@@ -50,6 +50,7 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
+import org.deegree.feature.gml.FeatureReference;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -226,7 +227,10 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 for ( Property<?> property : feature.getProperties() ) {
                     Object propertyValue = property.getValue();
                     if ( propertyValue instanceof Feature ) {
-                        findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
+                        if ( !( propertyValue instanceof FeatureReference )
+                             || ( (FeatureReference) propertyValue ).isLocal() ) {
+                            findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
+                        }
                     } else if ( propertyValue instanceof Geometry ) {
                         findGeometries( (Geometry) propertyValue, geometries, gids );
                     }

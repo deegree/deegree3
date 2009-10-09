@@ -75,31 +75,33 @@ import org.junit.Test;
 public class GetFeatureXMLAdapterTest extends TestCase {
 
     private final String EXAMPLE01 = "examples_xml/v110/example01.xml";
-    
+
     private final String EXAMPLE02 = "examples_xml/v110/example02.xml";
-    
+
     private final String EXAMPLE03 = "examples_xml/v110/example03.xml";
-    
+
     private final String EXAMPLE04 = "examples_xml/v110/example04.xml";
-    
-//    private final String EXAMPLE05 = "examples_xml/v110/example05.xml";
-    
-//    private final String EXAMPLE06 = "examples_xml/v110/example06.xml";
-    
+
+    // private final String EXAMPLE05 = "examples_xml/v110/example05.xml";
+
+    // private final String EXAMPLE06 = "examples_xml/v110/example06.xml";
+
     private final String EXAMPLE09 = "examples_xml/v110/example09.xml";
-    
+
     private final String EXAMPLE10 = "examples_xml/v110/example10.xml";
-    
+
     private final String EXAMPLE11 = "examples_xml/v110/example11.xml";
-    
+
     private final String EXAMPLE12 = "examples_xml/v110/example12.xml";
-    
+
     /**
-     * @throws Exception    When the version of the GetFeature document is not supported for 
-     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
+     * @throws Exception
+     *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
+     *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE01() throws Exception {          
+    public void testEXAMPLE01()
+                            throws Exception {
 
         URL exampleURL = this.getClass().getResource( EXAMPLE01 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
@@ -108,28 +110,29 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
         GetFeature getFeature = getFeatureAdapter.parse();
 
-        Query[] queries = getFeature.getQueries();                
+        Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
-        
+
         TypeName[] typeNames = filterQuery.getTypeNames();
-        
+
         assertEquals( typeNames.length, 1 );
-        assertEquals( typeNames[0].getFeatureTypeName(), 
-                      new QName( "http://www.someserver.com/myns", "InWaterA_1M" ) );
-                
+        assertEquals( typeNames[0].getFeatureTypeName(), new QName( "http://www.someserver.com/myns", "InWaterA_1M" ) );
+
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
 
         assertEquals( ids.size(), 1 );
         assertTrue( ids.contains( "InWaterA_1M.1234" ) );
     }
-    
+
     /**
-     * @throws Exception    When the version of the GetFeature document is not supported for 
-     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
+     * @throws Exception
+     *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
+     *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE02() throws Exception {          
+    public void testEXAMPLE02()
+                            throws Exception {
 
         URL exampleURL = this.getClass().getResource( EXAMPLE02 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
@@ -140,27 +143,29 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
-        
+
         PropertyName[] propNames = filterQuery.getPropertyNames();
-        
+
         assertEquals( propNames.length, 3 );
         assertEquals( propNames[0].getPropertyName(), "myns:wkbGeom" );
         assertEquals( propNames[1].getPropertyName(), "myns:tileId" );
         assertEquals( propNames[2].getPropertyName(), "myns:facId" );
-        
+
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
 
         assertEquals( ids.size(), 1 );
         assertTrue( ids.contains( "InWaterA_1M.1013" ) );
     }
-    
+
     /**
-     * @throws Exception    When the version of the GetFeature document is not supported for 
-     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
+     * @throws Exception
+     *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
+     *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE03() throws Exception {          
+    public void testEXAMPLE03()
+                            throws Exception {
 
         URL exampleURL = this.getClass().getResource( EXAMPLE03 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
@@ -171,7 +176,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
-                
+
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
 
@@ -180,13 +185,15 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ids.contains( "InWaterA_1M.1014" ) );
         assertTrue( ids.contains( "InWaterA_1M.1015" ) );
     }
-    
+
     /**
-     * @throws Exception    When the version of the GetFeature document is not supported for 
-     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
+     * @throws Exception
+     *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
+     *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE04() throws Exception {          
+    public void testEXAMPLE04()
+                            throws Exception {
 
         URL exampleURL = this.getClass().getResource( EXAMPLE04 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
@@ -197,13 +204,13 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
-        
+
         PropertyName[] propNames = filterQuery.getPropertyNames();
-        
+
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getPropertyName(), "myns:wkbGeom" );
         assertEquals( propNames[1].getPropertyName(), "myns:tileId" );
-                
+
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
 
@@ -213,73 +220,75 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ids.contains( "InWaterA_1M.1015" ) );
     }
 
-//    /**
-//     * @throws Exception    When the version of the GetFeature document is not supported for 
-//     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
-//     */
-//    @Test
-//    public void testEXAMPLE05() throws Exception {          
-//
-//        URL exampleURL = this.getClass().getResource( EXAMPLE05 );
-//        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-//
-//        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-//        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-//        GetFeature getFeature = getFeatureAdapter.parse();
-//
-//        Query[] queries = getFeature.getQueries();                
-//        FilterQuery filterQuery = (FilterQuery) queries[0];
-//        
-//        TypeName[] typeNames = filterQuery.getTypeNames();
-//        
-//        assertEquals( typeNames.length, 1 );
-//        assertEquals( typeNames[0].getFeatureTypeName(), 
-//                      new QName( "http://www.someserver.com/myns", "InWaterA_1M" ) );
-//    }
-    
-//    /**
-//     * @throws Exception    When the version of the GetFeature document is not supported for 
-//     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
-//     */
-//    @Test
-//    public void testEXAMPLE06() throws Exception {          
-//
-//        URL exampleURL = this.getClass().getResource( EXAMPLE06 );
-//        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-//
-//        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-//        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-//        GetFeature getFeature = getFeatureAdapter.parse();
-//
-//        Query[] queries = getFeature.getQueries();
-//        
-//        assertEquals( queries.length, 3 );
-//        
-//        FilterQuery filterQuery = (FilterQuery) queries[0];        
-//        TypeName[] typeNames = filterQuery.getTypeNames();        
-//        assertEquals( typeNames.length, 1 );
-//        assertEquals( typeNames[0].getFeatureTypeName(), 
-//                      new QName( "http://www.someserver.com/myns", "InWaterA_1M" ) );
-//        
-//        filterQuery = (FilterQuery) queries[1];        
-//        typeNames = filterQuery.getTypeNames();        
-//        assertEquals( typeNames.length, 1 );
-//        assertEquals( typeNames[0].getFeatureTypeName(), 
-//                      new QName( "http://www.someserver.com/myns", "BuiltUpA_1M" ) );
-//        
-//        filterQuery = (FilterQuery) queries[2];        
-//        typeNames = filterQuery.getTypeNames();        
-//        assertEquals( typeNames.length, 1 );
-//        assertEquals( typeNames[0].getFeatureTypeName(), 
-//                      new QName( "http://demo.cubewerx.com/yourns", "RoadL_1M" ) );
-//    }
-    
+    // /**
+    // * @throws Exception When the version of the GetFeature document is not supported for
+    // * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)
+    // */
+    // @Test
+    // public void testEXAMPLE05() throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( EXAMPLE05 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse();
+    //
+    // Query[] queries = getFeature.getQueries();
+    // FilterQuery filterQuery = (FilterQuery) queries[0];
+    //        
+    // TypeName[] typeNames = filterQuery.getTypeNames();
+    //        
+    // assertEquals( typeNames.length, 1 );
+    // assertEquals( typeNames[0].getFeatureTypeName(),
+    // new QName( "http://www.someserver.com/myns", "InWaterA_1M" ) );
+    // }
+
+    // /**
+    // * @throws Exception When the version of the GetFeature document is not supported for
+    // * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)
+    // */
+    // @Test
+    // public void testEXAMPLE06() throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( EXAMPLE06 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse();
+    //
+    // Query[] queries = getFeature.getQueries();
+    //        
+    // assertEquals( queries.length, 3 );
+    //        
+    // FilterQuery filterQuery = (FilterQuery) queries[0];
+    // TypeName[] typeNames = filterQuery.getTypeNames();
+    // assertEquals( typeNames.length, 1 );
+    // assertEquals( typeNames[0].getFeatureTypeName(),
+    // new QName( "http://www.someserver.com/myns", "InWaterA_1M" ) );
+    //        
+    // filterQuery = (FilterQuery) queries[1];
+    // typeNames = filterQuery.getTypeNames();
+    // assertEquals( typeNames.length, 1 );
+    // assertEquals( typeNames[0].getFeatureTypeName(),
+    // new QName( "http://www.someserver.com/myns", "BuiltUpA_1M" ) );
+    //        
+    // filterQuery = (FilterQuery) queries[2];
+    // typeNames = filterQuery.getTypeNames();
+    // assertEquals( typeNames.length, 1 );
+    // assertEquals( typeNames[0].getFeatureTypeName(),
+    // new QName( "http://demo.cubewerx.com/yourns", "RoadL_1M" ) );
+    // }
+
     /**
-     * @throws Exception    When the version of the GetFeature document is not supported for 
-     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
+     * @throws Exception
+     *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
+     *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE09() throws Exception {          
+    public void testEXAMPLE09()
+                            throws Exception {
 
         URL exampleURL = this.getClass().getResource( EXAMPLE09 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
@@ -291,94 +300,101 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
         TypeName[] typeNames = filterQuery.getTypeNames();
-                
+
         assertEquals( typeNames.length, 1 );
-        assertEquals( typeNames[0].getFeatureTypeName(), 
-                      new QName( "http://www.opengis.net/wfs", "Person" ) );
-                        
+        assertEquals( new QName( "Person" ), typeNames[0].getFeatureTypeName() );
+
         OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
         assertEquals( opFilter.getOperator().getType(), LOGICAL );
-        
+
         LogicalOperator logOp = (LogicalOperator) opFilter.getOperator();
-        
+
         assertEquals( logOp.getSubType(), AND );
         And andOp = (And) logOp;
         Operator op1 = andOp.getParameter( 0 );
-        
+
         assertEquals( op1.getType(), LOGICAL );
         LogicalOperator logOp1 = (LogicalOperator) op1;
         assertEquals( logOp1.getSubType(), AND );
         And andOp1 = (And) logOp1;
-        
+
         Operator op11 = andOp1.getParameter( 0 );
         assertEquals( op11.getType(), COMPARISON );
         BinaryComparisonOperator compOp11 = (BinaryComparisonOperator) op11;
         assertTrue( compOp11 instanceof PropertyIsGreaterThanOrEqualTo );
-        assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsGreaterThanOrEqualTo) op11).getParameter1() ).getPropertyName(), "myns:Person/myns:mailAddress/myns:Address/myns:streetNumber" );
-        assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsGreaterThanOrEqualTo) op11).getParameter2() ).getValue(), "10000" );
-        
+        assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter1() instanceof PropertyName );
+        assertEquals( ( (PropertyName) ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter1() ).getPropertyName(),
+                      "myns:Person/myns:mailAddress/myns:Address/myns:streetNumber" );
+        assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter2() instanceof Literal );
+        assertEquals( ( (Literal) ( (PropertyIsGreaterThanOrEqualTo) op11 ).getParameter2() ).getValue(), "10000" );
+
         Operator op12 = andOp1.getParameter( 1 );
         assertEquals( op12.getType(), COMPARISON );
         BinaryComparisonOperator compOp12 = (BinaryComparisonOperator) op12;
         assertTrue( compOp12 instanceof PropertyIsLessThanOrEqualTo );
-        assertTrue( ( (PropertyIsLessThanOrEqualTo) op12).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsLessThanOrEqualTo) op12).getParameter1() ).getPropertyName(), "myns:Person/myns:mailAddress/myns:Address/myns:streetNumber" );
-        assertTrue( ( (PropertyIsLessThanOrEqualTo) op12).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsLessThanOrEqualTo) op12).getParameter2() ).getValue(), "10999" );
-                
+        assertTrue( ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter1() instanceof PropertyName );
+        assertEquals( ( (PropertyName) ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter1() ).getPropertyName(),
+                      "myns:Person/myns:mailAddress/myns:Address/myns:streetNumber" );
+        assertTrue( ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter2() instanceof Literal );
+        assertEquals( ( (Literal) ( (PropertyIsLessThanOrEqualTo) op12 ).getParameter2() ).getValue(), "10999" );
+
         Operator op2 = andOp.getParameter( 1 );
-        
+
         assertEquals( op2.getType(), LOGICAL );
         LogicalOperator logOp2 = (LogicalOperator) op2;
         assertEquals( logOp2.getSubType(), AND );
         And andOp2 = (And) logOp2;
-        
+
         Operator op21 = andOp2.getParameter( 0 );
         assertEquals( op21.getType(), COMPARISON );
         BinaryComparisonOperator compOp21 = (BinaryComparisonOperator) op21;
         assertTrue( compOp21 instanceof PropertyIsEqualTo );
-        assertTrue( ( (PropertyIsEqualTo) op21).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op21).getParameter1() ).getPropertyName(), "myns:Person/myns:mailAddress/myns:Address/myns:streetName" );
-        assertTrue( ( (PropertyIsEqualTo) op21).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op21).getParameter2() ).getValue(), "Main St." );
-        
+        assertTrue( ( (PropertyIsEqualTo) op21 ).getParameter1() instanceof PropertyName );
+        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op21 ).getParameter1() ).getPropertyName(),
+                      "myns:Person/myns:mailAddress/myns:Address/myns:streetName" );
+        assertTrue( ( (PropertyIsEqualTo) op21 ).getParameter2() instanceof Literal );
+        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op21 ).getParameter2() ).getValue(), "Main St." );
+
         Operator op22 = andOp2.getParameter( 1 );
         assertEquals( op22.getType(), COMPARISON );
         BinaryComparisonOperator compOp22 = (BinaryComparisonOperator) op22;
         assertTrue( compOp22 instanceof PropertyIsEqualTo );
-        assertTrue( ( (PropertyIsEqualTo) op22).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op22).getParameter1() ).getPropertyName(), "myns:Person/myns:mailAddress/myns:Address/myns:city" );
-        assertTrue( ( (PropertyIsEqualTo) op22).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op22).getParameter2() ).getValue(), "SomeTown" );
-        
+        assertTrue( ( (PropertyIsEqualTo) op22 ).getParameter1() instanceof PropertyName );
+        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op22 ).getParameter1() ).getPropertyName(),
+                      "myns:Person/myns:mailAddress/myns:Address/myns:city" );
+        assertTrue( ( (PropertyIsEqualTo) op22 ).getParameter2() instanceof Literal );
+        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op22 ).getParameter2() ).getValue(), "SomeTown" );
+
         Operator op23 = andOp2.getParameter( 2 );
         assertEquals( op23.getType(), COMPARISON );
         BinaryComparisonOperator compOp23 = (BinaryComparisonOperator) op23;
         assertTrue( compOp23 instanceof PropertyIsEqualTo );
-        assertTrue( ( (PropertyIsEqualTo) op23).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op23).getParameter1() ).getPropertyName(), "myns:Person/myns:sex" );
-        assertTrue( ( (PropertyIsEqualTo) op23).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op23).getParameter2() ).getValue(), "Female" );
-        
+        assertTrue( ( (PropertyIsEqualTo) op23 ).getParameter1() instanceof PropertyName );
+        assertEquals( ( (PropertyName) ( (PropertyIsEqualTo) op23 ).getParameter1() ).getPropertyName(),
+                      "myns:Person/myns:sex" );
+        assertTrue( ( (PropertyIsEqualTo) op23 ).getParameter2() instanceof Literal );
+        assertEquals( ( (Literal) ( (PropertyIsEqualTo) op23 ).getParameter2() ).getValue(), "Female" );
+
         Operator op24 = andOp2.getParameter( 3 );
         assertEquals( op24.getType(), COMPARISON );
         BinaryComparisonOperator compOp24 = (BinaryComparisonOperator) op24;
         assertTrue( compOp24 instanceof PropertyIsGreaterThan );
-        assertTrue( ( (PropertyIsGreaterThan) op24).getParameter1() instanceof PropertyName );
-        assertEquals( ( (PropertyName) ( (PropertyIsGreaterThan) op24).getParameter1() ).getPropertyName(), "myns:Person/myns:salary" );
-        assertTrue( ( (PropertyIsGreaterThan) op24).getParameter2() instanceof Literal );
-        assertEquals( ( (Literal) ( (PropertyIsGreaterThan) op24).getParameter2() ).getValue(), "35000" );
-                
+        assertTrue( ( (PropertyIsGreaterThan) op24 ).getParameter1() instanceof PropertyName );
+        assertEquals( ( (PropertyName) ( (PropertyIsGreaterThan) op24 ).getParameter1() ).getPropertyName(),
+                      "myns:Person/myns:salary" );
+        assertTrue( ( (PropertyIsGreaterThan) op24 ).getParameter2() instanceof Literal );
+        assertEquals( ( (Literal) ( (PropertyIsGreaterThan) op24 ).getParameter2() ).getValue(), "35000" );
+
     }
-    
+
     /**
-     * @throws Exception    When the version of the GetFeature document is not supported for 
-     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
+     * @throws Exception
+     *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
+     *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE10() throws Exception {          
+    public void testEXAMPLE10()
+                            throws Exception {
 
         URL exampleURL = this.getClass().getResource( EXAMPLE10 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
@@ -389,26 +405,28 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
-        
+
         PropertyName[] propNames = filterQuery.getPropertyNames();
-        
+
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getPropertyName(), "gml:name" );
         assertEquals( propNames[1].getPropertyName(), "gml:directedNode" );
-                
+
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
 
         assertEquals( ids.size(), 1 );
         assertTrue( ids.contains( "t1" ) );
     }
-    
+
     /**
-     * @throws Exception    When the version of the GetFeature document is not supported for 
-     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)  
+     * @throws Exception
+     *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
+     *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE11() throws Exception {          
+    public void testEXAMPLE11()
+                            throws Exception {
 
         URL exampleURL = this.getClass().getResource( EXAMPLE11 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
@@ -419,25 +437,27 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
-        
+
         PropertyName[] propNames = filterQuery.getPropertyNames();
-        
+
         assertEquals( propNames.length, 2 );
         assertEquals( propNames[0].getPropertyName(), "gml:name" );
         assertEquals( propNames[1].getPropertyName(), "gml:directedNode" );
-                
+
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
 
         assertEquals( ids.size(), 1 );
         assertTrue( ids.contains( "t1" ) );
     }
-    
+
     /**
-     * @throws Exception    When the version of the GetFeature document is not supported for 
-     * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)
+     * @throws Exception
+     *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
+     *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
-    public void testEXAMPLE12() throws Exception {          
+    public void testEXAMPLE12()
+                            throws Exception {
 
         URL exampleURL = this.getClass().getResource( EXAMPLE12 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
@@ -448,16 +468,16 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
-        
+
         PropertyName[] propNames = filterQuery.getPropertyNames();
-        
+
         assertEquals( propNames.length, 1 );
         assertEquals( propNames[0].getPropertyName(), "gml:name" );
         assertEquals( filterQuery.getXLinkPropertyNames().length, 1 );
         assertEquals( filterQuery.getXLinkPropertyNames()[0].getTraverseXlinkDepth(), "2" );
-        assertEquals( filterQuery.getXLinkPropertyNames()[0].getTraverseXlinkExpiry(), new Integer(2) );
+        assertEquals( filterQuery.getXLinkPropertyNames()[0].getTraverseXlinkExpiry(), new Integer( 2 ) );
         assertEquals( filterQuery.getXLinkPropertyNames()[0].getPropertyName().getPropertyName(), "gml:directedNode" );
-                
+
         IdFilter filter = (IdFilter) filterQuery.getFilter();
         Set<String> ids = filter.getMatchingIds();
 

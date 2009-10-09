@@ -39,7 +39,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.feature.gml.FeatureReference;
 import org.deegree.feature.xpath.FeatureNode;
 import org.deegree.feature.xpath.FeatureXPath;
 import org.deegree.feature.xpath.PropertyNode;
@@ -59,7 +60,7 @@ import org.jaxen.XPath;
  */
 public abstract class AbstractFeature implements Feature {
 
-    private StandardObjectProperties standardProps;
+    private StandardObjectProps standardProps;
 
     public Object[] getPropertyValues( PropertyName propName )
                             throws JaxenException {
@@ -100,21 +101,23 @@ public abstract class AbstractFeature implements Feature {
         Envelope featureBBox = null;
         if ( !visited.contains( feature ) ) {
             visited.add( feature );
-            for ( Property<?> prop : feature.getProperties() ) {
-                Object propValue = prop.getValue();
-                Envelope propBBox = null;
-                if ( propValue instanceof Geometry ) {
-                    Geometry geom = (Geometry) propValue;
-                    propBBox = geom.getEnvelope();
-                } else if ( propValue instanceof Feature ) {
-                    Feature subFeature = (Feature) propValue;
-                    propBBox = getEnvelope( subFeature, visited );
-                }
-                if ( propBBox != null ) {
-                    if ( featureBBox != null ) {
-                        featureBBox = featureBBox.merge( propBBox );
-                    } else {
-                        featureBBox = propBBox;
+            if ( !( feature instanceof FeatureReference ) || ( (FeatureReference) feature ).isLocal() ) {
+                for ( Property<?> prop : feature.getProperties() ) {
+                    Object propValue = prop.getValue();
+                    Envelope propBBox = null;
+                    if ( propValue instanceof Geometry ) {
+                        Geometry geom = (Geometry) propValue;
+                        propBBox = geom.getEnvelope();
+                    } else if ( propValue instanceof Feature ) {
+                        Feature subFeature = (Feature) propValue;
+                        propBBox = getEnvelope( subFeature, visited );
+                    }
+                    if ( propBBox != null ) {
+                        if ( featureBBox != null ) {
+                            featureBBox = featureBBox.merge( propBBox );
+                        } else {
+                            featureBBox = propBBox;
+                        }
                     }
                 }
             }
@@ -123,12 +126,12 @@ public abstract class AbstractFeature implements Feature {
     }
 
     @Override
-    public StandardObjectProperties getStandardGMLProperties() {
+    public StandardObjectProps getStandardGMLProperties() {
         return standardProps;
     }
 
     @Override
-    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
+    public void setStandardGMLProperties( StandardObjectProps standardProps ) {
         this.standardProps = standardProps;
     }
 }

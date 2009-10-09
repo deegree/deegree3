@@ -157,8 +157,8 @@ public class GMLFeatureDecoder extends XMLAdapter {
     }
 
     /**
-     * Returns the object representation for the feature element event that the cursor of the given
-     * <code>XMLStreamReader</code> points at.
+     * Returns the object representation for the feature (or feature collection) element event that the cursor of the
+     * given <code>XMLStreamReader</code> points at.
      * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of the feature element, afterwards points at
@@ -196,9 +196,13 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
         CRS activeCRS = crs;
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
+
+        StandardFeatureProps standardProps = GMLStandardFeaturePropsParser.parse311( xmlStream );
+
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
             QName propName = xmlStream.getName();
             LOG.debug( "- property '" + propName + "'" );
+
             if ( isElementSubstitutableForProperty( propName, activeDecl ) ) {
                 // current property element is equal to active declaration
                 if ( activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs() ) {
@@ -238,11 +242,12 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 }
             }
             propOccurences++;
+            xmlStream.nextTag();
         }
-
         LOG.debug( " - parsing feature (end): " + xmlStream.getCurrentEventInfo() );
 
         feature = ft.newFeature( fid, propertyList );
+        feature.setStandardGMLProperties( standardProps );
 
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getFeature( fid ) != null ) {
@@ -250,8 +255,17 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 throw new XMLParsingException( xmlStream, msg );
             }
             idContext.addFeature( feature );
-        }        
+        }
         return feature;
+    }
+
+    /**
+     * Handles the standard GML object properties that may occur at the beginning of a GML object element (e.g.
+     * 'gml:name').
+     * 
+     * @param xmlStream
+     */
+    private void parseStandardGMLObjectProps( XMLStreamReaderWrapper xmlStream ) {
     }
 
     private ApplicationSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream )

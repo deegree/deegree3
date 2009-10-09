@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,10 +32,12 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.types.gml;
 
+import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 
@@ -88,14 +90,43 @@ import org.deegree.geometry.Geometry;
  * </tr>
  * </table>
  * </p>
- *
+ * 
  * @see Feature
  * @see Geometry
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class StandardObjectProperties {
+public class StandardObjectProps {
+
+    private StringOrRef description;
+
+    protected final CodeType[] names;
+
+    public StandardObjectProps( StringOrRef description, CodeType[] names ) {
+        this.description = description;
+        this.names = names;
+    }
+
+    public StringOrRef getDescription() {
+        return description;
+    }
+
+    public CodeType[] getNames() {
+        return names;
+    }
+
+    @Override
+    public String toString() {
+        String s = "";
+        for ( int i = 0; i < names.length; i++ ) {
+            s += "name={" + names[i] + "}";
+            if ( i != names.length - 1 ) {
+                s += ',';
+            }
+        }
+        return s;
+    }
 }

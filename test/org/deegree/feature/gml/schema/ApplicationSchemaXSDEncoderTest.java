@@ -36,7 +36,6 @@
 
 package org.deegree.feature.gml.schema;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 
@@ -44,8 +43,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.gml.GMLVersion;
-import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.junit.XMLMemoryStreamWriter;

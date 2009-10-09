@@ -40,7 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProps;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.FeatureType;
@@ -91,12 +91,12 @@ public class FeatureReference implements Feature {
         this.feature = feature;
     }
 
-    @Override    
+    @Override
     public Envelope getEnvelope() {
         return feature.getEnvelope();
     }
 
-    @Override    
+    @Override
     public Property<Geometry>[] getGeometryProperties() {
         return feature.getGeometryProperties();
     }
@@ -121,7 +121,7 @@ public class FeatureReference implements Feature {
         return feature.getProperties( propName );
     }
 
-    @Override    
+    @Override
     public Property<?> getProperty( QName propName ) {
         return feature.getProperty( propName );
     }
@@ -137,15 +137,15 @@ public class FeatureReference implements Feature {
         return feature.getPropertyValue( propName );
     }
 
-    @Override    
+    @Override
     public Object[] getPropertyValues( QName propName ) {
         return feature.getPropertyValues( propName );
     }
 
-    @Override    
+    @Override
     public FeatureType getType() {
-        if (feature == null) {
-            return ft;            
+        if ( feature == null ) {
+            return ft;
         }
         return feature.getType();
     }
@@ -161,22 +161,26 @@ public class FeatureReference implements Feature {
         feature.setProperties( props );
     }
 
-    @Override    
+    @Override
     public void setPropertyValue( QName propName, int occurence, Object value ) {
         feature.setPropertyValue( propName, occurence, value );
     }
 
-    @Override    
-    public StandardObjectProperties getStandardGMLProperties() {
+    @Override
+    public StandardObjectProps getStandardGMLProperties() {
         return feature.getStandardGMLProperties();
     }
 
     @Override
-    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
+    public void setStandardGMLProperties( StandardObjectProps standardProps ) {
         feature.setStandardGMLProperties( standardProps );
     }
 
     public String getHref() {
         return href;
+    }
+
+    public boolean isLocal() {
+        return href.startsWith( "#" );
     }
 }

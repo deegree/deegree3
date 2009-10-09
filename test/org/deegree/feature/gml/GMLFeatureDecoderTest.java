@@ -47,8 +47,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.util.StAXUtils;
 import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -102,13 +102,13 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
     }
     
-//    @Test
-    public void testParsingCiteSF2()
+    @Test
+    public void testParsingCiteSF0()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException {
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( "/home/schneider/workspace/cite_testing/wfs-1.1.0-20091008/schemas/cite-gmlsf2.xsd" );
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf0.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
@@ -116,14 +116,41 @@ public class GMLFeatureDecoderTest {
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
 
 //        XMLStreamWriter writer = new FormattingXMLStreamWriter (XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter( "/tmp/out.xml" ) ));
+//        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
 //        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
 //        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
 //        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer );
 //        encoder.export( fc );
 //        writer.close();
     }
+
+    @Test
+    public void testParsingCiteSF1()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException {
+
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf1.xml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        GMLIdContext idContext = new GMLIdContext();
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+
+        XMLStreamWriter writer = new FormattingXMLStreamWriter (XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter( "/tmp/out.xml" ) ));
+        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
+        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer );
+        encoder.export( fc );
+        writer.close();
+    }    
     
 //    @Test
     public void testParsingXPlan20()

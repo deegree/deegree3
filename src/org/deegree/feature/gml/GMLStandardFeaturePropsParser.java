@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.gml;
+package org.deegree.feature.gml;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -44,12 +44,14 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.gml.GMLStandardPropsParser;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.geometry.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -59,44 +61,48 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
  * 
  * @version $Revision$, $Date$
  */
-public class GMLStandardPropsParser {
+public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
+
+    private static final Logger LOG = LoggerFactory.getLogger( GMLStandardFeaturePropsParser.class );
 
     /**
      * Returns the object representation for the <code>StandardObjectProperties</code> element group of the given
-     * <code>gml:_GML</code> element event.
+     * <code>gml:_Feature</code> element event.
      * <ul>
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GML&gt;)</li>
      * <li>Postcondition: cursor points at the first tag event (<code>START_ELEMENT/END_ELEMENT</code>) that does not
      * belong to an element from the <code>StandardObjectProperties</code> group</li>
      * </ul>
      * <p>
-     * GML 3.1.1 specifies the <code>StandardObjectProperties</code> group as follows:
+     * GML 3.1.1 specifies the following standard properties for any feature type:
      * 
      * <pre>
      * &lt;sequence&gt;
      *    &lt;element ref=&quot;gml:metaDataProperty&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;
      *    &lt;element ref=&quot;gml:description&quot; minOccurs=&quot;0&quot;/&gt;
      *    &lt;element ref=&quot;gml:name&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+     *    &lt;element ref=&quot;gml:boundedBy&quot; minOccurs=&quot;0&quot;/&gt;
+     *    &lt;element ref=&quot;gml:location&quot; minOccurs=&quot;0&quot;/&gt;
      * &lt;/sequence&gt;
      * </pre>
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GML&gt;), points at the at the
-     *            first tag event (<code>START_ELEMENT/END_ELEMENT</code>) that does not belong to an element from the
-     *            <code>StandardObjectProperties</code> group afterwards
-     * @return corresponding {@link StandardObjectProperties} object
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Feature&gt;), points at the at the
+     *            first tag event (<code>START_ELEMENT/END_ELEMENT</code>) following the standard properties
+     * @return corresponding {@link StandardFeatureProps} object
      * @throws XMLStreamException
      * @throws XMLParsingException
      *             if a syntactical error occurs
      * @throws XMLStreamException
      */
-    public static StandardObjectProps parse311( XMLStreamReaderWrapper xmlStream )
+    public static StandardFeatureProps parse311( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
 
         // 'gml:metaDataProperty' (0...unbounded)
         while ( event == START_ELEMENT && new QName( GMLNS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
+            LOG.debug( "gml:metaDataProperty" );
             parseMetadataProperty311( xmlStream );
             xmlStream.nextTag();
         }
@@ -115,27 +121,30 @@ public class GMLStandardPropsParser {
             xmlStream.nextTag();
         }
 
-        return new StandardObjectProps( description, names.toArray( new CodeType[names.size()] ) );
+        // 'gml:boundedBy' (0...1)
+        Envelope boundedBy = null;
+        if ( event == START_ELEMENT && new QName( GMLNS, "boundedBy" ).equals( xmlStream.getName() ) ) {
+            parseBoundedBy311( xmlStream );
+            xmlStream.nextTag();
+        }
+
+        // 'gml:location' (0...1)
+        if ( event == START_ELEMENT && new QName( GMLNS, "location" ).equals( xmlStream.getName() ) ) {
+            LOG.debug( "gml:location" );
+            parseLocation311( xmlStream );
+            xmlStream.nextTag();
+        }
+
+        return new StandardFeatureProps( description, names.toArray( new CodeType[names.size()] ), boundedBy );
     }
 
-    protected static void parseMetadataProperty311( XMLStreamReaderWrapper xmlStream )
+    protected static void parseBoundedBy311( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
         xmlStream.skipElement();
     }
 
-    protected static StringOrRef parseDescription311( XMLStreamReaderWrapper xmlStream )
+    protected static void parseLocation311( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
-
-        String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-        String string = xmlStream.getElementText().trim();
-        return new StringOrRef( string, ref );
-    }
-
-    protected static CodeType parseName311( XMLStreamReaderWrapper xmlStream )
-                            throws XMLStreamException {
-
-        String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
-        String code = xmlStream.getElementText().trim();
-        return new CodeType( code, codeSpace );
+        xmlStream.skipElement();
     }
 }

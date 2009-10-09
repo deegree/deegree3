@@ -46,7 +46,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.types.gml.StandardObjectProps;
 import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
@@ -179,11 +181,14 @@ public class GML311FeatureEncoder {
                 writer.writeStartElement( localName );
             } else {
                 writer.writeStartElement( "app", localName, namespaceURI );
-            }            
-            
-//            writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
+            }
+
+            // writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
             if ( feature.getId() != null ) {
                 writer.writeAttribute( "gml", GMLNS, "id", feature.getId() );
+            }
+            if ( feature.getStandardGMLProperties() != null ) {
+                exportStandardProps( writer, feature.getStandardGMLProperties() );
             }
             for ( Property<?> prop : feature.getProperties() ) {
                 export( prop, inlineLevels );
@@ -204,8 +209,11 @@ public class GML311FeatureEncoder {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeAttribute( XLNNS, "href", "#" + subFid );
             } else {
-                if ( referenceTemplate == null || subFid == null
-                     || traverseXlinkDepth == -1 || ( traverseXlinkDepth > 0 && ( inlineLevels < traverseXlinkDepth ) ) ) {
+                if ( ( subFeature instanceof FeatureReference ) && !( (FeatureReference) subFeature ).isLocal() ) {
+                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writer.writeAttribute( XLNNS, "href", ( (FeatureReference) subFeature ).getHref() );
+                } else if ( referenceTemplate == null || subFid == null || traverseXlinkDepth == -1
+                            || ( traverseXlinkDepth > 0 && ( inlineLevels < traverseXlinkDepth ) ) ) {
                     exportedIds.add( subFeature.getId() );
                     writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     export( subFeature, inlineLevels + 1 );
@@ -275,5 +283,32 @@ public class GML311FeatureEncoder {
 
     public boolean isExported( String memberFid ) {
         return exportedIds.contains( memberFid );
+    }
+
+    private void exportStandardProps( XMLStreamWriter writer, StandardObjectProps standardGMLProperties )
+                            throws XMLStreamException {
+
+        StringOrRef description = standardGMLProperties.getDescription();
+        if ( description != null ) {
+            writer.writeStartElement( GMLNS, "description" );
+            if ( description.getRef() != null ) {
+                writer.writeAttribute( XLNNS, "xlink", description.getRef() );
+            }
+            if ( description.getString() != null ) {
+                writer.writeCharacters( description.getString() );
+            }
+            writer.writeEndElement();
+        }
+
+        for ( CodeType name : standardGMLProperties.getNames() ) {
+            writer.writeStartElement( GMLNS, "name" );
+            if ( name.getCodeSpace() != null ) {
+                writer.writeAttribute( "codeSpace", name.getCodeSpace() );
+            }
+            if ( name.getCode() != null ) {
+                writer.writeCharacters( name.getCode() );
+            }
+            writer.writeEndElement();
+        }
     }
 }

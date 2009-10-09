@@ -39,7 +39,7 @@ package org.deegree.geometry.gml.refs;
 import java.net.URL;
 
 import org.deegree.commons.gml.GMLIdContext;
-import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -254,12 +254,12 @@ public class GeometryReference<T extends Geometry> implements Geometry {
     }
 
     @Override
-    public StandardObjectProperties getAttachedProperties() {
+    public StandardObjectProps getAttachedProperties() {
         return getReferencedGeometry().getAttachedProperties();
     }
 
     @Override
-    public void setAttachedProperties( StandardObjectProperties standardProps ) {
+    public void setAttachedProperties( StandardObjectProps standardProps ) {
         getReferencedGeometry().setAttachedProperties( standardProps );
     }
 

@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.gml.GMLIdContext;
-import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProps;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
@@ -982,7 +982,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         Point point = null;
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         // must contain one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
         if ( xmlStream.getEventType() == START_ELEMENT ) {
@@ -1041,7 +1041,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Point> points = null;
         if ( xmlStream.getEventType() == XMLStreamConstants.START_ELEMENT ) {
@@ -1106,7 +1106,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "segments" );
         List<CurveSegment> segments = new LinkedList<CurveSegment>();
@@ -1144,7 +1144,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "baseCurve" );
         Curve baseCurve = parseCurveProperty( xmlStream, crs );
@@ -1177,7 +1177,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         Points points = curveSegmentParser.parseControlPoints( xmlStream, crs );
         if ( points.size() < 4 ) {
@@ -1211,7 +1211,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
@@ -1252,7 +1252,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         Ring exteriorRing = null;
         List<Ring> interiorRings = new LinkedList<Ring>();
@@ -1333,7 +1333,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
         xmlStream.require( START_ELEMENT, GMLNS, "patches" );
@@ -1369,7 +1369,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<PolygonPatch> memberPatches = new LinkedList<PolygonPatch>();
         xmlStream.require( START_ELEMENT, GMLNS, "polygonPatches" );
@@ -1405,7 +1405,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
         xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
@@ -1444,7 +1444,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
         xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
@@ -1546,7 +1546,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "baseSurface" );
         Surface baseSurface = parseSurfaceProperty( xmlStream, defaultCRS );
@@ -1580,7 +1580,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         Surface exteriorSurface = null;
         List<Surface> interiorSurfaces = new LinkedList<Surface>();
@@ -1633,7 +1633,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
@@ -1669,7 +1669,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Surface> memberSurfaces = new LinkedList<Surface>();
 
@@ -1705,7 +1705,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Solid> memberSolids = new LinkedList<Solid>();
         do {
@@ -1740,7 +1740,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<GeometricPrimitive> memberSolids = new LinkedList<GeometricPrimitive>();
 
@@ -1777,7 +1777,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Point> members = new LinkedList<Point>();
 
@@ -1829,7 +1829,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Curve> members = new LinkedList<Curve>();
 
@@ -1880,7 +1880,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
         List<LineString> members = new LinkedList<LineString>();
 
         if ( xmlStream.isStartElement() ) {
@@ -1924,7 +1924,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Surface> members = new LinkedList<Surface>();
 
@@ -1975,7 +1975,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Polygon> members = new LinkedList<Polygon>();
 
@@ -2019,7 +2019,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Solid> members = new LinkedList<Solid>();
 
@@ -2070,7 +2070,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardObjectProperties standardProps = parse311( xmlStream );
+        StandardObjectProps standardProps = parse311( xmlStream );
 
         List<Geometry> members = new LinkedList<Geometry>();
 
