@@ -37,6 +37,7 @@ package org.deegree.feature.gml.schema;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.dv.XSSimpleType;
+import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -57,6 +59,9 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.gml.schema.XSModelGMLAnalyzer;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceContext;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
@@ -396,6 +401,16 @@ public class ApplicationSchemaXSDDecoder {
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.debug( "Checking if element declaration '" + ptName + "' defines a feature property type." );
 
+        FeaturePropertyType pt = buildFeaturePropertyTypeXGml( elementDecl, typeDef, minOccurs, maxOccurs );
+        if ( pt != null ) {
+            return pt;
+        }
+
+        pt = buildFeaturePropertyTypeAdv( elementDecl, typeDef, minOccurs, maxOccurs );
+        if ( pt != null ) {
+            return pt;
+        }
+
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
             LOG.debug( "CONTENTTYPE_ELEMENT" );
@@ -429,7 +444,7 @@ public class ApplicationSchemaXSDDecoder {
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( ftNameToFtElement.get( elementName ) != null ) {
                             LOG.debug( "Identified a feature property." );
-                            FeaturePropertyType pt = null;
+                            pt = null;
                             if ( GMLNS.equals( elementName.getNamespaceURI() ) ) {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null );
                             } else {
@@ -471,6 +486,60 @@ public class ApplicationSchemaXSDDecoder {
             // contents = new Sequence( elements );
             break;
         }
+        }
+        return null;
+    }
+
+    private FeaturePropertyType buildFeaturePropertyTypeXGml( XSElementDeclaration elementDecl,
+                                                              XSComplexTypeDefinition typeDef, int minOccurs,
+                                                              int maxOccurs ) {
+        // handle schemas that use a source="urn:x-gml:targetElement" attribute for defining the referenced feature type
+        // inside the annotation element (e.g. CITE examples for WFS 1.1.0)
+        XSObjectList annotations = elementDecl.getAnnotations();
+        if ( annotations.getLength() > 0 ) {
+            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
+            String s = annotation.getAnnotationString();
+            XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
+            NamespaceContext nsContext = new NamespaceContext();
+            nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+            QName refElement = adapter.getNodeAsQName(
+                                                       adapter.getRootElement(),
+                                                       new XPath(
+                                                                  "xs:appinfo[@source='urn:x-gml:targetElement']/text()",
+                                                                  nsContext ), null );
+            if ( refElement != null ) {
+                LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
+                QName elementName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+                FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement );
+                featurePropertyTypes.add( pt );
+                return pt;
+            }
+        }
+        return null;
+    }
+
+    private FeaturePropertyType buildFeaturePropertyTypeAdv( XSElementDeclaration elementDecl,
+                                                             XSComplexTypeDefinition typeDef, int minOccurs,
+                                                             int maxOccurs ) {
+        // handle adv schemas (referenced feature type inside annotation element)
+        XSObjectList annotations = elementDecl.getAnnotations();
+        if ( annotations.getLength() > 0 ) {
+            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
+            String s = annotation.getAnnotationString();
+            XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
+            NamespaceContext nsContext = new NamespaceContext();
+            nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+            nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
+            QName refElement = adapter.getNodeAsQName( adapter.getRootElement(),
+                                                       new XPath( "xs:appinfo/adv:referenziertesElement/text()",
+                                                                  nsContext ), null );
+            if ( refElement != null ) {
+                LOG.debug( "Identified a feature property (adv style)." );
+                QName elementName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+                FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement );
+                featurePropertyTypes.add( pt );
+                return pt;
+            }
         }
         return null;
     }
