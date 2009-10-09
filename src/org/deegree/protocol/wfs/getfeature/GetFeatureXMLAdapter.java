@@ -37,6 +37,7 @@
 package org.deegree.protocol.wfs.getfeature;
 
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 
 import java.util.ArrayList;
@@ -98,90 +99,105 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         GetFeature result = null;
 
-        if ( VERSION_110.equals( version ) )
+        if ( VERSION_100.equals( version ) )
+            result = parse100();
+        else if ( VERSION_110.equals( version ) )
             result = parse110();
         else {
-            throw new Exception( "Version " + version
-                                 + " is not supported for parsing (for now). Only 1.1.0 is supported." );
+            throw new Exception(
+                                 "Version "
+                                                         + version
+                                                         + " is not supported for parsing (for now). Only 1.0.0 and 1.1.0 versions are supported." );
         }
 
         return result;
     }
 
-    // /**
-    // *
-    // * @return
-    // */
-    // public GetFeature parse100() {
-    // GetFeature result = null;
-    //
-    // String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-    //
-    // String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-    //
-    // String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
-    // Integer maxFeatures = null;
-    // if ( maxFeaturesStr != null )
-    // maxFeatures = Integer.parseInt( maxFeaturesStr );
-    //
-    // List<OMElement> queries = getRequiredElements( rootElement, new XPath( "Query", nsContext ) );
-    //
-    // List<Query> filterQueries = new ArrayList<Query>();
-    //
-    // for ( OMElement query : queries ) {
-    // List<PropertyName> propNames = new ArrayList<PropertyName>();
-    // Filter filter = null;
-    //
-    // // get the child elements
-    // Iterator<OMElement> iterator = query.getChildElements();
-    // while ( iterator.hasNext() ) {
-    // OMElement el = iterator.next();
-    // if ( el.getQName().getLocalPart().equals( "PropertyName" ) ) {
-    // NamespaceContext nsContext = getNamespaceContext( el );
-    // PropertyName propName = new PropertyName( el.getQName().getLocalPart(), nsContext );
-    // propNames.add( propName );
-    // }
-    // if ( el.getQName().getLocalPart().equals( "Filter" ) ) {
-    // Filter110XMLAdapter filterAdapter = new Filter110XMLAdapter();
-    // filter = filterAdapter.parse();
-    // }
-    // }
-    //
-    // // get the attributes
-    // String queryHandle = null;
-    // TypeName[] typeName = new TypeName[1];
-    // String featureVersion = null;
-    //
-    // Iterator<OMAttribute> attributes = query.getAllAttributes();
-    // while ( attributes.hasNext() ) {
-    // OMAttribute att = attributes.next();
-    // if ( att.getLocalName().equals( "handle" ) )
-    // queryHandle = att.getAttributeValue();
-    // if ( att.getLocalName().equals( "typeName" ) ) {
-    // String typeNameStr = att.getAttributeValue();
-    // QName typeNameAsQ = query.resolveQName( typeNameStr );
-    // typeName[0] = new TypeName( typeNameAsQ, null );
-    // }
-    // if ( att.getLocalName().equals( "featureVersion" ) )
-    // featureVersion = att.getAttributeValue();
-    // }
-    //
-    // // convert some lists to arrays to conform the FilterQuery constructor signature
-    // PropertyName[] propNamesArray = new PropertyName[ propNames.size() ];
-    //
-    // Query filterQuery = new FilterQuery( queryHandle, null, featureVersion, null,
-    // propNamesArray, null, null,
-    // null, filter );
-    // filterQueries.add( filterQuery );
-    // }
-    // Query[] queryArray = new FilterQuery[ filterQueries.size() ];
-    // filterQueries.toArray( queryArray );
-    //
-    // result = new GetFeature( VERSION_100, handle, null, outputFormat, maxFeatures, null,
-    // null, queryArray );
-    //
-    // return result;
-    // }
+    /**
+     * Parses a WFS 1.0.0 <code>GetFeature</code> document into a {@link GetFeature} object.
+     * 
+     * @return a GetFeature instance
+     */
+    @SuppressWarnings("boxing")
+    public GetFeature parse100() {
+
+        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+
+        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
+        ResultType resultType = null;
+        if ( resultTypeStr != null ) {
+            if ( resultTypeStr.equalsIgnoreCase( ResultType.RESULTS.toString() ) ) {
+                resultType = ResultType.RESULTS;
+            } else if ( resultTypeStr.equalsIgnoreCase( ResultType.HITS.toString() ) ) {
+                resultType = ResultType.HITS;
+            }
+        }
+
+        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
+
+        String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
+        Integer maxFeatures = null;
+        if ( maxFeaturesStr != null ) {
+            maxFeatures = Integer.parseInt( maxFeaturesStr );
+        }
+
+        List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "wfs:Query", nsContext ) );
+
+        List<Query> queries = new ArrayList<Query>();
+
+        for ( OMElement queryEl : queryElements ) {
+            List<PropertyName> propNames = new ArrayList<PropertyName>();
+            List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
+
+            for ( OMElement propertyNameEl : propertyNameElements ) {
+                PropertyName propertyName = new PropertyName( propertyNameEl.getText(),
+                                                              getNamespaceContext( propertyNameEl ) );
+                propNames.add( propertyName );
+            }
+
+            Filter filter = null;
+            OMElement filterEl = queryEl.getFirstChildWithName( new QName( OGCNS, "Filter" ) );
+            if ( filterEl != null ) {
+                try {
+                    // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
+                    // XMLStreamReader)
+                    XMLStreamReader xmlStream = new XMLStreamReaderWrapper(
+                                                                            filterEl.getXMLStreamReaderWithoutCaching(),
+                                                                            null );
+                    // skip START_DOCUMENT
+                    xmlStream.nextTag();
+
+                    // TODO Filter v1.1.0 is basically a superset of v1.0.0; but nevertheless CHECK it!
+                    filter = Filter110XMLDecoder.parse( xmlStream );
+                } catch ( XMLStreamException e ) {
+                    e.printStackTrace();
+                    throw new XMLParsingException( this, filterEl, e.getMessage() );
+                }
+            }
+
+            String queryHandle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );
+
+            String typeNameStr = getRequiredNodeAsString( queryEl, new XPath( "@typeName", nsContext ) );
+            TypeName[] typeNames = TypeName.valuesOf( queryEl, typeNameStr );
+
+            String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
+
+            // convert some lists to arrays to conform the FilterQuery constructor signature
+            PropertyName[] propNamesArray = new PropertyName[propNames.size()];
+            propNames.toArray( propNamesArray );
+
+            // build Query
+            Query filterQuery = new FilterQuery( queryHandle, typeNames, null, featureVersion, null, propNamesArray,
+                                                 null, null, null, filter );
+
+            queries.add( filterQuery );
+        }
+
+        Query[] queryArray = new FilterQuery[queries.size()];
+        queries.toArray( queryArray );
+
+        return new GetFeature( VERSION_100, handle, resultType, outputFormat, maxFeatures, null, null, queryArray );
+    }
 
     /**
      * Parses a WFS 1.1.0 <code>GetFeature</code> document into a {@link GetFeature} object.
