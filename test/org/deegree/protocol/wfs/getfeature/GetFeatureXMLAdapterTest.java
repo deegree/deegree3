@@ -74,25 +74,63 @@ import org.junit.Test;
  */
 public class GetFeatureXMLAdapterTest extends TestCase {
 
-    private final String EXAMPLE01 = "examples_xml/v110/example01.xml";
+    // ---------------------version 1.0.0------------------------------
+    private final String V100_EXAMPLE1 = "examples_xml/v100/example1.xml";
 
-    private final String EXAMPLE02 = "examples_xml/v110/example02.xml";
+    private final String V100_EXAMPLE2 = "examples_xml/v100/example2.xml";
 
-    private final String EXAMPLE03 = "examples_xml/v110/example03.xml";
+    private final String V100_EXAMPLE3 = "examples_xml/v100/example3.xml";
 
-    private final String EXAMPLE04 = "examples_xml/v110/example04.xml";
+    private final String V100_EXAMPLE4 = "examples_xml/v100/example4.xml";
 
-    // private final String EXAMPLE05 = "examples_xml/v110/example05.xml";
+    private final String V100_EXAMPLE5 = "examples_xml/v100/example5.xml";
 
-    // private final String EXAMPLE06 = "examples_xml/v110/example06.xml";
+    private final String V100_EXAMPLE6 = "examples_xml/v100/example6.xml";
 
-    private final String EXAMPLE09 = "examples_xml/v110/example09.xml";
+    private final String V100_EXAMPLE7 = "examples_xml/v100/example7.xml";
 
-    private final String EXAMPLE10 = "examples_xml/v110/example10.xml";
+    // ---------------------version 1.1.0------------------------------
+    private final String V110_EXAMPLE01 = "examples_xml/v110/example01.xml";
 
-    private final String EXAMPLE11 = "examples_xml/v110/example11.xml";
+    private final String V110_EXAMPLE02 = "examples_xml/v110/example02.xml";
 
-    private final String EXAMPLE12 = "examples_xml/v110/example12.xml";
+    private final String V110_EXAMPLE03 = "examples_xml/v110/example03.xml";
+
+    private final String V110_EXAMPLE04 = "examples_xml/v110/example04.xml";
+
+    // private final String V110_EXAMPLE05 = "examples_xml/v110/example05.xml";
+
+    // private final String V110_EXAMPLE06 = "examples_xml/v110/example06.xml";
+
+    private final String V110_EXAMPLE09 = "examples_xml/v110/example09.xml";
+
+    private final String V110_EXAMPLE10 = "examples_xml/v110/example10.xml";
+
+    private final String V110_EXAMPLE11 = "examples_xml/v110/example11.xml";
+
+    private final String V110_EXAMPLE12 = "examples_xml/v110/example12.xml";
+
+    /**
+     * @throws Exception
+     */
+    public void test_V100_EXAMPLE1()
+                            throws Exception {
+        URL exampleURL = this.getClass().getResource( V100_EXAMPLE1 );
+        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+
+        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+        GetFeature getFeature = getFeatureAdapter.parse();
+
+        Query[] queries = getFeature.getQueries();
+        FilterQuery filterQuery = (FilterQuery) queries[0];
+        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
+        IdFilter idFilter = (IdFilter) filterQuery.getFilter();
+
+        Set<String> matchingIds = idFilter.getMatchingIds();
+        assertTrue( matchingIds.size() == 1 && matchingIds.contains( "INWATERA_1M.1234" ) );
+    }
 
     /**
      * @throws Exception
@@ -100,10 +138,10 @@ public class GetFeatureXMLAdapterTest extends TestCase {
      *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE01()
+    public void test_V110_EXAMPLE01()
                             throws Exception {
 
-        URL exampleURL = this.getClass().getResource( EXAMPLE01 );
+        URL exampleURL = this.getClass().getResource( V110_EXAMPLE01 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -127,14 +165,39 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
     /**
      * @throws Exception
+     */
+    public void test_V100_EXAMPLE2()
+                            throws Exception {
+
+        URL exampleURL = this.getClass().getResource( V100_EXAMPLE2 );
+        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+
+        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+        GetFeature getFeature = getFeatureAdapter.parse();
+
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        PropertyName[] propertyNames = filterQuery.getPropertyNames();
+
+        assertEquals( "myns:WKB_GEOM", propertyNames[0].getPropertyName() );
+        assertEquals( "myns:TILE_ID", propertyNames[1].getPropertyName() );
+        assertEquals( "myns:FAC_ID", propertyNames[2].getPropertyName() );
+
+        IdFilter idFilter = (IdFilter) filterQuery.getFilter();
+        Set<String> matchingIds = idFilter.getMatchingIds();
+        assertTrue( matchingIds.size() == 1 && matchingIds.contains( "INWATERA_1M.1013" ) );
+    }
+
+    /**
+     * @throws Exception
      *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
      *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE02()
+    public void test_V110_EXAMPLE02()
                             throws Exception {
 
-        URL exampleURL = this.getClass().getResource( EXAMPLE02 );
+        URL exampleURL = this.getClass().getResource( V110_EXAMPLE02 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -160,14 +223,36 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
     /**
      * @throws Exception
+     */
+    public void test_V100_EXAMPLE3()
+                            throws Exception {
+
+        URL exampleURL = this.getClass().getResource( V100_EXAMPLE3 );
+        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+
+        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+        GetFeature getFeature = getFeatureAdapter.parse();
+
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
+        IdFilter idFilter = (IdFilter) filterQuery.getFilter();
+        Set<String> matchingIds = idFilter.getMatchingIds();
+        assertTrue( matchingIds.size() == 3 && matchingIds.contains( "INWATERA_1M.1013" )
+                    && matchingIds.contains( "INWATERA_1M.1014" ) && matchingIds.contains( "INWATERA_1M.1015" ) );
+    }
+
+    /**
+     * @throws Exception
      *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
      *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE03()
+    public void test_V110_EXAMPLE03()
                             throws Exception {
 
-        URL exampleURL = this.getClass().getResource( EXAMPLE03 );
+        URL exampleURL = this.getClass().getResource( V110_EXAMPLE03 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -188,14 +273,41 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
     /**
      * @throws Exception
+     */
+    public void test_V100_EXAMPLE4()
+                            throws Exception {
+
+        URL exampleURL = this.getClass().getResource( V100_EXAMPLE4 );
+        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+
+        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+        GetFeature getFeature = getFeatureAdapter.parse();
+
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
+
+        assertEquals( "myns:WKB_GEOM", filterQuery.getPropertyNames()[0].getPropertyName() );
+        assertEquals( "myns:TILE_ID", filterQuery.getPropertyNames()[1].getPropertyName() );
+        IdFilter idFilter = (IdFilter) filterQuery.getFilter();
+        Set<String> ids = idFilter.getMatchingIds();
+
+        assertTrue( ids.size() == 3 && ids.contains( "INWATERA_1M.1013" ) && ids.contains( "INWATERA_1M.1014" )
+                    && ids.contains( "INWATERA_1M.1015" ) );
+
+    }
+
+    /**
+     * @throws Exception
      *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
      *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE04()
+    public void test_V110_EXAMPLE04()
                             throws Exception {
 
-        URL exampleURL = this.getClass().getResource( EXAMPLE04 );
+        URL exampleURL = this.getClass().getResource( V110_EXAMPLE04 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -220,6 +332,73 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ids.contains( "InWaterA_1M.1015" ) );
     }
 
+    /**
+     * @throws Exception
+     */
+    public void test_V100_EXAMPLE5()
+                            throws Exception {
+
+        URL exampleURL = this.getClass().getResource( V100_EXAMPLE5 );
+        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+
+        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+        GetFeature getFeature = getFeatureAdapter.parse();
+
+        assertEquals( new Integer( 10000 ), getFeature.getMaxFeatures() );
+
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void test_V100_EXAMPLE6()
+                            throws Exception {
+
+        URL exampleURL = this.getClass().getResource( V100_EXAMPLE6 );
+        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+
+        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+        GetFeature getFeature = getFeatureAdapter.parse();
+
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
+
+        filterQuery = (FilterQuery) getFeature.getQueries()[1];
+        assertEquals( new QName( "http://www.someserver.com/myns", "BUILTUPA_1M" ),
+                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
+
+        filterQuery = (FilterQuery) getFeature.getQueries()[2];
+        assertEquals( new QName( "http://demo.cubewerx.com/yourns", "ROADL_1M" ),
+                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    }
+
+    // /**
+    // * @throws Exception
+    // */
+    // public void test_V100_EXAMPLE7()
+    // throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE7 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse();
+    //
+    // FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+    // assertEquals( new QName( "http://www.someserver.com/myns", "HYDROGRAPHY" ),
+    // filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    //
+    // assertEquals( "myns:GEOTEMP", filterQuery.getPropertyNames()[0].getPropertyName() );
+    // assertEquals( "myns:DEPTH", filterQuery.getPropertyNames()[1].getPropertyName() );
+    // }
+
     // /**
     // * @throws Exception When the version of the GetFeature document is not supported for
     // * parsing (superfluous in this case, since we are testing 1.1.0 files and parsing is supported for this version)
@@ -227,7 +406,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     // @Test
     // public void testEXAMPLE05() throws Exception {
     //
-    // URL exampleURL = this.getClass().getResource( EXAMPLE05 );
+    // URL exampleURL = this.getClass().getResource( V110_EXAMPLE05 );
     // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
     //
     // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -251,7 +430,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     // @Test
     // public void testEXAMPLE06() throws Exception {
     //
-    // URL exampleURL = this.getClass().getResource( EXAMPLE06 );
+    // URL exampleURL = this.getClass().getResource( V110_EXAMPLE06 );
     // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
     //
     // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -290,7 +469,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     public void testEXAMPLE09()
                             throws Exception {
 
-        URL exampleURL = this.getClass().getResource( EXAMPLE09 );
+        URL exampleURL = this.getClass().getResource( V110_EXAMPLE09 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -396,7 +575,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     public void testEXAMPLE10()
                             throws Exception {
 
-        URL exampleURL = this.getClass().getResource( EXAMPLE10 );
+        URL exampleURL = this.getClass().getResource( V110_EXAMPLE10 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -428,7 +607,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     public void testEXAMPLE11()
                             throws Exception {
 
-        URL exampleURL = this.getClass().getResource( EXAMPLE11 );
+        URL exampleURL = this.getClass().getResource( V110_EXAMPLE11 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
@@ -459,7 +638,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     public void testEXAMPLE12()
                             throws Exception {
 
-        URL exampleURL = this.getClass().getResource( EXAMPLE12 );
+        URL exampleURL = this.getClass().getResource( V110_EXAMPLE12 );
         XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
