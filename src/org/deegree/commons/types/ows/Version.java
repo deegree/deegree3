@@ -167,7 +167,7 @@ public class Version implements Comparable<Version> {
     }
 
     /**
-     * Returns a formatted string for presenting a number of versions to a human.
+     * Returns a formatted string for presenting a series of versions to a human.
      *
      * @param versions
      *            versions to be listed

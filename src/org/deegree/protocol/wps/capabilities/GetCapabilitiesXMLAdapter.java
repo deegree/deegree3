@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,17 +32,16 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wps.capabilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.types.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -51,10 +50,10 @@ import org.deegree.protocol.ows.capabilities.GetCapabilities;
 
 /**
  * Parser for WPS GetCapabilities requests.
- *
+ * 
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author last edited by: $Author: $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesXMLAdapter extends XMLAdapter {
@@ -82,19 +81,16 @@ public class GetCapabilitiesXMLAdapter extends XMLAdapter {
      * GetCapabilities-requests, this individual XMLAdapter is needed for WPS GetCapabilities-requests. Although the
      * adapter has to be different, the common request bean can be used.
      * </p>
-     *
+     * 
      * @return the parsed request
      * @throws InvalidParameterValueException
      */
-    public GetCapabilities parse100() throws InvalidParameterValueException {
+    public GetCapabilities parse100()
+                            throws InvalidParameterValueException {
 
         // ows:AcceptVersions (optional)
-        List<OMElement> versionElements = getElements( rootElement, new XPath( "wps:AcceptVersions/ows:Version",
-                                                                               nsContext ) );
-        List<Version> versions = new ArrayList<Version>( versionElements.size() );
-        for ( OMElement versionElement : versionElements ) {
-            versions.add( Version.parseVersion( versionElement.getText() ) );
-        }
+        String[] versions = getNodesAsStrings( rootElement, new XPath( "ows:AcceptVersions/ows:Version/text()",
+                                                                       nsContext ) );
 
         // @language (optional)
         List<String> languages = null;
@@ -103,6 +99,6 @@ public class GetCapabilitiesXMLAdapter extends XMLAdapter {
             languages = new ArrayList<String>();
             languages.add( languageString );
         }
-        return new GetCapabilities( versions, null, null, null, languages );
+        return new GetCapabilities( Arrays.asList( versions ), null, null, null, languages );
     }
 }

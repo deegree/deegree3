@@ -63,11 +63,10 @@ public class GetCapabilities100KVPAdapter {
                             throws InvalidParameterValueException {
 
         // VERSION (optional)
-        String versionString = kvpParams.get( "VERSION" );
-        if ( versionString == null || versionString.length() == 0 ) {
-            versionString = "1.0.0";
+        String version = kvpParams.get( "VERSION" );
+        if ( version == null || version.length() == 0 ) {
+            version = "1.0.0";
         }
-        Version version = Version.parseVersion( versionString );
 
         // SECTION (optional)
         List<String> sections = KVPUtils.splitAll( kvpParams, "SECTION" );

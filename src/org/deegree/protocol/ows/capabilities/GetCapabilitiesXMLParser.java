@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.capabilities;
 
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.types.ows.Version;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
@@ -60,10 +59,10 @@ import org.deegree.protocol.ows.OWSCommonXMLAdapter;
  * Evaluates the <code>language</code> attribute for requests to multilingual services according to OWS Common change
  * request OGC 08-016r2. This is used by the WPS Specification 1.0.0.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
@@ -77,7 +76,7 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
 
     /**
      * Create a new {@link GetCapabilitiesXMLParser} for the given root element.
-     *
+     * 
      * @param rootElement
      *            the root element of the GetCapabilities request
      */
@@ -87,7 +86,7 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
 
     /**
      * Parses an OWS 1.0.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities} object.
-     *
+     * 
      * @return <code>GetCapabilities</code> object corresponding to the input document
      * @throws XMLParsingException
      *             if the document contains syntactic or semantic errors
@@ -99,12 +98,8 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
         String updateSequence = rootElement.getAttributeValue( new QName( "updateSequence" ) );
 
         // ows:AcceptVersions (optional)
-        List<OMElement> versionElements = getElements( rootElement, new XPath( "ows:AcceptVersions/ows:Version",
-                                                                               nsContext ) );
-        List<Version> versions = new ArrayList<Version>( versionElements.size() );
-        for ( OMElement versionElement : versionElements ) {
-            versions.add( Version.parseVersion( versionElement.getText() ) );
-        }
+        String[] versions = getNodesAsStrings( rootElement, new XPath( "ows:AcceptVersions/ows:Version/text()",
+                                                                       nsContext ) );
 
         // ows110:Sections (optional)
         List<String> sections = parseSections( OWS_PREFIX );
@@ -124,12 +119,12 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
             languages = Arrays.asList( languageString.split( "," ) );
         }
 
-        return new GetCapabilities( versions, sections, formats, updateSequence, languages );
+        return new GetCapabilities( Arrays.asList( versions ), sections, formats, updateSequence, languages );
     }
 
     /**
      * Parses an OWS 1.1.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities} object.
-     *
+     * 
      * @return <code>GetCapabilities</code> object corresponding to the input document
      * @throws XMLParsingException
      *             if the document contains syntactic or semantic errors
@@ -141,12 +136,8 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
         String updateSequence = rootElement.getAttributeValue( new QName( "updateSequence" ) );
 
         // ows110:AcceptVersions (optional)
-        List<OMElement> versionElements = getElements( rootElement, new XPath( "ows110:AcceptVersions/ows110:Version",
-                                                                               nsContext ) );
-        List<Version> versions = new ArrayList<Version>( versionElements.size() );
-        for ( OMElement versionElement : versionElements ) {
-            versions.add( Version.parseVersion( versionElement.getText() ) );
-        }
+        String[] versions = getNodesAsStrings( rootElement, new XPath( "ows110:AcceptVersions/ows110:Version/text()",
+                                                                       nsContext ) );
 
         // ows110:Sections (optional)
         List<String> sections = parseSections( OWS110_PREFIX );
@@ -166,7 +157,7 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
             languages = Arrays.asList( languageString.split( "," ) );
         }
 
-        return new GetCapabilities( versions, sections, formats, updateSequence, languages );
+        return new GetCapabilities( Arrays.asList( versions ), sections, formats, updateSequence, languages );
     }
 
     /**
@@ -178,8 +169,7 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
         // Therefore we set All explicit if the element is omitted.
         OMElement sectionsElement = getElement( rootElement, new XPath( nsPrefix + ":Sections", nsContext ) );
         List<OMElement> sectionElements = getElements( rootElement, new XPath( nsPrefix + ":Sections/" + nsPrefix
-                                                                               + ":Section",
-                                                                               nsContext ) );
+                                                                               + ":Section", nsContext ) );
         List<String> sections = new ArrayList<String>( sectionElements.size() );
         if ( sectionsElement == null && sectionElements.size() == 0 ) {
             sections.add( "All" );

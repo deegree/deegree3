@@ -43,6 +43,7 @@ import java.util.Set;
 
 import org.deegree.commons.types.ows.Version;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
  * Generic representation of an OWS/OGC GetCapabilities request. Used for <code>GetCapabilities</code> requests to all
@@ -68,9 +69,9 @@ import org.deegree.commons.utils.ArrayUtils;
  */
 public class GetCapabilities {
 
-    private Version version;
+    private String version;
 
-    private List<Version> acceptVersions = new ArrayList<Version>();
+    private List<String> acceptVersions = new ArrayList<String>();
 
     private Set<String> sections = new HashSet<String>();
 
@@ -95,7 +96,7 @@ public class GetCapabilities {
      *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or
      *            <code>null</code>
      */
-    public GetCapabilities( Collection<Version> acceptVersions, Collection<String> sections,
+    public GetCapabilities( Collection<String> acceptVersions, Collection<String> sections,
                             Collection<String> acceptFormats, String updateSequence, Collection<String> languages ) {
         if ( acceptVersions != null ) {
             this.acceptVersions.addAll( acceptVersions );
@@ -128,7 +129,7 @@ public class GetCapabilities {
      *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or
      *            <code>null</code>
      */
-    public GetCapabilities( Version version, Collection<String> sections, Collection<String> acceptFormats,
+    public GetCapabilities( String version, Collection<String> sections, Collection<String> acceptFormats,
                             String updateSequence, Collection<String> languages ) {
         this.version = version;
         if ( sections != null ) {
@@ -150,8 +151,21 @@ public class GetCapabilities {
      * @param version
      *            old-style version information, may be <code>null</code>
      */
-    public GetCapabilities( Version version ) {
+    public GetCapabilities( String version ) {
         this.version = version;
+    }
+
+    /**
+     * Constructs a new <code>GetCapabilities</code> request that specifies the requested version in a pre-OWS fashion
+     * (see section D.11 of OGC 06-121r3).
+     * 
+     * @param version
+     *            old-style version information, may be <code>null</code>
+     */    
+    public GetCapabilities( Version version ) {
+        if (version != null) {
+            this.version = version.toString();
+        }
     }
 
     /**
@@ -161,17 +175,49 @@ public class GetCapabilities {
      * @return old-style version information, may be <code>null</code> (if this is an OWS-style request or an pre-OWS
      *         request without version specification)
      */
-    public Version getVersion() {
+    public String getVersion() {
         return version;
     }
 
     /**
-     * Returns the acceptable {@link Version}s in order of client preference (most preferred version comes first).
+     * Returns the old-style version information (used by pre-OWS GetCapabilities requests, see section D.11 of OGC
+     * 06-121r3).
      * 
-     * @return the acceptable <code>Version</code>s, in order of preference, may be empty, but not <code>null</code>
+     * @return old-style version information, may be <code>null</code> (if this is an OWS-style request or an pre-OWS
+     *         request without version specification)
+     * @throws InvalidParameterValueException
+     *             if any of the versions is not syntactically correct
      */
-    public List<Version> getAcceptVersions() {
+    public Version getVersionAsVersion()
+                            throws InvalidParameterValueException {
+        return Version.parseVersion( version );
+    }
+
+    /**
+     * Returns the acceptable versions in order of client preference (most preferred version first).
+     * 
+     * @return the acceptable versions, in order of preference, may be empty, but not <code>null</code>
+     */
+    public List<String> getAcceptVersions() {
         return acceptVersions;
+    }
+
+    /**
+     * Returns the acceptable versions in order of client preference (most preferred version first).
+     * 
+     * @see Version
+     * 
+     * @return the acceptable versions, in order of preference, may be empty, but not <code>null</code>
+     * @throws InvalidParameterValueException
+     *             if any of the versions is not syntactically correct
+     */
+    public List<Version> getAcceptVersionsAsVersions()
+                            throws InvalidParameterValueException {
+        List<Version> versions = new ArrayList<Version>( acceptVersions.size() );
+        for ( String version : acceptVersions ) {
+            versions.add( Version.parseVersion( version ) );
+        }
+        return versions;
     }
 
     /**

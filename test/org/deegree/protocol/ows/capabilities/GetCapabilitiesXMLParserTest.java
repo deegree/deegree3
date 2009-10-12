@@ -69,8 +69,8 @@ public class GetCapabilitiesXMLParserTest {
         // check accept versions
         assertNotNull( request.getAcceptVersions() );
         assertEquals( 2, request.getAcceptVersions().size() );
-        assertEquals( Version.parseVersion( "1.0.0" ), request.getAcceptVersions().get(1) );
-        assertEquals( Version.parseVersion( "1.1.0" ), request.getAcceptVersions().get(0) );
+        assertEquals( Version.parseVersion( "1.0.0" ), request.getAcceptVersionsAsVersions().get(1) );
+        assertEquals( Version.parseVersion( "1.1.0" ), request.getAcceptVersionsAsVersions().get(0) );
 
         // check sections
         assertNotNull( request.getSections() );
@@ -101,8 +101,8 @@ public class GetCapabilitiesXMLParserTest {
         // check accept versions
         assertNotNull( request.getAcceptVersions() );
         assertEquals( 3, request.getAcceptVersions().size() );
-        assertEquals( Version.parseVersion( "1.0.0" ), request.getAcceptVersions().get(0) );
-        assertEquals( Version.parseVersion( "2.0.0" ), request.getAcceptVersions().get(1) );
+        assertEquals( Version.parseVersion( "1.0.0" ), request.getAcceptVersionsAsVersions().get(0) );
+        assertEquals( Version.parseVersion( "2.0.0" ), request.getAcceptVersionsAsVersions().get(1) );
 
         // check sections
         assertNotNull( request.getSections() );

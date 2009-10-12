@@ -1265,7 +1265,8 @@ public class GML311GeometryEncoder {
         if ( !hasID ) { // if not then use the <posList> element to export the points
             writer.writeStartElement( "gml", "posList", GMLNS );
             
-            writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
+            // TODO CITE
+//            writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
             boolean first = true;
             for ( Point p : points ) {
                 double[] array = p.getAsArray();

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wfs.describefeaturetype;
 
@@ -55,11 +55,11 @@ import org.deegree.protocol.wfs.WFSConstants;
  * Adapter between XML <code>DescribeFeatureType</code> requests and {@link DescribeFeatureType} objects.
  * <p>
  * TODO code for exporting to XML
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter {
@@ -73,7 +73,10 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
      * <li>WFS 1.1.0</li>
      * <li>WFS 2.0.0 (tentative)</li>
      * </ul>
-     *
+     * 
+     * @param version
+     *            version of the request, may be <code>null</code> (in that case, a version attribute must be present in
+     *            the root element)
      * @return parsed {@link DescribeFeatureType} request
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
@@ -82,8 +85,11 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public DescribeFeatureType parse() {
-        Version version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
+    public DescribeFeatureType parse( Version version ) {
+
+        if ( version == null ) {
+            version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
+        }
 
         DescribeFeatureType result = null;
         if ( VERSION_100.equals( version ) ) {
@@ -103,14 +109,15 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
 
     /**
      * Parses a WFS 1.0.0 <code>DescribeFeatureType</code> document into a {@link DescribeFeatureType} request.
-     *
+     * 
      * @return parsed {@link DescribeFeatureType} request
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public DescribeFeatureType parse100() throws XMLParsingException, InvalidParameterValueException {
+    public DescribeFeatureType parse100()
+                            throws XMLParsingException, InvalidParameterValueException {
 
         // optional: '@outputFormat'
         String outputFormat = rootElement.getAttributeValue( new QName( "outputFormat" ) );
@@ -119,24 +126,25 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
         QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs:TypeName", nsContext ) );
         // TODO remove null namespace hack
         for ( int i = 0; i < typeNames.length; i++ ) {
-            if (WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI())) {
+            if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
                 typeNames[i] = new QName( typeNames[i].getLocalPart() );
             }
-        }        
+        }
 
         return new DescribeFeatureType( VERSION_100, null, outputFormat, typeNames );
     }
 
     /**
      * Parses a WFS 1.1.0 <code>DescribeFeatureType</code> document into a {@link DescribeFeatureType} request.
-     *
+     * 
      * @return parsed {@link DescribeFeatureType} request
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public DescribeFeatureType parse110() throws XMLParsingException, InvalidParameterValueException {
+    public DescribeFeatureType parse110()
+                            throws XMLParsingException, InvalidParameterValueException {
 
         // optional: '@handle'
         String handle = rootElement.getAttributeValue( new QName( "handle" ) );
@@ -146,10 +154,10 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
 
         // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
         QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs:TypeName", nsContext ) );
-        
+
         // TODO remove null namespace hack
         for ( int i = 0; i < typeNames.length; i++ ) {
-            if (WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI())) {
+            if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
                 typeNames[i] = new QName( typeNames[i].getLocalPart() );
             }
         }
@@ -159,14 +167,15 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
 
     /**
      * Parses a WFS 2.0.0 <code>DescribeFeatureType</code> document into a {@link DescribeFeatureType} request.
-     *
+     * 
      * @return parsed {@link DescribeFeatureType} request
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public DescribeFeatureType parse200() throws XMLParsingException, InvalidParameterValueException {
+    public DescribeFeatureType parse200()
+                            throws XMLParsingException, InvalidParameterValueException {
 
         // optional: '@handle'
         String handle = rootElement.getAttributeValue( new QName( "handle" ) );
@@ -178,10 +187,10 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
         QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs200:TypeName", nsContext ) );
         // TODO remove null namespace hack
         for ( int i = 0; i < typeNames.length; i++ ) {
-            if (WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI())) {
+            if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
                 typeNames[i] = new QName( typeNames[i].getLocalPart() );
             }
-        }        
+        }
 
         return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames );
     }
