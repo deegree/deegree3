@@ -147,7 +147,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         for ( OMElement queryEl : queryElements ) {
             List<PropertyName> propNames = new ArrayList<PropertyName>();
-            List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "wfs:PropertyName", nsContext ) );
+            List<OMElement> propertyNameElements = getElements( queryEl, new XPath( "ogc:PropertyName", nsContext ) );
 
             for ( OMElement propertyNameEl : propertyNameElements ) {
                 PropertyName propertyName = new PropertyName( propertyNameEl.getText(),
