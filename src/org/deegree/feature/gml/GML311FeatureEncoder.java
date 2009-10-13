@@ -63,6 +63,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryEncoder;
@@ -96,6 +97,8 @@ public class GML311FeatureEncoder {
 
     private String referenceTemplate;
 
+    private Set<PropertyName> propNames = new HashSet<PropertyName>();
+
     // export all levels by default
     private int traverseXlinkDepth = -1;
 
@@ -115,13 +118,20 @@ public class GML311FeatureEncoder {
      *            URI template used to create references to local objects, e.g.
      *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
      *            , the substring <code>{}</code> is replaced by the object id
+     * @param requestedProps
+     *            properties to be exported, may be <code>null</code>
      * @param traverseXlinkDepth
      * @param traverseXlinkExpiry
      */
-    public GML311FeatureEncoder( XMLStreamWriter writer, String referenceTemplate, int traverseXlinkDepth,
-                                 int traverseXlinkExpiry ) {
+    public GML311FeatureEncoder( XMLStreamWriter writer, String referenceTemplate, PropertyName[] requestedProps,
+                                 int traverseXlinkDepth, int traverseXlinkExpiry ) {
         this.writer = writer;
         this.referenceTemplate = referenceTemplate;
+        if ( requestedProps != null ) {
+            for ( PropertyName propertyName : requestedProps ) {
+                this.propNames.add( propertyName );
+            }
+        }
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
         geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
@@ -180,7 +190,9 @@ public class GML311FeatureEncoder {
             if ( namespaceURI == null || namespaceURI.length() == 0 ) {
                 writer.writeStartElement( localName );
             } else {
-                writer.writeStartElement( "app", localName, namespaceURI );
+                // TODO find a clever strategy for binding of the namespaces
+                writer.setPrefix( "app", namespaceURI );
+                writer.writeStartElement( namespaceURI, localName );
             }
 
             // writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
@@ -197,10 +209,19 @@ public class GML311FeatureEncoder {
         }
     }
 
-    private void export( Property<?> property, int inlineLevels )
+    protected void export( Property<?> property, int inlineLevels )
                             throws XMLStreamException {
+
         QName propName = property.getName();
         PropertyType propertyType = property.getType();
+        if ( propertyType.getMinOccurs() == 0 ) {
+            LOG.debug( "Optional property '" + propName + "', checking if it is requested." );
+            if (!isPropertyRequested( propName )) {
+                LOG.debug( "Skipping it." );
+                return;
+            }
+        }
+
         Object value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
             Feature subFeature = (Feature) value;
@@ -289,7 +310,7 @@ public class GML311FeatureEncoder {
                             throws XMLStreamException {
 
         StringOrRef description = standardGMLProperties.getDescription();
-        if ( description != null ) {
+        if ( description != null && isPropertyRequested( new QName( GMLNS, "description" ) ) ) {
             writer.writeStartElement( GMLNS, "description" );
             if ( description.getRef() != null ) {
                 writer.writeAttribute( XLNNS, "xlink", description.getRef() );
@@ -300,15 +321,21 @@ public class GML311FeatureEncoder {
             writer.writeEndElement();
         }
 
-        for ( CodeType name : standardGMLProperties.getNames() ) {
-            writer.writeStartElement( GMLNS, "name" );
-            if ( name.getCodeSpace() != null ) {
-                writer.writeAttribute( "codeSpace", name.getCodeSpace() );
+        if ( isPropertyRequested( new QName( GMLNS, "name" ) ) ) {
+            for ( CodeType name : standardGMLProperties.getNames() ) {
+                writer.writeStartElement( GMLNS, "name" );
+                if ( name.getCodeSpace() != null ) {
+                    writer.writeAttribute( "codeSpace", name.getCodeSpace() );
+                }
+                if ( name.getCode() != null ) {
+                    writer.writeCharacters( name.getCode() );
+                }
+                writer.writeEndElement();
             }
-            if ( name.getCode() != null ) {
-                writer.writeCharacters( name.getCode() );
-            }
-            writer.writeEndElement();
         }
+    }
+
+    private boolean isPropertyRequested( QName propName ) {
+        return propNames.size() == 0 || propNames.contains( propName );
     }
 }

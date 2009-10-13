@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,44 +32,58 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.deegree.feature.Property;
+import org.deegree.feature.gml.GML311StandardPropertiesIterator;
+import org.deegree.feature.gml.StandardFeatureProps;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-class PropertyNodeIterator implements Iterator<PropertyNode>{
+class PropertyNodeIterator implements Iterator<PropertyNode> {
 
     private FeatureNode parent;
 
+    private Iterator<Property<?>> stdProps;
+
     private Iterator<Property<?>> props;
 
-    PropertyNodeIterator(FeatureNode parent, Iterator<Property<?>> props) {
+    PropertyNodeIterator( FeatureNode parent ) {
         this.parent = parent;
-        this.props = props;
+        // TODO handle other GML versions
+        this.stdProps = new GML311StandardPropertiesIterator(
+                                                              (StandardFeatureProps) parent.getFeature().getStandardGMLProperties() );
+        this.props = Arrays.asList( parent.getFeature().getProperties() ).iterator();
     }
 
     @Override
     public boolean hasNext() {
-        return props.hasNext();
+        return stdProps.hasNext() || props.hasNext();
     }
 
     @Override
     public PropertyNode next() {
-        if (!props.hasNext()) {
+        if ( !hasNext() ) {
             throw new NoSuchElementException();
         }
-        return new PropertyNode(parent, props.next());
+        Property<?> prop = null;
+        if ( stdProps.hasNext() ) {
+            prop = stdProps.next();
+        } else {
+            prop = props.next();
+        }
+        return new PropertyNode( parent, prop );
     }
 
     @Override

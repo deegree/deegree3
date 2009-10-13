@@ -56,4 +56,8 @@ public class StandardFeatureProps extends StandardObjectProps {
         super( description, names );
         this.boundedBy = boundedBy;
     }
+
+    public Envelope getBoundedBy() {
+        return boundedBy;
+    }
 }

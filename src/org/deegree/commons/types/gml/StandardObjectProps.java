@@ -107,7 +107,11 @@ public class StandardObjectProps {
 
     public StandardObjectProps( StringOrRef description, CodeType[] names ) {
         this.description = description;
-        this.names = names;
+        if (names == null) {
+            this.names = new CodeType[0];
+        } else {
+            this.names = names;
+        }
     }
 
     public StringOrRef getDescription() {

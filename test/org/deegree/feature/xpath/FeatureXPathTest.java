@@ -246,4 +246,17 @@ public class FeatureXPathTest {
         Feature feature = featureNode.getFeature();
         Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
     }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testXPath12()
+                            throws JaxenException {
+        XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[gml:name='JEAN_PAUL']" );
+        xpath.setNamespaceContext( nsContext );
+        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        Assert.assertEquals( 1, selectedNodes.size() );
+        FeatureNode featureNode = (FeatureNode) selectedNodes.get( 0 );
+        Feature feature = featureNode.getFeature();
+        Assert.assertEquals( "PHILOSOPHER_6", feature.getId() );
+    }    
 }

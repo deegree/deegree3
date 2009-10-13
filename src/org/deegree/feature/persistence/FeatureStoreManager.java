@@ -165,7 +165,7 @@ public class FeatureStoreManager {
                     idContext.resolveXLinks( schema );
                     
                     FeatureStoreTransaction ta = fs.acquireTransaction();
-                    List<String> fids = ta.performInsert( fc, IDGenMode.GENERATE_NEW );
+                    List<String> fids = ta.performInsert( fc, IDGenMode.USE_EXISTING );
                     LOG.info( "Inserted " + fids.size() + " features." );
                     ta.commit();
                 } catch ( Exception e ) {

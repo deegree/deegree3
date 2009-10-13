@@ -2796,6 +2796,8 @@ xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.
       <app:placeOfDeath xlink:href="#PLACE_6"/>
       <app:friend>
         <app:Philosopher gml:id="PHILOSOPHER_6">
+          <gml:description>Description using standard GML 3.1.1 feature properties.</gml:description>
+          <gml:name codeSpace="deegree">JEAN_PAUL</gml:name>        
           <app:id>6</app:id>
           <app:name>Jean-Paul Sartre</app:name>
           <app:sex>m</app:sex>

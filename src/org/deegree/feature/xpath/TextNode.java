@@ -35,7 +35,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import org.deegree.feature.Feature;
 
 /**
  * TODO add documentation here
