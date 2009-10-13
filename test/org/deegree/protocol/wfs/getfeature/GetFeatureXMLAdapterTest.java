@@ -87,7 +87,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
     private final String V100_EXAMPLE6 = "examples_xml/v100/example6.xml";
 
-    private final String V100_EXAMPLE7 = "examples_xml/v100/example7.xml";
+    private final String V100_EXAMPLE9 = "examples_xml/v100/example9.xml";
 
     // ---------------------version 1.1.0------------------------------
     private final String V110_EXAMPLE01 = "examples_xml/v110/example01.xml";
@@ -462,11 +462,65 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
     /**
      * @throws Exception
+     */
+    public void test_V100_EXAMPLE9()
+                            throws Exception {
+
+        URL exampleURL = this.getClass().getResource( V100_EXAMPLE9 );
+        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+
+        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+        GetFeature getFeature = getFeatureAdapter.parse();
+
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        assertEquals( new QName( "Person" ), filterQuery.getTypeNames()[0].getFeatureTypeName() );
+
+        assertEquals( "myns:Person/myns:LastName", filterQuery.getPropertyNames()[0].getPropertyName() );
+
+        OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
+        assertTrue( opFilter.getOperator() instanceof And );
+
+        And rootOp = (And) opFilter.getOperator();
+        assertTrue( rootOp.getParameter( 0 ) instanceof And );
+        And op0 = (And) rootOp.getParameter( 0 );
+
+        assertTrue( op0.getParameter( 0 ) instanceof PropertyIsGreaterThanOrEqualTo );
+        PropertyIsGreaterThanOrEqualTo op00 = (PropertyIsGreaterThanOrEqualTo) op0.getParameter( 0 );
+        assertEquals( "myns:Person/myns:Address/myns:StreetNumber",
+                      ( (PropertyName) op00.getParameter1() ).getPropertyName() );
+        assertEquals( "10000", ( (Literal) op00.getParameter2() ).getValue() );
+
+        assertTrue( rootOp.getParameter( 1 ) instanceof And );
+        And op1 = (And) rootOp.getParameter( 1 );
+
+        assertTrue( op1.getParameter( 0 ) instanceof PropertyIsEqualTo );
+        PropertyIsEqualTo op10 = (PropertyIsEqualTo) op1.getParameter( 0 );
+        assertEquals( "myns:Person/myns:Address/myns:StreetName",
+                      ( (PropertyName) op10.getParameter1() ).getPropertyName() );
+        assertEquals( "Main St.", ( (Literal) op10.getParameter2() ).getValue() );
+
+        PropertyIsEqualTo op11 = (PropertyIsEqualTo) op1.getParameter( 1 );
+        assertEquals( "myns:Person/myns:Address/myns:City", ( (PropertyName) op11.getParameter1() ).getPropertyName() );
+        assertEquals( "SomeTown", ( (Literal) op11.getParameter2() ).getValue() );
+
+        PropertyIsEqualTo op12 = (PropertyIsEqualTo) op1.getParameter( 2 );
+        assertEquals( "myns:Person/myns:Sex", ( (PropertyName) op12.getParameter1() ).getPropertyName() );
+        assertEquals( "Female", ( (Literal) op12.getParameter2() ).getValue() );
+
+        PropertyIsGreaterThan op13 = (PropertyIsGreaterThan) op1.getParameter( 3 );
+        assertEquals( "myns:Person/myns:Salary", ( (PropertyName) op13.getParameter1() ).getPropertyName() );
+        assertEquals( "35000", ( (Literal) op13.getParameter2() ).getValue() );
+
+    }
+
+    /**
+     * @throws Exception
      *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
      *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE09()
+    public void test_V110_EXAMPLE09()
                             throws Exception {
 
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE09 );
@@ -572,7 +626,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
      *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE10()
+    public void test_V110_EXAMPLE10()
                             throws Exception {
 
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE10 );
@@ -604,7 +658,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
      *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
     @Test
-    public void testEXAMPLE11()
+    public void test_V110_EXAMPLE11()
                             throws Exception {
 
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE11 );
@@ -635,7 +689,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
      *             When the version of the GetFeature document is not supported for parsing (superfluous in this case,
      *             since we are testing 1.1.0 files and parsing is supported for this version)
      */
-    public void testEXAMPLE12()
+    public void test_V110_EXAMPLE12()
                             throws Exception {
 
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE12 );
