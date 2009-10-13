@@ -120,7 +120,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
@@ -146,7 +146,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
@@ -174,7 +174,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         PropertyName[] propertyNames = filterQuery.getPropertyNames();
@@ -202,7 +202,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
@@ -232,7 +232,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
@@ -257,7 +257,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
@@ -282,7 +282,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
@@ -312,7 +312,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
@@ -343,7 +343,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         assertEquals( new Integer( 10000 ), getFeature.getMaxFeatures() );
 
@@ -363,7 +363,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
@@ -471,7 +471,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "Person" ), filterQuery.getTypeNames()[0].getFeatureTypeName() );
@@ -528,7 +528,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
@@ -634,7 +634,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
@@ -666,7 +666,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];
@@ -697,7 +697,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
         getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse();
+        GetFeature getFeature = getFeatureAdapter.parse( null );
 
         Query[] queries = getFeature.getQueries();
         FilterQuery filterQuery = (FilterQuery) queries[0];

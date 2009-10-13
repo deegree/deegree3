@@ -84,6 +84,9 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * <li>WFS 1.1.0</li>
      * </ul>
      * 
+     * @param version
+     *            version of the request, may be <code>null</code> (in that case, a version attribute must be present in
+     *            the root element)
      * @return parsed {@link GetFeature} request
      * @throws Exception
      * @throws XMLParsingException
@@ -93,9 +96,12 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public GetFeature parse()
+    public GetFeature parse( Version version )
                             throws Exception {
-        Version version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
+
+        if ( version == null ) {
+            version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
+        }
 
         GetFeature result = null;
 

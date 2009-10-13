@@ -336,6 +336,7 @@ public class GML311FeatureEncoder {
     }
 
     private boolean isPropertyRequested( QName propName ) {
+        // TODO compare names properly (different types)
         return propNames.size() == 0 || propNames.contains( propName );
     }
 }

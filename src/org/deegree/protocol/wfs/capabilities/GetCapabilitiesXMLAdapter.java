@@ -51,7 +51,7 @@ import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
  * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesXMLAdapter extends GetCapabilitiesXMLParser {
-  
+
     /**
      * Parses a WFS <code>GetCapabilities</code> document into a {@link GetCapabilities} request.
      * <p>
@@ -60,9 +60,9 @@ public class GetCapabilitiesXMLAdapter extends GetCapabilitiesXMLParser {
      * <li>WFS 1.0.0</li>
      * <li>WFS 1.1.0</li>
      * </ul>
-     *
-     * @param version 
      * 
+     * @param version
+     *            specifies the request version, can be <code>null</code> (version attribute is evaluated then)
      * @return parsed {@link DescribeFeatureType} request
      */
     public GetCapabilities parse( Version version ) {

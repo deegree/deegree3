@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
 import org.deegree.filter.Expression;
@@ -40,10 +40,10 @@ import org.deegree.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Literal implements Expression {
@@ -61,27 +61,17 @@ public class Literal implements Expression {
     @Override
     public Type getType() {
         return Type.LITERAL;
-    }    
-    
+    }
+
     /**
      * Returns the <code>Literal</code>'s value (to be used in the evaluation of a complexer <code>Expression</code>).
-     * <p>
-     * If the value appears to be numerical, a <code>Double</code> object is returned, else a <code>String</code>.
      */
     @Override
     public Object[] evaluate( MatchableObject obj ) {
-
-        Object [] result = new Object[] {value};
-        // try to parse the literal as a double value
-        try {
-            result[0] = new Double( value );
-        } catch ( NumberFormatException e ) {
-            // not a double -> eat the exception
-        }
-        return result;
+        return new Object[] { value };
     }
 
-    @Override    
+    @Override
     public String toString( String indent ) {
         String s = indent + "-Literal ('" + value + "')\n";
         return s;
