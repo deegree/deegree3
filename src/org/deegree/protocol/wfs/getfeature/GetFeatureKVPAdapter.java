@@ -106,10 +106,9 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
 
         GetFeature result = null;
-        // if ( VERSION_100.equals( version ) ) {
-        // result = parse100( kvpParams );
-        // } else
-        if ( VERSION_110.equals( version ) ) {
+        if ( VERSION_100.equals( version ) ) {
+            result = parse100( kvpParams );
+        } else if ( VERSION_110.equals( version ) ) {
             result = parse110( kvpParams );
             // } else if ( VERSION_200.equals( version ) ) {
             // result = parse200( kvpParams );
