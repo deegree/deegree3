@@ -50,10 +50,12 @@ import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
@@ -79,7 +81,7 @@ public class GMLFeatureEncoderTest {
     public void testValidateExportedFeatures()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
-                            XMLParsingException, UnknownCRSException {
+                            XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
@@ -104,11 +106,10 @@ public class GMLFeatureEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML311FeatureEncoder exporter = new GML311FeatureEncoder( writer );
+        GML311FeatureEncoder exporter = new GML311FeatureEncoder( writer, null );
         exporter.export( feature );
         writer.flush();
         writer.close();
-        // XMLAssert.assertValidity( memoryWriter.getReader() );
-
+//        XMLAssert.assertValidity( memoryWriter.getReader() );
     }
 }

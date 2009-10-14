@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.crs;
 
 import java.util.ArrayList;
@@ -50,11 +50,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class for transforming coordinates to new a coordinate reference systems.
- *
- *
+ * 
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class CoordinateTransformer extends Transformer {
@@ -66,7 +66,7 @@ public class CoordinateTransformer extends Transformer {
 
     /**
      * Creates a new CoordinateTransformer object.
-     *
+     * 
      * @param targetCRS
      * @throws IllegalArgumentException
      *             if the given parameter is null.
@@ -77,7 +77,7 @@ public class CoordinateTransformer extends Transformer {
 
     /**
      * Creates a new CoordinateTransformer object, with the given id as the target CRS.
-     *
+     * 
      * @param targetCRS
      *            an identifier to which all other CRS's shall be transformed.
      * @throws UnknownCRSException
@@ -91,7 +91,7 @@ public class CoordinateTransformer extends Transformer {
 
     /**
      * Creates a new CoordinateTransformer object, with the given id as the target CRS.
-     *
+     * 
      * @param transformation
      *            to be used.
      * @throws IllegalArgumentException
@@ -102,8 +102,8 @@ public class CoordinateTransformer extends Transformer {
     }
 
     /**
-     * Transforms all points to the CoordinateTransformer`s coordinate system.
-     *
+     * Transforms all points to the CoordinateTransformer's coordinate system.
+     * 
      * @param sourceCRS
      *            in which the given points are referenced.
      * @param points
@@ -181,5 +181,28 @@ public class CoordinateTransformer extends Transformer {
             result = new ArrayList<Point3d>();
         }
         return result;
+    }
+
+    /**
+     * Transforms a given coordinate into the CoordinateTransformer's coordinate system.
+     * 
+     * @param sourceCRS
+     *            crs of the input coordinate, must not be <code>null</code>
+     * @param input
+     *            input coordinate, must not be <code>null</code> and array length must match the number of dimensions
+     *            of <code>sourceCRS</code>
+     * @param out
+     *            output coordinate, used to store the transformed ordinates, must not be <code>null</code> and array
+     *            length must match the number of dimensions of the target crs
+     * @return transformed coordinate, this is the same instance as <code>out</code>
+     * @throws TransformationException
+     * @throws IllegalArgumentException
+     */
+    public double[] transform( CoordinateSystem sourceCRS, double[] input, double[] out )
+                            throws IllegalArgumentException, TransformationException {
+        Transformation trans = createCRSTransformation( sourceCRS );
+        
+        trans.doTransform( input, 0, out, 0, input.length );
+        return out;
     }
 }

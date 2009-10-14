@@ -2111,10 +2111,9 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      * @return corresponding {@link Envelope} object
      * @throws XMLStreamException
      * @throws XMLParsingException
-     * @throws UnknownCRSException
      */
     public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+                            throws XMLParsingException, XMLStreamException {
         return parseEnvelope( xmlStream, null );
     }
 
@@ -2131,10 +2130,9 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      * @return corresponding {@link Envelope} object
      * @throws XMLStreamException
      * @throws XMLParsingException
-     * @throws UnknownCRSException
      */
     public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+                            throws XMLParsingException, XMLStreamException {
 
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 

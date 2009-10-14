@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.transformations;
 
@@ -49,7 +49,7 @@ import org.deegree.crs.i18n.Messages;
 
 /**
  * The <code>Transformation</code> class supplies the most basic method interface for any given transformation.
- *
+ * 
  * The change of coordinates from one CRS to another CRS based on different datum is 'currently' only possible via a
  * coordinate <code>Transformation</code>.
  * <p>
@@ -61,13 +61,13 @@ import org.deegree.crs.i18n.Messages;
  * <p>
  * An analytic derivation is precise but mostly too complex to evaluate.
  * </p>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
 
@@ -102,7 +102,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
 
     /**
      * Do a transformation, e.g. the incoming data will be transformed into other coordinates.
-     *
+     * 
      * @param srcPts
      *            the points which must be transformed, expected are following values either, long_1, lat_1, height_1,
      *            long_2, lat_2, height_2. or long_1, lat_1, long_2, lat_2
@@ -120,7 +120,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
 
     /**
      * Little helper function to create a temporary id or name.
-     *
+     * 
      * @param source
      *            containing the value (id or name) of the 'src' coourdinateSystem
      * @param dest
@@ -136,18 +136,18 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
      * will be read according to the dimension of the source CRS {@link #getSourceDimension()} and the target
      * coordinates will be put according to the dimension of the targetCRS {@link #getTargetDimension()}. If the
      * sourceDim &lt; 2 or &gt; 3 a transformation exception will be thrown.
-     *
-     * @param srcCoords
+     * 
+     * @param srcOrdinates
      *            the array holding the source ('original') coordinates.
      * @param startPositionSrc
      *            the position to start reading the coordinates from the source array (0 is the first).
-     * @param destCoords
+     * @param destOrdinates
      *            the array which will receive the transformed coordinates.
      * @param startPositionDest
      *            the index of the destCoords array to put the results, if the result will exceed the array.length, the
      *            array will be enlarged to hold the transformed coordinates.
-     * @param lastCoord
-     *            the index of the last coordinate (normally length-1)
+     * @param length
+     *            the number of source ordinates to transform
      * @throws TransformationException
      *             If the sourceDim &lt; 2 or soureDim &gt 3;
      * @throws IllegalArgumentException
@@ -161,27 +161,27 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
      *             <li>the source or target dimension &lt; 2 or &gt; 3</li>
      *             </ul>
      */
-    public void doTransform( double[] srcCoords, int startPositionSrc, double[] destCoords, int startPositionDest,
-                             int lastCoord )
+    public void doTransform( double[] srcOrdinates, int startPositionSrc, double[] destOrdinates,
+                             int startPositionDest, int length )
                             throws TransformationException {
         if ( startPositionSrc < 0 ) {
             startPositionSrc = 0;
         }
-        if ( srcCoords == null ) {
+        if ( srcOrdinates == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
                                                                      "doTransform(double[],int,double[],int,int)",
                                                                      "srcCoords" ) );
         }
-        if ( startPositionSrc > srcCoords.length ) {
+        if ( startPositionSrc > srcOrdinates.length ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_TRANSFORM_START_GT_LENGTH" ) );
         }
-        if ( lastCoord > srcCoords.length ) {
+        if ( length > srcOrdinates.length ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_TRANSFORM_END_GT_LENGTH" ) );
         }
-        if ( ( lastCoord - startPositionSrc ) % getSourceDimension() != 0 ) {
+        if ( ( length - startPositionSrc ) % getSourceDimension() != 0 ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_TRANSFORM_SRC_WRONG_DIM" ) );
         }
-        int listSize = ( lastCoord - startPositionSrc ) / getSourceDimension();
+        int listSize = ( length - startPositionSrc ) / getSourceDimension();
         if ( listSize < 0 ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_TRANSFORM_LAST_LT_START" ) );
         }
@@ -191,23 +191,23 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
         if ( dim > 3 || dim < 2 ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORM_WRONG_CRS_DIM", "source" ) );
         }
-        for ( int i = startPositionSrc; i < lastCoord && ( i + ( dim - 1 ) ) < lastCoord; i += dim ) {
-            sourceCoords.add( new Point3d( srcCoords[i], srcCoords[i + 1], ( dim == 3 ) ? srcCoords[i + 2] : 0 ) );
+        for ( int i = startPositionSrc; i < ( startPositionSrc + length ); i += dim ) {
+            sourceCoords.add( new Point3d( srcOrdinates[i], srcOrdinates[i + 1], ( dim == 3 ) ? srcOrdinates[i + 2] : 0 ) );
         }
         List<Point3d> result = doTransform( sourceCoords );
         if ( startPositionDest < 0 ) {
             startPositionDest = 0;
         }
         final int requiredSpace = result.size() * getTargetDimension();
-        if ( destCoords == null ) {
+        if ( destOrdinates == null ) {
             startPositionDest = 0;
-            destCoords = new double[requiredSpace];
+            destOrdinates = new double[requiredSpace];
         }
         final int requiredSize = startPositionDest + requiredSpace;
-        if ( requiredSize > destCoords.length ) {
+        if ( requiredSize > destOrdinates.length ) {
             double[] tmp = new double[requiredSize];
-            System.arraycopy( destCoords, 0, tmp, 0, startPositionDest );
-            destCoords = tmp;
+            System.arraycopy( destOrdinates, 0, tmp, 0, startPositionDest );
+            destOrdinates = tmp;
         }
         final int dimDest = getTargetDimension();
         if ( dimDest > 3 || dimDest < 2 ) {
@@ -215,18 +215,17 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
         }
         int arrayPos = startPositionDest;
         for ( Point3d coord : result ) {
-            destCoords[arrayPos++] = coord.x;
-            destCoords[arrayPos++] = coord.y;
+            destOrdinates[arrayPos++] = coord.x;
+            destOrdinates[arrayPos++] = coord.y;
             if ( dimDest == 3 ) {
-                destCoords[arrayPos++] = coord.z;
+                destOrdinates[arrayPos++] = coord.z;
             }
         }
-
     }
 
     /**
      * Transforms a single point3d (by calling the doTransform( List<Point3d>).
-     *
+     * 
      * @param coordinate
      *            to transform, if <code>null</code> null will be returned.
      * @return the transformed coordinate.
@@ -299,7 +298,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
      * Checks if this transformation is the inverse of the other transformation, which means, this.sourceCRS equals
      * other.targetCRS && this.targetCRS == other.sourceCRS. If Both transformations are identity this method also
      * returns true.
-     *
+     * 
      * @param other
      *            the transformation to check
      * @return true if this and the other transformation are each others inverse.

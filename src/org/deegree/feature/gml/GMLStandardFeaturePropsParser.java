@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml;
 
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
@@ -42,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.gml.GMLStandardPropsParser;
@@ -49,7 +51,9 @@ import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +68,8 @@ import org.slf4j.LoggerFactory;
 public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLStandardFeaturePropsParser.class );
+
+    private static final GML311GeometryDecoder decoder = new GML311GeometryDecoder();
 
     /**
      * Returns the object representation for the <code>StandardObjectProperties</code> element group of the given
@@ -124,7 +130,7 @@ public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
         // 'gml:boundedBy' (0...1)
         Envelope boundedBy = null;
         if ( event == START_ELEMENT && new QName( GMLNS, "boundedBy" ).equals( xmlStream.getName() ) ) {
-            parseBoundedBy311( xmlStream );
+            boundedBy = parseBoundedBy311( xmlStream );
             xmlStream.nextTag();
         }
 
@@ -138,9 +144,32 @@ public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
         return new StandardFeatureProps( description, names.toArray( new CodeType[names.size()] ), boundedBy );
     }
 
-    protected static void parseBoundedBy311( XMLStreamReaderWrapper xmlStream )
-                            throws XMLStreamException {
-        xmlStream.skipElement();
+    protected static Envelope parseBoundedBy311( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException, XMLParsingException {
+
+        xmlStream.nextTag();
+
+        if ( xmlStream.getEventType() != XMLStreamConstants.START_ELEMENT
+             || !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:boundedBy element. Must contain a child element in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        String name = xmlStream.getLocalName();
+        Envelope envelope = null;
+        if ( name.equals( "Envelope" ) ) {
+            envelope = decoder.parseEnvelope( xmlStream );
+        } else if ( name.equals( "Null" ) ) {
+            xmlStream.skipElement();
+            envelope = null;
+        } else {
+            String msg = "Invalid {" + GMLNS + "}boundedBy element. Must contain either a {" + GMLNS
+                         + "}Envelope or a {" + GMLNS + "}Null element.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "boundedBy" );
+        return envelope;
     }
 
     protected static void parseLocation311( XMLStreamReaderWrapper xmlStream )

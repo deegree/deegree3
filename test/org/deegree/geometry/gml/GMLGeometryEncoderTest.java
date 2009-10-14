@@ -49,6 +49,7 @@ import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
+import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -157,11 +158,12 @@ public class GMLGeometryEncoderTest {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws TransformationException 
      */
     @Test
     public void testValidatingExportedAbstractGeometryTypes()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
-                            FactoryConfigurationError, IOException {
+                            FactoryConfigurationError, IOException, TransformationException {
         for ( String source : sources ) {
             GMLIdContext idContext = new GMLIdContext();
             GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
@@ -182,11 +184,12 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer );
+            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
             exporter.export( geom );
             writer.flush();
             writer.close();
             
+            System.out.println (memoryWriter.toString());            
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
@@ -197,11 +200,12 @@ public class GMLGeometryEncoderTest {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws TransformationException 
      */
     @Test
     public void testValidatingExportedSurfacePatches()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
-                            FactoryConfigurationError, IOException {
+                            FactoryConfigurationError, IOException, TransformationException {
         for ( String patchSource : patchSources ) {
             GMLIdContext idContext = new GMLIdContext();
             GeometryFactory geomFactory = new GeometryFactory();
@@ -225,10 +229,10 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer );
+            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
             exporter.exportSurfacePatch( surfPatch );
             writer.flush();
-            writer.close();
+            writer.close();           
             
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
@@ -240,11 +244,12 @@ public class GMLGeometryEncoderTest {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws TransformationException 
      */
     @Test
     public void testValidatingExportedCurveSegments()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
-                            FactoryConfigurationError, IOException {
+                            FactoryConfigurationError, IOException, TransformationException {
         for ( String segmentSource : segmentSources ) {
             GMLIdContext idContext = new GMLIdContext();
             GeometryFactory geomFactory = new GeometryFactory();
@@ -266,7 +271,7 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer );
+            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
             exporter.exportCurveSegment( curveSegment );
             writer.flush();
             writer.close();
@@ -281,11 +286,12 @@ public class GMLGeometryEncoderTest {
      * @throws IOException
      * @throws XMLParsingException
      * @throws UnknownCRSException
+     * @throws TransformationException 
      */
     @Test
     public void testValidatingExportedEnvelope()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
+                            UnknownCRSException, TransformationException {
         for ( String envelopeSource : envelopeSources ) {
             GMLIdContext idContext = new GMLIdContext();
             GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
@@ -305,7 +311,7 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer );
+            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
             exporter.export( geom );
             writer.flush();
             writer.close();
@@ -320,11 +326,12 @@ public class GMLGeometryEncoderTest {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws TransformationException 
      */
     @Test
     public void testValidatingExportedXLinkMultiGeometry1()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException {
+                            FactoryConfigurationError, IOException, TransformationException {
 
         String source = "XLinkMultiGeometry1.gml";
         GMLIdContext idContext = new GMLIdContext();
@@ -347,7 +354,7 @@ public class GMLGeometryEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer );
+        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
         exporter.export( geom );
         writer.flush();
         writer.close();

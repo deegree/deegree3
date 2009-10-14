@@ -151,7 +151,7 @@ class GML311BaseDecoder {
     }
 
     protected List<Point> parseCoordinates( XMLStreamReaderWrapper xmlStream, CRS crs )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+                            throws XMLParsingException, XMLStreamException {
 
         String decimalSeparator = xmlStream.getAttributeValueWDefault( "decimal", "." );
         if ( !".".equals( decimalSeparator ) ) {

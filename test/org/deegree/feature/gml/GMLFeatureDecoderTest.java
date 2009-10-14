@@ -52,6 +52,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -106,7 +107,7 @@ public class GMLFeatureDecoderTest {
     public void testParsingCiteSF0()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException {
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf0.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -118,20 +119,20 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
 
-//        XMLStreamWriter writer = new FormattingXMLStreamWriter (XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter( "/tmp/out.xml" ) ));
-//        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-//        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-//        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-//        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer );
-//        encoder.export( fc );
-//        writer.close();
+        XMLStreamWriter writer = new FormattingXMLStreamWriter (XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter( "/tmp/out.xml" ) ));
+        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
+        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer, null );
+        encoder.export( fc );
+        writer.close();
     }
 
     @Test
     public void testParsingCiteSF1()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException {
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf1.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -147,7 +148,7 @@ public class GMLFeatureDecoderTest {
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer );
+        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer, null );
         encoder.export( fc );
         writer.close();
     }    

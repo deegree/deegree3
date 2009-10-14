@@ -328,7 +328,11 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
             String featureVersion = getNodeAsString( queryEl, new XPath( "@featureVersion", nsContext ), null );
 
+            CRS crs = null;
             String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
+            if ( srsName != null ) {
+                crs = new CRS( srsName );
+            }
 
             // convert some lists to arrays to conform the FilterQuery constructor signature
             PropertyName[] propNamesArray = new PropertyName[propNames.size()];
@@ -344,9 +348,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             sortProps.toArray( sortPropsArray );
 
             // build Query
-            Query filterQuery = new FilterQuery( queryHandle, typeNames, null, featureVersion, new CRS( srsName ),
-                                                 propNamesArray, xlinkPropNamesArray, functionsArray, sortPropsArray,
-                                                 filter );
+            Query filterQuery = new FilterQuery( queryHandle, typeNames, null, featureVersion, crs, propNamesArray,
+                                                 xlinkPropNamesArray, functionsArray, sortPropsArray, filter );
 
             queries.add( filterQuery );
         }

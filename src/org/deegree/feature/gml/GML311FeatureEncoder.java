@@ -51,6 +51,9 @@ import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
+import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -106,14 +109,20 @@ public class GML311FeatureEncoder {
 
     /**
      * @param writer
+     * @param outputCRS
+     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
+     *            used)
      */
-    public GML311FeatureEncoder( XMLStreamWriter writer ) {
+    public GML311FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportedIds );
     }
 
     /**
      * @param writer
+     * @param outputCRS
+     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
+     *            used)
      * @param referenceTemplate
      *            URI template used to create references to local objects, e.g.
      *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
@@ -123,7 +132,7 @@ public class GML311FeatureEncoder {
      * @param traverseXlinkDepth
      * @param traverseXlinkExpiry
      */
-    public GML311FeatureEncoder( XMLStreamWriter writer, String referenceTemplate, PropertyName[] requestedProps,
+    public GML311FeatureEncoder( XMLStreamWriter writer, CRS outputCRS, String referenceTemplate, PropertyName[] requestedProps,
                                  int traverseXlinkDepth, int traverseXlinkExpiry ) {
         this.writer = writer;
         this.referenceTemplate = referenceTemplate;
@@ -134,16 +143,16 @@ public class GML311FeatureEncoder {
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
-        geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportedIds );
     }
 
     public void export( Feature feature )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
         export( feature, 0 );
     }
 
     public void export( FeatureCollection fc, QName name )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
         LOG.debug( "Exporting feature collection with explicit name." );
         writer.setPrefix( "gml", GMLNS );
         writer.writeStartElement( name.getNamespaceURI(), name.getLocalPart() );
@@ -161,7 +170,7 @@ public class GML311FeatureEncoder {
     }
 
     private void export( Feature feature, int inlineLevels )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( feature.getId() != null ) {
             exportedIds.add( feature.getId() );
@@ -210,13 +219,13 @@ public class GML311FeatureEncoder {
     }
 
     protected void export( Property<?> property, int inlineLevels )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
         PropertyType propertyType = property.getType();
         if ( propertyType.getMinOccurs() == 0 ) {
             LOG.debug( "Optional property '" + propName + "', checking if it is requested." );
-            if (!isPropertyRequested( propName )) {
+            if ( !isPropertyRequested( propName ) ) {
                 LOG.debug( "Skipping it." );
                 return;
             }

@@ -60,4 +60,22 @@ public class StandardFeatureProps extends StandardObjectProps {
     public Envelope getBoundedBy() {
         return boundedBy;
     }
+
+    @Override
+    public String toString() {
+        String s = "";
+        for ( int i = 0; i < names.length; i++ ) {
+            s += "name={" + names[i] + "}";
+            if ( i != names.length - 1 ) {
+                s += ',';
+            }
+        }
+        if ( boundedBy != null ) {
+            if ( s.length() > 0 ) {
+                s += ",";
+            }
+            s += "boundedBy={" + boundedBy + "}";
+        }
+        return s;
+    }
 }

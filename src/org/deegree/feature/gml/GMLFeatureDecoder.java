@@ -185,10 +185,6 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
         LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
 
-        // override defaultSRS with SRS information from boundedBy element (if present)
-        // srsName = XMLTools.getNodeAsString( element, "gml:boundedBy/*[1]/@srsName", nsContext,
-        // srsName );
-
         // parse properties
         Iterator<PropertyType> declIter = ft.getPropertyDeclarations().iterator();
         PropertyType activeDecl = declIter.next();
@@ -198,6 +194,11 @@ public class GMLFeatureDecoder extends XMLAdapter {
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
 
         StandardFeatureProps standardProps = GMLStandardFeaturePropsParser.parse311( xmlStream );
+        // override active CRS with the one from boundedBy (if present)
+        if (standardProps != null && standardProps.getBoundedBy() != null) {
+            activeCRS = standardProps.getBoundedBy().getCoordinateSystem();
+        }
+        LOG.debug( "- crs '" + activeCRS + "'" );
 
         while ( xmlStream.getEventType() == START_ELEMENT ) {
             QName propName = xmlStream.getName();
@@ -235,11 +236,6 @@ public class GMLFeatureDecoder extends XMLAdapter {
             Property<?> property = parseProperty( xmlStream, activeDecl, activeCRS, fid, propOccurences );
             if ( property != null ) {
                 propertyList.add( property );
-                // if the property is 'gml:boundedBy', its srsName value sets the default CRS for the following
-                // properties of the feature
-                if ( QName.valueOf( "{http://www.opengis.net/gml}boundedBy" ).equals( propName ) ) {
-                    activeCRS = ( (Envelope) property.getValue() ).getCoordinateSystem();
-                }
             }
             propOccurences++;
             xmlStream.nextTag();

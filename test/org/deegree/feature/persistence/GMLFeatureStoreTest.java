@@ -52,6 +52,7 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -153,7 +154,7 @@ public class GMLFeatureStoreTest {
     }
 
     @Test
-    public void testGetObjectByIdGeometry2() throws FileNotFoundException, XMLStreamException {
+    public void testGetObjectByIdGeometry2() throws FileNotFoundException, XMLStreamException, UnknownCRSException, TransformationException {
         Object o = store.getObjectById( "RING_1" );
         Assert.assertTrue( o instanceof Ring );
 
@@ -162,7 +163,7 @@ public class GMLFeatureStoreTest {
         OutputStream out = new FileOutputStream( "/tmp/exported_ring.gml");
         XMLStreamWriter writer = outputFactory.createXMLStreamWriter( out );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
-        GML311GeometryEncoder exporter = new GML311GeometryEncoder(writer );
+        GML311GeometryEncoder exporter = new GML311GeometryEncoder(writer, null );
         exporter.exportRing( (Ring) o);
     }        
 }

@@ -50,6 +50,9 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
+import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
@@ -90,10 +93,13 @@ public class GML212FeatureEncoder {
 
     /**
      * @param writer
+     * @param outputCRS
+     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
+     *            used)
      */
-    public GML212FeatureEncoder( XMLStreamWriter writer ) {
+    public GML212FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportedIds );
     }
 
     // public void export( FeatureCollection featureCol ) throws XMLStreamException {
@@ -117,16 +123,20 @@ public class GML212FeatureEncoder {
     /**
      * @param feature
      * @throws XMLStreamException
+     * @throws TransformationException
+     * @throws UnknownCRSException
      */
     public void export( Feature feature )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
         QName featureName = feature.getName();
         LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
         writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
-        if ( feature.getId() != null )
+        if ( feature.getId() != null ) {
             writer.writeAttribute( "fid", feature.getId() );
-        for ( Property<?> prop : feature.getProperties() )
+        }
+        for ( Property<?> prop : feature.getProperties() ) {
             export( prop );
+        }
         writer.writeEndElement();
     }
 
@@ -135,9 +145,11 @@ public class GML212FeatureEncoder {
      * @param schemaLocation
      *            may be null
      * @throws XMLStreamException
+     * @throws TransformationException 
+     * @throws UnknownCRSException 
      */
     public void export( GenericFeatureCollection col, String schemaLocation )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
         LOG.debug( "Exporting generic feature collection." );
         writer.setPrefix( "gml", GMLNS );
         writer.writeStartElement( "FeatureCollection" );
@@ -159,7 +171,7 @@ public class GML212FeatureEncoder {
     }
 
     private void export( Property<?> property )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
         QName propName = property.getName();
         PropertyType propertyType = property.getType();
         Object value = property.getValue();

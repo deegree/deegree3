@@ -49,6 +49,8 @@ import junit.framework.Assert;
 
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -126,14 +128,14 @@ public class GeometryAnalysisTest {
         Assert.assertNull( result );
     }
 
-    private void writeResult( Geometry result ) {
+    private void writeResult( Geometry result ) throws UnknownCRSException, TransformationException {
         try {
             XMLStreamWriter writer = new FormattingXMLStreamWriter(
                                                                     XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                           new FileWriter(
                                                                                                                                           "/tmp/out.gml" ) ) );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-            GML311GeometryEncoder encoder = new GML311GeometryEncoder( writer );
+            GML311GeometryEncoder encoder = new GML311GeometryEncoder( writer, null );
             encoder.export( result );
             writer.close();
         } catch ( XMLStreamException e ) {
