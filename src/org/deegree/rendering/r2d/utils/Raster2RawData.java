@@ -34,17 +34,18 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.utils;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
+import java.awt.Color;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.feature.GenericProperty;
+import org.deegree.coverage.raster.data.info.BandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parses 1, 3 or 4 band rasters assuming pixels are integers, and returns a long matrix containing the pixel values.
+ * Utility class to convert a multi-band raster to a matrix of float values, that can be used in lookup operations (for
+ * example in Categorize or Interpolate). This class can read 1,3 and 4-band rasters, and combines band values into a
+ * single pixel value.
  * 
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
@@ -57,12 +58,6 @@ public class Raster2RawData implements Image2RawData {
 
     private RasterData data;
 
-    private DataBuffer db;
-
-    private float scale = 0;
-
-    private float offset = 0;
-
     private int width = 0;
 
     private int height = 0;
@@ -71,46 +66,28 @@ public class Raster2RawData implements Image2RawData {
 
     /**
      * 
-     * @param data
-     *            image containing raw data instead color information
+     * @param raster
+     *            abstract raster data source
      */
     public Raster2RawData( AbstractRaster raster ) {
-        this( raster.getAsSimpleRaster().getRasterData(), 1, 0 );
+        this( raster.getAsSimpleRaster().getRasterData() );
     }
 
     /**
      * 
      * @param data
-     *            image containing raw data instead color information
-     * @param scale
-     *            scale factor; newHeight[i][j] = height[i][j] * scale
+     *            raster data source
      */
-    public Raster2RawData( RasterData data, float scale ) {
-        this( data, scale, 0 );
-    }
-
-    /**
-     * 
-     * @param data
-     *            raster containing raw data
-     * @param scale
-     *            scale factor; newHeight[i][j] = height[i][j] * scale
-     * @param offset
-     *            height offset; newHeight[i][j] = height[i][j] + offset
-     */
-    public Raster2RawData( RasterData d, float scale, float offset ) {
+    public Raster2RawData( RasterData d ) {
         this.data = d;
-        this.scale = scale;
-        this.offset = offset;
         width = data.getWidth();
         height = data.getHeight();
         bands = data.getBands();
     }
 
     /**
-     * returns the image pixels as a matrix of Integers or Floats
      * 
-     * @return the image pixels as a matrix of Integers or Floats
+     * @return the image pixels as a matrix of Floats
      */
     @Override
     public Float[][] parse() {
@@ -119,59 +96,123 @@ public class Raster2RawData implements Image2RawData {
         int row = -1, col = -1;
 
         LOG.debug( "Parsing raster data. Raster has {} bands and datatype {}.", bands, data.getDataType() );
-        LOG.debug( "Raster has size {} x {} ", data.getHeight(), data.getWidth() );
+        BandType[] allb = data.getDataInfo().bandInfo;
+        String b = allb[0].toString();
+        for ( int i = 1; i < bands; i++ )
+            b += ", " + allb[i].toString();
+        b = "[" + b + "]";
+        LOG.debug( "Raster bands are: {}", b );
+        LOG.debug( "Raster has size {} x {} ", height, width );
 
         try {
+            values = new Float[height][width];
+
             switch ( data.getDataType() ) {
+            case BYTE:
+                byte[] bpixel = new byte[bands];
+                for ( col = 0; col < width; col++ ) {
+                    for ( row = 0; row < height; row++ ) {
+                        values[row][col] = combineBytes( data.getBytePixel( col, row, bpixel ) ).floatValue();
+                    }
+                }
+                break;
             case SHORT:
             case USHORT:
-            case BYTE:
-                values = new Float[height][width];
-                short[] spixel = new short[data.getBands()];
+                short[] spixel = new short[bands];
                 for ( col = 0; col < width; col++ ) {
                     for ( row = 0; row < height; row++ ) {
                         values[row][col] = combineShorts( data.getShortPixel( col, row, spixel ) ).floatValue();
                     }
                 }
                 break;
+            case INT:
+                int[] ipixel = new int[bands];
+                for ( col = 0; col < width; col++ ) {
+                    for ( row = 0; row < height; row++ ) {
+                        values[row][col] = combineInts( data.getIntPixel( col, row, ipixel ) ).floatValue();
+                    }
+                }
+                break;
             case FLOAT:
-                values = new Float[height][width];
-                float[] fpixel = new float[data.getBands()];
+
+                float[] fpixel = new float[bands];
                 for ( col = 0; col < width; col++ ) {
                     for ( row = 0; row < height; row++ ) {
                         values[row][col] = combineFloats( data.getFloatPixel( col, row, fpixel ) );
                     }
                 }
             default:
-                break;
+                throw new IllegalArgumentException( "Cannot parse datatype " + data.getDataType().toString() );
             }
-        } catch ( Exception e ) {
+        } catch ( NullPointerException e ) {
             LOG.error( "Error while parsing raster data, @ row={}, col={}", row, col );
-//            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         return values;
     }
 
     private Float combineFloats( float[] pixel ) {
-        switch ( bands ) {
-        case 1: /* Gray-scale */
-            return new Float( pixel[0] );
-        case 3: /* RGB bands */
-            return new Float( ( pixel[0] + pixel[1] + pixel[2] ) / 3 );
-        default:
+        try {
+            switch ( bands ) {
+            case 1: /* Gray-scale */
+                return new Float( pixel[0] );
+            case 3: /* RGB bands */
+                Color c = new Color( pixel[0], pixel[1], pixel[2] );
+                return new Float( c.getRGB() );
+            default:
+                return null;
+            }
+        } catch ( Exception e ) {
             return null;
         }
     }
 
-    private Integer combineShorts( short[] pixel ) {
-        switch ( bands ) {
-        case 1: /* Gray-scale */
-            return new Integer( pixel[0] );
-        case 3: /* RGB bands */
-            return new Integer( ( pixel[0] << 16 ) + ( pixel[1] << 8 ) + ( pixel[0] ) );
-        default:
+    private Float combineShorts( short[] pixel ) {
+        try {
+            switch ( bands ) {
+            case 1: /* Gray-scale */
+                return new Float( pixel[0] );
+            case 3: /* RGB bands */
+                Color c = new Color( pixel[0], pixel[1], pixel[2] );
+                return new Float( c.getRGB() );
+            default:
+                return null;
+            }
+        } catch ( Exception e ) {
             return null;
+        }
+    }
+
+    private Float combineInts( int[] pixel ) {
+        try {
+            switch ( bands ) {
+            case 1: /* Gray-scale */
+                return new Float( pixel[0] );
+            case 3: /* RGB bands */
+                Color c = new Color( pixel[0], pixel[1], pixel[2] );
+                return new Float( c.getRGB() );
+            default:
+                return null;
+            }
+        } catch ( Exception e ) {
+            return null;
+        }
+    }
+
+    private Float combineBytes( byte[] pixel ) {
+        try {
+            switch ( bands ) {
+            case 1: /* Gray-scale */
+                return new Float( pixel[0] );
+            case 3: /* RGB bands */
+                Color c = new Color( pixel[0], pixel[1], pixel[2] );
+                return new Float( c.getRGB() );
+            default:
+                return new Float(0);
+            }
+        } catch ( Exception e ) {
+            return new Float(0);
         }
     }
 
@@ -184,15 +225,22 @@ public class Raster2RawData implements Image2RawData {
      */
     public Float get( int x, int y ) {
         Float ret = null;
+
         switch ( data.getDataType() ) {
+        case BYTE:
+            ret = combineBytes( data.getBytePixel( x, y, null ) ).floatValue();
+            break;
         case SHORT:
         case USHORT:
-        case BYTE:
             ret = combineShorts( data.getShortPixel( x, y, null ) ).floatValue();
             break;
+        case INT:
+            ret = combineInts( data.getIntPixel( x, y, null ) ).floatValue();
         case FLOAT:
             ret = combineFloats( data.getFloatPixel( x, y, null ) );
+            break;
         default:
+            ret = null;
             break;
         }
 

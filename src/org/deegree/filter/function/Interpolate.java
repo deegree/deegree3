@@ -55,9 +55,12 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
+import org.deegree.rendering.r2d.utils.Raster2RawData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +97,7 @@ public class Interpolate extends Function {
 
     private boolean linear = true, cosine, cubic;
 
-    private static byte mode = 1; /* Values from 1-3, for linear, cosine, cubic */
+    private static byte mode = 1; /* Values in range 1..3, for linear, cosine, cubic */
 
     /***/
     public Interpolate() {
@@ -343,27 +346,30 @@ public class Interpolate extends Function {
      *            Array of float values, that are the inputs to the categorize operation
      * @return a buffered image
      */
-    public BufferedImage evaluateRasterData( Float[][] values ) {
+    public BufferedImage evaluateRaster( AbstractRaster raster ) {
         BufferedImage img = null;
         long start = System.nanoTime();
         int col = -1, row = -1;
+        Color c = null;
+        int rgb = 0;
+        RasterData data = raster.getAsSimpleRaster().getRasterData();
 
         buildLookupArrays();
 
         try {
-            img = new BufferedImage( values[0].length, values.length, BufferedImage.TYPE_INT_RGB );
+            Raster2RawData converter = new Raster2RawData( raster );
+            Float[][] mat = (Float[][]) converter.parse();
+
+            img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_RGB );
             LOG.debug( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
             for ( row = 0; row < img.getHeight(); row++ )
                 for ( col = 0; col < img.getWidth(); col++ ) {
-                    float val = values[row][col];
-//                    LOG.trace( "row {}, col {}", row, col );
-                    Color c = lookupColor2( val );
-                    if (c.getRed() > 0)
-                        LOG.trace( "row {}, col {}", row, col );
-                    img.setRGB( col, row, c.getRGB() );
+                    Float val = mat[row][col];
+                    rgb = (val != null) ? lookupColor2( val ).getRGB() : 0;
+                    img.setRGB( col, row, rgb );
                 }
         } catch ( Exception e ) {
-            LOG.error( "Error while building image, with row={}, col={}", row, col );
+            LOG.error( "Error while building image, @ row={}, col={}: " + e.getMessage(), row, col );
             // e.printStackTrace();
         } finally {
             long end = System.nanoTime();
@@ -385,9 +391,8 @@ public class Interpolate extends Function {
         if ( value <= dataArray[0] || value >= dataArray[l] ) {
             if ( value <= dataArray[0] )
                 return colorArray[0];
-            if ( value >= dataArray[l] )
-            {
-                LOG.trace( "bigger!" );
+            if ( value >= dataArray[l] ) {
+                // LOG.trace( "bigger!" );
                 return colorArray[l];
             }
         }
@@ -397,13 +402,13 @@ public class Interpolate extends Function {
             pos = pos * ( -1 ) - 1;
         }
 
-        LOG.debug( "Found positions {} and {}", pos-1, pos );
-        LOG.debug( "Going to do division to {}", dataArray[pos] - dataArray[pos - 1] );
+//        LOG.debug( "Found positions {} and {}", pos - 1, pos );
+//        LOG.debug( "Going to do division to {}", dataArray[pos] - dataArray[pos - 1] );
         double f = ( value - dataArray[pos - 1] ) / ( dataArray[pos] - dataArray[pos - 1] );
-        LOG.debug( "Interpolating between {} and {} ", dataArray[pos - 1], dataArray[pos] );
-        LOG.debug( "Interpolating with fraction {} ", f );
+//        LOG.debug( "Interpolating between {} and {} ", dataArray[pos - 1], dataArray[pos] );
+//        LOG.debug( "Interpolating with fraction {} ", f );
         Color color = interpolateColor( colorArray[pos - 1], colorArray[pos], f );
-        LOG.debug( "Found color: {}", color );
+//        LOG.debug( "Found color: {}", color );
         return color;
     }
 

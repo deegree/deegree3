@@ -112,16 +112,10 @@ public class Java2DRasterRenderer implements RasterRenderer {
 
         if ( styling.categorize != null || styling.interpolate != null ) {
             LOG.trace( "Creating raster ColorMap..." );
-            // BufferedImage img2 = RasterFactory.imageFromRaster( raster );
-            // SimpleImage2RawData converter = new SimpleImage2RawData( img2 );
-            // LOG.debug( "We have image with H={}, L={}", img2.getHeight(), img2.getWidth() );
-            // Integer[][] mat = converter.parse();
-            Raster2RawData converter = new Raster2RawData( raster );
-            Float[][] mat = (Float[][]) converter.parse();
             if ( styling.categorize != null )
-                img = styling.categorize.evaluateRasterData( mat );
+                img = styling.categorize.evaluateRaster( raster);
             else if ( styling.interpolate != null )
-                img = styling.interpolate.evaluateRasterData( mat );
+                img = styling.interpolate.evaluateRaster( raster );
         }
 
         if ( styling.opacity != 1 ) {

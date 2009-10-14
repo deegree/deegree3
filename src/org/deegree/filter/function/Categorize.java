@@ -51,9 +51,12 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
+import org.deegree.rendering.r2d.utils.Raster2RawData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,25 +136,29 @@ public class Categorize extends Function {
      *            Array of float values, that are the inputs to the categorize operation
      * @return a buffered image
      */
-    public BufferedImage evaluateRasterData( Float[][] values ) {
+    public BufferedImage evaluateRaster( AbstractRaster raster ) {
         BufferedImage img = null;
         long start = System.nanoTime();
         int col = -1, row = -1;
+        RasterData data = raster.getAsSimpleRaster().getRasterData();
 
         buildLookupArrays();
 
         try {
-            img = new BufferedImage( values[0].length, values.length, BufferedImage.TYPE_INT_RGB );
-            LOG.debug( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
+            Raster2RawData converter = new Raster2RawData( raster );
+            Float[][] mat = (Float[][]) converter.parse();
+
+            img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_RGB );
+            LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
+            LOG.trace( "Found data matrix with size {}-by-{}", mat.length, mat[0].length );
             for ( row = 0; row < img.getHeight(); row++ )
                 for ( col = 0; col < img.getWidth(); col++ ) {
-                    float val = values[row][col];
-                    int rgb = lookup2( val ).getRGB();
-                    img.setRGB( col, row, rgb );
+                    Color c = lookup2( mat[row][col] );
+                    img.setRGB( col, row, c.getRGB() );
                 }
         } catch ( Exception e ) {
-            LOG.error( "Error while building image, with row={}, col={}", row, col );
-            // e.printStackTrace();
+//            e.printStackTrace();
+            LOG.error( "Error while building image, on row={}, col={}: " + e.getMessage(), row, col );
         } finally {
             long end = System.nanoTime();
             LOG.debug( "Built image with total time {} ms", ( end - start ) / 1000000 );

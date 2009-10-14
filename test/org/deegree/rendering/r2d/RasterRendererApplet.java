@@ -83,6 +83,7 @@ public class RasterRendererApplet extends JApplet {
     public static final Logger LOG = LoggerFactory.getLogger( RasterRendererApplet.class );
 
     private Categorize cat = null;
+
     private Interpolate interp = null;
 
     private AbstractRaster image, car, small_car;
@@ -95,8 +96,8 @@ public class RasterRendererApplet extends JApplet {
         // invertImageLookupTable();
         // applyCategorizeOnImage();
         // renderTextWithStyle();
-//        renderRasterWithStyle();
-        renderRasterWithStyleReloaded();
+//         renderRasterWithStyle();
+        renderRasterWithInterpolate();
         // testCategorize();
     }
 
@@ -104,8 +105,8 @@ public class RasterRendererApplet extends JApplet {
     public void init() {
         try {
             System.out.println( "Loading XML ... " );
-            cat = loadCategorizeFromXml("setest17.xml");
-            interp = loadInterpolateFromXml("setest16.xml");
+            cat = loadCategorizeFromXml( "setest17.xml" );
+            interp = loadInterpolateFromXml( "setest16.xml" );
             // cat.buildLookupArrays();
             System.out.println( "Finished loading XML ... " );
             if ( cat != null )
@@ -224,23 +225,23 @@ public class RasterRendererApplet extends JApplet {
 
     }
 
-    public Categorize loadCategorizeFromXml(String name) {
-        RasterStyling style = loadRasterStylingFromXml(name);
+    public Categorize loadCategorizeFromXml( String name ) {
+        RasterStyling style = loadRasterStylingFromXml( name );
         if ( style != null )
             return style.categorize;
         else
             return null;
     }
-    
-    public Interpolate loadInterpolateFromXml(String name) {
-        RasterStyling style = loadRasterStylingFromXml(name);
+
+    public Interpolate loadInterpolateFromXml( String name ) {
+        RasterStyling style = loadRasterStylingFromXml( name );
         if ( style != null )
             return style.interpolate;
         else
             return null;
     }
 
-    public RasterStyling loadRasterStylingFromXml(String fname) {
+    public RasterStyling loadRasterStylingFromXml( String fname ) {
         RasterStyling rs = null;
         try {
             LOG.debug( "Loading SE XML..." );
@@ -286,28 +287,29 @@ public class RasterRendererApplet extends JApplet {
     }
 
     /* Load a RasterStyle that contains a Categorize operation for the ColorMap */
-    private void renderRasterWithStyle() {
-        RasterStyling style = loadRasterStylingFromXml("setest17.xml");
+    private void renderRasterWithCategorize() {
+        RasterStyling style = loadRasterStylingFromXml( "setest17.xml" );
         LOG.debug( "Found opacity: {}", style.opacity );
         Graphics2D g2d = (Graphics2D) this.getGraphics();
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
 
         r.render( style, car );
     }
-    
+
     /* Load a RasterStyle, that contains an Interpolation operation for the ColorMap */
-    private void renderRasterWithStyleReloaded() {
-        RasterStyling style = loadRasterStylingFromXml("setest16.xml");
+    private void renderRasterWithInterpolate() {
+        RasterStyling style = loadRasterStylingFromXml( "setest16.xml" );
         LOG.debug( "Found interpolate: {}", style.interpolate );
         Graphics2D g2d = (Graphics2D) this.getGraphics();
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
 
-        r.render( style, car );
+        r.render( style, image );
     }
 
     private void loadRasters() {
         try {
             LOG.debug( "Loading images..." );
+            
             URI uri = SymbologyParserTest.class.getResource( "image.png" ).toURI();
             image = RasterFactory.loadRasterFromFile( new File( uri ) );
 
@@ -317,8 +319,6 @@ public class RasterRendererApplet extends JApplet {
             uri = RasterRendererApplet.class.getResource( "small_car.jpg" ).toURI();
             small_car = RasterFactory.loadRasterFromFile( new File( uri ) );
 
-//            uri = RasterRendererApplet.class.getResource( "lady.jpg" ).toURI();
-//            lady = RasterFactory.loadRasterFromFile( new File( uri ) );
             LOG.debug( "Loaded images" );
         } catch ( Exception e ) {
             LOG.error( "Could not load images...", e );
