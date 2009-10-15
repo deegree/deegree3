@@ -62,11 +62,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>Categorize</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class Categorize extends Function {
@@ -131,7 +131,7 @@ public class Categorize extends Function {
 
     /**
      * Construct an image map, as the result of the Categorize operation
-     * 
+     *
      * @param values
      *            Array of float values, that are the inputs to the categorize operation
      * @return a buffered image
@@ -148,7 +148,7 @@ public class Categorize extends Function {
             Raster2RawData converter = new Raster2RawData( raster );
             Float[][] mat = (Float[][]) converter.parse();
 
-            img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_RGB );
+            img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
             LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
             LOG.trace( "Found data matrix with size {}-by-{}", mat.length, mat[0].length );
             for ( row = 0; row < img.getHeight(); row++ )
@@ -168,7 +168,7 @@ public class Categorize extends Function {
 
     /**
      * Looks up a value in the current categories and thresholds. Uses binary search for optimization.
-     * 
+     *
      * @param input
      *            value
      * @return Category value
@@ -183,12 +183,12 @@ public class Categorize extends Function {
             pos = pos * ( -1 ) - 1;
         }
         String color = valuesArray[pos].toString();
-        return Color.decode( color );
+        return decodeWithAlpha( color );
     }
 
     /**
      * Looks up a value in the current categories and thresholds. Naive implementation.
-     * 
+     *
      * @param input
      *            double value
      * @return rgb int value, for storing in a BufferedImage
@@ -204,7 +204,8 @@ public class Categorize extends Function {
             vs.next();
         }
 
-        Color c = Color.decode( vs.next().toString() );
+        String col = vs.next().toString();
+        Color c = decodeWithAlpha( col );
         return c;
     }
 
@@ -300,4 +301,9 @@ public class Categorize extends Function {
             thresholdsArray = list.toArray( thresholdsArray );
         }
     }
+
+    private static Color decodeWithAlpha( String s ) {
+        return new Color( Integer.decode( s ), s.length() > 7 );
+    }
+
 }
