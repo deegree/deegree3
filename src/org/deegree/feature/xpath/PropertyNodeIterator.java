@@ -62,14 +62,16 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
     PropertyNodeIterator( FeatureNode parent ) {
         this.parent = parent;
         // TODO handle other GML versions
-        this.stdProps = new GML311StandardPropertiesIterator(
-                                                              (StandardFeatureProps) parent.getFeature().getStandardGMLProperties() );
+        if ( parent.getFeature().getStandardGMLProperties() != null ) {
+            this.stdProps = new GML311StandardPropertiesIterator(
+                                                                  (StandardFeatureProps) parent.getFeature().getStandardGMLProperties() );
+        }
         this.props = Arrays.asList( parent.getFeature().getProperties() ).iterator();
     }
 
     @Override
     public boolean hasNext() {
-        return stdProps.hasNext() || props.hasNext();
+        return (stdProps != null && stdProps.hasNext()) || props.hasNext();
     }
 
     @Override
@@ -78,7 +80,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
             throw new NoSuchElementException();
         }
         Property<?> prop = null;
-        if ( stdProps.hasNext() ) {
+        if ( stdProps != null && stdProps.hasNext() ) {
             prop = stdProps.next();
         } else {
             prop = props.next();
