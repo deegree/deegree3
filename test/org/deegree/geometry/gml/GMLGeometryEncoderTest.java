@@ -188,8 +188,6 @@ public class GMLGeometryEncoderTest {
             exporter.export( geom );
             writer.flush();
             writer.close();
-            
-            System.out.println (memoryWriter.toString());            
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
