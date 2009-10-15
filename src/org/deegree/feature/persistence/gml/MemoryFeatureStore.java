@@ -56,6 +56,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.Property;
 import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -340,8 +341,27 @@ public class MemoryFeatureStore implements FeatureStore {
 
     @Override
     public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
-                            throws FeatureStoreException {
-        throw new FeatureStoreException( "Not implemented yet." );
+                            throws FeatureStoreException, FilterEvaluationException {
+        FeatureCollection res = new GenericFeatureCollection();
+
+        for ( FeatureCollection fc : ftToFeatures.values() ) {
+            for ( Feature f : fc ) {
+                if ( filter == null || filter.evaluate( f ) ) {
+                    if ( bbox == null ) {
+                        res.add( f );
+                    } else {
+                        bboxcheck: for ( Property<Geometry> p : f.getGeometryProperties() ) {
+                            if ( bbox.intersects( p.getValue() ) ) {
+                                res.add( f );
+                                break bboxcheck;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return res;
     }
 
     @Override
