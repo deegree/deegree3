@@ -119,7 +119,10 @@ public class Symbolizer<T extends Copyable<T>> {
         if ( geometry != null ) {
             try {
                 Object[] os = geometry.evaluate( f );
-                if ( os[0] instanceof Geometry ) {
+
+                if ( os.length == 0 ) {
+                    LOG.warn( "A geometry expression evaluated to nothing." );
+                } else if ( os[0] instanceof Geometry ) {
                     geom = (Geometry) os[0];
                 } else {
                     // TODO proper error messages -> SLD/SE line/col
@@ -160,8 +163,7 @@ public class Symbolizer<T extends Copyable<T>> {
     }
 
     /* Convenience method for debugging */
-    public T getBase()
-    {
+    public T getBase() {
         return base;
     }
 }
