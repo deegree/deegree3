@@ -350,10 +350,14 @@ public class MemoryFeatureStore implements FeatureStore {
                     if ( bbox == null ) {
                         res.add( f );
                     } else {
-                        bboxcheck: for ( Property<Geometry> p : f.getGeometryProperties() ) {
-                            if ( bbox.intersects( p.getValue() ) ) {
-                                res.add( f );
-                                break bboxcheck;
+                        if ( f.getGeometryProperties().length == 0 ) {
+                            res.add( f );
+                        } else {
+                            bboxcheck: for ( Property<Geometry> p : f.getGeometryProperties() ) {
+                                if ( bbox.intersects( p.getValue() ) ) {
+                                    res.add( f );
+                                    break bboxcheck;
+                                }
                             }
                         }
                     }
