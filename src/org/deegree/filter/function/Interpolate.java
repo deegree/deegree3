@@ -97,39 +97,43 @@ public class Interpolate extends Function {
 
     private boolean linear = true, cosine, cubic;
 
-    private static byte mode = 1; /* Values in range 1..3, for linear, cosine, cubic */
+    private byte mode = 1; /* Values in range 1..3, for linear, cosine, cubic. Default is linear. */
 
     /***/
     public Interpolate() {
         super( "Interpolate", null );
     }
 
+    /** Linear interpolation between two colors, with fraction f */
     private static final Color interpolateColorLinear( final Color fst, final Color snd, final double f ) {
         final double f1m = 1 - f;
-        int red = (int) ( fst.getRed() * f1m + snd.getRed() * f );
-        int green = (int) ( fst.getGreen() * f1m + snd.getGreen() * f );
-        int blue = (int) ( fst.getBlue() * f1m + snd.getBlue() * f );
-        int alpha = (int) ( fst.getAlpha() * f1m + snd.getAlpha() * f );
+        int red = (int) Math.round( fst.getRed() * f1m + snd.getRed() * f );
+        int green = (int) Math.round( fst.getGreen() * f1m + snd.getGreen() * f );
+        int blue = (int) Math.round( fst.getBlue() * f1m + snd.getBlue() * f );
+        int alpha = (int) Math.round( fst.getAlpha() * f1m + snd.getAlpha() * f );
         return new Color( red, green, blue, alpha );
     }
 
+    /* Linear interpolation between two numbers with fraction f */
     private static final double interpolateLinear( final double fst, final double snd, final double f ) {
         return fst * ( 1 - f ) + snd * f;
     }
 
-    private static final Color interpolateColorCubic( final Color fst, final Color snd, final double f ) {
-        // TODO: fix computation
-        final double f1m = 1 - f;
-        int red = (int) ( fst.getRed() * f1m + snd.getRed() * f );
-        int green = (int) ( fst.getGreen() * f1m + snd.getGreen() * f );
-        int blue = (int) ( fst.getBlue() * f1m + snd.getBlue() * f );
-        int alpha = (int) ( fst.getAlpha() * f1m + snd.getAlpha() * f );
-        return new Color( red, green, blue, alpha );
-    }
+    /*
+     * Cubic interpolation between y1 and y2, with fraction f. y0 and y3 are extra points, such that y0-y1-y2-y3 are
+     * ordered.
+     */
+    private static final double interpolateCubic( final double y0, final double y1, final double y2, final double y3,
+                                                  final double f ) {
+        double a0, a1, a2, a3, f2;
 
-    private static final double interpolateCubic( final double fst, final double snd, final double f ) {
-        // TODO: fix formula
-        return fst * ( 1 - f ) + snd * f;
+        f2 = f * f;
+        a0 = y3 - y2 - y0 + y1;
+        a1 = y0 - y1 - a0;
+        a2 = y2 - y0;
+        a3 = y1;
+
+        return ( a0 * f * f2 + a1 * f2 + a2 * f + a3 );
     }
 
     private static final Color interpolateColorCosine( final Color fst, final Color snd, final double f ) {
@@ -147,28 +151,129 @@ public class Interpolate extends Function {
         return fst * ( 1 - mu ) + snd * mu;
     }
 
-    private static final Color interpolateColor( final Color fst, final Color snd, final double f ) {
+    private final Color interpolateColor( final int pos1, final int pos2, final double f ) {
         switch ( mode ) {
         case 1:
-            return interpolateColorLinear( fst, snd, f );
+            return interpolateColorLinear( colorArray[pos1], colorArray[pos2], f );
         case 2:
-            return interpolateColorCosine( fst, snd, f );
+            return interpolateColorCosine( colorArray[pos1], colorArray[pos2], f );
         case 3:
-            return interpolateColorCubic( fst, snd, f );
+            // Cubic interpolation needs 4 points.
+            // Create extra 2 points with the same slope on both sides of the input points
+            Color col = null;
+            double r, g, b, a;
+            double r1 = colorArray[pos1].getRed(),
+            g1 = colorArray[pos1].getGreen(),
+            b1 = colorArray[pos1].getBlue(),
+            a1 = colorArray[pos1].getAlpha();
+
+            double r2 = colorArray[pos2].getRed(),
+            g2 = colorArray[pos2].getGreen(),
+            b2 = colorArray[pos2].getBlue(),
+            a2 = colorArray[pos2].getAlpha();
+            
+            if ( pos1 == 0 || pos2 == colorArray.length - 1 ) {
+                int l = colorArray.length - 1;
+                // Cubic interpolation needs 4 points, not just two. Interpolate for each of RGBA channels.
+                double aux1, aux2;
+                aux1 = interpolateLinear( r1, r2, -1 );
+                aux2 = interpolateLinear( r1, r2, 2 );
+                r = interpolateCubic( aux1, r1, r2, aux2, f );
+
+                aux1 = interpolateLinear( g1, g2, -1 );
+                aux2 = interpolateLinear( g1, g2, 2 );
+                g = interpolateCubic( aux1, g1, g2, aux2, f );
+
+                aux1 = interpolateLinear( b1, b2, -1 );
+                aux2 = interpolateLinear( b1, b2, 2 );
+                b = interpolateCubic( aux1, b1, b2, aux2, f );
+
+                aux1 = interpolateLinear( a1, a2, -1 );
+                aux2 = interpolateLinear( a1, a2, 2 );
+                a = interpolateCubic( aux1, a1, a2, aux2, f );
+
+                if (color == true)  // value range is 0-255
+                    return new Color((int)r,(int)g,(int)b,(int)a);
+                else                // value range is 0-1
+                    return new Color((float)r,(float)g, (float)b, (float)a); 
+            }
+
+            r = interpolateCubic(colorArray[pos1-1].getRed(), r1, r2, colorArray[pos2+1].getRed(), f);
+            g = interpolateCubic(colorArray[pos1-1].getGreen(), g1, g2, colorArray[pos2+1].getGreen(), f);
+            b = interpolateCubic(colorArray[pos1-1].getBlue(), b1, b2, colorArray[pos2+1].getBlue(), f);
+            a = interpolateCubic(colorArray[pos1-1].getAlpha(), a1, a2, colorArray[pos2+1].getAlpha(), f);
+            
+            if (color == true)  // value range is 0-255
+                return new Color((int)r,(int)g,(int)b,(int)a);
+            else                // value range is 0-1
+                return new Color((float)r,(float)g, (float)b, (float)a);
+            
+        default:
+            LOG.error( "Invalid value for interpolation type: {}", mode );
+            throw new RuntimeException( "Invalid value for interpolation type: " + mode );
         }
-        return null;
+        
     }
 
-    private static final double interpolate( final double fst, final double snd, final double f ) {
+    private final double interpolate( final int pos1, final int pos2, final double f ) {
+        switch ( mode ) {
+        case 1:
+            return interpolateLinear( valuesArray[pos1], valuesArray[pos2], f );
+        case 2:
+            return interpolateCosine( valuesArray[pos1], valuesArray[pos2], f );
+        case 3:
+            if ( pos1 == 0 || pos2 == valuesArray.length - 1 ) {
+                int l = valuesArray.length - 1;
+                // Cubic interpolation needs 4 points, not just two.
+                // If we are at the first/last intervals, create 2 new points by interpolating linearly, on both sides
+                // of the segment to be interpolated.
+                double aux1, aux2;
+                aux1 = interpolateLinear( valuesArray[pos1], valuesArray[pos2], -1 );
+                aux2 = interpolateLinear( valuesArray[pos1], valuesArray[pos2], 2 );
+                return interpolateCubic( aux1, valuesArray[pos1], valuesArray[pos2], aux2, f );
+            }
+
+            return interpolateCubic( valuesArray[pos1 - 1], valuesArray[pos1], valuesArray[pos2],
+                                     valuesArray[pos2 + 1], f );
+        default:
+            LOG.error( "Invalid value for interpolation type: {}", mode );
+            throw new RuntimeException( "Invalid value for interpolation type: " + mode );
+        }
+    }
+
+    /****************************
+     * The interpolation methods below are called from the initial functions. TODO: replace their calls to calls to
+     * interpolation methods that take indexes.
+     ****************************/
+
+    private final double interpolate( final double fst, final double snd, final double f ) {
         switch ( mode ) {
         case 1:
             return interpolateLinear( fst, snd, f );
         case 2:
             return interpolateCosine( fst, snd, f );
         case 3:
-            return interpolateCubic( fst, snd, f );
+            // Cubic interpolation needs 4 points. Since we only receive two, we cannot interpolate properly.
+            throw new RuntimeException( "Cubic interpolation is not available." );
+        default:
+            LOG.error( "Invalid value for interpolation type: {}", mode );
+            throw new RuntimeException( "Invalid value for interpolation type: " + mode );
         }
-        return 0.0;
+    }
+
+    private final Color interpolateColor( final Color fst, final Color snd, final double f ) {
+        switch ( mode ) {
+        case 1:
+            return interpolateColorLinear( fst, snd, f );
+        case 2:
+            return interpolateColorCosine( fst, snd, f );
+        case 3:
+            // Cubic interpolation needs 4 points. Since we only receive two, we cannot interpolate properly.
+            throw new RuntimeException( "Cubic interpolation is not available." );
+        default:
+            LOG.error( "Invalid value for interpolation type: {}", mode );
+            throw new RuntimeException( "Invalid value for interpolation type: " + mode );
+        }
     }
 
     @Override
@@ -215,7 +320,7 @@ public class Interpolate extends Function {
         double fac = ( val - cur ) / ( next - cur );
 
         if ( color ) {
-            Color fst = decode( sndString );
+            Color fst = decode( fstString );
             Color snd = decode( sndString );
             Color res = interpolateColor( fst, snd, fac );
             return new Object[] { "#" + toHexString( res.getRGB() ) };
@@ -357,15 +462,14 @@ public class Interpolate extends Function {
         buildLookupArrays();
 
         try {
-            Raster2RawData converter = new Raster2RawData( raster );
-            Float[][] mat = (Float[][]) converter.parse();
+            Raster2RawData rawData = new Raster2RawData( raster );
 
             img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_RGB );
             LOG.debug( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
             for ( row = 0; row < img.getHeight(); row++ )
                 for ( col = 0; col < img.getWidth(); col++ ) {
-                    Float val = mat[row][col];
-                    rgb = (val != null) ? lookupColor2( val ).getRGB() : 0;
+                    float val = rawData.get( col, row );
+                    rgb = lookup2( val ).getRGB();
                     img.setRGB( col, row, rgb );
                 }
         } catch ( Exception e ) {
@@ -386,13 +490,12 @@ public class Interpolate extends Function {
      *            value
      * @return the corresponding Color
      */
-    public Color lookupColor2( double value ) {
+    public Color lookup2( double value ) {
         int l = dataArray.length - 1;
         if ( value <= dataArray[0] || value >= dataArray[l] ) {
             if ( value <= dataArray[0] )
                 return colorArray[0];
             if ( value >= dataArray[l] ) {
-                // LOG.trace( "bigger!" );
                 return colorArray[l];
             }
         }
@@ -402,13 +505,13 @@ public class Interpolate extends Function {
             pos = pos * ( -1 ) - 1;
         }
 
-//        LOG.debug( "Found positions {} and {}", pos - 1, pos );
-//        LOG.debug( "Going to do division to {}", dataArray[pos] - dataArray[pos - 1] );
+        // LOG.debug( "Found positions {} and {}", pos - 1, pos );
+        // LOG.debug( "Going to do division to {}", dataArray[pos] - dataArray[pos - 1] );
         double f = ( value - dataArray[pos - 1] ) / ( dataArray[pos] - dataArray[pos - 1] );
-//        LOG.debug( "Interpolating between {} and {} ", dataArray[pos - 1], dataArray[pos] );
-//        LOG.debug( "Interpolating with fraction {} ", f );
-        Color color = interpolateColor( colorArray[pos - 1], colorArray[pos], f );
-//        LOG.debug( "Found color: {}", color );
+        // LOG.debug( "Interpolating between {} and {} ", dataArray[pos - 1], dataArray[pos] );
+        // LOG.debug( "Interpolating with fraction {} ", f );
+        Color color = interpolateColor( pos - 1, pos, f );
+        // LOG.debug( "Found color: {}", color );
         return color;
     }
 

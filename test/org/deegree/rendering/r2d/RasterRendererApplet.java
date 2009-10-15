@@ -96,7 +96,7 @@ public class RasterRendererApplet extends JApplet {
         // invertImageLookupTable();
         // applyCategorizeOnImage();
         // renderTextWithStyle();
-//         renderRasterWithStyle();
+//         renderRasterWithCategorize();
         renderRasterWithInterpolate();
         // testCategorize();
     }
@@ -274,7 +274,16 @@ public class RasterRendererApplet extends JApplet {
                 System.err.println( line );
             }
             LOG.info( strCat );
-        } catch ( IOException e ) {
+        } catch ( IOException e ) {//    private static final Color interpolateColorCubic( final Color fst, final Color snd, final double f ) {
+//          // TODO: fix computation
+//          final double f1m = 1 - f;
+//          int red = (int) ( fst.getRed() * f1m + snd.getRed() * f );
+//          int green = (int) ( fst.getGreen() * f1m + snd.getGreen() * f );
+//          int blue = (int) ( fst.getBlue() * f1m + snd.getBlue() * f );
+//          int alpha = (int) ( fst.getAlpha() * f1m + snd.getAlpha() * f );
+//          return new Color( red, green, blue, alpha );
+//      }
+
             e.printStackTrace();
         }
     }
@@ -303,7 +312,7 @@ public class RasterRendererApplet extends JApplet {
         Graphics2D g2d = (Graphics2D) this.getGraphics();
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
 
-        r.render( style, image );
+        r.render( style, car );
     }
 
     private void loadRasters() {

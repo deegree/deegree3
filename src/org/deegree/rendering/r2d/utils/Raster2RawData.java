@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class Raster2RawData implements Image2RawData {
+public class Raster2RawData {
 
     private final static Logger LOG = LoggerFactory.getLogger( Raster2RawData.class );
 
@@ -89,7 +89,6 @@ public class Raster2RawData implements Image2RawData {
      * 
      * @return the image pixels as a matrix of Floats
      */
-    @Override
     public Float[][] parse() {
 
         Float[][] values = null;
@@ -209,10 +208,10 @@ public class Raster2RawData implements Image2RawData {
                 Color c = new Color( pixel[0], pixel[1], pixel[2] );
                 return new Float( c.getRGB() );
             default:
-                return new Float(0);
+                return new Float( 0 );
             }
         } catch ( Exception e ) {
-            return new Float(0);
+            return new Float( 0 );
         }
     }
 
@@ -223,8 +222,8 @@ public class Raster2RawData implements Image2RawData {
      *            index
      * @return the appropriate value, as an Integer, or a Float object
      */
-    public Float get( int x, int y ) {
-        Float ret = null;
+    public float get( int x, int y ) {
+        float ret = (float) 0.0;
 
         switch ( data.getDataType() ) {
         case BYTE:
@@ -240,8 +239,8 @@ public class Raster2RawData implements Image2RawData {
             ret = combineFloats( data.getFloatPixel( x, y, null ) );
             break;
         default:
-            ret = null;
-            break;
+            LOG.error( "Cannot parse datatype '{}'", data.getDataType().toString() );
+            throw new UnsupportedOperationException( "Cannot parse datatype: " + data.getDataType() );
         }
 
         return ret;

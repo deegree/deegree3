@@ -146,14 +146,12 @@ public class Categorize extends Function {
 
         try {
             Raster2RawData converter = new Raster2RawData( raster );
-            Float[][] mat = (Float[][]) converter.parse();
 
             img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
             LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
-            LOG.trace( "Found data matrix with size {}-by-{}", mat.length, mat[0].length );
             for ( row = 0; row < img.getHeight(); row++ )
                 for ( col = 0; col < img.getWidth(); col++ ) {
-                    Color c = lookup2( mat[row][col] );
+                    Color c = lookup2( converter.get( col, row ) );
                     img.setRGB( col, row, c.getRGB() );
                 }
         } catch ( Exception e ) {

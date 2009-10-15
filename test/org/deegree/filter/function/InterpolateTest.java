@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r2d;
+package org.deegree.filter.function;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -61,9 +61,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * <code>Java2DRenderingTest</code>
+ * <code>InterpolateTest</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -77,7 +78,7 @@ public class InterpolateTest extends TestCase {
     @BeforeClass
     private void loadCategorizeFromXml()
                             throws URISyntaxException, XMLStreamException, FileNotFoundException {
-        URI uri = SymbologyParserTest.class.getResource( "setest16.xml" ).toURI();
+        URI uri = SymbologyParserTest.class.getResource( "setest18.xml" ).toURI();
         LOG.info( "Loading resource: {}", uri );
         File f = new File( uri );
         final XMLInputFactory fac = XMLInputFactory.newInstance();
@@ -98,17 +99,29 @@ public class InterpolateTest extends TestCase {
         loadCategorizeFromXml();
         interp.buildLookupArrays();
         LOG.info( "Interpolate: {}", interp );
-        test( -1 );
-        test( -0.5 );
+        test( -0.51 );
         test( 0 );
+        test( 0.49 );
         test( 0.5 );
-        test( 0.75 );
+        test( 0.51 );
         test( 1 );
         test( 2 );
+        test(7);
+        test(8);
+        test(9);
+        test(15);
+        test(16);
+        test(17);
+        test(31);
+        test(32);
+        test(33);
+        test(48);
+        test(48.3);
+        test(50);
     }
 
     private void test( double x ) {
-        LOG.debug( "Lookup({}): {}", x, interp.lookupColor2( x ).toString() );
+        LOG.debug( "Lookup({}): {}", x, interp.lookup2( x ).toString() );
         LOG.debug( "------------------" );
         // assertEquals( x1, x2 );
     }
