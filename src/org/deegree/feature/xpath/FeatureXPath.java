@@ -73,6 +73,20 @@ public class FeatureXPath extends BaseXPath {
      *             if there is a syntax error in the expression
      */
     public FeatureXPath( String xpathExpr ) throws JaxenException {
-        super( xpathExpr, FeatureNavigator.getInstance() );
+        super( xpathExpr, new FeatureNavigator( null ) );
+    }
+
+    /**
+     * Create a new <code>FeatureXPath</code> from an XPath expression string.
+     * 
+     * @param xpathExpr
+     *            the XPath expression
+     * @param rootFeature
+     *            root of the navigation hierarchy (document node)
+     * @throws JaxenException
+     *             if there is a syntax error in the expression
+     */
+    public FeatureXPath( String xpathExpr, Feature rootFeature ) throws JaxenException {
+        super( xpathExpr, new FeatureNavigator( rootFeature ) );
     }
 }

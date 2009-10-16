@@ -35,7 +35,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import org.deegree.feature.Feature;
 
 /**
  * TODO add documentation here
@@ -45,24 +44,24 @@ import org.deegree.feature.Feature;
  *
  * @version $Revision:$, $Date:$
  */
-public class FeatureNode extends ElementNode {
+class DocumentNode implements Node {
 
-    private Node parentNode;
+    private final FeatureNode rootNode;
 
-    private Feature feature;
+    DocumentNode (FeatureNode rootNode) {
+        this.rootNode = rootNode;
+    }
 
-    public FeatureNode (Node parentNode, Feature feature) {
-        super (feature.getName());
-        this.parentNode = parentNode;
-        this.feature = feature;
+    public boolean isElement() {
+        return false;
     }
 
     @Override
     public Node getParent() {
-        return parentNode;
+        return null;
     }
-
-    Feature getFeature () {
-        return feature;
+    
+    public FeatureNode getRootNode () {
+        return rootNode;
     }
 }

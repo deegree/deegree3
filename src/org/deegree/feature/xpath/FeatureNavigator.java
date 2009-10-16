@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,10 +32,9 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.xml.namespace.QName;
@@ -44,7 +43,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.jaxen.DefaultNavigator;
 import org.jaxen.JaxenConstants;
-import org.jaxen.Navigator;
 import org.jaxen.XPath;
 import org.jaxen.saxpath.SAXPathException;
 import org.jaxen.util.SingleObjectIterator;
@@ -53,37 +51,36 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class FeatureNavigator extends DefaultNavigator {
+class FeatureNavigator extends DefaultNavigator {
 
     private static final long serialVersionUID = 5684363154723828577L;
 
     private static final Logger LOG = LoggerFactory.getLogger( FeatureNavigator.class );
 
-    // Singleton implementation.
-    private static class Singleton {
-
-        // Singleton instance.
-        static FeatureNavigator instance = new FeatureNavigator();
-    }
+    private DocumentNode documentNode;
 
     /**
-     * Returns the single <code>FeatureNavigator</code> instance.
-     *
-     * @return the single <code>FeatureNavigator</code> instance
+     * Creates a new {@link FeatureNavigator} instance with a {@link Feature} that is the root of the navigation
+     * hierarchy.
+     * 
+     * @param rootFeature
+     *            root of the navigation hierarchy (document node), can be null
      */
-    public static Navigator getInstance() {
-        return Singleton.instance;
+    FeatureNavigator( Feature rootFeature ) {
+        if ( rootFeature != null ) {
+            this.documentNode = new DocumentNode( new FeatureNode( null, rootFeature ) );
+        }
     }
 
     /**
      * Returns an iterator over all attributes of an element node.
-     *
+     * 
      * @param node
      *            the context node for the attribute axis
      * @return a possibly-empty iterator (not null)
@@ -105,7 +102,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the local name of an attribute node.
-     *
+     * 
      * @param node
      *            the attribute node
      * @return a string representing the unqualified local name if the node is an attribute, or null otherwise
@@ -122,7 +119,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the namespace URI of an attribute node.
-     *
+     * 
      * @param node
      *            the attribute node
      * @return the namespace if the argument is an attribute, or null otherwise
@@ -139,7 +136,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the qualified (=prefixed) name of an attribute node.
-     *
+     * 
      * @param node
      *            the attribute node
      * @return a string representing the qualified (i.e. possibly prefixed) name if the argument is an attribute, or
@@ -157,7 +154,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the string value of an attribute node.
-     *
+     * 
      * @param node
      *            the attribute node
      * @return the text of the attribute value if the node is an attribute, null otherwise
@@ -173,7 +170,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns an iterator over all children of the given node.
-     *
+     * 
      * @param node
      *            the context node for the child axis
      * @return a possibly-empty iterator (not null)
@@ -183,16 +180,17 @@ public class FeatureNavigator extends DefaultNavigator {
     public Iterator<?> getChildAxisIterator( Object node ) {
         Iterator<?> iter = JaxenConstants.EMPTY_ITERATOR;
         if ( node instanceof FeatureNode ) {
-            Feature feature = ( (FeatureNode) node ).getFeature();
-            iter = new PropertyNodeIterator ((FeatureNode) node);
+            iter = new PropertyNodeIterator( (FeatureNode) node );
+        } else if ( node instanceof DocumentNode ) {
+            iter = new SingleObjectIterator( ( (DocumentNode) node ).getRootNode() );
         } else if ( node instanceof PropertyNode ) {
             Property prop = ( (PropertyNode) node ).getProperty();
             Object propValue = prop.getValue();
-            if (propValue instanceof Feature) {
-                iter = new SingleObjectIterator(new FeatureNode ((PropertyNode) node, (Feature) propValue));
+            if ( propValue instanceof Feature ) {
+                iter = new SingleObjectIterator( new FeatureNode( (PropertyNode) node, (Feature) propValue ) );
             }
-            if (propValue instanceof String) {
-                iter = new SingleObjectIterator(new TextNode ((PropertyNode) node, (String) propValue));
+            if ( propValue instanceof String ) {
+                iter = new SingleObjectIterator( new TextNode( (PropertyNode) node, (String) propValue ) );
             }
         }
         return iter;
@@ -207,20 +205,23 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the top-level document node.
-     *
+     * 
      * @param contextNode
      *            any node in the document
      * @return the root node
      */
     @Override
     public Object getDocumentNode( Object contextNode ) {
-        String msg = "getDocumentNode(Object) called with argument (" + contextNode + "), but method not implemented";
-        throw new UnsupportedOperationException( msg );
+        if ( documentNode == null ) {
+            String msg = "getDocumentNode(Object) not possible, no document node provided";
+            throw new UnsupportedOperationException( msg );
+        }
+        return documentNode;
     }
 
     /**
      * Returns the local name of an element node.
-     *
+     * 
      * @param node
      *            the element node
      * @return a string representing the unqualified local name if the node is an element, or null otherwise
@@ -237,7 +238,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the namespace URI of an element node.
-     *
+     * 
      * @param node
      *            the element node
      * @return the namespace if the argument is an element, or null otherwise
@@ -254,7 +255,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the qualified (=prefixed) name of an element node.
-     *
+     * 
      * @param node
      *            the element node
      * @return a string representing the qualified (i.e. possibly prefixed) name if the argument is an element, or null
@@ -272,7 +273,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the string value of an element node.
-     *
+     * 
      * @param node
      *            the target node
      * @return the text inside the node and its descendants if the node is an element, null otherwise
@@ -307,7 +308,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns a (single-member) iterator over this node's parent.
-     *
+     * 
      * @param contextNode
      *            the context node for the parent axis
      * @return a possibly-empty iterator (not null)
@@ -367,7 +368,7 @@ public class FeatureNavigator extends DefaultNavigator {
     /**
      * Returns a parsed form of the given XPath string, which will be suitable for queries on <code>Feature</code>
      * objects.
-     *
+     * 
      * @param xpath
      *            the XPath expression
      * @return a parsed form of the given XPath string
@@ -382,7 +383,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Translates a namespace prefix to a URI.
-     *
+     * 
      * @param prefix
      *            the namespace prefix
      * @param element

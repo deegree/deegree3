@@ -61,6 +61,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
+import org.deegree.protocol.wfs.WFSConstants;
 
 /**
  * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
@@ -147,8 +148,15 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             maxFeatures = Integer.parseInt( maxFeaturesStr );
         }
 
-        List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "wfs:Query", nsContext ) );
-
+        List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
+        // check if all child elements are 'wfs:Query' elements (required for CITE)
+        for ( OMElement omElement : queryElements ) {
+            if ( !new QName( WFSConstants.WFS_NS, "Query" ).equals( omElement.getQName() ) ) {
+                String msg = "Child element '" + omElement.getQName() + "' is not allowed.";
+                throw new XMLParsingException( this, omElement, msg );
+            }
+        }
+        
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
@@ -241,7 +249,14 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             traverseXlinkExpiry = Integer.parseInt( traverseXlinkExpiryStr );
         }
 
-        List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "wfs:Query", nsContext ) );
+        List<OMElement> queryElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
+        // check if all child elements are 'wfs:Query' elements (required for CITE)
+        for ( OMElement omElement : queryElements ) {
+            if ( !new QName( WFSConstants.WFS_NS, "Query" ).equals( omElement.getQName() ) ) {
+                String msg = "Child element '" + omElement.getQName() + "' is not allowed.";
+                throw new XMLParsingException( this, omElement, msg );
+            }
+        }        
 
         List<Query> queries = new ArrayList<Query>();
 

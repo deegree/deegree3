@@ -1440,7 +1440,10 @@ public class GML311GeometryEncoder {
 
     private double[] getTransformedCoordinate( CRS inputCRS, double[] inputCoordinate )
                             throws TransformationException, UnknownCRSException {
-        if ( inputCRS != null && !inputCRS.equals( outputCRS ) && transformer != null ) {            
+        if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS )) {
+            if (transformer == null) {
+                throw new UnknownCRSException( outputCRS.getName() ); 
+            }
             double[] out = transformer.transform( inputCRS.getWrappedCRS(), inputCoordinate, transformedOrdinates );
             return out; 
         }

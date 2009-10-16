@@ -71,7 +71,7 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
      *            bindings to copy
      */
     public NamespaceContext( NamespaceContext nsContext ) {
-        namespaceMap = new HashMap<String, String>( nsContext.namespaceMap );
+        namespaceMap = new HashMap<String, String>( nsContext.namespaceMap );        
     }
 
     /**
@@ -97,6 +97,9 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
 
     public String translateNamespacePrefixToUri( String prefix ) {
         // TODO remove this hack
+        if (prefix == "") {
+            return null;
+        }
         if ( javaNsc != null ) {
             return javaNsc.getNamespaceURI( prefix );
         }
@@ -109,6 +112,9 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
      * @return namespcae URI assigned to a prefix
      */
     public String getURI( String prefix ) {
+        if (prefix == "") {
+            return null;
+        }        
         return namespaceMap.get( prefix );
     }
 
