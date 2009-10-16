@@ -133,3 +133,34 @@ Used for: generation of small parsers
 Origin of files: CUP distribution or files included in Debian 5.0.1: http://www2.cs.tum.edu/projects/cup/java_cup_v10k.tar.gz
 Licence: Custom license
 Responsible: aschmitz
+
+=== derby ===
+
+Files: derby-10.4.2.0.jar
+URL: derby-10.4.2.0.jar
+Version: 10.4.2
+Description: Open source relational database implemented entirely in Java 
+Used for: CRS database, feature locking database
+Origin of files: http://db.apache.org/derby/releases/release-10.4.2.0.html
+Licence: The Apache Software License, Version 2.0
+Responsible: mschneider
+
+=== jogl/jogl-1.1.2-pre-20080523.jar ===
+Files: jogl-1.1.2-pre-20080523.jar
+URL: https://jogl.dev.java.net/#NIGHTLY
+Version: 1.1.2
+Description: Used for the rendering of opengl code in java   
+Used for: org.deegree.services.wpvs
+Responsible: bezema
+License: BSD licence 
+Origin of files: https://jogl.dev.java.net/#NIGHTLY
+
+=== jogl/gluegen-rt-1.1.2-pre-20080523.jar ===
+Files: jgluegen-rt-1.1.2-pre-20080523.jar
+URL: https://jogl.dev.java.net/#NIGHTLY
+Version: 1.1.2
+Description: Used for the rendering of opengl code in java   
+Used for: org.deegree.services.wpvs
+Responsible: bezema
+License: BSD licence 
+Origin of files: https://jogl.dev.java.net/#NIGHTLY
