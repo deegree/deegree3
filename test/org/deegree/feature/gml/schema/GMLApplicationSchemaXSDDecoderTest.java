@@ -40,6 +40,7 @@ import javax.xml.namespace.QName;
 import junit.framework.Assert;
 
 import org.deegree.commons.gml.GMLVersion;
+import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.junit.Test;
 
@@ -76,8 +77,12 @@ public class GMLApplicationSchemaXSDDecoderTest {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
-        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        FeatureType[] fts = schema.getFeatureTypes();        
         Assert.assertEquals( 54, fts.length );
+        FeatureType cityModelFt = schema.getFeatureType( new QName ("http://www.opengis.net/citygml/1.0", "CityModel" ));
+        System.out.println (cityModelFt.getClass());        
+        System.out.println (cityModelFt);
 
         // TODO do more thorough testing
     }

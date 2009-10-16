@@ -65,7 +65,7 @@ public abstract class AbstractFeature implements Feature {
     public Object[] getPropertyValues( PropertyName propName )
                             throws JaxenException {
 
-        XPath xpath = new FeatureXPath( propName.getPropertyName() );
+        XPath xpath = new FeatureXPath( propName.getPropertyName(), this );
         xpath.setNamespaceContext( propName.getNsContext() );
         List<?> selectedNodes = xpath.selectNodes( new FeatureNode( null, this ) );
 

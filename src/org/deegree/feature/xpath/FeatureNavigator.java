@@ -41,6 +41,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
+import org.deegree.feature.gml.FeatureReference;
 import org.jaxen.DefaultNavigator;
 import org.jaxen.JaxenConstants;
 import org.jaxen.XPath;
@@ -187,7 +188,10 @@ class FeatureNavigator extends DefaultNavigator {
             Property prop = ( (PropertyNode) node ).getProperty();
             Object propValue = prop.getValue();
             if ( propValue instanceof Feature ) {
-                iter = new SingleObjectIterator( new FeatureNode( (PropertyNode) node, (Feature) propValue ) );
+                // TODO clear strategy for feature references (remote + local)
+                if ( !( propValue instanceof FeatureReference ) || ( (FeatureReference) propValue ).isLocal() ) {
+                    iter = new SingleObjectIterator( new FeatureNode( (PropertyNode) node, (Feature) propValue ) );
+                }
             }
             if ( propValue instanceof String ) {
                 iter = new SingleObjectIterator( new TextNode( (PropertyNode) node, (String) propValue ) );

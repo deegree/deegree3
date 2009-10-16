@@ -62,6 +62,8 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.feature.generic.GenericCustomPropertyParser;
+import org.deegree.feature.generic.GenericCustomPropertyValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
@@ -657,9 +659,20 @@ public class Filter110XMLDecoder {
         return comparisonOperator;
     }
 
-    private static Literal parseLiteral( XMLStreamReader xmlStream )
+    private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        return new Literal( xmlStream.getElementText() );
+        // TODO outfactor generic XML representation and parser to commons
+        GenericCustomPropertyParser literalParser = new GenericCustomPropertyParser();
+        GenericCustomPropertyValue value = literalParser.parse( new XMLStreamReaderWrapper( xmlStream, null ) );
+
+        List<GenericCustomPropertyValue> childNodes = value.getChildNodes();
+        if ( childNodes.size() == 0 ) {
+            List<String> textNodes = value.getTextNodes();
+            if ( textNodes.size() >= 1 ) {
+                return new Literal<String>( textNodes.get( 0 ) );
+            }
+        }
+        return new Literal<GenericCustomPropertyValue>( value );
     }
 
     private static PropertyName parsePropertyName( XMLStreamReader xmlStream )

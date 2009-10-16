@@ -62,7 +62,7 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 
 /**
- * Adapter for converting the contents of a deegree application schema declaration document as an
+ * Adapter for converting the contents of a deegree application schema declaration document to an
  * {@link ApplicationSchema}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

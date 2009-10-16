@@ -332,7 +332,9 @@ public class ApplicationSchemaXSDDecoder {
         PropertyType pt = null;
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.debug( "*** Found property declaration: '" + elementDecl.getName() + "'." );
-        if ( GMLNS.equals( elementDecl.getNamespace() ) ) {
+        // HACK HACK HACK
+        if ( GMLNS.equals( elementDecl.getNamespace() )
+             && !( "featureMember".equals( elementDecl.getName() ) || "featureMembers".equals( elementDecl.getName() ) ) ) {
             LOG.debug( "Omitting from feature type -- GML standard property." );
         } else {
             XSTypeDefinition typeDef = elementDecl.getTypeDefinition();

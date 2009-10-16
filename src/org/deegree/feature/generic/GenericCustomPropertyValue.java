@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.feature.generic;
 
@@ -45,10 +45,10 @@ import javax.xml.namespace.QName;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class GenericCustomPropertyValue {
@@ -87,7 +87,7 @@ public class GenericCustomPropertyValue {
     }
 
     /**
-     *
+     * 
      * @param qName
      *            to match
      * @return the direct childnodes of this {@link GenericCustomPropertyValue}, which are
@@ -101,6 +101,23 @@ public class GenericCustomPropertyValue {
                     if ( qName.equals( ( (GenericCustomPropertyValue) o ).name ) ) {
                         result.add( (GenericCustomPropertyValue) o );
                     }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 
+     * @return the direct childnodes of this {@link GenericCustomPropertyValue}, which are
+     *         {@link GenericCustomPropertyValue} as well.
+     */
+    public List<GenericCustomPropertyValue> getChildNodes() {
+        List<GenericCustomPropertyValue> result = new ArrayList<GenericCustomPropertyValue>();
+        for ( Object o : childNodes ) {
+            if ( o != null ) {
+                if ( o instanceof GenericCustomPropertyValue ) {
+                    result.add( (GenericCustomPropertyValue) o );
                 }
             }
         }

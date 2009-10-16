@@ -156,8 +156,8 @@ public class Filter110XMLEncoder {
 
     private static void addElementToComparisonOperatorMapping( QName elementName, ComparisonOperator.SubType type ) {
         comparisonOperatorTypeToElementName.put( type, elementName );
-    }    
-    
+    }
+
     /**
      * Serializes the given {@link Filter} object to XML.
      * 
@@ -366,7 +366,8 @@ public class Filter110XMLEncoder {
             writer.writeCharacters( ( (PropertyName) expression ).getPropertyName() );
             break;
         case LITERAL:
-            writer.writeCharacters( ( (Literal) expression ).getValue() );
+            // TODO handle complex literals
+            writer.writeCharacters( ( (Literal<?>) expression ).getValue().toString() );
             break;
         case FUNCTION:
             Function function = (Function) expression;

@@ -35,26 +35,40 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
+import org.deegree.feature.generic.GenericCustomPropertyValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.MatchableObject;
 
 /**
- * TODO add documentation here
+ * {@link Expression} that has a constant value.
  * 
+ * @param <T>
+ *            besides primitive types, this may also be {@link GenericCustomPropertyValue}
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class Literal implements Expression {
+public class Literal<T> implements Expression {
 
-    private String value;
+    private T value;
 
-    public Literal( String value ) {
+    /**
+     * Creates a new {@link Literal} instance.
+     * 
+     * @param value
+     *            value of the literal
+     */
+    public Literal( T value ) {
         this.value = value;
     }
 
-    public String getValue() {
+    /**
+     * Returns the literal's value.
+     * 
+     * @return the literal's value
+     */
+    public T getValue() {
         return value;
     }
 

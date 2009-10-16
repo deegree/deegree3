@@ -53,7 +53,7 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.gml.MemoryFeatureStore;
+import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.junit.Before;

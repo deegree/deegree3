@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.persistence.gml;
+package org.deegree.feature.persistence.memory;
 
 import java.io.IOException;
 import java.net.URL;

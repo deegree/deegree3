@@ -110,7 +110,8 @@ public class PropertyIsLike extends ComparisonOperator {
         Object[] paramValues = propName.evaluate( object );
         for ( Object value : paramValues ) {
             Comparable<Object> parameter1Value = checkComparableOrNull( value );
-            if ( matches( literal.getValue(), parameter1Value.toString() ) ) {
+            // TODO handle complex literals
+            if ( matches( literal.getValue().toString(), parameter1Value.toString() ) ) {
                 return true;
             }
         }

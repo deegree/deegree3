@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.persistence.gml;
+package org.deegree.feature.persistence.memory;
 
 import static org.deegree.feature.i18n.Messages.getMessage;
 

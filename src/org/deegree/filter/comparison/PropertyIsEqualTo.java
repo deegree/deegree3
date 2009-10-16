@@ -65,13 +65,11 @@ public class PropertyIsEqualTo extends BinaryComparisonOperator {
         Object[] param1Values = param1.evaluate( object );
         Object[] param2Values = param2.evaluate( object );
         for ( Object value1 : param1Values ) {
-            Comparable<Object> parameter1Value = checkComparableOrNull( value1 );
             for ( Object value2 : param2Values ) {
-                Comparable<Object> parameter2Value = checkComparableOrNull( value2 );
-                if ( parameter1Value == null && parameter2Value == null ) {
+                if ( value1 == null && value2 == null ) {
                     return true;
                 }
-                if ( parameter1Value != null && parameter1Value.equals( parameter2Value ) ) {
+                if ( value1 != null && value1.equals( value2 ) ) {
                     return true;
                 }
             }
