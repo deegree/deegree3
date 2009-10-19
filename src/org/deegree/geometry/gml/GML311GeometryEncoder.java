@@ -237,28 +237,20 @@ public class GML311GeometryEncoder {
             MultiCurve multiCurve = (MultiCurve) geometry;
 
             startGeometry( "MultiCurve", geometry );
-            if ( exportSF ) {
-                for ( Curve curve : multiCurve ) {
-                    writer.writeStartElement( "gml", "curveMember", GMLNS );
-                    if ( curve instanceof CompositeCurve ) {
-                        exportCompositeCurve( (CompositeCurve) curve );
-                    } else {
-                        exportCurve( curve );
-                    }
-                    writer.writeEndElement();
-                }
-            } else {
-                writer.writeStartElement( "gml", "curveMembers", GMLNS );
-                for ( Curve curve : multiCurve ) {
-                    if ( curve instanceof CompositeCurve ) {
-                        exportCompositeCurve( (CompositeCurve) curve );
-                    } else {
-                        exportCurve( curve );
-                    }
+
+            for ( Curve curve : multiCurve ) {
+                writer.writeStartElement( "gml", "curveMember", GMLNS );
+                if ( exportedIds.contains( curve.getId() ) ) {
+                    writer.writeAttribute( XLNNS, "href", "#" + curve.getId() );
+                } else if ( curve instanceof CompositeCurve ) {
+                    exportCompositeCurve( (CompositeCurve) curve );
+                } else {
+                    exportCurve( curve );
                 }
                 writer.writeEndElement();
             }
-            writer.writeEndElement();
+
+            writer.writeEndElement(); // MultiCurve
             return;
         }
 
@@ -269,10 +261,14 @@ public class GML311GeometryEncoder {
 
             for ( LineString ls : multiLineString ) {
                 writer.writeStartElement( GMLNS, "lineStringMember" );
-                exportCurve( ls );
+                if ( exportedIds.contains( ls.getId() ) ) {
+                    writer.writeAttribute( XLNNS, "href", "#" + ls.getId() );
+                } else {
+                    exportCurve( ls );
+                }
                 writer.writeEndElement();
             }
-            writer.writeEndElement();
+            writer.writeEndElement(); // MultiLineString
             return;
         }
 
@@ -290,7 +286,8 @@ public class GML311GeometryEncoder {
                 }
                 writer.writeEndElement();
             }
-            writer.writeEndElement();
+
+            writer.writeEndElement(); // MultiPoint
             return;
         }
 
@@ -302,8 +299,12 @@ public class GML311GeometryEncoder {
 
             for ( Polygon pol : multiPolygon ) {
                 writer.writeStartElement( GMLNS, "polygonMember" );
+                if ( exportedIds.contains( pol.getId() ) ) {
+                    writer.writeAttribute( XLNNS, "href", "#" + pol.getId() );
+                }
                 exportSurface( pol );
-                writer.writeEndElement();
+
+                writer.writeEndElement(); // polygonMember
             }
             writer.writeEndElement();
             return;
@@ -314,15 +315,18 @@ public class GML311GeometryEncoder {
 
             startGeometry( "MultiSolid", geometry );
 
-            writer.writeStartElement( GMLNS, "solidMembers" );
             for ( Solid solid : multiSolid ) {
-                if ( solid instanceof CompositeSolid ) {
+                writer.writeStartElement( GMLNS, "solidMember" );
+                if ( exportedIds.contains( solid.getId() ) ) {
+                    writer.writeAttribute( XLNNS, "href", "#" + solid.getId() );
+                } else if ( solid instanceof CompositeSolid ) {
                     exportCompositeSolid( (CompositeSolid) solid );
                 } else {
                     exportSolid( solid );
                 }
+                writer.writeEndElement(); // solidMember
             }
-            writer.writeEndElement();
+
             writer.writeEndElement();
             return;
         }
@@ -332,15 +336,18 @@ public class GML311GeometryEncoder {
 
             startGeometry( "MultiSurface", geometry );
 
-            writer.writeStartElement( GMLNS, "surfaceMembers" );
             for ( Surface surface : multiSurface ) {
-                if ( surface instanceof CompositeSurface ) {
+                writer.writeStartElement( GMLNS, "surfaceMember" );
+                if ( exportedIds.contains( surface.getId() ) ) {
+                    writer.writeAttribute( XLNNS, "href", "#" + surface.getId() );
+                } else if ( surface instanceof CompositeSurface ) {
                     exportCompositeSurface( (CompositeSurface) surface );
                 } else {
                     exportSurface( surface );
                 }
+
+                writer.writeEndElement(); // surfaceMember
             }
-            writer.writeEndElement();
             writer.writeEndElement();
             return;
         }
@@ -348,11 +355,16 @@ public class GML311GeometryEncoder {
         // it is the case that we export a general MultiGeometry
         startGeometry( "MultiGeometry", geometry );
 
-        writer.writeStartElement( GMLNS, "geometryMembers" );
         for ( Geometry geometryMember : geometry ) {
+            writer.writeStartElement( GMLNS, "geometryMember" );
+            if ( exportedIds.contains( geometryMember.getId() ) ) {
+                writer.writeAttribute( XLNNS, "href", "#" + geometryMember.getId() );
+            }
             export( geometryMember );
+
+            writer.writeEndElement(); // geometryMember
         }
-        writer.writeEndElement();
+
         writer.writeEndElement();
 
     }
@@ -419,7 +431,6 @@ public class GML311GeometryEncoder {
             LineString lineString = (LineString) curve;
 
             startGeometry( "LineString", lineString );
-
             int dim = lineString.getCoordinateDimension();
             export( lineString.getControlPoints(), dim );
             writer.writeEndElement();
