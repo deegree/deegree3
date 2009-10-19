@@ -78,10 +78,6 @@ public class ParserTest extends TestCase {
         p = new parser( new DimensionLexer( new StringReader( "a/b/c,b/c/a,c/b/a" ) ) );
         assertEquals( "[a/b/c, b/c/a, c/b/a]", p.parse().value.toString() );
 
-        p = new parser( new DimensionLexer( new StringReader( "/" ) ) );
-        assertEquals( "No value, list, interval or interval list was found.",
-                      ( (Exception) p.parse().value ).getMessage() );
-
         p = new parser( new DimensionLexer( new StringReader( "1,2," ) ) );
         assertEquals( "Expected another value after '2,'.", ( (Exception) p.parse().value ).getMessage() );
 
@@ -89,13 +85,13 @@ public class ParserTest extends TestCase {
         assertEquals( "Expected another interval after '2/54/gf,'.", ( (Exception) p.parse().value ).getMessage() );
 
         p = new parser( new DimensionLexer( new StringReader( "1/3, single" ) ) );
-        assertEquals( "Missing '/' after single.", ( (Exception) p.parse().value ).getMessage() );
+        assertEquals( "[1/3/0, single]", p.parse().value.toString() );
 
         p = new parser( new DimensionLexer( new StringReader( "1/3, single/" ) ) );
         assertEquals( "Missing max value for interval.", ( (Exception) p.parse().value ).getMessage() );
 
         p = new parser( new DimensionLexer( new StringReader( "single, pseudointerval/" ) ) );
-        assertEquals( "Expected another value after 'single,'.", ( (Exception) p.parse().value ).getMessage() );
+        assertEquals( "Missing max value for interval.", ( (Exception) p.parse().value ).getMessage() );
 
         p = new parser( new DimensionLexer( new StringReader( "one/two, three/four/, " ) ) );
         assertEquals( "Expected another interval after 'three/four/0,'.", ( (Exception) p.parse().value ).getMessage() );
