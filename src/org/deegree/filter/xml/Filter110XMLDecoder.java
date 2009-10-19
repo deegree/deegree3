@@ -624,15 +624,13 @@ public class Filter110XMLDecoder {
 
         BinaryComparisonOperator comparisonOperator = null;
 
-        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", false );
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
 
         StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter1 = parseExpression( xmlStream );
         StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter2 = parseExpression( xmlStream );
-        System.out.println( xmlStream.getName() );
         StAXParsingHelper.requireNextTag( xmlStream, END_ELEMENT );
-        System.out.println( xmlStream.getName() );
 
         switch ( type ) {
         case PROPERTY_IS_EQUAL_TO:

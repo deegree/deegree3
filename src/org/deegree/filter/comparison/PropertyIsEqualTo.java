@@ -70,15 +70,17 @@ public class PropertyIsEqualTo extends BinaryComparisonOperator {
                     return true;
                 }
                 if ( value1 != null ) {
-                    if ( !matchCase )
+                    if ( !matchCase ) {
                         if ( value1.toString().equalsIgnoreCase( value2.toString() ) ) {
                             return true;
                         }
-                } else if ( value1.equals( value2 ) ) {
-                    return true;
+                    } else if ( value1.equals( value2 ) ) {
+                        return true;
+                    }
                 }
             }
         }
+
         return false;
     }
 
