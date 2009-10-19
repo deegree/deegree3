@@ -60,7 +60,7 @@ import org.deegree.crs.CRS;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.i18n.Messages;
@@ -119,9 +119,34 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return result;
     }
 
+    /**
+     * @param kvpParams
+     * @return
+     * @throws Exception
+     */
+    public GetFeature parseParams( Map<String, String> kvpParams )
+                            throws Exception {
+
+        Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
+
+        GetFeature result = null;
+        if ( VERSION_100.equals( version ) ) {
+            result = parse100( kvpParams );
+        } else if ( VERSION_110.equals( version ) ) {
+            result = parse110( kvpParams );
+            // } else if ( VERSION_200.equals( version ) ) {
+            // result = parse200( kvpParams );
+        } else {
+            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
+            throw new InvalidParameterValueException( msg );
+        }
+        return result;
+    }
+
     private static GetFeature parse100( Map<String, String> kvpParams )
                             throws Exception {
         // optional: MAXFEATURES
+        @SuppressWarnings("boxing")
         Integer maxFeatures = null;
         String maxFeatureStr = kvpParams.get( "MAXFEATURES" );
         if ( maxFeatureStr != null ) {
@@ -210,7 +235,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                                                                                        adapter.getSystemId() );
                     try {
                         streamWrapper.nextTag();
-                        filter = Filter110XMLDecoder.parse( streamWrapper );
+                        Filter100XMLDecoder filterDecoder = new Filter100XMLDecoder();
+                        filter = filterDecoder.parse( streamWrapper );
                     } catch ( XMLParsingException e ) {
                         e.printStackTrace();
                         // TODO raise exception
@@ -387,7 +413,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                                                                                        adapter.getSystemId() );
                     try {
                         streamWrapper.nextTag();
-                        filter = Filter110XMLDecoder.parse( streamWrapper );
+                        Filter100XMLDecoder filterDecoder = new Filter100XMLDecoder();
+                        filter = filterDecoder.parse( streamWrapper );
                     } catch ( XMLParsingException e ) {
                         e.printStackTrace();
                         // TODO raise exception

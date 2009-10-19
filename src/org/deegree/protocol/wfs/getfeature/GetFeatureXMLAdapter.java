@@ -59,6 +59,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -156,7 +157,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 throw new XMLParsingException( this, omElement, msg );
             }
         }
-        
+
         List<Query> queries = new ArrayList<Query>();
 
         for ( OMElement queryEl : queryElements ) {
@@ -181,8 +182,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                     // skip START_DOCUMENT
                     xmlStream.nextTag();
 
-                    // TODO Filter v1.1.0 is basically a superset of v1.0.0; but nevertheless CHECK it!
-                    filter = Filter110XMLDecoder.parse( xmlStream );
+                    Filter100XMLDecoder filterDecoder = new Filter100XMLDecoder();
+                    filter = filterDecoder.parse( xmlStream );
                 } catch ( XMLStreamException e ) {
                     e.printStackTrace();
                     throw new XMLParsingException( this, filterEl, e.getMessage() );
@@ -256,7 +257,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 String msg = "Child element '" + omElement.getQName() + "' is not allowed.";
                 throw new XMLParsingException( this, omElement, msg );
             }
-        }        
+        }
 
         List<Query> queries = new ArrayList<Query>();
 
@@ -317,7 +318,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                             null );
                     // skip START_DOCUMENT
                     xmlStream.nextTag();
-                    filter = Filter110XMLDecoder.parse( xmlStream );
+                    Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
+                    filter = filterDecoder.parse( xmlStream );
                 } catch ( XMLStreamException e ) {
                     e.printStackTrace();
                     throw new XMLParsingException( this, filterEl, e.getMessage() );

@@ -56,7 +56,6 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.persistence.IDGenMode;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -160,7 +159,7 @@ public class TransactionXMLAdapter {
         } else if ( "Native".equals( localName ) ) {
             operation = parseNative110( xmlStream );
         } else if ( "Update".equals( localName ) ) {
-            operation = parseUpdate110( xmlStream );       
+            operation = parseUpdate110( xmlStream );
         }
         return operation;
     }
@@ -188,7 +187,8 @@ public class TransactionXMLAdapter {
         // required: 'ogc:Filter'
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
-        Filter filter = Filter110XMLDecoder.parse( xmlStream );
+        Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
+        Filter filter = filterDecoder.parse( xmlStream );
         xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
         return new Delete( handle, ftName, filter );
     }

@@ -50,7 +50,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.types.ows.Version;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.WFSConstants;
@@ -202,12 +201,13 @@ public class Update extends TransactionOperation {
         Filter filter = null;
         if ( xmlStream.isStartElement() ) {
             xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
-            filter = Filter110XMLDecoder.parse( xmlStream );
+            Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
+            filter = filterDecoder.parse( xmlStream );
             xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
             // contract: skip to wfs:Update END_ELEMENT
             xmlStream.nextTag();
             // contract: skip to next operation START_ELEMENT
-            xmlStream.nextTag();            
+            xmlStream.nextTag();
         }
         return filter;
     }

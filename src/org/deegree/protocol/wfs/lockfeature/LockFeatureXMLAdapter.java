@@ -155,7 +155,8 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 // skip START_DOCUMENT
                 xmlStream.nextTag();
                 // TODO use filter 1.0.0 parser
-                filter = Filter110XMLDecoder.parse( xmlStream );
+                Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
+                filter = filterDecoder.parse( xmlStream );
             } catch ( XMLStreamException e ) {
                 e.printStackTrace();
                 throw new XMLParsingException( this, filterEl, e.getMessage() );
@@ -213,7 +214,8 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                         null );
                 // skip START_DOCUMENT
                 xmlStream.nextTag();
-                filter = Filter110XMLDecoder.parse( xmlStream );
+                Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
+                filter = filterDecoder.parse( xmlStream );
             } catch ( XMLStreamException e ) {
                 e.printStackTrace();
                 throw new XMLParsingException( this, filterEl, e.getMessage() );
