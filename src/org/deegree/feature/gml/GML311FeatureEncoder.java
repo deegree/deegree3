@@ -115,7 +115,7 @@ public class GML311FeatureEncoder {
      */
     public GML311FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, false, exportedIds );
     }
 
     /**
@@ -131,9 +131,10 @@ public class GML311FeatureEncoder {
      *            properties to be exported, may be <code>null</code>
      * @param traverseXlinkDepth
      * @param traverseXlinkExpiry
+     * @param exportSfGeometries 
      */
     public GML311FeatureEncoder( XMLStreamWriter writer, CRS outputCRS, String referenceTemplate, PropertyName[] requestedProps,
-                                 int traverseXlinkDepth, int traverseXlinkExpiry ) {
+                                 int traverseXlinkDepth, int traverseXlinkExpiry, boolean exportSfGeometries ) {
         this.writer = writer;
         this.referenceTemplate = referenceTemplate;
         if ( requestedProps != null ) {
@@ -143,7 +144,7 @@ public class GML311FeatureEncoder {
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
-        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportSfGeometries, exportedIds );
     }
 
     public void export( Feature feature )

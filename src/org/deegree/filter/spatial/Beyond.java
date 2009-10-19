@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
 import org.deegree.commons.uom.Measure;
@@ -43,23 +43,23 @@ import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Beyond extends SpatialOperator {
 
     private final PropertyName param1;
-    
-    private final Geometry param2;
-    
+
+    private final Geometry literal;
+
     private final Measure distance;
-    
+
     public Beyond( PropertyName param1, Geometry param2, Measure distance ) {
         this.param1 = param1;
-        this.param2 = param2;
+        this.literal = param2;
         this.distance = distance;
     }
 
@@ -67,8 +67,10 @@ public class Beyond extends SpatialOperator {
                             throws FilterEvaluationException {
         for ( Object param1Value : param1.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( param1Value );
-            if ( param1Value != null && geom.isBeyond( param2, distance )) {
-                return true;
+            if ( geom != null ) {
+                Geometry transformedLiteral = getCompatibleGeometry( geom, literal );
+                // TODO what about the units of the distance when transforming?
+                return geom.isBeyond( transformedLiteral, distance );
             }
         }
         return false;

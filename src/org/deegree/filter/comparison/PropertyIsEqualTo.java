@@ -69,7 +69,12 @@ public class PropertyIsEqualTo extends BinaryComparisonOperator {
                 if ( value1 == null && value2 == null ) {
                     return true;
                 }
-                if ( value1 != null && value1.equals( value2 ) ) {
+                if ( value1 != null ) {
+                    if ( !matchCase )
+                        if ( value1.toString().equalsIgnoreCase( value2.toString() ) ) {
+                            return true;
+                        }
+                } else if ( value1.equals( value2 ) ) {
                     return true;
                 }
             }

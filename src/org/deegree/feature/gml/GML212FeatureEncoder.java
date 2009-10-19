@@ -99,7 +99,7 @@ public class GML212FeatureEncoder {
      */
     public GML212FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, true, exportedIds );
     }
 
     // public void export( FeatureCollection featureCol ) throws XMLStreamException {
@@ -145,8 +145,8 @@ public class GML212FeatureEncoder {
      * @param schemaLocation
      *            may be null
      * @throws XMLStreamException
-     * @throws TransformationException 
-     * @throws UnknownCRSException 
+     * @throws TransformationException
+     * @throws UnknownCRSException
      */
     public void export( GenericFeatureCollection col, String schemaLocation )
                             throws XMLStreamException, UnknownCRSException, TransformationException {

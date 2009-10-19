@@ -53,13 +53,13 @@ public class DWithin extends SpatialOperator {
 
     private final PropertyName param1;
 
-    private final Geometry param2;
+    private final Geometry literal;
 
     private final Measure distance;
 
     public DWithin( PropertyName param1, Geometry param2, Measure distance ) {
         this.param1 = param1;
-        this.param2 = param2;
+        this.literal = param2;
         this.distance = distance;
     }
 
@@ -67,8 +67,10 @@ public class DWithin extends SpatialOperator {
                             throws FilterEvaluationException {
         for ( Object param1Value : param1.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( param1Value );
-            if ( param1Value != null && geom.isWithinDistance( param2, distance ) ) {
-                return true;
+            if ( geom != null ) {
+                Geometry transformedLiteral = getCompatibleGeometry( geom, literal );
+                // TODO what about the units of the distance when transforming?
+                return geom.isWithinDistance( transformedLiteral, distance );
             }
         }
         return false;

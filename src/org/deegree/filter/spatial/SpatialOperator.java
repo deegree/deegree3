@@ -35,10 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.deegree.crs.CRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Defines a topological predicate that can be evaluated on {@link Geometry} valued objects.
@@ -49,6 +56,10 @@ import org.deegree.geometry.Geometry;
  * @version $Revision:$, $Date:$
  */
 public abstract class SpatialOperator implements Operator {
+
+    private static final Logger LOG = LoggerFactory.getLogger( SpatialOperator.class );
+
+    private final Map<String, Geometry> srsNameToTransformedGeometry = new HashMap<String, Geometry>();
 
     /**
      * Convenience enum type for discriminating the different {@link SpatialOperator} types.
@@ -100,8 +111,8 @@ public abstract class SpatialOperator implements Operator {
     }
 
     /**
-     * Performs a checked cast to {@link Geometry}. If the given value is neither null nor a {@link Geometry} instance, a
-     * corresponding {@link FilterEvaluationException} is thrown.
+     * Performs a checked cast to {@link Geometry}. If the given value is neither null nor a {@link Geometry} instance,
+     * a corresponding {@link FilterEvaluationException} is thrown.
      * 
      * @param value
      * @return the very same value (if it is a {@link Geometry} or <code>null</code>)
@@ -115,5 +126,38 @@ public abstract class SpatialOperator implements Operator {
             throw new FilterEvaluationException( msg );
         }
         return (Geometry) value;
+    }
+
+    /**
+     * Returns a version of the given geometry literal that has the same srs as the given geometry parameter.
+     * 
+     * @param param
+     *            geometry parameter, must not be <code>null</code>
+     * @param literal
+     *            geometry literal, must not be <code>null</code>
+     * @return literal geometry with the same srs as the parameter geometry
+     * @throws FilterEvaluationException
+     *             if the transformation failed
+     */
+    protected Geometry getCompatibleGeometry( Geometry param, Geometry literal )
+                            throws FilterEvaluationException {
+        Geometry transformedLiteral = literal;
+        CRS paramCRS = param.getCoordinateSystem();
+        CRS literalCRS = literal.getCoordinateSystem();
+        if ( literal != null && literalCRS != null && !( paramCRS.equals( literalCRS ) ) ) {
+            LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getName() + " -> "
+                       + paramCRS.getName() );
+            transformedLiteral = srsNameToTransformedGeometry.get( paramCRS.getName() );
+            if ( transformedLiteral == null ) {
+                try {
+                    GeometryTransformer transformer = new GeometryTransformer( paramCRS.getWrappedCRS() );
+                    transformedLiteral = transformer.transform( literal );
+                    srsNameToTransformedGeometry.put( paramCRS.getName(), transformedLiteral );
+                } catch ( Exception e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+            }
+        }
+        return transformedLiteral;
     }
 }

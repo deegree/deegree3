@@ -52,7 +52,7 @@ public class Intersects extends SpatialOperator {
 
     private final PropertyName param1;
 
-    private final Geometry param2;
+    private final Geometry literal;
 
     /**
      * @param param1
@@ -60,16 +60,17 @@ public class Intersects extends SpatialOperator {
      */
     public Intersects( PropertyName param1, Geometry param2 ) {
         this.param1 = param1;
-        this.param2 = param2;
+        this.literal = param2;
     }
 
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         for ( Object paramValue : param1.evaluate( object ) ) {
-            Geometry param1Value = checkGeometryOrNull( paramValue );
-            if ( param1Value != null && param1Value.intersects( param2 ) ) {
-                return true;
+            Geometry geom = checkGeometryOrNull( paramValue );
+            if ( geom != null ) {
+                Geometry transformedLiteral = getCompatibleGeometry( geom, literal );
+                return geom.intersects( transformedLiteral );
             }
         }
         return false;
@@ -79,7 +80,7 @@ public class Intersects extends SpatialOperator {
     public String toString( String indent ) {
         String s = indent + "-Intersects\n";
         s += indent + param1 + "\n";
-        s += indent + param2;
+        s += indent + literal;
         return s;
     }
 }

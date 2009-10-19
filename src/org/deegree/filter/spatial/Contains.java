@@ -52,20 +52,21 @@ public class Contains extends SpatialOperator {
 
     private final PropertyName param1;
 
-    private final Geometry param2;    
+    private final Geometry literal;    
     
     public Contains( PropertyName param1, Geometry param2 ) {
         this.param1 = param1;
-        this.param2 = param2;
+        this.literal = param2;
     }
 
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         for ( Object paramValue : param1.evaluate( object ) ) {
-            Geometry param1Value = checkGeometryOrNull( paramValue );
-            if ( param1Value != null && param1Value.contains( param2 ) ) {
-                return true;
-            }
+            Geometry geom = checkGeometryOrNull( paramValue );
+            if ( geom != null ) {
+                Geometry transformedLiteral = getCompatibleGeometry( geom, literal );
+                return geom.contains( transformedLiteral);
+            }          
         }
         return false;
     }

@@ -35,11 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.deegree.crs.CRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
@@ -51,9 +58,11 @@ import org.deegree.geometry.Geometry;
  */
 public class BBOX extends SpatialOperator {
 
-    private PropertyName geometry;
+    private static final Logger LOG = LoggerFactory.getLogger( BBOX.class );
 
-    private Envelope bbox;
+    private final PropertyName geometry;
+
+    private final Envelope bbox;
 
     /**
      * @param bbox
@@ -76,8 +85,9 @@ public class BBOX extends SpatialOperator {
                             throws FilterEvaluationException {
         for ( Object paramValue : geometry.evaluate( object ) ) {
             Geometry param1Value = checkGeometryOrNull( paramValue );
-            if ( param1Value != null && bbox.intersects( param1Value.getEnvelope() ) ) {
-                return true;
+            if ( param1Value != null ) {
+                Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, bbox );
+                return transformedBBox.intersects( param1Value );
             }
         }
         return false;

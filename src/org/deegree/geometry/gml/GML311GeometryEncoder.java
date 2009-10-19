@@ -135,6 +135,8 @@ public class GML311GeometryEncoder {
     // this object is used for every coordinate conversion, hence this class is not Thread-safe
     private double[] transformedOrdinates;
 
+    private final boolean exportSF;
+
     /**
      * Creates a new {@link GML311GeometryEncoder} instance.
      * 
@@ -145,7 +147,7 @@ public class GML311GeometryEncoder {
      *            used)
      */
     public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCRS ) {
-        this( writer, outputCRS, new HashSet<String>() );
+        this( writer, outputCRS, false, new HashSet<String>() );
     }
 
     /**
@@ -153,21 +155,24 @@ public class GML311GeometryEncoder {
      * 
      * @param writer
      *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
-     * @param outputCRS
+     * @param outputCrs
      *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
      *            used)
+     * @param exportSf
+     *            if true, the generated GML is as simple as possible to conform to the GML-SF profile
      * @param exportedIds
      */
-    public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCRS, Set<String> exportedIds ) {
+    public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCrs, boolean exportSf, Set<String> exportedIds ) {
         this.writer = writer;
-        this.outputCRS = outputCRS;
-        if ( outputCRS != null ) {
+        this.outputCRS = outputCrs;
+        this.exportSF = exportSf;
+        if ( outputCrs != null ) {
             try {
-                CoordinateSystem crs = outputCRS.getWrappedCRS();
+                CoordinateSystem crs = outputCrs.getWrappedCRS();
                 transformer = new CoordinateTransformer( crs );
                 transformedOrdinates = new double[crs.getDimension()];
             } catch ( Exception e ) {
-                LOG.debug( "Could not create transformer for CRS '" + outputCRS + "': " + e.getMessage()
+                LOG.debug( "Could not create transformer for CRS '" + outputCrs + "': " + e.getMessage()
                            + ". Encoding will fail if a transformation is actually necessary." );
             }
         }
@@ -232,16 +237,27 @@ public class GML311GeometryEncoder {
             MultiCurve multiCurve = (MultiCurve) geometry;
 
             startGeometry( "MultiCurve", geometry );
-
-            writer.writeStartElement( "gml", "curveMembers", GMLNS );
-            for ( Curve curve : multiCurve ) {
-                if ( curve instanceof CompositeCurve ) {
-                    exportCompositeCurve( (CompositeCurve) curve );
-                } else {
-                    exportCurve( curve );
+            if ( exportSF ) {
+                for ( Curve curve : multiCurve ) {
+                    writer.writeStartElement( "gml", "curveMember", GMLNS );
+                    if ( curve instanceof CompositeCurve ) {
+                        exportCompositeCurve( (CompositeCurve) curve );
+                    } else {
+                        exportCurve( curve );
+                    }
+                    writer.writeEndElement();
                 }
+            } else {
+                writer.writeStartElement( "gml", "curveMembers", GMLNS );
+                for ( Curve curve : multiCurve ) {
+                    if ( curve instanceof CompositeCurve ) {
+                        exportCompositeCurve( (CompositeCurve) curve );
+                    } else {
+                        exportCurve( curve );
+                    }
+                }
+                writer.writeEndElement();
             }
-            writer.writeEndElement();
             writer.writeEndElement();
             return;
         }
@@ -1431,7 +1447,7 @@ public class GML311GeometryEncoder {
 
         if ( outputCRS != null ) {
             writer.writeAttribute( "srsName", outputCRS.getName() );
-        } else if ( geometry.getCoordinateSystem() != null ) {           
+        } else if ( geometry.getCoordinateSystem() != null ) {
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
         }
 
@@ -1440,12 +1456,12 @@ public class GML311GeometryEncoder {
 
     private double[] getTransformedCoordinate( CRS inputCRS, double[] inputCoordinate )
                             throws TransformationException, UnknownCRSException {
-        if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS )) {
-            if (transformer == null) {
-                throw new UnknownCRSException( outputCRS.getName() ); 
+        if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
+            if ( transformer == null ) {
+                throw new UnknownCRSException( outputCRS.getName() );
             }
             double[] out = transformer.transform( inputCRS.getWrappedCRS(), inputCoordinate, transformedOrdinates );
-            return out; 
+            return out;
         }
         return inputCoordinate;
     }
