@@ -158,7 +158,7 @@ public class GMLGeometryEncoderTest {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
-     * @throws TransformationException 
+     * @throws TransformationException
      */
     @Test
     public void testValidatingExportedAbstractGeometryTypes()
@@ -175,7 +175,7 @@ public class GMLGeometryEncoderTest {
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
             XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
-            
+
             XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
             writer.setPrefix( "app", "http://www.deegree.org/app" );
@@ -187,7 +187,7 @@ public class GMLGeometryEncoderTest {
             GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
             exporter.export( geom );
             writer.flush();
-            writer.close();
+
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
@@ -198,7 +198,7 @@ public class GMLGeometryEncoderTest {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
-     * @throws TransformationException 
+     * @throws TransformationException
      */
     @Test
     public void testValidatingExportedSurfacePatches()
@@ -230,8 +230,7 @@ public class GMLGeometryEncoderTest {
             GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
             exporter.exportSurfacePatch( surfPatch );
             writer.flush();
-            writer.close();           
-            
+
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
@@ -242,7 +241,7 @@ public class GMLGeometryEncoderTest {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
-     * @throws TransformationException 
+     * @throws TransformationException
      */
     @Test
     public void testValidatingExportedCurveSegments()
@@ -272,7 +271,6 @@ public class GMLGeometryEncoderTest {
             GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
             exporter.exportCurveSegment( curveSegment );
             writer.flush();
-            writer.close();
 
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
@@ -284,7 +282,7 @@ public class GMLGeometryEncoderTest {
      * @throws IOException
      * @throws XMLParsingException
      * @throws UnknownCRSException
-     * @throws TransformationException 
+     * @throws TransformationException
      */
     @Test
     public void testValidatingExportedEnvelope()
@@ -312,7 +310,6 @@ public class GMLGeometryEncoderTest {
             GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
             exporter.export( geom );
             writer.flush();
-            writer.close();
 
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
@@ -324,7 +321,7 @@ public class GMLGeometryEncoderTest {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
-     * @throws TransformationException 
+     * @throws TransformationException
      */
     @Test
     public void testValidatingExportedXLinkMultiGeometry1()
@@ -355,8 +352,74 @@ public class GMLGeometryEncoderTest {
         GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
         exporter.export( geom );
         writer.flush();
-        writer.close();
 
         XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
     }
+
+    @Test
+    public void testValidatingExportedXLinkMultiGeometry2()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, TransformationException {
+        String source = "XLinkMultiGeometry2.gml";
+        GMLIdContext idContext = new GMLIdContext();
+        GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
+        URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
+        xmlReader.nextTag();
+        Geometry geom = parser.parseMultiCurve( xmlReader, null );
+
+        idContext.resolveXLinks( null );
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+        writer.setPrefix( "app", "http://www.deegree.org/app" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+        exporter.export( geom );
+        writer.flush();
+
+        XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
+
+    }
+
+    @Test
+    public void testValidatingExportedXLinkMultiLineString()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, TransformationException {
+        String source = "XLinkMultiLineString.gml";
+        GMLIdContext idContext = new GMLIdContext();
+        GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
+        URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
+        xmlReader.nextTag();
+        Geometry geom = parser.parseMultiLineString( xmlReader, null );
+
+        idContext.resolveXLinks( null );
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
+                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+        writer.setPrefix( "app", "http://www.deegree.org/app" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+        exporter.export( geom );
+        writer.flush();
+
+        XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
+
+    }
+
 }
