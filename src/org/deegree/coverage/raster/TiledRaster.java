@@ -46,6 +46,7 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -102,6 +103,11 @@ public class TiledRaster extends AbstractRaster {
         return tileContainer.getRasterReference();
     }
 
+    @Override
+    public CRS getCoordinateSystem() {
+        return tileContainer.getEnvelope().getCoordinateSystem();
+    }
+
     // TODO: convert to TileContainer
     @Override
     public TiledRaster copy() {
@@ -130,9 +136,9 @@ public class TiledRaster extends AbstractRaster {
         // use the default tile container.
         MemoryTileContainer resultTC = new MemoryTileContainer();
         TiledRaster result = new TiledRaster( resultTC );
-
         for ( AbstractRaster r : getTileContainer().getTiles( env ) ) {
-            Geometry intersection = r.getEnvelope().getIntersection( env );
+            Envelope rasterEnv = r.getEnvelope();
+            Geometry intersection = rasterEnv.getIntersection( env );
 
             if ( intersection != null ) {
                 // rb: don't delete the following tests, they are crucial.
@@ -151,7 +157,6 @@ public class TiledRaster extends AbstractRaster {
         if ( resultTC.getRasterReference() == null ) {
             throw new IndexOutOfBoundsException( "no intersection between TiledRaster and requested subset" );
         }
-
         return result;
     }
 
