@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,25 +32,26 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class PropertyIsGreaterThan extends BinaryComparisonOperator {
 
     public PropertyIsGreaterThan( Expression parameter1, Expression parameter2, boolean matchCase ) {
-        super (parameter1, parameter2, matchCase);
+        super( parameter1, parameter2, matchCase );
     }
 
     @Override
@@ -58,29 +59,33 @@ public class PropertyIsGreaterThan extends BinaryComparisonOperator {
         return SubType.PROPERTY_IS_GREATER_THAN;
     }
 
-    @Override    
+    @SuppressWarnings("unchecked")
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
 
         Object[] param1Values = param1.evaluate( object );
         Object[] param2Values = param2.evaluate( object );
+
+        // evaluate to true if at least one pair of values matches the condition        
         for ( Object value1 : param1Values ) {
-            Comparable<Object> parameter1Value = checkComparableOrNull( value1 );
             for ( Object value2 : param2Values ) {
-                Comparable<Object> parameter2Value = checkComparableOrNull( value2 );
-                if ( parameter1Value != null && parameter1Value.compareTo(  parameter2Value ) > 0) {
-                    return true;
+                if ( value1 != null && value2 != null ) {
+                    Pair<Object, Object> comparablePair = makeComparable( value1, value2 );
+                    if ( ( (Comparable<Object>) comparablePair.first ).compareTo( comparablePair.second ) > 0 ) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
     }
 
-    @Override    
+    @Override
     public String toString( String indent ) {
         String s = indent + "-PropertyIsGreaterThan\n";
-        s += param1.toString (indent + "  ");
-        s += param2.toString (indent + "  ");
+        s += param1.toString( indent + "  " );
+        s += param2.toString( indent + "  " );
         return s;
     }
 }

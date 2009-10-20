@@ -107,7 +107,9 @@ public class PropertyIsLike extends ComparisonOperator {
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
+        
         Object[] paramValues = propName.evaluate( object );
+
         for ( Object value : paramValues ) {
             Comparable<Object> parameter1Value = checkComparableOrNull( value );
             // TODO handle complex literals

@@ -587,9 +587,17 @@ public class Filter110XMLDecoder {
 
         Set<String> matchingIds = new HashSet<String>();
 
+        // needed to check that only one type of identifier elements occur, OGC 04-095, 11.2, p.15
+        QName lastIdElement = null;
+
         while ( xmlStream.getEventType() == START_ELEMENT ) {
             QName childElementName = xmlStream.getName();
             if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) ) {
+                if ( lastIdElement != null && !lastIdElement.equals( GML_OBJECT_ID_ELEMENT ) ) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ONLY_ONE_TYPE_OF_IDS" );
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                lastIdElement = GML_OBJECT_ID_ELEMENT;
                 String id = xmlStream.getAttributeValue( GML_NS, "id" );
                 if ( id == null || id.length() == 0 ) {
                     String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", GML_OBJECT_ID_ELEMENT,
@@ -600,6 +608,11 @@ public class Filter110XMLDecoder {
                 xmlStream.nextTag();
                 xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "GmlObjectId" );
             } else if ( FEATURE_ID_ELEMENT.equals( childElementName ) ) {
+                if ( lastIdElement != null && !lastIdElement.equals( FEATURE_ID_ELEMENT ) ) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ONLY_ONE_TYPE_OF_IDS" );
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                lastIdElement = FEATURE_ID_ELEMENT;
                 String id = xmlStream.getAttributeValue( null, "fid" );
                 if ( id == null || id.length() == 0 ) {
                     String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", FEATURE_ID_ELEMENT,

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -84,6 +85,7 @@ public class PropertyIsBetween extends ComparisonOperator {
         return SubType.PROPERTY_IS_BETWEEN;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
@@ -93,22 +95,23 @@ public class PropertyIsBetween extends ComparisonOperator {
         Object[] lowerBoundaryValues = lowerBoundary.evaluate( obj );
 
         for ( Object propertyValue : propertyValues ) {
-            Comparable<Object> prop = checkComparableOrNull( propertyValue );
             // check for one upper value that is larger than the propertyValue
-            boolean found = false;
-            for ( Object upperValue : upperBoundaryValues ) {
-                Comparable<Object> upper = checkComparableOrNull( upperValue );
-                if ( upper != null && upper.compareTo( prop ) >= 0 ) {
-                    found = true;
-                    break;
-                }
-            }
-            if ( found ) {
-                // check for one lower value that is smaller than the propertyValue
-                for ( Object lowerValue : lowerBoundaryValues ) {
-                    Comparable<Object> lower = checkComparableOrNull( lowerValue );
-                    if ( lower != null && lower.compareTo( prop ) <= 0 ) {
-                        return true;
+            if ( propertyValue != null ) {
+                for ( Object upperValue : upperBoundaryValues ) {
+                    if ( upperValue != null ) {
+                        Pair<Object, Object> propUpper = makeComparable( propertyValue, upperValue );
+                        if ( ( (Comparable<Object>) propUpper.first ).compareTo( propUpper.second ) <= 0 ) {
+                            // now check for one lower value that is smaller than the propertyValue
+                            for ( Object lowerValue : lowerBoundaryValues ) {
+                                if ( lowerValue != null ) {
+                                    Pair<Object, Object> propLower = makeComparable( propertyValue, lowerValue );
+                                    if ( ( (Comparable<Object>) propLower.first ).compareTo( propLower.second ) >= 0 ) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -121,7 +124,7 @@ public class PropertyIsBetween extends ComparisonOperator {
         String s = indent + "-PropertyIsBetween\n";
         s += lowerBoundary.toString( indent + "  " );
         s += expression.toString( indent + "  " );
-        s += upperBoundary.toString( indent + "  " );        
+        s += upperBoundary.toString( indent + "  " );
         return s;
     }
 }

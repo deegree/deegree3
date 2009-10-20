@@ -641,7 +641,74 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     private PrimitiveType getPrimitiveType( XSSimpleType typeDef ) {
-        LOG.debug( "Mapping '" + typeDef.getName() + "'..." );
-        return null;
+
+        PrimitiveType pt = null;
+        switch ( typeDef.getBuiltInKind() ) {
+
+        // date and time types
+        case XSConstants.DATE_DT: {
+            pt = PrimitiveType.DATE;
+            break;
+        }
+        case XSConstants.DATETIME_DT: {
+            pt = PrimitiveType.DATE_TIME;
+            break;
+        }
+        case XSConstants.TIME_DT: {
+            pt = PrimitiveType.DATE_TIME;
+            break;
+        }
+        
+        // numeric types
+        case XSConstants.BYTE_DT:        
+        case XSConstants.DECIMAL_DT:
+        case XSConstants.DOUBLE_DT:
+        case XSConstants.FLOAT_DT:            
+        case XSConstants.INT_DT:
+        case XSConstants.INTEGER_DT:
+        case XSConstants.NONNEGATIVEINTEGER_DT:
+        case XSConstants.NONPOSITIVEINTEGER_DT:
+        case XSConstants.POSITIVEINTEGER_DT:
+        case XSConstants.SHORT_DT:            
+        case XSConstants.UNSIGNEDBYTE_DT:
+        case XSConstants.UNSIGNEDINT_DT:
+        case XSConstants.UNSIGNEDLONG_DT:
+        case XSConstants.UNSIGNEDSHORT_DT: {
+            pt = PrimitiveType.NUMBER;
+            break;
+        }
+
+        // other types
+        case XSConstants.ANYSIMPLETYPE_DT:
+        case XSConstants.ANYURI_DT:
+        case XSConstants.BASE64BINARY_DT:
+        case XSConstants.BOOLEAN_DT:
+        case XSConstants.DURATION_DT:
+        case XSConstants.ENTITY_DT:
+        case XSConstants.GDAY_DT:
+        case XSConstants.GMONTH_DT:
+        case XSConstants.GMONTHDAY_DT:
+        case XSConstants.GYEAR_DT:
+        case XSConstants.GYEARMONTH_DT:
+        case XSConstants.HEXBINARY_DT:
+        case XSConstants.ID_DT:
+        case XSConstants.IDREF_DT:
+        case XSConstants.LANGUAGE_DT:
+        case XSConstants.LIST_DT:
+        case XSConstants.LISTOFUNION_DT:
+        case XSConstants.LONG_DT:
+        case XSConstants.NAME_DT:
+        case XSConstants.NCNAME_DT:
+        case XSConstants.NORMALIZEDSTRING_DT:
+        case XSConstants.NOTATION_DT:
+        case XSConstants.QNAME_DT:
+        case XSConstants.STRING_DT:
+        case XSConstants.TOKEN_DT:
+        case XSConstants.UNAVAILABLE_DT: {
+            pt = PrimitiveType.STRING;
+        }
+        }
+        LOG.debug( "Mapped '" + typeDef.getName() + "' (base type: '" + typeDef.getBaseType() + "') -> '" + pt + "'" );
+        return pt;
     }
 }

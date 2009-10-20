@@ -172,6 +172,22 @@ public class FilterEvaluationTest {
         assertResultSet( fc.getMembers( filter ) );
     }
 
+    @Test
+    public void filterCollection11()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
+                            JaxenException {
+        Filter filter = parseFilter( "testfilter11.xml" );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
+    }     
+
+    @Test
+    public void filterCollection12()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
+                            JaxenException {
+        Filter filter = parseFilter( "testfilter12.xml" );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2", "PHILOSOPHER_3" );
+    }     
+    
     private void assertResultSet( FeatureCollection fc, String... expectedIds ) {
         Assert.assertEquals( expectedIds.length, fc.size() );
         Set<String> ids = new HashSet<String>();

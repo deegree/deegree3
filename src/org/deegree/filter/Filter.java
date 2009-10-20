@@ -85,5 +85,4 @@ public interface Filter {
      */
     boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException;
-
 }

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -61,18 +62,25 @@ public class PropertyIsNotEqualTo extends BinaryComparisonOperator {
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
+
         Object[] param1Values = param1.evaluate( object );
         Object[] param2Values = param2.evaluate( object );
+
+        // evaluate to true if at least one pair of values matches the condition
         for ( Object value1 : param1Values ) {
-            Comparable<Object> parameter1Value = checkComparableOrNull( value1 );
             for ( Object value2 : param2Values ) {
-                Comparable<Object> parameter2Value = checkComparableOrNull( value2 );
-                if ( ( parameter1Value == null && parameter2Value != null )
-                     || ( ( parameter1Value != null && parameter2Value == null ) ) ) {
+                if ( ( value1 != null && value2 == null ) || ( value1 == null && value2 != null ) ) {
                     return true;
                 }
-                if ( parameter1Value != null && !parameter1Value.equals( parameter2Value ) ) {
-                    return true;
+                if ( value1 != null && value2 != null ) {
+                    Pair<Object, Object> comparablePair = makeComparable( value1, value2 );
+                    if ( !matchCase ) {
+                        if ( !comparablePair.first.toString().equalsIgnoreCase( comparablePair.second.toString() ) ) {
+                            return true;
+                        }
+                    } else if ( !comparablePair.first.equals( comparablePair.second ) ) {
+                        return true;
+                    }
                 }
             }
         }

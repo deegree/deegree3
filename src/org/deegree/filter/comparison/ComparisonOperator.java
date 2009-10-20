@@ -35,6 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Date;
+
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
 import org.deegree.filter.i18n.Messages;
@@ -76,4 +82,32 @@ public abstract class ComparisonOperator implements Operator {
         }
         return (Comparable<Object>) value;
     }
+    
+
+    protected Pair<Object, Object> makeComparable( Object value1, Object value2 )
+                            throws FilterEvaluationException {
+        Pair<Object, Object> result = new Pair<Object, Object>( value1, value2 );
+        if ( !( value1 instanceof String ) ) {
+            if ( value1 instanceof Number ) {
+                result = new Pair<Object, Object>( value1, new BigDecimal( value2.toString() ) );
+            } else if ( value1 instanceof Date ) {
+                try {
+                    result = new Pair<Object, Object>( value1, DateUtils.parseISO8601Date( value2.toString() ) );
+                } catch ( ParseException e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+            }
+        } else if ( !( value2 instanceof String ) ) {
+            if ( value2 instanceof Number ) {
+                result = new Pair<Object, Object>( new BigDecimal( value1.toString() ), value2 );
+            } else if ( value2 instanceof Date ) {
+                try {
+                    result = new Pair<Object, Object>( DateUtils.parseISO8601Date( value1.toString() ), value2 );
+                } catch ( ParseException e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+            }
+        }
+        return result;
+    }    
 }

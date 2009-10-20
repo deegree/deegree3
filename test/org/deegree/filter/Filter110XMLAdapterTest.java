@@ -81,18 +81,10 @@ public class Filter110XMLAdapterTest {
         Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_969" ) );
     }
 
-    @Test
+    @Test (expected=XMLParsingException.class)
     public void parseMixedIdFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter filter = parse( "testfilter_110_id_mixed.xml" );
-        assertNotNull( filter );
-        Assert.assertEquals( Filter.Type.ID_FILTER, filter.getType() );
-        IdFilter idFilter = (IdFilter) filter;
-        Assert.assertEquals( 4, idFilter.getMatchingIds().size() );
-        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_966" ) );
-        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_967" ) );
-        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_968" ) );
-        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_969" ) );
+        parse( "testfilter_110_id_mixed.xml" );
     }
 
     @Test

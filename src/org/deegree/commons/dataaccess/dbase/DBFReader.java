@@ -178,8 +178,7 @@ public class DBFReader {
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.STRING );
                 break;
             case 'N':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, fieldPrecision == 0 ? PrimitiveType.INTEGER
-                                                                                         : PrimitiveType.DOUBLE );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.NUMBER);
                 break;
             case 'L':
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.BOOLEAN );
@@ -188,13 +187,13 @@ public class DBFReader {
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DATE );
                 break;
             case 'F':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DOUBLE );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.NUMBER );
                 break;
             case 'T':
                 LOG.warn( "Date/Time fields are not supported. Please send the file to the devs, so they can implement it." );
                 break;
             case 'I':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.INTEGER );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.NUMBER );
                 break;
             case '@':
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DATE_TIME );
@@ -270,7 +269,7 @@ public class DBFReader {
             case 'F': {
                 in.readFully( bs );
                 String val = getString( bs, encoding ).trim();
-                if ( field.propertyType.getPrimitiveType() == PrimitiveType.INTEGER ) {
+                if ( field.propertyType.getPrimitiveType() == PrimitiveType.NUMBER ) {
                     property = new GenericProperty<Integer>( field.propertyType, val.isEmpty() ? null
                                                                                               : Integer.valueOf( val ) );
                 } else {

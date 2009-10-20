@@ -61,11 +61,9 @@ public class SimplePropertyType extends AbstractPropertyType {
     public enum PrimitiveType {
         STRING,
         BOOLEAN,
-        INTEGER,
+        NUMBER,
         DATE,
-        DATE_TIME,
-        FLOAT,
-        DOUBLE,
+        DATE_TIME
     }
 
     private PrimitiveType primitiveType;

@@ -49,15 +49,15 @@ import org.deegree.geometry.Geometry;
  * {@link MatchableObject}.
  * <p>
  * Note that the objects returned by {@link #evaluate(MatchableObject)} is an <code>Object[]</code>, as an expression
- * may evaluate to multiple values, e.g. a {@link PropertyName} that targets a multi property of a feature. The single
- * values in the array are usually one of the following:
+ * may evaluate to multiple values, e.g. a {@link PropertyName} that targets a multi property of a feature. The values
+ * in the array always have one of the following classes:
  * <ul>
  * <li><code>String</code></li>
  * <li><code>Number</code></li>
- * <li><code>Boolean</code></li>
  * <li><code>Date</code></li>
  * <li>{@link Geometry}</li>
  * </ul>
+ * NOTE: Values in the returned array may also be <code>null</code>.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -110,7 +110,8 @@ public interface Expression {
      * 
      * @param obj
      *            object that the expression is evaluated upon
-     * @return the values of the expression, may be empty, but never <code>null</code>
+     * @return the values of the expression, may be empty (and even contain <code>null</code> values), but never
+     *         <code>null</code>
      * @throws FilterEvaluationException
      */
     public Object[] evaluate( MatchableObject obj )

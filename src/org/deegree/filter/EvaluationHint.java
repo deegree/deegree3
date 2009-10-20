@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,48 +33,29 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.comparison;
+package org.deegree.filter;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.util.Date;
-
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.filter.Expression;
-import org.deegree.filter.FilterEvaluationException;
+import org.deegree.geometry.Geometry;
 
 /**
- * TODO add documentation here
+ * Enum type for discriminating the different types that an {@link Expression} may return.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public abstract class BinaryComparisonOperator extends ComparisonOperator {
+public enum EvaluationHint {
 
-    protected Expression param1;
+    /** The type is a generic <code>String</code>. **/
+    STRING,
 
-    protected Expression param2;
+    /** The type is a generic <code>Number</code>. **/
+    NUMBER,
 
-    protected boolean matchCase;
+    /** The type is a generic <code>Date</code>. **/
+    DATE,
 
-    protected BinaryComparisonOperator( Expression param1, Expression param2, boolean matchCase ) {
-        this.param1 = param1;
-        this.param2 = param2;
-        this.matchCase = matchCase;
-    }
-
-    public Expression getParameter1() {
-        return param1;
-    }
-
-    public Expression getParameter2() {
-        return param2;
-    }
-
-    public boolean getMatchCase() {
-        return matchCase;
-    }
+    /** The type is a {@link Geometry}. **/
+    GEOMETRY
 }
