@@ -85,8 +85,8 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
  */
 public abstract class AbstractDefaultGeometry implements Geometry {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractDefaultGeometry.class );    
-    
+    private static final Logger LOG = LoggerFactory.getLogger( AbstractDefaultGeometry.class );
+
     /**
      * Used to built JTS geometries.
      */
@@ -178,13 +178,13 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public boolean isWithinDistance( Geometry geometry, Measure distance ) {
-        LOG.warn ("TODO: Respect UOM in evaluation of topological predicate.");
+        LOG.warn( "TODO: Respect UOM in evaluation of topological predicate." );
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         return jtsGeoms.first.isWithinDistance( jtsGeoms.second, distance.getValueAsDouble() );
     }
 
     @Override
-    public boolean isBeyond( Geometry geometry, Measure distance ) {        
+    public boolean isBeyond( Geometry geometry, Measure distance ) {
         return !isWithinDistance( geometry, distance );
     }
 
@@ -208,7 +208,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public Point getCentroid() {
-        throw new UnsupportedOperationException();
+        return (Point) createFromJTS( getJTSGeometry().getCentroid() );
     }
 
     @Override

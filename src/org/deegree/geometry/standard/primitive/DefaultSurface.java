@@ -106,11 +106,6 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public Point getCentroid() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public List<? extends SurfacePatch> getPatches() {
         return patches;
     }
