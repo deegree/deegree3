@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.container;
 
 import java.util.ArrayList;
@@ -45,13 +45,13 @@ import org.deegree.geometry.Envelope;
 
 /**
  * This TileContainer keeps all tiles (AbstractRaster) in memory.
- *
+ * 
  * Use this container for tiles with a few thousand or less tiles. The AbstractRaster should be loaded with a LAZY or
  * CACHED LoadingPolicy (see {@link RasterFactory}).
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class MemoryTileContainer implements TileContainer {
@@ -63,52 +63,68 @@ public class MemoryTileContainer implements TileContainer {
     private Envelope envelope;
 
     /**
+     * Creates a MemoryTileContainer with no tiles.
+     * 
+     */
+    public MemoryTileContainer() {
+        // just do nothing.
+    }
+
+    /**
      * Creates a MemoryTileContainer with given tiles.
-     *
+     * 
      * @param abstractRasters
      *            one or more tiles
      */
     public MemoryTileContainer( AbstractRaster... abstractRasters ) {
-        for ( AbstractRaster raster : abstractRasters ) {
-            addTile( raster );
+        if ( abstractRasters != null ) {
+            for ( AbstractRaster raster : abstractRasters ) {
+                if ( raster != null ) {
+                    addTile( raster );
+                }
+            }
         }
     }
 
     /**
      * Creates a MemoryTileContainer with given tiles.
-     *
+     * 
      * @param abstractRasters
      *            one or more tiles
      */
     public MemoryTileContainer( List<AbstractRaster> abstractRasters ) {
-        for ( AbstractRaster raster : abstractRasters ) {
-            addTile( raster );
+        if ( abstractRasters != null ) {
+            for ( AbstractRaster raster : abstractRasters ) {
+                addTile( raster );
+            }
         }
     }
 
     /**
      * Adds a new tile to the container.
-     *
+     * 
      * @param raster
      *            new tile
      */
     public synchronized void addTile( AbstractRaster raster ) {
-        if ( this.envelope == null ) {
-            this.envelope = raster.getEnvelope();
-        } else {
-            this.envelope = this.envelope.merge( raster.getEnvelope() );
+        if ( raster != null ) {
+            if ( this.envelope == null ) {
+                this.envelope = raster.getEnvelope();
+            } else {
+                this.envelope = this.envelope.merge( raster.getEnvelope() );
+            }
+            if ( this.rasterReference == null ) {
+                this.rasterReference = raster.getRasterReference();
+            } else {
+                this.rasterReference = this.rasterReference.merger( raster.getRasterReference() );
+            }
+            tiles.add( raster );
         }
-        if ( this.rasterReference == null ) {
-            this.rasterReference = raster.getRasterReference();
-        } else {
-            this.rasterReference = this.rasterReference.merger( raster.getRasterReference() );
-        }
-        tiles.add( raster );
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.TileContainer#getTiles(org.deegree.geometry.primitive.Envelope)
      */
     public List<AbstractRaster> getTiles( Envelope env ) {
@@ -123,7 +139,7 @@ public class MemoryTileContainer implements TileContainer {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.TileContainer#getEnvelope()
      */
     public Envelope getEnvelope() {
@@ -132,7 +148,7 @@ public class MemoryTileContainer implements TileContainer {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.TileContainer#getRasterEnvelope()
      */
     public RasterReference getRasterReference() {
