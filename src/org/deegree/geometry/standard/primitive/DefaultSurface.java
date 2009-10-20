@@ -151,11 +151,10 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
 
         if ( patches.size() != 1 || !( patches.get( 0 ) instanceof PolygonPatch ) ) {
-            throw new IllegalArgumentException(
-                                                "Cannot transform Surface to JTS geometry -- not equivalent to a polygon." );
+            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_NOT_EQUIVALENT_TO_POLYGON" ) );
         }
-        
-        PolygonPatch patch = (PolygonPatch) patches.get(0);
+
+        PolygonPatch patch = (PolygonPatch) patches.get( 0 );
         Ring exteriorRing = patch.getExteriorRing();
         List<Ring> interiorRings = patch.getInteriorRings();
 

@@ -77,7 +77,7 @@ public class DefaultMultiPoint extends DefaultMultiGeometry<Point> implements Mu
         com.vividsolutions.jts.geom.Point [] jtsMembers = new com.vividsolutions.jts.geom.Point[size()];
         int i = 0;
         for ( Point geometry : members ) {
-            jtsMembers[i++] = (com.vividsolutions.jts.geom.Point) getAsAbstractDefaultGeometry( geometry ).getJTSGeometry();
+            jtsMembers[i++] = (com.vividsolutions.jts.geom.Point) getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createMultiPoint( jtsMembers );
     }

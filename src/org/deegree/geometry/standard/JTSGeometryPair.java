@@ -65,7 +65,7 @@ public class JTSGeometryPair extends Pair<Geometry, Geometry> {
     public static JTSGeometryPair createCompatiblePair( AbstractDefaultGeometry geom1,
                                                         org.deegree.geometry.Geometry geom2 ) {
         return new JTSGeometryPair( geom1.getJTSGeometry(),
-                                    AbstractDefaultGeometry.getAsAbstractDefaultGeometry( geom2 ).getJTSGeometry() );
+                                    AbstractDefaultGeometry.getAsDefaultGeometry( geom2 ).getJTSGeometry() );
     }
 
 }

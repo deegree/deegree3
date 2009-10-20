@@ -184,7 +184,7 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
         com.vividsolutions.jts.geom.Geometry [] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
         int i = 0;
         for ( Geometry geometry : memberPrimitives ) {
-            jtsMembers[i++] = getAsAbstractDefaultGeometry( geometry ).getJTSGeometry();
+            jtsMembers[i++] = getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createGeometryCollection( jtsMembers );
     }    

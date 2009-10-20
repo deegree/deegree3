@@ -214,7 +214,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     @Override
     public Measure getDistance( Geometry geometry, Unit requestedUnit ) {
         // TODO respect unit
-        double dist = getJTSGeometry().distance( getAsAbstractDefaultGeometry( geometry ).getJTSGeometry() );
+        double dist = getJTSGeometry().distance( getAsDefaultGeometry( geometry ).getJTSGeometry() );
         return new Measure( Double.toString( dist ), null );
     }
 
@@ -362,7 +362,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         return geom;
     }
 
-    protected static AbstractDefaultGeometry getAsAbstractDefaultGeometry( Geometry geometry ) {
+    protected static AbstractDefaultGeometry getAsDefaultGeometry( Geometry geometry ) {
         if ( geometry instanceof AbstractDefaultGeometry ) {
             return (AbstractDefaultGeometry) geometry;
         }

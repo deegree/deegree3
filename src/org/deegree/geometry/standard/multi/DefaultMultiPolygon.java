@@ -83,7 +83,7 @@ public class DefaultMultiPolygon extends DefaultMultiGeometry<Polygon> implement
         com.vividsolutions.jts.geom.Polygon [] jtsMembers = new com.vividsolutions.jts.geom.Polygon[size()];
         int i = 0;
         for ( Surface geometry : members ) {
-            jtsMembers[i++] = (com.vividsolutions.jts.geom.Polygon) getAsAbstractDefaultGeometry( geometry ).getJTSGeometry();
+            jtsMembers[i++] = (com.vividsolutions.jts.geom.Polygon) getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createMultiPolygon( jtsMembers );
     }       
