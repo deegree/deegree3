@@ -707,16 +707,18 @@ public class Filter110XMLDecoder {
         Expression expression = parseExpression( xmlStream );
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, OGC_NS, "lowerBoundary" );
+        xmlStream.require( START_ELEMENT, OGC_NS, "LowerBoundary" );
         xmlStream.nextTag();
         Expression lowerBoundary = parseExpression( xmlStream );
+        xmlStream.nextTag();
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, OGC_NS, "upperBoundary" );
+        xmlStream.require( START_ELEMENT, OGC_NS, "UpperBoundary" );
         xmlStream.nextTag();
         Expression upperBoundary = parseExpression( xmlStream );
-
         xmlStream.nextTag();
+        xmlStream.nextTag();
+
         return new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
     }
 
