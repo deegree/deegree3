@@ -44,12 +44,13 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+
+import com.vividsolutions.jts.geom.LinearRing;
 
 /**
  * Default implementation of {@link Surface}.
@@ -144,5 +145,29 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
             throw new IllegalArgumentException( Messages.getMessage( "SURFACE_MORE_THAN_ONE_PATCH" ) );
         }
         return controlPoints;
+    }
+
+    @Override
+    protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
+
+        if ( patches.size() != 1 || !( patches.get( 0 ) instanceof PolygonPatch ) ) {
+            throw new IllegalArgumentException(
+                                                "Cannot transform Surface to JTS geometry -- not equivalent to a polygon." );
+        }
+        
+        PolygonPatch patch = (PolygonPatch) patches.get(0);
+        Ring exteriorRing = patch.getExteriorRing();
+        List<Ring> interiorRings = patch.getInteriorRings();
+
+        LinearRing shell = (LinearRing) getAsDefaultGeometry( exteriorRing ).getJTSGeometry();
+        LinearRing[] holes = null;
+        if ( interiorRings != null ) {
+            holes = new LinearRing[interiorRings.size()];
+            int i = 0;
+            for ( Ring ring : interiorRings ) {
+                holes[i++] = (LinearRing) getAsDefaultGeometry( ring ).getJTSGeometry();
+            }
+        }
+        return jtsFactory.createPolygon( shell, holes );
     }
 }
