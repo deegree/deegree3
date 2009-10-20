@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io;
 
 import java.io.File;
@@ -48,12 +48,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class is a container for various RasterIO options.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class RasterIOOptions {
 
@@ -78,11 +78,40 @@ public class RasterIOOptions {
 
     private RasterReference envelope;
 
+    /**
+     * An empty constructor, nothing is set. The loading policy is the default value taken from the
+     * {@link RasterDataContainerFactory}.
+     */
     public RasterIOOptions() {
+        // nottin
+        add( DATA_LOADING_POLICY, RasterDataContainerFactory.getDefaultLoadingPolicy().name() );
     }
 
-    public RasterIOOptions( RasterReference envelope ) {
-        this.envelope = envelope;
+    /**
+     * Use this constructor if you read your raster reference some place else, or if you are reading from a stream. Be
+     * aware to set the filetype of the data as well. The loading policy is the default value taken from the
+     * {@link RasterDataContainerFactory}.
+     * 
+     * @param reference
+     *            of the file/stream to read.
+     */
+    public RasterIOOptions( RasterReference reference ) {
+        this();
+        this.envelope = reference;
+    }
+
+    /**
+     * Set the default loading policy to one configured in the {@link RasterDataContainerFactory}
+     * 
+     * @param ref
+     * @param format
+     *            of the raster to read, e.g. png, jpg, tiff..., may be <code>null</code>
+     */
+    public RasterIOOptions( RasterReference ref, String format ) {
+        this( ref );
+        if ( format != null && !"".equals( format ) ) {
+            add( OPT_FORMAT, format );
+        }
     }
 
     /**
@@ -111,7 +140,7 @@ public class RasterIOOptions {
 
     /**
      * Return a RasterIOOption object with the format set according to the given file.
-     *
+     * 
      * @param file
      * @return RasterIOOption proper format.
      */
@@ -127,7 +156,7 @@ public class RasterIOOptions {
     /**
      * Return a RasterIOOption object with the format set according to the given file with an optional
      * {@link RasterReference}.
-     *
+     * 
      * @param file
      * @param envelope
      * @return RasterIOOption proper format.

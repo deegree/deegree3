@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import org.deegree.commons.utils.FileUtils;
@@ -88,6 +90,71 @@ public class WorldFileAccess {
     }
 
     /**
+     * @param stream
+     *            the stream pointing to a world file.
+     * @param type
+     * @return a RasterReference
+     * @throws IOException
+     */
+    public static RasterReference readWorldFile( InputStream stream, RasterReference.Type type )
+                            throws IOException {
+
+        if ( stream == null ) {
+            throw new IOException( "Stream is null, no world file found." );
+        }
+
+        BufferedReader br = new BufferedReader( new InputStreamReader( stream ) );
+
+        return readRasterReference( br, type, "from stream" );
+
+    }
+
+    /**
+     * @param br
+     * @return
+     * @throws IOException
+     */
+    private static RasterReference readRasterReference( final BufferedReader br, final RasterReference.Type type,
+                                                        final String filePath )
+                            throws IOException {
+        double[] values = new double[6];
+
+        int i = 0;
+        try {
+            for ( ; i < 6; i++ ) {
+                String line = br.readLine();
+                if ( line == null ) {
+                    throw new IOException( i + ") failure, current line could not be read from world file"
+                                           + ( ( filePath != null ) ? " (" + filePath + ")" : "" ) + "." );
+                }
+                line = line.trim();
+                double val = Double.parseDouble( line.replace( ',', '.' ) );
+                values[i] = val;
+            }
+        } catch ( NumberFormatException e ) {
+            throw new IOException( i + ") invalid line in world file"
+                                   + ( ( filePath != null ) ? " (" + filePath + ")" : "" ) + "." );
+        }
+
+        br.close();
+
+        double resx = values[0];
+        double resy = values[3];
+        double xmin = values[4];
+        double ymax = values[5];
+        // double xmax = xmin + ( ( width - 1 ) * resx );
+        // double ymin = ymax + ( ( height - 1 ) * resy );
+        // if ( type == RasterReference.Type.OUTER ) {
+        // xmin = xmin + resx / 2.0;
+        // // ymin = ymin - resy / 2.0;
+        // // xmax = xmax - resx / 2.0;
+        // ymax = ymax + resy / 2.0;
+        // }
+
+        return new RasterReference( type, xmin, ymax, resx, resy );
+    }
+
+    /**
      * @param filename
      *            the image/raster file (including path and file extension)
      * @param type
@@ -107,39 +174,7 @@ public class WorldFileAccess {
         }
 
         BufferedReader br = new BufferedReader( new FileReader( worldFile ) );
-        double[] values = new double[6];
-
-        try {
-            for ( int i = 0; i < 6; i++ ) {
-                String line = br.readLine();
-                if ( line == null ) {
-                    throw new IOException( "invalid world file (" + worldFile.getAbsolutePath() + ")" );
-                }
-                line = line.trim();
-                double val = Double.parseDouble( line.replace( ',', '.' ) );
-                values[i] = val;
-            }
-        } catch ( NumberFormatException e ) {
-            throw new IOException( "invalid world file (" + worldFile.getAbsolutePath() + ")" );
-        }
-
-        br.close();
-
-        double resx = values[0];
-        double resy = values[3];
-        double xmin = values[4];
-        double ymax = values[5];
-        // double xmax = xmin + ( ( width - 1 ) * resx );
-        // double ymin = ymax + ( ( height - 1 ) * resy );
-
-        if ( type == RasterReference.Type.OUTER ) {
-            xmin = xmin + resx / 2.0;
-            // ymin = ymin - resy / 2.0;
-            // xmax = xmax - resx / 2.0;
-            ymax = ymax + resy / 2.0;
-        }
-
-        return new RasterReference( type, xmin, ymax, resx, resy );
+        return readRasterReference( br, type, worldFile.getAbsolutePath() );
     }
 
     /**
