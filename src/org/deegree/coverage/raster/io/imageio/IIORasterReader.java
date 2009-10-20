@@ -151,7 +151,7 @@ public class IIORasterReader implements RasterReader {
             }
         }
 
-        reader.close();
+        // reader.close();
 
         CRS readCRS = crs == null ? null : new CRS( crs );
         Envelope envelope = rasterReference.getEnvelope( width, height, readCRS );
