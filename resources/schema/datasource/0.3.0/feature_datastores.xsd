@@ -58,7 +58,7 @@
       <extension base="ds:FeatureStoreType">
         <sequence>
           <element name="GMLSchemaFileURL" type="string" />
-          <element name="GMLFeatureCollectionFileURL" type="string" minOccurs="0"/>
+          <element name="GMLFeatureCollectionFileURL" type="string" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </extension>
     </complexContent>

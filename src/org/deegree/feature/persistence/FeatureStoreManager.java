@@ -152,26 +152,27 @@ public class FeatureStoreManager {
             fs = new MemoryFeatureStore( schema );
             fs.init();
 
-            String datasetFile = memoryDsConfig.getGMLFeatureCollectionFileURL();
-            if ( datasetFile != null ) {
-                try {
-                    GMLIdContext idContext = new GMLIdContext();
-                    GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, idContext );
-                    URL docURL = resolver.resolve( datasetFile.trim() );
-                    XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( docURL );
-                    xmlStream.nextTag();
-                    LOG.info( "Populating feature store with features from file '" + docURL + "'..." );
-                    FeatureCollection fc = (FeatureCollection) decoder.parseFeature( xmlStream, null );
-                    idContext.resolveXLinks( schema );
-                    
-                    FeatureStoreTransaction ta = fs.acquireTransaction();
-                    List<String> fids = ta.performInsert( fc, IDGenMode.USE_EXISTING );
-                    LOG.info( "Inserted " + fids.size() + " features." );
-                    ta.commit();
-                } catch ( Exception e ) {
-                    String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                    LOG.error( msg, e );
-                    throw new FeatureStoreException( msg, e );
+            for ( String datasetFile : memoryDsConfig.getGMLFeatureCollectionFileURL() ) {
+                if ( datasetFile != null ) {
+                    try {
+                        GMLIdContext idContext = new GMLIdContext();
+                        GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, idContext );
+                        URL docURL = resolver.resolve( datasetFile.trim() );
+                        XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( docURL );
+                        xmlStream.nextTag();
+                        LOG.debug( "Populating feature store with features from file '" + docURL + "'..." );
+                        FeatureCollection fc = (FeatureCollection) decoder.parseFeature( xmlStream, null );
+                        idContext.resolveXLinks( schema );
+
+                        FeatureStoreTransaction ta = fs.acquireTransaction();
+                        List<String> fids = ta.performInsert( fc, IDGenMode.GENERATE_NEW );
+                        LOG.debug( "Inserted " + fids.size() + " features." );
+                        ta.commit();
+                    } catch ( Exception e ) {
+                        String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+                        LOG.error( msg, e );
+                        throw new FeatureStoreException( msg, e );
+                    }
                 }
             }
         } else {
