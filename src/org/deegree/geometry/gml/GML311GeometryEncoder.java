@@ -46,6 +46,9 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.crs.CRS;
 import org.deegree.crs.CoordinateTransformer;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
@@ -259,7 +262,7 @@ public class GML311GeometryEncoder {
                 if ( !exportSF && ls.getId() != null && exportedIds.contains( ls.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + ls.getId() );
                 } else {
-                    exportCurve( ls );
+                    exportCurve( ls ); // LineString is a type of Curve
                 }
                 writer.writeEndElement();
             }
@@ -278,7 +281,7 @@ public class GML311GeometryEncoder {
                 writer.writeEndElement();
             }
             writer.writeEndElement(); // MultiPoint
-            break;            
+            break;
         case MULTI_POLYGON:
             LOG.debug( "Exporting Geometry with ID " + geometry.getId() );
             MultiPolygon multiPolygon = (MultiPolygon) geometry;
@@ -287,13 +290,14 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "polygonMember" );
                 if ( !exportSF && pol.getId() != null && exportedIds.contains( pol.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + pol.getId() );
+                } else {
+                    exportSurface( pol );
                 }
-                exportSurface( pol );
 
                 writer.writeEndElement(); // polygonMember
             }
             writer.writeEndElement();
-            break;            
+            break;
         case MULTI_SOLID:
             MultiSolid multiSolid = (MultiSolid) geometry;
             startGeometry( "MultiSolid", geometry );
@@ -326,7 +330,7 @@ public class GML311GeometryEncoder {
                 writer.writeEndElement(); // surfaceMember
             }
             writer.writeEndElement();
-            break;            
+            break;
         case MULTI_GEOMETRY:
             // it is the case that we export a general MultiGeometry
             startGeometry( "MultiGeometry", geometry );
@@ -341,7 +345,7 @@ public class GML311GeometryEncoder {
                 writer.writeEndElement(); // geometryMember
             }
             writer.writeEndElement();
-            break;            
+            break;
         }
     }
 
@@ -399,8 +403,8 @@ public class GML311GeometryEncoder {
             for ( CurveSegment curveSeg : curve.getCurveSegments() ) {
                 exportCurveSegment( curveSeg );
             }
-            writer.writeEndElement();
-            writer.writeEndElement();
+            writer.writeEndElement(); // segments
+            writer.writeEndElement(); // Curve
             break;
 
         case LineString:
@@ -1438,7 +1442,37 @@ public class GML311GeometryEncoder {
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
         }
 
-        // TODO handle standard object properties
+        StandardObjectProps props = geometry.getAttachedProperties();
+        if ( props != null ) {
+            exportStandardProps( writer, props );
+        }
+    }
+
+    private void exportStandardProps( XMLStreamWriter writer, StandardObjectProps standardGMLProperties )
+                            throws XMLStreamException {
+
+        StringOrRef description = standardGMLProperties.getDescription();
+        if ( description != null ) {
+            writer.writeStartElement( GMLNS, "description" );
+            if ( description.getRef() != null ) {
+                writer.writeAttribute( XLNNS, "xlink", description.getRef() );
+            }
+            if ( description.getString() != null ) {
+                writer.writeCharacters( description.getString() );
+            }
+            writer.writeEndElement();
+        }
+
+        for ( CodeType name : standardGMLProperties.getNames() ) {
+            writer.writeStartElement( GMLNS, "name" );
+            if ( name.getCodeSpace() != null ) {
+                writer.writeAttribute( "codeSpace", name.getCodeSpace() );
+            }
+            if ( name.getCode() != null ) {
+                writer.writeCharacters( name.getCode() );
+            }
+            writer.writeEndElement();
+        }
     }
 
     private double[] getTransformedCoordinate( CRS inputCRS, double[] inputCoordinate )
