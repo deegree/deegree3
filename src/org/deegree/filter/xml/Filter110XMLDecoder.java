@@ -131,15 +131,9 @@ public class Filter110XMLDecoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( Filter110XMLDecoder.class );
 
-    /**
-     * OGC namespace
-     */
-    protected static final String OGC_NS = "http://www.opengis.net/ogc";
+    private static final String OGC_NS = "http://www.opengis.net/ogc";
 
-    /**
-     * GML namespace
-     */
-    protected static final String GML_NS = "http://www.opengis.net/gml";
+    private static final String GML_NS = "http://www.opengis.net/gml";
 
     private static final QName FEATURE_ID_ELEMENT = new QName( OGC_NS, "FeatureId" );
 
@@ -155,15 +149,9 @@ public class Filter110XMLDecoder {
 
     private static final Map<QName, Operator.Type> elementNameToOperatorType = new HashMap<QName, Operator.Type>();
 
-    /**
-     * Map of Spatial Operators: from names to types
-     */
-    protected static final Map<QName, SpatialOperator.SubType> elementNameToSpatialOperatorType = new HashMap<QName, SpatialOperator.SubType>();
+    private static final Map<QName, SpatialOperator.SubType> elementNameToSpatialOperatorType = new HashMap<QName, SpatialOperator.SubType>();
 
-    /**
-     * Map of Spatial Operators: from types to names
-     */
-    protected static final Map<SpatialOperator.SubType, QName> spatialOperatorTypeToElementName = new HashMap<SpatialOperator.SubType, QName>();
+    private static final Map<SpatialOperator.SubType, QName> spatialOperatorTypeToElementName = new HashMap<SpatialOperator.SubType, QName>();
 
     private static final Map<QName, ComparisonOperator.SubType> elementNameToComparisonOperatorType = new HashMap<QName, ComparisonOperator.SubType>();
 
@@ -274,13 +262,8 @@ public class Filter110XMLDecoder {
      *             if the element is not a valid "wfs:Filter" element
      * @throws XMLStreamException
      */
-    public Filter parse( XMLStreamReader xmlStream )
+    public static Filter parse( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
-        return parseCore( xmlStream );
-    }
-
-    private static Filter parseCore( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
 
         Filter filter = null;
         xmlStream.require( START_ELEMENT, OGC_NS, "Filter" );
@@ -593,7 +576,7 @@ public class Filter110XMLDecoder {
             break;
         case SPATIAL:
             LOG.debug( "Building spatial operator" );
-            operator = parseSpatialOperatorCore( xmlStream );
+            operator = parseSpatialOperator( xmlStream );
             break;
         }
         return operator;
@@ -690,14 +673,7 @@ public class Filter110XMLDecoder {
         return new Literal<GenericCustomPropertyValue>( value );
     }
 
-    /**
-     * Parsing a {@link PropertyName} from a xml stream
-     * 
-     * @param xmlStream
-     * @return a {@link PropertyName}
-     * @throws XMLStreamException
-     */
-    protected static PropertyName parsePropertyName( XMLStreamReader xmlStream )
+    private static PropertyName parsePropertyName( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
@@ -742,7 +718,7 @@ public class Filter110XMLDecoder {
         PropertyName propName = parsePropertyName( xmlStream );
 
         xmlStream.nextTag();
-        Literal literal = parseLiteral( xmlStream );
+        Literal<?> literal = parseLiteral( xmlStream );
         xmlStream.nextTag();
         return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar );
     }
@@ -805,17 +781,7 @@ public class Filter110XMLDecoder {
         return logicalOperator;
     }
 
-    /**
-     * @param xmlStream
-     * @return
-     * @throws XMLStreamException
-     */
-    public SpatialOperator parseSpatialOperator( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        return parseSpatialOperatorCore( xmlStream );
-    }
-
-    private static SpatialOperator parseSpatialOperatorCore( XMLStreamReader xmlStream )
+    private static SpatialOperator parseSpatialOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         SpatialOperator spatialOperator = null;
 
@@ -935,7 +901,7 @@ public class Filter110XMLDecoder {
      *            the operator type -> element name map
      * @return a coma separated list of element names
      */
-    protected static String elemNames( Class<? extends Enum<?>> enumClass, Map<? extends Enum<?>, QName> map ) {
+    private static String elemNames( Class<? extends Enum<?>> enumClass, Map<? extends Enum<?>, QName> map ) {
         List<String> names = new LinkedList<String>();
         for ( Enum<?> e : enumClass.getEnumConstants() ) {
             QName qname = map.get( e );

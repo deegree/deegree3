@@ -283,8 +283,7 @@ public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
                                                                                        adapter.getSystemId() );
                     try {
                         streamWrapper.nextTag();
-                        Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
-                        filter = filterDecoder.parse( streamWrapper );
+                        filter = Filter110XMLDecoder.parse( streamWrapper );
                     } catch ( XMLParsingException e ) {
                         e.printStackTrace();
                         // TODO raise exception

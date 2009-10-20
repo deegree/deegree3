@@ -1512,8 +1512,7 @@ public class SymbologyParser {
                     checkCommon( ruleCommon, localReader );
 
                     if ( localReader.getLocalName().equals( "Filter" ) ) {
-                        Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
-                        filter = filterDecoder.parse( localReader );
+                        filter = Filter110XMLDecoder.parse( localReader );
                     }
 
                     if ( localReader.getLocalName().equals( "ElseFilter" ) ) {

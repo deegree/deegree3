@@ -182,8 +182,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                     // skip START_DOCUMENT
                     xmlStream.nextTag();
 
-                    Filter100XMLDecoder filterDecoder = new Filter100XMLDecoder();
-                    filter = filterDecoder.parse( xmlStream );
+                    filter = Filter100XMLDecoder.parse( xmlStream );
                 } catch ( XMLStreamException e ) {
                     e.printStackTrace();
                     throw new XMLParsingException( this, filterEl, e.getMessage() );
@@ -318,8 +317,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                             null );
                     // skip START_DOCUMENT
                     xmlStream.nextTag();
-                    Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
-                    filter = filterDecoder.parse( xmlStream );
+                    filter = Filter110XMLDecoder.parse( xmlStream );
                 } catch ( XMLStreamException e ) {
                     e.printStackTrace();
                     throw new XMLParsingException( this, filterEl, e.getMessage() );

@@ -54,6 +54,7 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.filter.Filter;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
@@ -155,8 +156,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                 // skip START_DOCUMENT
                 xmlStream.nextTag();
                 // TODO use filter 1.0.0 parser
-                Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
-                filter = filterDecoder.parse( xmlStream );
+                filter = Filter100XMLDecoder.parse( xmlStream );
             } catch ( XMLStreamException e ) {
                 e.printStackTrace();
                 throw new XMLParsingException( this, filterEl, e.getMessage() );
@@ -214,8 +214,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                         null );
                 // skip START_DOCUMENT
                 xmlStream.nextTag();
-                Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
-                filter = filterDecoder.parse( xmlStream );
+                filter = Filter110XMLDecoder.parse( xmlStream );
             } catch ( XMLStreamException e ) {
                 e.printStackTrace();
                 throw new XMLParsingException( this, filterEl, e.getMessage() );

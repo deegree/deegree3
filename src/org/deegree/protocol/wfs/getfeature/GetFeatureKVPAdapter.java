@@ -61,6 +61,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter100XMLDecoder;
+import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.i18n.Messages;
@@ -235,8 +236,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                                                                                        adapter.getSystemId() );
                     try {
                         streamWrapper.nextTag();
-                        Filter100XMLDecoder filterDecoder = new Filter100XMLDecoder();
-                        filter = filterDecoder.parse( streamWrapper );
+                        filter = Filter100XMLDecoder.parse( streamWrapper );
                     } catch ( XMLParsingException e ) {
                         e.printStackTrace();
                         // TODO raise exception
@@ -413,8 +413,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                                                                                        adapter.getSystemId() );
                     try {
                         streamWrapper.nextTag();
-                        Filter100XMLDecoder filterDecoder = new Filter100XMLDecoder();
-                        filter = filterDecoder.parse( streamWrapper );
+                        filter = Filter110XMLDecoder.parse( streamWrapper );
                     } catch ( XMLParsingException e ) {
                         e.printStackTrace();
                         // TODO raise exception

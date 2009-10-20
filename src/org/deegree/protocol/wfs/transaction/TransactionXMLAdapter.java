@@ -187,8 +187,7 @@ public class TransactionXMLAdapter {
         // required: 'ogc:Filter'
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
-        Filter110XMLDecoder filterDecoder = new Filter110XMLDecoder();
-        Filter filter = filterDecoder.parse( xmlStream );
+        Filter filter = Filter110XMLDecoder.parse( xmlStream );
         xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
         return new Delete( handle, ftName, filter );
     }

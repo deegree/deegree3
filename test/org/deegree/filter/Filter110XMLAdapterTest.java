@@ -38,7 +38,6 @@ package org.deegree.filter;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -117,12 +116,14 @@ public class Filter110XMLAdapterTest {
     }
 
     @Test(expected = XMLParsingException.class)
-    public void parseBrokenIdFilterDocument() throws XMLStreamException, FactoryConfigurationError, IOException {
+    public void parseBrokenIdFilterDocument()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         parse( "testfilter_110_id.invalid_xml" );
     }
 
     @Test(expected = XMLParsingException.class)
-    public void parseBrokenIdFilterDocument2() throws XMLStreamException, FactoryConfigurationError, IOException {
+    public void parseBrokenIdFilterDocument2()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         parse( "testfilter_110_id2.invalid_xml" );
     }
 
@@ -142,12 +143,13 @@ public class Filter110XMLAdapterTest {
     private Filter parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         URL url = Filter110XMLAdapterTest.class.getResource( resourceName );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(), url.openStream() );        
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
+                                                                                         url.openStream() );
         xmlStream.nextTag();
         Location loc = xmlStream.getLocation();
-        System.out.println (loc.getLineNumber());
-        System.out.println (loc.getSystemId());
-        System.out.println (loc.getColumnNumber());
+        System.out.println( loc.getLineNumber() );
+        System.out.println( loc.getSystemId() );
+        System.out.println( loc.getColumnNumber() );
         return Filter110XMLDecoder.parse( xmlStream );
     }
 }

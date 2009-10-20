@@ -211,8 +211,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                                             null );
                     // skip START_DOCUMENT
                     xmlStream.nextTag();
-                    Filter110XMLDecoder filerDecoder = new Filter110XMLDecoder();
-                    filter = filerDecoder.parse( xmlStream );
+                    filter = Filter110XMLDecoder.parse( xmlStream );
                 } catch ( XMLStreamException e ) {
                     e.printStackTrace();
                     throw new XMLParsingException( this, filterEl, e.getMessage() );
