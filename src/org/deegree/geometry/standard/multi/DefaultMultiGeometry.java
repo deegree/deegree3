@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.multi;
 
 import java.util.Collection;
@@ -45,20 +45,19 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 import com.vividsolutions.jts.geom.GeometryCollection;
 
 /**
  * Default implementation of {@link MultiGeometry}.
- *
+ * 
  * @param <T>
  *            type of contained geometry objects
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeometry implements MultiGeometry<T> {
@@ -67,7 +66,7 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
 
     /**
      * Creates a new {@link DefaultMultiGeometry} from the given parameters.
-     *
+     * 
      * @param id
      *            identifier, may be null
      * @param crs
@@ -87,25 +86,20 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
     }
 
     @Override
-    public Point getCentroid() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public GeometryType getGeometryType() {
         return GeometryType.MULTI_GEOMETRY;
     }
 
     @Override
     protected GeometryCollection buildJTSGeometry() {
-        com.vividsolutions.jts.geom.Geometry [] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
+        com.vividsolutions.jts.geom.Geometry[] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
         int i = 0;
         for ( Geometry geometry : members ) {
             jtsMembers[i++] = getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createGeometryCollection( jtsMembers );
     }
-    
+
     // -----------------------------------------------------------------------
     // delegate methods for List<T>
     // -----------------------------------------------------------------------

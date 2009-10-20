@@ -70,6 +70,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -271,8 +272,6 @@ public class Java2DRenderer implements Renderer {
     }
 
     private void render( TextStyling styling, Font font, String text, Point p ) {
-        p = transform( p );
-
         Point2D.Double pt = (Point2D.Double) worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ), null );
         double x = pt.x + styling.displacementX;
         double y = pt.y + styling.displacementY;
@@ -348,8 +347,7 @@ public class Java2DRenderer implements Renderer {
 
         if ( geom instanceof Point ) {
             render( styling, font, text, (Point) geom );
-        }
-        if ( geom instanceof Surface ) {
+        } else if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
             if ( styling.linePlacement != null ) {
                 for ( SurfacePatch patch : surface.getPatches() ) {
@@ -365,12 +363,17 @@ public class Java2DRenderer implements Renderer {
             } else {
                 render( styling, font, text, surface.getCentroid() );
             }
-        }
-        if ( geom instanceof Curve ) {
+        } else if ( geom instanceof Curve ) {
             if ( styling.linePlacement != null ) {
                 render( styling, font, text, (Curve) geom );
             }
+        } else if ( geom instanceof MultiSurface ) {
+            render( styling, font, text, ( (MultiSurface) geom ).getCentroid() );
+        } else {
+            LOG.warn( "Trying to use unsupported geometry type '{}' for text rendering.",
+                      geom.getClass().getSimpleName() );
         }
+
     }
 
     private void render( PointStyling styling, double x, double y ) {
@@ -434,7 +437,7 @@ public class Java2DRenderer implements Renderer {
                 render( styling, point );
             }
         }
-        if ( geom instanceof MultiGeometry ) {
+        if ( geom instanceof MultiGeometry<?> ) {
             LOG.trace( "Breaking open multi geometry." );
             MultiGeometry<?> mc = (MultiGeometry<?>) geom;
             for ( Geometry g : mc ) {
@@ -494,7 +497,7 @@ public class Java2DRenderer implements Renderer {
                 }
             }
         }
-        if ( geom instanceof MultiGeometry ) {
+        if ( geom instanceof MultiGeometry<?> ) {
             LOG.trace( "Breaking open multi geometry." );
             MultiGeometry<?> mc = (MultiGeometry<?>) geom;
             for ( Geometry g : mc ) {
@@ -549,7 +552,7 @@ public class Java2DRenderer implements Renderer {
             LOG.trace( "Drawing {} with {}", geom, styling );
             render( styling, (Surface) geom );
         }
-        if ( geom instanceof MultiGeometry ) {
+        if ( geom instanceof MultiGeometry<?> ) {
             LOG.trace( "Breaking open multi geometry." );
             for ( Geometry g : (MultiGeometry<?>) geom ) {
                 render( styling, g );
