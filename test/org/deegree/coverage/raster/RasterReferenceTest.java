@@ -223,28 +223,6 @@ public class RasterReferenceTest {
      * 
      */
     @Test
-    public void testCreateScaledEnvelope() {
-        RasterReference r = new RasterReference( Type.OUTER, 10.0, 210.0, 1.0, -1.0 );
-        Envelope envelope = geomFactory.createEnvelope( new double[] { 10.0, 10.0 }, new double[] { 110.0, 210.0 },
-                                                        null );
-        RasterReference scaled = r.createResizedEnvelope( envelope, 50, 25 );
-        assertEquals( 10.0, scaled.getX0( Type.OUTER ), DELTA );
-        assertEquals( 210.0, scaled.getY0( Type.OUTER ), DELTA );
-        assertEquals( 2.0, scaled.getXRes(), DELTA );
-        assertEquals( -8.0, scaled.getYRes(), DELTA );
-        envelope = scaled.getEnvelope( 50, 25 );
-        assertEquals( 100.0, envelope.getSpan0(), DELTA );
-        assertEquals( 200.0, envelope.getSpan1(), DELTA );
-        int[] size = scaled.getSize( envelope );
-        assertEquals( 50, size[0] );
-        assertEquals( 25, size[1] );
-
-    }
-
-    /**
-     * 
-     */
-    @Test
     public void testTiling() {
         Envelope envelope;
         RasterReference subEnv;
