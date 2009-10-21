@@ -63,7 +63,8 @@ public class SimplePropertyType extends AbstractPropertyType {
         BOOLEAN,
         NUMBER,
         DATE,
-        DATE_TIME
+        DATE_TIME,
+        TIME
     }
 
     private PrimitiveType primitiveType;

@@ -37,10 +37,11 @@ package org.deegree.filter.comparison;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Date;
 
+import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.types.datetime.DateTime;
+import org.deegree.commons.types.datetime.Time;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
 import org.deegree.filter.i18n.Messages;
@@ -66,14 +67,14 @@ public abstract class ComparisonOperator implements Operator {
     public abstract SubType getSubType();
 
     /**
-     * Performs a checked cast to {@link Comparable}. If the given value is neither null nor a {@link Comparable} instance, a
-     * corresponding {@link FilterEvaluationException} is thrown.
+     * Performs a checked cast to {@link Comparable}. If the given value is neither null nor a {@link Comparable}
+     * instance, a corresponding {@link FilterEvaluationException} is thrown.
      * 
      * @param value
      * @return the very same value (if it is a {@link Comparable} or <code>null</code>)
      * @throws FilterEvaluationException
      *             if the value is neither <code>null</code> nor a {@link Comparable}
-     */    
+     */
     protected Comparable<Object> checkComparableOrNull( Object value )
                             throws FilterEvaluationException {
         if ( value != null && !( value instanceof Comparable<?> ) ) {
@@ -82,7 +83,6 @@ public abstract class ComparisonOperator implements Operator {
         }
         return (Comparable<Object>) value;
     }
-    
 
     protected Pair<Object, Object> makeComparable( Object value1, Object value2 )
                             throws FilterEvaluationException {
@@ -92,7 +92,19 @@ public abstract class ComparisonOperator implements Operator {
                 result = new Pair<Object, Object>( value1, new BigDecimal( value2.toString() ) );
             } else if ( value1 instanceof Date ) {
                 try {
-                    result = new Pair<Object, Object>( value1, DateUtils.parseISO8601Date( value2.toString() ) );
+                    result = new Pair<Object, Object>( value1, new Date( value2.toString() ) );
+                } catch ( ParseException e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+            } else if ( value1 instanceof DateTime ) {
+                try {
+                    result = new Pair<Object, Object>( value1, new DateTime( value2.toString() ) );
+                } catch ( ParseException e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+            } else if ( value1 instanceof Time ) {
+                try {
+                    result = new Pair<Object, Object>( value1, new Time( value2.toString() ) );
                 } catch ( ParseException e ) {
                     throw new FilterEvaluationException( e.getMessage() );
                 }
@@ -102,12 +114,24 @@ public abstract class ComparisonOperator implements Operator {
                 result = new Pair<Object, Object>( new BigDecimal( value1.toString() ), value2 );
             } else if ( value2 instanceof Date ) {
                 try {
-                    result = new Pair<Object, Object>( DateUtils.parseISO8601Date( value1.toString() ), value2 );
+                    result = new Pair<Object, Object>( new Date( value1.toString() ), value2 );
+                } catch ( ParseException e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+            } else if ( value2 instanceof DateTime ) {
+                try {
+                    result = new Pair<Object, Object>( new DateTime( value1.toString() ), value2 );
+                } catch ( ParseException e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
+            } else if ( value2 instanceof Time ) {
+                try {
+                    result = new Pair<Object, Object>( new Time( value1.toString() ), value2 );
                 } catch ( ParseException e ) {
                     throw new FilterEvaluationException( e.getMessage() );
                 }
             }
         }
         return result;
-    }    
+    }
 }

@@ -40,12 +40,15 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+
+import junit.framework.Assert;
 
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.gml.GMLVersion;
@@ -73,7 +76,7 @@ import org.junit.Test;
 public class GMLFeatureDecoderTest {
 
     private static final String BASE_DIR = "testdata/features/";
-   
+
     @Test
     public void testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
@@ -90,8 +93,8 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
     }
-    
-    @Test (expected=XMLParsingException.class)
+
+    @Test(expected = XMLParsingException.class)
     public void testParsingPhilosopherFeatureCollectionNoSchema()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
@@ -106,7 +109,7 @@ public class GMLFeatureDecoderTest {
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
     }
-    
+
     @Test
     public void testParsingCiteSF0()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
@@ -123,13 +126,24 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
 
-        XMLStreamWriter writer = new FormattingXMLStreamWriter (XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter( "/tmp/out.xml" ) ));
+        XMLStreamWriter writer = new FormattingXMLStreamWriter(
+                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                      new FileWriter(
+                                                                                                                                      "/tmp/out.xml" ) ) );
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer, null );
         encoder.export( fc );
         writer.close();
+
+        for ( Feature feature : fc ) {
+            if ( "f094".equals( feature.getId() ) ) {
+                Property<?> decimalProp = feature.getProperty( new QName( "http://cite.opengeospatial.org/gmlsf",
+                                                                               "decimalProperty" ) );
+                System.out.println (decimalProp);
+            }
+        }
     }
 
     @Test
@@ -148,7 +162,10 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
 
-        XMLStreamWriter writer = new FormattingXMLStreamWriter (XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter( "/tmp/out.xml" ) ));
+        XMLStreamWriter writer = new FormattingXMLStreamWriter(
+                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                      new FileWriter(
+                                                                                                                                      "/tmp/out.xml" ) ) );
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -156,19 +173,18 @@ public class GMLFeatureDecoderTest {
         encoder.export( fc );
         writer.close();
     }
-    
-//    @Test
+
+    // @Test
     public void testParsingCityGML()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException, TransformationException {
 
-
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
-        
-        URL docURL = new URL ("file:/home/schneider/Desktop/waldbruecke_v1.0.0.gml");
+
+        URL docURL = new URL( "file:/home/schneider/Desktop/waldbruecke_v1.0.0.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
@@ -177,22 +193,23 @@ public class GMLFeatureDecoderTest {
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
-        
+
         // work with the fc
         for ( Feature feature : fc ) {
-            System.out.println ("member fid: " + feature.getId());
+            System.out.println( "member fid: " + feature.getId() );
         }
-        System.out.println ("member features: " + fc.size());
-    }        
-    
-//    @Test
+        System.out.println( "member features: " + fc.size() );
+    }
+
+    // @Test
     public void testParsingXPlan20()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException {
 
         // BP2070
-        URL docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/BP2070.gml" );
+        URL docURL = new URL(
+                              "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/BP2070.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
@@ -202,48 +219,44 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
 
-        // BP2135        
-        docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/BP2135.gml" );
-        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
+        // BP2135
+        docURL = new URL( "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/BP2135.gml" );
+        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
         xmlReader.nextTag();
         idContext = new GMLIdContext();
         gmlAdapter = new GMLFeatureDecoder( null, idContext );
         wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
-        
+
         // PlanA
-        docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/FPlan_2.0.gml" );
-        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
+        docURL = new URL( "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/FPlan_2.0.gml" );
+        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
         xmlReader.nextTag();
         idContext = new GMLIdContext();
         gmlAdapter = new GMLFeatureDecoder( null, idContext );
         wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
-        
+
         // LA22
-        docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/LA 22.gml" );
-        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
+        docURL = new URL( "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/LA 22.gml" );
+        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
         xmlReader.nextTag();
         idContext = new GMLIdContext();
         gmlAdapter = new GMLFeatureDecoder( null, idContext );
         wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
-        
+
         // LA67
-        docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/LA67_2_0.gml" );
-        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
+        docURL = new URL( "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/LA67_2_0.gml" );
+        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
         xmlReader.nextTag();
         idContext = new GMLIdContext();
         gmlAdapter = new GMLFeatureDecoder( null, idContext );
         wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );        
-    }    
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+    }
 }

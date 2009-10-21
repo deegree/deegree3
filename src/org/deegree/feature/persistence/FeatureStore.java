@@ -96,7 +96,7 @@ public interface FeatureStore {
      * 
      * @param ftName
      *            name of the feature type, cannot be null and must be served by this store
-     * @return metadata, never null
+     * @return metadata for the feature type, never <code>null</code>
      */
     public StoredFeatureTypeMetadata getMetadata( QName ftName );
 

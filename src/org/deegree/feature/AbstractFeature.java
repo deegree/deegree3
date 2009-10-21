@@ -35,17 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.types.gml.StandardObjectProps;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.gml.FeatureReference;
-import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.xpath.FeatureNode;
 import org.deegree.feature.xpath.FeatureXPath;
 import org.deegree.feature.xpath.PropertyNode;
@@ -81,44 +76,7 @@ public abstract class AbstractFeature implements Feature {
         for ( Object node : selectedNodes ) {
             if ( node instanceof PropertyNode ) {
                 Property<?> prop = ( (PropertyNode) node ).getProperty();
-                PropertyType pt = prop.getType();
-
-                Object value = ( (PropertyNode) node ).getProperty().getValue();
-                if ( pt instanceof SimplePropertyType ) {
-                    switch ( ( (SimplePropertyType) pt ).getPrimitiveType() ) {
-                    case BOOLEAN: {
-                        value = Boolean.parseBoolean( (String) value );
-                        break;
-                    }
-                    case DATE: {
-                        try {
-                            value = DateUtils.parseISO8601Date( (String) value );
-                        } catch ( ParseException e ) {
-                            throw new JaxenException( e.getMessage(), e );
-                        }
-                        break;
-                    }
-                    case DATE_TIME: {
-                        try {
-                            value = DateUtils.parseISO8601Date( (String) value );
-                        } catch ( ParseException e ) {
-                            throw new JaxenException( e.getMessage(), e );
-                        }
-                        break;
-                    }
-                    case NUMBER: {
-                        value = new BigDecimal( (String) value );
-                        break;
-                    }
-                    case STRING: {
-                        // nothing to do
-                        break;
-                    }
-                    }
-                }
-                resultValues[i++] = value;
-            } else {
-                resultValues[i++] = node;
+                resultValues[i++] = prop.getValue();
             }
         }
         return resultValues;

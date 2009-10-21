@@ -59,6 +59,7 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.feature.gml.GMLFeatureDecoder;
@@ -73,6 +74,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -232,6 +234,7 @@ public class MemoryFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
+        // determine matching features
         FeatureCollection fc = ftToFeatures.get( ft );
         if ( query instanceof FilterQuery ) {
             if ( ( (FilterQuery) query ).getFilter() != null ) {
@@ -242,6 +245,13 @@ public class MemoryFeatureStore implements FeatureStore {
                 }
             }
         }
+
+        // sort features
+        SortProperty[] sortCrit = query.getSortBy();
+        if ( sortCrit != null ) {
+            fc = Features.sortFc( fc, sortCrit );
+        }
+
         return fc;
     }
 

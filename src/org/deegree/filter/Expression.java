@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
+import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.types.datetime.DateTime;
+import org.deegree.commons.types.datetime.Time;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
@@ -54,7 +57,9 @@ import org.deegree.geometry.Geometry;
  * <ul>
  * <li><code>String</code></li>
  * <li><code>Number</code></li>
- * <li><code>Date</code></li>
+ * <li>{@link Date}</li>
+ * <li>{@link DateTime}</li>
+ * <li>{@link Time}</li>
  * <li>{@link Geometry}</li>
  * </ul>
  * NOTE: Values in the returned array may also be <code>null</code>.

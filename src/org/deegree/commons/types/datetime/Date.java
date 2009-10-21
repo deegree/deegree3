@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,57 +33,46 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.comparison;
+package org.deegree.commons.types.datetime;
 
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.PropertyName;
+import java.text.ParseException;
+
+import org.deegree.commons.utils.time.DateUtils;
 
 /**
- * TODO add documentation here
+ * Represents an <code>xs:date</code> instance.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class PropertyIsNull extends ComparisonOperator {
+public class Date implements Comparable<Date> {
 
-    private final PropertyName propName;
+    private final String isoDate;
 
-    public PropertyIsNull( PropertyName propName ) {
-        this.propName = propName;
-    }
+    private final java.util.Date date;
 
-    public PropertyName getPropertyName() {
-        return propName;
-    }
-
-    @Override
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_NULL;
+    public Date( String isoDate ) throws ParseException {
+        this.isoDate = isoDate;
+        date = DateUtils.parseISO8601Date( isoDate );
     }
 
     @Override
-    public boolean evaluate( MatchableObject object )
-                            throws FilterEvaluationException {
+    public int compareTo( Date o ) {
+        return this.date.compareTo( o.date );
+    }
 
-        Object[] paramValues = propName.evaluate( object );
-        if ( paramValues.length == 0 ) {
-            return true;
+    @Override
+    public boolean equals( Object o ) {
+        if ( !( o instanceof Date ) ) {
+            return false;
         }
-        for ( Object value : paramValues ) {
-            if ( value == null ) {
-                return true;
-            }
-        }
-        return false;
+        return this.date.equals( ( (Date) o ).date );
     }
 
     @Override
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNull\n";
-        s += propName.toString( indent + "  " );
-        return s;
+    public String toString() {
+        return isoDate;
     }
 }

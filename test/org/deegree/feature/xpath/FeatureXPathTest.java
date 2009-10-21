@@ -210,8 +210,10 @@ public class FeatureXPathTest {
     @Test
     public void testXPath9()
                             throws JaxenException {
+
         XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[app:id < 3]/app:name" );
         xpath.setNamespaceContext( nsContext );
+
         List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
         Set<String> names = new HashSet<String>();
         for ( Node node : selectedNodes ) {

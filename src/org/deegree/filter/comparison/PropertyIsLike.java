@@ -39,6 +39,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
@@ -111,10 +112,10 @@ public class PropertyIsLike extends ComparisonOperator {
         Object[] paramValues = propName.evaluate( object );
 
         for ( Object value : paramValues ) {
-            Comparable<Object> parameter1Value = checkComparableOrNull( value );
-            // TODO handle complex literals
-            if ( matches( literal.getValue().toString(), parameter1Value.toString() ) ) {
-                return true;
+            if (!(value instanceof Geometry)) {
+                if ( matches( literal.getValue().toString(), value.toString() ) ) {
+                    return true;
+                }                
             }
         }
         return false;

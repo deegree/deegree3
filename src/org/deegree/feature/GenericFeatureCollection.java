@@ -126,7 +126,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * @param fid
      * @param memberFeatures
      */
-    public GenericFeatureCollection( String fid, List<Feature> memberFeatures ) {
+    public GenericFeatureCollection( String fid, Collection<Feature> memberFeatures ) {
         this.fid = fid;
         this.memberFeatures = new ArrayList<Feature>( memberFeatures );
         featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );

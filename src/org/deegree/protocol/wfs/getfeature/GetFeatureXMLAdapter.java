@@ -326,14 +326,18 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
             List<SortProperty> sortProps = new ArrayList<SortProperty>();
             OMElement sortByEl = getElement( queryEl, new XPath( "ogc:SortBy", nsContext ) );
-            List<OMElement> sortPropertyElements = getElements( sortByEl, new XPath( "SortProperty", nsContext ) );
-            for ( OMElement sortPropertyEl : sortPropertyElements ) {
-                OMElement propName = getRequiredElement( sortPropertyEl, new XPath( "ogc:PropertyName", nsContext ) );
-                OMElement sortOrder = getElement( sortPropertyEl, new XPath( "SortOrder", nsContext ) );
-                SortProperty sortProp = new SortProperty( new PropertyName( propName.getText(),
-                                                                            getNamespaceContext( propName ) ),
-                                                          sortOrder.getText().equals( "ASC" ) );
-                sortProps.add( sortProp );
+            if ( sortByEl != null ) {
+                List<OMElement> sortPropertyElements = getRequiredElements( sortByEl, new XPath( "ogc:SortProperty",
+                                                                                                 nsContext ) );
+                for ( OMElement sortPropertyEl : sortPropertyElements ) {
+                    OMElement propNameEl = getRequiredElement( sortPropertyEl,
+                                                               new XPath( "ogc:PropertyName", nsContext ) );
+                    String sortOrder = getNodeAsString( sortPropertyEl, new XPath( "ogc:SortOrder", nsContext ), "ASC" );
+                    SortProperty sortProp = new SortProperty( new PropertyName( propNameEl.getText(),
+                                                                                getNamespaceContext( propNameEl ) ),
+                                                              sortOrder.equals( "ASC" ) );
+                    sortProps.add( sortProp );
+                }
             }
 
             String queryHandle = getNodeAsString( queryEl, new XPath( "@handle", nsContext ), null );

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,40 +32,47 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+----------------------------------------------------------------------------*/
+package org.deegree.commons.types.datetime;
 
-import org.deegree.feature.Property;
+import java.text.ParseException;
+
+import org.deegree.commons.utils.time.DateUtils;
 
 /**
- * TODO add documentation here
+ * Represents an <code>xs:dateTime</code> instance. 
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class PropertyNode extends ElementNode {
+public class DateTime implements Comparable<DateTime> {
 
-    private FeatureNode parent;
+    private final String isoDate;
 
-    private Property<?> prop;
+    private final java.util.Date date;
 
-    PropertyNode( FeatureNode parent, final Property<?> prop ) {
-        super( prop.getName() );
-        this.parent = parent;
-        this.prop = prop;
+    public DateTime( String isoDate ) throws ParseException {
+        this.isoDate = isoDate;
+        date = DateUtils.parseISO8601Date( isoDate );
     }
 
     @Override
-    public Node getParent() {
-        return parent;
+    public int compareTo( DateTime o ) {
+        return this.date.compareTo( o.date );
     }
 
-    /**
-     * @return the modified property which converts values to strings
-     */
-    public Property<?> getProperty() {
-        return prop;
+    @Override
+    public boolean equals( Object o ) {
+        if ( !( o instanceof Date ) ) {
+            return false;
+        }
+        return this.date.equals( ( (DateTime) o ).date );
     }
+
+    @Override
+    public String toString() {
+        return isoDate;
+    }    
 }

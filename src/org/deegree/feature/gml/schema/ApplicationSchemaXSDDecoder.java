@@ -655,7 +655,7 @@ public class ApplicationSchemaXSDDecoder {
             break;
         }
         case XSConstants.TIME_DT: {
-            pt = PrimitiveType.DATE_TIME;
+            pt = PrimitiveType.TIME;
             break;
         }
         

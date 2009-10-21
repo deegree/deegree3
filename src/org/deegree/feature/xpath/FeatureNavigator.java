@@ -47,8 +47,6 @@ import org.jaxen.JaxenConstants;
 import org.jaxen.XPath;
 import org.jaxen.saxpath.SAXPathException;
 import org.jaxen.util.SingleObjectIterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
@@ -58,11 +56,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-class FeatureNavigator extends DefaultNavigator {
-
+class FeatureNavigator extends DefaultNavigator {  
+    
     private static final long serialVersionUID = 5684363154723828577L;
-
-    private static final Logger LOG = LoggerFactory.getLogger( FeatureNavigator.class );
 
     private DocumentNode documentNode;
 
@@ -289,9 +285,8 @@ class FeatureNavigator extends DefaultNavigator {
         if ( node instanceof PropertyNode ) {
             Property prop = ( (PropertyNode) node ).getProperty();
             Object propValue = prop.getValue();
-            if ( propValue instanceof String ) {
-                value = (String) propValue;
-            }
+            // TODO check if conversion is feasible (e.g. Geometry.toString() may be expensive)
+            value = propValue.toString();
         }
         return value;
     }
