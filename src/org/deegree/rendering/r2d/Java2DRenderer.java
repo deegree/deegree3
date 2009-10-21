@@ -208,6 +208,7 @@ public class Java2DRenderer implements Renderer {
             applyGraphicFill( stroke.fill );
         }
         if ( stroke.stroke != null ) {
+            LOG.warn( "Used graphical stroke. This is not supported yet! " );
         }
 
         int linecap = CAP_SQUARE;
