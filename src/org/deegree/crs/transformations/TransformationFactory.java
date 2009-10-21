@@ -499,11 +499,11 @@ public class TransformationFactory {
                             throws TransformationException {
         final GeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
         final GeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
-        if ( sourceDatum.equals( targetDatum ) ) {
-            LOG.debug( "The datums of geographic (source): " + sourceCRS.getCode() + " equals geographic (target): "
-                       + targetCRS.getCode() + " returning null" );
-            return null;
-        }
+        // if ( sourceDatum.equals( targetDatum ) ) {
+        // LOG.debug( "The datums of geographic (source): " + sourceCRS.getCode() + " equals geographic (target): "
+        // + targetCRS.getCode() + " returning null" );
+        // return null;
+        // }
         LOG.debug( "Creating geographic ->geographic transformation: from (source): " + sourceCRS.getCode()
                    + " to(target): " + targetCRS.getCode() );
         final Ellipsoid sourceEllipsoid = sourceDatum.getEllipsoid();
