@@ -73,10 +73,8 @@ public class Features {
      */
     public static FeatureCollection sortFc( final FeatureCollection fc, final SortProperty[] sortCrits ) {
 
-        LOG.info( "*** SORTING *** " );
         FeatureCollection sortedFc = fc;
         if ( sortCrits != null && sortCrits.length > 0 ) {
-            LOG.info( "*** SORTING 2 *** " );
             SortedSet<Feature> sortedFeatures = new TreeSet<Feature>( new Comparator<Feature>() {
                 @SuppressWarnings( { "unchecked", "synthetic-access" })
                 @Override

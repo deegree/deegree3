@@ -43,6 +43,7 @@ import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -261,8 +262,12 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
     @SuppressWarnings("boxing")
     private static GetFeature parse110( Map<String, String> kvpParams )
                             throws Exception {
+
         // optional: 'NAMESPACE'
         Map<String, String> nsBindings = extractNamespaceBindings( kvpParams );
+        if ( nsBindings == null ) {
+            nsBindings = Collections.emptyMap();
+        }
 
         NamespaceContext nsContext = new NamespaceContext();
         if ( nsBindings != null ) {

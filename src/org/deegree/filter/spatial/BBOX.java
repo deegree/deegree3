@@ -35,16 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.deegree.crs.CRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +78,9 @@ public class BBOX extends SpatialOperator {
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
+
+        System.out.println ("Checking against " + object.getId());        
+        
         for ( Object paramValue : geometry.evaluate( object ) ) {
             Geometry param1Value = checkGeometryOrNull( paramValue );
             if ( param1Value != null ) {

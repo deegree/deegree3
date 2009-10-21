@@ -107,6 +107,8 @@ public class GML311FeatureEncoder {
 
     private int traverseXlinkExpiry;
 
+    private boolean exportSf;
+
     /**
      * @param writer
      * @param outputCRS
@@ -131,10 +133,11 @@ public class GML311FeatureEncoder {
      *            properties to be exported, may be <code>null</code>
      * @param traverseXlinkDepth
      * @param traverseXlinkExpiry
-     * @param exportSfGeometries 
+     * @param exportSfGeometries
      */
-    public GML311FeatureEncoder( XMLStreamWriter writer, CRS outputCRS, String referenceTemplate, PropertyName[] requestedProps,
-                                 int traverseXlinkDepth, int traverseXlinkExpiry, boolean exportSfGeometries ) {
+    public GML311FeatureEncoder( XMLStreamWriter writer, CRS outputCRS, String referenceTemplate,
+                                 PropertyName[] requestedProps, int traverseXlinkDepth, int traverseXlinkExpiry,
+                                 boolean exportSfGeometries ) {
         this.writer = writer;
         this.referenceTemplate = referenceTemplate;
         if ( requestedProps != null ) {
@@ -145,6 +148,7 @@ public class GML311FeatureEncoder {
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
         geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportSfGeometries, exportedIds );
+        this.exportSf = exportSfGeometries;
     }
 
     public void export( Feature feature )
@@ -261,11 +265,10 @@ public class GML311FeatureEncoder {
             writer.writeEndElement();
         } else if ( propertyType instanceof GeometryPropertyType ) {
             Geometry gValue = (Geometry) value;
-            if ( gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
+            if ( !exportSf && gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeAttribute( XLNNS, "href", "#" + gValue.getId() );
             } else {
-                exportedIds.add( gValue.getId() );
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 geometryExporter.export( (Geometry) value );
                 writer.writeEndElement();

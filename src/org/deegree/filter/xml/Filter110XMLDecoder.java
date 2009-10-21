@@ -82,9 +82,12 @@ import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.comparison.ComparisonOperator.SubType;
 import org.deegree.filter.expression.Add;
+import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.Sub;
 import org.deegree.filter.function.Categorize;
 import org.deegree.filter.function.ChangeCase;
 import org.deegree.filter.function.Concatenate;
@@ -329,8 +332,7 @@ public class Filter110XMLDecoder {
             String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( Expression.Type.class, expressionTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
-        }
-
+        }       
         switch ( type ) {
         case ADD: {
             xmlStream.nextTag();
@@ -338,6 +340,7 @@ public class Filter110XMLDecoder {
             xmlStream.nextTag();
             Expression param2 = parseExpression( xmlStream );
             expression = new Add( param1, param2 );
+            xmlStream.nextTag();
             break;
         }
         case SUB: {
@@ -345,7 +348,8 @@ public class Filter110XMLDecoder {
             Expression param1 = parseExpression( xmlStream );
             xmlStream.nextTag();
             Expression param2 = parseExpression( xmlStream );
-            expression = new Add( param1, param2 );
+            expression = new Sub( param1, param2 );
+            xmlStream.nextTag();
             break;
         }
         case MUL: {
@@ -353,7 +357,8 @@ public class Filter110XMLDecoder {
             Expression param1 = parseExpression( xmlStream );
             xmlStream.nextTag();
             Expression param2 = parseExpression( xmlStream );
-            expression = new Add( param1, param2 );
+            expression = new Mul( param1, param2 );
+            xmlStream.nextTag();
             break;
         }
         case DIV: {
@@ -361,7 +366,8 @@ public class Filter110XMLDecoder {
             Expression param1 = parseExpression( xmlStream );
             xmlStream.nextTag();
             Expression param2 = parseExpression( xmlStream );
-            expression = new Add( param1, param2 );
+            expression = new Div( param1, param2 );
+            xmlStream.nextTag();
             break;
         }
         case PROPERTY_NAME: {
@@ -860,8 +866,8 @@ public class Filter110XMLDecoder {
                 break;
             }
             case DISJOINT: {
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parse( wrapper );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Disjoint( param1, param2 );
                 break;
             }
@@ -878,8 +884,8 @@ public class Filter110XMLDecoder {
                 break;
             }
             case EQUALS: {
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parse( wrapper, null );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Equals( param1, param2 );
                 break;
             }

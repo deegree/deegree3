@@ -229,6 +229,16 @@ public class MemoryFeatureStore implements FeatureStore {
 
         QName ftName = query.getTypeNames()[0].getFeatureTypeName();
         FeatureType ft = schema.getFeatureType( ftName );
+
+        // TODO remove this quirk
+        if ( ft == null ) {
+            for ( FeatureType schemaFt : schema.getFeatureTypes() ) {
+                if ( ftName.getLocalPart().equals( ftName.getLocalPart() ) ) {
+                    ft = schemaFt;
+                    break;
+                }
+            }
+        }
         if ( ft == null ) {
             String msg = "Feature type '" + ftName + "' is not served by this datastore.";
             throw new UnsupportedOperationException( msg );
