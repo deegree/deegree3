@@ -232,6 +232,13 @@ public class Style {
         this.name = name;
     }
 
+    /**
+     * @return the name of the feature type (or null if not constrained)
+     */
+    public QName getFeatureType() {
+        return featureType;
+    }
+
     class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
         U value;
 

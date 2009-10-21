@@ -36,6 +36,7 @@
 
 package org.deegree.feature.persistence.memory;
 
+import static java.util.Collections.singletonList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -347,11 +348,23 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
+    public FeatureCollection query( QName featureType, Filter filter, Envelope bbox, boolean withGeometries,
+                                    boolean exact )
                             throws FeatureStoreException, FilterEvaluationException {
         FeatureCollection res = new GenericFeatureCollection();
 
-        for ( FeatureType ft : ftToFeatures.keySet() ) {
+        Collection<FeatureType> types;
+        if ( featureType != null ) {
+            FeatureType tp = schema.getFeatureType( featureType );
+            if ( tp == null ) {
+                return res;
+            }
+            types = singletonList( schema.getFeatureType( featureType ) );
+        } else {
+            types = ftToFeatures.keySet();
+        }
+
+        for ( FeatureType ft : types ) {
             FeatureCollection fc = ftToFeatures.get( ft );
             Envelope fcenv = fc.getEnvelope();
             try {

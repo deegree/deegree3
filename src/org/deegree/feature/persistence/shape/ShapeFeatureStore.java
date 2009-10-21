@@ -223,7 +223,7 @@ public class ShapeFeatureStore implements FeatureStore {
             ft = new GenericFeatureType( new QName( new File( name ).getName() ),
                                          Collections.<PropertyType> singletonList( geomProp ), false );
         }
-        ftMetadata = new StoredFeatureTypeMetadata( ft, this, "" + ft.getName(), "" + ft.getName(), crs );        
+        ftMetadata = new StoredFeatureTypeMetadata( ft, this, "" + ft.getName(), "" + ft.getName(), crs );
         schema = new ApplicationSchema( new FeatureType[] { ft }, null, null );
     }
 
@@ -327,8 +327,14 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
+    public FeatureCollection query( QName featureType, Filter filter, Envelope bbox, boolean withGeometries,
+                                    boolean exact )
                             throws FilterEvaluationException, FeatureStoreException {
+
+        if ( featureType != null && !featureType.equals( ft ) ) {
+            // or null?
+            return new GenericFeatureCollection();
+        }
 
         checkForUpdate();
 

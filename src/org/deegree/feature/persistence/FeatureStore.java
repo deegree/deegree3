@@ -114,6 +114,7 @@ public interface FeatureStore {
      * <p>
      * TODO integrate properly with the other query methods
      * 
+     * @param featureType
      * @param filter
      * @param bbox
      *            if the bbox filter is contained in the filter, it will be evaluated by deegree, if given here, the
@@ -127,7 +128,8 @@ public interface FeatureStore {
      * @throws FilterEvaluationException
      *             if the filter could not be evaluated
      */
-    public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
+    public FeatureCollection query( QName featureType, Filter filter, Envelope bbox, boolean withGeometries,
+                                    boolean exact )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**
