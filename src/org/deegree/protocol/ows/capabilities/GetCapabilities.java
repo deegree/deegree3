@@ -262,7 +262,7 @@ public class GetCapabilities {
         s += "acceptVersions={" + ArrayUtils.join( ",", acceptVersions ) + "},";
         s += "sections={" + ArrayUtils.join( ",", sections ) + "},";
         s += "acceptFormats={" + ArrayUtils.join( ",", acceptFormats ) + "},";
-        s += "updateSequence=" + updateSequence + "},";
+        s += "updateSequence={" + updateSequence + "},";
         s += "languages={" + ArrayUtils.join( ",", languages ) + "}";
         s += "}";
         return s;
