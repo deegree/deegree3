@@ -119,6 +119,16 @@ public class GML21GeometryDecoder {
 
     /**
      * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public Geometry parse( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parse( xmlStream, null );
+    }
+
+    /**
+     * @param xmlStream
      * @param defaultCRS
      * @return
      * @throws XMLStreamException
@@ -159,6 +169,16 @@ public class GML21GeometryDecoder {
         }
         return geometry;
 
+    }
+
+    /**
+     * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public MultiPolygon parseMultiPolygon( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parseMultiPolygon( xmlStream, null );
     }
 
     /**
@@ -224,6 +244,16 @@ public class GML21GeometryDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         return polygon;
+    }
+
+    /**
+     * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public MultiLineString parseMultiLineString( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parseMultiLineString( xmlStream, null );
     }
 
     /**
@@ -294,6 +324,16 @@ public class GML21GeometryDecoder {
 
     /**
      * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public MultiPoint parseMultiPoint( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parseMultiPoint( xmlStream, null );
+    }
+
+    /**
+     * @param xmlStream
      * @param defaultCRS
      * @return
      * @throws XMLStreamException
@@ -358,6 +398,16 @@ public class GML21GeometryDecoder {
 
     /**
      * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public MultiGeometry<Geometry> parseMultiGeometry( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parseMultiGeometry( xmlStream, null );
+    }
+
+    /**
+     * @param xmlStream
      * @param defaultCRS
      * @return
      * @throws XMLStreamException
@@ -418,6 +468,16 @@ public class GML21GeometryDecoder {
 
     /**
      * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public Envelope parseBox( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parseBox( xmlStream, null );
+    }
+
+    /**
+     * @param xmlStream
      * @param defaultCRS
      * @return
      * @throws XMLStreamException
@@ -460,6 +520,16 @@ public class GML21GeometryDecoder {
 
     /**
      * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public LineString parseLineString( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parseLineString( xmlStream, null );
+    }
+
+    /**
+     * @param xmlStream
      * @param defaultCRS
      * @return
      * @throws XMLStreamException
@@ -498,6 +568,16 @@ public class GML21GeometryDecoder {
         LineString lineString = geomFac.createLineString( gid, crs, new PointsList( points ) );
         idContext.addGeometry( lineString );
         return lineString;
+    }
+
+    /**
+     * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public Polygon parsePolygon( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parsePolygon( xmlStream, null );
     }
 
     /**
@@ -554,6 +634,16 @@ public class GML21GeometryDecoder {
 
     /**
      * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public Ring parseLinearRing( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parseLinearRing( xmlStream, null );
+    }
+
+    /**
+     * @param xmlStream
      * @param defaultCRS
      * @return
      * @throws XMLStreamException
@@ -599,6 +689,16 @@ public class GML21GeometryDecoder {
             }
         }
         return new PointsList( controlPoints );
+    }
+
+    /**
+     * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    public Point parsePoint( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException {
+        return parsePoint( xmlStream, null );
     }
 
     /**
