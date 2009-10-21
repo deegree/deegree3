@@ -36,6 +36,8 @@
 
 package org.deegree.feature.persistence.memory;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
@@ -52,6 +54,7 @@ import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -71,8 +74,10 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.Query;
+import org.slf4j.Logger;
 
 /**
  * {@link FeatureStore} implementation that keeps the feature instances in memory.
@@ -85,6 +90,8 @@ import org.deegree.protocol.wfs.getfeature.Query;
  * @version $Revision: $, $Date: $
  */
 public class MemoryFeatureStore implements FeatureStore {
+
+    private static final Logger LOG = getLogger( MemoryFeatureStore.class );
 
     private final ApplicationSchema schema;
 
@@ -344,24 +351,38 @@ public class MemoryFeatureStore implements FeatureStore {
                             throws FeatureStoreException, FilterEvaluationException {
         FeatureCollection res = new GenericFeatureCollection();
 
-        for ( FeatureCollection fc : ftToFeatures.values() ) {
-            for ( Feature f : fc ) {
-                if ( filter == null || filter.evaluate( f ) ) {
-                    if ( bbox == null ) {
-                        res.add( f );
-                    } else {
-                        if ( f.getGeometryProperties().length == 0 ) {
+        for ( FeatureType ft : ftToFeatures.keySet() ) {
+            FeatureCollection fc = ftToFeatures.get( ft );
+            Envelope fcenv = fc.getEnvelope();
+            try {
+                // TODO what to do in these cases? especially, why do envelopes sometimes have no coordinate system?
+                Envelope box = ( bbox == null || fcenv == null || fcenv.getCoordinateSystem() == null ) ? null
+                                                                                                       : (Envelope) new GeometryTransformer(
+                                                                                                                                             fcenv.getCoordinateSystem().getWrappedCRS() ).transform( bbox );
+                for ( Feature f : fc ) {
+                    if ( filter == null || filter.evaluate( f ) ) {
+                        if ( box == null ) {
                             res.add( f );
                         } else {
-                            bboxcheck: for ( Property<Geometry> p : f.getGeometryProperties() ) {
-                                if ( bbox.intersects( p.getValue() ) ) {
-                                    res.add( f );
-                                    break bboxcheck;
+                            if ( f.getGeometryProperties().length == 0 ) {
+                                res.add( f );
+                            } else {
+                                bboxcheck: for ( Property<Geometry> p : f.getGeometryProperties() ) {
+                                    if ( box.intersects( p.getValue() ) ) {
+                                        res.add( f );
+                                        break bboxcheck;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            } catch ( IllegalArgumentException e ) {
+                LOG.debug( "Unknown error", e );
+            } catch ( UnknownCRSException e ) {
+                LOG.debug( "Unknown error", e );
+            } catch ( TransformationException e ) {
+                LOG.debug( "Unknown error", e );
             }
         }
 
