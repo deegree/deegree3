@@ -1433,6 +1433,8 @@ public class SymbologyParser {
         if ( in.getLocalName().equals( "FeatureTypeStyle" ) ) {
             return parseFeatureTypeOrCoverageStyle( in );
         }
+        LOG.warn( "Symbology file '{}' did not contain symbolizer or feature type style.",
+                  in.getLocation().getSystemId() );
         return null;
     }
 
