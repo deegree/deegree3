@@ -319,6 +319,10 @@ public class Java2DRenderer implements Renderer {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
+        if ( text == null || text.length() == 0 ) {
+            LOG.debug( "Trying to render null or zero length text." );
+            return;
+        }
 
         geom = transform( geom );
 

@@ -68,6 +68,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -1269,30 +1270,33 @@ public class SymbologyParser {
                             obj.fontFamily.add( val );
                         }
                     }, contn );
-                }
-                if ( name.equals( "font-style" ) ) {
+                } else if ( name.equals( "font-style" ) ) {
                     contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
                         @Override
                         public void update( Font obj, String val ) {
                             obj.fontStyle = Style.valueOf( val.toUpperCase() );
                         }
                     }, contn );
-                }
-                if ( name.equals( "font-weight" ) ) {
+                } else if ( name.equals( "font-weight" ) ) {
                     contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
                         @Override
                         public void update( Font obj, String val ) {
                             obj.bold = val.equalsIgnoreCase( "bold" );
                         }
                     }, contn );
-                }
-                if ( name.equals( "font-size" ) ) {
+                } else if ( name.equals( "font-size" ) ) {
                     contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
                         @Override
                         public void update( Font obj, String val ) {
                             obj.fontSize = Integer.parseInt( val );
                         }
                     }, contn );
+                } else if ( name.equals( "font-color" ) ) {
+                    in.getElementText();
+                    LOG.warn( "The non-standard font-color Svg/CssParameter is not supported any more. Use a standard Fill element instead." );
+                } else {
+                    in.getElementText();
+                    LOG.warn( "The non-standard '{}' Svg/CssParameter is not supported.", name );
                 }
             }
         }
@@ -1466,6 +1470,7 @@ public class SymbologyParser {
         LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> result = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
         Common common = new Common();
+        QName featureTypeName = null;
 
         while ( !( in.isEndElement() && ( in.getLocalName().equals( "FeatureTypeStyle" ) || in.getLocalName().equals(
                                                                                                                       "CoverageStyle" ) ) ) ) {
@@ -1478,9 +1483,8 @@ public class SymbologyParser {
                 in.getElementText(); // AndThrowItAwayImmediately
             }
 
-            // TODO unused
             if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
-                getElementTextAsQName( in ); // AndThrowItAwayImmediately
+                featureTypeName = getElementTextAsQName( in );
             }
 
             // TODO unused
@@ -1546,7 +1550,7 @@ public class SymbologyParser {
             }
         }
 
-        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels, common.name );
+        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels, common.name, featureTypeName );
     }
 
     static class ElseFilter implements Filter {

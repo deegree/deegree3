@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
@@ -96,16 +98,20 @@ public class Style {
 
     private PolygonStyling defaultPolygonStyle;
 
+    private QName featureType;
+
     /**
      * @param rules
      * @param labels
      * @param name
+     * @param featureTypeName
      */
     public Style( Collection<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules,
-                  Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels, String name ) {
+                  Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels, String name, QName featureTypeName ) {
         this.rules.addAll( rules );
         this.labels.putAll( labels );
         this.name = name;
+        featureType = featureTypeName;
     }
 
     /**
@@ -155,7 +161,7 @@ public class Style {
                 LOG.debug( "Not using rule because of scale constraints, in style with name '{}'.", name );
             }
         }
-        return new Style( rules, labels, name );
+        return new Style( rules, labels, name, featureType );
     }
 
     /**
@@ -184,9 +190,14 @@ public class Style {
 
             return list;
         }
-        StringBuffer sb = new StringBuffer();
-        LinkedList<Object> res = new LinkedList<Object>();
 
+        LinkedList<Object> res = new LinkedList<Object>();
+        if ( featureType != null && !f.getType().getName().equals( featureType ) ) {
+            LOG.debug( "Not using style because feature type constraint does not match." );
+            return (LinkedList) res;
+        }
+
+        StringBuffer sb = new StringBuffer();
         LinkedList<Symbolizer<?>> list = new LinkedList<Symbolizer<?>>();
         for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> pair : rules ) {
             pair.first.evaluate( list, f );
