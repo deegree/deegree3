@@ -67,6 +67,8 @@ public abstract class AbstractFeature implements Feature {
 
     private StandardObjectProps standardProps;
 
+    private Envelope envelope;
+
     public Object[] getPropertyValues( PropertyName propName )
                             throws JaxenException {
 
@@ -82,8 +84,8 @@ public abstract class AbstractFeature implements Feature {
                 PropertyType pt = prop.getType();
 
                 Object value = ( (PropertyNode) node ).getProperty().getValue();
-                if (pt instanceof SimplePropertyType) {
-                    switch (( (SimplePropertyType) pt ).getPrimitiveType()) {
+                if ( pt instanceof SimplePropertyType ) {
+                    switch ( ( (SimplePropertyType) pt ).getPrimitiveType() ) {
                     case BOOLEAN: {
                         value = Boolean.parseBoolean( (String) value );
                         break;
@@ -92,7 +94,7 @@ public abstract class AbstractFeature implements Feature {
                         try {
                             value = DateUtils.parseISO8601Date( (String) value );
                         } catch ( ParseException e ) {
-                            throw new JaxenException (e.getMessage(), e);
+                            throw new JaxenException( e.getMessage(), e );
                         }
                         break;
                     }
@@ -100,12 +102,12 @@ public abstract class AbstractFeature implements Feature {
                         try {
                             value = DateUtils.parseISO8601Date( (String) value );
                         } catch ( ParseException e ) {
-                            throw new JaxenException (e.getMessage(), e);
+                            throw new JaxenException( e.getMessage(), e );
                         }
                         break;
                     }
                     case NUMBER: {
-                        value = new BigDecimal((String) value);
+                        value = new BigDecimal( (String) value );
                         break;
                     }
                     case STRING: {
@@ -123,7 +125,10 @@ public abstract class AbstractFeature implements Feature {
     }
 
     public Envelope getEnvelope() {
-        return getEnvelope( this, new HashSet<Feature>() );
+        if ( envelope == null ) {
+            envelope = getEnvelope( this, new HashSet<Feature>() );
+        }
+        return envelope;
     }
 
     /**
