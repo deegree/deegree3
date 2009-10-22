@@ -77,6 +77,9 @@ public abstract class AbstractFeature implements Feature {
             if ( node instanceof PropertyNode ) {
                 Property<?> prop = ( (PropertyNode) node ).getProperty();
                 resultValues[i++] = prop.getValue();
+            } else {
+                // TODO is node.toString() o.k. for all other node types?
+                resultValues[i++] = node.toString();
             }
         }
         return resultValues;
