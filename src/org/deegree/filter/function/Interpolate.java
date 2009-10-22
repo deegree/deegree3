@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
-import static java.awt.Color.decode;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.toHexString;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -52,13 +51,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.media.jai.Interpolation;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -165,11 +162,7 @@ public class Interpolate extends Function {
         case 3:
             // Cubic interpolation needs 4 points.
             // Create extra 2 points with the same slope on both sides of the input points
-            Color col = null;
-            double r,
-            g,
-            b,
-            a;
+            double r, g, b, a;
             double r1 = colorArray[pos1].getRed(),
             g1 = colorArray[pos1].getGreen(),
             b1 = colorArray[pos1].getBlue(),
@@ -181,7 +174,6 @@ public class Interpolate extends Function {
             a2 = colorArray[pos2].getAlpha();
 
             if ( pos1 == 0 || pos2 == colorArray.length - 1 ) {
-                int l = colorArray.length - 1;
                 // Cubic interpolation needs 4 points, not just two. Interpolate for each of RGBA channels.
                 double aux1, aux2;
                 aux1 = interpolateLinear( r1, r2, -1 );
@@ -199,8 +191,6 @@ public class Interpolate extends Function {
                 aux1 = interpolateLinear( a1, a2, -1 );
                 aux2 = interpolateLinear( a1, a2, 2 );
                 a = interpolateCubic( aux1, a1, a2, aux2, f );
-
-                Interpolation t = null;
 
                 if ( color == true ) // value range is 0-255
                     return new Color( (int) r, (int) g, (int) b, (int) a );
@@ -243,7 +233,6 @@ public class Interpolate extends Function {
             return interpolateCosine( valuesArray[pos1], valuesArray[pos2], f );
         case 3:
             if ( pos1 == 0 || pos2 == valuesArray.length - 1 ) {
-                int l = valuesArray.length - 1;
                 // Cubic interpolation needs 4 points, not just two.
                 // If we are at the first/last intervals, create 2 new points by interpolating linearly, on both sides
                 // of the segment to be interpolated.
@@ -261,43 +250,10 @@ public class Interpolate extends Function {
         }
     }
 
-    /****************************
-     * The interpolation methods below are called from the initial functions. TODO: replace their calls to calls to
-     * interpolation methods that take indexes.
-     ****************************/
-
-    private final double interpolate( final double fst, final double snd, final double f ) {
-        switch ( mode ) {
-        case 1:
-            return interpolateLinear( fst, snd, f );
-        case 2:
-            return interpolateCosine( fst, snd, f );
-        case 3:
-            // Cubic interpolation needs 4 points. Since we only receive two, we cannot interpolate properly.
-            throw new RuntimeException( "Cubic interpolation is not available." );
-        default:
-            LOG.error( "Invalid value for interpolation type: {}", mode );
-            throw new RuntimeException( "Invalid value for interpolation type: " + mode );
-        }
-    }
-
-    private final Color interpolateColor( final Color fst, final Color snd, final double f ) {
-        switch ( mode ) {
-        case 1:
-            return interpolateColorLinear( fst, snd, f );
-        case 2:
-            return interpolateColorCosine( fst, snd, f );
-        case 3:
-            // Cubic interpolation needs 4 points. Since we only receive two, we cannot interpolate properly.
-            throw new RuntimeException( "Cubic interpolation is not available." );
-        default:
-            LOG.error( "Invalid value for interpolation type: {}", mode );
-            throw new RuntimeException( "Invalid value for interpolation type: " + mode );
-        }
-    }
-
     @Override
     public Object[] evaluate( MatchableObject f ) {
+        buildLookupArrays();
+        
         StringBuffer sb = new StringBuffer( value.toString().trim() );
         if ( contn != null ) {
             contn.evaluate( sb, f );
@@ -310,6 +266,7 @@ public class Interpolate extends Function {
         Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
 
         double cur = data.next();
+        int pos = 0;
         StringBuffer intVal = vals.next();
         Continuation<StringBuffer> contn = contns.next();
 
@@ -317,6 +274,7 @@ public class Interpolate extends Function {
             cur = data.next();
             intVal = vals.next();
             contn = contns.next();
+            pos ++;
         }
 
         StringBuffer buf = new StringBuffer( intVal.toString().trim() );
@@ -334,19 +292,16 @@ public class Interpolate extends Function {
         if ( contn != null ) {
             contn.evaluate( sb, f );
         }
-        String sndString = buf.toString();
 
         double next = data.next();
         double fac = ( val - cur ) / ( next - cur );
 
         if ( color ) {
-            Color fst = decode( fstString );
-            Color snd = decode( sndString );
-            Color res = interpolateColor( fst, snd, fac );
+            Color res = interpolateColor( pos-1, pos, fac );
             return new Object[] { "#" + toHexString( res.getRGB() ) };
         }
 
-        return new Object[] { "" + interpolate( parseDouble( fstString ), parseDouble( sndString ), fac ) };
+        return new Object[] { "" + interpolate( pos-1, pos, fac ) };
     }
 
     /**
@@ -475,7 +430,6 @@ public class Interpolate extends Function {
         BufferedImage img = null;
         long start = System.nanoTime();
         int col = -1, row = -1;
-        Color c = null;
         int rgb = 0;
         RasterData data = raster.getAsSimpleRaster().getRasterData();
 
