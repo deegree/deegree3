@@ -58,4 +58,16 @@
             <env key="CRS_DB_URL" value="jdbc:derby:src/META-INF/deegreeCRS" />
         </java>
     </target>
+
+		<target name="show-crs" description="-> outputs a crs with all its components, when supplied a CRS id">
+				<fail unless="crs.id" message="you should supply a crs.id parameter to this ant target (-Dcrs.id=the_crs_that_you_want_to_look_at)"/>			
+				<java classname="org.deegree.crs.configuration.deegree.db.CRSQuerier" fork="true" maxmemory="512M">
+						<classpath>
+								<path refid="build.path"/>
+								<pathelement location="${classes.dir}"/>
+						</classpath>
+						<arg line="${crs.id}" />
+				</java>
+		</target>				
+
 </project>
