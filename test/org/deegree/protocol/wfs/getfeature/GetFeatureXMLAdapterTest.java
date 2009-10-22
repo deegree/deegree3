@@ -110,27 +110,27 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
     private final String V110_EXAMPLE12 = "examples_xml/v110/example12.xml";
 
-    /**
-     * @throws Exception
-     */
-    public void test_V100_EXAMPLE1()
-                            throws Exception {
-        URL exampleURL = this.getClass().getResource( V100_EXAMPLE1 );
-        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-
-        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
-
-        Query[] queries = getFeature.getQueries();
-        FilterQuery filterQuery = (FilterQuery) queries[0];
-        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
-                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
-        IdFilter idFilter = (IdFilter) filterQuery.getFilter();
-
-        Set<String> matchingIds = idFilter.getMatchingIds();
-        assertTrue( matchingIds.size() == 1 && matchingIds.contains( "INWATERA_1M.1234" ) );
-    }
+    // /**
+    // * @throws Exception
+    // */
+    // public void test_V100_EXAMPLE1()
+    // throws Exception {
+    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE1 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse( null );
+    //
+    // Query[] queries = getFeature.getQueries();
+    // FilterQuery filterQuery = (FilterQuery) queries[0];
+    // assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+    // filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    // IdFilter idFilter = (IdFilter) filterQuery.getFilter();
+    //
+    // Set<String> matchingIds = idFilter.getMatchingIds();
+    // assertTrue( matchingIds.size() == 1 && matchingIds.contains( "INWATERA_1M.1234" ) );
+    // }
 
     /**
      * @throws Exception
@@ -163,30 +163,30 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ids.contains( "InWaterA_1M.1234" ) );
     }
 
-    /**
-     * @throws Exception
-     */
-    public void test_V100_EXAMPLE2()
-                            throws Exception {
-
-        URL exampleURL = this.getClass().getResource( V100_EXAMPLE2 );
-        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-
-        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
-
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
-        PropertyName[] propertyNames = filterQuery.getPropertyNames();
-
-        assertEquals( "myns:WKB_GEOM", propertyNames[0].getPropertyName() );
-        assertEquals( "myns:TILE_ID", propertyNames[1].getPropertyName() );
-        assertEquals( "myns:FAC_ID", propertyNames[2].getPropertyName() );
-
-        IdFilter idFilter = (IdFilter) filterQuery.getFilter();
-        Set<String> matchingIds = idFilter.getMatchingIds();
-        assertTrue( matchingIds.size() == 1 && matchingIds.contains( "INWATERA_1M.1013" ) );
-    }
+    // /**
+    // * @throws Exception
+    // */
+    // public void test_V100_EXAMPLE2()
+    // throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE2 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse( null );
+    //
+    // FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+    // PropertyName[] propertyNames = filterQuery.getPropertyNames();
+    //
+    // assertEquals( "myns:WKB_GEOM", propertyNames[0].getPropertyName() );
+    // assertEquals( "myns:TILE_ID", propertyNames[1].getPropertyName() );
+    // assertEquals( "myns:FAC_ID", propertyNames[2].getPropertyName() );
+    //
+    // IdFilter idFilter = (IdFilter) filterQuery.getFilter();
+    // Set<String> matchingIds = idFilter.getMatchingIds();
+    // assertTrue( matchingIds.size() == 1 && matchingIds.contains( "INWATERA_1M.1013" ) );
+    // }
 
     /**
      * @throws Exception
@@ -221,27 +221,27 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ids.contains( "InWaterA_1M.1013" ) );
     }
 
-    /**
-     * @throws Exception
-     */
-    public void test_V100_EXAMPLE3()
-                            throws Exception {
-
-        URL exampleURL = this.getClass().getResource( V100_EXAMPLE3 );
-        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-
-        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
-
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
-        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
-                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
-        IdFilter idFilter = (IdFilter) filterQuery.getFilter();
-        Set<String> matchingIds = idFilter.getMatchingIds();
-        assertTrue( matchingIds.size() == 3 && matchingIds.contains( "INWATERA_1M.1013" )
-                    && matchingIds.contains( "INWATERA_1M.1014" ) && matchingIds.contains( "INWATERA_1M.1015" ) );
-    }
+    // /**
+    // * @throws Exception
+    // */
+    // public void test_V100_EXAMPLE3()
+    // throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE3 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse( null );
+    //
+    // FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+    // assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+    // filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    // IdFilter idFilter = (IdFilter) filterQuery.getFilter();
+    // Set<String> matchingIds = idFilter.getMatchingIds();
+    // assertTrue( matchingIds.size() == 3 && matchingIds.contains( "INWATERA_1M.1013" )
+    // && matchingIds.contains( "INWATERA_1M.1014" ) && matchingIds.contains( "INWATERA_1M.1015" ) );
+    // }
 
     /**
      * @throws Exception
@@ -271,32 +271,32 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ids.contains( "InWaterA_1M.1015" ) );
     }
 
-    /**
-     * @throws Exception
-     */
-    public void test_V100_EXAMPLE4()
-                            throws Exception {
-
-        URL exampleURL = this.getClass().getResource( V100_EXAMPLE4 );
-        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-
-        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
-
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
-        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
-                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
-
-        assertEquals( "myns:WKB_GEOM", filterQuery.getPropertyNames()[0].getPropertyName() );
-        assertEquals( "myns:TILE_ID", filterQuery.getPropertyNames()[1].getPropertyName() );
-        IdFilter idFilter = (IdFilter) filterQuery.getFilter();
-        Set<String> ids = idFilter.getMatchingIds();
-
-        assertTrue( ids.size() == 3 && ids.contains( "INWATERA_1M.1013" ) && ids.contains( "INWATERA_1M.1014" )
-                    && ids.contains( "INWATERA_1M.1015" ) );
-
-    }
+    // /**
+    // * @throws Exception
+    // */
+    // public void test_V100_EXAMPLE4()
+    // throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE4 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse( null );
+    //
+    // FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+    // assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+    // filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    //
+    // assertEquals( "myns:WKB_GEOM", filterQuery.getPropertyNames()[0].getPropertyName() );
+    // assertEquals( "myns:TILE_ID", filterQuery.getPropertyNames()[1].getPropertyName() );
+    // IdFilter idFilter = (IdFilter) filterQuery.getFilter();
+    // Set<String> ids = idFilter.getMatchingIds();
+    //
+    // assertTrue( ids.size() == 3 && ids.contains( "INWATERA_1M.1013" ) && ids.contains( "INWATERA_1M.1014" )
+    // && ids.contains( "INWATERA_1M.1015" ) );
+    //
+    // }
 
     /**
      * @throws Exception
@@ -332,51 +332,51 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ids.contains( "InWaterA_1M.1015" ) );
     }
 
-    /**
-     * @throws Exception
-     */
-    public void test_V100_EXAMPLE5()
-                            throws Exception {
+    // /**
+    // * @throws Exception
+    // */
+    // public void test_V100_EXAMPLE5()
+    // throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE5 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse( null );
+    //
+    // assertEquals( new Integer( 10000 ), getFeature.getMaxFeatures() );
+    //
+    // FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+    // assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+    // filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    // }
 
-        URL exampleURL = this.getClass().getResource( V100_EXAMPLE5 );
-        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-
-        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
-
-        assertEquals( new Integer( 10000 ), getFeature.getMaxFeatures() );
-
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
-        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
-                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void test_V100_EXAMPLE6()
-                            throws Exception {
-
-        URL exampleURL = this.getClass().getResource( V100_EXAMPLE6 );
-        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-
-        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
-
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
-        assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
-                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
-
-        filterQuery = (FilterQuery) getFeature.getQueries()[1];
-        assertEquals( new QName( "http://www.someserver.com/myns", "BUILTUPA_1M" ),
-                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
-
-        filterQuery = (FilterQuery) getFeature.getQueries()[2];
-        assertEquals( new QName( "http://demo.cubewerx.com/yourns", "ROADL_1M" ),
-                      filterQuery.getTypeNames()[0].getFeatureTypeName() );
-    }
+    // /**
+    // * @throws Exception
+    // */
+    // public void test_V100_EXAMPLE6()
+    // throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE6 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse( null );
+    //
+    // FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+    // assertEquals( new QName( "http://www.someserver.com/myns", "INWATERA_1M" ),
+    // filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    //
+    // filterQuery = (FilterQuery) getFeature.getQueries()[1];
+    // assertEquals( new QName( "http://www.someserver.com/myns", "BUILTUPA_1M" ),
+    // filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    //
+    // filterQuery = (FilterQuery) getFeature.getQueries()[2];
+    // assertEquals( new QName( "http://demo.cubewerx.com/yourns", "ROADL_1M" ),
+    // filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    // }
 
     // /**
     // * @throws Exception
@@ -460,59 +460,59 @@ public class GetFeatureXMLAdapterTest extends TestCase {
     // new QName( "http://demo.cubewerx.com/yourns", "RoadL_1M" ) );
     // }
 
-    /**
-     * @throws Exception
-     */
-    public void test_V100_EXAMPLE9()
-                            throws Exception {
-
-        URL exampleURL = this.getClass().getResource( V100_EXAMPLE9 );
-        XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
-
-        GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
-        getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
-        GetFeature getFeature = getFeatureAdapter.parse( null );
-
-        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
-        assertEquals( new QName( "Person" ), filterQuery.getTypeNames()[0].getFeatureTypeName() );
-
-        assertEquals( "myns:Person/myns:LastName", filterQuery.getPropertyNames()[0].getPropertyName() );
-
-        OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
-        assertTrue( opFilter.getOperator() instanceof And );
-
-        And rootOp = (And) opFilter.getOperator();
-        assertTrue( rootOp.getParameter( 0 ) instanceof And );
-        And op0 = (And) rootOp.getParameter( 0 );
-
-        assertTrue( op0.getParameter( 0 ) instanceof PropertyIsGreaterThanOrEqualTo );
-        PropertyIsGreaterThanOrEqualTo op00 = (PropertyIsGreaterThanOrEqualTo) op0.getParameter( 0 );
-        assertEquals( "myns:Person/myns:Address/myns:StreetNumber",
-                      ( (PropertyName) op00.getParameter1() ).getPropertyName() );
-        assertEquals( "10000", ( (Literal) op00.getParameter2() ).getValue() );
-
-        assertTrue( rootOp.getParameter( 1 ) instanceof And );
-        And op1 = (And) rootOp.getParameter( 1 );
-
-        assertTrue( op1.getParameter( 0 ) instanceof PropertyIsEqualTo );
-        PropertyIsEqualTo op10 = (PropertyIsEqualTo) op1.getParameter( 0 );
-        assertEquals( "myns:Person/myns:Address/myns:StreetName",
-                      ( (PropertyName) op10.getParameter1() ).getPropertyName() );
-        assertEquals( "Main St.", ( (Literal) op10.getParameter2() ).getValue() );
-
-        PropertyIsEqualTo op11 = (PropertyIsEqualTo) op1.getParameter( 1 );
-        assertEquals( "myns:Person/myns:Address/myns:City", ( (PropertyName) op11.getParameter1() ).getPropertyName() );
-        assertEquals( "SomeTown", ( (Literal) op11.getParameter2() ).getValue() );
-
-        PropertyIsEqualTo op12 = (PropertyIsEqualTo) op1.getParameter( 2 );
-        assertEquals( "myns:Person/myns:Sex", ( (PropertyName) op12.getParameter1() ).getPropertyName() );
-        assertEquals( "Female", ( (Literal) op12.getParameter2() ).getValue() );
-
-        PropertyIsGreaterThan op13 = (PropertyIsGreaterThan) op1.getParameter( 3 );
-        assertEquals( "myns:Person/myns:Salary", ( (PropertyName) op13.getParameter1() ).getPropertyName() );
-        assertEquals( "35000", ( (Literal) op13.getParameter2() ).getValue() );
-
-    }
+    // /**
+    // * @throws Exception
+    // */
+    // public void test_V100_EXAMPLE9()
+    // throws Exception {
+    //
+    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE9 );
+    // XMLAdapter xmlAdapter = new XMLAdapter( exampleURL );
+    //
+    // GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+    // getFeatureAdapter.setRootElement( xmlAdapter.getRootElement() );
+    // GetFeature getFeature = getFeatureAdapter.parse( null );
+    //
+    // FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+    // assertEquals( new QName( "Person" ), filterQuery.getTypeNames()[0].getFeatureTypeName() );
+    //
+    // assertEquals( "myns:Person/myns:LastName", filterQuery.getPropertyNames()[0].getPropertyName() );
+    //
+    // OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
+    // assertTrue( opFilter.getOperator() instanceof And );
+    //
+    // And rootOp = (And) opFilter.getOperator();
+    // assertTrue( rootOp.getParameter( 0 ) instanceof And );
+    // And op0 = (And) rootOp.getParameter( 0 );
+    //
+    // assertTrue( op0.getParameter( 0 ) instanceof PropertyIsGreaterThanOrEqualTo );
+    // PropertyIsGreaterThanOrEqualTo op00 = (PropertyIsGreaterThanOrEqualTo) op0.getParameter( 0 );
+    // assertEquals( "myns:Person/myns:Address/myns:StreetNumber",
+    // ( (PropertyName) op00.getParameter1() ).getPropertyName() );
+    // assertEquals( "10000", ( (Literal) op00.getParameter2() ).getValue() );
+    //
+    // assertTrue( rootOp.getParameter( 1 ) instanceof And );
+    // And op1 = (And) rootOp.getParameter( 1 );
+    //
+    // assertTrue( op1.getParameter( 0 ) instanceof PropertyIsEqualTo );
+    // PropertyIsEqualTo op10 = (PropertyIsEqualTo) op1.getParameter( 0 );
+    // assertEquals( "myns:Person/myns:Address/myns:StreetName",
+    // ( (PropertyName) op10.getParameter1() ).getPropertyName() );
+    // assertEquals( "Main St.", ( (Literal) op10.getParameter2() ).getValue() );
+    //
+    // PropertyIsEqualTo op11 = (PropertyIsEqualTo) op1.getParameter( 1 );
+    // assertEquals( "myns:Person/myns:Address/myns:City", ( (PropertyName) op11.getParameter1() ).getPropertyName() );
+    // assertEquals( "SomeTown", ( (Literal) op11.getParameter2() ).getValue() );
+    //
+    // PropertyIsEqualTo op12 = (PropertyIsEqualTo) op1.getParameter( 2 );
+    // assertEquals( "myns:Person/myns:Sex", ( (PropertyName) op12.getParameter1() ).getPropertyName() );
+    // assertEquals( "Female", ( (Literal) op12.getParameter2() ).getValue() );
+    //
+    // PropertyIsGreaterThan op13 = (PropertyIsGreaterThan) op1.getParameter( 3 );
+    // assertEquals( "myns:Person/myns:Salary", ( (PropertyName) op13.getParameter1() ).getPropertyName() );
+    // assertEquals( "35000", ( (Literal) op13.getParameter2() ).getValue() );
+    //
+    // }
 
     /**
      * @throws Exception
