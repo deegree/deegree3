@@ -61,6 +61,7 @@ import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryEncoder;
@@ -96,7 +97,7 @@ public class GMLFeatureStoreTest {
     }
 
     @Test
-    public void testQueryAllPhilosophers() {
+    public void testQueryAllPhilosophers() throws FilterEvaluationException {
         QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );
         FilterQuery query = new FilterQuery( ftName, null, null, null );
         FeatureCollection fc = store.performQuery( query );
@@ -105,7 +106,7 @@ public class GMLFeatureStoreTest {
     }
 
     @Test
-    public void testQueryAllPlaces() {
+    public void testQueryAllPlaces() throws FilterEvaluationException {
         QName ftName = new QName( "http://www.deegree.org/app", "Place" );
         FilterQuery query = new FilterQuery( ftName, null, null, null );
         FeatureCollection fc = store.performQuery( query );
@@ -114,7 +115,7 @@ public class GMLFeatureStoreTest {
     }
 
     @Test
-    public void testQueryAllCountries() {
+    public void testQueryAllCountries() throws FilterEvaluationException {
         QName ftName = new QName( "http://www.deegree.org/app", "Country" );
         FilterQuery query = new FilterQuery( ftName, null, null, null );
         FeatureCollection fc = store.performQuery( query );
@@ -123,7 +124,7 @@ public class GMLFeatureStoreTest {
     }
 
 //    @Test
-    public void testQueryAllBooks() {
+    public void testQueryAllBooks() throws FilterEvaluationException {
         QName ftName = new QName( "http://www.deegree.org/app", "Book" );
         FilterQuery query = new FilterQuery( ftName, null, null, null );
         FeatureCollection fc = store.performQuery( query );
@@ -132,7 +133,7 @@ public class GMLFeatureStoreTest {
     }
 
     @Test
-    public void testQueryPhilosopherById() {
+    public void testQueryPhilosopherById() throws FilterEvaluationException {
         QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );
         Filter filter = new IdFilter( "PHILOSOPHER_1", "PHILOSOPHER_2" );
         FilterQuery query = new FilterQuery( ftName, null, null, filter );
