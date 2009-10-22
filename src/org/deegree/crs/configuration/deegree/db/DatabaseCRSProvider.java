@@ -143,7 +143,8 @@ public class DatabaseCRSProvider implements CRSProvider {
 
             if ( "4326".equals( code.getCode() ) || "31466".equals( code.getCode() ) || "31467".equals( code.getCode() )
                  || "31468".equals( code.getCode() ) ) {
-                if ( code.getCodeVersion() != null && code.getCodeVersion().length() > 0 ) {
+                if ( ( code.getOriginal().toLowerCase().startsWith( "urn:x-ogc" ) )
+                     || ( code.getCodeVersion() != null && code.getCodeVersion().length() > 0 ) ) {
                     // switch axes of the CRS 4326, 31466, 31467, 31468 that have a version! (e.g. 6.11)
                     if ( result instanceof GeographicCRS ) {
                         CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(), result.getNames(),
