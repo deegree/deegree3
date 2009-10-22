@@ -342,6 +342,7 @@ public class GML21GeometryDecoder {
                             throws XMLStreamException {
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        xmlStream.nextTag();
 
         List<Point> members = new LinkedList<Point>();
 
@@ -353,7 +354,7 @@ public class GML21GeometryDecoder {
                     xmlStream.require( END_ELEMENT, GML21NS, "pointMember" );
                 } else {
                     String msg = "Invalid 'gml:MultiPoint' element: unexpected element '" + localName
-                                 + "'. Expected 'pointMember' or 'pointMembers'.";
+                                 + "'. Expected 'pointMember' ";
                     throw new XMLParsingException( xmlStream, msg );
                 }
             } while ( xmlStream.nextTag() == START_ELEMENT );
@@ -428,7 +429,7 @@ public class GML21GeometryDecoder {
                     xmlStream.require( END_ELEMENT, GML21NS, "geometryMember" );
                 } else {
                     String msg = "Invalid 'gml:MultiGeometry' element: unexpected element '" + localName
-                                 + "'. Expected 'geometryMember' or 'geometryMembers'.";
+                                 + "'. Expected 'geometryMember'.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
             } while ( xmlStream.nextTag() == START_ELEMENT );
@@ -729,7 +730,7 @@ public class GML21GeometryDecoder {
                 point = geomFac.createPoint( gid, coords, crs );
 
             } else {
-                String msg = "Error in 'gml:Point' element. Expected either a 'gml:pos', 'gml:coordinates'"
+                String msg = "Error in 'gml:Point' element. Expected either a 'gml:coordinates'"
                              + " or a 'gml:coord' element, but found '" + name + "'.";
                 throw new XMLParsingException( xmlStream, msg );
             }

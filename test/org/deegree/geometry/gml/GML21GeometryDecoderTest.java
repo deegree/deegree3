@@ -50,6 +50,8 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
+import org.deegree.geometry.multi.MultiPoint;
+import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -83,6 +85,10 @@ public class GML21GeometryDecoderTest extends TestCase {
     private static final String MULTIGEOMETRY_FILE = "MultiGeometry.gml";
 
     private static final String MULTILINESTRING_FILE = "MultiLineString.gml";
+
+    private static final String MULTIPOINT_FILE = "MultiPoint.gml";
+
+    private static final String MULTIPOLYGON_FILE = "MultiPolygon.gml";
 
     private static double DELTA = 0.00000001;
 
@@ -287,6 +293,86 @@ public class GML21GeometryDecoderTest extends TestCase {
         controlPoints = thirdMember.getControlPoints();
         comparePoint( 324.1, 219.7, controlPoints.get( 0 ) );
         comparePoint( 0.45, 4.56, controlPoints.get( 1 ) );
+    }
+
+    /**
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
+    public void testMultiPoint()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       this.getClass().getResource(
+                                                                                                    BASE_DIR
+                                                                                                                            + MULTIPOINT_FILE ) );
+        xmlReader.nextTag();
+
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( GML21NS, "MultiPoint" ), xmlReader.getName() );
+
+        MultiPoint multiPoint = new GML21GeometryDecoder().parseMultiPoint( xmlReader, null );
+
+        Point firstMember = multiPoint.get( 0 );
+        comparePoint( 5.0, 40.0, firstMember );
+
+        Point secondMember = multiPoint.get( 1 );
+        comparePoint( 0.0, 0.0, secondMember );
+
+    }
+
+    /**
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     * @throws UnknownCRSException
+     */
+    public void testMultiPolygon()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       this.getClass().getResource(
+                                                                                                    BASE_DIR
+                                                                                                                            + MULTIPOLYGON_FILE ) );
+        xmlReader.nextTag();
+
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( GML21NS, "MultiPolygon" ), xmlReader.getName() );
+
+        MultiPolygon multiPolygon = new GML21GeometryDecoder().parseMultiPolygon( xmlReader, null );
+
+        Polygon firstMember = multiPolygon.get( 0 );
+        Points points = firstMember.getExteriorRing().getControlPoints();
+        comparePoint( 0.0, 0.0, points.get( 0 ) );
+        comparePoint( 100.0, 0.0, points.get( 1 ) );
+        comparePoint( 100.0, 100.0, points.get( 2 ) );
+        comparePoint( 0.0, 100.0, points.get( 3 ) );
+        comparePoint( 0.0, 0.0, points.get( 4 ) );
+
+        List<Points> innerPoints = firstMember.getInteriorRingsCoordinates();
+        Points points1 = innerPoints.get( 0 );
+        comparePoint( 10.0, 10.0, points1.get( 0 ) );
+        comparePoint( 10.0, 40.0, points1.get( 1 ) );
+        comparePoint( 40.0, 40.0, points1.get( 2 ) );
+        comparePoint( 40.0, 10.0, points1.get( 3 ) );
+        comparePoint( 10.0, 10.0, points1.get( 4 ) );
+
+        Points points2 = innerPoints.get( 1 );
+        comparePoint( 60.0, 60.0, points2.get( 0 ) );
+        comparePoint( 60.0, 90.0, points2.get( 1 ) );
+        comparePoint( 90.0, 90.0, points2.get( 2 ) );
+        comparePoint( 90.0, 60.0, points2.get( 3 ) );
+        comparePoint( 60.0, 60.0, points2.get( 4 ) );
+
+        Polygon secondMember = multiPolygon.get( 1 );
+        points = secondMember.getExteriorRing().getControlPoints();
+        comparePoint( 0.0, 0.0, points.get( 0 ) );
+        comparePoint( 100.0, 0.0, points.get( 1 ) );
+        comparePoint( 100.0, 100.0, points.get( 2 ) );
+        comparePoint( 0.0, 100.0, points.get( 3 ) );
+        comparePoint( 0.0, 0.0, points.get( 4 ) );
+
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), multiPolygon.getCoordinateSystem().getWrappedCRS() );
+
     }
 
     private void comparePoint( double x, double y, Point point ) {
