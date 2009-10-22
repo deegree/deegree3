@@ -63,7 +63,6 @@ import org.slf4j.Logger;
 /**
  * <code>InterpolateTest</code>
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
  * 
@@ -118,10 +117,14 @@ public class InterpolateTest extends TestCase {
         test(48);
         test(48.3);
         test(50);
+        
+        test(225);
+        test(240);
+        test(250);
     }
 
     private void test( double x ) {
-        LOG.debug( "Lookup({}): {}", x, interp.lookup2( x ).toString() );
+        LOG.debug( "Lookup({}): {}", x, interp.lookup2Color( x ).toString() );
         LOG.debug( "------------------" );
         // assertEquals( x1, x2 );
     }

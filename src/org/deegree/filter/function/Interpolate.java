@@ -52,11 +52,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.media.jai.Interpolation;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -152,6 +154,9 @@ public class Interpolate extends Function {
     }
 
     private final Color interpolateColor( final int pos1, final int pos2, final double f ) {
+        if ( color == false )
+            return null;
+
         switch ( mode ) {
         case 1:
             return interpolateColorLinear( colorArray[pos1], colorArray[pos2], f );
@@ -161,7 +166,10 @@ public class Interpolate extends Function {
             // Cubic interpolation needs 4 points.
             // Create extra 2 points with the same slope on both sides of the input points
             Color col = null;
-            double r, g, b, a;
+            double r,
+            g,
+            b,
+            a;
             double r1 = colorArray[pos1].getRed(),
             g1 = colorArray[pos1].getGreen(),
             b1 = colorArray[pos1].getBlue(),
@@ -171,7 +179,7 @@ public class Interpolate extends Function {
             g2 = colorArray[pos2].getGreen(),
             b2 = colorArray[pos2].getBlue(),
             a2 = colorArray[pos2].getAlpha();
-            
+
             if ( pos1 == 0 || pos2 == colorArray.length - 1 ) {
                 int l = colorArray.length - 1;
                 // Cubic interpolation needs 4 points, not just two. Interpolate for each of RGBA channels.
@@ -192,27 +200,39 @@ public class Interpolate extends Function {
                 aux2 = interpolateLinear( a1, a2, 2 );
                 a = interpolateCubic( aux1, a1, a2, aux2, f );
 
-                if (color == true)  // value range is 0-255
-                    return new Color((int)r,(int)g,(int)b,(int)a);
-                else                // value range is 0-1
-                    return new Color((float)r,(float)g, (float)b, (float)a); 
+                Interpolation t = null;
+
+                if ( color == true ) // value range is 0-255
+                    return new Color( (int) r, (int) g, (int) b, (int) a );
+                else
+                    // value range is 0-1
+                    return new Color( (float) r, (float) g, (float) b, (float) a );
             }
 
-            r = interpolateCubic(colorArray[pos1-1].getRed(), r1, r2, colorArray[pos2+1].getRed(), f);
-            g = interpolateCubic(colorArray[pos1-1].getGreen(), g1, g2, colorArray[pos2+1].getGreen(), f);
-            b = interpolateCubic(colorArray[pos1-1].getBlue(), b1, b2, colorArray[pos2+1].getBlue(), f);
-            a = interpolateCubic(colorArray[pos1-1].getAlpha(), a1, a2, colorArray[pos2+1].getAlpha(), f);
-            
-            if (color == true)  // value range is 0-255
-                return new Color((int)r,(int)g,(int)b,(int)a);
-            else                // value range is 0-1
-                return new Color((float)r,(float)g, (float)b, (float)a);
-            
+            r = interpolateCubic( colorArray[pos1 - 1].getRed(), r1, r2, colorArray[pos2 + 1].getRed(), f );
+            g = interpolateCubic( colorArray[pos1 - 1].getGreen(), g1, g2, colorArray[pos2 + 1].getGreen(), f );
+            b = interpolateCubic( colorArray[pos1 - 1].getBlue(), b1, b2, colorArray[pos2 + 1].getBlue(), f );
+            a = interpolateCubic( colorArray[pos1 - 1].getAlpha(), a1, a2, colorArray[pos2 + 1].getAlpha(), f );
+            // Sometimes the cubic interpolation overshoots, so enforce 0-255 interval
+            r = fixRange( r, 0, 255 );
+            g = fixRange( g, 0, 255 );
+            b = fixRange( b, 0, 255 );
+            a = fixRange( a, 0, 255 );
+
+            return new Color( (int) r, (int) g, (int) b, (int) a );
+
         default:
             LOG.error( "Invalid value for interpolation type: {}", mode );
             throw new RuntimeException( "Invalid value for interpolation type: " + mode );
         }
-        
+
+    }
+
+    /* Adapt an input value <i>r</i> to an interval [<i>low</i>,<i>high</i>] */
+    private double fixRange( double r, double low, double high ) {
+        r = r < low ? low : r;
+        r = r > high ? high : r;
+        return r;
     }
 
     private final double interpolate( final int pos1, final int pos2, final double f ) {
@@ -412,7 +432,7 @@ public class Interpolate extends Function {
         }
     }
 
-    /* Create the sorted lookup arrays from the linked lists */
+    /* Create the sorted lookup arrays from the linked lists, so that we can perform binary search. */
     public void buildLookupArrays() {
         LOG.debug( "Building look-up arrays, for binary search... " );
         if ( color == true && colorArray == null ) {
@@ -469,7 +489,7 @@ public class Interpolate extends Function {
             for ( row = 0; row < img.getHeight(); row++ )
                 for ( col = 0; col < img.getWidth(); col++ ) {
                     float val = rawData.get( col, row );
-                    rgb = lookup2( val ).getRGB();
+                    rgb = lookup2Color( val ).getRGB();
                     img.setRGB( col, row, rgb );
                 }
         } catch ( Exception e ) {
@@ -483,20 +503,33 @@ public class Interpolate extends Function {
     }
 
     /**
-     * Looks up a value in the current data values, and returns an interpolated value. Uses binary search for
+     * Performs interpolation on a value, and returns a color built from the interpolated value. Uses binary search for
      * optimization.
      * 
      * @param input
      *            value
      * @return the corresponding Color
      */
-    public Color lookup2( double value ) {
+    public Color lookup2Color( double value ) {
+        Color color;
+
         int l = dataArray.length - 1;
         if ( value <= dataArray[0] || value >= dataArray[l] ) {
-            if ( value <= dataArray[0] )
-                return colorArray[0];
-            if ( value >= dataArray[l] ) {
-                return colorArray[l];
+            if ( this.color == true ) {
+                if ( value <= dataArray[0] )
+                    return colorArray[0];
+                if ( value >= dataArray[l] ) {
+                    return colorArray[l];
+                }
+            } else if ( this.color == false ) {
+                if ( value <= dataArray[0] ) {
+                    int val = valuesArray[0].intValue();
+                    return new Color( val, val, val );
+                }
+                if ( value >= dataArray[l] ) {
+                    int val = valuesArray[0].intValue();
+                    return new Color( val, val, val );
+                }
             }
         }
 
@@ -505,14 +538,50 @@ public class Interpolate extends Function {
             pos = pos * ( -1 ) - 1;
         }
 
-        // LOG.debug( "Found positions {} and {}", pos - 1, pos );
-        // LOG.debug( "Going to do division to {}", dataArray[pos] - dataArray[pos - 1] );
         double f = ( value - dataArray[pos - 1] ) / ( dataArray[pos] - dataArray[pos - 1] );
-        // LOG.debug( "Interpolating between {} and {} ", dataArray[pos - 1], dataArray[pos] );
-        // LOG.debug( "Interpolating with fraction {} ", f );
-        Color color = interpolateColor( pos - 1, pos, f );
-        // LOG.debug( "Found color: {}", color );
+        if ( this.color == true )
+            color = interpolateColor( pos - 1, pos, f );
+        else {
+            double d = interpolate( pos - 1, pos, f );
+            int val = (int) fixRange( d, 0, 255 );
+            color = new Color( val, val, val );
+        }
         return color;
+    }
+
+    /**
+     * Looks up a value in the current data values. Uses binary search for optimization.
+     * 
+     * @param value
+     * @return the interpolated value
+     */
+    public double lookup2( double value ) {
+        int l = dataArray.length - 1;
+        if ( value <= dataArray[0] || value >= dataArray[l] ) {
+            if ( this.color == true ) {
+                if ( value <= dataArray[0] )
+                    return colorArray[0].getRGB();
+                if ( value >= dataArray[l] ) {
+                    return colorArray[l].getRGB();
+                }
+            } else if ( this.color == false ) {
+                if ( value <= dataArray[0] ) {
+                    return valuesArray[0];
+                }
+                if ( value >= dataArray[l] ) {
+                    return valuesArray[0];
+                }
+            }
+        }
+
+        int pos = Arrays.binarySearch( dataArray, value );
+        if ( pos < 0 ) {
+            pos = pos * ( -1 ) - 1;
+        }
+
+        double f = ( value - dataArray[pos - 1] ) / ( dataArray[pos] - dataArray[pos - 1] );
+        double val = interpolate( pos - 1, pos, f );
+        return val;
     }
 
     @Override

@@ -23,22 +23,22 @@
 	</ChannelSelection>
 	<OverlapBehavior>LATEST_ON_TOP</OverlapBehavior>
 	<ColorMap>
-		<Interpolate fallbackValue="#dddddd" method="color" mode="cubic">
+		<Interpolate fallbackValue="#dddddd" mode="cubic" method="color">
 			<LookupValue>Rasterdata</LookupValue>
 			<InterpolationPoint>
 				<Data>0</Data>
 				<Value>#000000</Value>
 			</InterpolationPoint>
 			<InterpolationPoint>
-				<Data>16</Data>
+				<Data>48</Data>
 				<Value>#ff0000</Value>
 			</InterpolationPoint>
 			<InterpolationPoint>
-				<Data>32</Data>
+				<Data>190</Data>
 				<Value>#ffff00</Value>
 			</InterpolationPoint>
 			<InterpolationPoint>
-				<Data>48</Data>
+				<Data>255</Data>
 				<Value>#ffffff</Value>
 			</InterpolationPoint>
 		</Interpolate>

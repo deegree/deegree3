@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RasterSymbolizer version="1.1.0" xsi:schemaLocation="http://www.opengis.net/se/1.1.0/Symbolizer.xsd" xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Opacity>0.2</Opacity>
+	<Opacity>0.7</Opacity>
 	<OverlapBehavior>AVERAGE</OverlapBehavior>
 	<ColorMap>
 		<Categorize fallbackValue="#78c818" thresholdsBelongTo="succeeding">
 		<LookupValue>Rasterdata</LookupValue>
             <Value>#00ffff</Value>
-            <Threshold>-2000000000</Threshold>
+            <Threshold>0</Threshold>
             <Value>#00ffbb</Value>
-            <Threshold>-1000000000</Threshold>
+            <Threshold>5</Threshold>
             <Value>#00ff66</Value>
-            <Threshold>-100000000</Threshold>
+            <Threshold>10</Threshold>
             <Value>#00ff00</Value>
-            <Threshold>-10000000</Threshold>
+            <Threshold>15</Threshold>
             <Value>#44ff00</Value>
-            <Threshold>-1000000</Threshold>
+            <Threshold>17</Threshold>
 			<Value>#88ff00</Value>
-			<Threshold>-100000</Threshold>
+			<Threshold>20</Threshold>
 			<Value>#00fa00</Value>
-			<Threshold>-10000</Threshold>
+			<Threshold>25</Threshold>
 			<Value>#14f500</Value>
-			<Threshold>-1000</Threshold>
+			<Threshold>30</Threshold>
 			<Value>#28f502</Value>
-			<Threshold>-100</Threshold>
+			<Threshold>35</Threshold>
 			<Value>#3cf505</Value>
-			<Threshold>-2</Threshold>
+			<Threshold>40</Threshold>
 			<Value>#50f50a</Value>
-			<Threshold>-1</Threshold>
+			<Threshold>45</Threshold>
 			<Value>#64f014</Value>
-			<Threshold>0</Threshold>
+			<Threshold>60</Threshold>
 			<Value>#7deb32</Value>
-			<Threshold>1</Threshold>
+			<Threshold>80</Threshold>
 			<Value>#78c818</Value>
-			<Threshold>2</Threshold>
+			<Threshold>120</Threshold>
 			<Value>#38840c</Value>
-			<Threshold>300</Threshold>
+			<Threshold>200</Threshold>
 			<Value>#2c4b04</Value>
-			<Threshold>400</Threshold>
+			<Threshold>210</Threshold>
 			<Value>#ffff00</Value>
-			<Threshold>700</Threshold>
+			<Threshold>220</Threshold>
 			<Value>#dcdc00</Value>
-			<Threshold>1200</Threshold>
+			<Threshold>225</Threshold>
 			<Value>#b47800</Value>
-			<Threshold>1400</Threshold>
+			<Threshold>230</Threshold>
 			<Value>#c85000</Value>
-			<Threshold>1600</Threshold>
+			<Threshold>235</Threshold>
 			<Value>#be4100</Value>
-			<Threshold>2000</Threshold>
+			<Threshold>240</Threshold>
 			<Value>#963000</Value>
-			<Threshold>3000</Threshold>
+			<Threshold>245</Threshold>
 			<Value>#3c0200</Value>
-			<Threshold>5000</Threshold>
+			<Threshold>250</Threshold>
 			<Value>#ffffff</Value>
-			<Threshold>13000</Threshold>
+			<Threshold>255</Threshold>
 			<Value>#ffffff</Value>
 		</Categorize>
 	</ColorMap>
