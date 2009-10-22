@@ -72,12 +72,20 @@ import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.protocol.wfs.getfeature.BBoxQuery;
+import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.Query;
 import org.slf4j.Logger;
@@ -220,7 +228,7 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection performQuery( Query query ) {
+    public FeatureCollection performQuery( Query query ) throws FilterEvaluationException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length != 1 ) {
             String msg = "Only queries with exactly one type name are supported.";
@@ -244,15 +252,26 @@ public class MemoryFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
+        // extract / create filter from query
+        Filter filter = null;
+        if ( query instanceof FilterQuery ) {
+            filter = ( (FilterQuery) query ).getFilter();
+        } else if ( query instanceof BBoxQuery ) {
+            Envelope bbox = ( (BBoxQuery) query ).getBBox();
+            PropertyName geoProp = findGeoProp( ft );
+            Operator bboxOperator = new BBOX( geoProp, bbox );
+            filter = new OperatorFilter( bboxOperator );           
+        } else if ( query instanceof FeatureIdQuery ) {
+            throw new UnsupportedOperationException();
+        }
+
         // determine matching features
         FeatureCollection fc = ftToFeatures.get( ft );
-        if ( query instanceof FilterQuery ) {
-            if ( ( (FilterQuery) query ).getFilter() != null ) {
-                try {
-                    fc = fc.getMembers( ( (FilterQuery) query ).getFilter() );
-                } catch ( FilterEvaluationException e ) {
-                    throw new RuntimeException( e.getMessage() );
-                }
+        if ( filter != null ) {
+            try {
+                fc = fc.getMembers( filter );
+            } catch ( FilterEvaluationException e ) {
+                throw new RuntimeException( e.getMessage() );
             }
         }
 
@@ -265,8 +284,28 @@ public class MemoryFeatureStore implements FeatureStore {
         return fc;
     }
 
+    private PropertyName findGeoProp( FeatureType ft ) throws FilterEvaluationException {
+
+        PropertyName propName = null;
+
+        // TODO what about geometry properties on subfeature levels
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            if ( pt instanceof GeometryPropertyType ) {
+                propName = new PropertyName( pt.getName() );
+                break;
+            }
+        }
+
+        if ( propName == null ) {
+            String msg = "Cannot perform BBox query: requested feature type ('" + ft.getName()
+                         + "') does not have a geometry property.";
+            throw new FilterEvaluationException( msg );
+        }
+        return propName;
+    }
+
     @Override
-    public int performHitsQuery( Query query ) {
+    public int performHitsQuery( Query query ) throws FilterEvaluationException {
         // TODO maybe implement this more efficiently
         return performQuery( query ).size();
     }

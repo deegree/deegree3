@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -58,6 +60,17 @@ public class PropertyName implements Expression {
     public PropertyName( String propName, NamespaceContext nsContext ) {
         this.propName = propName;
         this.nsContext = nsContext;
+    }
+
+    public PropertyName( QName name ) {        
+        this.nsContext = new org.deegree.commons.xml.NamespaceContext();
+        if ( name.getNamespaceURI() != null ) {
+            String prefix = (name.getPrefix() != null && !"".equals( name.getPrefix() )) ? name.getPrefix() : "app";
+            ( (org.deegree.commons.xml.NamespaceContext) nsContext ).addNamespace( prefix, name.getNamespaceURI() );
+            this.propName = prefix + ":" + name.getLocalPart();
+        } else {
+            this.propName = name.getLocalPart();
+        }
     }
 
     public String getPropertyName() {

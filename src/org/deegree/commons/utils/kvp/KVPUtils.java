@@ -69,8 +69,8 @@ public class KVPUtils {
     public static String getRequired( Map<String, String> param, String key )
                             throws MissingParameterException {
         String value = param.get( key );
-        if ( value == null ) {
-            throw new MissingParameterException( "Required parameter '" + key + "' is missing." );
+        if ( value == null || value.length() == 0) {
+            throw new MissingParameterException( "Required parameter '" + key + "' is missing.", key );
         }
         return value;
     }

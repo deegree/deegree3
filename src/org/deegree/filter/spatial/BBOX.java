@@ -79,8 +79,6 @@ public class BBOX extends SpatialOperator {
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
 
-        System.out.println ("Checking against " + object.getId());        
-        
         for ( Object paramValue : geometry.evaluate( object ) ) {
             Geometry param1Value = checkGeometryOrNull( paramValue );
             if ( param1Value != null ) {

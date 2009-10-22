@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,24 +32,26 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.kvp;
 
 /**
  * Thrown to indicate that a required parameter is missing.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class MissingParameterException extends IllegalArgumentException {
 
     private static final long serialVersionUID = -624744087515632107L;
 
+    private String param;
+
     /**
-     * Constructs a new {@link MissingParameterException}  with null as its detail message.
+     * Constructs a new {@link MissingParameterException} with null as its detail message.
      */
     public MissingParameterException() {
         // nothing to do
@@ -57,7 +59,7 @@ public class MissingParameterException extends IllegalArgumentException {
 
     /**
      * Constructs a new {@link MissingParameterException} with the specified detail message.
-     *
+     * 
      * @param msg
      *            the detail message (which is saved for later retrieval by the <code>Throwable.getMessage()</code>
      *            method).
@@ -67,8 +69,22 @@ public class MissingParameterException extends IllegalArgumentException {
     }
 
     /**
+     * Constructs a new {@link MissingParameterException} with the specified detail message.
+     * 
+     * @param msg
+     *            the detail message (which is saved for later retrieval by the <code>Throwable.getMessage()</code>
+     *            method).
+     * @param param
+     *            name of the missing parameter
+     */
+    public MissingParameterException( String msg, String param ) {
+        super( msg );
+        this.param = param;
+    }
+
+    /**
      * Constructs a new {@link MissingParameterException} with the specified detail message and cause.
-     *
+     * 
      * @param msg
      *            the detail message (which is saved for later retrieval by the <code>Throwable.getMessage()</code>
      *            method).
@@ -85,12 +101,21 @@ public class MissingParameterException extends IllegalArgumentException {
      * <code>(cause==null ? null : cause.toString())</code> (which typically contains the class and detail message of
      * cause). This constructor is useful for runtime exceptions that are little more than wrappers for other
      * throwables.
-     *
+     * 
      * @param cause
      *            the cause (which is saved for later retrieval by the <code>Throwable.getCause()</code> method). (A
      *            <code>null</code> value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
     public MissingParameterException( Throwable cause ) {
         super( cause );
+    }
+
+    /**
+     * Returns the name of the missing parameter.
+     * 
+     * @return the name of the missing parameter
+     */
+    public String getName() {
+        return param;
     }
 }

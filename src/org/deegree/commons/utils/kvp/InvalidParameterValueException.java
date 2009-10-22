@@ -48,6 +48,8 @@ public class InvalidParameterValueException extends IllegalArgumentException {
 
     private static final long serialVersionUID = -6082873552693636502L;
 
+    private String param;
+
     /**
      * Constructs a new {@link InvalidParameterValueException} with null as its detail message.
      */
@@ -66,6 +68,20 @@ public class InvalidParameterValueException extends IllegalArgumentException {
         super( msg );
     }
 
+    /**
+     * Constructs a new {@link InvalidParameterValueException} with the specified detail message.
+     *
+     * @param msg
+     *            the detail message (which is saved for later retrieval by the <code>Throwable.getMessage()</code>
+     *            method)
+     * @param param
+     *            name of the missing parameter
+     */
+    public InvalidParameterValueException( String msg, String param ) {
+        super( msg );
+        this.param = param;
+    }    
+    
     /**
      * Constructs a new {@link InvalidParameterValueException} with the specified detail message and cause.
      *
@@ -92,5 +108,14 @@ public class InvalidParameterValueException extends IllegalArgumentException {
      */
     public InvalidParameterValueException( Throwable cause ) {
         super( cause );
+    }
+    
+    /**
+     * Returns the name of the invalid parameter.
+     * 
+     * @return the name of the invalid parameter
+     */
+    public String getName() {
+        return param;
     }
 }
