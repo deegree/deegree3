@@ -971,8 +971,8 @@ public class CRSQuerier {
                             throws SQLException {
         CoordinateSystem result = null;
 
-        PreparedStatement ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE original = '"
-                                                      + crsCode.getOriginal() + "'" );
+        PreparedStatement ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE UPPER(original) = UPPER('"
+                                                      + crsCode.getOriginal() + "')" );
 
         ResultSet rs = ps.executeQuery();
         if ( !rs.next() ) {
