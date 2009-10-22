@@ -88029,13 +88029,10 @@
  </crs:geographicCRS>
  <crs:geographicCRS>
   <crs:id>EPSG:4326</crs:id>
-  <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11:4326</crs:id>
-  <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326</crs:id>
   <crs:id>URN:OGC:DEF:CRS:EPSG::4326</crs:id>
   <crs:id>URN:OGC:DEF:CRS:EPSG:4326</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326</crs:id>
   <crs:id>URN:OPENGIS:DEF:CRS:EPSG::4326</crs:id>
-  <crs:id>URN:X-OGC:DEF:CRS:EPSG:4326</crs:id>
   <crs:name>WGS 84</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
   <crs:description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:description>
@@ -88052,6 +88049,26 @@
   <crs:axisOrder>longitude, latitude</crs:axisOrder>
   <crs:usedDatum>EPSG:6326</crs:usedDatum>
  </crs:geographicCRS>
+<crs:geographicCRS>
+  <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11:4326</crs:id>
+  <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326</crs:id>
+  <crs:id>URN:X-OGC:DEF:CRS:EPSG:4326</crs:id>
+  <crs:name>WGS 84</crs:name>
+  <crs:version>2008-1-16T9:49</crs:version>
+  <crs:description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:description>
+  <crs:Axis>
+   <crs:name>longitude</crs:name>
+   <crs:units>degree</crs:units>
+   <crs:axisOrientation>east</crs:axisOrientation>
+  </crs:Axis>
+  <crs:Axis>
+   <crs:name>latitude</crs:name>
+   <crs:units>degree</crs:units>
+   <crs:axisOrientation>north</crs:axisOrientation>
+  </crs:Axis>
+  <crs:axisOrder>latitude, longitude</crs:axisOrder>
+  <crs:usedDatum>EPSG:6326</crs:usedDatum>
+ </crs:geographicCRS> 
  <crs:compoundCRS>
   <crs:id>EPSG:4979</crs:id>
   <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11.2:4979</crs:id>
