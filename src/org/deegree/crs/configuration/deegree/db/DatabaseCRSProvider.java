@@ -44,12 +44,9 @@ import java.util.Properties;
 
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
-import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.configuration.CRSProvider;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.coordinatesystems.GeographicCRS;
-import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.exceptions.CRSException;
 import org.deegree.crs.transformations.Transformation;
@@ -141,27 +138,6 @@ public class DatabaseCRSProvider implements CRSProvider {
         try {
             result = querier.getCRSByCode( code );
 
-            if ( "4326".equals( code.getCode() ) || "31466".equals( code.getCode() ) || "31467".equals( code.getCode() )
-                 || "31468".equals( code.getCode() ) ) {
-                if ( ( code.getOriginal().toLowerCase().startsWith( "urn:x-ogc" ) )
-                     || ( code.getCodeVersion() != null && code.getCodeVersion().length() > 0 ) ) {
-                    // switch axes of the CRS 4326, 31466, 31467, 31468 that have a version! (e.g. 6.11)
-                    if ( result instanceof GeographicCRS ) {
-                        CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(), result.getNames(),
-                                                                      result.getVersions(), result.getDescriptions(),
-                                                                      result.getAreasOfUse() );
-                        result = new GeographicCRS( result.getGeodeticDatum(), new Axis[] { result.getAxis()[1],
-                                                                                           result.getAxis()[0] },
-                                                    fiable );
-                    } else if ( result instanceof ProjectedCRS ) {
-                        CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(), result.getNames(),
-                                                                      result.getVersions(), result.getDescriptions(),
-                                                                      result.getAreasOfUse() );
-                        result = new ProjectedCRS( ( (ProjectedCRS) result ).getProjection(),
-                                                   new Axis[] { result.getAxis()[1], result.getAxis()[0] }, fiable );
-                    }
-                }
-            }
         } catch ( IllegalArgumentException e ) {
             LOG.warn( "Instantiation for code: " + code.getOriginal() + " could not be forefullfilled, because: "
                       + e.getLocalizedMessage() );
