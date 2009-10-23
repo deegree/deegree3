@@ -218,30 +218,30 @@ public class Raster2RawData {
     }
 
     /**
-     * @param x
-     *            index
-     * @param y
-     *            index
+     * @param col
+     *            column index
+     * @param row
+     *            row index
      * @return the appropriate value, as an Integer, or a Float object
      */
-    public float get( int x, int y ) {
+    public float get( int col, int row ) {
         float ret = (float) 0.0;
 
         switch ( data.getDataType() ) {
         case BYTE:
-            ret = combineBytes( data.getBytePixel( x, y, null ) );
+            ret = combineBytes( data.getBytePixel( col, row, null ) );
             // Compensate for the fact that byte is a signed datatype. This is used in grayscale images, range 0-255
             if ( ret < 0 )
                 ret += -2 * Byte.MIN_VALUE;
             break;
         case SHORT:
         case USHORT:
-            ret = combineShorts( data.getShortPixel( x, y, null ) );
+            ret = combineShorts( data.getShortPixel( col, row, null ) );
             break;
         case INT:
-            ret = combineInts( data.getIntPixel( x, y, null ) );
+            ret = combineInts( data.getIntPixel( col, row, null ) );
         case FLOAT:
-            ret = combineFloats( data.getFloatPixel( x, y, null ) );
+            ret = combineFloats( data.getFloatPixel( col, row, null ) );
             break;
         default:
             LOG.error( "Cannot parse datatype '{}'", data.getDataType().toString() );

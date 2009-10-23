@@ -40,9 +40,16 @@ import static org.deegree.rendering.r2d.styling.RasterStyling.Overlap.RANDOM;
 
 import java.util.HashMap;
 
+import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.RasterDataFactory;
+import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.filter.function.Categorize;
 import org.deegree.filter.function.Interpolate;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
+import org.deegree.rendering.r2d.utils.Raster2RawData;
+
 
 /**
  * <code>RasterStyling</code>
@@ -104,6 +111,9 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
         /** Default is 55. */
         public double reliefFactor = 55;
+        
+        /** Azimuth angle = Illumination direction (Default is Nord-West) */
+        private final int azimuthAngle = 315;
 
         public ShadedRelief copy() {
             ShadedRelief copy = new ShadedRelief();
@@ -112,6 +122,68 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
             copy.reliefFactor = reliefFactor;
 
             return copy;
+        }
+        
+        /** Perform the hill-shading algorithm on a DEM raster. Algorithm is taken from 
+         * http://edndoc.esri.com/arcobjects/9.2/net/shared/geoprocessing/spatial_analyst_tools/how_hillshade_works.htm
+         * @param raster Input raster, containing a DEM
+         * @return a new raster
+         */
+        public AbstractRaster performHillShading(AbstractRaster raster)
+        {
+            int cols = raster.getColumns(), rows = raster.getRows();
+            Raster2RawData data = new Raster2RawData( raster );
+            RasterData shadeData = RasterDataFactory.createRasterData( cols, rows, DataType.BYTE );
+            SimpleRaster hillShade = new SimpleRaster(shadeData, raster.getEnvelope(), raster.getRasterReference());
+            
+            double Azimuth_math = 360 - azimuthAngle + 90;
+            double Azimuth_rad = Azimuth_math * Math.PI / 180.0;
+            double Aspect_rad = 0;
+            
+            for (int row = 0; row < hillShade.getRows(); row++)
+                for (int col = 0; col < hillShade.getColumns(); col++)
+                {
+                    if (row== 0 || col == 0 || row == rows-1 || col == cols - 1)
+                    {
+                        shadeData.setByteSample( col, row, 0, (byte)0 );
+                        continue;
+                    }
+                    
+                    byte shade = 0;
+                    double Zenith_rad = (90 - data.get( col, row )) * Math.PI / 180.0;
+                    double dx = ((data.get( col+1, row-1 ) + 2*data.get( col+1, row ) + data.get( col+1, row+1 )) - 
+                                 (data.get( col-1, row-1 ) + 2*data.get( col-1, row ) + data.get( col-1, row+1 ))) 
+                                 / 8;
+                    double dy = ((data.get( col-1, row+1 ) + 2 * data.get( col, row+1 ) + data.get( col+1, row+1 )) - 
+                                 (data.get( col-1, row-1 ) + 2 * data.get( col, row-1 ) + data.get( col+1, row-1 ))) 
+                                 / 8;
+                    double Slope_rad = Math.atan( reliefFactor * Math.sqrt( dx*dx + dy*dy) );
+                    if (dx != 0)
+                    {
+                        Aspect_rad = Math.atan2( dy, -dx );
+                        if (Aspect_rad < 0)
+                            Aspect_rad += 2 * Math.PI;
+                    }
+                    else
+                    {
+                        if (dy > 0)
+                            Aspect_rad = Math.PI / 2;
+                        else if (dy < 0)
+                            Aspect_rad = 2 * Math.PI - Math.PI / 2;
+                    }
+                    
+                    shade = (byte) Math.round(255.0 * ( ( Math.cos(Zenith_rad) * Math.cos(Slope_rad) ) + 
+                        ( Math.sin(Zenith_rad) * Math.sin(Slope_rad) * Math.cos(Azimuth_rad - Aspect_rad) ) ));
+                    if (shade < 0)
+                        shade = 0;
+                    shadeData.setByteSample( col, row, 0, shade );
+                }
+            return hillShade;
+        }
+        
+        public String toString()
+        {
+            return "ShadedRelief: { BrightnessOnly: " + brightnessOnly + ", ReliefFactor: " + reliefFactor + "}";   
         }
     }
 

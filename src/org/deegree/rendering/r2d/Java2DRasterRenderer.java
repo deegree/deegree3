@@ -109,6 +109,12 @@ public class Java2DRasterRenderer implements RasterRenderer {
             render( raster );
             return;
         }
+        
+        if (styling.shaded != null)
+        {
+            LOG.trace( "Hill shading DEM data ... ");
+            raster = styling.shaded.performHillShading( raster );
+        }
 
         if ( styling.categorize != null || styling.interpolate != null ) {
             LOG.trace( "Creating raster ColorMap..." );
@@ -119,11 +125,11 @@ public class Java2DRasterRenderer implements RasterRenderer {
         }
 
         if ( styling.opacity != 1 ) {
-            LOG.debug( "Using opacity: " + styling.opacity );
+            LOG.trace( "Using opacity: " + styling.opacity );
             graphics.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, (float) styling.opacity ) );
         }
 
-        LOG.trace( "Rendering ..." );
+        LOG.trace( "Rendering image..." );
         if ( img != null )
             render( img );
         else

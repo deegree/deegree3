@@ -56,5 +56,5 @@
 			<Value>#ffffff</Value>
 		</Categorize>
 	</ColorMap>
-	<ShadedRelief/>
+	<!--ShadedRelief/-->
 </RasterSymbolizer>
