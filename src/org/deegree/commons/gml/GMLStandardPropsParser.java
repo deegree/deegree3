@@ -44,7 +44,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -90,7 +90,7 @@ public class GMLStandardPropsParser {
      *             if a syntactical error occurs
      * @throws XMLStreamException
      */
-    public static StandardObjectProps parse311( XMLStreamReaderWrapper xmlStream )
+    public static StandardGMLObjectProps parse311( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -115,7 +115,7 @@ public class GMLStandardPropsParser {
             xmlStream.nextTag();
         }
 
-        return new StandardObjectProps( description, names.toArray( new CodeType[names.size()] ) );
+        return new StandardGMLObjectProps( description, names.toArray( new CodeType[names.size()] ) );
     }
 
     protected static void parseMetadataProperty311( XMLStreamReaderWrapper xmlStream )

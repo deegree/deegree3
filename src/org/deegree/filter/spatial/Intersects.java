@@ -50,26 +50,26 @@ import org.deegree.geometry.Geometry;
  */
 public class Intersects extends SpatialOperator {
 
-    private final PropertyName param1;
+    private final PropertyName propName;
 
-    private final Geometry literal;
+    private final Geometry geometry;
 
     /**
-     * @param param1
-     * @param param2
+     * @param propName 
+     * @param geometry 
      */
-    public Intersects( PropertyName param1, Geometry param2 ) {
-        this.param1 = param1;
-        this.literal = param2;
+    public Intersects( PropertyName propName, Geometry geometry ) {
+        this.propName = propName;
+        this.geometry = geometry;
     }
 
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        for ( Object paramValue : param1.evaluate( object ) ) {
+        for ( Object paramValue : propName.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( paramValue );
             if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, literal );
+                Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
                 return geom.intersects( transformedLiteral );
             }
         }
@@ -79,8 +79,13 @@ public class Intersects extends SpatialOperator {
     @Override
     public String toString( String indent ) {
         String s = indent + "-Intersects\n";
-        s += indent + param1 + "\n";
-        s += indent + literal;
+        s += indent + propName + "\n";
+        s += indent + geometry;
         return s;
     }
+    
+    @Override
+    public Object[] getParams () {
+        return new Object [] {propName, geometry};
+    }    
 }

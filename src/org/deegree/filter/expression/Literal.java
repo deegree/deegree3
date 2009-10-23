@@ -90,4 +90,9 @@ public class Literal<T> implements Expression {
         String s = indent + "-Literal ('" + value + "')\n";
         return s;
     }
+    
+    @Override
+    public Expression[] getParams() {
+        return new Expression[0];
+    }
 }

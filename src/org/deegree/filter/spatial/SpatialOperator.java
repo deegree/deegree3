@@ -160,4 +160,6 @@ public abstract class SpatialOperator implements Operator {
         }
         return transformedLiteral;
     }
+    
+    public abstract Object[] getParams ();    
 }

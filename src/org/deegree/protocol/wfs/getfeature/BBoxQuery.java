@@ -36,7 +36,6 @@
 package org.deegree.protocol.wfs.getfeature;
 
 import org.deegree.crs.CRS;
-import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
@@ -67,8 +66,6 @@ public class BBoxQuery extends Query {
      * @param typeNames
      *            requested feature types (with optional aliases), must not be null and must always contain at least one
      *            entry
-     * @param featureIds
-     *            requested feature ids
      * @param featureVersion
      *            version of the feature instances to be retrieved, may be null
      * @param srsName
@@ -77,19 +74,16 @@ public class BBoxQuery extends Query {
      *            properties of the features that should be retrieved, may be null
      * @param xLinkPropertyNames
      *            properties for which the the traversal of nested XLinks is selectively requested, may be null
-     * @param functions
-     *            properties for which a function value should be used instead of the original property value, may be
-     *            null
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
      *            may be null
      * @param bbox
      *            envelope that constraints the query, must not be null
      */
-    public BBoxQuery( String handle, TypeName[] typeNames, String[] featureIds, String featureVersion, CRS srsName,
-                      PropertyName[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames, Function[] functions,
+    public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, CRS srsName,
+                      PropertyName[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames,
                       SortProperty[] sortBy, Envelope bbox ) {
-        super( handle, typeNames, featureIds, featureVersion, srsName, functions, sortBy );
+        super( handle, typeNames, featureVersion, srsName, sortBy );
         if ( bbox == null ) {
             throw new IllegalArgumentException();
         }
@@ -130,7 +124,7 @@ public class BBoxQuery extends Query {
      * 
      * @return the xLinkPropertyNames. See {@link XLinkPropertyName}
      */
-    public XLinkPropertyName[][] getxLinkPropertyNames() {
+    public XLinkPropertyName[][] getXLinkPropertyNames() {
         return xLinkPropertyNames;
     }
 }

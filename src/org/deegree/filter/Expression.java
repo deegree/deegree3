@@ -122,5 +122,12 @@ public interface Expression {
     public Object[] evaluate( MatchableObject obj )
                             throws FilterEvaluationException;
 
-    public String toString( String indent );
+    /**
+     * Returns the expression's paramters.
+     * 
+     * @return the parameters of the expression
+     */
+    public abstract Expression [] getParams();    
+    
+    public String toString( String indent );    
 }

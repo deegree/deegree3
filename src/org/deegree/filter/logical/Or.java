@@ -116,4 +116,9 @@ public class Or extends LogicalOperator {
         }
         return s;
     }
+
+    @Override
+    public Operator[] getParams() {
+        return params.toArray(new Operator [params.size()]);
+    }    
 }

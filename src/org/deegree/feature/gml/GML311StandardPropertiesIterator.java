@@ -42,17 +42,15 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.ows.CodeType;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
-import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 
 /**
- * Allows to iterate over the GML 3.1.1 properties defined by a {@link StandardFeatureProps} object.
+ * Allows to iterate over the GML 3.1.1 properties defined by a {@link StandardGMLFeatureProps} object.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -61,7 +59,7 @@ import org.deegree.geometry.Envelope;
  */
 public class GML311StandardPropertiesIterator implements Iterator<Property<?>> {
 
-    private final StandardFeatureProps props;
+    private final StandardGMLFeatureProps props;
 
     private enum PROPERTY {
         BEFORE, DESCRIPTION, NAME, BOUNDED_BY, AFTER
@@ -82,7 +80,7 @@ public class GML311StandardPropertiesIterator implements Iterator<Property<?>> {
 
     private final static PropertyType BOUNDED_BY_TYPE = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1 );
 
-    public GML311StandardPropertiesIterator( StandardFeatureProps props ) {
+    public GML311StandardPropertiesIterator( StandardGMLFeatureProps props ) {
         this.props = props;
     }
 

@@ -38,7 +38,7 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
@@ -72,7 +72,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
 
     private boolean isReversed;
 
-    private StandardObjectProps standardProps;
+    private StandardGMLObjectProps standardProps;
 
     /**
      * Creates a new <code>DefaultOrientableCurve</code> instance from the given parameters.

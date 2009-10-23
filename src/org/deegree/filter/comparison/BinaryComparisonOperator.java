@@ -35,14 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.util.Date;
-
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.Expression;
-import org.deegree.filter.FilterEvaluationException;
 
 /**
  * TODO add documentation here
@@ -76,5 +69,10 @@ public abstract class BinaryComparisonOperator extends ComparisonOperator {
 
     public boolean getMatchCase() {
         return matchCase;
+    }
+    
+    @Override
+    public Expression[] getParams () {
+        return new Expression [] {param1, param2};
     }
 }

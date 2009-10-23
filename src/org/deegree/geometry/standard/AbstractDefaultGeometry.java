@@ -38,7 +38,7 @@ package org.deegree.geometry.standard;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
@@ -103,7 +103,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     // contains an equivalent (or best-fit) JTS geometry object
     protected com.vividsolutions.jts.geom.Geometry jtsGeometry;
 
-    private StandardObjectProps standardProps;
+    private StandardGMLObjectProps standardProps;
 
     /**
      * @param id
@@ -279,12 +279,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public StandardObjectProps getAttachedProperties() {
+    public StandardGMLObjectProps getAttachedProperties() {
         return standardProps;
     }
 
     @Override
-    public void setAttachedProperties( StandardObjectProps standardProps ) {
+    public void setAttachedProperties( StandardGMLObjectProps standardProps ) {
         this.standardProps = standardProps;
     }
 

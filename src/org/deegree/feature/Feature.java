@@ -39,7 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;
@@ -63,7 +63,7 @@ import org.deegree.geometry.Geometry;
  * 
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML feature type definition are treated in a specific way.
- * They are modelled using the {@link StandardObjectProps} class and not as standard properties of the feature.
+ * They are modelled using the {@link StandardGMLObjectProps} class and not as standard properties of the feature.
  * This design decision has been driven by the goal to make the implementation less GML (and GML-version) specific and
  * to allow for example to export a {@link Feature} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for
  * the standard properties).
@@ -208,7 +208,7 @@ public interface Feature extends MatchableObject {
      * 
      * @return a representation of the standard GML properties, may be null
      */
-    public StandardObjectProps getStandardGMLProperties();
+    public StandardGMLObjectProps getStandardGMLProperties();
 
     /**
      * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
@@ -216,5 +216,5 @@ public interface Feature extends MatchableObject {
      * @param standardProps
      *            representation of the standard GML properties
      */
-    public void setStandardGMLProperties( StandardObjectProps standardProps );
+    public void setStandardGMLProperties( StandardGMLObjectProps standardProps );
 }

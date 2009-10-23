@@ -40,7 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.FeatureType;
@@ -167,12 +167,12 @@ public class FeatureReference implements Feature {
     }
 
     @Override
-    public StandardObjectProps getStandardGMLProperties() {
+    public StandardGMLObjectProps getStandardGMLProperties() {
         return feature.getStandardGMLProperties();
     }
 
     @Override
-    public void setStandardGMLProperties( StandardObjectProps standardProps ) {
+    public void setStandardGMLProperties( StandardGMLObjectProps standardProps ) {
         feature.setStandardGMLProperties( standardProps );
     }
 

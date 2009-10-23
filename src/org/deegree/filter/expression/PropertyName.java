@@ -108,4 +108,9 @@ public class PropertyName implements Expression {
         String s = indent + "-PropertyName ('" + propName + "')\n";
         return s;
     }
+
+    @Override
+    public Expression[] getParams() {
+        return new Expression[0];
+    }    
 }

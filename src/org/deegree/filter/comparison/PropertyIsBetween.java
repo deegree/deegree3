@@ -127,4 +127,8 @@ public class PropertyIsBetween extends ComparisonOperator {
         s += upperBoundary.toString( indent + "  " );
         return s;
     }
+    
+    public Expression[] getParams () {
+        return new Expression [] {lowerBoundary, expression, upperBoundary};
+    }
 }

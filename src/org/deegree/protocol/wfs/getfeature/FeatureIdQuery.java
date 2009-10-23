@@ -36,7 +36,6 @@
 package org.deegree.protocol.wfs.getfeature;
 
 import org.deegree.crs.CRS;
-import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 
@@ -59,7 +58,7 @@ public class FeatureIdQuery extends Query {
     private final XLinkPropertyName[][] xLinkPropertyNames;
 
     /**
-     * Creates a new {@link FilterQuery} instance.
+     * Creates a new {@link FeatureIdQuery} instance.
      * 
      * @param handle
      *            client-generated query identifier, may be null
@@ -74,9 +73,6 @@ public class FeatureIdQuery extends Query {
      *            properties of the features that should be retrieved, may be null
      * @param xLinkPropertyNames
      *            properties for which the the traversal of nested XLinks is selectively requested, may be null
-     * @param functions
-     *            properties for which a function value should be used instead of the original property value, may be
-     *            null
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
      *            may be null
@@ -85,8 +81,8 @@ public class FeatureIdQuery extends Query {
      */
     public FeatureIdQuery( String handle, TypeName[] typeNames, String[] featureIds, String featureVersion,
                            CRS srsName, PropertyName[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames,
-                           Function[] functions, SortProperty[] sortBy ) {
-        super( handle, typeNames, featureIds, featureVersion, srsName, functions, sortBy );
+                           SortProperty[] sortBy ) {
+        super( handle, typeNames, featureVersion, srsName, sortBy );
         if ( featureIds == null ) {
             throw new IllegalArgumentException();
         }
@@ -118,4 +114,12 @@ public class FeatureIdQuery extends Query {
         return xLinkPropertyNames;
     }
 
+    /**
+     * Returns the requested feature ids.
+     * 
+     * @return the requested feature ids, never null
+     */
+    public String[] getFeatureIds() {
+        return featureIds;
+    }
 }

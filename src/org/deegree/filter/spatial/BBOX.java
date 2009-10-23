@@ -55,16 +55,16 @@ public class BBOX extends SpatialOperator {
 
     private static final Logger LOG = LoggerFactory.getLogger( BBOX.class );
 
-    private final PropertyName geometry;
+    private final PropertyName propName;
 
     private final Envelope bbox;
 
     /**
+     * @param propName
      * @param bbox
-     * @param geometry
      */
-    public BBOX( PropertyName geometry, Envelope bbox ) {
-        this.geometry = geometry;
+    public BBOX( PropertyName propName, Envelope bbox ) {
+        this.propName = propName;
         this.bbox = bbox;
     }
 
@@ -79,7 +79,7 @@ public class BBOX extends SpatialOperator {
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
 
-        for ( Object paramValue : geometry.evaluate( object ) ) {
+        for ( Object paramValue : propName.evaluate( object ) ) {
             Geometry param1Value = checkGeometryOrNull( paramValue );
             if ( param1Value != null ) {
                 Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, bbox );
@@ -92,8 +92,13 @@ public class BBOX extends SpatialOperator {
     @Override
     public String toString( String indent ) {
         String s = indent + "-BBOX\n";
-        s += indent + geometry + "\n";
+        s += indent + propName + "\n";
         s += indent + bbox;
         return s;
+    }
+    
+    @Override
+    public Object[] getParams () {
+        return new Object [] {propName, bbox};
     }
 }

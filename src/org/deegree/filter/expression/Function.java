@@ -90,4 +90,9 @@ public class Function implements Expression {
         }
         return s;
     }
+
+    @Override
+    public Expression[] getParams() {
+        return params.toArray( new Expression[params.size()] );
+    }
 }

@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.PropertyType;
@@ -68,16 +69,36 @@ public interface FeatureType {
      * 
      * @param propName
      *            name of the property
-     * @return the declaration of the property, or null if no such property is defined
+     * @return the declaration of the property, or <code>null</code> if no such property is defined
      */
     public PropertyType getPropertyDeclaration( QName propName );
 
     /**
-     * Returns all property declarations of the feature type.
+     * Returns the declaration of the property with the given name.
      * 
-     * @return the property declarations (in order)
+     * @param propName
+     *            name of the property
+     * @param version
+     *            the GML version (this defines the available GML standard properties)
+     * @return the declaration of the property, or <code>null</code> if no such property is defined
+     */
+    public PropertyType getPropertyDeclaration( QName propName, GMLVersion version );
+
+    /**
+     * Returns all property declarations of the feature type, excluding those that any GML feature allows for.
+     * 
+     * @return property declarations (in order)
      */
     public List<PropertyType> getPropertyDeclarations();
+
+    /**
+     * Returns all property declarations of the feature type, including those that any GML feature allows for.
+     * 
+     * @param version
+     *            GML version, must not be <code>null</code>
+     * @return property declarations (in order)
+     */
+    public List<PropertyType> getPropertyDeclarations( GMLVersion version );
 
     /**
      * Returns whether this type is abstract or not.

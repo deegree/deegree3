@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.logical;
 
 import org.deegree.filter.FilterEvaluationException;
@@ -41,39 +41,44 @@ import org.deegree.filter.Operator;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Not extends LogicalOperator {
 
     private Operator param;
 
-    public Not (Operator param) {
+    public Not( Operator param ) {
         this.param = param;
     }
 
-    public Operator getParameter () {
+    public Operator getParameter() {
         return param;
     }
 
-    @Override    
+    @Override
     public SubType getSubType() {
         return SubType.NOT;
-    }    
-    
-    @Override    
+    }
+
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         return !param.evaluate( object );
     }
-    
-    @Override    
+
+    @Override
     public String toString( String indent ) {
         String s = indent + "-Not\n";
-        s += param.toString (indent + "  ");
+        s += param.toString( indent + "  " );
         return s;
+    }
+
+    @Override
+    public Operator[] getParams() {
+        return new Operator[] { param };
     }
 }

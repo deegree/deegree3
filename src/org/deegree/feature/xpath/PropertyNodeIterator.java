@@ -41,7 +41,7 @@ import java.util.NoSuchElementException;
 
 import org.deegree.feature.Property;
 import org.deegree.feature.gml.GML311StandardPropertiesIterator;
-import org.deegree.feature.gml.StandardFeatureProps;
+import org.deegree.feature.gml.StandardGMLFeatureProps;
 
 /**
  * TODO add documentation here
@@ -64,7 +64,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
         // TODO handle other GML versions
         if ( parent.getFeature().getStandardGMLProperties() != null ) {
             this.stdProps = new GML311StandardPropertiesIterator(
-                                                                  (StandardFeatureProps) parent.getFeature().getStandardGMLProperties() );
+                                                                  (StandardGMLFeatureProps) parent.getFeature().getStandardGMLProperties() );
         }
         this.props = Arrays.asList( parent.getFeature().getProperties() ).iterator();
     }

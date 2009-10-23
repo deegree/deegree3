@@ -201,9 +201,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             propNames.toArray( propNamesArray );
 
             // build Query
-            Query filterQuery = new FilterQuery( queryHandle, typeNames, null, featureVersion, null, propNamesArray,
-                                                 null, null, null, filter );
-
+            Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, null, propNamesArray, null,
+                                                 null, null, filter );
             queries.add( filterQuery );
         }
 
@@ -367,9 +366,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             sortProps.toArray( sortPropsArray );
 
             // build Query
-            Query filterQuery = new FilterQuery( queryHandle, typeNames, null, featureVersion, crs, propNamesArray,
+            Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, crs, propNamesArray,
                                                  xlinkPropNamesArray, functionsArray, sortPropsArray, filter );
-
             queries.add( filterQuery );
         }
 

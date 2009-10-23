@@ -55,13 +55,9 @@ public abstract class Query {
 
     private final TypeName[] typeNames;
 
-    private final String[] featureIds;
-
     private final String featureVersion;
 
     private final CRS srsName;
-
-    private final Function[] functions;
 
     private final SortProperty[] sortBy;
 
@@ -72,27 +68,20 @@ public abstract class Query {
      *            client-generated query identifier, may be null
      * @param typeNames
      *            requested feature types (with optional aliases), can be null
-     * @param featureIds
-     *            requested feature ids, can be null
      * @param featureVersion
      *            version of the feature instances to be retrieved, may be null
      * @param srsName
      *            WFS-supported SRS that should be used for returned feature geometries, may be null
-     * @param functions
-     *            properties for which a function value should be used instead of the original property value, may be
-     *            null
      * @param sortBy
      *            properties whose values should be used to order the set of feature instances that satisfy the query,
      *            may be null
      */
-    public Query( String handle, TypeName[] typeNames, String[] featureIds, String featureVersion, CRS srsName,
-                  Function[] functions, SortProperty[] sortBy ) {
+    public Query( String handle, TypeName[] typeNames, String featureVersion, CRS srsName, 
+                  SortProperty[] sortBy ) {
         this.handle = handle;
         this.typeNames = typeNames;
-        this.featureIds = featureIds;
         this.featureVersion = featureVersion;
         this.srsName = srsName;
-        this.functions = functions;
         this.sortBy = sortBy;
     }
 
@@ -115,15 +104,6 @@ public abstract class Query {
     }
 
     /**
-     * Returns the requested feature ids.
-     * 
-     * @return the requested feature ids, never null
-     */
-    public String[] getFeatureIds() {
-        return featureIds;
-    }
-
-    /**
      * Returns the version of the feature instances to be retrieved.
      * 
      * @return the version of the feature instances to be retrieved, may be null
@@ -139,15 +119,6 @@ public abstract class Query {
      */
     public CRS getSrsName() {
         return srsName;
-    }
-
-    /**
-     * Returns the functions that should be fetched instead of the original property values.
-     * 
-     * @return the functions that should be fetched instead of the original property values, may be null
-     */
-    public Function[] getFunctions() {
-        return functions;
     }
 
     /**

@@ -38,18 +38,22 @@ package org.deegree.feature.persistence;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.crs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.expression.Function;
+import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.protocol.wfs.getfeature.Query;
+import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
+ * Base interface of the {@l ink Feature} persistence layer, provides access to stored {@link Feature} instances.
  * <p>
  * Note that a {@link FeatureStore} instance is always associated with exactly one {@link ApplicationSchema} instance.
  * <h4>Implementation requirements</h4>
@@ -131,6 +135,9 @@ public interface FeatureStore {
     public FeatureCollection query( QName featureType, Filter filter, Envelope bbox, boolean withGeometries,
                                     boolean exact )
                             throws FeatureStoreException, FilterEvaluationException;
+
+//    public FeatureCollection query( TypeName[] fts, String featureVersion, CRS srsName, Function[] functions,
+//                                    SortProperty[] sortBy, Filter filter );
 
     /**
      * Performs the given {@link Query} and returns the matching features as a {@link FeatureCollection}.

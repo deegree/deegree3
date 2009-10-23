@@ -46,7 +46,7 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.crs.CRS;
@@ -1443,13 +1443,13 @@ public class GML311GeometryEncoder {
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
         }
 
-        StandardObjectProps props = geometry.getAttachedProperties();
+        StandardGMLObjectProps props = geometry.getAttachedProperties();
         if ( props != null ) {
             exportStandardProps( writer, props );
         }
     }
 
-    private void exportStandardProps( XMLStreamWriter writer, StandardObjectProps standardGMLProperties )
+    private void exportStandardProps( XMLStreamWriter writer, StandardGMLObjectProps standardGMLProperties )
                             throws XMLStreamException {
 
         StringOrRef description = standardGMLProperties.getDescription();

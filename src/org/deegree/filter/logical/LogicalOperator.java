@@ -55,6 +55,8 @@ public abstract class LogicalOperator implements Operator {
     public Type getType () {
         return Type.LOGICAL;
     }
+    
+    public abstract Operator[] getParams ();
 
     public abstract SubType getSubType ();
 }

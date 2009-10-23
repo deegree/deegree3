@@ -46,7 +46,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
@@ -319,7 +319,7 @@ public class GML311FeatureEncoder {
         return exportedIds.contains( memberFid );
     }
 
-    private void exportStandardProps( XMLStreamWriter writer, StandardObjectProps standardGMLProperties )
+    private void exportStandardProps( XMLStreamWriter writer, StandardGMLObjectProps standardGMLProperties )
                             throws XMLStreamException {
 
         StringOrRef description = standardGMLProperties.getDescription();

@@ -60,6 +60,8 @@ public class FilterQuery extends Query {
 
     private final PropertyName[] propertyNames;
 
+    private final Function[] functions;
+
     private final XLinkPropertyName[] xLinkPropertyNames;
 
     /**
@@ -67,8 +69,6 @@ public class FilterQuery extends Query {
      * 
      * @param handle
      *            client-generated query identifier, may be null
-     * @param featureIds
-     *            requested feature ids
      * @param typeNames
      *            requested feature types (with optional aliases), must not be null and must always contain at least one
      *            entry
@@ -89,15 +89,16 @@ public class FilterQuery extends Query {
      * @param filter
      *            filter constraint, may be null
      */
-    public FilterQuery( String handle, TypeName[] typeNames, String[] featureIds, String featureVersion, CRS srsName,
+    public FilterQuery( String handle, TypeName[] typeNames, String featureVersion, CRS srsName,
                         PropertyName[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
                         SortProperty[] sortBy, Filter filter ) {
-        super( handle, typeNames, featureIds, featureVersion, srsName, functions, sortBy );
+        super( handle, typeNames, featureVersion, srsName, sortBy );
         if ( typeNames == null || typeNames.length == 0 ) {
             throw new IllegalArgumentException();
         }
         this.xLinkPropertyNames = xLinkPropertyNames;
         this.propertyNames = propertyNames;
+        this.functions = functions;
         this.filter = filter;
     }
 
@@ -115,8 +116,7 @@ public class FilterQuery extends Query {
      *            filter constraint, may be null
      */
     public FilterQuery( QName typeName, CRS srsName, SortProperty[] sortBy, Filter filter ) {
-        this( null, new TypeName[] { new TypeName( typeName, null ) }, null, null, srsName, null, null, null, sortBy,
-              filter );
+        this( null, new TypeName[] { new TypeName( typeName, null ) }, null, srsName, null, null, null, sortBy, filter );
     }
 
     /**
@@ -158,4 +158,12 @@ public class FilterQuery extends Query {
         return xLinkPropertyNames;
     }
 
+    /**
+     * Returns the functions that should be fetched instead of the original property values.
+     * 
+     * @return the functions that should be fetched instead of the original property values, may be null
+     */
+    public Function[] getFunctions() {
+        return functions;
+    }
 }

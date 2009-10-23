@@ -42,6 +42,7 @@ import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.types.datetime.DateTime;
 import org.deegree.commons.types.datetime.Time;
 import org.deegree.commons.utils.Pair;
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
 import org.deegree.filter.i18n.Messages;
@@ -143,4 +144,6 @@ public abstract class ComparisonOperator implements Operator {
 
         return result;
     }
+    
+    public abstract Expression[] getParams ();
 }

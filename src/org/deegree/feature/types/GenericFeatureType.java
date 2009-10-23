@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,27 +32,30 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.Property;
+import org.deegree.feature.gml.StandardGMLFeatureProps;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericFeatureType implements FeatureType {
@@ -85,8 +88,28 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
+    public PropertyType getPropertyDeclaration( QName propName, GMLVersion version ) {
+        PropertyType pt = StandardGMLFeatureProps.getPropertyType( propName, version );
+        if ( pt == null ) {
+            pt = propNameToDecl.get( propName );
+        }
+        return pt;
+    }
+
+    @Override
     public List<PropertyType> getPropertyDeclarations() {
         List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() );
+        for ( QName propName : propNameToDecl.keySet() ) {
+            propDecls.add( propNameToDecl.get( propName ) );
+        }
+        return propDecls;
+    }
+
+    @Override
+    public List<PropertyType> getPropertyDeclarations( GMLVersion version ) {
+        Collection<PropertyType> stdProps = StandardGMLFeatureProps.getPropertyTypes( version );
+        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() + stdProps.size() );
+        propDecls.addAll( stdProps );
         for ( QName propName : propNameToDecl.keySet() ) {
             propDecls.add( propNameToDecl.get( propName ) );
         }
@@ -110,11 +133,11 @@ public class GenericFeatureType implements FeatureType {
 
     @Override
     public void setSchema( ApplicationSchema schema ) {
-       this.schema = schema;
-    }       
-    
+        this.schema = schema;
+    }
+
     @Override
-    public String toString () {
+    public String toString() {
         String s = "- Feature type '" + name + "', abstract: " + isAbstract;
         for ( QName ptName : propNameToDecl.keySet() ) {
             PropertyType pt = propNameToDecl.get( ptName );

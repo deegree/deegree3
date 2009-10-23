@@ -50,22 +50,22 @@ import org.deegree.geometry.Geometry;
  */
 public class Within extends SpatialOperator {
 
-    private final PropertyName param1;
+    private final PropertyName propName;
 
-    private final Geometry literal;
+    private final Geometry geometry;
 
     public Within( PropertyName param1, Geometry param2 ) {
-        this.param1 = param1;
-        this.literal = param2;
+        this.propName = param1;
+        this.geometry = param2;
     }
 
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        for ( Object paramValue : param1.evaluate( object ) ) {
+        for ( Object paramValue : propName.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( paramValue );
             if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, literal );
+                Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
                 return geom.isWithin( transformedLiteral );
             }
         }
@@ -79,11 +79,15 @@ public class Within extends SpatialOperator {
     }
 
     public PropertyName getParam1() {
-        return param1;
+        return propName;
     }
 
     public Geometry getParam2() {
-        return literal;
+        return geometry;
     }
 
+    @Override
+    public Object[] getParams () {
+        return new Object [] {propName, geometry};
+    }    
 }

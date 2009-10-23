@@ -60,7 +60,7 @@ public class GMLStandardFeaturePropsParserTest {
     public void testParsing311Empty() throws XMLStreamException, FactoryConfigurationError {
         String xml = "<Object xmlns=\"http://www.opengis.net/gml\">";
         xml += "</Object>";
-        StandardFeatureProps props = parse311( xml );
+        StandardGMLFeatureProps props = parse311( xml );
         Assert.assertNull( props.getDescription() );
         Assert.assertEquals( 0, props.getNames().length );
         Assert.assertNull( props.getBoundedBy() );
@@ -71,7 +71,7 @@ public class GMLStandardFeaturePropsParserTest {
         String xml = "<Object xmlns=\"http://www.opengis.net/gml\">";
         xml += "<description>A description property with an inline value.</description>";
         xml += "</Object>";
-        StandardFeatureProps props = parse311( xml );
+        StandardGMLFeatureProps props = parse311( xml );
         Assert.assertEquals( "A description property with inline value.", props.getDescription().getString() );
         Assert.assertEquals( 0, props.getNames().length );
         Assert.assertNull( props.getBoundedBy() );
@@ -84,7 +84,7 @@ public class GMLStandardFeaturePropsParserTest {
         xml += "<name>NAME1</name>";
         xml += "<name codeSpace=\"deegree\">NAME2</name>";
         xml += "</Object>";
-        StandardFeatureProps props = parse311( xml );
+        StandardGMLFeatureProps props = parse311( xml );
         Assert.assertEquals( "A description property with inline value.", props.getDescription().getString() );
         Assert.assertEquals( 2, props.getNames().length );
         Assert.assertEquals( "NAME1",  props.getNames()[0].getCode());
@@ -94,7 +94,7 @@ public class GMLStandardFeaturePropsParserTest {
         Assert.assertNull( props.getBoundedBy() );
     }    
     
-    private StandardFeatureProps parse311( String xml ) throws XMLStreamException, FactoryConfigurationError {
+    private StandardGMLFeatureProps parse311( String xml ) throws XMLStreamException, FactoryConfigurationError {
         XMLStreamReader innerReader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader( xml ));
         XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper(innerReader, null );
         xmlStream.nextTag();

@@ -36,15 +36,18 @@
 package org.deegree.feature.types;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
+import org.deegree.feature.gml.StandardGMLFeatureProps;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
@@ -83,6 +86,15 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     public PropertyType getPropertyDeclaration( QName propName ) {
         return propNameToDecl.get( propName );
     }
+    
+    @Override
+    public PropertyType getPropertyDeclaration( QName propName, GMLVersion version ) {
+        PropertyType pt = StandardGMLFeatureProps.getPropertyType( propName, version );
+        if ( pt == null ) {
+            pt = propNameToDecl.get( propName );
+        }
+        return pt;
+    }
 
     @Override
     public List<PropertyType> getPropertyDeclarations() {
@@ -92,6 +104,17 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
         }
         return propDecls;
     }
+    
+    @Override
+    public List<PropertyType> getPropertyDeclarations( GMLVersion version ) {
+        Collection<PropertyType> stdProps = StandardGMLFeatureProps.getPropertyTypes( version );
+        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() + stdProps.size() );
+        propDecls.addAll( stdProps );
+        for ( QName propName : propNameToDecl.keySet() ) {
+            propDecls.add( propNameToDecl.get( propName ) );
+        }
+        return propDecls;
+    }    
 
     @Override
     public Feature newFeature( String fid, List<Property<?>> props) {

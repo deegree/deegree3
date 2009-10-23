@@ -95,13 +95,13 @@ public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Feature&gt;), points at the at the
      *            first tag event (<code>START_ELEMENT/END_ELEMENT</code>) following the standard properties
-     * @return corresponding {@link StandardFeatureProps} object
+     * @return corresponding {@link StandardGMLFeatureProps} object
      * @throws XMLStreamException
      * @throws XMLParsingException
      *             if a syntactical error occurs
      * @throws XMLStreamException
      */
-    public static StandardFeatureProps parse311( XMLStreamReaderWrapper xmlStream )
+    public static StandardGMLFeatureProps parse311( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -141,7 +141,7 @@ public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
             xmlStream.nextTag();
         }
 
-        return new StandardFeatureProps( description, names.toArray( new CodeType[names.size()] ), boundedBy );
+        return new StandardGMLFeatureProps( description, names.toArray( new CodeType[names.size()] ), boundedBy );
     }
 
     protected static Envelope parseBoundedBy311( XMLStreamReaderWrapper xmlStream )

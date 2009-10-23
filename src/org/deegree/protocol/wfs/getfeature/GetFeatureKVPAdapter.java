@@ -190,7 +190,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
             queries = new Query[1];
             queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, null, propertyNames, null,
-                                             null, null );
+                                             null );
             return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
         }
 
@@ -209,8 +209,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             Envelope bbox = createEnvelope( bboxStr, null );
 
             queries = new Query[1];
-            queries[0] = new BBoxQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null, null,
-                                        null, bbox );
+            queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, null, bbox );
 
             return new GetFeature( VERSION_110, null, null, null, maxFeatures, null, null, queries );
         }
@@ -247,11 +246,11 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     }
                 }
                 if ( propertyNames != null ) {
-                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureIds, featureVersion,
-                                                  null, propertyNames[i], null, null, null, filter );
+                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, null,
+                                                  propertyNames[i], null, null, null, filter );
                 } else {
-                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureIds, featureVersion,
-                                                  null, null, null, null, null, filter );
+                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, null, null,
+                                                  null, null, null, filter );
                 }
             }
             return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
@@ -370,7 +369,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
             queries = new Query[1];
             queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames,
-                                             xlinkPropNames, null, sortBy );
+                                             xlinkPropNames, sortBy );
             return new GetFeature( VERSION_110, null, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
                                    traverseXlinkExpiry, queries );
         }
@@ -389,8 +388,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             Envelope bbox = createEnvelope( bboxStr, srs );
 
             queries = new Query[1];
-            queries[0] = new BBoxQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null, null,
-                                        sortBy, bbox );
+            queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, sortBy, bbox );
 
             return new GetFeature( VERSION_110, null, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
                                    traverseXlinkExpiry, queries );
@@ -429,21 +427,19 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 }
                 if ( propertyNames != null ) {
                     if ( xlinkPropNames != null ) {
-                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureIds,
-                                                      featureVersion, srs, propertyNames[i], xlinkPropNames[i], null,
-                                                      sortBy, filter );
+                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
+                                                      propertyNames[i], xlinkPropNames[i], null, sortBy, filter );
                     } else {
-                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureIds,
-                                                      featureVersion, srs, propertyNames[i], null, null, sortBy, filter );
+                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs,
+                                                      propertyNames[i], null, null, sortBy, filter );
                     }
                 } else {
                     if ( xlinkPropNames != null ) {
-                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureIds,
-                                                      featureVersion, srs, null, xlinkPropNames[i], null, sortBy,
-                                                      filter );
+                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
+                                                      xlinkPropNames[i], null, sortBy, filter );
                     } else {
-                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureIds,
-                                                      featureVersion, srs, null, null, null, sortBy, filter );
+                        queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureVersion, srs, null,
+                                                      null, null, sortBy, filter );
                     }
                 }
             }

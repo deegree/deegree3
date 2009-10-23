@@ -61,7 +61,7 @@ public class GML311StandardPropertiesIteratorTest {
         StringOrRef description = null;
         CodeType[] names = null;
         Envelope boundedBy = null;
-        StandardFeatureProps props = new StandardFeatureProps( description, names, boundedBy );
+        StandardGMLFeatureProps props = new StandardGMLFeatureProps( description, names, boundedBy );
         GML311StandardPropertiesIterator iter = new GML311StandardPropertiesIterator( props );
         Assert.assertFalse( iter.hasNext() );
     }
@@ -73,7 +73,7 @@ public class GML311StandardPropertiesIteratorTest {
         StringOrRef description = new StringOrRef( "Description", null );
         CodeType[] names = new CodeType[] { new CodeType( "NAME1", null ), new CodeType( "NAME2", "deegree" ) };
         Envelope boundedBy = null;
-        StandardFeatureProps props = new StandardFeatureProps( description, names, boundedBy );
+        StandardGMLFeatureProps props = new StandardGMLFeatureProps( description, names, boundedBy );
         GML311StandardPropertiesIterator iter = new GML311StandardPropertiesIterator( props );
 
         Property<?> prop = iter.next();

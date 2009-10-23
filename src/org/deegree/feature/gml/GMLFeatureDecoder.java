@@ -198,7 +198,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         CRS activeCRS = crs;
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
 
-        StandardFeatureProps standardProps = GMLStandardFeaturePropsParser.parse311( xmlStream );
+        StandardGMLFeatureProps standardProps = GMLStandardFeaturePropsParser.parse311( xmlStream );
         // override active CRS with the one from boundedBy (if present)
         if ( standardProps != null && standardProps.getBoundedBy() != null ) {
             activeCRS = standardProps.getBoundedBy().getCoordinateSystem();

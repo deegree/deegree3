@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.PropertyName;
@@ -86,4 +87,9 @@ public class PropertyIsNull extends ComparisonOperator {
         s += propName.toString( indent + "  " );
         return s;
     }
+    
+    @Override
+    public Expression[] getParams () {
+        return new Expression [] {propName};
+    }    
 }

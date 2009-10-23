@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
@@ -172,7 +172,7 @@ public interface Geometry {
      * 
      * @return the attached properties, may be null
      */
-    public StandardObjectProps getAttachedProperties();
+    public StandardGMLObjectProps getAttachedProperties();
 
     /**
      * Sets the attached properties (e.g. GML standard properties, such as <code>gml:name</code>).
@@ -180,7 +180,7 @@ public interface Geometry {
      * @param props
      *            properties to be attached
      */
-    public void setAttachedProperties( StandardObjectProps props );
+    public void setAttachedProperties( StandardGMLObjectProps props );
 
     /**
      * Returns the coordinate dimension, i.e. the dimension of the space that the geometry is embedded in.

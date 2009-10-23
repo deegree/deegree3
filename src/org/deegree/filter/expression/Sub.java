@@ -104,4 +104,9 @@ public class Sub implements Expression {
         s += param2.toString( indent + "  " );
         return s;
     }
+    
+    @Override
+    public Expression[] getParams() {
+        return new Expression[] { param1, param2 };
+    }    
 }

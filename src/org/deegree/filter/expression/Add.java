@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
-import java.math.BigDecimal;
-
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -103,5 +101,10 @@ public class Add implements Expression {
         s += param1.toString( indent + "  " );
         s += param2.toString( indent + "  " );
         return s;
+    }
+
+    @Override
+    public Expression[] getParams() {
+        return new Expression[] { param1, param2 };
     }
 }

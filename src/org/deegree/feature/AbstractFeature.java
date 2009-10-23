@@ -39,7 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.types.gml.StandardObjectProps;
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.feature.gml.FeatureReference;
 import org.deegree.feature.xpath.FeatureNode;
 import org.deegree.feature.xpath.FeatureXPath;
@@ -60,7 +60,7 @@ import org.jaxen.XPath;
  */
 public abstract class AbstractFeature implements Feature {
 
-    private StandardObjectProps standardProps;
+    private StandardGMLObjectProps standardProps;
 
     private Envelope envelope;
 
@@ -133,12 +133,12 @@ public abstract class AbstractFeature implements Feature {
     }
 
     @Override
-    public StandardObjectProps getStandardGMLProperties() {
+    public StandardGMLObjectProps getStandardGMLProperties() {
         return standardProps;
     }
 
     @Override
-    public void setStandardGMLProperties( StandardObjectProps standardProps ) {
+    public void setStandardGMLProperties( StandardGMLObjectProps standardProps ) {
         this.standardProps = standardProps;
     }
 }

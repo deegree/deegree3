@@ -51,24 +51,24 @@ import org.deegree.geometry.Geometry;
  */
 public class Beyond extends SpatialOperator {
 
-    private final PropertyName param1;
+    private final PropertyName propName;
 
-    private final Geometry literal;
+    private final Geometry geometry;
 
     private final Measure distance;
 
-    public Beyond( PropertyName param1, Geometry param2, Measure distance ) {
-        this.param1 = param1;
-        this.literal = param2;
+    public Beyond( PropertyName propName, Geometry geometry, Measure distance ) {
+        this.propName = propName;
+        this.geometry = geometry;
         this.distance = distance;
     }
 
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        for ( Object param1Value : param1.evaluate( object ) ) {
+        for ( Object param1Value : propName.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( param1Value );
             if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, literal );
+                Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
                 // TODO what about the units of the distance when transforming?
                 return geom.isBeyond( transformedLiteral, distance );
             }
@@ -81,4 +81,8 @@ public class Beyond extends SpatialOperator {
         return null;
     }
 
+    @Override
+    public Object[] getParams () {
+        return new Object [] {propName, geometry};
+    }    
 }
