@@ -49,12 +49,14 @@ import org.deegree.filter.function.Categorize;
 import org.deegree.filter.function.Interpolate;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.utils.Raster2RawData;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>RasterStyling</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -101,19 +103,26 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
      * <code>ShadedRelief</code>
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
      * @author last edited by: $Author$
      * 
      * @version $Revision$, $Date$
      */
     public static class ShadedRelief implements Copyable<ShadedRelief> {
+
+        static Logger LOG = LoggerFactory.getLogger( ShadedRelief.class );
+
         /** Default is false. */
         public boolean brightnessOnly;
 
         /** Default is 55. */
         public double reliefFactor = 55;
-        
-        /** Azimuth angle = Illumination direction (Default is Nord-West) */
+
+        /** Azimuth angle = Illumination direction. Default is Nord-West. */
         private final int azimuthAngle = 315;
+
+        /** Angle of illumination source. Default is 45 degrees. */
+        private final double Alt = 45;
 
         public ShadedRelief copy() {
             ShadedRelief copy = new ShadedRelief();
@@ -123,67 +132,79 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
             return copy;
         }
-        
-        /** Perform the hill-shading algorithm on a DEM raster. Algorithm is taken from 
+
+        /**
+         * Perform the hill-shading algorithm on a DEM raster. Based on algorithm presented at
          * http://edndoc.esri.com/arcobjects/9.2/net/shared/geoprocessing/spatial_analyst_tools/how_hillshade_works.htm
-         * @param raster Input raster, containing a DEM
-         * @return a new raster
+         * 
+         * @param raster
+         *            Input raster, containing a DEM, with R rows and C columns
+         * @return a gray-scale raster (with bytes), with R-2 rows and C-2 columns
          */
-        public AbstractRaster performHillShading(AbstractRaster raster)
-        {
+        public AbstractRaster performHillShading( AbstractRaster raster ) {
+            LOG.trace( "Performing Hill-Shading ... " );
+            long start = System.nanoTime();
             int cols = raster.getColumns(), rows = raster.getRows();
             Raster2RawData data = new Raster2RawData( raster );
-            RasterData shadeData = RasterDataFactory.createRasterData( cols, rows, DataType.BYTE );
-            SimpleRaster hillShade = new SimpleRaster(shadeData, raster.getEnvelope(), raster.getRasterReference());
-            
-            double Azimuth_math = 360 - azimuthAngle + 90;
-            double Azimuth_rad = Azimuth_math * Math.PI / 180.0;
+            RasterData shadeData = RasterDataFactory.createRasterData( cols-2, rows-2, DataType.BYTE );
+            SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), raster.getRasterReference() );
+
+            final double Zenith_rad = Math.toRadians( 90 - Alt );
+            final double Azimuth_rad = Math.toRadians( 90 - azimuthAngle );
+            final double sinZenith = Math.sin( Zenith_rad );
+            final double cosZenith = Math.cos( Zenith_rad );
+            double Slope_rad;
             double Aspect_rad = 0;
-            
-            for (int row = 0; row < hillShade.getRows(); row++)
-                for (int col = 0; col < hillShade.getColumns(); col++)
-                {
-                    if (row== 0 || col == 0 || row == rows-1 || col == cols - 1)
-                    {
-                        shadeData.setByteSample( col, row, 0, (byte)0 );
-                        continue;
-                    }
-                    
-                    byte shade = 0;
-                    double Zenith_rad = (90 - data.get( col, row )) * Math.PI / 180.0;
-                    double dx = ((data.get( col+1, row-1 ) + 2*data.get( col+1, row ) + data.get( col+1, row+1 )) - 
-                                 (data.get( col-1, row-1 ) + 2*data.get( col-1, row ) + data.get( col-1, row+1 ))) 
-                                 / 8;
-                    double dy = ((data.get( col-1, row+1 ) + 2 * data.get( col, row+1 ) + data.get( col+1, row+1 )) - 
-                                 (data.get( col-1, row-1 ) + 2 * data.get( col, row-1 ) + data.get( col+1, row-1 ))) 
-                                 / 8;
-                    double Slope_rad = Math.atan( reliefFactor * Math.sqrt( dx*dx + dy*dy) );
-                    if (dx != 0)
-                    {
+            byte shade = 0;
+            double dx, dy;
+            float m[][] = new float[3][3];
+
+            for ( int row = 1; row < rows-1; row++ ) {
+                for ( int col = 1; col < cols-1; col++ ) {
+                    m[0][0] = data.get( col - 1, row - 1 );
+                    m[0][1] = data.get( col, row - 1 );
+                    m[0][2] = data.get( col + 1, row - 1 );
+                    m[1][0] = data.get( col - 1, row );
+                    m[1][1] = data.get( col, row );
+                    m[1][2] = data.get( col + 1, row );
+                    m[2][0] = data.get( col - 1, row + 1 );
+                    m[2][1] = data.get( col, row + 1 );
+                    m[2][2] = data.get( col + 1, row + 1 );
+
+                    dx = ( ( m[0][2] + 2 * m[1][2] + m[2][2] ) - ( m[0][0] + 2 * m[1][0] + m[2][0] ) ) / 8;
+                    dy = ( ( m[2][0] + 2 * m[2][1] + m[2][2] ) - ( m[0][0] + 2 * m[0][1] + m[0][2] ) ) / 8;
+                    Slope_rad = Math.atan( reliefFactor * Math.sqrt( dx * dx + dy * dy ) );
+                    if ( dx != 0 ) {
                         Aspect_rad = Math.atan2( dy, -dx );
-                        if (Aspect_rad < 0)
-                            Aspect_rad += 2 * Math.PI;
+                        if ( Aspect_rad < 0 )
+                            Aspect_rad += Math.PI * 2;
                     }
-                    else
-                    {
-                        if (dy > 0)
+                    if ( dx == 0 ) {
+                        if ( dy > 0 )
                             Aspect_rad = Math.PI / 2;
-                        else if (dy < 0)
+                        else if ( dy < 0 )
                             Aspect_rad = 2 * Math.PI - Math.PI / 2;
+                        else
+                            Aspect_rad = 0;
                     }
-                    
-                    shade = (byte) Math.round(255.0 * ( ( Math.cos(Zenith_rad) * Math.cos(Slope_rad) ) + 
-                        ( Math.sin(Zenith_rad) * Math.sin(Slope_rad) * Math.cos(Azimuth_rad - Aspect_rad) ) ));
-                    if (shade < 0)
-                        shade = 0;
-                    shadeData.setByteSample( col, row, 0, shade );
+
+                    long val = Math.round( 255.0 * ( ( cosZenith * Math.cos( Slope_rad ) ) + 
+                          ( sinZenith * Math.sin( Slope_rad ) * Math.cos( Azimuth_rad - Aspect_rad ) ) ) );
+                    if ( val < 0 )
+                        val = 0;
+                    shade = (byte) val;
+
+                    shadeData.setByteSample( col-1, row-1, 0, shade );
                 }
+            }
+            long end = System.nanoTime();
+
+            LOG.trace( "Performed Hill shading in {} ms ", ( end - start ) / 1000000 );
             return hillShade;
         }
-        
-        public String toString()
-        {
-            return "ShadedRelief: { BrightnessOnly: " + brightnessOnly + ", ReliefFactor: " + reliefFactor + "}";   
+
+        public String toString() {
+            return "ShadedRelief: { BrightnessOnly: " + brightnessOnly + ", ReliefFactor: " + reliefFactor + "}";
         }
     }
 
@@ -191,6 +212,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
      * <code>ContrastEnhancement</code>
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
      * @author last edited by: $Author$
      * 
      * @version $Revision$, $Date$
@@ -220,6 +242,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
      * <code>Overlap</code>
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
      * @author last edited by: $Author$
      * 
      * @version $Revision$, $Date$

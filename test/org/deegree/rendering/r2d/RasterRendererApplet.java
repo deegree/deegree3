@@ -72,16 +72,18 @@ public class RasterRendererApplet extends JApplet {
 
     private Interpolate interp = null;
 
-    private AbstractRaster image, car;
+    private AbstractRaster image, car, dem;
 
     @Override
     public void paint( Graphics g ) {
         loadRasters();
-        renderTwoTransparentRasters();
+//        renderTwoTransparentRasters();
+        
         renderRasterWithCategorize();
         renderRasterWithInterpolate();
-        g.drawString( "Car + Categorize (setest17.xml)", 100, 350 );
-        g.drawString( "Car + Interpolate (setest18.xml)", 530, 350 );
+        renderHillShadedRaster();
+        g.drawString( "Car + Categorize (setest17.xml)", 100, 300 );
+        g.drawString( "Car + Interpolate (setest18.xml)", 530, 300 );
     }
 
     @Override
@@ -100,7 +102,7 @@ public class RasterRendererApplet extends JApplet {
             e.printStackTrace();
         }
 
-        this.setSize( 840, 400 );
+        this.setSize( 840, 800 );
     }
 
     public void renderTwoTransparentRasters() {
@@ -180,7 +182,7 @@ public class RasterRendererApplet extends JApplet {
         r.render( style, car );
     }
 
-    /* Load a RasterStyle, that contains an Interpolation operation for the ColorMap */
+    /* Render a raster after an Interpolation operation for the ColorMap */
     private void renderRasterWithInterpolate() {
         RasterStyling style = loadRasterStylingFromXml( "setest18.xml" );
         LOG.debug( "Found interpolate: {}", style.interpolate );
@@ -188,6 +190,16 @@ public class RasterRendererApplet extends JApplet {
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
 
         r.render( style, car );
+    }
+    
+    /* Render a raster after hill-shading */
+    private void renderHillShadedRaster() {
+        RasterStyling style = loadRasterStylingFromXml( "setest19.xml" );
+        LOG.debug( "Found hill-shading: {}", style.shaded  );
+        LOG.debug( "Found interpolate: {}", style.interpolate );
+        Graphics2D g2d = (Graphics2D) this.getGraphics().create( 10, 330, 370, 370 );
+        Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
+        r.render( style, dem );
     }
 
     private void loadRasters() {
@@ -199,6 +211,9 @@ public class RasterRendererApplet extends JApplet {
 
             uri = RasterRendererApplet.class.getResource( "car.jpg" ).toURI();
             car = RasterFactory.loadRasterFromFile( new File( uri ) );
+            
+            uri = RasterRendererApplet.class.getResource( "dem0.png" ).toURI();
+            dem = RasterFactory.loadRasterFromFile( new File( uri ) );
 
             LOG.trace( "Loaded images" );
         } catch ( Exception e ) {

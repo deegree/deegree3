@@ -109,17 +109,14 @@ public class Java2DRasterRenderer implements RasterRenderer {
             render( raster );
             return;
         }
-        
-        if (styling.shaded != null)
-        {
-            LOG.trace( "Hill shading DEM data ... ");
+
+        if ( styling.shaded != null )
             raster = styling.shaded.performHillShading( raster );
-        }
 
         if ( styling.categorize != null || styling.interpolate != null ) {
             LOG.trace( "Creating raster ColorMap..." );
             if ( styling.categorize != null )
-                img = styling.categorize.evaluateRaster( raster);
+                img = styling.categorize.evaluateRaster( raster );
             else if ( styling.interpolate != null )
                 img = styling.interpolate.evaluateRaster( raster );
         }
