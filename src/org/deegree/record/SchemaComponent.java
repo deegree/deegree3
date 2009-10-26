@@ -35,27 +35,46 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.record;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.commons.xml.NamespaceContext;
-import org.deegree.filter.MatchableObject;
+import javax.xml.validation.Schema;
 
 /**
- * TODO add class documentation here
+ * This interface provides an access 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Record extends MatchableObject{
+public interface SchemaComponent {
     
-    public String getId();
+    /**
+     * Namespace from the target
+     * 
+     * @return
+     */
+    public String getTargetNamespace();
     
-    public QName getTypeName();
+    /**
+     * If the SchemaComponent is a fragment, there must be referenced a parent schema
+     * 
+     * @return
+     */
+    public String getParentSchema();
     
-    public NamespaceContext getNsContext();
+    /**
+     * The language of the schema
+     * <br>
+     * The default is XML Schema
+     * 
+     * @return
+     */
+    public String getSchemaLanguage();
     
-    
+    /**
+     * The schema response for a request
+     * 
+     * @return
+     */
+    public Schema getXmlSchema();
 
 }
