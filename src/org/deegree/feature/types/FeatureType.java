@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
@@ -99,6 +100,13 @@ public interface FeatureType {
      * @return property declarations (in order)
      */
     public List<PropertyType> getPropertyDeclarations( GMLVersion version );
+
+    /**
+     * Returns the first geometry property declaration of the feature type.
+     * 
+     * @return first geometry property declaration or <code>null</code> if no such declaration exists
+     */
+    public GeometryPropertyType getDefaultGeometryPropertyDeclaration();
 
     /**
      * Returns whether this type is abstract or not.

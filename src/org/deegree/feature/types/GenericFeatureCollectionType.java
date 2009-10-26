@@ -48,6 +48,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.feature.gml.StandardGMLFeatureProps;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
@@ -116,6 +117,11 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
         return propDecls;
     }    
 
+    @Override
+    public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
+        return null;
+    }    
+    
     @Override
     public Feature newFeature( String fid, List<Property<?>> props) {
         return new GenericFeatureCollection(this, fid, props);

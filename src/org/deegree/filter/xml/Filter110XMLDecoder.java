@@ -332,7 +332,7 @@ public class Filter110XMLDecoder {
             String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( Expression.Type.class, expressionTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
-        }       
+        }
         switch ( type ) {
         case ADD: {
             xmlStream.nextTag();
@@ -371,7 +371,7 @@ public class Filter110XMLDecoder {
             break;
         }
         case PROPERTY_NAME: {
-            expression = parsePropertyName( xmlStream );
+            expression = parsePropertyName( xmlStream, false );
             break;
         }
         case LITERAL: {
@@ -692,12 +692,12 @@ public class Filter110XMLDecoder {
         return new Literal<GenericCustomPropertyValue>( value );
     }
 
-    private static PropertyName parsePropertyName( XMLStreamReader xmlStream )
+    private static PropertyName parsePropertyName( XMLStreamReader xmlStream, boolean permitEmpty )
                             throws XMLStreamException {
 
         NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
         String propName = xmlStream.getElementText().trim();
-        if ( propName.isEmpty() ) {
+        if ( !permitEmpty && propName.isEmpty() ) {
             // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
             // GetObservation100XMLAdapter gets an exception from here as the compliance of the SOS hangs on it's thread
             throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_PROPERTY_NAME_EMPTY",
@@ -736,7 +736,7 @@ public class Filter110XMLDecoder {
         String escapeChar = getRequiredAttributeValue( xmlStream, "escapeChar" );
 
         xmlStream.nextTag();
-        PropertyName propName = parsePropertyName( xmlStream );
+        PropertyName propName = parsePropertyName( xmlStream, false );
 
         xmlStream.nextTag();
         Literal<?> literal = parseLiteral( xmlStream );
@@ -747,7 +747,7 @@ public class Filter110XMLDecoder {
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         xmlStream.nextTag();
-        PropertyName propName = parsePropertyName( xmlStream );
+        PropertyName propName = parsePropertyName( xmlStream, false );
         xmlStream.nextTag();
         return new PropertyIsNull( propName );
     }
@@ -822,13 +822,12 @@ public class Filter110XMLDecoder {
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
         GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
 
-        // always first parameter: 'ogc:PropertyName'
-        PropertyName param1 = parsePropertyName( xmlStream );
-        xmlStream.nextTag();
-
         try {
             switch ( type ) {
             case BBOX: {
+                // first parameter: 'ogc:PropertyName' (can be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, true );
+                xmlStream.nextTag();
                 // second parameter: 'gml:Envelope'
                 xmlStream.require( START_ELEMENT, GML_NS, "Envelope" );
                 Envelope param2 = geomParser.parseEnvelope( wrapper );
@@ -836,6 +835,9 @@ public class Filter110XMLDecoder {
                 break;
             }
             case BEYOND: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry'
                 Geometry param2 = geomParser.parse( wrapper );
                 // third parameter: 'ogc:Distance'
@@ -848,30 +850,45 @@ public class Filter110XMLDecoder {
                 break;
             }
             case INTERSECTS: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Intersects( param1, param2 );
                 break;
             }
             case CONTAINS: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Contains( param1, param2 );
                 break;
             }
             case CROSSES: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Crosses( param1, param2 );
                 break;
             }
             case DISJOINT: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Disjoint( param1, param2 );
                 break;
             }
             case DWITHIN: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry'
                 Geometry param2 = geomParser.parse( wrapper );
                 // third parameter: 'ogc:Distance'
@@ -884,24 +901,36 @@ public class Filter110XMLDecoder {
                 break;
             }
             case EQUALS: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Equals( param1, param2 );
                 break;
             }
             case OVERLAPS: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Overlaps( param1, param2 );
                 break;
             }
             case TOUCHES: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Touches( param1, param2 );
                 break;
             }
             case WITHIN: {
+                // first parameter: 'ogc:PropertyName' (cannot be empty)
+                PropertyName param1 = parsePropertyName( xmlStream, false );
+                xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry' or 'gml:Envelope'
                 Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Within( param1, param2 );

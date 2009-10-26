@@ -48,6 +48,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.Property;
 import org.deegree.feature.gml.StandardGMLFeatureProps;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
@@ -115,6 +116,19 @@ public class GenericFeatureType implements FeatureType {
         }
         return propDecls;
     }
+    
+    @Override
+    public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
+        GeometryPropertyType geoPt = null;
+        for ( QName propName : propNameToDecl.keySet() ) {
+            PropertyType pt = propNameToDecl.get( propName );
+            if (pt instanceof GeometryPropertyType) {
+                geoPt = (GeometryPropertyType) pt;
+                break;
+            }
+        }
+        return geoPt;
+    }    
 
     @Override
     public Feature newFeature( String fid, List<Property<?>> props ) {

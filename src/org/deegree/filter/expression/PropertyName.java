@@ -53,30 +53,54 @@ import org.jaxen.NamespaceContext;
  */
 public class PropertyName implements Expression {
 
-    private String propName;
+    private String xPath;
 
     private NamespaceContext nsContext;
 
-    public PropertyName( String propName, NamespaceContext nsContext ) {
-        this.propName = propName;
+    /**
+     * Creates a new {@link PropertyName} instance from an XPath-expression and the namespace bindings.
+     * 
+     * @param xPath
+     *            XPath-expression, this may be the empty string, but never <code>null</code>
+     * @param nsContext
+     *            binding of the namespaces used in the XPath expression
+     */
+    public PropertyName( String xPath, NamespaceContext nsContext ) {
+        this.xPath = xPath;
         this.nsContext = nsContext;
     }
 
-    public PropertyName( QName name ) {        
+    /**
+     * Creates a new {@link PropertyName} instance that select a property of a {@link MatchableObject}.
+     * 
+     * @param name
+     *            qualified name of the property, never <code>null</code>
+     */
+    public PropertyName( QName name ) {
         this.nsContext = new org.deegree.commons.xml.NamespaceContext();
         if ( name.getNamespaceURI() != null ) {
-            String prefix = (name.getPrefix() != null && !"".equals( name.getPrefix() )) ? name.getPrefix() : "app";
+            String prefix = ( name.getPrefix() != null && !"".equals( name.getPrefix() ) ) ? name.getPrefix() : "app";
             ( (org.deegree.commons.xml.NamespaceContext) nsContext ).addNamespace( prefix, name.getNamespaceURI() );
-            this.propName = prefix + ":" + name.getLocalPart();
+            this.xPath = prefix + ":" + name.getLocalPart();
         } else {
-            this.propName = name.getLocalPart();
+            this.xPath = name.getLocalPart();
         }
     }
 
+    /**
+     * Returns the property name value (an XPath-expression).
+     * 
+     * @return the XPath property name, this may be an empty string, but never <code>null</code>
+     */
     public String getPropertyName() {
-        return propName;
+        return xPath;
     }
 
+    /**
+     * Returns the bindings for the namespaces used in the XPath expression.
+     * 
+     * @return the namespace bindings, never <code>null</code>
+     */
     public NamespaceContext getNsContext() {
         return nsContext;
     }
@@ -93,6 +117,7 @@ public class PropertyName implements Expression {
         try {
             values = obj.getPropertyValues( this );
         } catch ( JaxenException e ) {
+            e.printStackTrace();
             throw new FilterEvaluationException( e.getMessage() );
         }
         return values;
@@ -105,12 +130,12 @@ public class PropertyName implements Expression {
 
     @Override
     public String toString( String indent ) {
-        String s = indent + "-PropertyName ('" + propName + "')\n";
+        String s = indent + "-PropertyName ('" + xPath + "')\n";
         return s;
     }
 
     @Override
     public Expression[] getParams() {
         return new Expression[0];
-    }    
+    }
 }

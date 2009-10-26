@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.deegree.feature.Feature;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.PropertyName;
@@ -79,6 +81,16 @@ public class BBOX extends SpatialOperator {
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
 
+        // handle the BBOX-specific case that the property name can be empty
+        PropertyName propName = this.propName;
+        if ( propName.getPropertyName().isEmpty() ) {
+            if ( object instanceof Feature ) {
+                GeometryPropertyType pt = ( (Feature) object ).getType().getDefaultGeometryPropertyDeclaration();
+                if ( pt != null ) {
+                    propName = new PropertyName( pt.getName() );
+                }
+            }
+        }
         for ( Object paramValue : propName.evaluate( object ) ) {
             Geometry param1Value = checkGeometryOrNull( paramValue );
             if ( param1Value != null ) {
@@ -96,9 +108,9 @@ public class BBOX extends SpatialOperator {
         s += indent + bbox;
         return s;
     }
-    
+
     @Override
-    public Object[] getParams () {
-        return new Object [] {propName, bbox};
+    public Object[] getParams() {
+        return new Object[] { propName, bbox };
     }
 }
