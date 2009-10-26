@@ -34,8 +34,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.utils;
 
-import java.awt.Color;
-
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
@@ -43,9 +41,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility class to convert a multi-band raster to a matrix of float values, that can be used in lookup operations (for
- * example in Categorize or Interpolate). This class can read 1,3 and 4-band rasters, and combines band values into a
- * single pixel value.
+ * Utility class to interpret raster data in a consistent way. It should be used in raster lookup operations (for
+ * example in Categorize or Interpolate). This class can read 1, 2, 3 and 4-band rasters, and combines band values into
+ * a single pixel value. RGB bands are combined and their average value is returned (yielding the overall gray-pixel
+ * intensity), and alpha bands are ignored.
  * 
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
@@ -63,6 +62,9 @@ public class Raster2RawData {
     private int height = 0;
 
     private int bands = 0;
+
+    /* Index of alpha band, if exists */
+    private int alphaIndex = -1;
 
     /**
      * 
@@ -83,6 +85,10 @@ public class Raster2RawData {
         width = data.getWidth();
         height = data.getHeight();
         bands = data.getBands();
+        BandType[] blist = d.getDataInfo().getBandInfo();
+        for ( int i = 0; i < blist.length; i++ )
+            if ( blist[i] == BandType.ALPHA )
+                alphaIndex = i;
     }
 
     /**
@@ -112,7 +118,8 @@ public class Raster2RawData {
                 for ( col = 0; col < width; col++ ) {
                     for ( row = 0; row < height; row++ ) {
                         Float f = combineBytes( data.getBytePixel( col, row, bpixel ) );
-                        // Compensate for the fact that byte is a signed datatype. This is used in grayscale images, range 0-255
+                        // Compensate for the fact that byte is a signed datatype. This is used in grayscale images,
+                        // range 0-255
                         values[row][col] = ( ( f >= 0 ) ? ( f ) : ( f + 256 ) );
                     }
                 }
@@ -158,9 +165,12 @@ public class Raster2RawData {
             switch ( bands ) {
             case 1: /* Gray-scale */
                 return (float) pixel[0];
-            case 3: /* RGB bands */
-                Color c = new Color( pixel[0], pixel[1], pixel[2] );
-                return (float) c.getRGB();
+            case 2: /* Gray-scale + alpha: ignore alpha */
+                return (float) pixel[bands - alphaIndex - 1];
+            case 3: /* RGB bands: use gray-pixel intensity */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
             default:
                 return 0;
             }
@@ -173,10 +183,13 @@ public class Raster2RawData {
         try {
             switch ( bands ) {
             case 1: /* Gray-scale */
-                return (float) pixel[0] ;
-            case 3: /* RGB bands */
-                Color c = new Color( pixel[0], pixel[1], pixel[2] );
-                return (float) c.getRGB();
+                return (float) pixel[0];
+            case 2: /* Gray-scale + alpha: ignore alpha */
+                return (float) pixel[bands - alphaIndex - 1];
+            case 3: /* RGB bands: use gray-pixel intensity */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
             default:
                 return 0;
             }
@@ -190,9 +203,12 @@ public class Raster2RawData {
             switch ( bands ) {
             case 1: /* Gray-scale */
                 return (float) pixel[0];
-            case 3: /* RGB bands */
-                Color c = new Color( pixel[0], pixel[1], pixel[2] );
-                return (float) c.getRGB() ;
+            case 2: /* Gray-scale + alpha: ignore alpha */
+                return (float) pixel[bands - alphaIndex - 1];
+            case 3: /* RGB bands: use gray-pixel intensity */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
             default:
                 return 0;
             }
@@ -206,14 +222,17 @@ public class Raster2RawData {
             switch ( bands ) {
             case 1: /* Gray-scale */
                 return (float) pixel[0];
-            case 3: /* RGB bands */
-                Color c = new Color( pixel[0], pixel[1], pixel[2] );
-                return (float) c.getRGB();
+            case 2: /* Gray-scale + alpha: ignore alpha */
+                return (float) pixel[bands - alphaIndex - 1];
+            case 3: /* RGB bands: use gray-pixel intensity */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
             default:
                 return 0;
             }
         } catch ( Exception e ) {
-            return  0;
+            return 0;
         }
     }
 
@@ -230,7 +249,7 @@ public class Raster2RawData {
         switch ( data.getDataType() ) {
         case BYTE:
             ret = combineBytes( data.getBytePixel( col, row, null ) );
-            // Compensate for the fact that byte is a signed datatype. This is used in grayscale images, range 0-255
+            // Compensate for byte being a signed datatype. This is commonly used in grayscale images, range 0-255
             if ( ret < 0 )
                 ret += -2 * Byte.MIN_VALUE;
             break;
