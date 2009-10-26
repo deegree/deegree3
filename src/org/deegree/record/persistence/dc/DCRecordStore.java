@@ -42,7 +42,7 @@ import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 
 /**
- * TODO add class documentation here
+ * {@link RecordStore} implementation of Dublin Core.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -56,7 +56,7 @@ public class DCRecordStore implements RecordStore {
      */
     @Override
     public void describeRecord( XMLStreamWriter xmlWriter ) {
-        // TODO Auto-generated method stub
+        
 
     }
 
