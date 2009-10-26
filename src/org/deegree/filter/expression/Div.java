@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,10 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -43,10 +44,10 @@ import org.deegree.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Div implements Expression {
@@ -71,27 +72,26 @@ public class Div implements Expression {
     @Override
     public Type getType() {
         return Type.DIV;
-    }    
+    }
 
-    @Override    
+    @Override
     public Object[] evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
 
         Object[] values1 = param1.evaluate( obj );
         Object[] values2 = param2.evaluate( obj );
-        
-        Object [] resultValues = new Object [values1.length * values2.length];
+
+        Object[] resultValues = new Object[values1.length * values2.length];
         int i = 0;
         for ( Object value1 : values1 ) {
-            if ( !( value1 instanceof Double ) ) {
-                value1 = new Double( value1.toString() );
+            if ( !( value1 instanceof BigDecimal ) ) {
+                value1 = new BigDecimal( value1.toString() );
             }
             for ( Object value2 : values2 ) {
-                if ( !( value2 instanceof Double ) ) {
-                    value2 = new Double( value2.toString() );
+                if ( !( value2 instanceof BigDecimal ) ) {
+                    value2 = new BigDecimal( value2.toString() );
                 }
-                // TODO think about numerical bounds (double?)
-                resultValues[i++] = ( (Double) value1 ) / ( (Double) value2 );
+                resultValues[i++] = ( (BigDecimal) value1 ).divide( ( (BigDecimal) value2 ), RoundingMode.HALF_UP );
             }
         }
         return resultValues;
@@ -104,9 +104,9 @@ public class Div implements Expression {
         s += param2.toString( indent + "  " );
         return s;
     }
-    
+
     @Override
     public Expression[] getParams() {
         return new Expression[] { param1, param2 };
-    }    
+    }
 }

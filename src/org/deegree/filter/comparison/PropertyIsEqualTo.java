@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import java.math.BigDecimal;
+
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -59,6 +61,7 @@ public class PropertyIsEqualTo extends BinaryComparisonOperator {
         return SubType.PROPERTY_IS_EQUAL_TO;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
@@ -78,8 +81,16 @@ public class PropertyIsEqualTo extends BinaryComparisonOperator {
                         if ( comparablePair.first.toString().equalsIgnoreCase( comparablePair.second.toString() ) ) {
                             return true;
                         }
-                    } else if ( comparablePair.first.equals( comparablePair.second ) ) {
-                        return true;
+                    } else if ( comparablePair.first instanceof BigDecimal ) {
+                        // NOTE: don't use #equals() for BigDecimal, because new BigDecimal("155.00") is not equal to
+                        // new BigDecimal("155")
+                        if ( ( (Comparable) comparablePair.first ).compareTo( comparablePair.second ) == 0 ) {
+                            return true;
+                        }
+                    } else {
+                        if ( comparablePair.first.equals( comparablePair.second ) ) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -93,5 +104,14 @@ public class PropertyIsEqualTo extends BinaryComparisonOperator {
         s += param1.toString( indent + "  " );
         s += param2.toString( indent + "  " );
         return s;
+    }
+
+    public static void main( String[] args ) {
+        BigDecimal a = new BigDecimal( "155" );
+        BigDecimal b = new BigDecimal( "155.00" );
+        System.out.println( "a: " + a );
+        System.out.println( "b: " + b );
+        System.out.println( a.compareTo( b ) );
+        System.out.println( a.equals( b ) );
     }
 }

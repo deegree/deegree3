@@ -135,11 +135,11 @@ public abstract class ComparisonOperator implements Operator {
         }
 
         // TODO create comparable numbers in a more efficient manner
-        if ( result.first instanceof Number && !( result.first instanceof Double ) ) {
-            result.first = new Double( result.first.toString() );
+        if ( result.first instanceof Number && !( result.first instanceof BigDecimal ) ) {
+            result.first = new BigDecimal( result.first.toString() );
         }
-        if ( result.second instanceof Number && !( result.second instanceof Double ) ) {
-            result.second = new Double( result.second.toString() );
+        if ( result.second instanceof Number && !( result.second instanceof BigDecimal ) ) {
+            result.second = new BigDecimal( result.second.toString() );
         }
 
         return result;

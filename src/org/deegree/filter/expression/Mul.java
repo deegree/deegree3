@@ -35,6 +35,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
+import java.math.BigDecimal;
+
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -81,15 +83,14 @@ public class Mul implements Expression {
         Object [] resultValues = new Object [values1.length * values2.length];
         int i = 0;
         for ( Object value1 : values1 ) {
-            if ( !( value1 instanceof Double ) ) {
-                value1 = new Double( value1.toString() );
+            if ( !( value1 instanceof BigDecimal ) ) {
+                value1 = new BigDecimal( value1.toString() );
             }
             for ( Object value2 : values2 ) {
-                if ( !( value2 instanceof Double ) ) {
-                    value2 = new Double( value2.toString() );
+                if ( !( value2 instanceof BigDecimal ) ) {
+                    value2 = new BigDecimal( value2.toString() );
                 }
-                // TODO think about numerical bounds (double?)
-                resultValues[i++] = ( (Double) value1 ) * ( (Double) value2 );
+                resultValues[i++] = ( (BigDecimal) value1 ).multiply( ( (BigDecimal) value2 ));
             }
         }
         return resultValues;
