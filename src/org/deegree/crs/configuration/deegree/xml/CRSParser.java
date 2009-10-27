@@ -241,7 +241,7 @@ public class CRSParser extends XMLFileResource {
             String[] names = getNodesAsStrings( element, new XPath( PRE + "name", nsContext ) );
             String[] versions = getNodesAsStrings( element, new XPath( PRE + "version", nsContext ) );
             String[] descriptions = getNodesAsStrings( element, new XPath( PRE + "description", nsContext ) );
-            String[] areasOfUse = getNodesAsStrings( element, new XPath( PRE + "areaOfuse", nsContext ) );
+            String[] areasOfUse = getNodesAsStrings( element, new XPath( PRE + "areaOfUse", nsContext ) );
 
             // convert the string IDs to CRSCodeTypes
             Set<CRSCodeType> codeSet = new HashSet<CRSCodeType>();

@@ -26067,6 +26067,7 @@
   <crs:id>URN:OPENGIS:DEF:CRS:EPSG::32631</crs:id>
   <crs:name>WGS 84 / UTM zone 31N</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
+  <crs:areaOfUse>0.0,0.0,6.0,84.0</crs:areaOfUse>
   <crs:Axis>
    <crs:name>x</crs:name>
    <crs:units>metre</crs:units>

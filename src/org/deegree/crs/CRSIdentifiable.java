@@ -40,20 +40,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.deegree.crs.i18n.Messages;
+import org.deegree.geometry.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The <code>CRSIdentifiable</code> class can be used to identify any crs, Ellipsoid, Geodetic Datum and Prime
- * Meridian
+ * The <code>CRSIdentifiable</code> class can be used to identify any crs, Ellipsoid, Geodetic Datum and Prime Meridian
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
-
 public class CRSIdentifiable {
+
+    private static final Logger LOG = LoggerFactory.getLogger( CRSIdentifiable.class );
 
     private CRSCodeType[] codes;
 
@@ -64,6 +65,8 @@ public class CRSIdentifiable {
     private String[] descriptions;
 
     private String[] areasOfUse;
+    
+    private double [] areaOfUseBBox;
 
     /**
      * Takes the references of the other object and stores them in this CRSIdentifiable Object.
@@ -366,5 +369,57 @@ public class CRSIdentifiable {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Returns the area of use, i.e. the domain where this {@link CRSIdentifiable} is valid.
+     * 
+     * @return the domain of validity (EPSG:4326 coordinates), order: minX, minY, maxX, maxY, never <code>null</code>
+     *         (-180,-90,180,90) if no such information is available
+     */
+    public double[] getAreaOfUseBBox() {
+
+        if ( areaOfUseBBox == null ) {
+            areaOfUseBBox = new double [4];
+            areaOfUseBBox[0] = Double.NaN;
+            areaOfUseBBox[1] = Double.NaN;
+            areaOfUseBBox[2] = Double.NaN;
+            areaOfUseBBox[3] = Double.NaN;
+            if ( areasOfUse != null ) {
+                for ( String bboxString : areasOfUse ) {
+                    try {
+                        double[] ords = parseAreaBBox( bboxString );
+                        for ( int i = 0; i < 4; i++ ) {
+                            if ( Double.isNaN( areaOfUseBBox[i] ) || areaOfUseBBox[i] > ords[i] ) {
+                                areaOfUseBBox[i] = ords[i];
+                            }
+                        }
+                    } catch ( Exception e ) {
+                        LOG.debug( "Error parsing areaOfUse bbox (ignoring it): '" + e.getMessage() + "'" );
+                    }
+                }
+            }
+            if ( Double.isNaN( areaOfUseBBox[0] ) ) {
+                LOG.debug( "No areaOfUse BBox available, assuming world." );
+                areaOfUseBBox[0] = -180;
+                areaOfUseBBox[1] = -90;
+                areaOfUseBBox[2] = 180;
+                areaOfUseBBox[3] = 90;
+            }
+        }
+        return areaOfUseBBox;
+    }
+
+    private double[] parseAreaBBox( String s )
+                            throws IllegalArgumentException, NumberFormatException {
+        String[] tokens = s.split( "," );
+        if ( tokens.length != 4 ) {
+            throw new IllegalArgumentException( "Invalid areaOfUse: expected CSV-list of length 4." );
+        }
+        double[] ords = new double[4];
+        for ( int i = 0; i < 4; i++ ) {
+            ords[i] = Double.parseDouble( tokens[i] );
+        }
+        return ords;
     }
 }
