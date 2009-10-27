@@ -48,7 +48,7 @@ import javax.xml.validation.Schema;
 public interface SchemaComponent {
     
     /**
-     * Namespace from the target
+     * getting the targetNamespace for the internal referencing in the xml document
      * 
      * @return
      */
