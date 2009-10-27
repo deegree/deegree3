@@ -35,9 +35,12 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.dc;
 
+import java.io.File;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 
@@ -56,8 +59,10 @@ public class DCRecordStore implements RecordStore {
      */
     @Override
     public void describeRecord( XMLStreamWriter xmlWriter ) {
+        File file = new File( "/home/thomas/workspace/d3_core/src/org/deegree/record/persistence/dc/dc.xsd" );
         
-
+        XMLAdapter ada = new XMLAdapter(file);
+        System.out.println(ada.toString());
     }
 
     /* (non-Javadoc)
