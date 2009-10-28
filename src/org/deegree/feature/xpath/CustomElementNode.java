@@ -35,15 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import org.deegree.feature.generic.GenericCustomPropertyValue;
+import org.deegree.feature.types.GenericCustomPropertyValue;
 
 /**
  * TODO add documentation here
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
 public class CustomElementNode extends ElementNode {
 

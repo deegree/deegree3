@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
-import org.deegree.feature.generic.GenericCustomPropertyValue;
+import org.deegree.feature.types.GenericCustomPropertyValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.MatchableObject;
 

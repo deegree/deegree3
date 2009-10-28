@@ -44,7 +44,7 @@ import org.deegree.commons.types.datetime.Time;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.Pair;
-import org.deegree.feature.generic.GenericCustomPropertyValue;
+import org.deegree.feature.types.GenericCustomPropertyValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
