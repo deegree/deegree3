@@ -38,8 +38,8 @@ package org.deegree.record.persistence.dc;
 import java.io.File;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
@@ -53,16 +53,32 @@ import org.deegree.record.persistence.RecordStoreException;
  * @version $Revision: $, $Date: $
  */
 public class DCRecordStore implements RecordStore {
+    
+    public String output;
+    
+    private QName typeNames;
+    
+    /*private QName qName;
+    
+    public DCRecordStore(QName qName){
+        this.qName = qName;
+    }*/
 
     /* (non-Javadoc)
      * @see org.deegree.record.persistence.RecordStore#describeRecord(javax.xml.stream.XMLStreamWriter)
      */
     @Override
-    public void describeRecord( XMLStreamWriter xmlWriter ) {
+    public void describeRecord() {
         File file = new File( "/home/thomas/workspace/d3_core/src/org/deegree/record/persistence/dc/dc.xsd" );
         
         XMLAdapter ada = new XMLAdapter(file);
         System.out.println(ada.toString());
+        output = ada.toString();
+        OMNamespace elem = ada.getRootElement().getDefaultNamespace();
+        ada.getNamespaceContext( ada.getRootElement() );
+        
+        this.typeNames = new QName(elem.getNamespaceURI());
+        
     }
 
     /* (non-Javadoc)
@@ -89,8 +105,19 @@ public class DCRecordStore implements RecordStore {
      */
     @Override
     public QName getTypeNames() {
-        // TODO Auto-generated method stub
-        return null;
+        
+        return typeNames;
     }
+
+    /**
+     * @return the output
+     */
+    public String getOutput() {
+        return output;
+    }
+    
+    
+    
+   
 
 }
