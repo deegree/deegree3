@@ -71,7 +71,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
-import org.deegree.feature.generic.GenericCustomPropertyParser;
+import org.deegree.feature.gml.generic.GenericCustomPropertyParser;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.gml.schema.DefaultGMLTypes;
 import org.deegree.feature.i18n.Messages;
