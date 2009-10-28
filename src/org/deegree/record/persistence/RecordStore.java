@@ -78,7 +78,7 @@ public interface RecordStore {
      * @param xmlWriter
      *            writer to export to, must not be <code>null</code>
      */
-    public void describeRecord( XMLStreamWriter xmlWriter );
+    public void describeRecord();
 
     /**
      * Returns the TypeNames that are known in the Backend
@@ -86,4 +86,10 @@ public interface RecordStore {
      * @return QName
      */
     public QName getTypeNames();
+    
+    /**
+     * Is for a dummyimplementation
+     * @return
+     */
+    public String getOutput();
 }
