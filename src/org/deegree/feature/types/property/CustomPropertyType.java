@@ -33,15 +33,35 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature.types;
+package org.deegree.feature.types.property;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.feature.types.property.CustomComplexPropertyType;
+/**
+ * {@link PropertyType} that defines a property with a user-defined value type.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public class CustomPropertyType extends AbstractPropertyType {
 
-public class LengthPropertyType extends CustomComplexPropertyType {
+    private QName xsdType;
 
-    public LengthPropertyType (QName name, int minOccurs, int maxOccurs) {
-        super (name, minOccurs, maxOccurs, null);
+    public CustomPropertyType (QName name, int minOccurs, int maxOccurs, QName xsdType) {
+        super (name, minOccurs, maxOccurs);
+        this.xsdType = xsdType;
+    }
+
+    public QName getXSDValueType() {
+        return xsdType;
+    }
+
+    @Override
+    public String toString() {
+        String s = "- custom property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+                   + ", content xsd type: " + xsdType;
+        return s;
     }
 }

@@ -58,11 +58,15 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
-import org.deegree.feature.types.LengthPropertyType;
+import org.deegree.feature.generic.GenericCustomPropertyExporter;
+import org.deegree.feature.generic.GenericCustomPropertyParser;
+import org.deegree.feature.generic.GenericCustomPropertyValue;
 import org.deegree.feature.types.property.CodePropertyType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -294,7 +298,9 @@ public class GML311FeatureEncoder {
             writer.writeAttribute( "uom", measure.getUomUri() );
             writer.writeCharacters( String.valueOf( measure.getValue() ) );
             writer.writeEndElement();
-        }
+        } else if ( propertyType instanceof CustomPropertyType ) {
+            GenericCustomPropertyExporter.export( (GenericCustomPropertyValue) value, writer );
+        }        
     }
 
     private void writeStartElementWithNS( String namespaceURI, String localname )

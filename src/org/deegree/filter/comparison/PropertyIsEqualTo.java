@@ -105,13 +105,4 @@ public class PropertyIsEqualTo extends BinaryComparisonOperator {
         s += param2.toString( indent + "  " );
         return s;
     }
-
-    public static void main( String[] args ) {
-        BigDecimal a = new BigDecimal( "155" );
-        BigDecimal b = new BigDecimal( "155.00" );
-        System.out.println( "a: " + a );
-        System.out.println( "b: " + b );
-        System.out.println( a.compareTo( b ) );
-        System.out.println( a.equals( b ) );
-    }
 }

@@ -33,45 +33,19 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+package org.deegree.feature.types.property;
 
 import javax.xml.namespace.QName;
 
-/**
- * TODO add documentation here
- *
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
- */
-public abstract class ElementNode implements Node {
+public class LengthPropertyType extends MeasurePropertyType {
 
-    private QName name;
-
-    protected ElementNode (QName name) {
-        this.name = name;
+    public LengthPropertyType (QName name, int minOccurs, int maxOccurs) {
+        super (name, minOccurs, maxOccurs );
     }
 
-    public boolean isElement() {
-        return true;
-    }   
-
-    public String getLocalName() {
-        return name.getLocalPart();
-    }
-
-    public String getPrefixedName() {
-        String prefixedName = "";
-        String prefix = name.getPrefix();
-        if (prefix != null && prefix.length() > 0) {
-            prefixedName = prefix + ":";
-        }
-        prefixedName += name.getLocalPart();
-        return prefixedName;
-    }
-
-    public String getNamespaceUri() {
-        return name.getNamespaceURI();
-    }
+    @Override
+    public String toString() {
+        String s = "- length property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+        return s;
+    }    
 }

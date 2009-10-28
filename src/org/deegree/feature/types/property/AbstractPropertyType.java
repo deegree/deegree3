@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
 import javax.xml.namespace.QName;
@@ -47,10 +47,10 @@ import javax.xml.namespace.QName;
  * <li>Maximum number of times that a property must be present in a corresponding feature instance (maxOccurs)</li>
  * </ul>
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public abstract class AbstractPropertyType implements PropertyType {
@@ -66,7 +66,7 @@ public abstract class AbstractPropertyType implements PropertyType {
 
     /**
      * Creates a new <code>AbstractPropertyType</code> instance.
-     *
+     * 
      * @param name
      *            name of the property
      * @param minOccurs

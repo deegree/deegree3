@@ -37,9 +37,10 @@
 package org.deegree.feature.generic;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -55,12 +56,20 @@ public class GenericCustomPropertyValue {
 
     private QName name;
 
-    private Map<QName, String> attributes = new HashMap<QName, String>();
+    private Map<QName, String> attributes = new LinkedHashMap<QName, String>();
 
     private List<Object> childNodes = new ArrayList<Object>();
 
     public GenericCustomPropertyValue( QName name ) {
         this.name = name;
+    }
+
+    public GenericCustomPropertyValue( String textNode ) {
+        childNodes.add( textNode );
+    }
+
+    public QName getName() {
+        return name;
     }
 
     public void setAttribute( QName name, String value ) {
@@ -69,6 +78,10 @@ public class GenericCustomPropertyValue {
 
     public void addChild( Object child ) {
         childNodes.add( child );
+    }
+
+    public Map<QName, String> getAttributes() {
+        return attributes;
     }
 
     /**
@@ -84,6 +97,10 @@ public class GenericCustomPropertyValue {
             }
         }
         return result;
+    }
+
+    public List<Object> getChildNodesAll() {
+        return childNodes;
     }
 
     /**
@@ -125,27 +142,31 @@ public class GenericCustomPropertyValue {
     }
 
     @Override
+    public boolean equals (Object o ) {
+        if (!(o instanceof GenericCustomPropertyValue)) {
+            return false;
+        }
+        GenericCustomPropertyValue that = (GenericCustomPropertyValue) o;
+        return this.toString().equals( that.toString() );
+    }
+    
+    @Override
     public String toString() {
-        String s = name.toString();
-        s += "=[";
-        int i = 0;
-        for ( Map.Entry<QName, String> attribute : attributes.entrySet() ) {
-            s += "@" + attribute.getKey() + "'" + attribute.getValue();
-            if ( i++ != attributes.size() - 1 ) {
-                s += ",";
-            }
-        }
-        if ( i != 0 && childNodes.size() > 0 ) {
-            s += ",";
-        }
-        i = 0;
+        StringBuffer sb = new StringBuffer();
         for ( Object o : childNodes ) {
-            s += o.toString();
-            if ( i++ != childNodes.size() - 1 ) {
-                s += ",";
+            if ( o instanceof String ) {
+                sb.append( o );
+            } else if ( o instanceof GenericCustomPropertyValue ) {
+                GenericCustomPropertyValue childEl = (GenericCustomPropertyValue) o;
+                sb.append( "<" + childEl.name );
+                for ( Entry<QName, String> attr : childEl.attributes.entrySet() ) {
+                    sb.append( " " + attr.getKey() + "=\"" + attr.getValue() + "\"" );
+                }
+                sb.append( ">" );
+                sb.append( childEl );
+                sb.append( "</" + childEl.name + ">" );
             }
         }
-        s += "]";
-        return s;
+        return sb.toString();
     }
 }

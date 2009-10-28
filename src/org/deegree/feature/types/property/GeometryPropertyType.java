@@ -40,7 +40,7 @@ import javax.xml.namespace.QName;
 import org.deegree.geometry.Geometry;
 
 /**
- * A {@link PropertyType} that defines a property with a {@link Geometry} value.
+ * {@link PropertyType} that defines a property with a {@link Geometry} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

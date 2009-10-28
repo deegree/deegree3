@@ -127,11 +127,11 @@ public class GML311CurveSegmentDecoderTest {
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().get0() );
         Assert.assertEquals( 11.0, arc.getMidPoint().get1() );
-        Assert.assertEquals( 1.0, arc.getRadius(null).getValue() );
+        Assert.assertEquals( 1.0, arc.getRadius(null).getValueAsDouble() );
         Assert.assertEquals( "whatever#metres", arc.getRadius(null).getUomUri() );
-        Assert.assertEquals( 180.0, arc.getStartAngle().getValue() );
+        Assert.assertEquals( 180.0, arc.getStartAngle().getValueAsDouble() );
         Assert.assertEquals( "whatever#degrees", arc.getStartAngle().getUomUri() );
-        Assert.assertEquals( 360.0, arc.getEndAngle().getValue() );
+        Assert.assertEquals( 360.0, arc.getEndAngle().getValueAsDouble() );
         Assert.assertEquals( "whatever#degrees", arc.getEndAngle().getUomUri() );
     }
 
@@ -249,11 +249,11 @@ public class GML311CurveSegmentDecoderTest {
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().get0() );
         Assert.assertEquals( 11.0, arc.getMidPoint().get1() );
-        Assert.assertEquals( 1.0, arc.getRadius(null).getValue() );
+        Assert.assertEquals( 1.0, arc.getRadius(null).getValueAsDouble() );
         Assert.assertEquals( "whatever#metres", arc.getRadius(null).getUomUri() );
-        Assert.assertEquals( 0.0, arc.getStartAngle().getValue() );
+        Assert.assertEquals( 0.0, arc.getStartAngle().getValueAsDouble() );
         Assert.assertEquals( "whatever#degrees", arc.getStartAngle().getUomUri() );
-        Assert.assertEquals( 0.0, arc.getEndAngle().getValue() );
+        Assert.assertEquals( 0.0, arc.getEndAngle().getValueAsDouble() );
         Assert.assertEquals( "whatever#degrees", arc.getEndAngle().getUomUri() );
     }
 
@@ -347,7 +347,7 @@ public class GML311CurveSegmentDecoderTest {
                             UnknownCRSException {
         OffsetCurve segment = (OffsetCurve) getParser().parseCurveSegment( getReader( "OffsetCurve.gml" ),
                                                                            new CRS( "EPSG:4326" ) );
-        Assert.assertEquals( 1.0, segment.getDistance(null).getValue() );
+        Assert.assertEquals( 1.0, segment.getDistance(null).getValueAsDouble() );
         Assert.assertEquals( 0.0, segment.getDirection().get0() );
         Assert.assertEquals( 1.0, segment.getDirection().get1() );
     }

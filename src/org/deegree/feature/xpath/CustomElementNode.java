@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,37 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.feature.types.property;
+ ----------------------------------------------------------------------------*/
+package org.deegree.feature.xpath;
 
-import javax.xml.namespace.QName;
+import org.deegree.feature.generic.GenericCustomPropertyValue;
 
-public class CustomComplexPropertyType extends AbstractPropertyType {
+/**
+ * TODO add documentation here
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ * 
+ * @version $Revision:$, $Date:$
+ */
+public class CustomElementNode extends ElementNode {
 
-    private QName xsdType;
+    private Node parentNode;
 
-    public CustomComplexPropertyType (QName name, int minOccurs, int maxOccurs, QName xsdType) {
-        super (name, minOccurs, maxOccurs);
-        this.xsdType = xsdType;
-    }
+    private GenericCustomPropertyValue element;
 
-    public QName getXSDValueType() {
-        return xsdType;
+    public CustomElementNode( Node parentNode, GenericCustomPropertyValue element ) {
+        super( element.getName() );
+        this.parentNode = parentNode;
+        this.element = element;
     }
 
     @Override
-    public String toString() {
-        String s = "- custom property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", content xsd type: " + xsdType;
-        return s;
+    public Node getParent() {
+        return parentNode;
+    }
+
+    public GenericCustomPropertyValue getElement() {
+        return element;
     }
 }

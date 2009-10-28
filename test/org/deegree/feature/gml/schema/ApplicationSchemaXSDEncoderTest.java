@@ -36,17 +36,22 @@
 
 package org.deegree.feature.gml.schema;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.gml.GMLVersion;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.junit.XMLMemoryStreamWriter;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -59,21 +64,13 @@ import org.junit.Test;
  */
 public class ApplicationSchemaXSDEncoderTest {
 
-    private ApplicationSchema schema;
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp()
-                            throws Exception {
-        URL url = ApplicationSchemaXSDEncoderTest.class.getResource( "example.xml" );
-        JAXBAdapter adapter = new JAXBAdapter( url );
-        schema = adapter.getApplicationSchema();
-    }
 
     @Test
-    public void testExportAsGML31() throws XMLStreamException, IOException {
+    public void testExportAsGML31() throws XMLStreamException, IOException, JAXBException {
+
+        URL url = ApplicationSchemaXSDEncoderTest.class.getResource( "example.xml" );
+        JAXBAdapter adapter = new JAXBAdapter( url );
+        ApplicationSchema schema = adapter.getApplicationSchema();
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 //        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         
@@ -81,4 +78,24 @@ public class ApplicationSchemaXSDEncoderTest {
         new ApplicationSchemaXSDEncoder(GMLVersion.GML_31, null).export( memoryWriter.getXMLStreamWriter(), schema );
         memoryWriter.getXMLStreamWriter().close();
     }
+    
+    @Test
+    public void testReexportCiteSF1()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException {
+
+        String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf1.xsd" ).toString();
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+        
+        XMLStreamWriter writer = new FormattingXMLStreamWriter(
+                                                               XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                     new FileWriter(
+                                                                                                                                     "/tmp/out.xml" ) ) );
+       writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
+       writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
+       writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+       new ApplicationSchemaXSDEncoder(GMLVersion.GML_31, null).export( writer, schema );
+       writer.close();        
+    }    
 }

@@ -78,7 +78,7 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
-import org.deegree.feature.types.property.CustomComplexPropertyType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -260,15 +260,6 @@ public class GMLFeatureDecoder extends XMLAdapter {
         return feature;
     }
 
-    /**
-     * Handles the standard GML object properties that may occur at the beginning of a GML object element (e.g.
-     * 'gml:name').
-     * 
-     * @param xmlStream
-     */
-    private void parseStandardGMLObjectProps( XMLStreamReaderWrapper xmlStream ) {
-    }
-
     private ApplicationSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream )
                             throws XMLParsingException {
         String schemaLocation = xmlStream.getAttributeValue( XSINS, "schemaLocation" );
@@ -368,24 +359,6 @@ public class GMLFeatureDecoder extends XMLAdapter {
             if ( propDecl instanceof SimplePropertyType ) {
                 property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
                                                  xmlStream.getElementText().trim() );
-            } else if ( propDecl instanceof CustomComplexPropertyType ) {
-                Object value = null;
-                if ( propDecl instanceof EnvelopePropertyType ) {
-                    xmlStream.nextTag();
-                    value = geomParser.parseEnvelope( xmlStream, crs );
-                    xmlStream.nextTag();
-                } else if ( propDecl instanceof CodePropertyType ) {
-                    String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
-                    String code = xmlStream.getElementText().trim();
-                    value = new CodeType( code, codeSpace );
-                } else if ( propDecl instanceof MeasurePropertyType ) {
-                    String uom = xmlStream.getAttributeValue( null, "uom" );
-                    double number = xmlStream.getElementTextAsDouble();
-                    value = new Measure( number, uom );
-                } else {
-                    value = new GenericCustomPropertyParser().parse( xmlStream );
-                }
-                property = new GenericProperty<Object>( propDecl, propName, value );
             } else if ( propDecl instanceof GeometryPropertyType ) {
                 xmlStream.nextTag();
                 Geometry geometry = geomParser.parse( xmlStream, crs );
@@ -424,6 +397,23 @@ public class GMLFeatureDecoder extends XMLAdapter {
                     property = new GenericProperty<Feature>( propDecl, propName, subFeature );
                     xmlStream.skipElement();
                 }
+            } else if ( propDecl instanceof CustomPropertyType ) {
+                Object value = new GenericCustomPropertyParser().parse( xmlStream );
+                property = new GenericProperty<Object>( propDecl, propName, value );
+            } else if ( propDecl instanceof EnvelopePropertyType ) {
+                xmlStream.nextTag();
+                Object value = geomParser.parseEnvelope( xmlStream, crs );
+                property = new GenericProperty<Object>( propDecl, propName, value );
+                xmlStream.nextTag();
+            } else if ( propDecl instanceof CodePropertyType ) {
+                String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
+                String code = xmlStream.getElementText().trim();
+                Object value = new CodeType( code, codeSpace );
+                property = new GenericProperty<Object>( propDecl, propName, value );
+            } else if ( propDecl instanceof MeasurePropertyType ) {
+                String uom = xmlStream.getAttributeValue( null, "uom" );
+                Object value = new Measure( xmlStream.getElementText(), uom );
+                property = new GenericProperty<Object>( propDecl, propName, value );
             }
         } else {
             LOG.trace( "************ Parsing property using custom parser." );

@@ -41,6 +41,8 @@ import java.util.Set;
 
 import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.feature.gml.FeatureReference;
+import org.deegree.feature.xpath.AttributeNode;
+import org.deegree.feature.xpath.CustomElementNode;
 import org.deegree.feature.xpath.FeatureNode;
 import org.deegree.feature.xpath.FeatureXPath;
 import org.deegree.feature.xpath.PropertyNode;
@@ -77,6 +79,10 @@ public abstract class AbstractFeature implements Feature {
             if ( node instanceof PropertyNode ) {
                 Property<?> prop = ( (PropertyNode) node ).getProperty();
                 resultValues[i++] = prop.getValue();
+            } else if ( node instanceof AttributeNode ) {
+                resultValues[i++] = ( (AttributeNode) node ).getValue();
+            } else if ( node instanceof CustomElementNode ) {
+                resultValues[i++] = ( (CustomElementNode) node ).getElement();
             } else {
                 // TODO is node.toString() o.k. for all other node types?
                 resultValues[i++] = node.toString();

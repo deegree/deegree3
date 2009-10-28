@@ -35,12 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
+import org.deegree.feature.generic.GenericCustomPropertyValue;
 import org.deegree.feature.gml.FeatureReference;
 import org.jaxen.DefaultNavigator;
 import org.jaxen.JaxenConstants;
@@ -56,8 +63,8 @@ import org.jaxen.util.SingleObjectIterator;
  * 
  * @version $Revision:$, $Date:$
  */
-class FeatureNavigator extends DefaultNavigator {  
-    
+class FeatureNavigator extends DefaultNavigator {
+
     private static final long serialVersionUID = 5684363154723828577L;
 
     private DocumentNode documentNode;
@@ -93,6 +100,29 @@ class FeatureNavigator extends DefaultNavigator {
                                                                  featureNode.getFeature().getId() );
                 return new SingleObjectIterator( gmlIdAttrNode );
             }
+        } else if ( node instanceof PropertyNode ) {
+            Object value = ( (PropertyNode) node ).getProperty().getValue();
+            if ( value instanceof GenericCustomPropertyValue ) {
+                GenericCustomPropertyValue genericValue = (GenericCustomPropertyValue) value;
+                Map<QName, String> attributes = genericValue.getAttributes();
+                List<AttributeNode> attrNodes = new ArrayList<AttributeNode>( attributes.size() );
+                for ( Entry<QName, String> attribute : attributes.entrySet() ) {
+                    attrNodes.add( new AttributeNode( (Node) node, attribute.getKey(), attribute.getValue() ) );
+                }
+                return attrNodes.iterator();
+            } else if ( value instanceof Measure ) {
+                return new SingleObjectIterator(new AttributeNode( (PropertyNode) node, new QName("uom"), ((Measure) value).getUomUri()));
+            } else if ( value instanceof CodeType ) {
+                return new SingleObjectIterator(new AttributeNode( (PropertyNode) node, new QName("codeSpace"), ((CodeType) value).getCodeSpace()));
+            }
+        } else if ( node instanceof CustomElementNode ) {
+            GenericCustomPropertyValue value = ( (CustomElementNode) node ).getElement();
+            Map<QName, String> attributes = value.getAttributes();
+            List<AttributeNode> attrNodes = new ArrayList<AttributeNode>( attributes.size() );
+            for ( Entry<QName, String> attribute : attributes.entrySet() ) {
+                attrNodes.add( new AttributeNode( (Node) node, attribute.getKey(), attribute.getValue() ) );
+            }
+            return attrNodes.iterator();
         }
         return JaxenConstants.EMPTY_ITERATOR;
     }
@@ -158,6 +188,7 @@ class FeatureNavigator extends DefaultNavigator {
      */
     @Override
     public String getAttributeStringValue( Object node ) {
+
         String value = null;
         if ( isAttribute( node ) ) {
             value = ( (AttributeNode) node ).getValue();
@@ -188,10 +219,25 @@ class FeatureNavigator extends DefaultNavigator {
                 if ( !( propValue instanceof FeatureReference ) || ( (FeatureReference) propValue ).isLocal() ) {
                     iter = new SingleObjectIterator( new FeatureNode( (PropertyNode) node, (Feature) propValue ) );
                 }
-            }
-            if ( propValue instanceof String ) {
+            } else if ( propValue instanceof GenericCustomPropertyValue ) {
+                // TODO handle text node children
+                List<GenericCustomPropertyValue> childNodes = ( (GenericCustomPropertyValue) propValue ).getChildNodes();
+                List<CustomElementNode> propNodes = new ArrayList<CustomElementNode>( childNodes.size() );
+                for ( GenericCustomPropertyValue childNode : childNodes ) {
+                    propNodes.add( new CustomElementNode( (Node) node, childNode ) );
+                }
+                iter = propNodes.iterator();
+            } else if ( propValue instanceof String ) {
                 iter = new SingleObjectIterator( new TextNode( (PropertyNode) node, (String) propValue ) );
             }
+        } else if ( node instanceof CustomElementNode ) {
+            // TODO handle text node children            
+            List<GenericCustomPropertyValue> childNodes = ( (CustomElementNode) node ).getElement().getChildNodes();
+            List<CustomElementNode> propNodes = new ArrayList<CustomElementNode>( childNodes.size() );
+            for ( GenericCustomPropertyValue childNode : childNodes ) {
+                propNodes.add( new CustomElementNode( (Node) node, childNode ) );
+            }
+            iter = propNodes.iterator();
         }
         return iter;
     }

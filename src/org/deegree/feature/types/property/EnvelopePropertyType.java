@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,14 +32,30 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
 import javax.xml.namespace.QName;
 
-public class EnvelopePropertyType extends CustomComplexPropertyType {
+import org.deegree.geometry.Envelope;
 
-    public EnvelopePropertyType (QName name, int minOccurs, int maxOccurs) {
-        super (name, minOccurs, maxOccurs, null);
+/**
+ * {@link PropertyType} that defines a property with an {@link Envelope} value.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public class EnvelopePropertyType extends AbstractPropertyType {
+
+    public EnvelopePropertyType( QName name, int minOccurs, int maxOccurs ) {
+        super( name, minOccurs, maxOccurs );
     }
+    
+    @Override
+    public String toString() {
+        String s = "- envelope property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+        return s;
+    }    
 }

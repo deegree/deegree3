@@ -42,6 +42,7 @@ import junit.framework.Assert;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.PropertyType;
 import org.junit.Test;
 
 /**
@@ -107,6 +108,12 @@ public class GMLApplicationSchemaXSDDecoderTest {
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
+        for ( FeatureType ft : fts ) {
+            System.out.println ("\nFt: " + ft.getName());
+            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+                System.out.println (pt);
+            }
+        }
     }
 
     @Test

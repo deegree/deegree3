@@ -42,7 +42,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.types.FeatureType;
 
 /**
- * A {@link PropertyType} that defines a property with a {@link Feature} value.
+ * {@link PropertyType} that defines a property with a {@link Feature} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -58,21 +58,6 @@ public class FeaturePropertyType extends AbstractPropertyType {
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, QName valueFtName ) {
         super( name, minOccurs, maxOccurs );
         this.valueFtName = valueFtName;
-    }
-
-    @Override
-    public QName getName() {
-        return name;
-    }
-
-    @Override
-    public int getMaxOccurs() {
-        return maxOccurs;
-    }
-
-    @Override
-    public int getMinOccurs() {
-        return minOccurs;
     }
 
     /**

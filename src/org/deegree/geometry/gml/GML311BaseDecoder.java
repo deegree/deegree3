@@ -36,6 +36,7 @@ package org.deegree.geometry.gml;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -240,9 +241,9 @@ class GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         String s = xmlStream.getElementText();
-        double value = 0.0;
+        BigDecimal value = new BigDecimal( 0.0 );
         try {
-            value = Double.parseDouble( s );
+            value = new BigDecimal( s );
         } catch ( NumberFormatException e ) {
             String msg = "Error in element '" + xmlStream.getName() + "': expected a double value, but found '" + s
                          + "'.";
@@ -259,9 +260,9 @@ class GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         String s = xmlStream.getElementText();
-        double value = 0.0;
+        BigDecimal value = new BigDecimal( 0.0 );
         try {
-            value = Double.parseDouble( s );
+            value = new BigDecimal( s );
         } catch ( NumberFormatException e ) {
             String msg = "Error in element '" + xmlStream.getName() + "': expected a double value, but found '" + s
                          + "'.";
@@ -278,9 +279,9 @@ class GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         String s = xmlStream.getElementText();
-        double value = 0.0;
+        BigDecimal value = new BigDecimal( 0.0 );
         try {
-            value = Double.parseDouble( s );
+            value = new BigDecimal( s );
         } catch ( NumberFormatException e ) {
             String msg = "Error in element '" + xmlStream.getName() + "': expected a double value, but found '" + s
                          + "'.";

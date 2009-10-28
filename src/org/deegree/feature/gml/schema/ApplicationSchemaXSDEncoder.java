@@ -50,11 +50,14 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.gml.GMLVersion;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.CustomComplexPropertyType;
+import org.deegree.feature.types.property.CodePropertyType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.slf4j.Logger;
@@ -78,8 +81,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ApplicationSchemaXSDEncoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );    
-    
+    private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );
+
     private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
 
     private static final String GML_311_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
@@ -180,10 +183,10 @@ public class ApplicationSchemaXSDEncoder {
     public void export( XMLStreamWriter writer, List<FeatureType> fts )
                             throws XMLStreamException {
 
-        for (FeatureType ft : fts) {
-            LOG.debug ("Exporting ft " + ft.getName());
+        for ( FeatureType ft : fts ) {
+            LOG.debug( "Exporting ft " + ft.getName() );
         }
-        
+
         // TODO prefix handling
         final String ns = fts.get( 0 ).getName().getNamespaceURI();
         if ( ns != null && !ns.isEmpty() ) {
@@ -289,8 +292,8 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         if ( pt instanceof SimplePropertyType ) {
-            // TODO handle restricted types (e.g. 'xs:integer')
             writer.writeAttribute( "type", "xs:string" );
+            writer.writeComment( "TODO: export primitive type information" );
         } else if ( pt instanceof GeometryPropertyType ) {
             // TODO handle restricted types (e.g. 'gml:PointPropertyType')
             writer.writeAttribute( "type", "gml:GeometryPropertyType" );
@@ -312,8 +315,23 @@ public class ApplicationSchemaXSDEncoder {
             } else {
                 writer.writeAttribute( "type", "gml:FeaturePropertyType" );
             }
-        } else if ( pt instanceof CustomComplexPropertyType ) {
-
+        } else if ( pt instanceof CodePropertyType ) {
+            writer.writeAttribute( "type", "gml:CodeType" );
+        } else if ( pt instanceof MeasurePropertyType ) {
+            writer.writeAttribute( "type", "gml:MeasureType" );
+        } else if ( pt instanceof CustomPropertyType ) {
+            writer.writeComment( "TODO: export custom property type information" );
+            writer.writeStartElement( XSNS, "complexType" );
+            writer.writeAttribute( "mixed", "true" );
+            writer.writeStartElement( XSNS, "sequence" );
+            writer.writeStartElement( XSNS, "any" );
+            writer.writeAttribute( "minOccurs", "0" );
+            writer.writeAttribute( "maxOccurs", "unbounded" );
+            writer.writeAttribute( "processContents", "lax" );
+            writer.writeEndElement();
+            writer.writeEndElement();
+            XMLAdapter.writeElement( writer, XSNS, "anyAttribute", null, "processContents", "lax");
+            writer.writeEndElement();
         }
 
         // end 'xs:element'

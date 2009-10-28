@@ -67,10 +67,11 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
-import org.deegree.feature.types.property.CustomComplexPropertyType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -372,15 +373,18 @@ public class ApplicationSchemaXSDDecoder {
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}BoundingShapeType" ) ) ) {
                         LOG.debug( "Identified a EnvelopePropertyType." );
                         pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs );
+                    } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}MeasureType" ) ) ) {
+                        LOG.debug( "Identified a MeasurePropertyType." );
+                        pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}LengthType" ) ) ) {
                         LOG.debug( "Identified a LengthPropertyType." );
-                        pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
+                        pt = new LengthPropertyType( ptName, minOccurs, maxOccurs );
 
                     } else {
-                        pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, typeName );
+                        pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeName );
                     }
                 } else {
-                    pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, null );
+                    pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, null );
                 }
             }
         }

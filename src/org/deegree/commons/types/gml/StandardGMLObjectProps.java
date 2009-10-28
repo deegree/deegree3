@@ -44,7 +44,7 @@ import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.CodePropertyType;
-import org.deegree.feature.types.property.CustomComplexPropertyType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -120,7 +120,7 @@ public class StandardGMLObjectProps {
     public static final PropertyType PT_BOUNDED_BY_GML2;
 
     /** GML 3.0/3.1 standard property type 'gml:metaDataProperty' */
-    public static final CustomComplexPropertyType PT_META_DATA_PROPERTY_GML31;
+    public static final CustomPropertyType PT_META_DATA_PROPERTY_GML31;
 
     /** GML 3.0/3.1 standard property type 'gml:description' */
     public static final PropertyType PT_DESCRIPTION_GML31;
@@ -139,10 +139,10 @@ public class StandardGMLObjectProps {
                                                        GeometryPropertyType.GeometryType.GEOMETRY,
                                                        GeometryPropertyType.CoordinateDimension.DIM_2 );
 
-        PT_META_DATA_PROPERTY_GML31 = new CustomComplexPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1,
+        PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1,
                                                                      null );
         // TODO correct this (should be a MetaDataPropertyType)
-        PT_DESCRIPTION_GML31 = new CustomComplexPropertyType( new QName( GMLNS, "description" ), 0, 1, null );
+        PT_DESCRIPTION_GML31 = new CustomPropertyType( new QName( GMLNS, "description" ), 0, 1, null );
         PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1 );
     }
 

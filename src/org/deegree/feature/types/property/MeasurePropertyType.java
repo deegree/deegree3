@@ -37,9 +37,25 @@ package org.deegree.feature.types.property;
 
 import javax.xml.namespace.QName;
 
-public class MeasurePropertyType extends CustomComplexPropertyType {
+import org.deegree.commons.uom.Measure;
+
+/**
+ * {@link PropertyType} that defines a property with a {@link Measure} value.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public class MeasurePropertyType extends AbstractPropertyType {
 
     public MeasurePropertyType (QName name, int minOccurs, int maxOccurs) {
-        super (name, minOccurs, maxOccurs, null);
+        super (name, minOccurs, maxOccurs);
     }
+    
+    @Override
+    public String toString() {
+        String s = "- measure property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+        return s;
+    }    
 }

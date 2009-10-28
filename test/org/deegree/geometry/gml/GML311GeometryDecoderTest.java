@@ -81,7 +81,6 @@ import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
-import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -404,7 +403,7 @@ public class GML311GeometryDecoderTest {
         Assert.assertEquals( SurfaceType.Tin, surface.getSurfaceType() );
         Assert.assertEquals( 2, surface.getStopLines().size() );
         Assert.assertEquals( 1, surface.getBreakLines().size() );
-        Assert.assertEquals( 15.0, surface.getMaxLength( null ).getValue(), DELTA );
+        Assert.assertEquals( 15.0, surface.getMaxLength( null ).getValueAsDouble(), DELTA );
         Assert.assertEquals( 3, surface.getControlPoints().size() );
         Assert.assertEquals( 3.0, surface.getControlPoints().get( 2 ).get0(), DELTA );
         Assert.assertEquals( 4.0, surface.getControlPoints().get( 2 ).get1(), DELTA );

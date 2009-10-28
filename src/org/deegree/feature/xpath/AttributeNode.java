@@ -47,13 +47,13 @@ import javax.xml.namespace.QName;
  */
 public class AttributeNode implements Node {
 
-    private FeatureNode parentNode;
+    private Node parentNode;
 
     private QName name;
 
     private String value;
 
-    AttributeNode (FeatureNode parentNode, QName attrName, String value) {
+    AttributeNode (Node parentNode, QName attrName, String value) {
         this.parentNode = parentNode;
         this.name = attrName;
         this.value = value;
@@ -88,6 +88,11 @@ public class AttributeNode implements Node {
     }
 
     public String getValue() {
+        return value;
+    }
+    
+    @Override
+    public String toString () {
         return value;
     }
 }

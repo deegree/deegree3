@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,66 +32,65 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.uom;
+
+import java.math.BigDecimal;
 
 /**
  * Number with a scale.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Measure {
 
-    private double value;
+    private BigDecimal value;
 
     private String uomURI;
 
-    //angular degree --> urn:ogc:def:uom:EPSG:6.3:9102
-    //radian --> urn:ogc:def:uom:EPSG::9101 
-    //meter --> urn:ogc:def:uom:EPSG:6.3:9001
-    //unity --> urn:ogc:def:uom:EPSG:6.3:8805
+    // angular degree --> urn:ogc:def:uom:EPSG:6.3:9102
+    // radian --> urn:ogc:def:uom:EPSG::9101
+    // meter --> urn:ogc:def:uom:EPSG:6.3:9001
+    // unity --> urn:ogc:def:uom:EPSG:6.3:8805
     // from URN definitions
-    public Measure( double value, String uomURI ) {
-        this.value = value;
-        this.uomURI = uomURI;
-    }
-    
-    public Measure( double value, Unit units ) {
+    public Measure( BigDecimal value, String uomURI ) {
         this.value = value;
         this.uomURI = uomURI;
     }
 
-    public Measure( String text, String distanceUnits ) {
-        this.value = Double.parseDouble( text );
-        this.uomURI = distanceUnits;
+    public Measure( String value, String uomURI ) throws NumberFormatException {
+        this.value = new BigDecimal( value );
+        this.uomURI = uomURI;
     }
 
-    public double getValue() {
+    public BigDecimal getValue() {
         return value;
     }
 
     public double getValueAsDouble() {
-        return value;
-    }    
-    
+        return value.doubleValue();
+    }
+
     public String getUomUri() {
         return uomURI;
     }
 
+    @Override
     public boolean equals( Object obj ) {
         if ( !( obj instanceof Measure ) ) {
             return false;
         }
         Measure m = (Measure) obj;
-        if ( value == m.value ) {
+        // NOTE: don't use #equals() for BigDecimal, because new BigDecimal("155.00") is not equal to
+        // new BigDecimal("155")
+        if ( value.compareTo( m.value ) == 0 ) {
             if ( uomURI != null ) {
                 return uomURI.equals( m.uomURI );
-            } else {
-                return m.uomURI == null;
             }
+            return m.uomURI == null;
         }
         return false;
     }
