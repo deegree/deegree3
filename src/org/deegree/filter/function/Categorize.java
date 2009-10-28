@@ -56,6 +56,7 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
+import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.utils.Raster2RawData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,14 +130,14 @@ public class Categorize extends Function {
         return new Object[] { curVal };
     }
 
-    /**
-     * Construct an image map, as the result of the Categorize operation
-     *
-     * @param values
-     *            Array of float values, that are the inputs to the categorize operation
-     * @return a buffered image
+    
+    /** Construct an image map, as the result of the Categorize operation
+     * 
+     * @param raster input raster 
+     * @param style raster style, that contains channel mappings (if applicable)
+     * @return a buffered image with the processed data
      */
-    public BufferedImage evaluateRaster( AbstractRaster raster ) {
+    public BufferedImage evaluateRaster( AbstractRaster raster, RasterStyling style ) {
         BufferedImage img = null;
         long start = System.nanoTime();
         int col = -1, row = -1;
@@ -145,9 +146,9 @@ public class Categorize extends Function {
         buildLookupArrays();
 
         try {
-            Raster2RawData converter = new Raster2RawData( raster );
+            Raster2RawData converter = new Raster2RawData( raster, style );
 
-            img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
+            img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_RGB );
             LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
             for ( row = 0; row < img.getHeight(); row++ )
                 for ( col = 0; col < img.getWidth(); col++ ) {

@@ -762,6 +762,18 @@ public class SymbologyParser {
                         }
                         in.nextTag();
                     }
+                    
+                    if ( in.getLocalName().equals( "GrayChannel" ) ) {
+                        in.nextTag();
+                        in.require( START_ELEMENT, null, "SourceChannelName" );
+                        baseOrEvaluated.grayChannel = in.getElementText();
+                        in.nextTag();
+                        ContrastEnhancement enh = parseContrastEnhancement( in );
+                        if ( enh != null ) {
+                            baseOrEvaluated.channelContrastEnhancements.put( "gray", enh );
+                        }
+                        in.nextTag();
+                    }
                 }
             }
 

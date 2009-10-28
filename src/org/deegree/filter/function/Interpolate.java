@@ -59,6 +59,7 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
+import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.utils.Raster2RawData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -420,13 +421,12 @@ public class Interpolate extends Function {
     }
 
     /**
-     * Construct an image map, as the result of the Categorize operation
-     * 
-     * @param values
-     *            Array of float values, that are the inputs to the categorize operation
-     * @return a buffered image
+     * Construct an image map, as the result of the Interpolate operation
+     * @param raster input raster
+     * @param style raster style, containing channel mappings (if applicable)
+     * @return a buffered image with the processed data
      */
-    public BufferedImage evaluateRaster( AbstractRaster raster ) {
+    public BufferedImage evaluateRaster( AbstractRaster raster, RasterStyling style ) {
         BufferedImage img = null;
         long start = System.nanoTime();
         int col = -1, row = -1;

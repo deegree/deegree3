@@ -37,6 +37,8 @@ package org.deegree.rendering.r2d.utils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.rendering.r2d.RasterRenderingException;
+import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +46,10 @@ import org.slf4j.LoggerFactory;
  * Utility class to interpret raster data in a consistent way. It should be used in raster lookup operations (for
  * example in Categorize or Interpolate). This class can read 1, 2, 3 and 4-band rasters, and combines band values into
  * a single pixel value. RGB bands are combined and their average value is returned (yielding the overall gray-pixel
- * intensity), and alpha bands are ignored.
+ * intensity of a pixel), and alpha bands are ignored. 
+ * 
+ * If channel mappings are provided, this class can process rasters with any number
+ * of bands.
  * 
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
@@ -66,6 +71,11 @@ public class Raster2RawData {
     /* Index of alpha band, if exists */
     private int alphaIndex = -1;
 
+    /* Channel mappings */
+    private boolean channelMappings = false;
+    /* Indexes of channels, if applicable */
+    private int gray = -1, red = -1, green = -1, blue = -1;
+
     /**
      * 
      * @param raster
@@ -73,6 +83,61 @@ public class Raster2RawData {
      */
     public Raster2RawData( AbstractRaster raster ) {
         this( raster.getAsSimpleRaster().getRasterData() );
+    }
+
+    /**
+     * Create a Raster2RawData object, where channels are mapped according to the RasterStyle options
+     * 
+     * @param raster
+     * @param style
+     */
+    public Raster2RawData( AbstractRaster raster, RasterStyling style ) {
+        this( raster.getAsSimpleRaster().getRasterData() );
+
+        BandType[] bands = raster.getRasterDataInfo().getBandInfo();
+        channelMappings = true;
+        if ( style.grayChannel != null )
+            gray = findChannelIndex( style.grayChannel, bands );
+        if ( style.redChannel != null )
+            red = findChannelIndex( style.redChannel, bands );
+        if ( style.greenChannel != null )
+            green = findChannelIndex( style.greenChannel, bands );
+        if ( style.blueChannel != null )
+            blue = findChannelIndex( style.blueChannel, bands );
+        if ( gray == -1 && red == -1 && green == -1 && blue == -1 )
+            channelMappings = false;
+    }
+
+    /**
+     * Search the index of a channel in the list of bands.
+     * 
+     * @param cName
+     *            Channel name or index, as string
+     * @param bands
+     *            array of band information for the current raster
+     * @return index of the channel
+     * @throws RasterRenderingException
+     *             if the channel is not found
+     */
+    private int findChannelIndex( String cName, BandType[] bands )
+                            throws RasterRenderingException {
+        int i = -1;
+        try {
+            i = Integer.parseInt( cName ) - 1;
+            if ( i < 0 || i >= bands.length ) {
+                LOG.error( "Cannot evaluate band '{}', raster data has only {} bands", i, bands.length );
+                throw new RasterRenderingException( "Cannot evaluate band " + i + ", raster data has only "
+                                                    + bands.length + " bands. " );
+            }
+            return i;
+        } catch ( NumberFormatException e ) {
+            for ( i = 0; i < bands.length; i++ )
+                if ( bands[i].name().equals( cName ) )
+                    return i;
+        }
+
+        LOG.error( "Could not evaluate band with name '{}'", cName );
+        throw new RasterRenderingException( "Could not evaluate band with name '" + cName + "'" );
     }
 
     /**
@@ -162,17 +227,24 @@ public class Raster2RawData {
 
     private float combineFloats( float[] pixel ) {
         try {
-            switch ( bands ) {
-            case 1: /* Gray-scale */
-                return (float) pixel[0];
-            case 2: /* Gray-scale + alpha: ignore alpha */
-                return (float) pixel[bands - alphaIndex - 1];
-            case 3: /* RGB bands: use gray-pixel intensity */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
-            default:
-                return 0;
+            if ( channelMappings == true ) {
+                if ( gray != -1 )
+                    return pixel[gray];
+                else
+                    return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+            } else {
+                switch ( bands ) {
+                case 1: /* Gray-scale */
+                    return (float) pixel[0];
+                case 2: /* Gray-scale + alpha: ignore alpha */
+                    return (float) pixel[bands - alphaIndex - 1];
+                case 3: /* RGB bands: use gray-pixel intensity */
+                    return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+                case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                    return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+                default:
+                    return 0;
+                }
             }
         } catch ( Exception e ) {
             return 0;
@@ -181,17 +253,24 @@ public class Raster2RawData {
 
     private float combineShorts( short[] pixel ) {
         try {
-            switch ( bands ) {
-            case 1: /* Gray-scale */
-                return (float) pixel[0];
-            case 2: /* Gray-scale + alpha: ignore alpha */
-                return (float) pixel[bands - alphaIndex - 1];
-            case 3: /* RGB bands: use gray-pixel intensity */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
-            default:
-                return 0;
+            if ( channelMappings == true ) {
+                if ( gray != -1 )
+                    return pixel[gray];
+                else
+                    return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+            } else {
+                switch ( bands ) {
+                case 1: /* Gray-scale */
+                    return (float) pixel[0];
+                case 2: /* Gray-scale + alpha: ignore alpha */
+                    return (float) pixel[bands - alphaIndex - 1];
+                case 3: /* RGB bands: use gray-pixel intensity */
+                    return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+                case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                    return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+                default:
+                    return 0;
+                }
             }
         } catch ( Exception e ) {
             return 0;
@@ -200,17 +279,24 @@ public class Raster2RawData {
 
     private float combineInts( int[] pixel ) {
         try {
-            switch ( bands ) {
-            case 1: /* Gray-scale */
-                return (float) pixel[0];
-            case 2: /* Gray-scale + alpha: ignore alpha */
-                return (float) pixel[bands - alphaIndex - 1];
-            case 3: /* RGB bands: use gray-pixel intensity */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
-            default:
-                return 0;
+            if ( channelMappings == true ) {
+                if ( gray != -1 )
+                    return pixel[gray];
+                else
+                    return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+            } else {
+                switch ( bands ) {
+                case 1: /* Gray-scale */
+                    return (float) pixel[0];
+                case 2: /* Gray-scale + alpha: ignore alpha */
+                    return (float) pixel[bands - alphaIndex - 1];
+                case 3: /* RGB bands: use gray-pixel intensity */
+                    return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+                case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                    return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+                default:
+                    return 0;
+                }
             }
         } catch ( Exception e ) {
             return 0;
@@ -219,17 +305,24 @@ public class Raster2RawData {
 
     private float combineBytes( byte[] pixel ) {
         try {
-            switch ( bands ) {
-            case 1: /* Gray-scale */
-                return (float) pixel[0];
-            case 2: /* Gray-scale + alpha: ignore alpha */
-                return (float) pixel[bands - alphaIndex - 1];
-            case 3: /* RGB bands: use gray-pixel intensity */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
-            default:
-                return 0;
+            if ( channelMappings == true ) {
+                if ( gray != -1 )
+                    return pixel[gray];
+                else
+                    return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+            } else {
+                switch ( bands ) {
+                case 1: /* Gray-scale */
+                    return (float) pixel[0];
+                case 2: /* Gray-scale + alpha: ignore alpha */
+                    return (float) pixel[bands - alphaIndex - 1];
+                case 3: /* RGB bands: use gray-pixel intensity */
+                    return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+                case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                    return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+                default:
+                    return 0;
+                }
             }
         } catch ( Exception e ) {
             return 0;
@@ -269,6 +362,22 @@ public class Raster2RawData {
 
         return ret;
 
+    }
+
+    public int getGrayChannelIndex() {
+        return gray;
+    }
+
+    public int getRedChannelIndex() {
+        return red;
+    }
+
+    public int getGreenChannelIndex() {
+        return green;
+    }
+
+    public int getBlueChannelIndex() {
+        return blue;
     }
 
 }

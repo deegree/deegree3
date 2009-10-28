@@ -64,44 +64,26 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Andrei Aiordachioaie
  */
-
 public class RasterRendererApplet extends JApplet {
+    private static final long serialVersionUID = 5323930312991827270L;
+
     public static final Logger LOG = LoggerFactory.getLogger( RasterRendererApplet.class );
 
-    private Categorize cat = null;
-
-    private Interpolate interp = null;
-
-    private AbstractRaster image, car, dem;
+    private AbstractRaster image, car, dem, doll;
 
     @Override
     public void paint( Graphics g ) {
         loadRasters();
-//        renderTwoTransparentRasters();
-        
+        // renderTwoTransparentRasters();
+
         renderRasterWithCategorize();
         renderRasterWithInterpolate();
         renderHillShadedRaster();
-        g.drawString( "Car + Categorize (setest17.xml)", 100, 300 );
-        g.drawString( "Car + Interpolate (setest18.xml)", 530, 300 );
+        renderRasterSelectedChannels();
     }
 
     @Override
     public void init() {
-        try {
-            System.out.println( "Loading XML ... " );
-            cat = loadCategorizeFromXml( "setest17.xml" );
-            interp = loadInterpolateFromXml( "setest18.xml" );
-            // cat.buildLookupArrays();
-            System.out.println( "Finished loading XML ... " );
-            if ( cat != null )
-                System.out.println( "Found Categorize: " + cat );
-            if ( interp != null )
-                System.out.println( "Found Interpolate: " + interp );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-
         this.setSize( 840, 800 );
     }
 
@@ -111,7 +93,7 @@ public class RasterRendererApplet extends JApplet {
         RasterStyling style = new RasterStyling();
         style.opacity = 0.05;
         renderer.render( style, image );
-        
+
         g2d = (Graphics2D) this.getGraphics().create( 550, 350, 200, 50 );
         renderer = new Java2DRasterRenderer( g2d );
         style.opacity = 0.6;
@@ -191,15 +173,24 @@ public class RasterRendererApplet extends JApplet {
 
         r.render( style, car );
     }
-    
+
     /* Render a raster after hill-shading */
     private void renderHillShadedRaster() {
         RasterStyling style = loadRasterStylingFromXml( "setest19.xml" );
-        LOG.debug( "Found hill-shading: {}", style.shaded  );
+        LOG.debug( "Found hill-shading: {}", style.shaded );
         LOG.debug( "Found interpolate: {}", style.interpolate );
-        Graphics2D g2d = (Graphics2D) this.getGraphics().create( 10, 330, 370, 370 );
+        Graphics2D g2d = (Graphics2D) this.getGraphics().create( 10, 310, 370, 370 );
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
         r.render( style, dem );
+    }
+    
+    /* Render a raster after selecting (actually swapping) channels */
+    private void renderRasterSelectedChannels()
+    {
+        RasterStyling style = loadRasterStylingFromXml( "setest20.xml" );
+        Graphics2D g2d = (Graphics2D) this.getGraphics().create( 400, 310, 370, 370 );
+        Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
+        r.render( style, doll );
     }
 
     private void loadRasters() {
@@ -211,9 +202,13 @@ public class RasterRendererApplet extends JApplet {
 
             uri = RasterRendererApplet.class.getResource( "car.jpg" ).toURI();
             car = RasterFactory.loadRasterFromFile( new File( uri ) );
-            
-            uri = RasterRendererApplet.class.getResource( "dem0.png" ).toURI();
+
+            uri = RasterRendererApplet.class.getResource( "demimage.png" ).toURI();
             dem = RasterFactory.loadRasterFromFile( new File( uri ) );
+
+            uri = RasterRendererApplet.class.getResource( "RussianDoll.jpg" ).toURI();
+//            uri = RasterRendererApplet.class.getResource( "parintele.jpg" ).toURI();
+            doll = RasterFactory.loadRasterFromFile( new File( uri ) );
 
             LOG.trace( "Loaded images" );
         } catch ( Exception e ) {

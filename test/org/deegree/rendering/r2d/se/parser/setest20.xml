@@ -3,7 +3,7 @@
 	<Opacity>1.0</Opacity>
 	<ChannelSelection>
 		<RedChannel>
-			<SourceChannelName>1</SourceChannelName>
+			<SourceChannelName>3</SourceChannelName>
 			<ContrastEnhancement>
 				<Histogram/>
 			</ContrastEnhancement>
@@ -15,34 +15,13 @@
 			</ContrastEnhancement>
 		</GreenChannel>
 		<BlueChannel>
-			<SourceChannelName>1</SourceChannelName>
+			<SourceChannelName>2</SourceChannelName>
 			<ContrastEnhancement>
 				<Normalize/>
 			</ContrastEnhancement>
 		</BlueChannel>
 	</ChannelSelection>
 	<OverlapBehavior>LATEST_ON_TOP</OverlapBehavior>
-	<ColorMap>
-		<Interpolate fallbackValue="#dddddd" mode="cubic" method="color">
-			<LookupValue>Rasterdata</LookupValue>
-			<InterpolationPoint>
-				<Data>0</Data>
-				<Value>#000000</Value>
-			</InterpolationPoint>
-			<InterpolationPoint>
-				<Data>48</Data>
-				<Value>#ff0000</Value>
-			</InterpolationPoint>
-			<InterpolationPoint>
-				<Data>190</Data>
-				<Value>#ffff00</Value>
-			</InterpolationPoint>
-			<InterpolationPoint>
-				<Data>255</Data>
-				<Value>#ffffff</Value>
-			</InterpolationPoint>
-		</Interpolate>
-	</ColorMap>
 	<ContrastEnhancement>
 		<GammaValue>1.0</GammaValue>
 	</ContrastEnhancement>
