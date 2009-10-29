@@ -211,14 +211,14 @@ public class MultiRangedRaster extends AbstractRaster {
     @Override
     public void setSubRaster( Envelope env, AbstractRaster source ) {
         AbstractRaster subset = source.getSubRaster( env );
-        double[] pos = subset.getRasterReference().convertToCRS( 0, 0 );
+        double[] pos = subset.getRasterReference().getOrigin();
         setSubRaster( pos[0], pos[1], source );
     }
 
     @Override
     public void setSubRaster( Envelope env, int dstBand, AbstractRaster source ) {
         AbstractRaster subset = source.getSubRaster( env );
-        double[] pos = subset.getRasterReference().convertToCRS( 0, 0 );
+        double[] pos = subset.getRasterReference().getOrigin();
         setSubRaster( pos[0], pos[1], dstBand, source );
     }
 

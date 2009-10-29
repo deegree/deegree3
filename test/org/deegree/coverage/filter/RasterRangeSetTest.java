@@ -60,14 +60,15 @@ import org.deegree.coverage.rangeset.ValueType;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;
 
 /**
- * The <code>RasterRangeSetTest</code> class TODO add class documentation here.
+ * Tests filtering on rasters.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -86,7 +87,7 @@ public class RasterRangeSetTest {
 
     Envelope env = geomFac.createEnvelope( 0, 0, 3000, 2000, null );
 
-    RasterReference rasterReference = new RasterReference( 0, 0, 10, -10 );
+    RasterGeoReference rasterReference = new RasterGeoReference( OriginLocation.OUTER, 10, -10, 0, 0 );
 
     int[] colors = new int[] { 255, 230, 205, 180, 155, 130, 105, 80, 55, 30 };
 
@@ -124,8 +125,7 @@ public class RasterRangeSetTest {
 
     private synchronized SimpleRaster getRaster() {
         BufferedImage image = createBufferedImage();
-
-        AbstractRaster raster = RasterFactory.createRasterFromImage( image, env );
+        AbstractRaster raster = RasterFactory.createRasterFromImage( image, env, OriginLocation.OUTER );
 
         SimpleRaster createdRaster = raster.getAsSimpleRaster();
         RasterData rasterData = createdRaster.getRasterData();
@@ -163,9 +163,9 @@ public class RasterRangeSetTest {
         nullValues[0] = nullPixel[0] & 0xFF;
         nullValues[1] = nullPixel[1] & 0xFF;// green should be 0.
         nullValues[2] = nullPixel[2] & 0xFF;
-        if ( LOG.isDebugEnabled() ) {
-            RasterFactory.saveRasterToFile( subset, File.createTempFile( "red_blue_green", ".png" ) );
-        }
+        // if ( LOG.isDebugEnabled() ) {
+        RasterFactory.saveRasterToFile( subset, File.createTempFile( "red_blue_green", ".png" ) );
+        // }
         testDefaults( raster );
         BufferedImage newImage = RasterFactory.imageFromRaster( subset );
         testBandValues( newImage, -1, -1, new int[0], new int[0], new int[0], nullValues );
@@ -580,7 +580,7 @@ public class RasterRangeSetTest {
         Assert.assertEquals( width, raster.getColumns() );
         Assert.assertEquals( height, raster.getRows() );
         Assert.assertEquals( env, raster.getEnvelope() );
-        RasterReference rasterReference = raster.getRasterReference();
+        RasterGeoReference rasterReference = raster.getRasterReference();
         Assert.assertEquals( rasterReference, raster.getRasterReference() );
     }
 }

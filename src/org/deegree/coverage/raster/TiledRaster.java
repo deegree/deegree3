@@ -45,7 +45,8 @@ import org.deegree.coverage.raster.container.TileContainer;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -99,7 +100,7 @@ public class TiledRaster extends AbstractRaster {
     }
 
     @Override
-    public RasterReference getRasterReference() {
+    public RasterGeoReference getRasterReference() {
         return tileContainer.getRasterReference();
     }
 
@@ -133,10 +134,28 @@ public class TiledRaster extends AbstractRaster {
         // min: (2584384.0,5635491.2), max: (2587660.8,5638768.0)
         // ((2584384.0,5638768.0, NaN), (2584384.0,5635491.2, NaN))
 
+        // determine the new raster geo reference for the requested envelope.
+        RasterGeoReference ref = getRasterReference().createSubEnvelope( env );
+        // merging with the existing one, will result in getting the origin right.
+        // ref = RasterGeoReference.merger( getRasterReference(), ref );
+
         // use the default tile container.
-        MemoryTileContainer resultTC = new MemoryTileContainer();
+        MemoryTileContainer resultTC = new MemoryTileContainer( ref, env );
         TiledRaster result = new TiledRaster( resultTC );
-        for ( AbstractRaster r : getTileContainer().getTiles( env ) ) {
+        List<AbstractRaster> tiles = getTileContainer().getTiles( env );
+        if ( tiles == null || tiles.isEmpty() ) {
+            // a tiledraster with no simple rasters should return the a simple raster with no data values. To do this we
+            // need the raster data info. If it is present supply the result with it. If not we can only throw an
+            // exception.
+            RasterDataInfo dataInfo = getRasterDataInfo();
+            if ( dataInfo == null ) {
+                throw new NullPointerException(
+                                                "The given tile container does not contain any tiles and no raster data information is available. " );
+            }
+            result.setRasterDataInfo( dataInfo );
+            return result;
+        }
+        for ( AbstractRaster r : tiles ) {
             Envelope rasterEnv = r.getEnvelope();
             Geometry intersection = rasterEnv.getIntersection( env );
 
@@ -154,10 +173,17 @@ public class TiledRaster extends AbstractRaster {
             }
         }
 
-        if ( resultTC.getRasterReference() == null ) {
-            throw new IndexOutOfBoundsException( "no intersection between TiledRaster and requested subset" );
-        }
+        // if ( resultTC.getRasterReference() == null ) {
+        // throw new IndexOutOfBoundsException( "no intersection between TiledRaster and requested subset" );
+        // }
         return result;
+    }
+
+    /**
+     * @param dataInfo
+     */
+    private void setRasterDataInfo( RasterDataInfo dataInfo ) {
+        this.rasterDataInfo = dataInfo;
     }
 
     @Override
@@ -178,9 +204,10 @@ public class TiledRaster extends AbstractRaster {
 
     @Override
     public void setSubRaster( double x, double y, AbstractRaster source ) {
-        RasterReference srcREnv = source.getRasterReference();
-        RasterReference dstREnv = new RasterReference( x, y, srcREnv.getXRes(), srcREnv.getYRes() );
-        Envelope dstEnv = dstREnv.getEnvelope( source.getColumns(), source.getRows() );
+        RasterGeoReference srcREnv = source.getRasterReference();
+        RasterGeoReference dstREnv = new RasterGeoReference( srcREnv.getOriginLocation(), srcREnv.getResolutionX(),
+                                                             srcREnv.getResolutionY(), x, y );
+        Envelope dstEnv = dstREnv.getEnvelope( source.getColumns(), source.getRows(), source.getCoordinateSystem() );
         RasterData srcData = source.getAsSimpleRaster().getRasterData();
         SimpleRaster movedRaster = new SimpleRaster( srcData, dstEnv, dstREnv );
         setSubRaster( dstEnv, movedRaster );
@@ -204,7 +231,16 @@ public class TiledRaster extends AbstractRaster {
         Envelope env = getEnvelope();
         List<AbstractRaster> tiles = getTileContainer().getTiles( env );
         if ( tiles == null || tiles.isEmpty() ) {
-            throw new NullPointerException( "The given tile container does not contain any tiles. " );
+            // a tiledraster with no simple rasters should return the a simple raster with no data values. To do this we
+            // need the raster data info. If it is present supply the result with it. If not we can only throw an
+            // exception.
+            RasterDataInfo dataInfo = getRasterDataInfo();
+            if ( dataInfo == null ) {
+                throw new NullPointerException(
+                                                "The given tile container does not contain any tiles and no raster data information is available. " );
+            }
+            SimpleRaster result = RasterFactory.createEmptyRaster( dataInfo, env, getRasterReference() );
+            return result;
         }
         SimpleRaster originalSimpleRaster = tiles.get( 0 ).getAsSimpleRaster();
         SimpleRaster result = originalSimpleRaster.createCompatibleSimpleRaster( getRasterReference(), env );
@@ -254,7 +290,7 @@ public class TiledRaster extends AbstractRaster {
             Envelope tEnv = new GeometryFactory().createEnvelope( min, max, env.getCoordinateSystem() );
 
             List<AbstractRaster> tiles = getTileContainer().getTiles( tEnv );
-            if ( !tiles.isEmpty() ) {
+            if ( tiles != null && !tiles.isEmpty() ) {
                 SimpleRaster originalSimpleRaster = tiles.get( 0 ).getAsSimpleRaster();
                 rasterDataInfo = originalSimpleRaster.getRasterDataInfo();
             }

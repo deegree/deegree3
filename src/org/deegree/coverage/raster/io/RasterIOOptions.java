@@ -42,7 +42,9 @@ import java.util.Map;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.crs.CRS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,9 +76,19 @@ public class RasterIOOptions {
      */
     public static final String DATA_LOADING_POLICY = "LOADING_POLICIY";
 
+    /**
+     * This key will get the location of the origin of a raster geo reference see {@link OriginLocation}
+     */
+    public static final String GEO_ORIGIN_LOCATION = "ORIGIN";
+
+    /**
+     * This key will get the crs of the raster.
+     */
+    public static final String CRS = "CRS";
+
     private final Map<String, String> options = new HashMap<String, String>();
 
-    private RasterReference envelope;
+    private RasterGeoReference geoRef;
 
     /**
      * An empty constructor, nothing is set. The loading policy is the default value taken from the
@@ -95,9 +107,9 @@ public class RasterIOOptions {
      * @param reference
      *            of the file/stream to read.
      */
-    public RasterIOOptions( RasterReference reference ) {
+    public RasterIOOptions( RasterGeoReference reference ) {
         this();
-        this.envelope = reference;
+        this.geoRef = reference;
     }
 
     /**
@@ -107,11 +119,21 @@ public class RasterIOOptions {
      * @param format
      *            of the raster to read, e.g. png, jpg, tiff..., may be <code>null</code>
      */
-    public RasterIOOptions( RasterReference ref, String format ) {
+    public RasterIOOptions( RasterGeoReference ref, String format ) {
         this( ref );
         if ( format != null && !"".equals( format ) ) {
             add( OPT_FORMAT, format );
         }
+    }
+
+    /**
+     * @param originLocation
+     *            to be used for reading worldfiles.
+     */
+    public RasterIOOptions( OriginLocation originLocation ) {
+        this();
+        options.put( GEO_ORIGIN_LOCATION, ( ( originLocation == null ) ? OriginLocation.CENTER.name()
+                                                                      : originLocation.name() ) );
     }
 
     /**
@@ -155,13 +177,13 @@ public class RasterIOOptions {
 
     /**
      * Return a RasterIOOption object with the format set according to the given file with an optional
-     * {@link RasterReference}.
+     * {@link RasterGeoReference}.
      * 
      * @param file
      * @param envelope
      * @return RasterIOOption proper format.
      */
-    public static RasterIOOptions forFile( File file, RasterReference envelope ) {
+    public static RasterIOOptions forFile( File file, RasterGeoReference envelope ) {
         RasterIOOptions result = new RasterIOOptions( envelope );
         String ext = FileUtils.getFileExtension( file );
         result.add( OPT_FORMAT, ext );
@@ -196,10 +218,38 @@ public class RasterIOOptions {
     }
 
     public boolean hasEnvelope() {
-        return envelope != null;
+        return geoRef != null;
     }
 
-    public RasterReference getEnvelope() {
-        return envelope;
+    public RasterGeoReference getEnvelope() {
+        return geoRef;
+    }
+
+    public void setRasterGeoReference( RasterGeoReference geoRef ) {
+        this.geoRef = geoRef;
+    }
+
+    /**
+     * @return the location of the origin of the read file. If not defined this method will return return
+     *         {@link RasterGeoReference.OriginLocation#CENTER};
+     * 
+     */
+    public RasterGeoReference.OriginLocation getRasterOriginLocation() {
+        String s = options.get( GEO_ORIGIN_LOCATION );
+        if ( "outer".equalsIgnoreCase( s ) ) {
+            return RasterGeoReference.OriginLocation.OUTER;
+        }
+        return RasterGeoReference.OriginLocation.CENTER;
+    }
+
+    /**
+     * @return the defined crs or null if no crs was defined.
+     */
+    public CRS getCRS() {
+        String s = options.get( CRS );
+        if ( s == null || "".equals( s.trim() ) ) {
+            return null;
+        }
+        return new CRS( s );
     }
 }

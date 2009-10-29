@@ -42,7 +42,7 @@ import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.coverage.raster.io.WorldFileAccess;
@@ -73,7 +73,7 @@ public class JAIRasterWriter implements RasterWriter {
             JAIRasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(),
                                                       file.getAbsolutePath() );
         }
-        RasterReference rasterEnv = raster.getRasterReference();
+        RasterGeoReference rasterEnv = raster.getRasterReference();
         WorldFileAccess.writeWorldFile( rasterEnv, file );
     }
 

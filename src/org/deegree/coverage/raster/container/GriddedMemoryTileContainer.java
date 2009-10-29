@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,31 +32,43 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.coverage.raster.container;
 
 import java.io.IOException;
 
 import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
 
 /**
  * Concrete implementation of {@link GriddedTileContainer} that keeps the tiles in memory.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class GriddedMemoryTileContainer extends GriddedTileContainer {
 
     private AbstractRaster[] cells;
 
-    public GriddedMemoryTileContainer( Envelope envelope, int rows, int columns, int tileSamplesX, int tileSamplesY,
-                                       AbstractRaster[] cells ) {
+    /**
+     * The memory based gridded tile container.
+     * 
+     * @param location
+     * @param envelope
+     * @param rows
+     * @param columns
+     * @param tileSamplesX
+     * @param tileSamplesY
+     * @param cells
+     */
+    public GriddedMemoryTileContainer( OriginLocation location, Envelope envelope, int rows, int columns,
+                                       int tileSamplesX, int tileSamplesY, AbstractRaster[] cells ) {
 
-        super( envelope, rows, columns, tileSamplesX, tileSamplesY );
+        super( location, envelope, rows, columns, tileSamplesX, tileSamplesY );
         this.cells = cells;
     }
 
@@ -65,6 +77,13 @@ public class GriddedMemoryTileContainer extends GriddedTileContainer {
         return cells[getTileId( columnId, rowId )];
     }
 
+    /**
+     * Creates an in-memory gridded tile container from the given tile container.
+     * 
+     * @param orig
+     * @return an in-memory gridded tile container.
+     * @throws IOException
+     */
     public static GriddedMemoryTileContainer create( GriddedTileContainer orig )
                             throws IOException {
 
@@ -77,7 +96,7 @@ public class GriddedMemoryTileContainer extends GriddedTileContainer {
             }
         }
 
-        return new GriddedMemoryTileContainer( orig.getEnvelope(), rows, columns, orig.tileSamplesX, orig.tileSamplesY,
-                                               cells );
+        return new GriddedMemoryTileContainer( orig.getRasterReference().getOriginLocation(), orig.getEnvelope(), rows,
+                                               columns, orig.tileSamplesX, orig.tileSamplesY, cells );
     }
 }

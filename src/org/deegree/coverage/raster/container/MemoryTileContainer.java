@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 
@@ -58,16 +58,21 @@ public class MemoryTileContainer implements TileContainer {
 
     private List<AbstractRaster> tiles = new ArrayList<AbstractRaster>();
 
-    private RasterReference rasterReference;
+    private RasterGeoReference rasterReference;
 
     private Envelope envelope;
 
     /**
      * Creates a MemoryTileContainer with no tiles.
      * 
+     * @param geoRasterRef
+     *            of this tile container
+     * @param envelope
+     *            of this tile container.
      */
-    public MemoryTileContainer() {
-        // just do nothing.
+    public MemoryTileContainer( RasterGeoReference geoRasterRef, Envelope envelope ) {
+        this.envelope = envelope;
+        this.rasterReference = geoRasterRef;
     }
 
     /**
@@ -116,7 +121,7 @@ public class MemoryTileContainer implements TileContainer {
             if ( this.rasterReference == null ) {
                 this.rasterReference = raster.getRasterReference();
             } else {
-                this.rasterReference = this.rasterReference.merger( raster.getRasterReference() );
+                this.rasterReference = RasterGeoReference.merger( this.rasterReference, raster.getRasterReference() );
             }
             tiles.add( raster );
         }
@@ -151,7 +156,7 @@ public class MemoryTileContainer implements TileContainer {
      * 
      * @see org.deegree.model.raster.TileContainer#getRasterEnvelope()
      */
-    public RasterReference getRasterReference() {
+    public RasterGeoReference getRasterReference() {
         return rasterReference;
     }
 

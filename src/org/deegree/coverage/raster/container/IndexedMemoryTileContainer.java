@@ -46,7 +46,7 @@ import java.util.List;
 import org.deegree.commons.index.QTree;
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -63,7 +63,7 @@ public class IndexedMemoryTileContainer implements TileContainer {
 
     private Envelope domain;
 
-    private final RasterReference rasterReference;
+    private final RasterGeoReference rasterReference;
 
     /**
      * Uses a QTree as a spatial index.
@@ -72,7 +72,7 @@ public class IndexedMemoryTileContainer implements TileContainer {
      * @param rasterReference
      * @param objectsInLeaf
      */
-    public IndexedMemoryTileContainer( Envelope domain, RasterReference rasterReference, int objectsInLeaf ) {
+    public IndexedMemoryTileContainer( Envelope domain, RasterGeoReference rasterReference, int objectsInLeaf ) {
         this.rasterReference = rasterReference;
         this.index = new QTree<AbstractRaster>( domain, objectsInLeaf );
         this.domain = domain;
@@ -84,7 +84,7 @@ public class IndexedMemoryTileContainer implements TileContainer {
     }
 
     @Override
-    public RasterReference getRasterReference() {
+    public RasterGeoReference getRasterReference() {
         return this.rasterReference;
     }
 

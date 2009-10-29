@@ -42,8 +42,8 @@ import javax.media.jai.WarpPolynomial;
 import javax.vecmath.Point3d;
 
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.interpolation.Interpolation;
 import org.deegree.coverage.raster.interpolation.InterpolationFactory;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
@@ -149,7 +149,7 @@ public class RasterTransformer extends Transformer {
         }
         SimpleRaster simpleSourceRaster = source.getAsSimpleRaster();
         RasterData srcData = simpleSourceRaster.getReadOnlyRasterData();
-        RasterReference srcREnv = simpleSourceRaster.getRasterReference();
+        RasterGeoReference srcREnv = simpleSourceRaster.getRasterReference();
 
         if ( backgroundValue != null ) {
             srcData.setNullPixel( backgroundValue );
@@ -161,7 +161,8 @@ public class RasterTransformer extends Transformer {
         RasterRect rr = new RasterRect( 0, 0, dstWidth, dstHeight );
         RasterData dstData = srcData.createCompatibleWritableRasterData( rr, null );
 
-        RasterReference dstREnv = new RasterReference( dstEnvelope, dstWidth, dstHeight );
+        RasterGeoReference dstREnv = RasterGeoReference.create( sourceRaster.getRasterReference().getOriginLocation(),
+                                                                dstEnvelope, dstWidth, dstHeight );
 
         // use warp to calculate the correct sample positions in the source raster.
         // the warp is a cubic polynomial function created of 100 points in the dstEnvelope. This function will map
@@ -232,8 +233,8 @@ public class RasterTransformer extends Transformer {
         return source;
     }
 
-    private WarpPolynomial createWarp( int dstWidth, int dstHeight, CoordinateSystem srcCRS, RasterReference srcREnv,
-                                       RasterReference dstREnv )
+    private WarpPolynomial createWarp( int dstWidth, int dstHeight, CoordinateSystem srcCRS,
+                                       RasterGeoReference srcREnv, RasterGeoReference dstREnv )
                             throws TransformationException {
         int k = 0;
         // create/calculate reference points
@@ -246,7 +247,7 @@ public class RasterTransformer extends Transformer {
             for ( int i = 0; i < refPointsGridSize; i++ ) {
                 dstCoords[k] = i * dx;
                 dstCoords[k + 1] = j * dy;
-                double[] dstWCoords = dstREnv.convertToCRS( (int) dstCoords[k], (int) dstCoords[k + 1] );
+                double[] dstWCoords = dstREnv.getWorldCoordinate( (int) dstCoords[k], (int) dstCoords[k + 1] );
                 points.add( new Point3d( dstWCoords[0], dstWCoords[1], Double.NaN ) );
                 k += 2;
             }
@@ -255,7 +256,7 @@ public class RasterTransformer extends Transformer {
 
         k = 0;
         for ( Point3d point : resultList ) {
-            double[] srcRCoords = srcREnv.convertToRasterCRSDouble( point.x, point.y );
+            double[] srcRCoords = srcREnv.getRasterCoordinateUnrounded( point.x, point.y );
             srcCoords[k] = (float) srcRCoords[0];
             srcCoords[k + 1] = (float) srcRCoords[1];
             k += 2;

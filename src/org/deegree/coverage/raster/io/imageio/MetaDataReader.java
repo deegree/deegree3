@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,12 +32,14 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io.imageio;
 
 import javax.imageio.metadata.IIOMetadata;
 
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.crs.CRS;
 import org.deegree.crs.CRSRegistry;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -45,13 +47,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class MetaDataReader {
 
@@ -59,7 +61,7 @@ public class MetaDataReader {
 
     private IIOMetadata metaData;
 
-    private RasterReference rasterReference = null;
+    private RasterGeoReference rasterReference = null;
 
     private CoordinateSystem crs = null;
 
@@ -68,18 +70,19 @@ public class MetaDataReader {
     /**
      * @param metaData
      *            a ImageIO meta data object
+     * @param definedRasterOrigLoc
      */
-    public MetaDataReader( IIOMetadata metaData ) {
+    public MetaDataReader( IIOMetadata metaData, OriginLocation definedRasterOrigLoc ) {
         this.metaData = metaData;
         if ( metaData != null ) {
-            init();
+            init( definedRasterOrigLoc );
         }
     }
 
     /**
      * @return the raster envelope or <code>null</code>, if the metadata contains no georeference
      */
-    public RasterReference getRasterReference() {
+    public RasterGeoReference getRasterReference() {
         return rasterReference;
     }
 
@@ -90,15 +93,15 @@ public class MetaDataReader {
         return crs;
     }
 
-    private void init() {
+    private void init( OriginLocation definedRasterOrigLoc ) {
         if ( metaData.getNativeMetadataFormatName().equals( TIFF_MD_FORMAT ) ) {
-            initGeoTIFF();
+            initGeoTIFF( definedRasterOrigLoc );
         }
 
     }
 
     // read GeoTIFF metadata
-    private void initGeoTIFF() {
+    private void initGeoTIFF( OriginLocation definedRasterOrigLoc ) {
         GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
 
         try {
@@ -125,13 +128,14 @@ public class MetaDataReader {
             double[] scale = geoTIFFMetaData.getModelPixelScales();
             if ( tiePoints != null && scale != null ) {
                 if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
-                    rasterReference = new RasterReference( RasterReference.Type.CENTER, tiePoints[3], tiePoints[4],
-                                                         scale[0], -scale[1] );
+                    // rb: this might not be right always, see examples at
+                    // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
+                    rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0],
+                                                              -scale[1], tiePoints[3], tiePoints[4], new CRS( crs ) );
                 } else {
-                    rasterReference = new RasterReference( RasterReference.Type.OUTER, tiePoints[3], tiePoints[4],
-                                                         scale[0], -scale[1] );
+                    rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0],
+                                                              -scale[1], tiePoints[3], tiePoints[4], new CRS( crs ) );
                 }
-
             }
         } catch ( UnsupportedOperationException ex ) {
             LOG.debug( "couldn't read georeference information in GeoTIFF" );

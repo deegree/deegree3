@@ -50,7 +50,8 @@ import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 
@@ -68,6 +69,9 @@ public class RasterBuilder {
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterBuilder.class );
 
     /**
+     * Create a {@link MultiResolutionRaster} with the origin or the world coordinates on the center of the upper left
+     * pixel of each raster.
+     * 
      * @param resolutionDirectory
      *            locating the different resolutions
      * @param extension
@@ -81,6 +85,28 @@ public class RasterBuilder {
      */
     public static MultiResolutionRaster buildMultiResolutionRaster( File resolutionDirectory, String extension,
                                                                     boolean recursive, CRS crs ) {
+        return buildMultiResolutionRaster( resolutionDirectory, extension, recursive, crs, OriginLocation.CENTER );
+    }
+
+    /**
+     * Create a {@link MultiResolutionRaster} with the origin or the world coordinate of each raster file, defined by
+     * the given {@link OriginLocation}
+     * 
+     * @param resolutionDirectory
+     *            locating the different resolutions
+     * @param extension
+     *            to scan the directories for
+     * @param recursive
+     *            if the sub directories of the resolution directories should be scanned as well
+     * @param crs
+     *            in which the files are supposed to be defined
+     * @param location
+     *            of the world coordinates of the raster files.
+     * @return a {@link MultiResolutionRaster} filled with {@link TiledRaster}s or <code>null</code> if the
+     *         resolutionDirectory is not a directory.
+     */
+    public static MultiResolutionRaster buildMultiResolutionRaster( File resolutionDirectory, String extension,
+                                                                    boolean recursive, CRS crs, OriginLocation location ) {
         if ( !resolutionDirectory.isDirectory() ) {
             return null;
         }
@@ -181,7 +207,7 @@ public class RasterBuilder {
             List<AbstractRaster> rasters = new ArrayList<AbstractRaster>( coverageFiles.size() );
             QTreeInfo inf = buildTiledRaster( crs, coverageFiles, rasters );
             Envelope domain = inf.envelope;
-            RasterReference rasterDomain = inf.rasterGeoReference;
+            RasterGeoReference rasterDomain = inf.rasterGeoReference;
             // IndexedMemoryTileContainer container = new IndexedMemoryTileContainer( domain, rasterDomain,
             // inf.numberOfObjects );
             MemoryTileContainer container = new MemoryTileContainer( rasters );
@@ -202,7 +228,7 @@ public class RasterBuilder {
      */
     private final static QTreeInfo buildTiledRaster( CRS crs, List<File> coverageFiles, List<AbstractRaster> result ) {
         Envelope resultEnvelope = null;
-        RasterReference rasterReference = null;
+        RasterGeoReference rasterReference = null;
         if ( crs == null ) {
             LOG.warn( "Configured crs is null, maybe the rasterfiles define one." );
         }
@@ -236,7 +262,7 @@ public class RasterBuilder {
                 if ( rasterReference == null ) {
                     rasterReference = raster.getRasterReference();
                 } else {
-                    rasterReference.merger( raster.getRasterReference() );
+                    rasterReference = RasterGeoReference.merger( rasterReference, raster.getRasterReference() );
                 }
                 result.add( raster );
             } catch ( IOException e ) {
@@ -274,7 +300,7 @@ public class RasterBuilder {
     private static class QTreeInfo {
         Envelope envelope;
 
-        RasterReference rasterGeoReference;
+        RasterGeoReference rasterGeoReference;
 
         int numberOfObjects;
 
@@ -283,7 +309,7 @@ public class RasterBuilder {
          * @param rasterGeoReference
          * @param numberOfObjects
          */
-        public QTreeInfo( Envelope envelope, RasterReference rasterGeoReference, int numberOfObjects ) {
+        public QTreeInfo( Envelope envelope, RasterGeoReference rasterGeoReference, int numberOfObjects ) {
             this.envelope = envelope;
             this.rasterGeoReference = rasterGeoReference;
             this.numberOfObjects = numberOfObjects;

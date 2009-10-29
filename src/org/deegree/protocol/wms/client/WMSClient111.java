@@ -70,7 +70,8 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
@@ -426,7 +427,8 @@ public class WMSClient111 {
             BufferedImage img = imageResponse.first;
             // TODO don't use raster API internal classes
             PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) RasterFactory.rasterDataFromImage( img );
-            RasterReference rasterEnv = new RasterReference( bbox, img.getWidth(), img.getHeight() );
+            RasterGeoReference rasterEnv = RasterGeoReference.create( OriginLocation.OUTER, bbox, img.getWidth(),
+                                                                      img.getHeight() );
             SimpleRaster raster = new SimpleRaster( rasterData, bbox, rasterEnv );
             response.first = raster;
         } else {
@@ -590,7 +592,7 @@ public class WMSClient111 {
 
             response.first = compositedImage;
 
-            RasterReference rasterEnv = new RasterReference( bbox, width, height );
+            RasterGeoReference rasterEnv = RasterGeoReference.create( OriginLocation.OUTER, bbox, width, height );
 
             if ( maxMapWidth != -1 ) {
                 int xMin = 0;
@@ -633,12 +635,12 @@ public class WMSClient111 {
         }
 
         private void getAndSetSubImage( BufferedImage targetImage, List<String> layers, int xMin, int width, int yMin,
-                                        int height, RasterReference rasterEnv, CRS crs, String format,
+                                        int height, RasterGeoReference rasterEnv, CRS crs, String format,
                                         boolean transparent, boolean errorsInImage )
                                 throws IOException {
 
-            double[] min = rasterEnv.convertToCRS( xMin, yMin + height );
-            double[] max = rasterEnv.convertToCRS( xMin + width, yMin );
+            double[] min = rasterEnv.getWorldCoordinate( xMin, yMin + height );
+            double[] max = rasterEnv.getWorldCoordinate( xMin + width, yMin );
 
             Envelope env = new GeometryFactory().createEnvelope( min, max, crs );
             Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent,

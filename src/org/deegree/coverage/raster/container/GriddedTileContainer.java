@@ -40,7 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     private final double envelopeHeight;
 
-    private final RasterReference rasterReference;
+    private final RasterGeoReference rasterReference;
 
     private final int rows;
 
@@ -86,8 +87,10 @@ public abstract class GriddedTileContainer implements TileContainer {
     /**
      * Creates a new {@link GriddedTileContainer} instances.
      * 
+     * @param location
+     * 
      * @param envelope
-     *            area of the samples of the contained tiles (TODO: OUTER / INNER???)
+     *            area of the samples of the contained tiles
      * @param rows
      *            number of rows in the cell grid
      * @param columns
@@ -97,7 +100,8 @@ public abstract class GriddedTileContainer implements TileContainer {
      * @param tileSamplesY
      *            number of samples of each raster tile in y-direction
      */
-    protected GriddedTileContainer( Envelope envelope, int rows, int columns, int tileSamplesX, int tileSamplesY ) {
+    protected GriddedTileContainer( OriginLocation location, Envelope envelope, int rows, int columns,
+                                    int tileSamplesX, int tileSamplesY ) {
         this.envelope = envelope;
         this.envelopeWidth = envelope.getMax().get0() - envelope.getMin().get0();
         this.envelopeHeight = envelope.getMax().get1() - envelope.getMin().get1();
@@ -107,7 +111,8 @@ public abstract class GriddedTileContainer implements TileContainer {
         this.tileSamplesY = tileSamplesY;
         this.tileWidth = envelopeWidth / columns;
         this.tileHeight = envelopeHeight / rows;
-        this.rasterReference = new RasterReference( envelope, tileSamplesX * columns, tileSamplesY * rows );
+        this.rasterReference = RasterGeoReference.create( location, envelope, tileSamplesX * columns, tileSamplesY
+                                                                                                      * rows );
         geomFac = new GeometryFactory();
         LOG.debug( "envelope: " + envelope );
         LOG.debug( "raster envelope: " + rasterReference );
@@ -150,7 +155,7 @@ public abstract class GriddedTileContainer implements TileContainer {
     }
 
     @Override
-    public RasterReference getRasterReference() {
+    public RasterGeoReference getRasterReference() {
         return rasterReference;
     }
 

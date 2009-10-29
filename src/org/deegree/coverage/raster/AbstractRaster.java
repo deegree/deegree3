@@ -38,7 +38,7 @@ package org.deegree.coverage.raster;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -51,7 +51,7 @@ import org.deegree.geometry.Envelope;
  */
 public abstract class AbstractRaster extends AbstractCoverage {
 
-    private RasterReference rasterEnv = null;
+    private RasterGeoReference rasterEnv = null;
 
     /**
      * Instantiate an AbstractRaster with no envelope.
@@ -78,7 +78,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @param rasterEnv
      *            The raster envelope of the raster.
      */
-    protected AbstractRaster( Envelope envelope, RasterReference rasterEnv ) {
+    protected AbstractRaster( Envelope envelope, RasterGeoReference rasterEnv ) {
         super( envelope );
         this.rasterEnv = rasterEnv;
     }
@@ -107,11 +107,11 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @param rasterEnv
      *            The raster envelope to add to the current.
      */
-    protected void extendRasterReference( RasterReference rasterEnv ) {
+    protected void extendRasterReference( RasterGeoReference rasterEnv ) {
         if ( this.rasterEnv == null ) {
             this.rasterEnv = rasterEnv;
         } else {
-            this.rasterEnv = this.rasterEnv.merger( rasterEnv );
+            this.rasterEnv = RasterGeoReference.merger( this.rasterEnv, rasterEnv );
         }
     }
 
@@ -258,7 +258,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
     /**
      * @return The raster envelope of the raster.
      */
-    public RasterReference getRasterReference() {
+    public RasterGeoReference getRasterReference() {
         return rasterEnv;
     }
 

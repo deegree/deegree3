@@ -69,10 +69,12 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
+import org.deegree.coverage.raster.data.nio.BandInterleavedRasterData;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
+import org.deegree.coverage.raster.data.nio.LineInterleavedRasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterIOProvider;
 import org.deegree.coverage.raster.io.RasterReader;
@@ -277,11 +279,15 @@ public class RasterFactory {
      *            to get as a raster
      * @param envelope
      *            of the raster
+     * @param originLocation
+     *            the mapped location of the world coordinate origin on the upper left raster coordinate.
      * @return a geo referenced AbstractRaster.
      */
-    public static AbstractRaster createRasterFromImage( RenderedImage image, Envelope envelope ) {
+    public static AbstractRaster createRasterFromImage( RenderedImage image, Envelope envelope,
+                                                        RasterGeoReference.OriginLocation originLocation ) {
         ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image );
-        RasterReference ref = new RasterReference( envelope, image.getWidth(), image.getHeight() );
+        RasterGeoReference ref = RasterGeoReference.create( originLocation, envelope, image.getWidth(),
+                                                            image.getHeight() );
         return new SimpleRaster( rasterDataFromImage, envelope, ref );
 
     }
@@ -380,27 +386,31 @@ public class RasterFactory {
                                                   lineStride, bandOffsets );
             outputRaster = Raster.createWritableRaster( sm, null );
             // if the number of bands is original, use line copying (it's faster)
-            if ( pixelStride == raster.getPixelStride() && bands >= 3 ) {
-                byte[] buf = new byte[raster.getPixelStride() * width];
-                ByteBuffer src = raster.getByteBuffer();
-                for ( int i = 0; i < height; i++ ) {
-                    int pos = raster.calculatePos( 0, i );
-                    src.position( pos );
-                    src.get( buf );
-                    outputRaster.setDataElements( 0, i, width, 1, buf );
-                }
-            } else {
-                // the view has changed the bands, so copy pixel for pixel.
+            // if ( pixelStride == raster.getPixelStride() && bands >= 3 ) {
+            // byte[] buf = new byte[raster.getPixelStride() * width];
+            // ByteBuffer src = raster.getByteBuffer();
+            // for ( int i = 0; i < height; i++ ) {
+            // int pos = raster.calculatePos( 0, i );
+            // if ( pos == -1 ) {// outside the buffer.
+            // raster.getNullPixel( buf );
+            // } else {
+            // src.position( pos );
+            // src.get( buf );
+            // }
+            // outputRaster.setDataElements( 0, i, width, 1, buf );
+            // }
+            // } else {
+            // the view has changed the bands, so copy pixel for pixel.
 
-                byte[] buf = new byte[bandOffset * bands];
-                byte[] output = new byte[outputBands];
-                for ( int y = 0; y < height; y++ ) {
-                    for ( int x = 0; x < width; x++ ) {
-                        raster.getPixel( x, y, buf );
-                        outputRaster.setDataElements( x, y, mapToRGB( output, buf, view.bandInfo ) );
-                    }
+            byte[] buf = new byte[bandOffset * bands];
+            byte[] output = new byte[outputBands];
+            for ( int y = 0; y < height; y++ ) {
+                for ( int x = 0; x < width; x++ ) {
+                    raster.getPixel( x, y, buf );
+                    outputRaster.setDataElements( x, y, mapToRGB( output, buf, view.bandInfo ) );
                 }
             }
+            // }
             break;
         case DOUBLE:
             sm = new BandedSampleModel( DataBuffer.TYPE_DOUBLE, width, height, bands );
@@ -490,6 +500,40 @@ public class RasterFactory {
             }
         }
         return outputBands;
+    }
+
+    /**
+     * Creates a new Raster data object from the given world envelope, a raster reference and the data info object
+     * (holding information about type, size etc...). If any of the parameters are <code>null</code> null will be
+     * returned.
+     * 
+     * @param rdi
+     * @param worldEnvelope
+     *            describing the raster data.
+     * @param rasterGeoReference
+     *            the raster geo reference defining the resolution of the raster.
+     * @return a raster data object according to the given parameters.
+     */
+    public static SimpleRaster createEmptyRaster( RasterDataInfo rdi, Envelope worldEnvelope,
+                                                  RasterGeoReference rasterGeoReference ) {
+        SimpleRaster result = null;
+        if ( rdi != null && rasterGeoReference != null && worldEnvelope != null ) {
+            ByteBufferRasterData data = null;
+            RasterRect rasterRect = rasterGeoReference.convertEnvelopeToRasterCRS( worldEnvelope );
+            switch ( rdi.interleaveType ) {
+            case BAND:
+                data = new BandInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, rdi );
+                break;
+            case LINE:
+                data = new LineInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, rdi );
+                break;
+            case PIXEL:
+                data = new PixelInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, rdi );
+                break;
+            }
+            result = new SimpleRaster( data, worldEnvelope, rasterGeoReference );
+        }
+        return result;
     }
 
     /**

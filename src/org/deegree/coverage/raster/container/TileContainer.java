@@ -38,7 +38,7 @@ package org.deegree.coverage.raster.container;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -75,6 +75,6 @@ public interface TileContainer {
      *
      * @return The raster envelope of the tiles.
      */
-    public RasterReference getRasterReference();
+    public RasterGeoReference getRasterReference();
 
 }

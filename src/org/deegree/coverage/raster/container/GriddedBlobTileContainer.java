@@ -55,13 +55,17 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.io.RasterIOOptions;
+import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Concrete implementation of {@link GriddedTileContainer} that extracts the tiles from a blob with a custom format.
+ * Concrete implementation of {@link GriddedTileContainer} that extracts the tiles from a blob with a custom format. See
+ * d3_tools/RasterTreeGridifier on how to create the format.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -82,10 +86,23 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 
     private final TileCache cache;
 
-    public GriddedBlobTileContainer( File blobDir, Envelope envelope, int rows, int columns, int tileSamplesX,
-                                     int tileSamplesY ) throws IOException {
+    /**
+     * A gridded tile container which reads data from a deegree internal format. See d3_tools/RasterTreeGridifier on how
+     * to create the format.
+     * 
+     * @param originLocation
+     * @param blobDir
+     * @param envelope
+     * @param rows
+     * @param columns
+     * @param tileSamplesX
+     * @param tileSamplesY
+     * @throws IOException
+     */
+    public GriddedBlobTileContainer( OriginLocation originLocation, File blobDir, Envelope envelope, int rows,
+                                     int columns, int tileSamplesX, int tileSamplesY ) throws IOException {
 
-        super( envelope, rows, columns, tileSamplesX, tileSamplesY );
+        super( originLocation, envelope, rows, columns, tileSamplesX, tileSamplesY );
 
         bytesPerTile = tileSamplesX * tileSamplesY * 3;
         LOG.debug( "Bytes per tile: " + bytesPerTile );
@@ -125,32 +142,35 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         cache = new TileCache( 50 );
     }
 
-    public static GriddedBlobTileContainer create( File dir )
+    public static GriddedBlobTileContainer create( File dir, RasterIOOptions options )
                             throws IOException {
-
+        //
         File metaInfoFile = new File( dir, METAINFO_FILE_NAME );
+        // BufferedReader br = new BufferedReader( new FileReader( metaInfoFile ) );
+        //
+        // // read world file entries
+        // double[] worldFileValues = new double[6];
+        // try {
+        // for ( int i = 0; i < 6; i++ ) {
+        // String line = br.readLine();
+        // if ( line == null ) {
+        // throw new IOException( "invalid metainfo file (" + metaInfoFile.getAbsolutePath() + ")" );
+        // }
+        // line = line.trim();
+        // double val = Double.parseDouble( line.replace( ',', '.' ) );
+        // worldFileValues[i] = val;
+        // }
+        // } catch ( NumberFormatException e ) {
+        // throw new IOException( "invalid metainfo file (" + metaInfoFile.getAbsolutePath() + ")" );
+        // }
+        // double resx = worldFileValues[0];
+        // double resy = worldFileValues[3];
+        // double xmin = worldFileValues[4];
+        // double ymax = worldFileValues[5];
+        // RasterGeoReference renv = new RasterGeoReference( xmin, ymax, resx, resy );
+        // use the WorldFileReader
         BufferedReader br = new BufferedReader( new FileReader( metaInfoFile ) );
-
-        // read world file entries
-        double[] worldFileValues = new double[6];
-        try {
-            for ( int i = 0; i < 6; i++ ) {
-                String line = br.readLine();
-                if ( line == null ) {
-                    throw new IOException( "invalid metainfo file (" + metaInfoFile.getAbsolutePath() + ")" );
-                }
-                line = line.trim();
-                double val = Double.parseDouble( line.replace( ',', '.' ) );
-                worldFileValues[i] = val;
-            }
-        } catch ( NumberFormatException e ) {
-            throw new IOException( "invalid metainfo file (" + metaInfoFile.getAbsolutePath() + ")" );
-        }
-        double resx = worldFileValues[0];
-        double resy = worldFileValues[3];
-        double xmin = worldFileValues[4];
-        double ymax = worldFileValues[5];
-        RasterReference renv = new RasterReference( xmin, ymax, resx, resy );
+        RasterGeoReference worldFile = WorldFileAccess.readWorldFile( br, options );
 
         // read grid info
         int rows = Integer.parseInt( br.readLine() );
@@ -158,9 +178,10 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         int tileSamplesX = Integer.parseInt( br.readLine() );
         int tileSamplesY = Integer.parseInt( br.readLine() );
 
-        Envelope env = renv.getEnvelope( tileSamplesX * columns, tileSamplesY * rows );
+        Envelope env = worldFile.getEnvelope( tileSamplesX * columns, tileSamplesY * rows, null );
         br.close();
-        return new GriddedBlobTileContainer( dir, env, rows, columns, tileSamplesX, tileSamplesY );
+        return new GriddedBlobTileContainer( options.getRasterOriginLocation(), dir, env, rows, columns, tileSamplesX,
+                                             tileSamplesY );
     }
 
     @Override
@@ -172,7 +193,10 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         if ( tile == null ) {
             long begin = System.currentTimeMillis();
             Envelope tileEnvelope = getTileEnvelope( rowId, columnId );
-            RasterReference tileRasterReference = new RasterReference( tileEnvelope, tileSamplesX, tileSamplesY );
+            RasterGeoReference tileRasterReference = RasterGeoReference.create(
+                                                                                getRasterReference().getOriginLocation(),
+                                                                                tileEnvelope, tileSamplesX,
+                                                                                tileSamplesY );
 
             ByteBufferRasterData tileData = RasterDataFactory.createRasterData( tileSamplesX, tileSamplesY,
                                                                                 new BandType[] { BandType.RED,

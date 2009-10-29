@@ -44,7 +44,8 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
@@ -86,16 +87,17 @@ public class JAIRasterReader implements RasterReader {
         int height = reader.getHeight();
 
         reader.close();
-        RasterReference rasterReference = new RasterReference( 0.5, height - 0.5, 1.0, -1.0 );
+        OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();
+        // create a 1:1 mapping
+        RasterGeoReference rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
 
         if ( options.hasEnvelope() ) {
             rasterReference = options.getEnvelope();
         } else {
-            rasterReference = new RasterReference( 0.5, height - 0.5, 1.0, -1.0 );
             if ( options.readWorldFile() ) {
                 try {
                     if ( file != null ) {
-                        rasterReference = WorldFileAccess.readWorldFile( file, RasterReference.Type.CENTER );
+                        rasterReference = WorldFileAccess.readWorldFile( file, options );
                     }
                 } catch ( IOException e ) {
                     //
@@ -103,7 +105,7 @@ public class JAIRasterReader implements RasterReader {
             }
         }
 
-        Envelope envelope = rasterReference.getEnvelope( width, height );
+        Envelope envelope = rasterReference.getEnvelope( width, height, null );
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
         RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy() );
         return new SimpleRaster( source, envelope, rasterReference );

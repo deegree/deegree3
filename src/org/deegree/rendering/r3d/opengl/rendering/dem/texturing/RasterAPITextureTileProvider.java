@@ -45,6 +45,8 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.slf4j.Logger;
@@ -68,6 +70,8 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
 
     private final double res;
 
+    private final static RasterIOOptions options = new RasterIOOptions( OriginLocation.CENTER );
+
     /**
      * Read a texture from a file and load it using the raster api.
      * 
@@ -77,7 +81,8 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
      */
     public RasterAPITextureTileProvider( File file, double res ) throws IOException {
         fac = new GeometryFactory();
-        raster = new TiledRaster( GriddedBlobTileContainer.create( file ) );
+
+        raster = new TiledRaster( GriddedBlobTileContainer.create( file, options ) );
         this.res = res;
     }
 

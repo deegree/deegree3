@@ -47,7 +47,8 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
@@ -128,9 +129,10 @@ public class IIORasterReader implements RasterReader {
         int width = reader.getWidth();
         int height = reader.getHeight();
 
-        RasterReference rasterReference;
+        RasterGeoReference rasterReference;
 
-        MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData() );
+        OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();
+        MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc );
         CoordinateSystem crs = metaDataReader.getCRS();
         rasterReference = metaDataReader.getRasterReference();
 
@@ -138,11 +140,12 @@ public class IIORasterReader implements RasterReader {
             if ( options.hasEnvelope() ) {
                 rasterReference = options.getEnvelope();
             } else {
-                rasterReference = new RasterReference( 0.5, height - 0.5, 1.0, -1.0 );
+                // create a 1:1 mapping
+                rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
                 if ( options.readWorldFile() ) {
                     try {
                         if ( file != null ) {
-                            rasterReference = WorldFileAccess.readWorldFile( file, RasterReference.Type.CENTER );
+                            rasterReference = WorldFileAccess.readWorldFile( file, options );
                         }
                     } catch ( IOException e ) {
                         //

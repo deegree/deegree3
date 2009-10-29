@@ -46,7 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.coverage.AbstractCoverage;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -72,8 +72,8 @@ public class MultiResolutionRaster extends AbstractCoverage {
         resolutions.add( raster );
         Comparator<AbstractRaster> comp = new Comparator<AbstractRaster>() {
             public int compare( AbstractRaster a1, AbstractRaster a2 ) {
-                double r1 = Math.abs( a1.getRasterReference().getXRes() );
-                double r2 = Math.abs( a2.getRasterReference().getXRes() );
+                double r1 = Math.abs( a1.getRasterReference().getResolutionX() );
+                double r2 = Math.abs( a2.getRasterReference().getResolutionX() );
                 return Double.valueOf( r1 ).compareTo( r2 );
             }
         };
@@ -98,7 +98,7 @@ public class MultiResolutionRaster extends AbstractCoverage {
             boolean found = false;
             while ( !found && iter.hasNext() ) {
                 AbstractRaster curRaster = iter.next();
-                if ( curRaster.getRasterReference().getXRes() > res ) {
+                if ( curRaster.getRasterReference().getResolutionX() > res ) {
                     found = true;
                 } else {
                     prevRaster = curRaster;
@@ -142,8 +142,8 @@ public class MultiResolutionRaster extends AbstractCoverage {
     public List<Double> getResolutions() {
         List<Double> res = new ArrayList<Double>( resolutions.size() );
         for ( AbstractRaster level : resolutions ) {
-            RasterReference renv = level.getRasterReference();
-            res.add( min( abs( renv.getXRes() ), abs( renv.getYRes() ) ) );
+            RasterGeoReference renv = level.getRasterReference();
+            res.add( min( abs( renv.getResolutionX() ), abs( renv.getResolutionY() ) ) );
         }
         return res;
     }

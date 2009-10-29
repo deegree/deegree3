@@ -52,8 +52,8 @@ import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
 /**
  * Three kinds of <code>CoordinateSystem</code>s (in this class abbreviated with CRS) are supported in this lib.
  * <ul>
- * <li>Geographic CRS: A position (on the ellipsoid) is given in Lattitude / Longitude (Polar Cooridnates) given in
- * rad° min''sec. The order of the position's coordinates are to be contrued to the axis order of the CRS. These lat/lon
+ * <li>Geographic CRS: A position (on the ellipsoid) is given in Lattitude / Longitude (Polar Cooridnates) given in rad°
+ * min''sec. The order of the position's coordinates are to be contrued to the axis order of the CRS. These lat/lon
  * coordinates are to be tranformed to x,y,z values to define their location on the underlying datum.</li>
  * <li>GeoCentric CRS: A position (on the ellipsoid) is given in x, y, z (cartesian) coordinates with the same units
  * defined as the ones in the underlying datum. The order of the position's coordinates are to be contrued to the axis
@@ -338,7 +338,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
@@ -394,4 +394,42 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     // super.setDefaultIdentifier( crsCode );
     // }
 
+    /**
+     * Return the axis index associated with an easting value, if the axis could not be determined {@link Axis#AO_OTHER}
+     * 0 will be returned.
+     * 
+     * @return the index of the axis which represents the easting/westing component of a coordinate tuple.
+     */
+    public int getEasting() {
+        Axis[] axis = getAxis();
+        for ( int i = 0; i < axis.length; ++i ) {
+            Axis a = axis[i];
+            if ( a != null ) {
+                if ( a.getOrientation() == Axis.AO_EAST || a.getOrientation() == Axis.AO_WEST ) {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Return the axis index associated with a northing value, if the axis could not be determined (e.g not is
+     * {@link Axis#AO_NORTH} {@link Axis#AO_SOUTH} or {@link Axis#AO_UP} or {@link Axis#AO_DOWN}) 1 will be returned.
+     * 
+     * @return the index of the axis which represents the easting/westing component of a coordinate tuple.
+     */
+    public int getNorthing() {
+        Axis[] axis = getAxis();
+        for ( int i = 0; i < axis.length; ++i ) {
+            Axis a = axis[i];
+            if ( a != null ) {
+                if ( a.getOrientation() == Axis.AO_NORTH || a.getOrientation() == Axis.AO_SOUTH
+                     || a.getOrientation() == Axis.AO_DOWN || a.getOrientation() == Axis.AO_UP ) {
+                    return i;
+                }
+            }
+        }
+        return 1;
+    }
 }

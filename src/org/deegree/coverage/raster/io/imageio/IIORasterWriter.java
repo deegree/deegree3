@@ -45,7 +45,7 @@ import javax.imageio.ImageIO;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.coverage.raster.io.WorldFileAccess;
@@ -89,7 +89,7 @@ public class IIORasterWriter implements RasterWriter {
         LOG.debug( "Writing raster with width: {} height: {}", raster.getColumns(), raster.getRows() );
         IIORasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(), file, format );
 
-        RasterReference rasterEnv = raster.getRasterReference();
+        RasterGeoReference rasterEnv = raster.getRasterReference();
         WorldFileAccess.writeWorldFile( rasterEnv, file );
     }
 

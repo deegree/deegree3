@@ -43,9 +43,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,11 +93,12 @@ public class WorldFileAccess {
     /**
      * @param stream
      *            the stream pointing to a world file.
-     * @param type
+     * @param options
+     *            set for this stream.
      * @return a RasterReference
      * @throws IOException
      */
-    public static RasterReference readWorldFile( InputStream stream, RasterReference.Type type )
+    public static RasterGeoReference readWorldFile( InputStream stream, RasterIOOptions options )
                             throws IOException {
 
         if ( stream == null ) {
@@ -105,7 +107,29 @@ public class WorldFileAccess {
 
         BufferedReader br = new BufferedReader( new InputStreamReader( stream ) );
 
-        return readRasterReference( br, type, "from stream" );
+        return readRasterReference( br, "from stream", options );
+
+    }
+
+    /**
+     * @param reader
+     *            to a world file.
+     * @param options
+     *            set for this stream.
+     * @return a RasterReference
+     * @throws IOException
+     */
+    public static RasterGeoReference readWorldFile( Reader reader, RasterIOOptions options )
+                            throws IOException {
+
+        if ( reader == null ) {
+            throw new IOException( "Reader is null, no world file found." );
+        }
+
+        BufferedReader br = ( reader instanceof BufferedReader ) ? (BufferedReader) reader
+                                                                : new BufferedReader( reader );
+
+        return readRasterReference( br, "from reader", options );
 
     }
 
@@ -114,8 +138,8 @@ public class WorldFileAccess {
      * @return
      * @throws IOException
      */
-    private static RasterReference readRasterReference( final BufferedReader br, final RasterReference.Type type,
-                                                        final String filePath )
+    private static RasterGeoReference readRasterReference( final BufferedReader br, final String filePath,
+                                                           final RasterIOOptions options )
                             throws IOException {
         double[] values = new double[6];
 
@@ -151,17 +175,19 @@ public class WorldFileAccess {
         // ymax = ymax + resy / 2.0;
         // }
 
-        return new RasterReference( type, xmin, ymax, resx, resy );
+        return new RasterGeoReference( options.getRasterOriginLocation(), resx, resy, values[2], values[1], xmin, ymax,
+                                       options.getCRS() );
     }
 
     /**
      * @param filename
      *            the image/raster file (including path and file extension)
-     * @param type
+     * @param options
+     *            set for this file.
      * @return a RasterReference
      * @throws IOException
      */
-    public static RasterReference readWorldFile( File filename, RasterReference.Type type )
+    public static RasterGeoReference readWorldFile( File filename, RasterIOOptions options )
                             throws IOException {
 
         File worldFile = getWorldFile( filename );
@@ -174,7 +200,7 @@ public class WorldFileAccess {
         }
 
         BufferedReader br = new BufferedReader( new FileReader( worldFile ) );
-        return readRasterReference( br, type, worldFile.getAbsolutePath() );
+        return readRasterReference( br, worldFile.getAbsolutePath(), options );
     }
 
     /**
@@ -186,7 +212,7 @@ public class WorldFileAccess {
      *            the raster file
      * @throws IOException
      */
-    public static void writeWorldFile( RasterReference renv, File file )
+    public static void writeWorldFile( RasterGeoReference renv, File file )
                             throws IOException {
         writeWorldFile( renv, file, "wld" );
     }
@@ -202,15 +228,16 @@ public class WorldFileAccess {
      *            the file extension for the world file (eg. 'wld', 'tfw', etc)
      * @throws IOException
      */
-    public static void writeWorldFile( RasterReference renv, File file, String extension )
+    public static void writeWorldFile( RasterGeoReference renv, File file, String extension )
                             throws IOException {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append( renv.getXRes() ).append( "\n" ).append( 0.0 ).append( "\n" );
-        sb.append( 0.0 ).append( "\n" ).append( renv.getYRes() ).append( "\n" );
-        sb.append( renv.getX0( RasterReference.Type.CENTER ) ).append( "\n" );
-        sb.append( renv.getY0( RasterReference.Type.CENTER ) ).append( "\n" );
+        sb.append( renv.getResolutionX() ).append( "\n" ).append( renv.getRotationY() ).append( "\n" );
+        sb.append( renv.getRotationX() ).append( "\n" ).append( renv.getResolutionY() ).append( "\n" );
+        double[] orig = renv.getOrigin();
+        sb.append( orig[0] ).append( "\n" );
+        sb.append( orig[1] ).append( "\n" );
 
         File f = new File( FileUtils.getBasename( file ) + "." + extension );
 
@@ -222,5 +249,4 @@ public class WorldFileAccess {
         pw.close();
         fw.close();
     }
-
 }

@@ -42,8 +42,8 @@ import org.deegree.coverage.raster.data.container.MemoryRasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -66,7 +66,7 @@ public class SimpleRaster extends AbstractRaster {
      * @param rasterEnv
      *            The raster envelope of the new raster.
      */
-    protected SimpleRaster( Envelope envelope, RasterReference rasterEnv ) {
+    protected SimpleRaster( Envelope envelope, RasterGeoReference rasterEnv ) {
         super( envelope, rasterEnv );
     }
 
@@ -80,7 +80,7 @@ public class SimpleRaster extends AbstractRaster {
      * @param rasterEnv
      *            The raster envelope of the new raster.
      */
-    public SimpleRaster( RasterData raster, Envelope envelope, RasterReference rasterEnv ) {
+    public SimpleRaster( RasterData raster, Envelope envelope, RasterGeoReference rasterEnv ) {
         this( envelope, rasterEnv );
 
         this.rasterDataContainer = new MemoryRasterDataContainer( raster );
@@ -96,7 +96,7 @@ public class SimpleRaster extends AbstractRaster {
      * @param rasterEnv
      *            RasterReference for the new raster
      */
-    public SimpleRaster( RasterDataContainer rasterDataContainer, Envelope envelope, RasterReference rasterEnv ) {
+    public SimpleRaster( RasterDataContainer rasterDataContainer, Envelope envelope, RasterGeoReference rasterEnv ) {
         this( envelope, rasterEnv );
         this.rasterDataContainer = rasterDataContainer;
     }
@@ -139,7 +139,7 @@ public class SimpleRaster extends AbstractRaster {
      *            The boundary of the new SimpleRaster.
      * @return A new empty SimpleRaster.
      */
-    public SimpleRaster createCompatibleSimpleRaster( RasterReference rEnv, Envelope env ) {
+    public SimpleRaster createCompatibleSimpleRaster( RasterGeoReference rEnv, Envelope env ) {
         int[] size = rEnv.getSize( env );
         RasterRect rasterRect = new RasterRect( 0, 0, size[0], size[1] );
         RasterData data = this.getRasterData();
@@ -178,13 +178,14 @@ public class SimpleRaster extends AbstractRaster {
         return getSubRaster( envelope, null );
     }
 
+    @Override
     public SimpleRaster getSubRaster( Envelope envelope, BandType[] bands ) {
         if ( getEnvelope().equals( envelope )
              && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
             return this;
         }
         RasterRect rasterRect = getRasterReference().convertEnvelopeToRasterCRS( envelope );
-        RasterReference rasterEnv = getRasterReference().createSubEnvelope( envelope );
+        RasterGeoReference rasterEnv = getRasterReference().createSubEnvelope( envelope );
         RasterData view = getReadOnlyRasterData().getSubset( rasterRect, bands );
         return new SimpleRaster( view, envelope, rasterEnv );
     }
@@ -219,7 +220,7 @@ public class SimpleRaster extends AbstractRaster {
     @Override
     public void setSubRaster( double x, double y, AbstractRaster source ) {
         // calculate position in RasterData
-        int offset[] = getRasterReference().convertToRasterCRS( x, y );
+        int offset[] = getRasterReference().getRasterCoordinate( x, y );
         RasterData sourceRD = source.getAsSimpleRaster().getReadOnlyRasterData();
         getRasterData().setSubset( offset[0], offset[1], sourceRD.getWidth(), sourceRD.getHeight(), sourceRD );
     }
@@ -227,7 +228,7 @@ public class SimpleRaster extends AbstractRaster {
     @Override
     public void setSubRaster( double x, double y, int dstBand, AbstractRaster source ) {
         // calculate position in RasterData
-        int offset[] = getRasterReference().convertToRasterCRS( x, y );
+        int offset[] = getRasterReference().getRasterCoordinate( x, y );
         getRasterData().setSubset( offset[0], offset[1], dstBand, 0, source.getAsSimpleRaster().getReadOnlyRasterData() );
     }
 

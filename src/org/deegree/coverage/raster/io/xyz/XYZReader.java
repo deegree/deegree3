@@ -59,9 +59,10 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.info.DataType;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,6 +192,7 @@ public class XYZReader implements RasterReader {
                             throws IOException {
         Dimensions dims = new Dimensions();
         boolean valuesProvided = dims.fromOptions( options );
+        CRS crs = options.getCRS();
 
         // First read all points and gather the actual extension of the raster.
         // Then create a new raster and put each point into it. The order of the points
@@ -265,16 +267,19 @@ public class XYZReader implements RasterReader {
 
         }
 
-        RasterReference renv = new RasterReference( gridExtension.minx, gridExtension.maxy, dims.res, -dims.res );
+        // RasterGeoReference renv = new RasterGeoReference( gridExtension.minx, gridExtension.maxy, dims.res, -dims.res
+        // );
+        RasterGeoReference renv = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, dims.res,
+                                                          -dims.res, gridExtension.minx, gridExtension.maxy );
 
         RasterData data = RasterDataFactory.createRasterData( dims.width, dims.height, DataType.FLOAT );
 
         for ( GridPoint p : gridPoints ) {
-            int[] pos = renv.convertToRasterCRS( p.x, p.y );
+            int[] pos = renv.getRasterCoordinate( p.x, p.y );
             data.setFloatSample( pos[0], pos[1], 0, p.value );
         }
 
-        Envelope env = renv.getEnvelope( dims.width, dims.height );
+        Envelope env = renv.getEnvelope( dims.width, dims.height, crs );
 
         SimpleRaster simpleRaster = new SimpleRaster( data, env, renv );
 
