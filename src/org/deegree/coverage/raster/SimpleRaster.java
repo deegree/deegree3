@@ -185,7 +185,7 @@ public class SimpleRaster extends AbstractRaster {
             return this;
         }
         RasterRect rasterRect = getRasterReference().convertEnvelopeToRasterCRS( envelope );
-        RasterGeoReference rasterEnv = getRasterReference().createSubEnvelope( envelope );
+        RasterGeoReference rasterEnv = getRasterReference().createRelocatedReference( envelope );
         RasterData view = getReadOnlyRasterData().getSubset( rasterRect, bands );
         return new SimpleRaster( view, envelope, rasterEnv );
     }

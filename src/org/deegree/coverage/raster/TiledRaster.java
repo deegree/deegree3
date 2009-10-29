@@ -135,7 +135,7 @@ public class TiledRaster extends AbstractRaster {
         // ((2584384.0,5638768.0, NaN), (2584384.0,5635491.2, NaN))
 
         // determine the new raster geo reference for the requested envelope.
-        RasterGeoReference ref = getRasterReference().createSubEnvelope( env );
+        RasterGeoReference ref = getRasterReference().createRelocatedReference( env );
         // merging with the existing one, will result in getting the origin right.
         // ref = RasterGeoReference.merger( getRasterReference(), ref );
 

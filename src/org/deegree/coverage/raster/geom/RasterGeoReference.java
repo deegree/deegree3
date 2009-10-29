@@ -63,7 +63,7 @@ import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;
 
 /**
- * The <code>RasterGeoReference</code> defines methods for transfomrations between a raster crs and a world crs. For
+ * The <code>RasterGeoReference</code> defines methods for transformations between a raster crs and a world crs. For
  * this purpose the origin of the upper left raster grid and the size in world coordinate units of a raster grid (pixel)
  * must be specified.
  * 
@@ -217,6 +217,44 @@ public class RasterGeoReference {
     }
 
     /**
+     * Create a raster reference which has it's origin at the min[0] and max[1] of the given Envelope. The resolution
+     * will be determined by getting the easting axis/width and northing-axis/height. If no CRS is available from the
+     * Envelope axisorder XY is assumed.
+     * 
+     * @param location
+     *            of the origin can be center or outer
+     * @param envelope
+     *            to get the appropriate values from.
+     * @param width
+     *            of the underlying raster needed to calculate the resolution.
+     * @param height
+     *            of the underlying raster needed to calculate the resolution.
+     * @return a new RasterGeoReference of <code>null</code> if the given envelope is <code>null</code>
+     */
+    public static RasterGeoReference create( OriginLocation location, Envelope envelope, int width, int height ) {
+        if ( envelope != null ) {
+            CRS crs = envelope.getCoordinateSystem();
+            int xAxis = 0;
+            int yAxis = 1;
+            if ( crs != null ) {
+                try {
+                    CoordinateSystem cs = crs.getWrappedCRS();
+                    xAxis = cs.getEasting();
+                    yAxis = cs.getNorthing();
+                } catch ( UnknownCRSException e ) {
+                    // assume xaxis is first.
+                }
+            }
+            double resX = envelope.getSpan( xAxis ) / width;
+            double resY = -envelope.getSpan( yAxis ) / height;
+            double origin0 = envelope.getMin().get0();
+            double origin1 = envelope.getMax().get1();
+            return new RasterGeoReference( location, resX, resY, origin0, origin1, crs );
+        }
+        return null;
+    }
+
+    /**
      * Return the raster coordinate denoted by the given world coordinate. This method is CENTER and OUTER aware.
      * 
      * @param worldX
@@ -253,44 +291,6 @@ public class RasterGeoReference {
             result[1] += 0.5;
         }
         return result;
-    }
-
-    /**
-     * Create a raster reference which has it's origin at the min[0] and max[1] of the given Envelope. The resolution
-     * will be determined by getting the easting axis/width and northing-axis/height. If no CRS is available from the
-     * Envelope axisorder XY is assumed.
-     * 
-     * @param location
-     *            of the origin can be center or outer
-     * @param envelope
-     *            to get the appropriate values from.
-     * @param width
-     *            of the underlying raster needed to calculate the resolution.
-     * @param height
-     *            of the underlying raster needed to calculate the resolution.
-     * @return a new RasterGeoReference of <code>null</code> if the given envelope is <code>null</code>
-     */
-    public static RasterGeoReference create( OriginLocation location, Envelope envelope, int width, int height ) {
-        if ( envelope != null ) {
-            CRS crs = envelope.getCoordinateSystem();
-            int xAxis = 0;
-            int yAxis = 1;
-            if ( crs != null ) {
-                try {
-                    CoordinateSystem cs = crs.getWrappedCRS();
-                    xAxis = cs.getEasting();
-                    yAxis = cs.getNorthing();
-                } catch ( UnknownCRSException e ) {
-                    // assume xaxis is first.
-                }
-            }
-            double resX = envelope.getSpan( xAxis ) / width;
-            double resY = -envelope.getSpan( yAxis ) / height;
-            double origin0 = envelope.getMin().get0();
-            double origin1 = envelope.getMax().get1();
-            return new RasterGeoReference( location, resX, resY, origin0, origin1, crs );
-        }
-        return null;
     }
 
     /**
@@ -494,13 +494,14 @@ public class RasterGeoReference {
 
     /**
      * Returns new RasterGeoReference with the origin set to the min[0],max[1] of the envelope but other values are
-     * taken from this instance. Attention, be sure the envelope snaps to the location of the underlying grid!
+     * taken from this instance. Attention, the resulting origin is snapped to the location (center/outer) of the
+     * underlying grid, so the min[0] and max[1] values are only approximations to the new origin!
      * 
      * @param envelope
      *            to get the origin from.
      * @return new RasterGeoReference or <code>null</code> if the envelope is <code>null</code>
      */
-    public RasterGeoReference createSubEnvelope( Envelope envelope ) {
+    public RasterGeoReference createRelocatedReference( Envelope envelope ) {
         if ( envelope != null ) {
             Envelope transformedEnv = envelope;
             if ( transformer != null ) {

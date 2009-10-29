@@ -546,12 +546,12 @@ public class RasterGeoRefTest {
     }
 
     /**
-     * Test the {@link RasterGeoReference#createSubEnvelope(Envelope)} method.
+     * Test the {@link RasterGeoReference#createRelocatedReference(Envelope)} method.
      */
     @Test
     public void createSubEnvelope() {
         Envelope env = geomFactor.createEnvelope( 1005, 975, 1035, 995, defaultCRS );
-        RasterGeoReference result = REF_CENTER.createSubEnvelope( env );
+        RasterGeoReference result = REF_CENTER.createRelocatedReference( env );
         double[] origin = result.getOrigin();
         Assert.assertEquals( 1010, origin[0], 0.00001 );
         Assert.assertEquals( 990, origin[1], 0.00001 );
@@ -561,7 +561,7 @@ public class RasterGeoRefTest {
         Assert.assertEquals( 0, result.getRotationY(), 0.00001 );
         Assert.assertEquals( OriginLocation.CENTER, result.getOriginLocation() );
 
-        result = REF_OUTER.createSubEnvelope( env );
+        result = REF_OUTER.createRelocatedReference( env );
         origin = result.getOrigin();
         Assert.assertEquals( 1000, origin[0], 0.00001 );
         Assert.assertEquals( 1000, origin[1], 0.00001 );
