@@ -103,6 +103,10 @@ public class FeatureReference implements Feature {
 
     @Override
     public String getId() {
+        // TODO remove hack (only necessary because ID generation in store does not update reference objects)
+        if (feature != null) {
+            return feature.getId();
+        }
         return fid;
     }
 
@@ -180,6 +184,11 @@ public class FeatureReference implements Feature {
         return href;
     }
 
+    /**
+     * Returns whether the reference is local or remote.
+     * 
+     * @return true, if the reference is local, false otherwise
+     */
     public boolean isLocal() {
         return href.startsWith( "#" );
     }

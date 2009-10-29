@@ -151,7 +151,8 @@ public class GML311FeatureEncoder {
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
         geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportSfGeometries, exportedIds );
-        this.exportSf = exportSfGeometries;
+        // TODO
+        this.exportSf = false;
     }
 
     public void export( Feature feature )
@@ -241,27 +242,7 @@ public class GML311FeatureEncoder {
 
         Object value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
-            Feature subFeature = (Feature) value;
-            String subFid = subFeature.getId();
-            if ( subFid != null && exportedIds.contains( subFid ) ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writer.writeAttribute( XLNNS, "href", "#" + subFid );
-            } else {
-                if ( ( subFeature instanceof FeatureReference ) && !( (FeatureReference) subFeature ).isLocal() ) {
-                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                    writer.writeAttribute( XLNNS, "href", ( (FeatureReference) subFeature ).getHref() );
-                } else if ( referenceTemplate == null || subFid == null || traverseXlinkDepth == -1
-                            || ( traverseXlinkDepth > 0 && ( inlineLevels < traverseXlinkDepth ) ) ) {
-                    exportedIds.add( subFeature.getId() );
-                    writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                    export( subFeature, inlineLevels + 1 );
-                    writer.writeEndElement();
-                } else {
-                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                    String uri = referenceTemplate.replace( "{}", subFid );
-                    writer.writeAttribute( XLNNS, "href", uri );
-                }
-            }
+            exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, inlineLevels );
         } else if ( propertyType instanceof SimplePropertyType ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             writer.writeCharacters( value.toString() );
@@ -299,7 +280,101 @@ public class GML311FeatureEncoder {
             writer.writeEndElement();
         } else if ( propertyType instanceof CustomPropertyType ) {
             GenericCustomPropertyExporter.export( (GenericCustomPropertyValue) value, writer );
-        }        
+        }
+    }
+
+    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, int inlineLevels )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        QName propName = pt.getName();
+        LOG.debug( "Exporting feature property '" + propName + "'" );
+
+        if ( !( subFeature instanceof FeatureReference ) || ( (FeatureReference) subFeature ).isLocal() ) {
+            // normal feature or local feature reference
+            String subFid = subFeature.getId();
+            if ( subFid == null ) {
+                // no feature id -> must put it inline then
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeComment( "Inlined feature '" + subFid + "'" );
+                export( subFeature, inlineLevels + 1 );
+                writer.writeEndElement();
+            } else {
+                // has feature id
+                if ( exportedIds.contains( subFid ) ) {
+                    // already exported -> put a local xlink to an already exported feature instance
+                    writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writer.writeAttribute( XLNNS, "href", "#" + subFid );
+                    writer.writeComment( "Reference to feature '" + subFid + "'" );
+                    writer.writeEndElement();
+                } else {
+                    // not exported yet
+                    if ( ( traverseXlinkDepth > 0 && inlineLevels < traverseXlinkDepth ) || referenceTemplate == null
+                         || traverseXlinkDepth == -1 ) {
+                        // must be exported inline
+                        exportedIds.add( subFeature.getId() );
+                        writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                        writer.writeComment( "Inlined feature '" + subFid + "'" );
+                        export( subFeature, inlineLevels + 1 );
+                        writer.writeEndElement();
+                    } else {
+                        // must be exported by reference
+                        writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                        String uri = referenceTemplate.replace( "{}", subFid );
+                        writer.writeAttribute( XLNNS, "href", uri );
+                        writer.writeComment( "Reference to feature '" + subFid + "'" );
+                        writer.writeEndElement();
+                    }
+                }
+            }
+        } else {
+            FeatureReference ref = (FeatureReference) subFeature;
+            // remote feature reference
+            if ( ( traverseXlinkDepth > 0 && inlineLevels < traverseXlinkDepth ) || referenceTemplate == null
+                 || traverseXlinkDepth == -1 ) {
+                // must be exported inline
+                String msg = "Inlining of remote feature references is not implemented yet.";
+                throw new XMLStreamException( msg );
+                // exportedIds.add( subFeature.getId() );
+                // writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                // writer.writeComment( "Inlined feature '" + subFeature.getId() + "'" );
+                // export( subFeature, inlineLevels + 1 );
+                // writer.writeEndElement();
+            } else {
+                // must be exported by reference
+                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XLNNS, "href", ref.getHref() );
+                writer.writeComment( "Reference to remote feature '" + ref.getHref() + "'" );
+                writer.writeEndElement();
+            }
+        }
+        //
+        // if ( subFid != null && exportedIds.contains( subFid ) ) {
+        // // put an xlink to an already exported feature instance
+        // writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+        // writer.writeAttribute( XLNNS, "href", "#" + subFid );
+        // writer.writeComment( "Reference to feature '" + subFid + "'" );
+        // writer.writeEndElement();
+        // } else {
+        // if ( ( subFeature instanceof FeatureReference ) && !( (FeatureReference) subFeature ).isLocal() ) {
+        // writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+        // writer.writeAttribute( XLNNS, "href", ( (FeatureReference) subFeature ).getHref() );
+        // writer.writeComment( "Reference to feature '" + subFid + "'" );
+        // writer.writeEndElement();
+        // } else if ( referenceTemplate == null || subFid == null || traverseXlinkDepth == -1
+        // || ( traverseXlinkDepth > 0 && ( inlineLevels < traverseXlinkDepth ) ) ) {
+        // exportedIds.add( subFeature.getId() );
+        // writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+        // writer.writeComment( "Inlined feature '" + subFid + "'" );
+        // export( subFeature, inlineLevels + 1 );
+        // writer.writeEndElement();
+        // } else {
+        // writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+        // String uri = referenceTemplate.replace( "{}", subFid );
+        // writer.writeAttribute( XLNNS, "href", uri );
+        // writer.writeComment( "Reference to feature '" + subFid + "'" );
+        // writer.writeEndElement();
+        // }
+        // }
     }
 
     private void writeStartElementWithNS( String namespaceURI, String localname )

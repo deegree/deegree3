@@ -126,16 +126,16 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
 
-        XMLStreamWriter writer = new FormattingXMLStreamWriter(
-                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                      new FileWriter(
-                                                                                                                                      "/tmp/out.xml" ) ) );
-        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer, null );
-        encoder.export( fc );
-        writer.close();
+//        XMLStreamWriter writer = new FormattingXMLStreamWriter(
+//                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
+//                                                                                                                      new FileWriter(
+//                                                                                                                                      "/tmp/out.xml" ) ) );
+//        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
+//        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
+//        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+//        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer, null );
+//        encoder.export( fc );
+//        writer.close();
 
         for ( Feature feature : fc ) {
             if ( "f094".equals( feature.getId() ) ) {
@@ -173,6 +173,34 @@ public class GMLFeatureDecoderTest {
         encoder.export( fc );
         writer.close();
     }
+    
+    @Test
+    public void testParsingCiteSF2()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException {
+
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf2.xml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        GMLIdContext idContext = new GMLIdContext();
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+
+//        XMLStreamWriter writer = new FormattingXMLStreamWriter(
+//                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
+//                                                                                                                      new FileWriter(
+//                                                                                                                                      "/tmp/out.xml" ) ) );
+//        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
+//        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
+//        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+//        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer, null );
+//        encoder.export( fc );
+//        writer.close();
+    }    
 
     // @Test
     public void testParsingCityGML()

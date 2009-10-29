@@ -60,6 +60,7 @@ import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
+import org.deegree.geometry.gml.refs.GeometryReference;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -169,7 +170,8 @@ public class GML311GeometryEncoder {
     public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCrs, boolean exportSf, Set<String> exportedIds ) {
         this.writer = writer;
         this.outputCRS = outputCrs;
-        this.exportSf = exportSf;
+        // TODO
+        this.exportSf = false;
         if ( outputCrs != null ) {
             try {
                 CoordinateSystem crs = outputCrs.getWrappedCRS();
@@ -196,6 +198,13 @@ public class GML311GeometryEncoder {
     @SuppressWarnings("unchecked")
     public void export( Geometry geometry )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
+
+        // TODO properly
+        if (geometry instanceof GeometryReference<?>) {
+            exportReference( (GeometryReference) geometry );
+            return;
+        }
+        
         switch ( geometry.getGeometryType() ) {
         case COMPOSITE_GEOMETRY:
             exportCompositeGeometry( (CompositeGeometry<GeometricPrimitive>) geometry );
@@ -225,6 +234,10 @@ public class GML311GeometryEncoder {
         }
     }
 
+    public void exportReference (GeometryReference<Geometry> geometryRef) throws XMLStreamException, UnknownCRSException, TransformationException {
+        export( geometryRef.getReferencedGeometry() );
+    }
+    
     /**
      * Exporting a multi-geometry via the XMLStreamWriter given when the class was constructed
      * 
@@ -275,7 +288,7 @@ public class GML311GeometryEncoder {
             for ( Point point : multiPoint ) {
                 writer.writeStartElement( GMLNS, "pointMember" );
                 if ( !exportSf && point.getId() != null && exportedIds.contains( point.getId() ) ) {
-                    writer.writeAttribute( "gml", GMLNS, "id", point.getId() );
+                    writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
                 } else {
                     export( point );
                 }

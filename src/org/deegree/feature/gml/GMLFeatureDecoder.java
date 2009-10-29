@@ -88,6 +88,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
+import org.deegree.geometry.gml.refs.GeometryReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -360,10 +361,22 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
                                                  xmlStream.getElementText().trim() );
             } else if ( propDecl instanceof GeometryPropertyType ) {
-                xmlStream.nextTag();
-                Geometry geometry = geomParser.parse( xmlStream, crs );
-                property = new GenericProperty<Geometry>( propDecl, propName, geometry );
-                xmlStream.nextTag();
+                String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+                if ( href != null ) {
+                    // TODO respect geometry type information (Point, Surface, etc.)
+                    GeometryReference<Geometry> refGeometry = new GeometryReference<Geometry>( href, getSystemId() );
+                    // local feature reference?
+                    if ( href.startsWith( "#" ) ) {
+                        idContext.addGeometryReference( refGeometry );
+                    }
+                    property = new GenericProperty<Geometry>( propDecl, propName, refGeometry );
+                    xmlStream.nextTag();
+                } else {
+                    xmlStream.nextTag();
+                    Geometry geometry = geomParser.parse( xmlStream, crs );
+                    property = new GenericProperty<Geometry>( propDecl, propName, geometry );
+                    xmlStream.nextTag();
+                }
             } else if ( propDecl instanceof FeaturePropertyType ) {
                 String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
                 if ( href != null ) {
@@ -446,8 +459,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
             try {
                 propValue = new Date( s );
             } catch ( ParseException e ) {
-                String msg = "Value ('" + s + "') for xs:date property '" + propDecl.getName()
-                             + "' is invalid.";
+                String msg = "Value ('" + s + "') for xs:date property '" + propDecl.getName() + "' is invalid.";
                 throw new XMLParsingException( xmlStream, msg );
             }
             break;
@@ -456,10 +468,9 @@ public class GMLFeatureDecoder extends XMLAdapter {
             try {
                 propValue = new DateTime( s );
             } catch ( ParseException e ) {
-                String msg = "Value ('" + s + "') for xs:dateTime property '" + propDecl.getName()
-                             + "' is invalid.";
+                String msg = "Value ('" + s + "') for xs:dateTime property '" + propDecl.getName() + "' is invalid.";
                 throw new XMLParsingException( xmlStream, msg );
-            }            
+            }
             break;
         }
         case NUMBER: {
@@ -474,11 +485,10 @@ public class GMLFeatureDecoder extends XMLAdapter {
             try {
                 propValue = new Time( s );
             } catch ( ParseException e ) {
-                String msg = "Value ('" + s + "') for xs:time property '" + propDecl.getName()
-                             + "' is invalid.";
+                String msg = "Value ('" + s + "') for xs:time property '" + propDecl.getName() + "' is invalid.";
                 throw new XMLParsingException( xmlStream, msg );
-            }            
-            break;            
+            }
+            break;
         }
         default: {
             LOG.warn( "Unhandled primitive type " + propDecl.getPrimitiveType() + " -- treating as string value." );
