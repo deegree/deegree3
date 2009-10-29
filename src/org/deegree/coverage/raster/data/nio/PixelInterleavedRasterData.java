@@ -130,12 +130,14 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         if ( result == null ) {
             result = new byte[dataInfo.noDataPixel.length];
         }
-        if ( 0 > x || x >= rasterWidth || 0 > y || y >= rasterHeight ) {
+        int pos = calculatePos( x, y );
+        if ( pos == -1 ) {
             System.arraycopy( dataInfo.noDataPixel, 0, result, 0, result.length );
-            return result;
+        } else {
+            data.position( pos );
+            data.get( result, 0, dataInfo.noDataPixel.length );
         }
-        data.position( calculatePos( x, y ) );
-        data.get( result, 0, dataInfo.noDataPixel.length );
+
         return result;
     }
 
@@ -167,20 +169,62 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         // int subHeight = min( hy0, height, srch );
 
         // copy data direct if interleaving type is identical
+
         if ( srcRaster instanceof PixelInterleavedRasterData && view.dataInfo.bands == dataInfo.bands ) {
-            int subWidth = clampSize( getWidth(), dstX, srcRaster.getWidth(), srcX, width );
-            int subHeight = clampSize( getHeight(), dstY, srcRaster.getHeight(), srcY, height );
+            // calculate if the getWidth || getWidth methods would exceed the actual rasterWidth
+            PixelInterleavedRasterData raster = (PixelInterleavedRasterData) srcRaster;
+
+            int srcRasterPosx = raster.view.x + srcX;
+            int srcRasterPosy = raster.view.y + srcY;
+            int possibleSrcWidth = raster.getWidth();
+            int possibleSrcHeight = raster.getHeight();
+
+            if ( srcRasterPosx < 0 ) {
+                // origin is negative, so add them to the width(subtract them).
+                possibleSrcWidth += srcRasterPosx;
+                srcRasterPosx = 0;
+            } else if ( srcRasterPosx >= raster.rasterWidth ) {
+                // no copy possible
+                possibleSrcWidth = 0;
+                srcRasterPosx = raster.rasterWidth;
+            }
+
+            if ( srcRasterPosy < 0 ) {
+                // origin is negative, so add them to the height (subtract them).
+                possibleSrcHeight += srcRasterPosy;
+                // adjust for snapping to the raster
+                srcRasterPosy = 0;
+            } else if ( srcRasterPosy >= raster.rasterHeight ) {
+                // no copy possible
+                possibleSrcHeight = 0;
+                srcRasterPosy = raster.rasterHeight;
+            }
+
+            // if the number of pixels from the source raster x position to requested width > raster width, snap the new
+            // width to the maximum raster width.
+            if ( ( srcRasterPosx + possibleSrcWidth ) >= raster.rasterWidth ) {
+                possibleSrcWidth = raster.rasterWidth - srcRasterPosx;
+            }
+            if ( ( srcRasterPosy + possibleSrcHeight ) >= raster.rasterHeight ) {
+                possibleSrcHeight = raster.rasterHeight - srcRasterPosy;
+            }
+            // reset to the view.
+            srcRasterPosx -= raster.view.x;
+            srcRasterPosy -= raster.view.y;
+
+            // find the smallest denominator of all values.
+            int subWidth = clampSize( getWidth(), dstX, possibleSrcWidth, srcRasterPosx, width );
+            int subHeight = clampSize( getHeight(), dstY, possibleSrcHeight, srcRasterPosy, height );
 
             if ( subHeight <= 0 || subWidth <= 0 ) {
                 return;
             }
 
-            PixelInterleavedRasterData raster = (PixelInterleavedRasterData) srcRaster;
             ByteBuffer srcData = raster.getByteBuffer().asReadOnlyBuffer();
             // byte[] tmp = new byte[subWidth * getPixelStride()];
             int length = subWidth * getPixelStride();
             for ( int i = 0; i < subHeight; i++ ) {
-                int pos = raster.calculatePos( srcX, i + srcY );
+                int pos = raster.calculatePos( srcRasterPosx, i + srcRasterPosy );
                 // order of .position and .get calls is significant, if bytebuffer is identical
                 srcData.limit( pos + length );
                 srcData.position( pos );
