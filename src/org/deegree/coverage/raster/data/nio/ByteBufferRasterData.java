@@ -351,7 +351,7 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            x coordinate
      * @param y
      *            y coordinate
-     * @return byte offset to the pixel with the specified coordinate
+     * @return byte offset to the pixel with the specified coordinate or -1 if outside of the bytebuffer.
      */
     public final int calculatePos( int x, int y ) {
         // check for negative views.
@@ -377,11 +377,19 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            y coordinate
      * @param bandOfView
      *            band index of the sample
-     * @return byte offset to the sample with the specified coordinate
+     * @return byte offset to the sample with the specified coordinate or -1 if outside of the bytebuffer.
      */
     public final int calculatePos( int x, int y, int bandOfView ) {
-        return ( ( view.y + y ) * getLineStride() ) + ( ( view.x + x ) * getPixelStride() )
-               + ( view.getBandOffset( bandOfView ) * getBandStride() );
+        // check for negative views.
+        int yPos = ( view.y + y );
+        int xPos = ( view.x + x );
+        int dataPos = ( xPos * getPixelStride() ) + ( yPos * getLineStride() )
+                      + ( view.getBandOffset( bandOfView ) * getBandStride() );
+        if ( yPos < 0 || xPos < 0 || yPos >= rasterHeight || xPos >= rasterWidth || dataPos > data.capacity()
+             || dataPos > data.limit() || dataPos < 0 ) {
+            dataPos = -1;
+        }
+        return dataPos;
     }
 
     /**
@@ -394,10 +402,11 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            x coordinate
      * @param y
      *            y coordinate
-     * @return offset to the pixel with the specified coordinates
+     * @return offset to the pixel with the specified coordinates or -1 if outside of the bytebuffer.
      */
     public final int calculateViewPos( int x, int y ) {
-        return calculatePos( x, y ) / dataInfo.dataSize;// TODO
+        int pos = calculatePos( x, y ) / dataInfo.dataSize;
+        return pos < 0 ? -1 : pos;
     }
 
     /**
@@ -415,7 +424,8 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return offset to the sample with the specified coordinates
      */
     public final int calculateViewPos( int x, int y, int band ) {
-        return calculatePos( x, y, band ) / dataInfo.dataSize;// TODO
+        int pos = calculatePos( x, y, band ) / dataInfo.dataSize;
+        return pos < 0 ? -1 : pos;
     }
 
     public byte[] getBytes( int x, int y, int width, int height, int band, byte[] result ) {
