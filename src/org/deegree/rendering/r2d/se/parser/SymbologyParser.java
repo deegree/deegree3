@@ -91,6 +91,7 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.RasterChannelSelection;
 import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.rendering.r2d.styling.RasterStyling.ContrastEnhancement;
@@ -709,6 +710,7 @@ public class SymbologyParser {
 
         Common common = new Common();
         RasterStyling baseOrEvaluated = new RasterStyling();
+        RasterChannelSelection channelSelection = null;
         Continuation<RasterStyling> contn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "RasterSymbolizer" ) ) ) {
@@ -726,13 +728,14 @@ public class SymbologyParser {
             }
 
             if ( in.getLocalName().equals( "ChannelSelection" ) ) {
+                String red = null, green = null, blue = null, gray = null;
                 while ( !( in.isEndElement() && in.getLocalName().equals( "ChannelSelection" ) ) ) {
                     in.nextTag();
 
                     if ( in.getLocalName().equals( "RedChannel" ) ) {
                         in.nextTag();
                         in.require( START_ELEMENT, null, "SourceChannelName" );
-                        baseOrEvaluated.redChannel = in.getElementText();
+                        red = in.getElementText();
                         in.nextTag();
                         ContrastEnhancement enh = parseContrastEnhancement( in );
                         if ( enh != null ) {
@@ -743,7 +746,7 @@ public class SymbologyParser {
                     if ( in.getLocalName().equals( "GreenChannel" ) ) {
                         in.nextTag();
                         in.require( START_ELEMENT, null, "SourceChannelName" );
-                        baseOrEvaluated.greenChannel = in.getElementText();
+                        green = in.getElementText();
                         in.nextTag();
                         ContrastEnhancement enh = parseContrastEnhancement( in );
                         if ( enh != null ) {
@@ -754,7 +757,7 @@ public class SymbologyParser {
                     if ( in.getLocalName().equals( "BlueChannel" ) ) {
                         in.nextTag();
                         in.require( START_ELEMENT, null, "SourceChannelName" );
-                        baseOrEvaluated.blueChannel = in.getElementText();
+                        blue = in.getElementText();
                         in.nextTag();
                         ContrastEnhancement enh = parseContrastEnhancement( in );
                         if ( enh != null ) {
@@ -762,11 +765,11 @@ public class SymbologyParser {
                         }
                         in.nextTag();
                     }
-                    
+
                     if ( in.getLocalName().equals( "GrayChannel" ) ) {
                         in.nextTag();
                         in.require( START_ELEMENT, null, "SourceChannelName" );
-                        baseOrEvaluated.grayChannel = in.getElementText();
+                        gray = in.getElementText();
                         in.nextTag();
                         ContrastEnhancement enh = parseContrastEnhancement( in );
                         if ( enh != null ) {
@@ -775,6 +778,8 @@ public class SymbologyParser {
                         in.nextTag();
                     }
                 }
+
+                baseOrEvaluated.channelSelection = new RasterChannelSelection( red, green, blue, gray );
             }
 
             if ( in.getLocalName().equals( "OverlapBehavior" ) ) {

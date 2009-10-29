@@ -119,7 +119,7 @@ public class RasterRendererApplet extends JApplet {
     public RasterStyling loadRasterStylingFromXml( String fname ) {
         RasterStyling rs = null;
         try {
-            LOG.debug( "Loading SE XML..." );
+//            LOG.debug( "Loading SE XML..." );
             URI uri = SymbologyParserTest.class.getResource( fname ).toURI();
             System.out.println( "Loading resource: " + uri );
             File f = new File( uri );
@@ -183,10 +183,9 @@ public class RasterRendererApplet extends JApplet {
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
         r.render( style, dem );
     }
-    
+
     /* Render a raster after selecting (actually swapping) channels */
-    private void renderRasterSelectedChannels()
-    {
+    private void renderRasterSelectedChannels() {
         RasterStyling style = loadRasterStylingFromXml( "setest20.xml" );
         Graphics2D g2d = (Graphics2D) this.getGraphics().create( 400, 310, 370, 370 );
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
@@ -207,7 +206,7 @@ public class RasterRendererApplet extends JApplet {
             dem = RasterFactory.loadRasterFromFile( new File( uri ) );
 
             uri = RasterRendererApplet.class.getResource( "RussianDoll.jpg" ).toURI();
-//            uri = RasterRendererApplet.class.getResource( "parintele.jpg" ).toURI();
+            // uri = RasterRendererApplet.class.getResource( "parintele.jpg" ).toURI();
             doll = RasterFactory.loadRasterFromFile( new File( uri ) );
 
             LOG.trace( "Loaded images" );

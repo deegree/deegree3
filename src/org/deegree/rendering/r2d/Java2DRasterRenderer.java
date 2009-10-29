@@ -50,7 +50,9 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
+import org.deegree.rendering.r2d.styling.RasterChannelSelection;
 import org.deegree.rendering.r2d.styling.RasterStyling;
+import org.deegree.rendering.r2d.styling.RasterStyling.ChannelSelectionMode;
 import org.deegree.rendering.r2d.utils.Raster2RawData;
 import org.slf4j.Logger;
 
@@ -114,23 +116,21 @@ public class Java2DRasterRenderer implements RasterRenderer {
             return;
         }
 
-        checkChannelNames( styling, raster );
-        raster = evaluateChannelSelections( styling, raster );
-        raster = evaluateConstrastEnhancements( styling, raster );
+        styling.channelSelection.evaluate( raster.getRasterDataInfo().bandInfo );
 
-        if ( styling.shaded != null ) {
-            if ( styling.grayChannel == null && styling.redChannel != null )
-                throw new RasterRenderingException(
-                                                    "Hill-shading output raster is grayscale, cannot create color image." );
-            raster = performHillShading( raster, styling );
-        }
-
-        if ( styling.categorize != null || styling.interpolate != null ) {
+        if ( styling.categorize != null || styling.interpolate != null || styling.shaded != null ) {
             LOG.trace( "Creating raster ColorMap..." );
             if ( styling.categorize != null )
                 img = styling.categorize.evaluateRaster( raster, styling );
             else if ( styling.interpolate != null )
                 img = styling.interpolate.evaluateRaster( raster, styling );
+
+            if ( styling.shaded != null ) {
+                raster = performHillShading( raster, styling );
+            }
+        } else if ( styling.channelSelection.isEnabled() ) {
+            raster = evaluateChannelSelections( styling.channelSelection, raster );
+            raster = evaluateConstrastEnhancements( styling, raster );
         }
 
         if ( styling.opacity != 1 ) {
@@ -146,8 +146,8 @@ public class Java2DRasterRenderer implements RasterRenderer {
         LOG.trace( "Done rendering raster." );
     }
 
-    private AbstractRaster evaluateChannelSelections( RasterStyling style, AbstractRaster raster ) {
-        if ( style.redChannel == null && style.grayChannel == null )
+    private AbstractRaster evaluateChannelSelections( RasterChannelSelection channels, AbstractRaster raster ) {
+        if ( channels.getMode() == ChannelSelectionMode.NONE )
             return raster;
         LOG.trace( "Evaluating channel selections ..." );
         long start = System.nanoTime();
@@ -155,20 +155,19 @@ public class Java2DRasterRenderer implements RasterRenderer {
         int cols = data.getWidth(), rows = data.getHeight();
         RasterData newData = raster.getAsSimpleRaster().getRasterData();
         BandType[] bandTypes = null;
-        Raster2RawData conv = new Raster2RawData( raster, style );
-        if ( style.redChannel != null && data.getBands() > 1 ) {
+        if ( channels.getMode() == ChannelSelectionMode.RGB && data.getBands() > 1 ) {
             bandTypes = new BandType[] { BandType.RED, BandType.GREEN, BandType.BLUE };
             newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, data.getDataType(),
                                                           data.getDataInfo().interleaveType );
-            newData.setSubset( 0, 0, cols, rows, 0, data, conv.getRedChannelIndex() );
-            newData.setSubset( 0, 0, cols, rows, 1, data, conv.getGreenChannelIndex() );
-            newData.setSubset( 0, 0, cols, rows, 2, data, conv.getBlueChannelIndex() );
+            newData.setSubset( 0, 0, cols, rows, 0, data, channels.getRedChannelIndex() );
+            newData.setSubset( 0, 0, cols, rows, 1, data, channels.getGreenChannelIndex() );
+            newData.setSubset( 0, 0, cols, rows, 2, data, channels.getBlueChannelIndex() );
         }
-        if ( style.grayChannel != null ) {
+        if ( channels.getMode() == ChannelSelectionMode.GRAY ) {
             bandTypes = new BandType[] { BandType.BAND_0 };
             newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, data.getDataType(),
                                                           data.getDataInfo().interleaveType );
-            newData.setSubset( 0, 0, cols, rows, 0, data, conv.getGrayChannelIndex() );
+            newData.setSubset( 0, 0, cols, rows, 0, data, channels.getGrayChannelIndex() );
         }
         AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference() );
         long end = System.nanoTime();
@@ -181,47 +180,47 @@ public class Java2DRasterRenderer implements RasterRenderer {
         return raster;
     }
 
-    /** Make sure that the selected channels are valid for a raster. Throws an exception in case of error. */
-    private void checkChannelNames( RasterStyling styling, AbstractRaster raster )
-                            throws RasterRenderingException {
-        BandType[] bands = raster.getRasterDataInfo().getBandInfo();
-
-        if ( styling.grayChannel != null )
-            if ( validateChannelName( styling.grayChannel, bands ) == false ) {
-                LOG.error( "Invalid name for gray channel: {}", styling.grayChannel );
-                throw new RasterRenderingException( "Invalid name for gray channel: " + styling.grayChannel );
-            }
-        if ( styling.redChannel != null )
-            if ( validateChannelName( styling.redChannel, bands ) == false ) {
-                LOG.error( "Invalid name for red channel: {}", styling.redChannel );
-                throw new RasterRenderingException( "Invalid name for red channel: " + styling.redChannel );
-            }
-        if ( styling.greenChannel != null )
-            if ( validateChannelName( styling.greenChannel, bands ) == false ) {
-                LOG.error( "Invalid name for green channel: {}", styling.greenChannel );
-                throw new RasterRenderingException( "Invalid name for green channel: " + styling.greenChannel );
-            }
-        if ( styling.blueChannel != null )
-            if ( validateChannelName( styling.blueChannel, bands ) == false ) {
-                LOG.error( "Invalid name for blue channel: {}", styling.blueChannel );
-                throw new RasterRenderingException( "Invalid name for blue channel: " + styling.blueChannel );
-            }
-
-        LOG.trace( "Channel names are valid." );
-    }
-
-    /** Validate a channel name as a number (1,2,...etc) or by name. */
-    private boolean validateChannelName( String name, BandType[] bands ) {
-        try {
-            int c = Integer.parseInt( name );
-            return ( c > 0 && c <= bands.length );
-        } catch ( NumberFormatException e ) {
-            for ( int i = 0; i < bands.length; i++ )
-                if ( bands[i].name().equals( name ) )
-                    return true;
-        }
-        return false;
-    }
+    // /** Make sure that the selected channels are valid for a raster. Throws an exception in case of error. */
+    // private void checkChannelNames( RasterStyling styling, AbstractRaster raster )
+    // throws RasterRenderingException {
+    // BandType[] bands = raster.getRasterDataInfo().getBandInfo();
+    //
+    // if ( styling.grayChannel != null )
+    // if ( validateChannelName( styling.grayChannel, bands ) == false ) {
+    // LOG.error( "Invalid name for gray channel: {}", styling.grayChannel );
+    // throw new RasterRenderingException( "Invalid name for gray channel: " + styling.grayChannel );
+    // }
+    // if ( styling.redChannel != null )
+    // if ( validateChannelName( styling.redChannel, bands ) == false ) {
+    // LOG.error( "Invalid name for red channel: {}", styling.redChannel );
+    // throw new RasterRenderingException( "Invalid name for red channel: " + styling.redChannel );
+    // }
+    // if ( styling.greenChannel != null )
+    // if ( validateChannelName( styling.greenChannel, bands ) == false ) {
+    // LOG.error( "Invalid name for green channel: {}", styling.greenChannel );
+    // throw new RasterRenderingException( "Invalid name for green channel: " + styling.greenChannel );
+    // }
+    // if ( styling.blueChannel != null )
+    // if ( validateChannelName( styling.blueChannel, bands ) == false ) {
+    // LOG.error( "Invalid name for blue channel: {}", styling.blueChannel );
+    // throw new RasterRenderingException( "Invalid name for blue channel: " + styling.blueChannel );
+    // }
+    //
+    // LOG.trace( "Channel names are valid." );
+    // }
+    //
+    // /** Validate a channel name as a number (1,2,...etc) or by name. */
+    // private boolean validateChannelName( String name, BandType[] bands ) {
+    // try {
+    // int c = Integer.parseInt( name );
+    // return ( c > 0 && c <= bands.length );
+    // } catch ( NumberFormatException e ) {
+    // for ( int i = 0; i < bands.length; i++ )
+    // if ( bands[i].name().equals( name ) )
+    // return true;
+    // }
+    // return false;
+    // }
 
     /**
      * Perform the hill-shading algorithm on a DEM raster. Based on algorithm presented at
@@ -235,7 +234,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         LOG.trace( "Performing Hill-Shading ... " );
         long start = System.nanoTime();
         int cols = raster.getColumns(), rows = raster.getRows();
-        Raster2RawData data = new Raster2RawData( raster, style );
+        Raster2RawData data = new Raster2RawData( raster, style.channelSelection );
         RasterData shadeData = RasterDataFactory.createRasterData( cols - 2, rows - 2, DataType.BYTE );
         SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), raster.getRasterReference() );
 

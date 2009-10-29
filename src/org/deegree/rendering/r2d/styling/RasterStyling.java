@@ -40,8 +40,10 @@ import static org.deegree.rendering.r2d.styling.RasterStyling.Overlap.RANDOM;
 
 import java.util.HashMap;
 
+import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.filter.function.Categorize;
 import org.deegree.filter.function.Interpolate;
+import org.deegree.rendering.r2d.RasterRenderingException;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * <code>RasterStyling</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
+ * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -59,9 +61,6 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
     /** Default is 1. */
     public double opacity = 1;
-
-    /** Output channel names. */
-    public String redChannel, greenChannel, blueChannel, grayChannel;
 
     /** Contrast Enhancements for all channels. */
     public HashMap<String, ContrastEnhancement> channelContrastEnhancements = new HashMap<String, ContrastEnhancement>();
@@ -74,6 +73,9 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
     /***/
     public Interpolate interpolate;
+
+    /** Default is no channel selections. */
+    public RasterChannelSelection channelSelection = new RasterChannelSelection();
 
     /** Default is no contrast enhancement. */
     public ContrastEnhancement contrastEnhancement;
@@ -88,7 +90,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
      * <code>ShadedRelief</code>
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
+     * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
      * @author last edited by: $Author$
      * 
      * @version $Revision$, $Date$
@@ -175,13 +177,23 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
         RANDOM
     }
 
+    /**
+     * 
+     * <code>ChannelSelectionMode</code>
+     * 
+     * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
+     * @author last edited by: $Author: aaiordachioaie$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static enum ChannelSelectionMode {
+        RGB, GRAY, INVALID, NONE
+    };
+
     public RasterStyling copy() {
         RasterStyling copy = new RasterStyling();
 
         copy.opacity = opacity;
-        copy.redChannel = redChannel;
-        copy.greenChannel = greenChannel;
-        copy.blueChannel = blueChannel;
         if ( channelContrastEnhancements != null ) {
             copy.channelContrastEnhancements = new HashMap<String, ContrastEnhancement>();
             for ( String chan : channelContrastEnhancements.keySet() ) {
@@ -191,6 +203,8 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
         copy.overlap = overlap;
         copy.contrastEnhancement = contrastEnhancement == null ? null : contrastEnhancement.copy();
         copy.shaded = shaded == null ? null : shaded.copy();
+        // select the same channels
+        copy.channelSelection = channelSelection;
         // should be able to share the symbolizers:
         copy.imageOutline = imageOutline;
         // ... and the functions
@@ -199,5 +213,4 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
         return copy;
     }
-
 }

@@ -146,7 +146,7 @@ public class Categorize extends Function {
         buildLookupArrays();
 
         try {
-            Raster2RawData converter = new Raster2RawData( raster, style );
+            Raster2RawData converter = new Raster2RawData( raster, style.channelSelection );
 
             img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_RGB );
             LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
