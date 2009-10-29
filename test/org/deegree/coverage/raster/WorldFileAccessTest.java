@@ -41,14 +41,16 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileWriter;
 
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.geometry.Envelope;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * 
+ * Reading of worldfiles.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -76,29 +78,42 @@ public class WorldFileAccessTest {
     }
 
     /**
-     * Test method for
-     * {@link org.deegree.dataaccess.raster.WorldFileAccess#readWorldFile(java.io.File, org.deegree.dataaccess.raster.WorldFileAccess.TYPE)}.
+     * Test method for {@link WorldFileAccess#readWorldFile(File, RasterIOOptions)} .
      */
     @Test
     public void testReadWorldFile() {
         try {
-            RasterReference renv = WorldFileAccess.readWorldFile( wld, RasterReference.Type.CENTER );
+            RasterIOOptions options = new RasterIOOptions();
+            options.add( RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.CENTER.name() );
+            RasterGeoReference rRefCenter = WorldFileAccess.readWorldFile( wld, options );
 
-            assertEquals( 419996.000, renv.getX0( RasterReference.Type.OUTER ), delta );
-            assertEquals( 4520003.000, renv.getY0( RasterReference.Type.OUTER ), delta );
-            assertEquals( 420000.000, renv.getX0( RasterReference.Type.CENTER ), delta );
-            assertEquals( 4519999.000, renv.getY0( RasterReference.Type.CENTER ), delta );
+            // center
+            double[] origin = rRefCenter.getOrigin();
+            assertEquals( 420000.000, origin[0], delta );
+            assertEquals( 4519999.000, origin[1], delta );
 
-            assertEquals( 8.0, renv.getXRes(), delta );
-            assertEquals( -8.0, renv.getYRes(), delta );
+            assertEquals( 8.0, rRefCenter.getResolutionX(), delta );
+            assertEquals( -8.0, rRefCenter.getResolutionY(), delta );
 
-            Envelope env = renv.getEnvelope( 500, 500 );
-            assertEquals( 423996.000, env.getMax().get0(), delta );
-            assertEquals( 4520003.000, env.getMax().get1(), delta );
-            assertEquals( 419996.000, env.getMin().get0(), delta );
-            assertEquals( 4516003.000, env.getMin().get1(), delta );
+            Envelope env = rRefCenter.getEnvelope( 500, 500, null );
+            assertEquals( 420000.0, env.getMin().get0(), delta );
+            assertEquals( 4515999.0, env.getMin().get1(), delta );
+            assertEquals( 424000.000, env.getMax().get0(), delta );
+            assertEquals( 4519999.000, env.getMax().get1(), delta );
 
-            int[] size = renv.getSize( env );
+            int[] size = rRefCenter.getSize( env );
+            assertEquals( 501, size[0] );
+            assertEquals( 501, size[1] );
+
+            // outer
+            options.add( RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.OUTER.name() );
+            RasterGeoReference rRefOuter = WorldFileAccess.readWorldFile( wld, options );
+            origin = rRefOuter.getOrigin();
+            assertEquals( 420000.000, origin[0], delta );
+            assertEquals( 4519999.000, origin[1], delta );
+
+            // test the outer size
+            size = rRefOuter.getSize( env );
             assertEquals( 500, size[0] );
             assertEquals( 500, size[1] );
 
@@ -107,5 +122,4 @@ public class WorldFileAccessTest {
         }
 
     }
-
 }

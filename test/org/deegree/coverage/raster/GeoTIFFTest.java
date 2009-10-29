@@ -45,15 +45,15 @@ import java.net.URL;
 
 import junit.framework.Assert;
 
-import org.deegree.coverage.raster.geom.RasterReference;
-import org.deegree.coverage.raster.geom.RasterReference.Type;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -72,8 +72,6 @@ public class GeoTIFFTest {
 
     private static AbstractRaster raster;
 
-    private static GeometryFactory geomFactory = new GeometryFactory();
-
     /**
      * load the GeoTIFF file to test
      * 
@@ -84,7 +82,9 @@ public class GeoTIFFTest {
                             throws IOException {
         URL inputURL = GeoTIFFTest.class.getResource( "epsg4326.tiff" );
         File input = new File( inputURL.getFile() );
-        raster = RasterFactory.loadRasterFromFile( input );
+        RasterIOOptions options = RasterIOOptions.forFile( input );
+        options.add( RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.OUTER.name() );
+        raster = RasterFactory.loadRasterFromFile( input, options );
     }
 
     /**
@@ -142,13 +142,13 @@ public class GeoTIFFTest {
     @Test
     public void geoTIFFRasterEnvelope() {
         double delta = 0.0000000001;
-        RasterReference renv = raster.getRasterReference();
-        Type outer = RasterReference.Type.OUTER;
+        RasterGeoReference renv = raster.getRasterReference();
         // actual values by gdalinfo
-        assertEquals( -113.6947431831, renv.getX0( outer ), delta );
-        assertEquals( 41.5412977608, renv.getY0( outer ), delta );
-        assertEquals( 0.0333591905, renv.getXRes(), delta );
-        assertEquals( -0.0334117789, renv.getYRes(), delta );
+        double[] orig = renv.getOrigin();
+        assertEquals( -113.6947431831, orig[0], delta );
+        assertEquals( 41.5412977608, orig[1], delta );
+        assertEquals( 0.0333591905, renv.getResolutionX(), delta );
+        assertEquals( -0.0334117789, renv.getResolutionY(), delta );
 
     }
 }
