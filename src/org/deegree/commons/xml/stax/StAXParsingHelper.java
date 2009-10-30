@@ -323,4 +323,9 @@ public class StAXParsingHelper {
     public static NamespaceContext getDeegreeNamespaceContext( XMLStreamReader xmlStream ) {
         return new NamespaceContext( xmlStream.getNamespaceContext() );
     }
+
+    public static boolean getRequiredAttributeValueAsBoolean( XMLStreamReader xmlStream, String namespaceURI,
+                                                              String localName ) {
+        return parseAsBoolean( xmlStream, getRequiredAttributeValue( xmlStream, namespaceURI, localName ) );
+    }
 }

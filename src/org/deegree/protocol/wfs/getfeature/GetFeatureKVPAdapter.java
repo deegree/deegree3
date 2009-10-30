@@ -543,6 +543,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     result[i] = new TypeName( new QName( typeParts[0] ), null );
                 }
             }
+        } else {
+            result = new TypeName [0];
         }
         return result;
     }

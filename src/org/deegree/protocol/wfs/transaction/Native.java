@@ -38,8 +38,6 @@ package org.deegree.protocol.wfs.transaction;
 
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.protocol.wfs.transaction.TransactionOperation.Type;
-
 /**
  * Represents a WFS <code>Native</code> operation (part of a {@link Transaction} request).
  * 
@@ -87,8 +85,8 @@ public class Native extends TransactionOperation {
     @Override
     public Type getType() {
         return Type.NATIVE;
-    }    
-    
+    }
+
     /**
      * Returns the vendor identifier.
      * 
@@ -110,7 +108,8 @@ public class Native extends TransactionOperation {
     /**
      * Returns an <code>XMLStreamReader</code> that provides access to the vendor specific data.
      * <p>
-     * Note: It is only safe to get and read the stream once.
+     * NOTE: The client <b>must</b> read this stream exactly once and exactly up to the next tag event after the closing
+     * element of the feature/feature collection, i.e. the END_ELEMENT of the surrounding <code>Native</code> element.
      * </p>
      * 
      * @return XML encoded vendor specific data, cursor points at the <code>START_ELEMENT</code> event of the

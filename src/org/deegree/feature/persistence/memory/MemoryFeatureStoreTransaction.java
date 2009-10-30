@@ -47,6 +47,7 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
@@ -198,9 +199,14 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 throw new FeatureStoreException( msg );
             }
         }
-
+        
         store.addFeatures( features );
-        store.addGeometriesWithId( geometries );
+        try {
+            store.addGeometriesWithId( geometries );
+        } catch ( UnknownCRSException e ) {
+            String msg = "Cannot insert geometry: " + e.getMessage();
+            throw new FeatureStoreException( msg );
+        }
 
         return new ArrayList<String>( fids );
     }

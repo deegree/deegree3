@@ -141,7 +141,7 @@ public class GML311StandardPropertiesIterator implements Iterator<Property<?>> {
             }
             break;
         case NAME:
-            if ( currentPropIdx <= props.getNames().length ) {
+            if ( currentPropIdx < props.getNames().length - 1) {
                 currentPropIdx++;
                 // TODO what about the codespace?
                 prop = new GenericProperty<String>( NAME_TYPE, props.getNames()[currentPropIdx].getCode() );

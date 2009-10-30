@@ -56,6 +56,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.persistence.IDGenMode;
 import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -272,6 +273,14 @@ public class TransactionXMLAdapter {
     }
 
     static Native parseNative110( XMLStreamReader xmlStream ) {
-        return null;
+        // optional: '@handle'
+        String handle = xmlStream.getAttributeValue( null, "handle" );
+
+        // required: '@vendorId'
+        String vendorId = StAXParsingHelper.getRequiredAttributeValue( xmlStream, "vendorId" );
+
+        // required: '@safeToIgnore'
+        boolean safeToIgnore = StAXParsingHelper.getRequiredAttributeValueAsBoolean( xmlStream, null, "safeToIgnore" );
+        return new Native( handle, vendorId, safeToIgnore, xmlStream );
     }
 }

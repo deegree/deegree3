@@ -43,6 +43,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -203,9 +205,16 @@ public class MemoryFeatureStore implements FeatureStore {
      * 
      * @param geometries
      *            geometries with ids
+     * @throws UnknownCRSException
      */
-    void addGeometriesWithId( Collection<Geometry> geometries ) {
+    void addGeometriesWithId( Collection<Geometry> geometries )
+                            throws UnknownCRSException {
         for ( Geometry geometry : geometries ) {
+            CRS crs = geometry.getCoordinateSystem();
+            // provoke an UnknownCRSException if it is not known
+            if ( crs != null ) {
+                crs.getWrappedCRS();
+            }
             idToObject.put( geometry.getId(), geometry );
         }
     }
@@ -228,14 +237,17 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection performQuery( Query query ) throws FilterEvaluationException {
+    public FeatureCollection performQuery( Query query )
+                            throws FilterEvaluationException {
 
-        if ( query.getTypeNames() == null || query.getTypeNames().length != 1 ) {
-            String msg = "Only queries with exactly one type name are supported.";
+        if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+            String msg = "Only queries with exactly one or zero type name(s) are supported.";
             throw new UnsupportedOperationException( msg );
         }
 
-        QName ftName = query.getTypeNames()[0].getFeatureTypeName();
+        // TODO what if no type name is specified (use id to determine ft?)
+        QName ftName = query.getTypeNames().length > 0 ? query.getTypeNames()[0].getFeatureTypeName()
+                                                      : schema.getFeatureTypes()[0].getName();
         FeatureType ft = schema.getFeatureType( ftName );
 
         // TODO remove this quirk
@@ -253,26 +265,29 @@ public class MemoryFeatureStore implements FeatureStore {
         }
 
         // extract / create filter from query
-        Filter filter = null;
+        FeatureCollection fc = null;
         if ( query instanceof FilterQuery ) {
-            filter = ( (FilterQuery) query ).getFilter();
+            Filter filter = ( (FilterQuery) query ).getFilter();
+            fc = ftToFeatures.get( ft );
+            if ( filter != null ) {
+                fc = fc.getMembers( filter );
+            }
         } else if ( query instanceof BBoxQuery ) {
             Envelope bbox = ( (BBoxQuery) query ).getBBox();
             PropertyName geoProp = findGeoProp( ft );
             Operator bboxOperator = new BBOX( geoProp, bbox );
-            filter = new OperatorFilter( bboxOperator );           
+            fc = ftToFeatures.get( ft );
+            Filter filter = new OperatorFilter( bboxOperator );
+            fc = fc.getMembers( filter );
         } else if ( query instanceof FeatureIdQuery ) {
-            throw new UnsupportedOperationException();
-        }
-
-        // determine matching features
-        FeatureCollection fc = ftToFeatures.get( ft );
-        if ( filter != null ) {
-            try {
-                fc = fc.getMembers( filter );
-            } catch ( FilterEvaluationException e ) {
-                throw new RuntimeException( e.getMessage() );
+            List<Feature> matches = new LinkedList<Feature>();
+            for ( String fid : ( (FeatureIdQuery) query ).getFeatureIds() ) {
+                Object object = idToObject.get( fid );
+                if ( object instanceof Feature ) {
+                    matches.add( (Feature) object );
+                }
             }
+            fc = new GenericFeatureCollection( null, matches );
         }
 
         // sort features
@@ -284,7 +299,8 @@ public class MemoryFeatureStore implements FeatureStore {
         return fc;
     }
 
-    private PropertyName findGeoProp( FeatureType ft ) throws FilterEvaluationException {
+    private PropertyName findGeoProp( FeatureType ft )
+                            throws FilterEvaluationException {
 
         PropertyName propName = null;
 
@@ -305,7 +321,8 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public int performHitsQuery( Query query ) throws FilterEvaluationException {
+    public int performHitsQuery( Query query )
+                            throws FilterEvaluationException {
         // TODO maybe implement this more efficiently
         return performQuery( query ).size();
     }

@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.crs.CRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.filter.Filter;
