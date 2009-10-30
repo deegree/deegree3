@@ -639,15 +639,17 @@ public class SymbologyParser {
 
     /**
      * @param in
+     * @param uom
      * @return a new symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<PointStyling> parsePointSymbolizer( XMLStreamReader in )
+    public static Symbolizer<PointStyling> parsePointSymbolizer( XMLStreamReader in, UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "PointSymbolizer" );
 
         Common common = new Common();
         PointStyling baseOrEvaluated = new PointStyling();
+        baseOrEvaluated.uom = uom;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "PointSymbolizer" ) ) ) {
             in.nextTag();
@@ -678,6 +680,24 @@ public class SymbologyParser {
         return new Symbolizer<PointStyling>( baseOrEvaluated, common.geometry, common.name );
     }
 
+    private static UOM getUOM( String uom ) {
+        UOM res = Pixel;
+        if ( uom != null ) {
+            String u = uom.toLowerCase();
+            if ( u.endsWith( "metre" ) || u.endsWith( "meter" ) ) {
+                return Metre;
+            } else if ( u.endsWith( "mm" ) ) {
+                return mm;
+            } else if ( u.endsWith( "foot" ) ) {
+                return Foot;
+            } else if ( !u.endsWith( "pixel" ) ) {
+                LOG.warn( "Unknown unit of measure '{}', using pixel instead.", uom );
+            }
+        }
+
+        return res;
+    }
+
     /**
      * @param in
      * @return the symbolizer
@@ -687,46 +707,22 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, null );
         if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
-            UOM uom = Pixel;
-            String u = in.getAttributeValue( null, "uom" );
-            if ( u != null ) {
-                u = u.toLowerCase();
-                if ( u.endsWith( "metre" ) || u.endsWith( "meter" ) ) {
-                    uom = Metre;
-                } else if ( u.endsWith( "mm" ) ) {
-                    uom = mm;
-                } else if ( u.endsWith( "foot" ) ) {
-                    uom = Foot;
-                } else if ( !u.endsWith( "pixel" ) ) {
-                    LOG.warn( "Unknown unit of measure '{}', using pixel instead.", in.getAttributeValue( null, "uom" ) );
-                }
-
-            }
+            UOM uom = getUOM( in.getAttributeValue( null, "uom" ) );
 
             if ( in.getLocalName().equals( "PointSymbolizer" ) ) {
-                Symbolizer<PointStyling> sym = parsePointSymbolizer( in );
-                sym.getBase().uom = uom;
-                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( sym, null );
+                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePointSymbolizer( in, uom ), null );
             }
             if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
-                Symbolizer<LineStyling> sym = parseLineSymbolizer( in );
-                sym.getBase().uom = uom;
-                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( sym, null );
+                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseLineSymbolizer( in, uom ), null );
             }
             if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
-                Symbolizer<PolygonStyling> sym = parsePolygonSymbolizer( in );
-                sym.getBase().uom = uom;
-                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( sym, null );
+                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePolygonSymbolizer( in, uom ), null );
             }
             if ( in.getLocalName().equals( "RasterSymbolizer" ) ) {
-                Symbolizer<RasterStyling> sym = parseRasterSymbolizer( in );
-                sym.getBase().uom = uom;
-                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( sym, null );
+                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseRasterSymbolizer( in, uom ), null );
             }
             if ( in.getLocalName().equals( "TextSymbolizer" ) ) {
-                Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> sym = parseTextSymbolizer( in );
-                sym.first.getBase().uom = uom;
-                return (Pair) sym;
+                return (Pair) parseTextSymbolizer( in, uom );
             }
         }
         return null;
@@ -734,15 +730,17 @@ public class SymbologyParser {
 
     /**
      * @param in
+     * @param uom
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<RasterStyling> parseRasterSymbolizer( XMLStreamReader in )
+    public static Symbolizer<RasterStyling> parseRasterSymbolizer( XMLStreamReader in, UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "RasterSymbolizer" );
 
         Common common = new Common();
         RasterStyling baseOrEvaluated = new RasterStyling();
+        baseOrEvaluated.uom = uom;
         RasterChannelSelection channelSelection = null;
         Continuation<RasterStyling> contn = null;
 
@@ -869,10 +867,12 @@ public class SymbologyParser {
             if ( in.getLocalName().equals( "ImageOutline" ) ) {
                 in.nextTag();
                 if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
-                    baseOrEvaluated.imageOutline = parseLineSymbolizer( in );
+                    baseOrEvaluated.imageOutline = parseLineSymbolizer( in,
+                                                                        getUOM( in.getAttributeValue( null, "uom" ) ) );
                 }
                 if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
-                    baseOrEvaluated.imageOutline = parsePolygonSymbolizer( in );
+                    baseOrEvaluated.imageOutline = parsePolygonSymbolizer( in, getUOM( in.getAttributeValue( null,
+                                                                                                             "uom" ) ) );
                 }
                 in.nextTag();
             }
@@ -912,15 +912,17 @@ public class SymbologyParser {
 
     /**
      * @param in
+     * @param uom
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<LineStyling> parseLineSymbolizer( XMLStreamReader in )
+    public static Symbolizer<LineStyling> parseLineSymbolizer( XMLStreamReader in, UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "LineSymbolizer" );
 
         Common common = new Common();
         LineStyling baseOrEvaluated = new LineStyling();
+        baseOrEvaluated.uom = uom;
         Continuation<LineStyling> contn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "LineSymbolizer" ) ) ) {
@@ -964,15 +966,17 @@ public class SymbologyParser {
 
     /**
      * @param in
+     * @param uom
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<PolygonStyling> parsePolygonSymbolizer( XMLStreamReader in )
+    public static Symbolizer<PolygonStyling> parsePolygonSymbolizer( XMLStreamReader in, UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "PolygonSymbolizer" );
 
         Common common = new Common();
         PolygonStyling baseOrEvaluated = new PolygonStyling();
+        baseOrEvaluated.uom = uom;
         Continuation<PolygonStyling> contn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "PolygonSymbolizer" ) ) ) {
@@ -1131,15 +1135,18 @@ public class SymbologyParser {
 
     /**
      * @param in
+     * @param uom
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> parseTextSymbolizer( XMLStreamReader in )
+    public static Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> parseTextSymbolizer( XMLStreamReader in,
+                                                                                                 UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "TextSymbolizer" );
 
         Common common = new Common();
         TextStyling baseOrEvaluated = new TextStyling();
+        baseOrEvaluated.uom = uom;
         Continuation<TextStyling> contn = null;
         Continuation<StringBuffer> label = null;
 

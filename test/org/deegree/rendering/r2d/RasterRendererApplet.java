@@ -119,7 +119,7 @@ public class RasterRendererApplet extends JApplet {
     public RasterStyling loadRasterStylingFromXml( String fname ) {
         RasterStyling rs = null;
         try {
-//            LOG.debug( "Loading SE XML..." );
+            // LOG.debug( "Loading SE XML..." );
             URI uri = SymbologyParserTest.class.getResource( fname ).toURI();
             System.out.println( "Loading resource: " + uri );
             File f = new File( uri );
@@ -130,7 +130,7 @@ public class RasterRendererApplet extends JApplet {
                 in.nextTag();
             }
             in.require( XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer" );
-            Symbolizer<RasterStyling> symb = SymbologyParser.parseRasterSymbolizer( in );
+            Symbolizer<RasterStyling> symb = SymbologyParser.parseRasterSymbolizer( in, null );
             rs = symb.getBase();
             LOG.debug( "Loaded SE XML" );
         } catch ( Exception e ) {
