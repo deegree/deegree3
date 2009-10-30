@@ -36,6 +36,8 @@
 package org.deegree.record.persistence.dc;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.xml.namespace.QName;
 
@@ -58,12 +60,7 @@ public class DCRecordStore implements RecordStore {
     
     private QName typeNames;
     
-    /*private QName qName;
     
-    public DCRecordStore(QName qName){
-        this.qName = qName;
-    }*/
-
     /* (non-Javadoc)
      * @see org.deegree.record.persistence.RecordStore#describeRecord(javax.xml.stream.XMLStreamWriter)
      */
@@ -72,10 +69,12 @@ public class DCRecordStore implements RecordStore {
         File file = new File( "/home/thomas/workspace/d3_core/src/org/deegree/record/persistence/dc/dc.xsd" );
         
         XMLAdapter ada = new XMLAdapter(file);
+        
+         
         System.out.println(ada.toString());
-        output = ada.toString();
+        //output = ada.toString();
         OMNamespace elem = ada.getRootElement().getDefaultNamespace();
-        ada.getNamespaceContext( ada.getRootElement() );
+        //ada.getNamespaceContext( ada.getRootElement() );
         
         this.typeNames = new QName(elem.getNamespaceURI());
         

@@ -47,7 +47,7 @@ import org.deegree.commons.xml.XMLAdapter;
  */
 public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
 
-    /** Namspace context with predefined bindings "wfs" and "wfs200" */
+    /** Namespace context with predefined bindings "wfs" and "wfs200" */
     protected static NamespaceContext nsContext;
 
     /** Namespace binding for WFS 1.0.0 and WFS 1.1.0 constructs */
