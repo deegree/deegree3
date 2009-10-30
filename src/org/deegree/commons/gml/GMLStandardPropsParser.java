@@ -96,6 +96,7 @@ public class GMLStandardPropsParser {
         int event = xmlStream.nextTag();
 
         // 'gml:metaDataProperty' (0...unbounded)
+        Object [] metadata = null;
         while ( event == START_ELEMENT && new QName( GMLNS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
             parseMetadataProperty311( xmlStream );
             xmlStream.nextTag();
@@ -115,7 +116,7 @@ public class GMLStandardPropsParser {
             xmlStream.nextTag();
         }
 
-        return new StandardGMLObjectProps( description, names.toArray( new CodeType[names.size()] ) );
+        return new StandardGMLObjectProps( metadata, description, names.toArray( new CodeType[names.size()] ) );
     }
 
     protected static void parseMetadataProperty311( XMLStreamReaderWrapper xmlStream )

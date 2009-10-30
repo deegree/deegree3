@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import java.util.ArrayList;
@@ -40,6 +40,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLVersion;
+import org.deegree.commons.utils.Pair;
+import org.deegree.feature.gml.StandardGMLFeatureProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.PropertyType;
@@ -53,12 +56,12 @@ import org.slf4j.LoggerFactory;
  * Please note that it is more efficient to use the {@link GenericSimpleFeature} class if the feature to be represented
  * does not contain multiple properties or nested features ("complex properties").
  * </p>
- *
+ * 
  * @see GenericSimpleFeature
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericFeature extends AbstractFeature {
@@ -71,10 +74,16 @@ public class GenericFeature extends AbstractFeature {
 
     private List<Property<?>> props;
 
-    public GenericFeature( GenericFeatureType ft, String fid, List<Property<?>> props ) {
+    public GenericFeature( GenericFeatureType ft, String fid, List<Property<?>> props, GMLVersion version ) {
         this.ft = ft;
         this.fid = fid;
-        this.props = new ArrayList<Property<?>>( props );
+        if ( version == null ) {
+            this.props = new ArrayList<Property<?>>( props );
+        } else {
+            Pair<StandardGMLFeatureProps, List<Property<?>>> pair = StandardGMLFeatureProps.create( props, version );
+            standardProps = pair.first;
+            this.props = pair.second;
+        }
     }
 
     @Override
@@ -181,9 +190,9 @@ public class GenericFeature extends AbstractFeature {
     @SuppressWarnings("unchecked")
     @Override
     public Property<Geometry>[] getGeometryProperties() {
-        List<Property<Geometry>> geoProps = new ArrayList<Property<Geometry>>(props.size());
+        List<Property<Geometry>> geoProps = new ArrayList<Property<Geometry>>( props.size() );
         for ( Property<?> property : props ) {
-            if ( property.getValue() instanceof Geometry) {
+            if ( property.getValue() instanceof Geometry ) {
                 geoProps.add( (Property<Geometry>) property );
             }
         }

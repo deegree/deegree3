@@ -51,7 +51,6 @@ import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.slf4j.Logger;
@@ -107,6 +106,7 @@ public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
         int event = xmlStream.nextTag();
 
         // 'gml:metaDataProperty' (0...unbounded)
+        Object[] metadata = new Object[0];
         while ( event == START_ELEMENT && new QName( GMLNS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
             LOG.debug( "gml:metaDataProperty" );
             parseMetadataProperty311( xmlStream );
@@ -140,8 +140,8 @@ public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
             parseLocation311( xmlStream );
             xmlStream.nextTag();
         }
-
-        return new StandardGMLFeatureProps( description, names.toArray( new CodeType[names.size()] ), boundedBy );
+        return new StandardGMLFeatureProps( metadata, description, names.toArray( new CodeType[names.size()] ),
+                                            boundedBy );
     }
 
     protected static Envelope parseBoundedBy311( XMLStreamReaderWrapper xmlStream )

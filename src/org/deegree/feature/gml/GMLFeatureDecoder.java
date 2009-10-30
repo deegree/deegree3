@@ -192,20 +192,23 @@ public class GMLFeatureDecoder extends XMLAdapter {
         LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
 
         // parse properties
-        Iterator<PropertyType> declIter = ft.getPropertyDeclarations().iterator();
+        Iterator<PropertyType> declIter = ft.getPropertyDeclarations(GMLVersion.GML_31).iterator();
+        
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
 
         CRS activeCRS = crs;
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
 
-        StandardGMLFeatureProps standardProps = GMLStandardFeaturePropsParser.parse311( xmlStream );
-        // override active CRS with the one from boundedBy (if present)
-        if ( standardProps != null && standardProps.getBoundedBy() != null ) {
-            activeCRS = standardProps.getBoundedBy().getCoordinateSystem();
-        }
-        LOG.debug( "- crs '" + activeCRS + "'" );
+//        StandardGMLFeatureProps standardProps = GMLStandardFeaturePropsParser.parse311( xmlStream );
+//        // override active CRS with the one from boundedBy (if present)
+//        if ( standardProps != null && standardProps.getBoundedBy() != null ) {
+//            activeCRS = standardProps.getBoundedBy().getCoordinateSystem();
+//        }
+//        LOG.debug( "- crs '" + activeCRS + "'" );
 
+        xmlStream.nextTag();
+        
         while ( xmlStream.getEventType() == START_ELEMENT ) {
             QName propName = xmlStream.getName();
             LOG.debug( "- property '" + propName + "'" );
@@ -248,8 +251,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         }
         LOG.debug( " - parsing feature (end): " + xmlStream.getCurrentEventInfo() );
 
-        feature = ft.newFeature( fid, propertyList );
-        feature.setStandardGMLProperties( standardProps );
+        feature = ft.newFeature( fid, propertyList, GMLVersion.GML_31 );
 
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getFeature( fid ) != null ) {

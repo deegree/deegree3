@@ -39,7 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProps;
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;
@@ -60,13 +60,8 @@ import org.deegree.geometry.Geometry;
  * </p>
  * <p>
  * <h4>Notes on the representation of GML features</h4>
- * 
- * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
- * <code>gml:description</code>) which are inherited by any GML feature type definition are treated in a specific way.
- * They are modelled using the {@link StandardGMLObjectProps} class and not as standard properties of the feature.
- * This design decision has been driven by the goal to make the implementation less GML (and GML-version) specific and
- * to allow for example to export a {@link Feature} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for
- * the standard properties).
+ * <p>
+ * The interface supports two modes of operation: GML-agnostic and GML (and version) specific. Blabla...
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -90,8 +85,8 @@ public interface Feature extends MatchableObject {
     /**
      * Sets the id of the feature.
      * <p>
-     * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3) or <code>fid</code>
-     * (GML 2) attribute of the feature element.
+     * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
+     * <code>fid</code> (GML 2) attribute of the feature element.
      * </p>
      * 
      * @param id
@@ -117,11 +112,20 @@ public interface Feature extends MatchableObject {
     public FeatureType getType();
 
     /**
-     * Returns all properties in order.
+     * Returns all properties in order, excluding standard GML properties such as <code>gml:name</code>.
      * 
-     * @return all properties
+     * @return all properties, excluding standard GML properties
      */
     public Property<?>[] getProperties();
+
+    /**
+     * Returns all properties in order, including standard GML properties.
+     * 
+     * @param version
+     *            determines the names and types of the standard GML properties, must not be <code>null</code>
+     * @return all properties, including standard GML properties
+     */
+    public Property<?>[] getProperties( GMLVersion version );
 
     /**
      * Returns the values of the properties with the given name, in order.
@@ -131,6 +135,17 @@ public interface Feature extends MatchableObject {
      * @return the values of the properties with the given name, in order
      */
     public Object[] getPropertyValues( QName propName );
+
+    /**
+     * Returns the values of the properties with the given name, in order.
+     * 
+     * @param propName
+     *            name of the requested property
+     * @param version
+     *            determines the names and types of the standard GML properties, must not be <code>null</code>
+     * @return the values of the properties with the given name, in order
+     */
+    public Object[] getPropertyValues( QName propName, GMLVersion version );
 
     /**
      * Returns the values of the property with the given name.
@@ -144,6 +159,19 @@ public interface Feature extends MatchableObject {
     public Object getPropertyValue( QName propName );
 
     /**
+     * Returns the values of the property with the given name.
+     * 
+     * @param propName
+     *            name of the requested property
+     * @param version
+     *            determines the names and types of the standard GML properties, must not be <code>null</code>
+     * @return the values of the properties with the given name
+     * @throws IllegalArgumentException
+     *             if the feature has more than one property with the given name
+     */
+    public Object getPropertyValue( QName propName, GMLVersion version );
+
+    /**
      * Returns the properties with the given name, in order.
      * 
      * @param propName
@@ -151,6 +179,17 @@ public interface Feature extends MatchableObject {
      * @return the properties with the given name, in order
      */
     public Property<?>[] getProperties( QName propName );
+
+    /**
+     * Returns the properties with the given name, in order.
+     * 
+     * @param propName
+     *            name of the requested properties
+     * @param version
+     *            determines the names and types of the standard GML properties, must not be <code>null</code>
+     * @return the properties with the given name, in order
+     */
+    public Property<?>[] getProperties( QName propName, GMLVersion version );
 
     /**
      * Returns the property with the given name.
@@ -162,6 +201,19 @@ public interface Feature extends MatchableObject {
      *             if the feature has more than one property with the given name
      */
     public Property<?> getProperty( QName propName );
+
+    /**
+     * Returns the property with the given name.
+     * 
+     * @param propName
+     *            name of the requested property
+     * @param version
+     *            determines the names and types of the standard GML properties, must not be <code>null</code>
+     * @return the property with the given name
+     * @throws IllegalArgumentException
+     *             if the feature has more than one property with the given name
+     */
+    public Property<?> getProperty( QName propName, GMLVersion version );
 
     /**
      * Returns all geometry-valued properties in order.
@@ -193,28 +245,41 @@ public interface Feature extends MatchableObject {
     public void setPropertyValue( QName propName, int occurence, Object value );
 
     /**
+     * Sets the value of a specific occurence of a property with a given name.
+     * 
+     * @param propName
+     *            property name
+     * @param occurence
+     *            index of the property, starting with zero. If the property is not a multi-property (i.e. maxOccurs=1),
+     *            this is always zero.
+     * @param value
+     *            new value of the property
+     * @param version
+     *            determines the names and types of the standard GML properties, must not be <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the property names or values are not compatible with the feature type
+     */
+    public void setPropertyValue( QName propName, int occurence, Object value, GMLVersion version );
+
+    /**
      * Called during construction to initialize the properties of the feature.
      * 
      * @param props
      * @throws IllegalArgumentException
      *             if the property names or values are not compatible with the feature type
      */
-    void setProperties( List<Property<?>> props )
+    public void setProperties( List<Property<?>> props )
                             throws IllegalArgumentException;
 
     /**
-     * Returns a representation of the standard GML properties (e.g. <code>gml:name</code> or
-     * <code>gml:description</code).
+     * Called during construction to initialize the properties of the feature.
      * 
-     * @return a representation of the standard GML properties, may be null
+     * @param props
+     * @param version
+     *            determines the names and types of the standard GML properties, must not be <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the property names or values are not compatible with the feature type
      */
-    public StandardGMLObjectProps getStandardGMLProperties();
-
-    /**
-     * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
-     * 
-     * @param standardProps
-     *            representation of the standard GML properties
-     */
-    public void setStandardGMLProperties( StandardGMLObjectProps standardProps );
+    public void setProperties( List<Property<?>> props, GMLVersion version )
+                            throws IllegalArgumentException;
 }

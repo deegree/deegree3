@@ -139,18 +139,25 @@ public class StandardGMLObjectProps {
                                                        GeometryPropertyType.GeometryType.GEOMETRY,
                                                        GeometryPropertyType.CoordinateDimension.DIM_2 );
 
+        // TODO correct this (should be a MetaDataPropertyType)
         PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1,
                                                                      null );
-        // TODO correct this (should be a MetaDataPropertyType)
         PT_DESCRIPTION_GML31 = new CustomPropertyType( new QName( GMLNS, "description" ), 0, 1, null );
         PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1 );
     }
+    
+    protected Object[] metadata;
 
-    protected final StringOrRef description;
+    protected StringOrRef description;
 
-    protected final CodeType[] names;
+    protected CodeType[] names;
 
-    public StandardGMLObjectProps( StringOrRef description, CodeType[] names ) {
+    public StandardGMLObjectProps( Object[] metadata, StringOrRef description, CodeType[] names ) {
+        if (metadata == null) {
+            this.metadata = new Object [0];
+        } else {
+            this.metadata = metadata;
+        }
         this.description = description;
         if ( names == null ) {
             this.names = new CodeType[0];
@@ -159,13 +166,17 @@ public class StandardGMLObjectProps {
         }
     }
 
+    public Object getMetadata() {
+        return description;
+    }    
+    
     public StringOrRef getDescription() {
         return description;
     }
 
     public CodeType[] getNames() {
         return names;
-    }
+    }   
 
     @Override
     public String toString() {

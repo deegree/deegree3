@@ -36,6 +36,7 @@
 
 package org.deegree.feature.gml;
 
+import static org.deegree.commons.gml.GMLVersion.GML_31;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
@@ -217,10 +218,7 @@ public class GML311FeatureEncoder {
             if ( feature.getId() != null ) {
                 writer.writeAttribute( "gml", GMLNS, "id", feature.getId() );
             }
-            if ( feature.getStandardGMLProperties() != null ) {
-                exportStandardProps( writer, feature.getStandardGMLProperties() );
-            }
-            for ( Property<?> prop : feature.getProperties() ) {
+            for ( Property<?> prop : feature.getProperties( GML_31 ) ) {
                 export( prop, inlineLevels );
             }
             writer.writeEndElement();

@@ -64,10 +64,6 @@ public class GMLApplicationSchemaXSDDecoderTest {
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
-
-        for ( int i = 0; i < fts.length; i++ ) {
-            System.out.println (fts[i]);
-        }        
         // TODO do more thorough testing
     }
    

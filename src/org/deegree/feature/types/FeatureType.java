@@ -80,7 +80,7 @@ public interface FeatureType {
      * @param propName
      *            name of the property
      * @param version
-     *            the GML version (this defines the available GML standard properties)
+     *            GML version that determines the standard GML properties, must not be <code>null</code>
      * @return the declaration of the property, or <code>null</code> if no such property is defined
      */
     public PropertyType getPropertyDeclaration( QName propName, GMLVersion version );
@@ -96,7 +96,7 @@ public interface FeatureType {
      * Returns all property declarations of the feature type, including those that any GML feature allows for.
      * 
      * @param version
-     *            GML version, must not be <code>null</code>
+     *            GML version that determines the standard GML properties, must not be <code>null</code>
      * @return property declarations (in order)
      */
     public List<PropertyType> getPropertyDeclarations( GMLVersion version );
@@ -122,9 +122,12 @@ public interface FeatureType {
      *            feature id, or null if the feature doesn't have an id
      * @param props
      *            properties
+     * @param version
+     *            determines the names and types of the standard GML properties, can be <code>null</code> (no GML
+     *            properties)
      * @return a new <code>Feature</code> instance
      */
-    public Feature newFeature( String fid, List<Property<?>> props );
+    public Feature newFeature( String fid, List<Property<?>> props, GMLVersion version );
 
     /**
      * Returns the {@link ApplicationSchema} that this feature type belongs to.

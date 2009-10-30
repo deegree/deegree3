@@ -129,10 +129,10 @@ public class GenericFeatureType implements FeatureType {
         }
         return geoPt;
     }    
-
+   
     @Override
-    public Feature newFeature( String fid, List<Property<?>> props ) {
-        return new GenericFeature( this, fid, props );
+    public Feature newFeature( String fid, List<Property<?>> props, GMLVersion version ) {
+        return new GenericFeature( this, fid, props, version );
     }
 
     @Override

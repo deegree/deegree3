@@ -43,6 +43,7 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
@@ -69,17 +70,23 @@ class FeatureNavigator extends DefaultNavigator {
 
     private DocumentNode documentNode;
 
+    private GMLVersion version;
+
     /**
      * Creates a new {@link FeatureNavigator} instance with a {@link Feature} that is the root of the navigation
      * hierarchy.
      * 
      * @param rootFeature
      *            root of the navigation hierarchy (document node), can be null
+     * @param version
+     *            determines the names and types of the standard GML properties, can be <code>null</code> (if no
+     *            properties such as "gml:name" are used)
      */
-    FeatureNavigator( Feature rootFeature ) {
+    FeatureNavigator( Feature rootFeature, GMLVersion version ) {
         if ( rootFeature != null ) {
             this.documentNode = new DocumentNode( new FeatureNode( null, rootFeature ) );
         }
+        this.version = version;
     }
 
     /**
@@ -111,9 +118,11 @@ class FeatureNavigator extends DefaultNavigator {
                 }
                 return attrNodes.iterator();
             } else if ( value instanceof Measure ) {
-                return new SingleObjectIterator(new AttributeNode( (PropertyNode) node, new QName("uom"), ((Measure) value).getUomUri()));
+                return new SingleObjectIterator( new AttributeNode( (PropertyNode) node, new QName( "uom" ),
+                                                                    ( (Measure) value ).getUomUri() ) );
             } else if ( value instanceof CodeType ) {
-                return new SingleObjectIterator(new AttributeNode( (PropertyNode) node, new QName("codeSpace"), ((CodeType) value).getCodeSpace()));
+                return new SingleObjectIterator( new AttributeNode( (PropertyNode) node, new QName( "codeSpace" ),
+                                                                    ( (CodeType) value ).getCodeSpace() ) );
             }
         } else if ( node instanceof CustomElementNode ) {
             GenericCustomPropertyValue value = ( (CustomElementNode) node ).getElement();
@@ -208,7 +217,7 @@ class FeatureNavigator extends DefaultNavigator {
     public Iterator<?> getChildAxisIterator( Object node ) {
         Iterator<?> iter = JaxenConstants.EMPTY_ITERATOR;
         if ( node instanceof FeatureNode ) {
-            iter = new PropertyNodeIterator( (FeatureNode) node );
+            iter = new PropertyNodeIterator( (FeatureNode) node, version );
         } else if ( node instanceof DocumentNode ) {
             iter = new SingleObjectIterator( ( (DocumentNode) node ).getRootNode() );
         } else if ( node instanceof PropertyNode ) {
@@ -231,7 +240,7 @@ class FeatureNavigator extends DefaultNavigator {
                 iter = new SingleObjectIterator( new TextNode( (PropertyNode) node, (String) propValue ) );
             }
         } else if ( node instanceof CustomElementNode ) {
-            // TODO handle text node children            
+            // TODO handle text node children
             List<GenericCustomPropertyValue> childNodes = ( (CustomElementNode) node ).getElement().getChildNodes();
             List<CustomElementNode> propNodes = new ArrayList<CustomElementNode>( childNodes.size() );
             for ( GenericCustomPropertyValue childNode : childNodes ) {
@@ -423,7 +432,7 @@ class FeatureNavigator extends DefaultNavigator {
     @Override
     public XPath parseXPath( String xpath )
                             throws SAXPathException {
-        return new FeatureXPath( xpath );
+        return new FeatureXPath( xpath, version );
     }
 
     /**

@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.FilterEvaluationException;
@@ -84,8 +85,8 @@ public class Features {
                         PropertyName propName = sortCrit.getSortProperty();
                         try {
                             // TODO handle multi properties correctly
-                            Object[] values1 = f1.getPropertyValues( propName );
-                            Object[] values2 = f2.getPropertyValues( propName );
+                            Object[] values1 = f1.getPropertyValues( propName, GMLVersion.GML_31 );
+                            Object[] values2 = f2.getPropertyValues( propName, GMLVersion.GML_31 );
                             for ( Object value1 : values1 ) {
                                 if ( value1 != null ) {
                                     for ( Object value2 : values2 ) {

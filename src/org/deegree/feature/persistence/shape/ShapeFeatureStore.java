@@ -403,7 +403,7 @@ public class ShapeFeatureStore implements FeatureStore {
             if ( withGeometries ) {
                 props.add( new GenericProperty<Geometry>( geom, pair.second ) );
             }
-            Feature feat = ft.newFeature( "shp_" + pair.first, props );
+            Feature feat = ft.newFeature( "shp_" + pair.first, props, null );
 
             if ( filter == null || filter.evaluate( feat ) ) {
                 feats.add( feat );

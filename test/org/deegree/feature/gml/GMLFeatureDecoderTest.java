@@ -90,8 +90,10 @@ public class GMLFeatureDecoderTest {
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
-        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );               
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+        
+        System.out.println (fc.size ());
     }
 
     @Test(expected = XMLParsingException.class)

@@ -37,6 +37,7 @@ package org.deegree.filter.expression;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -115,7 +116,7 @@ public class PropertyName implements Expression {
                             throws FilterEvaluationException {
         Object[] values;
         try {
-            values = obj.getPropertyValues( this );
+            values = obj.getPropertyValues( this, GMLVersion.GML_31 );
         } catch ( JaxenException e ) {
             e.printStackTrace();
             throw new FilterEvaluationException( e.getMessage() );

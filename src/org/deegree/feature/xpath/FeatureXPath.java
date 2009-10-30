@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
@@ -69,11 +70,14 @@ public class FeatureXPath extends BaseXPath {
      * 
      * @param xpathExpr
      *            the XPath expression
+     * @param version
+     *            determines the names and types of the standard GML properties, can be <code>null</code> (if no
+     *            properties such as "gml:name" are used)
      * @throws JaxenException
      *             if there is a syntax error in the expression
      */
-    public FeatureXPath( String xpathExpr ) throws JaxenException {
-        super( xpathExpr, new FeatureNavigator( null ) );
+    public FeatureXPath( String xpathExpr, GMLVersion version ) throws JaxenException {
+        super( xpathExpr, new FeatureNavigator( null, version ) );
     }
 
     /**
@@ -83,10 +87,13 @@ public class FeatureXPath extends BaseXPath {
      *            the XPath expression
      * @param rootFeature
      *            root of the navigation hierarchy (document node)
+     * @param version
+     *            determines the names and types of the standard GML properties, can be <code>null</code> (if no
+     *            properties such as "gml:name" are used)
      * @throws JaxenException
      *             if there is a syntax error in the expression
      */
-    public FeatureXPath( String xpathExpr, Feature rootFeature ) throws JaxenException {
-        super( xpathExpr, new FeatureNavigator( rootFeature ) );
+    public FeatureXPath( String xpathExpr, Feature rootFeature, GMLVersion version ) throws JaxenException {
+        super( xpathExpr, new FeatureNavigator( rootFeature, version ) );
     }
 }

@@ -42,6 +42,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -83,7 +84,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * @param fid
      * @param props
      */
-    public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property<?>> props ) {
+    public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property<?>> props, GMLVersion version ) {
         this.ft = ft;
         this.fid = fid;
         for ( Property<?> prop : props ) {
@@ -113,14 +114,6 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     }
 
     /**
-     * Creates a new <code>GenericFeatureCollection</code> without type information and contents.
-     */
-    public GenericFeatureCollection() {
-        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
-    }
-
-
-    /**
      * Creates a new <code>GenericFeatureCollection</code> without type information that contains the given features.
      *
      * @param fid
@@ -130,6 +123,10 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         this.fid = fid;
         this.memberFeatures = new ArrayList<Feature>( memberFeatures );
         featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
+    }
+
+    public GenericFeatureCollection() {
+        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -156,7 +153,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         }
         for ( Feature feature : memberFeatures ) {
             props[i++] = new GenericProperty<Feature>( featureMemberDecl, feature );
-        }
+        }       
         return props;
     }
 

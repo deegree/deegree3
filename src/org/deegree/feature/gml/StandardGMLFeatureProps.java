@@ -37,8 +37,11 @@ package org.deegree.feature.gml;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -47,7 +50,11 @@ import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
-import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.feature.GenericProperty;
+import org.deegree.feature.Property;
+import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
@@ -74,8 +81,6 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
     /** GML 3.0/3.1 standard property type 'gml:boundedBy' */
     public static final PropertyType PT_BOUNDED_BY_GML31;
 
-    private final Envelope boundedBy;
-
     private final static Map<QName, PropertyType> GML2PropNameToPropType = new LinkedHashMap<QName, PropertyType>();
 
     private final static Map<QName, PropertyType> GML31PropNameToPropType = new LinkedHashMap<QName, PropertyType>();
@@ -89,14 +94,10 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                                                SimplePropertyType.PrimitiveType.STRING );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
-        PT_BOUNDED_BY_GML2 = new GeometryPropertyType( new QName( GMLNS, "boundedBy" ), 0, 1,
-                                                       GeometryPropertyType.GeometryType.GEOMETRY,
-                                                       GeometryPropertyType.CoordinateDimension.DIM_2 );
+        PT_BOUNDED_BY_GML2 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1 );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
-        PT_BOUNDED_BY_GML31 = new GeometryPropertyType( new QName( GMLNS, "boundedBy" ), 0, 1,
-                                                        GeometryPropertyType.GeometryType.GEOMETRY,
-                                                        GeometryPropertyType.CoordinateDimension.DIM_2 );
+        PT_BOUNDED_BY_GML31 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1 );
 
         // fill lookup maps
         GML2PropNameToPropType.put( PT_DESCRIPTION_GML2.getName(), PT_DESCRIPTION_GML2 );
@@ -109,17 +110,243 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         GML31PropNameToPropType.put( PT_BOUNDED_BY_GML31.getName(), PT_BOUNDED_BY_GML31 );
     }
 
-    StandardGMLFeatureProps( StringOrRef description, CodeType[] names, Envelope boundedBy ) {
-        super( description, names );
+    private Envelope boundedBy;
+
+    /**
+     * Creates a new {@link StandardGMLFeatureProps} instance.
+     * 
+     * @param metadata
+     * @param description
+     * @param names
+     * @param boundedBy
+     */
+    public StandardGMLFeatureProps( Object[] metadata, StringOrRef description, CodeType[] names, Envelope boundedBy ) {
+        super( metadata, description, names );
         this.boundedBy = boundedBy;
     }
 
+    /**
+     * Returns the <code>boundedBy</code> property value.
+     * 
+     * @return <code>boundedBy</code> property value, or <code>null</code> if not defined
+     */
     public Envelope getBoundedBy() {
         return boundedBy;
     }
 
     /**
-     * Returns the standard property types that any GML feature allows for.
+     * Returns the corresponding {@link Property} instances for a specific GML version.
+     * 
+     * @param version
+     *            GML version, must not be <code>null</code>
+     * @return corresponding {@link Property} instances, may be empty, but never <code>null</code>
+     */
+    public Collection<Property<?>> getProperties( GMLVersion version ) {
+        List<Property<?>> props = new ArrayList<Property<?>>();
+        switch ( version ) {
+        case GML_2:
+            if ( description != null ) {
+                props.add( new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() ) );
+            }
+            if ( names.length > 0 ) {
+                props.add( new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() ) );
+            }
+            if ( boundedBy != null ) {
+                props.add( new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy ) );
+            }
+            break;
+        case GML_31:
+            if ( metadata != null ) {
+                for ( Object metadataItem : metadata ) {
+                    props.add( new GenericProperty<Object>( PT_META_DATA_PROPERTY_GML31, metadataItem ) );    
+                }                
+            }
+            if ( description != null ) {
+                props.add( new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML31, description ) );
+            }
+            if ( names != null ) {
+                for ( CodeType name : names ) {
+                    props.add( new GenericProperty<CodeType>( PT_NAME_GML31, name ) );
+                }
+            }
+            if ( boundedBy != null ) {
+                props.add( new GenericProperty<Envelope>( PT_BOUNDED_BY_GML31, boundedBy ) );
+            }
+            break;
+        case GML_32:
+            throw new UnsupportedOperationException( "Not implemented yet." );
+        }
+        return props;
+    }
+
+    /**
+     * Returns the standard GML property with the given name.
+     * 
+     * @param propName
+     *            name of the requested property, must not be <code>null</code>
+     * @param version
+     *            GML version, must not be <code>null</code>
+     * @return corresponding {@link Property} instance or <code>null</code> if no such property exists
+     */
+    public Property<?> getProperty( QName propName, GMLVersion version ) {
+        Property<?> prop = null;
+        switch ( version ) {
+        case GML_2:
+            if ( PT_DESCRIPTION_GML2.getName().equals( propName ) && description != null ) {
+                prop = new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() );
+            } else if ( PT_NAME_GML2.getName().equals( propName ) && names != null && names.length > 0 ) {
+                prop = new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() );
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) && boundedBy != null ) {
+                prop = new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy );
+            }
+            break;
+        case GML_31:
+            if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
+                prop = new GenericProperty<Object>( PT_META_DATA_PROPERTY_GML31, metadata[0] );
+            } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) && description != null ) {
+                prop = new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML31, description );
+            } else if ( PT_NAME_GML31.getName().equals( propName ) && names.length > 0 ) {
+                prop = new GenericProperty<CodeType>( PT_NAME_GML31, names[0] );
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
+                if ( boundedBy != null ) {
+                    prop = new GenericProperty<Envelope>( PT_BOUNDED_BY_GML31, boundedBy );
+                }
+            }
+            break;
+        case GML_32:
+            throw new UnsupportedOperationException( "Not implemented yet." );
+        }
+        return prop;
+    }
+
+    /**
+     * Returns the value of the standard GML property with the given name.
+     * 
+     * @param propName
+     *            name of the requested property, must not be <code>null</code>
+     * @param version
+     *            GML version, must not be <code>null</code>
+     * @return corresponding value or <code>null</code> if no such property exists
+     */
+    public Object getPropertyValue( QName propName, GMLVersion version ) {
+        Object value = null;
+        switch ( version ) {
+        case GML_2:
+            if ( PT_DESCRIPTION_GML2.getName().equals( propName ) && description != null ) {
+                value = description.getString();
+            } else if ( PT_NAME_GML2.getName().equals( propName ) && names != null && names.length > 0 ) {
+                value = names[0].getCode();
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) && boundedBy != null ) {
+                value = boundedBy;
+            }
+            break;
+        case GML_31:
+            if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
+                value = metadata[0];
+            } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) && description != null ) {
+                value = description.getString();
+            } else if ( PT_NAME_GML31.getName().equals( propName ) && names.length > 0 ) {
+                value = names[0];
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
+                if ( boundedBy != null ) {
+                    value = boundedBy;
+                }
+            }
+            break;
+        case GML_32:
+            throw new UnsupportedOperationException( "Not implemented yet." );
+        }
+        return value;
+    }
+
+    /**
+     * Returns the standard GML properties with the given name.
+     * 
+     * @param propName
+     *            name of the requested properties, must not be <code>null</code>
+     * @param version
+     *            GML version, must not be <code>null</code>
+     * @return corresponding {@link Property} instances or <code>null</code> if no such property exists
+     */
+    public Property<?>[] getProperties( QName propName, GMLVersion version ) {
+        Property<?>[] props = null;
+        switch ( version ) {
+        case GML_2:
+            if ( PT_DESCRIPTION_GML2.getName().equals( propName ) && description != null ) {
+                props = new Property<?>[] { new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() ) };
+            } else if ( PT_NAME_GML2.getName().equals( propName ) && names != null && names.length > 0 ) {
+                props = new Property<?>[] { new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() ) };
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) && boundedBy != null ) {
+                props = new Property<?>[] { new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy ) };
+            }
+            break;
+        case GML_31:
+            if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
+                props = new Property<?>[metadata.length];
+                for ( int i = 0; i < metadata.length; i++ ) {
+                    props[i] = new GenericProperty<Object>( PT_NAME_GML31, metadata[i] );
+                }
+            } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) && description != null ) {
+                props = new Property<?>[] { new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML31, description ) };
+            } else if ( PT_NAME_GML31.getName().equals( propName ) && names.length > 0 ) {
+                props = new Property<?>[names.length];
+                for ( int i = 0; i < names.length; i++ ) {
+                    props[i] = new GenericProperty<CodeType>( PT_NAME_GML31, names[i] );
+                }
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
+                if ( boundedBy != null ) {
+                    props = new Property<?>[] { new GenericProperty<Envelope>( PT_BOUNDED_BY_GML31, boundedBy ) };
+                }
+            }
+            break;
+        case GML_32:
+            throw new UnsupportedOperationException( "Not implemented yet." );
+        }
+        return props;
+    }
+
+    /**
+     * Returns the values of the standard GML properties with the given name.
+     * 
+     * @param propName
+     *            name of the requested properties, must not be <code>null</code>
+     * @param version
+     *            GML version, must not be <code>null</code>
+     * @return corresponding {@link Property} values or <code>null</code> if no such property exists
+     */
+    public Object[] getPropertiesValues( QName propName, GMLVersion version ) {
+        Object[] values = null;
+        switch ( version ) {
+        case GML_2:
+            if ( PT_DESCRIPTION_GML2.getName().equals( propName ) && description != null ) {
+                values = new Object[] { description.getString() };
+            } else if ( PT_NAME_GML2.getName().equals( propName ) && names != null && names.length > 0 ) {
+                values = new Object[] { names[0].getCode() };
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) && boundedBy != null ) {
+                values = new Object[] { boundedBy };
+            }
+            break;
+        case GML_31:
+            if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
+                values = metadata;
+            } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) && description != null ) {
+                values = new Object[] { description };
+            } else if ( PT_NAME_GML31.getName().equals( propName ) && names.length > 0 ) {
+                values = names;
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
+                if ( boundedBy != null ) {
+                    values = new Object[] { boundedBy };
+                }
+            }
+            break;
+        case GML_32:
+            throw new UnsupportedOperationException( "Not implemented yet." );
+        }
+        return values;
+    }
+
+    /**
+     * Returns the declaration for standard properties that any GML feature allows for.
      * 
      * @param version
      *            GML version, must not be <code>null</code>
@@ -141,10 +368,10 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
 
         }
         return pts;
-    }    
-    
+    }
+
     /**
-     * Returns the standard GML property type with the given name for the specified GML version.
+     * Returns the standard GML property declaration with the given name for the specified GML version.
      * 
      * @param propName
      *            qualified name of the property
@@ -153,7 +380,6 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
      * @return standard GML property type, or <code>null</code> if no such property type exists
      */
     public static PropertyType getPropertyType( QName propName, GMLVersion version ) {
-
         PropertyType pt = null;
         switch ( version ) {
         case GML_2:
@@ -168,6 +394,101 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
 
         }
         return pt;
+    }
+
+    public boolean setPropertyValue( QName propName, int occurence, Object value, GMLVersion version ) {
+
+        // TODO
+
+        switch ( version ) {
+        case GML_2: {
+            if ( PT_DESCRIPTION_GML2.equals( propName ) ) {
+            } else if ( PT_NAME_GML2.equals( propName ) ) {
+            } else if ( PT_BOUNDED_BY_GML2.equals( propName ) ) {
+            }
+            break;
+        }
+        case GML_31: {
+            if ( PT_META_DATA_PROPERTY_GML31.equals( propName ) ) {
+            } else if ( PT_DESCRIPTION_GML31.equals( propName ) ) {
+            } else if ( PT_NAME_GML31.equals( propName ) ) {
+            } else if ( PT_BOUNDED_BY_GML31.equals( propName ) ) {
+            }
+            break;
+        }
+        case GML_32: {
+            throw new UnsupportedOperationException( "Not implemented yet." );
+        }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a {@link StandardGMLFeatureProps} instances from the given list of {@link Property} objects and returns
+     * the remaining properties that are not GML default properties.
+     * 
+     * @param props
+     * @param version
+     *            GML version, must not be <code>null</code>
+     * @return created instance and remaining (non-default) properties
+     */
+    public static Pair<StandardGMLFeatureProps, List<Property<?>>> create( List<Property<?>> props, GMLVersion version ) {
+
+        List<Object> metadata = new LinkedList<Object>();
+        StringOrRef description = null;
+        List<CodeType> names = new LinkedList<CodeType>();
+        Envelope boundedBy = null;
+        int lastIndex = 0;
+
+        switch ( version ) {
+        case GML_2: {
+            for ( Property<?> property : props ) {
+                lastIndex++;
+                QName propName = property.getName();
+                if ( CommonNamespaces.GMLNS.equals( propName.getNamespaceURI() ) ) {
+                    if ( PT_DESCRIPTION_GML2.equals( propName ) ) {
+                        description = new StringOrRef( (String) property.getValue(), null );
+                    } else if ( PT_NAME_GML2.equals( propName ) ) {
+                        names.add( new CodeType( (String) property.getValue() ) );
+                    } else if ( PT_BOUNDED_BY_GML2.equals( propName ) ) {
+                        boundedBy = (Envelope) property.getValue();
+                    }
+                } else {
+                    break;
+                }
+            }
+            break;
+        }
+        case GML_31: {
+            for ( Property<?> property : props ) {
+                QName propName = property.getName();
+                if ( CommonNamespaces.GMLNS.equals( propName.getNamespaceURI() ) ) {
+                    if ( PT_META_DATA_PROPERTY_GML31.equals( propName ) ) {
+                        metadata.add( property.getValue() );
+                    } else if ( PT_DESCRIPTION_GML31.equals( propName ) ) {
+                        description = (StringOrRef) property.getValue();
+                    } else if ( PT_NAME_GML31.equals( propName ) ) {
+                        names.add( (CodeType) property.getValue() );
+                    } else if ( PT_BOUNDED_BY_GML31.equals( propName ) ) {
+                        boundedBy = (Envelope) property.getValue();
+                    }
+                } else {
+                    break;
+                }
+            }
+            break;
+        }
+        case GML_32: {
+            throw new UnsupportedOperationException( "Not implemented yet." );
+        }
+        }
+        StandardGMLFeatureProps gmlProps = new StandardGMLFeatureProps(
+                                                                        metadata.toArray( new Object[metadata.size()] ),
+                                                                        description,
+                                                                        names.toArray( new CodeType[names.size()] ),
+                                                                        boundedBy );
+        List<Property<?>> nonGMLProps = props.subList( lastIndex, props.size() - 1 );
+        return new Pair<StandardGMLFeatureProps, List<Property<?>>>( gmlProps, nonGMLProps );
     }
 
     @Override

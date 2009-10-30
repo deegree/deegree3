@@ -40,7 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProps;
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.FeatureType;
@@ -104,7 +104,7 @@ public class FeatureReference implements Feature {
     @Override
     public String getId() {
         // TODO remove hack (only necessary because ID generation in store does not update reference objects)
-        if (feature != null) {
+        if ( feature != null ) {
             return feature.getId();
         }
         return fid;
@@ -131,9 +131,9 @@ public class FeatureReference implements Feature {
     }
 
     @Override
-    public Object[] getPropertyValues( PropertyName propName )
+    public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
                             throws JaxenException {
-        return feature.getPropertyValues( propName );
+        return feature.getPropertyValues( propName, version );
     }
 
     @Override
@@ -170,16 +170,6 @@ public class FeatureReference implements Feature {
         feature.setPropertyValue( propName, occurence, value );
     }
 
-    @Override
-    public StandardGMLObjectProps getStandardGMLProperties() {
-        return feature.getStandardGMLProperties();
-    }
-
-    @Override
-    public void setStandardGMLProperties( StandardGMLObjectProps standardProps ) {
-        feature.setStandardGMLProperties( standardProps );
-    }
-
     public String getHref() {
         return href;
     }
@@ -191,5 +181,41 @@ public class FeatureReference implements Feature {
      */
     public boolean isLocal() {
         return href.startsWith( "#" );
+    }
+
+    @Override
+    public Property<?>[] getProperties( GMLVersion version ) {
+        return feature.getProperties( version );
+    }
+
+    @Override
+    public Property<?>[] getProperties( QName propName, GMLVersion version ) {
+        return feature.getProperties( propName, version );
+    }
+
+    @Override
+    public Property<?> getProperty( QName propName, GMLVersion version ) {
+        return feature.getProperty( propName, version );
+    }
+
+    @Override
+    public Object getPropertyValue( QName propName, GMLVersion version ) {
+        return feature.getPropertyValue( propName, version );
+    }
+
+    @Override
+    public Object[] getPropertyValues( QName propName, GMLVersion version ) {
+        return feature.getPropertyValues( propName, version );
+    }
+
+    @Override
+    public void setProperties( List<Property<?>> props, GMLVersion version )
+                            throws IllegalArgumentException {
+        feature.setProperties( props, version );
+    }
+
+    @Override
+    public void setPropertyValue( QName propName, int occurence, Object value, GMLVersion version ) {
+        feature.setPropertyValue( propName, occurence, value, version );
     }
 }

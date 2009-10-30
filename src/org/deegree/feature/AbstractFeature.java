@@ -35,12 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProps;
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.gml.GMLVersion;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.gml.FeatureReference;
+import org.deegree.feature.gml.StandardGMLFeatureProps;
 import org.deegree.feature.xpath.AttributeNode;
 import org.deegree.feature.xpath.CustomElementNode;
 import org.deegree.feature.xpath.FeatureNode;
@@ -62,14 +68,14 @@ import org.jaxen.XPath;
  */
 public abstract class AbstractFeature implements Feature {
 
-    private StandardGMLObjectProps standardProps;
+    protected StandardGMLFeatureProps standardProps;
 
     private Envelope envelope;
 
-    public Object[] getPropertyValues( PropertyName propName )
+    public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
                             throws JaxenException {
 
-        XPath xpath = new FeatureXPath( propName.getPropertyName(), this );
+        XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
         xpath.setNamespaceContext( propName.getNsContext() );
         List<?> selectedNodes = xpath.selectNodes( new FeatureNode( null, this ) );
 
@@ -139,12 +145,72 @@ public abstract class AbstractFeature implements Feature {
     }
 
     @Override
-    public StandardGMLObjectProps getStandardGMLProperties() {
-        return standardProps;
+    public Property<?>[] getProperties( GMLVersion version ) {
+        if ( standardProps != null ) {
+            List<Property<?>> props = new LinkedList<Property<?>>();
+            props.addAll( standardProps.getProperties( version ) );
+            props.addAll( Arrays.asList( getProperties() ) );
+            return props.toArray( new Property<?>[props.size()] );
+        }
+        return getProperties();
     }
 
     @Override
-    public void setStandardGMLProperties( StandardGMLObjectProps standardProps ) {
-        this.standardProps = standardProps;
+    public Property<?>[] getProperties( QName propName, GMLVersion version ) {
+        if ( standardProps != null ) {
+            Property<?>[] gmlProp = standardProps.getProperties( propName, version );
+            if ( gmlProp != null ) {
+                return gmlProp;
+            }
+        }
+        return getProperties( propName );
+    }
+
+    @Override
+    public Property<?> getProperty( QName propName, GMLVersion version ) {
+        if ( standardProps != null ) {
+            Property<?> gmlProp = standardProps.getProperty( propName, version );
+            if ( gmlProp != null ) {
+                return gmlProp;
+            }
+        }
+        return getProperty( propName );
+    }
+
+    @Override
+    public Object getPropertyValue( QName propName, GMLVersion version ) {
+        if ( standardProps != null ) {
+            Object propValue = standardProps.getPropertyValue( propName, version );
+            if ( propValue != null ) {
+                return propValue;
+            }
+        }
+        return getPropertyValue( propName );
+    }
+
+    @Override
+    public Object[] getPropertyValues( QName propName, GMLVersion version ) {
+        if ( standardProps != null ) {
+            Object[] propValues = standardProps.getPropertiesValues( propName, version );
+            if ( propValues != null ) {
+                return propValues;
+            }
+        }
+        return getPropertyValues( propName );
+    }
+
+    @Override
+    public void setProperties( List<Property<?>> props, GMLVersion version )
+                            throws IllegalArgumentException {
+        Pair<StandardGMLFeatureProps, List<Property<?>>> pair = StandardGMLFeatureProps.create( props, version );
+        this.standardProps = pair.first;
+        setProperties( pair.second );
+    }
+
+    @Override
+    public void setPropertyValue( QName propName, int occurence, Object value, GMLVersion version ) {
+        if ( standardProps != null || !standardProps.setPropertyValue( propName, occurence, value, version ) ) {
+            setPropertyValue( propName, occurence, value );
+        }
     }
 }

@@ -36,6 +36,7 @@
 
 package org.deegree.filter;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.filter.expression.PropertyName;
 import org.jaxen.JaxenException;
@@ -68,10 +69,11 @@ public interface MatchableObject {
      * 
      * @param propName
      *            XPath expression that usually selects a property
+     * @param version 
      * @return the selected values
      * @throws JaxenException
      *             if an exception occurs during the evaluation of the XPath expression
      */
-    public Object[] getPropertyValues( PropertyName propName )
+    public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
                             throws JaxenException;
 }
