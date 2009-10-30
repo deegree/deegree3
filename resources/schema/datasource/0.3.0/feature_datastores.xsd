@@ -2,18 +2,20 @@
   <!--
     This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
   -->
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ds="http://www.deegree.org/datasource"
-  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource"
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ds="http://www.deegree.org/datasource"
+  xmlns="http://www.w3.org/2001/XMLSchema" 
+  targetNamespace="http://www.deegree.org/datasource"
   elementFormDefault="qualified">
 
   <include schemaLocation="datasource.xsd" />
 
-  <element name="FeatureStore" substitutionGroup="ds:AbstractDataSource" type="ds:FeatureStoreType" abstract="false">
+  <element name="FeatureStore" substitutionGroup="ds:AbstractDataSource" type="ds:FeatureStoreType" abstract="true">
     <annotation>
       <documentation>Substitution group head for datasources that provide access to features.</documentation>
     </annotation>
   </element>
-  <complexType name="FeatureStoreType">
+  <complexType name="FeatureStoreType" abstract="true">
     <complexContent>
       <extension base="ds:AbstractDataSourceType"/>
     </complexContent>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <!--
+    This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+  -->
+
+<schema xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
+
+  <include schemaLocation="datasource.xsd" />
+
+  <element name="RecordStore" substitutionGroup="ds:AbstractDataSource" type="ds:RecordStoreType" abstract="true">
+    <annotation>
+      <documentation>Substitution group head for datasources that provide access to records.</documentation>
+    </annotation>
+  </element>
+  <complexType name="RecordStoreType" abstract="true">
+    <complexContent>
+      <extension base="ds:AbstractDataSourceType"/>
+    </complexContent>
+  </complexType>  
+
+  <element name="DCRecordStore" substitutionGroup="ds:RecordStore" type="ds:DCRecordStoreType" abstract="false">
+    <annotation>
+      <documentation></documentation>
+    </annotation>
+  </element>
+  <complexType name="DCRecordStoreType">
+    <complexContent>
+      <extension base="ds:RecordStoreType"/>
+    </complexContent>
+  </complexType>
+
+  <element name="ISORecordStore" substitutionGroup="ds:RecordStore" type="ds:ISORecordStoreType" abstract="false">
+    <annotation>
+      <documentation></documentation>
+    </annotation>
+  </element>
+  <complexType name="ISORecordStoreType">
+    <complexContent>
+      <extension base="ds:RecordStoreType"/>
+    </complexContent>
+  </complexType>
+
+</schema>
