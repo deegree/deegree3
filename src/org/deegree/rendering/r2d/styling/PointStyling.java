@@ -36,7 +36,10 @@
 
 package org.deegree.rendering.r2d.styling;
 
+import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
+
 import org.deegree.rendering.r2d.styling.components.Graphic;
+import org.deegree.rendering.r2d.styling.components.UOM;
 
 /**
  * <code>PointStyling</code>
@@ -47,6 +50,11 @@ import org.deegree.rendering.r2d.styling.components.Graphic;
  * @version $Revision$, $Date$
  */
 public class PointStyling implements Copyable<PointStyling>, Styling {
+
+    /**
+     * The unit of measure for all values.
+     */
+    public UOM uom = Pixel;
 
     /**
      * Default is a SQUARE mark graphic.

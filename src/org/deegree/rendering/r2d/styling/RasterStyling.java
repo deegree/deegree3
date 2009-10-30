@@ -37,6 +37,7 @@
 package org.deegree.rendering.r2d.styling;
 
 import static org.deegree.rendering.r2d.styling.RasterStyling.Overlap.RANDOM;
+import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
 import java.util.HashMap;
 
@@ -45,6 +46,7 @@ import org.deegree.filter.function.Categorize;
 import org.deegree.filter.function.Interpolate;
 import org.deegree.rendering.r2d.RasterRenderingException;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
+import org.deegree.rendering.r2d.styling.components.UOM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +60,11 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class RasterStyling implements Copyable<RasterStyling>, Styling {
+
+    /**
+     * The unit of measure for all values.
+     */
+    public UOM uom = Pixel;
 
     /** Default is 1. */
     public double opacity = 1;

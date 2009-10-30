@@ -37,11 +37,13 @@
 package org.deegree.rendering.r2d.styling;
 
 import static java.awt.Color.BLACK;
+import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Font;
 import org.deegree.rendering.r2d.styling.components.Halo;
 import org.deegree.rendering.r2d.styling.components.LinePlacement;
+import org.deegree.rendering.r2d.styling.components.UOM;
 
 /**
  * <code>TextStyling</code>
@@ -53,6 +55,11 @@ import org.deegree.rendering.r2d.styling.components.LinePlacement;
  */
 public class TextStyling implements Copyable<TextStyling>, Styling {
 
+    /**
+     * The unit of measure for all values.
+     */
+    public UOM uom = Pixel;
+    
     /**
      * Default is a font with default settings.
      */

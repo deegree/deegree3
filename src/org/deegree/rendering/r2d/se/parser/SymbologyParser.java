@@ -54,6 +54,10 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQNa
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
 import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
 import static org.deegree.rendering.i18n.Messages.get;
+import static org.deegree.rendering.r2d.styling.components.UOM.Foot;
+import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
+import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
+import static org.deegree.rendering.r2d.styling.components.UOM.mm;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -104,6 +108,7 @@ import org.deegree.rendering.r2d.styling.components.Halo;
 import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.deegree.rendering.r2d.styling.components.Mark;
 import org.deegree.rendering.r2d.styling.components.Stroke;
+import org.deegree.rendering.r2d.styling.components.UOM;
 import org.deegree.rendering.r2d.styling.components.Font.Style;
 import org.deegree.rendering.r2d.styling.components.Mark.SimpleMark;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineCap;
@@ -681,20 +686,48 @@ public class SymbologyParser {
     public static Pair<Symbolizer<?>, Continuation<StringBuffer>> parseSymbolizer( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, null );
-        if ( in.getLocalName().equals( "PointSymbolizer" ) ) {
-            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePointSymbolizer( in ), null );
-        }
-        if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
-            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseLineSymbolizer( in ), null );
-        }
-        if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
-            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePolygonSymbolizer( in ), null );
-        }
-        if ( in.getLocalName().equals( "RasterSymbolizer" ) ) {
-            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseRasterSymbolizer( in ), null );
-        }
-        if ( in.getLocalName().equals( "TextSymbolizer" ) ) {
-            return (Pair) parseTextSymbolizer( in );
+        if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
+            UOM uom = Pixel;
+            String u = in.getAttributeValue( null, "uom" );
+            if ( u != null ) {
+                u = u.toLowerCase();
+                if ( u.endsWith( "metre" ) || u.endsWith( "meter" ) ) {
+                    uom = Metre;
+                } else if ( u.endsWith( "mm" ) ) {
+                    uom = mm;
+                } else if ( u.endsWith( "foot" ) ) {
+                    uom = Foot;
+                } else if ( !u.endsWith( "pixel" ) ) {
+                    LOG.warn( "Unknown unit of measure '{}', using pixel instead.", in.getAttributeValue( null, "uom" ) );
+                }
+
+            }
+
+            if ( in.getLocalName().equals( "PointSymbolizer" ) ) {
+                Symbolizer<PointStyling> sym = parsePointSymbolizer( in );
+                sym.getBase().uom = uom;
+                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( sym, null );
+            }
+            if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
+                Symbolizer<LineStyling> sym = parseLineSymbolizer( in );
+                sym.getBase().uom = uom;
+                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( sym, null );
+            }
+            if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
+                Symbolizer<PolygonStyling> sym = parsePolygonSymbolizer( in );
+                sym.getBase().uom = uom;
+                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( sym, null );
+            }
+            if ( in.getLocalName().equals( "RasterSymbolizer" ) ) {
+                Symbolizer<RasterStyling> sym = parseRasterSymbolizer( in );
+                sym.getBase().uom = uom;
+                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( sym, null );
+            }
+            if ( in.getLocalName().equals( "TextSymbolizer" ) ) {
+                Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> sym = parseTextSymbolizer( in );
+                sym.first.getBase().uom = uom;
+                return (Pair) sym;
+            }
         }
         return null;
     }

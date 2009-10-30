@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,51 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
-package org.deegree.rendering.r2d.styling;
-
-import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
-
-import org.deegree.rendering.r2d.styling.components.Stroke;
-import org.deegree.rendering.r2d.styling.components.UOM;
+package org.deegree.rendering.r2d.styling.components;
 
 /**
- * <code>LineStyling</code>
+ * <code>UOM</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class LineStyling implements Copyable<LineStyling>, Styling {
+public enum UOM {
 
-    /**
-     * The unit of measure for all values.
-     */
-    public UOM uom = Pixel;
-
-    /**
-     * Default is standard gray.
-     */
-    public Stroke stroke = new Stroke();
-
-    /**
-     * Default is 0.
-     */
-    public double perpendicularOffset;
-
-    @Override
-    public String toString() {
-        return "LineStyling [" + stroke
-               + ( isZero( perpendicularOffset ) ? "" : ( ", Perpendicular offset: " + perpendicularOffset ) ) + "]";
-    }
-
-    public LineStyling copy() {
-        LineStyling copy = new LineStyling();
-        copy.stroke = stroke.copy();
-        copy.perpendicularOffset = perpendicularOffset;
-        return copy;
-    }
+    /***/
+    Metre, /***/
+    Foot, /***/
+    Pixel, /***/
+    mm
 
 }

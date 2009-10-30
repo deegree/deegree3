@@ -37,9 +37,11 @@
 package org.deegree.rendering.r2d.styling;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Stroke;
+import org.deegree.rendering.r2d.styling.components.UOM;
 
 /**
  * <code>PolygonStyling</code>
@@ -50,6 +52,11 @@ import org.deegree.rendering.r2d.styling.components.Stroke;
  * @version $Revision$, $Date$
  */
 public class PolygonStyling implements Copyable<PolygonStyling>, Styling {
+
+    /**
+     * The unit of measure for all values.
+     */
+    public UOM uom = Pixel;
 
     /**
      * Default is null.
