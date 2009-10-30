@@ -39,9 +39,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.datasource.configuration.DCRecordStoreType;
+import org.deegree.commons.datasource.configuration.ISORecordStoreType;
 import org.deegree.commons.datasource.configuration.RecordStoreType;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.record.persistence.dc.DCRecordStore;
 import org.slf4j.Logger;
@@ -74,20 +76,37 @@ public class RecordStoreManager {
 
     }
 
-    public static synchronized RecordStore create( RecordStoreType config, String baseURL )
+    
+    /**
+     * Creates a {@link RecordStore} instance from the given configuration object.
+     * <p>
+     * If the configuration specifies an identifier, the instance is also registered as global {@link RecordStore}.
+     * </p>
+     * 
+     * @param config
+     *            configuration object
+     *            
+     * @return corresponding {@link RecordStore} instance
+     * @throws RecordStoreException
+     *             if the creation fails, e.g. due to a configuration error
+     */
+    public static synchronized RecordStore create( RecordStoreType config )
                             throws RecordStoreException {
         RecordStore rs = null;
         String id = config.getDataSourceName();
 
         if ( config instanceof DCRecordStoreType ) {
 
-            DCRecordStoreType dcConfig = (DCRecordStoreType) config;
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( baseURL );
+            //DCRecordStoreType dcConfig = (DCRecordStoreType) config;
+            //XMLAdapter resolver = new XMLAdapter();
+            //resolver.setSystemId( baseURL );
 
-            rs = new DCRecordStore();
+            rs = new DCRecordStore(new QName ("","Record", "csw"));
             rs.describeRecord();
-        } else {
+        }else if(config instanceof ISORecordStoreType){
+            //TODO
+        }
+        else {
             String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", config.getClass() );
             throw new RecordStoreException( msg );
         }
