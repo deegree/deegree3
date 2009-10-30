@@ -63,11 +63,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>Categorize</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class Categorize extends Function {
@@ -130,11 +130,13 @@ public class Categorize extends Function {
         return new Object[] { curVal };
     }
 
-    
-    /** Construct an image map, as the result of the Categorize operation
+    /**
+     * Construct an image map, as the result of the Categorize operation
      * 
-     * @param raster input raster 
-     * @param style raster style, that contains channel mappings (if applicable)
+     * @param raster
+     *            input raster
+     * @param style
+     *            raster style, that contains channel mappings (if applicable)
      * @return a buffered image with the processed data
      */
     public BufferedImage evaluateRaster( AbstractRaster raster, RasterStyling style ) {
@@ -156,7 +158,7 @@ public class Categorize extends Function {
                     img.setRGB( col, row, c.getRGB() );
                 }
         } catch ( Exception e ) {
-//            e.printStackTrace();
+            // e.printStackTrace();
             LOG.error( "Error while building image, on row={}, col={}: " + e.getMessage(), row, col );
         } finally {
             long end = System.nanoTime();
@@ -167,8 +169,8 @@ public class Categorize extends Function {
 
     /**
      * Looks up a value in the current categories and thresholds. Uses binary search for optimization.
-     *
-     * @param input
+     * 
+     * @param value
      *            value
      * @return Category value
      */
@@ -187,8 +189,8 @@ public class Categorize extends Function {
 
     /**
      * Looks up a value in the current categories and thresholds. Naive implementation.
-     *
-     * @param input
+     * 
+     * @param val
      *            double value
      * @return rgb int value, for storing in a BufferedImage
      */
@@ -271,6 +273,10 @@ public class Categorize extends Function {
         return r;
     }
 
+    /**
+     * @param a
+     * @return a string
+     */
     public String printArray( Object[] a ) {
         String result = a[0].toString();
         for ( int i = 1; i < a.length; i++ )
@@ -279,7 +285,7 @@ public class Categorize extends Function {
         return result;
     }
 
-    /* Create the sorted lookup arrays from the StringBuffer lists */
+    /** Create the sorted lookup arrays from the StringBuffer lists */
     public void buildLookupArrays() {
         LOG.debug( "Building look-up arrays, for binary search... " );
         if ( valuesArray == null ) {

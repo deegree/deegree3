@@ -163,7 +163,10 @@ public class Interpolate extends Function {
         case 3:
             // Cubic interpolation needs 4 points.
             // Create extra 2 points with the same slope on both sides of the input points
-            double r, g, b, a;
+            double r,
+            g,
+            b,
+            a;
             double r1 = colorArray[pos1].getRed(),
             g1 = colorArray[pos1].getGreen(),
             b1 = colorArray[pos1].getBlue(),
@@ -195,9 +198,8 @@ public class Interpolate extends Function {
 
                 if ( color == true ) // value range is 0-255
                     return new Color( (int) r, (int) g, (int) b, (int) a );
-                else
-                    // value range is 0-1
-                    return new Color( (float) r, (float) g, (float) b, (float) a );
+                // value range is 0-1
+                return new Color( (float) r, (float) g, (float) b, (float) a );
             }
 
             r = interpolateCubic( colorArray[pos1 - 1].getRed(), r1, r2, colorArray[pos2 + 1].getRed(), f );
@@ -254,7 +256,7 @@ public class Interpolate extends Function {
     @Override
     public Object[] evaluate( MatchableObject f ) {
         buildLookupArrays();
-        
+
         StringBuffer sb = new StringBuffer( value.toString().trim() );
         if ( contn != null ) {
             contn.evaluate( sb, f );
@@ -275,7 +277,7 @@ public class Interpolate extends Function {
             cur = data.next();
             intVal = vals.next();
             contn = contns.next();
-            pos ++;
+            pos++;
         }
 
         StringBuffer buf = new StringBuffer( intVal.toString().trim() );
@@ -298,11 +300,11 @@ public class Interpolate extends Function {
         double fac = ( val - cur ) / ( next - cur );
 
         if ( color ) {
-            Color res = interpolateColor( pos-1, pos, fac );
+            Color res = interpolateColor( pos - 1, pos, fac );
             return new Object[] { "#" + toHexString( res.getRGB() ) };
         }
 
-        return new Object[] { "" + interpolate( pos-1, pos, fac ) };
+        return new Object[] { "" + interpolate( pos - 1, pos, fac ) };
     }
 
     /**
@@ -388,7 +390,7 @@ public class Interpolate extends Function {
         }
     }
 
-    /* Create the sorted lookup arrays from the linked lists, so that we can perform binary search. */
+    /** Create the sorted lookup arrays from the linked lists, so that we can perform binary search. */
     public void buildLookupArrays() {
         LOG.debug( "Building look-up arrays, for binary search... " );
         if ( color == true && colorArray == null ) {
@@ -422,8 +424,11 @@ public class Interpolate extends Function {
 
     /**
      * Construct an image map, as the result of the Interpolate operation
-     * @param raster input raster
-     * @param style raster style, containing channel mappings (if applicable)
+     * 
+     * @param raster
+     *            input raster
+     * @param style
+     *            raster style, containing channel mappings (if applicable)
      * @return a buffered image with the processed data
      */
     public BufferedImage evaluateRaster( AbstractRaster raster, RasterStyling style ) {
@@ -460,7 +465,7 @@ public class Interpolate extends Function {
      * Performs interpolation on a value, and returns a color built from the interpolated value. Uses binary search for
      * optimization.
      * 
-     * @param input
+     * @param value
      *            value
      * @return the corresponding Color
      */
@@ -555,6 +560,10 @@ public class Interpolate extends Function {
         return r;
     }
 
+    /**
+     * @param a
+     * @return a string
+     */
     public String printArray( Object[] a ) {
         String result = a[0].toString();
         for ( int i = 1; i < a.length; i++ )
