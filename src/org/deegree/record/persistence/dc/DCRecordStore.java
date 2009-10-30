@@ -60,24 +60,32 @@ public class DCRecordStore implements RecordStore {
     
     private QName typeNames;
     
+    public DCRecordStore(QName typeNames){
+        this.typeNames = typeNames;
+        
+    }
+    
     
     /* (non-Javadoc)
      * @see org.deegree.record.persistence.RecordStore#describeRecord(javax.xml.stream.XMLStreamWriter)
      */
     @Override
     public void describeRecord() {
+        
+        
         File file = new File( "/home/thomas/workspace/d3_core/src/org/deegree/record/persistence/dc/dc.xsd" );
         
+        if(typeNames.equals( new QName("","Record", "csw") )){
         XMLAdapter ada = new XMLAdapter(file);
         
          
         System.out.println(ada.toString());
-        //output = ada.toString();
+        output = ada.toString();
         OMNamespace elem = ada.getRootElement().getDefaultNamespace();
         //ada.getNamespaceContext( ada.getRootElement() );
         
-        this.typeNames = new QName(elem.getNamespaceURI());
-        
+        //this.typeNames = new QName(elem.getNamespaceURI());
+        }
     }
 
     /* (non-Javadoc)
