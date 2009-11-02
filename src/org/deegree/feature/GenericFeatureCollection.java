@@ -35,15 +35,20 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.gml.GMLVersion;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.types.FeatureCollectionType;
+import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
@@ -88,7 +93,6 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         this.ft = ft;
         this.fid = fid;
         for ( Property<?> prop : props ) {
-
             // TODO do this a better way
             Object propValue = prop.getValue();
             if ( propValue instanceof Feature ) {
@@ -123,10 +127,12 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         this.fid = fid;
         this.memberFeatures = new ArrayList<Feature>( memberFeatures );
         featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
+        this.ft = new GenericFeatureCollectionType( new QName (GMLNS, "FeatureCollection"), Collections.singletonList( featureMemberDecl ), false );
     }
 
     public GenericFeatureCollection() {
-        // TODO Auto-generated constructor stub
+        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
+        this.ft = new GenericFeatureCollectionType( new QName (GMLNS, "FeatureCollection"), Collections.singletonList( featureMemberDecl ), false );
     }
 
     @Override
