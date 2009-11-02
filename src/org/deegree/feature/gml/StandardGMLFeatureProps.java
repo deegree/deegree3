@@ -487,7 +487,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                                                                         description,
                                                                         names.toArray( new CodeType[names.size()] ),
                                                                         boundedBy );
-        List<Property<?>> nonGMLProps = props.subList( lastIndex, props.size() - 1 );
+        List<Property<?>> nonGMLProps = props.subList( lastIndex, props.size() );
         return new Pair<StandardGMLFeatureProps, List<Property<?>>>( gmlProps, nonGMLProps );
     }
 
