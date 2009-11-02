@@ -85,6 +85,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
@@ -122,6 +123,15 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private final GML311GeometryDecoder geomParser;
 
+    /**
+     * Creates a new {@link GMLFeatureDecoder} instance that is configured for building features with the specified
+     * feature types.
+     * 
+     * @param schema
+     *            application schema that defines the feature types, must not be <code>null</code>
+     * @param idContext
+     *            id context to be used for registering gml:ids (features and geometries and resolving local xlinks and
+     */
     public GMLFeatureDecoder( ApplicationSchema schema, GMLIdContext idContext ) {
         this.schema = schema;
         if ( schema != null ) {
@@ -133,11 +143,11 @@ public class GMLFeatureDecoder extends XMLAdapter {
     }
 
     /**
-     * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with the
-     * specified feature types.
+     * Creates a new {@link GMLFeatureDecoder} instance that is configured for building features with the specified
+     * feature types.
      * 
      * @param schema
-     *            schema
+     *            application schema that defines the feature types, must not be <code>null</code>
      */
     public GMLFeatureDecoder( ApplicationSchema schema ) {
         this( schema, new GMLIdContext() );
@@ -192,25 +202,20 @@ public class GMLFeatureDecoder extends XMLAdapter {
         LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
 
         // parse properties
-        Iterator<PropertyType> declIter = ft.getPropertyDeclarations(GMLVersion.GML_31).iterator();
-        
+        Iterator<PropertyType> declIter = ft.getPropertyDeclarations( GMLVersion.GML_31 ).iterator();
+
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
 
         CRS activeCRS = crs;
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
 
-//        StandardGMLFeatureProps standardProps = GMLStandardFeaturePropsParser.parse311( xmlStream );
-//        // override active CRS with the one from boundedBy (if present)
-//        if ( standardProps != null && standardProps.getBoundedBy() != null ) {
-//            activeCRS = standardProps.getBoundedBy().getCoordinateSystem();
-//        }
-//        LOG.debug( "- crs '" + activeCRS + "'" );
-
         xmlStream.nextTag();
-        
+
         while ( xmlStream.getEventType() == START_ELEMENT ) {
+
             QName propName = xmlStream.getName();
+
             LOG.debug( "- property '" + propName + "'" );
 
             if ( isElementSubstitutableForProperty( propName, activeDecl ) ) {
@@ -242,8 +247,17 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 }
             }
 
-            Property<?> property = parseProperty( xmlStream, activeDecl, activeCRS, fid, propOccurences );
+            Property<?> property = parseProperty( xmlStream, activeDecl, activeCRS, propOccurences );
             if ( property != null ) {
+                // if this is the "gml:boundedBy" property, override active CRS (see GML spec. (where???))
+                if ( StandardGMLFeatureProps.PT_BOUNDED_BY_GML31.getName().equals( activeDecl.getName() ) ) {
+                    Envelope bbox = (Envelope) property.getValue();
+                    if ( bbox.getCoordinateSystem() != null ) {
+                        activeCRS = bbox.getCoordinateSystem();
+                        LOG.debug( "- crs (from boundedBy): '" + activeCRS + "'" );
+                    }
+                }
+
                 propertyList.add( property );
             }
             propOccurences++;
@@ -347,8 +361,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Property<?> parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, CRS crs, String fid,
-                                      int occurence )
+    public Property<?> parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, CRS crs, int occurence )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Property<?> property = null;
