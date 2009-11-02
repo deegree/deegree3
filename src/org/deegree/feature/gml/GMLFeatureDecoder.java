@@ -61,6 +61,7 @@ import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.types.datetime.DateTime;
 import org.deegree.commons.types.datetime.Time;
 import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
@@ -85,6 +86,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -442,6 +444,10 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 String uom = xmlStream.getAttributeValue( null, "uom" );
                 Object value = new Measure( xmlStream.getElementText(), uom );
                 property = new GenericProperty<Object>( propDecl, propName, value );
+            } else if ( propDecl instanceof StringOrRefPropertyType ) {
+                String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+                String string = xmlStream.getElementText().trim();
+                property = new GenericProperty<Object>( propDecl, propName, new StringOrRef( string, ref ) );
             }
         } else {
             LOG.trace( "************ Parsing property using custom parser." );

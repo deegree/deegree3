@@ -48,6 +48,7 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -123,7 +124,7 @@ public class StandardGMLObjectProps {
     public static final CustomPropertyType PT_META_DATA_PROPERTY_GML31;
 
     /** GML 3.0/3.1 standard property type 'gml:description' */
-    public static final PropertyType PT_DESCRIPTION_GML31;
+    public static final StringOrRefPropertyType PT_DESCRIPTION_GML31;
 
     /** GML 3.0/3.1 standard property type 'gml:name' */
     public static final CodePropertyType PT_NAME_GML31;
@@ -140,12 +141,12 @@ public class StandardGMLObjectProps {
                                                        GeometryPropertyType.CoordinateDimension.DIM_2 );
 
         // TODO correct this (should be a MetaDataPropertyType)
-        PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1,
-                                                                     null );
-        PT_DESCRIPTION_GML31 = new CustomPropertyType( new QName( GMLNS, "description" ), 0, 1, null );
+        PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null );
+        // TODO correct this (should be a StringOrRefType)        
+        PT_DESCRIPTION_GML31 = new StringOrRefPropertyType( new QName( GMLNS, "description" ), 0, 1 );
         PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1 );
     }
-    
+
     protected Object[] metadata;
 
     protected StringOrRef description;
@@ -153,8 +154,8 @@ public class StandardGMLObjectProps {
     protected CodeType[] names;
 
     public StandardGMLObjectProps( Object[] metadata, StringOrRef description, CodeType[] names ) {
-        if (metadata == null) {
-            this.metadata = new Object [0];
+        if ( metadata == null ) {
+            this.metadata = new Object[0];
         } else {
             this.metadata = metadata;
         }
@@ -168,15 +169,15 @@ public class StandardGMLObjectProps {
 
     public Object getMetadata() {
         return description;
-    }    
-    
+    }
+
     public StringOrRef getDescription() {
         return description;
     }
 
     public CodeType[] getNames() {
         return names;
-    }   
+    }
 
     @Override
     public String toString() {

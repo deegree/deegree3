@@ -88,7 +88,6 @@ import org.slf4j.LoggerFactory;
                 org.deegree.feature.gml.GML311StandardPropertiesIteratorTest.class,
                 org.deegree.feature.gml.GMLFeatureDecoderTest.class,
                 org.deegree.feature.gml.GMLFeatureEncoderTest.class,
-                org.deegree.feature.gml.GMLStandardFeaturePropsParserTest.class,
                 org.deegree.feature.gml.schema.ApplicationSchemaXSDEncoderTest.class,
                 org.deegree.feature.gml.schema.GMLApplicationSchemaXSDDecoderTest.class,
                 org.deegree.feature.gml.schema.XSModelGMLAnalyzerTest.class,

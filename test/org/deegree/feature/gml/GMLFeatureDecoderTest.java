@@ -48,8 +48,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import junit.framework.Assert;
-
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -162,6 +160,15 @@ public class GMLFeatureDecoderTest {
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        
+        for ( Feature feature : fc ) {
+            System.out.println (feature.getId());
+            for (Property<?> prop : feature.getProperties(GMLVersion.GML_31)) {
+                System.out.println ( prop.getName());
+            }
+            break;
+        }
+        
         idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
 
         XMLStreamWriter writer = new FormattingXMLStreamWriter(

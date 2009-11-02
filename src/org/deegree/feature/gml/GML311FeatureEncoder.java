@@ -47,9 +47,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
 import org.deegree.crs.CRS;
@@ -395,35 +393,6 @@ public class GML311FeatureEncoder {
 
     public boolean isExported( String memberFid ) {
         return exportedIds.contains( memberFid );
-    }
-
-    private void exportStandardProps( XMLStreamWriter writer, StandardGMLObjectProps standardGMLProperties )
-                            throws XMLStreamException {
-
-        StringOrRef description = standardGMLProperties.getDescription();
-        if ( description != null && isPropertyRequested( new QName( GMLNS, "description" ) ) ) {
-            writer.writeStartElement( GMLNS, "description" );
-            if ( description.getRef() != null ) {
-                writer.writeAttribute( XLNNS, "xlink", description.getRef() );
-            }
-            if ( description.getString() != null ) {
-                writer.writeCharacters( description.getString() );
-            }
-            writer.writeEndElement();
-        }
-
-        if ( isPropertyRequested( new QName( GMLNS, "name" ) ) ) {
-            for ( CodeType name : standardGMLProperties.getNames() ) {
-                writer.writeStartElement( GMLNS, "name" );
-                if ( name.getCodeSpace() != null ) {
-                    writer.writeAttribute( "codeSpace", name.getCodeSpace() );
-                }
-                if ( name.getCode() != null ) {
-                    writer.writeCharacters( name.getCode() );
-                }
-                writer.writeEndElement();
-            }
-        }
     }
 
     private boolean isPropertyRequested( QName propName ) {
