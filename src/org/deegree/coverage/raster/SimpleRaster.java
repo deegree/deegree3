@@ -117,7 +117,7 @@ public class SimpleRaster extends AbstractRaster {
     }
 
     /**
-     * Creates a new empty SimpleRaster with same size, DataType and InterleaveType.
+     * Creates a new empty writable SimpleRaster with same size, DataType and InterleaveType.
      * 
      * @return new empty SimpleRaster
      */
