@@ -48,6 +48,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
 import org.deegree.crs.CRS;
@@ -68,6 +69,7 @@ import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -273,6 +275,16 @@ public class GML311FeatureEncoder {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             writer.writeAttribute( "uom", measure.getUomUri() );
             writer.writeCharacters( String.valueOf( measure.getValue() ) );
+            writer.writeEndElement();
+        } else if (propertyType instanceof StringOrRefPropertyType) {
+            StringOrRef stringOrRef = (StringOrRef) value;
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            if ( stringOrRef.getRef() != null ) {
+                writer.writeAttribute( XLNNS, "xlink", stringOrRef.getRef() );
+            }
+            if ( stringOrRef.getString() != null ) {
+                writer.writeCharacters( stringOrRef.getString() );
+            }
             writer.writeEndElement();
         } else if ( propertyType instanceof CustomPropertyType ) {
             GenericCustomPropertyExporter.export( (GenericCustomPropertyValue) value, writer );

@@ -53,12 +53,36 @@ public class StringOrRef {
         this.string = s;
         this.ref = ref;
     }
-    
-    public String getString () {
+
+    public String getString() {
         return string;
     }
 
-    public String getRef () {
+    public String getRef() {
         return ref;
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if ( o instanceof StringOrRef ) {
+            StringOrRef that = (StringOrRef) o;
+            if (string != null) {
+                return string.equals( that.string );
+            } else if (that.string != null) {
+                return that.string.equals( string );
+            } else {
+                return true;
+            }
+            // TODO ref?
+        } else if ( o instanceof String ) {
+            return o.equals( string );
+        }
+        return false;
+    }
+    
+    @Override
+    // TODO clarify how PropertyIsEqualTo depends on this methods (which currently requires to return the text node)
+    public String toString () {
+        return string;
     }
 }
