@@ -88,6 +88,7 @@ import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Graphic;
 import org.deegree.rendering.r2d.styling.components.Stroke;
+import org.deegree.rendering.r2d.styling.components.UOM;
 import org.slf4j.Logger;
 
 /**
@@ -108,6 +109,23 @@ public class Java2DRenderer implements Renderer {
 
     private GeometryTransformer transformer;
 
+    private double pixelSize = 0.28;
+
+    private double res;
+
+    /**
+     * @param graphics
+     * @param width
+     * @param height
+     * @param bbox
+     * @param pixelSize
+     *            in mm
+     */
+    public Java2DRenderer( Graphics2D graphics, int width, int height, Envelope bbox, double pixelSize ) {
+        this( graphics, width, height, bbox );
+        this.pixelSize = pixelSize;
+    }
+
     /**
      * @param graphics
      * @param width
@@ -119,6 +137,7 @@ public class Java2DRenderer implements Renderer {
 
         if ( bbox != null ) {
             double scalex = width / bbox.getSpan0();
+            res = bbox.getSpan0() / width; // use x for resolution
             double scaley = height / bbox.getSpan1();
 
             // we have to flip horizontally, so invert y scale and add the screen height
@@ -149,9 +168,10 @@ public class Java2DRenderer implements Renderer {
      */
     public Java2DRenderer( Graphics2D graphics ) {
         this.graphics = graphics;
+        res = 1;
     }
 
-    private Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y ) {
+    private Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {
         double width = graphic.size;
         double height = graphic.size;
 
@@ -165,25 +185,25 @@ public class Java2DRenderer implements Renderer {
             }
         }
 
-        double x0 = x - width * graphic.anchorPointX + graphic.displacementX;
-        double y0 = y - height * graphic.anchorPointY + graphic.displacementY;
+        double x0 = x - width * graphic.anchorPointX + considerUOM( graphic.displacementX, uom );
+        double y0 = y - height * graphic.anchorPointY + considerUOM( graphic.displacementY, uom );
 
         return new Rectangle2D.Double( x0, y0, width, height );
     }
 
-    void applyGraphicFill( Graphic graphic ) {
+    void applyGraphicFill( Graphic graphic, UOM uom ) {
         BufferedImage img;
 
         if ( graphic.image == null ) {
-            img = renderMark( graphic.mark, graphic.size < 0 ? 6 : round( graphic.size ) );
+            img = renderMark( graphic.mark, graphic.size < 0 ? 6 : round( considerUOM( graphic.size, uom ) ), uom );
         } else {
             img = graphic.image;
         }
 
-        graphics.setPaint( new TexturePaint( img, getGraphicBounds( graphic, 0, 0 ) ) );
+        graphics.setPaint( new TexturePaint( img, getGraphicBounds( graphic, 0, 0, uom ) ) );
     }
 
-    void applyFill( Fill fill ) {
+    void applyFill( Fill fill, UOM uom ) {
         if ( fill == null ) {
             graphics.setPaint( new Color( 0, 0, 0, 0 ) );
             return;
@@ -192,11 +212,11 @@ public class Java2DRenderer implements Renderer {
         if ( fill.graphic == null ) {
             graphics.setPaint( fill.color );
         } else {
-            applyGraphicFill( fill.graphic );
+            applyGraphicFill( fill.graphic, uom );
         }
     }
 
-    void applyStroke( Stroke stroke ) {
+    void applyStroke( Stroke stroke, UOM uom ) {
         if ( stroke == null || isZero( stroke.width ) ) {
             graphics.setPaint( new Color( 0, 0, 0, 0 ) );
             return;
@@ -205,7 +225,7 @@ public class Java2DRenderer implements Renderer {
             graphics.setPaint( stroke.color );
         }
         if ( stroke.fill != null ) {
-            applyGraphicFill( stroke.fill );
+            applyGraphicFill( stroke.fill, uom );
         }
         if ( stroke.stroke != null ) {
             LOG.warn( "Used graphical stroke. This is not supported yet! " );
@@ -240,16 +260,16 @@ public class Java2DRenderer implements Renderer {
                 break;
             }
         }
-        float dashoffset = (float) ( stroke.dashoffset );
+        float dashoffset = (float) considerUOM( stroke.dashoffset, uom );
         float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
         if ( stroke.dasharray != null ) {
             for ( int i = 0; i < stroke.dasharray.length; ++i ) {
-                dasharray[i] = (float) ( stroke.dasharray[i] );
+                dasharray[i] = (float) considerUOM( stroke.dasharray[i], uom );
             }
         }
 
-        BasicStroke bs = new BasicStroke( (float) ( stroke.width ), linecap, linejoin, miterLimit, dasharray,
-                                          dashoffset );
+        BasicStroke bs = new BasicStroke( (float) considerUOM( stroke.width, uom ), linecap, linejoin, miterLimit,
+                                          dasharray, dashoffset );
 
         graphics.setStroke( bs );
     }
@@ -274,8 +294,8 @@ public class Java2DRenderer implements Renderer {
 
     private void render( TextStyling styling, Font font, String text, Point p ) {
         Point2D.Double pt = (Point2D.Double) worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ), null );
-        double x = pt.x + styling.displacementX;
-        double y = pt.y + styling.displacementY;
+        double x = pt.x + considerUOM( styling.displacementX, styling.uom );
+        double y = pt.y + considerUOM( styling.displacementY, styling.uom );
         graphics.setFont( font );
         AffineTransform transform = graphics.getTransform();
         graphics.rotate( styling.rotation, x, y );
@@ -286,23 +306,24 @@ public class Java2DRenderer implements Renderer {
         double py = y + styling.anchorPointY * height;
 
         if ( styling.halo != null ) {
-            applyFill( styling.halo.fill );
+            applyFill( styling.halo.fill, styling.uom );
 
-            BasicStroke stroke = new BasicStroke( round( 2 * styling.halo.radius ), CAP_BUTT, JOIN_ROUND );
+            BasicStroke stroke = new BasicStroke( round( 2 * considerUOM( styling.halo.radius, styling.uom ) ),
+                                                  CAP_BUTT, JOIN_ROUND );
             graphics.setStroke( stroke );
             graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
         }
 
         graphics.setStroke( new BasicStroke() );
 
-        applyFill( styling.fill );
+        applyFill( styling.fill, styling.uom );
         layout.draw( graphics, (float) px, (float) py );
 
         graphics.setTransform( transform );
     }
 
     private void render( TextStyling styling, Font font, String text, Curve c ) {
-        applyFill( styling.fill );
+        applyFill( styling.fill, styling.uom );
         java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
         if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
             stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke );
@@ -341,7 +362,7 @@ public class Java2DRenderer implements Renderer {
         }
 
         // use the first matching name, or Dialog, if none was found
-        int size = round( styling.font.fontSize );
+        int size = round( considerUOM( styling.font.fontSize, styling.uom ) );
         Font font = new Font( "", style, size );
         for ( String name : styling.font.fontFamily ) {
             font = new Font( name, style, size );
@@ -391,12 +412,12 @@ public class Java2DRenderer implements Renderer {
         Graphic g = styling.graphic;
 
         if ( g.image == null ) {
-            img = renderMark( g.mark, g.size < 0 ? 6 : round( g.size ) );
+            img = renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom );
         } else {
             img = g.image;
         }
 
-        Rectangle2D.Double rect = getGraphicBounds( g, x, y );
+        Rectangle2D.Double rect = getGraphicBounds( g, x, y, styling.uom );
 
         graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
     }
@@ -483,9 +504,10 @@ public class Java2DRenderer implements Renderer {
         }
         if ( geom instanceof Curve ) {
             Double line = fromCurve( (Curve) geom );
-            applyStroke( styling.stroke );
-            if ( !isZero( styling.perpendicularOffset ) ) {
-                graphics.setStroke( new OffsetStroke( styling.perpendicularOffset, graphics.getStroke() ) );
+            applyStroke( styling.stroke, styling.uom );
+            double poff = considerUOM( styling.perpendicularOffset, styling.uom );
+            if ( !isZero( poff ) ) {
+                graphics.setStroke( new OffsetStroke( poff, graphics.getStroke() ) );
             }
             graphics.draw( line );
         }
@@ -529,9 +551,9 @@ public class Java2DRenderer implements Renderer {
                     return;
                 }
 
-                applyFill( styling.fill );
+                applyFill( styling.fill, styling.uom );
                 graphics.fill( polygon );
-                applyStroke( styling.stroke );
+                applyStroke( styling.stroke, styling.uom );
                 graphics.draw( polygon );
             } else {
                 throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
@@ -575,6 +597,22 @@ public class Java2DRenderer implements Renderer {
         if ( styling instanceof PolygonStyling ) {
             render( (PolygonStyling) styling, geom );
         }
+    }
+
+    private final double considerUOM( final double in, final UOM uom ) {
+        switch ( uom ) {
+        case Pixel:
+            return in;
+        case Foot:
+            // TODO properly convert the res to foot
+            return in / res;
+        case Metre:
+            // TODO properly convert the res to m
+            return in / res;
+        case mm:
+            return in / pixelSize;
+        }
+        return in;
     }
 
 }

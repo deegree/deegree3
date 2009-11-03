@@ -52,6 +52,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.deegree.rendering.r2d.styling.components.Mark;
+import org.deegree.rendering.r2d.styling.components.UOM;
 
 /**
  * <code>RenderHelper</code>
@@ -131,9 +132,10 @@ public class RenderHelper {
     /**
      * @param mark
      * @param size
+     * @param uom
      * @return the mark rendered as buffered image in the specified size
      */
-    public static BufferedImage renderMark( Mark mark, int size ) {
+    public static BufferedImage renderMark( Mark mark, int size, UOM uom ) {
         if ( mark.fill == null && mark.stroke == null ) {
             return new BufferedImage( size, size, TYPE_INT_ARGB );
         }
@@ -186,13 +188,13 @@ public class RenderHelper {
         }
 
         if ( mark.fill != null ) {
-            renderer.applyFill( mark.fill );
+            renderer.applyFill( mark.fill, uom );
             for ( Shape shape : shapes ) {
                 g.fill( shape );
             }
         }
         if ( mark.stroke != null ) {
-            renderer.applyStroke( mark.stroke );
+            renderer.applyStroke( mark.stroke, uom );
             for ( Shape shape : shapes ) {
                 g.draw( shape );
             }
