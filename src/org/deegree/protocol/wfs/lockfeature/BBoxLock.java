@@ -42,11 +42,9 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * envelope(bbox) is given. Such a lock can appear only in KVP requests.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class BBoxLock implements Lock {
 
@@ -81,5 +79,4 @@ public class BBoxLock implements Lock {
     public TypeName[] getTypeNames() {
         return typeNames;
     }
-
 }

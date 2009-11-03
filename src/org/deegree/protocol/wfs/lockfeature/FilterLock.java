@@ -39,9 +39,7 @@ import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * Defines a locking operation as part of a {@link LockFeature} request.
- * 
- * @see LockFeature
+ * {@link Lock} that specifies the features instances to be locked using a {@link Filter} expression.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>

@@ -119,15 +119,34 @@ public class GenericFeature extends AbstractFeature {
 
     @Override
     public void setPropertyValue( QName propName, int occurrence, Object value ) {
+
         LOG.debug( "Setting property value for " + occurrence + ". " + propName + " property" );
+
+        // check if change would violate minOccurs/maxOccurs constraint
+        int current = getProperties( propName ).length;
+        PropertyType pt = getType().getPropertyDeclaration( propName );
+        if ( value == null ) {
+            // null means remove
+            if ( current - 1 < pt.getMinOccurs() ) {
+                String msg = "Cannot remove property '" + propName + "' from feature '" + getName()
+                             + ": property must be present at least " + pt.getMinOccurs() + " time(s).";
+                throw new IllegalArgumentException( msg );
+            }
+        } else {
+             //TODO checks about maxOccurs (and check occurence)
+        }
+
         int num = 0;
         for ( int i = 0; i < props.size(); i++ ) {
             Property<?> prop = props.get( i );
             // TODO this is not sufficient (prop name must not be equal to prop type name)
             if ( prop.getName().equals( propName ) ) {
                 if ( num++ == occurrence ) {
-                    PropertyType pt = prop.getType();
-                    props.set( i, new GenericProperty<Object>( pt, propName, value ) );
+                    if ( value != null ) {
+                        props.set( i, new GenericProperty<Object>( pt, propName, value ) );
+                    } else {
+                        props.remove( i );
+                    }
                     LOG.debug( "Yep." );
                     break;
                 }

@@ -86,8 +86,6 @@ public class TransactionXMLAdapter {
      * @throws XMLStreamException
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
-     * @throws MissingParameterException
-     *             if the request version is unsupported
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
@@ -187,7 +185,14 @@ public class TransactionXMLAdapter {
 
         // required: 'ogc:Filter'
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+
+        try {
+            xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+        } catch ( XMLParsingException e ) {
+            // CITE compliance (wfs:wfs-1.1.0-Transaction-tc12.1)
+            throw new MissingParameterException( "Mandatory 'ogc:Filter' element is missing in request." );
+        }
+
         Filter filter = Filter110XMLDecoder.parse( xmlStream );
         xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
         return new Delete( handle, ftName, filter );
@@ -268,8 +273,18 @@ public class TransactionXMLAdapter {
         xmlStream.require( START_ELEMENT, WFS_NS, "Name" );
         QName propName = getElementTextAsQName( xmlStream );
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, WFS_NS, "Value" );
-        return new PropertyReplacement( propName, xmlStream );
+
+        PropertyReplacement replacement = null;
+        if ( new QName( WFS_NS, "Value" ).equals( xmlStream.getName() ) ) {
+            replacement = new PropertyReplacement( propName, xmlStream );
+        } else {
+            // if the wfs:Value element is omitted, the property shall be removed (CITE 1.1.0 test,
+            // wfs:wfs-1.1.0-Transaction-tc11.1)
+            xmlStream.require( END_ELEMENT, WFS_NS, "Property" );
+            replacement = new PropertyReplacement( propName, null );
+            xmlStream.nextTag();
+        }
+        return replacement;
     }
 
     static Native parseNative110( XMLStreamReader xmlStream ) {

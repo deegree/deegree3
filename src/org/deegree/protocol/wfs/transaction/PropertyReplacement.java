@@ -72,14 +72,15 @@ public class PropertyReplacement {
     }
 
     /**
-     * Returns an <code>XMLStreamReader</code> that provides access to the encoded replacement value.
+     * Returns an <code>XMLStreamReader</code> that provides access to the encoded replacement value (if such a value is
+     * specified).
      * <p>
      * <i>NOTE: The client <b>must</b> read this stream exactly once and exactly up to the next tag event after the
      * <code>wfs:Value</code> END_ELEMENT event, i.e. the <code>wfs:Property</code> END_ELEMENT event.</i>
      * </p>
      * 
      * @return <code>XMLStreamReader</code> that provides access to the XML encoded replacement value, cursor points at
-     *         the <code>wfs:Value</code> <code>START_ELEMENT</code> event, never null
+     *         the <code>wfs:Value</code> <code>START_ELEMENT</code> event, or <code>null</code>
      */
     public XMLStreamReader getReplacementValue() {
         return xmlStream;

@@ -230,7 +230,7 @@ public interface Feature extends MatchableObject {
     public Envelope getEnvelope();
 
     /**
-     * Sets the value of a specific occurence of a property with a given name.
+     * Sets the value of a specific occurence of a property with a given name (or removes the property feature).
      * 
      * @param propName
      *            property name
@@ -238,14 +238,15 @@ public interface Feature extends MatchableObject {
      *            index of the property, starting with zero. If the property is not a multi-property (i.e. maxOccurs=1),
      *            this is always zero.
      * @param value
-     *            new value of the property
+     *            new value of the property or <code>null</code> (removes the property)
      * @throws IllegalArgumentException
      *             if the property names or values are not compatible with the feature type
      */
     public void setPropertyValue( QName propName, int occurence, Object value );
 
     /**
-     * Sets the value of a specific occurence of a property with a given name.
+     * Sets the value of a specific occurence of a property with a given name (or removes the property from the
+     * feature).
      * 
      * @param propName
      *            property name
@@ -253,7 +254,7 @@ public interface Feature extends MatchableObject {
      *            index of the property, starting with zero. If the property is not a multi-property (i.e. maxOccurs=1),
      *            this is always zero.
      * @param value
-     *            new value of the property
+     *            new value of the property or <code>null</code> (removes the property)
      * @param version
      *            determines the names and types of the standard GML properties, must not be <code>null</code>
      * @throws IllegalArgumentException

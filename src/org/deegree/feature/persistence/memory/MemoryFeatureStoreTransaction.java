@@ -47,6 +47,7 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -257,6 +258,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, String lockId )
                             throws FeatureStoreException {
+
         FeatureType ft = store.getSchema().getFeatureType( ftName );
         if ( ft == null ) {
             throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
@@ -269,8 +271,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 updated = newFc.size();
                 for ( Feature feature : newFc ) {
                     for ( Property<?> prop : replacementProps ) {
-                        // TODO what about multi properties
-                        feature.setPropertyValue( prop.getType().getName(), 0, prop.getValue() );
+                        // TODO what about multi properties, strategy for proper handling of GML version                        
+                        feature.setPropertyValue( prop.getType().getName(), 0, prop.getValue(), GMLVersion.GML_31 );
                     }
                 }
             } catch ( FilterEvaluationException e ) {

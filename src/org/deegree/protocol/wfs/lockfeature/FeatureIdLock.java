@@ -40,11 +40,9 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * The <code>FeatureIdLock</code> class represents a lock based on a featureId. To be used with {@link LockFeature}.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class FeatureIdLock implements Lock {
 
