@@ -84,7 +84,7 @@ public class DCRecordStore implements RecordStore {
         OMNamespace elem = ada.getRootElement().getDefaultNamespace();
         //ada.getNamespaceContext( ada.getRootElement() );
         
-        //this.typeNames = new QName(elem.getNamespaceURI());
+        this.typeNames = new QName(elem.getNamespaceURI());
         }
     }
 
