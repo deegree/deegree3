@@ -50,6 +50,7 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.io.RasterDataReader;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,17 +96,19 @@ public class IIORasterDataReader implements RasterDataReader {
 
     private boolean imageReadFailed = false;
 
+    private RasterIOOptions options;
+
     /**
      * Create a IIORasterDataReader for given file
      * 
      * @param file
      *            file to read
-     * @param format
+     * @param options
+     *            with values.
      */
-    public IIORasterDataReader( File file, String format ) {
+    public IIORasterDataReader( File file, RasterIOOptions options ) {
+        this( options, false );
         this.file = file;
-        this.format = format;
-        resetableStream = false;
     }
 
     /**
@@ -113,12 +116,22 @@ public class IIORasterDataReader implements RasterDataReader {
      * 
      * @param stream
      *            stream to read
-     * @param format
+     * @param options
+     *            with values
      */
-    public IIORasterDataReader( InputStream stream, String format ) {
+    public IIORasterDataReader( InputStream stream, RasterIOOptions options ) {
+        this( options, ( stream != null && stream.markSupported() ) );
         this.inputStream = stream;
-        this.resetableStream = ( inputStream != null && inputStream.markSupported() );
-        this.format = format;
+    }
+
+    /**
+     * @param format
+     * @param noDataValue
+     */
+    private IIORasterDataReader( RasterIOOptions options, boolean resetableStream ) {
+        this.format = options.get( RasterIOOptions.OPT_FORMAT );
+        this.options = options;
+        this.resetableStream = resetableStream;
     }
 
     /**
@@ -131,7 +144,7 @@ public class IIORasterDataReader implements RasterDataReader {
             try {
                 BufferedImage img = reader.read( 0 );
                 resetStream();
-                return rasterDataFromImage( img );
+                return rasterDataFromImage( img, options );
             } catch ( IOException e ) {
                 LOG.error( "couldn't open image:" + e.getMessage(), e );
                 this.imageReadFailed = true;

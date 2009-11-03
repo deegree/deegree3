@@ -37,6 +37,7 @@ package org.deegree.coverage.raster.io.xyz;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,14 +45,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -62,8 +60,9 @@ import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
-import org.deegree.crs.CRS;
+import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +78,10 @@ import org.slf4j.LoggerFactory;
  * @version $Revision:10872 $, $Date:2008-04-01 15:41:48 +0200 (Tue, 01 Apr 2008) $
  */
 public class XYZReader implements RasterReader {
+
+    private static final Logger LOG = getLogger( XYZReader.class );
+
+    private final static GeometryFactory factory = new GeometryFactory();
 
     /**
      * 
@@ -125,10 +128,10 @@ public class XYZReader implements RasterReader {
          */
         public float value;
 
-        GridPoint( float x, float y, float value ) {
-            this.x = x;
-            this.y = y;
-            this.value = value;
+        GridPoint( float[] xyz ) {
+            this.x = xyz[0];
+            this.y = xyz[1];
+            this.value = xyz[2];
         }
 
         @Override
@@ -190,47 +193,44 @@ public class XYZReader implements RasterReader {
      */
     private SimpleRaster readASCIIGrid( BufferedReader reader, RasterIOOptions options )
                             throws IOException {
-        Dimensions dims = new Dimensions();
-        boolean valuesProvided = dims.fromOptions( options );
-        CRS crs = options.getCRS();
 
-        // First read all points and gather the actual extension of the raster.
-        // Then create a new raster and put each point into it. The order of the points
-        // is arbitrary.
+        RasterGeoReference geoReference = options.getRasterGeoReference();
 
         List<GridPoint> gridPoints = new LinkedList<GridPoint>();
 
-        String line;
+        String line = null;
         GridExtension gridExtension = new GridExtension();
-
-        HashMap<String, Integer> xVals = new HashMap<String, Integer>();
-        HashMap<String, Integer> yVals = new HashMap<String, Integer>();
 
         float prevX = 0;
 
         int i = 0;
+        double resolution = 1;
 
+        float[] xyzValues = new float[3];
         while ( ( line = reader.readLine() ) != null ) {
             try {
-                StringTokenizer tokenizer = new StringTokenizer( line );
+                // StringTokenizer tokenizer = new StringTokenizer( line );
+                String[] xyz = line.split( "\\s" );
 
-                String x = tokenizer.nextToken();
-                String y = tokenizer.nextToken();
-                String z = tokenizer.nextToken();
+                xyzValues[0] = Float.valueOf( xyz[0] );
+                xyzValues[1] = Float.valueOf( xyz[1] );
+                xyzValues[2] = Float.valueOf( xyz[2] );
 
-                float[] values = new float[] { Float.valueOf( x ), Float.valueOf( y ), Float.valueOf( z ), };
+                // float[] values = new float[] { Float.valueOf( x ), Float.valueOf( y ), Float.valueOf( z ), };
 
-                GridPoint gridPoint = new GridPoint( values[0], values[1], values[2] );
-                if ( !valuesProvided ) {
-                    int ix = xVals.get( x ) == null ? 0 : xVals.get( x );
-                    xVals.put( x, ++ix );
-                    int iy = yVals.get( y ) == null ? 0 : yVals.get( y );
-                    xVals.put( y, ++iy );
-                    if ( i == 0 ) {
-                        prevX = values[0];
-                    }
-                    if ( i == 1 ) {
-                        dims.res = Math.abs( prevX - values[0] );
+                GridPoint gridPoint = new GridPoint( xyzValues );
+                // if ( !valuesProvided ) {
+                // int ix = xVals.get( x ) == null ? 0 : xVals.get( x );
+                // xVals.put( x, ++ix );
+                // int iy = yVals.get( y ) == null ? 0 : yVals.get( y );
+                // yVals.put( y, ++iy );
+                if ( i == 0 ) {
+                    prevX = gridPoint.x;
+                    ++i;
+                } else {
+                    if ( i != -1 && prevX != gridPoint.x ) {
+                        resolution = Math.abs( prevX - gridPoint.x );
+                        i = -1;
                     }
 
                 }
@@ -245,7 +245,6 @@ public class XYZReader implements RasterReader {
                     log.warn( "Line " + ( i + 1 ) + " is invalid" );
                 }
             }
-            i += 1;
         }
 
         if ( log.isDebugEnabled() ) {
@@ -253,35 +252,23 @@ public class XYZReader implements RasterReader {
                                       gridExtension.miny ) );
         }
 
-        if ( !valuesProvided ) {
-            Integer[] vals = xVals.values().toArray( new Integer[0] );
-            if ( vals.length > 0 ) {
-                Arrays.sort( vals );
-                dims.width = vals[0];
-            }
-            vals = yVals.values().toArray( new Integer[0] );
-            if ( vals.length > 0 ) {
-                Arrays.sort( vals );
-                dims.height = vals[0];
-            }
-
+        if ( geoReference == null ) {
+            geoReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, resolution, -resolution,
+                                                   gridExtension.minx, gridExtension.maxy );
         }
 
-        // RasterGeoReference renv = new RasterGeoReference( gridExtension.minx, gridExtension.maxy, dims.res, -dims.res
-        // );
-        RasterGeoReference renv = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, dims.res,
-                                                          -dims.res, gridExtension.minx, gridExtension.maxy );
-
-        RasterData data = RasterDataFactory.createRasterData( dims.width, dims.height, DataType.FLOAT );
+        Envelope rasterEnvelope = factory.createEnvelope( gridExtension.minx, gridExtension.miny, gridExtension.maxx,
+                                                          gridExtension.maxy, options.getCRS() );
+        int[] size = geoReference.getSize( rasterEnvelope );
+        RasterData data = RasterDataFactory.createRasterData( size[0], size[1], DataType.FLOAT );
+        data.setNullPixel( options.getNoDataValue() );
 
         for ( GridPoint p : gridPoints ) {
-            int[] pos = renv.getRasterCoordinate( p.x, p.y );
+            int[] pos = geoReference.getRasterCoordinate( p.x, p.y );
             data.setFloatSample( pos[0], pos[1], 0, p.value );
         }
 
-        Envelope env = renv.getEnvelope( dims.width, dims.height, crs );
-
-        SimpleRaster simpleRaster = new SimpleRaster( data, env, renv );
+        SimpleRaster simpleRaster = new SimpleRaster( data, rasterEnvelope, geoReference );
 
         return simpleRaster;
     }
@@ -300,6 +287,14 @@ public class XYZReader implements RasterReader {
     public AbstractRaster load( File filename, RasterIOOptions options )
                             throws IOException {
         BufferedReader reader = new BufferedReader( new FileReader( filename ) );
+        if ( options.readWorldFile() ) {
+            try {
+                RasterGeoReference geoRef = WorldFileAccess.readWorldFile( filename, options );
+                options.setRasterGeoReference( geoRef );
+            } catch ( IOException e ) {
+                LOG.debug( "Could not read xyz world file: " + e.getLocalizedMessage(), e );
+            }
+        }
         return readASCIIGrid( reader, options );
     }
 

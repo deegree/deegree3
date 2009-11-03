@@ -46,6 +46,7 @@ import javax.media.jai.JAI;
 
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.io.RasterDataReader;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,13 +80,18 @@ public class JAIRasterDataReader implements RasterDataReader {
 
     private boolean errorOnLoading = false;
 
+    private RasterIOOptions options;
+
     /**
      * Create a JAIRasterReader for given file
      * 
      * @param file
      *            file to read
+     * @param options
+     *            holding information
      */
-    public JAIRasterDataReader( File file ) {
+    public JAIRasterDataReader( File file, RasterIOOptions options ) {
+        this( options );
         this.file = file;
     }
 
@@ -94,9 +100,19 @@ public class JAIRasterDataReader implements RasterDataReader {
      * 
      * @param stream
      *            stream to read
+     * @param options
+     *            holding information
      */
-    public JAIRasterDataReader( InputStream stream ) {
+    public JAIRasterDataReader( InputStream stream, RasterIOOptions options ) {
+        this( options );
         this.inputStream = stream;
+    }
+
+    /**
+     * @param options
+     */
+    private JAIRasterDataReader( RasterIOOptions options ) {
+        this.options = options;
     }
 
     /**
@@ -111,7 +127,7 @@ public class JAIRasterDataReader implements RasterDataReader {
 
         RenderedImage img = this.img;
         this.img = null; // remove reference to img
-        return rasterDataFromImage( img );
+        return rasterDataFromImage( img, options );
 
     }
 

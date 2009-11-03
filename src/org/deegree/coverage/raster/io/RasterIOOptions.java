@@ -36,12 +36,14 @@
 package org.deegree.coverage.raster.io;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
+import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.crs.CRS;
@@ -90,12 +92,14 @@ public class RasterIOOptions {
 
     private RasterGeoReference geoRef;
 
+    private byte[] noData;
+
     /**
      * An empty constructor, nothing is set. The loading policy is the default value taken from the
-     * {@link RasterDataContainerFactory}.
+     * {@link RasterDataContainerFactory}. Worldfile reading is on.
      */
     public RasterIOOptions() {
-        // nottin
+        add( READ_WLD_FILE, "yes" );
         add( DATA_LOADING_POLICY, RasterDataContainerFactory.getDefaultLoadingPolicy().name() );
     }
 
@@ -170,8 +174,6 @@ public class RasterIOOptions {
         RasterIOOptions result = new RasterIOOptions();
         String ext = FileUtils.getFileExtension( file );
         result.add( OPT_FORMAT, ext );
-        result.add( READ_WLD_FILE, "yes" );
-        result.add( DATA_LOADING_POLICY, RasterDataContainerFactory.getDefaultLoadingPolicy().name() );
         return result;
     }
 
@@ -188,7 +190,6 @@ public class RasterIOOptions {
         String ext = FileUtils.getFileExtension( file );
         result.add( OPT_FORMAT, ext );
         result.add( READ_WLD_FILE, null );
-        result.add( DATA_LOADING_POLICY, RasterDataContainerFactory.getDefaultLoadingPolicy().name() );
         return result;
     }
 
@@ -217,16 +218,37 @@ public class RasterIOOptions {
         return result;
     }
 
-    public boolean hasEnvelope() {
+    /**
+     * @return true if the options contain a raster geo reference.
+     */
+    public boolean hasRasterGeoReference() {
         return geoRef != null;
     }
 
-    public RasterGeoReference getEnvelope() {
+    /**
+     * @return the raster geo reference
+     */
+    public RasterGeoReference getRasterGeoReference() {
         return geoRef;
     }
 
+    /**
+     * @param geoRef
+     *            the raster geo reference to use for the loaded raster.
+     */
     public void setRasterGeoReference( RasterGeoReference geoRef ) {
         this.geoRef = geoRef;
+    }
+
+    /**
+     * Returns the no data value. A no data value should be added to the {@link RasterIOOptions} by using
+     * {@link RasterIOOptions#setNoData(byte[])}. The byte[] can be created from an array of Strings by using the
+     * {@link RasterIOOptions#createNoData(String[], DataType)}.
+     * 
+     * @return the no data values for the bands of the raster or <code>null</code> if no data was specified.
+     */
+    public byte[] getNoDataValue() {
+        return noData;
     }
 
     /**
@@ -252,4 +274,75 @@ public class RasterIOOptions {
         }
         return new CRS( s );
     }
+
+    /**
+     * no data value. The byte[] can be created from an array of Strings by using the
+     * {@link RasterIOOptions#createNoData(String[], DataType)}.
+     * 
+     * @param noDataValue
+     *            containing byte representations of the rasters no data value.
+     */
+    public void setNoData( byte[] noDataValue ) {
+        if ( noDataValue != null ) {
+            this.noData = new byte[noDataValue.length];
+            System.arraycopy( noDataValue, 0, noData, 0, noDataValue.length );
+        }
+    }
+
+    /**
+     * Create a noData array from the given strings. Each string will be interpreted as the given type.
+     * 
+     * @param bandValues
+     *            String representations of each bands no data value e.g {10.0, 80.5, -100} for a 3 band float raster.
+     * @param type
+     *            of the no data values.
+     * @return a byte array containing the no data values for each band, the bytes can be 'reversed' by using the
+     *         {@link ByteBuffer} methods. If either the type or the array is <code>null</code> <code>null</code> will
+     *         be returned.
+     * @throws NumberFormatException
+     *             if one of the Strings could not be decoded.
+     */
+    public static byte[] createNoData( String[] bandValues, DataType type )
+                            throws NumberFormatException {
+        byte[] result = null;
+        if ( bandValues != null && type != null ) {
+            int size = type.getSize();
+            result = new byte[size * bandValues.length];
+            byte[] bandResult = new byte[size];
+            ByteBuffer wrap = ByteBuffer.wrap( bandResult );
+            for ( int i = 0; i < bandValues.length; ++i ) {
+                String val = bandValues[i];
+                if ( val != null ) {
+                    val = val.trim();
+                    switch ( type ) {
+                    case BYTE:
+                        wrap.put( Byte.decode( val ) );
+                        break;
+                    case DOUBLE:
+                        wrap.putDouble( Long.decode( val ).doubleValue() );
+                        break;
+                    case FLOAT:
+                        Integer in = Integer.decode( val );
+                        float f = in.floatValue();
+                        wrap.putFloat( f );
+                        break;
+                    case INT:
+                        wrap.putInt( Integer.decode( val ) );
+                        break;
+                    case SHORT:
+                    case USHORT:
+                        wrap.putShort( Short.decode( val ) );
+                        break;
+                    case UNDEFINED:
+                        // what to do here?
+                        break;
+                    }
+                    System.arraycopy( bandResult, 0, result, i * size, size );
+                    wrap.position( 0 );
+                }
+            }
+        }
+        return result;
+    }
+
 }

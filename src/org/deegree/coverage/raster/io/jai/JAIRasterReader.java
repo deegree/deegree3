@@ -69,7 +69,7 @@ public class JAIRasterReader implements RasterReader {
     @Override
     public AbstractRaster load( File file, RasterIOOptions options ) {
         LOG.debug( "reading " + file + " with JAI" );
-        JAIRasterDataReader reader = new JAIRasterDataReader( file );
+        JAIRasterDataReader reader = new JAIRasterDataReader( file, options );
         this.file = file;
         return loadFromReader( reader, options );
     }
@@ -78,7 +78,7 @@ public class JAIRasterReader implements RasterReader {
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
         LOG.debug( "reading from stream with JAI" );
-        JAIRasterDataReader reader = new JAIRasterDataReader( stream );
+        JAIRasterDataReader reader = new JAIRasterDataReader( stream, options );
         return loadFromReader( reader, options );
     }
 
@@ -91,8 +91,8 @@ public class JAIRasterReader implements RasterReader {
         // create a 1:1 mapping
         RasterGeoReference rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
 
-        if ( options.hasEnvelope() ) {
-            rasterReference = options.getEnvelope();
+        if ( options.hasRasterGeoReference() ) {
+            rasterReference = options.getRasterGeoReference();
         } else {
             if ( options.readWorldFile() ) {
                 try {
