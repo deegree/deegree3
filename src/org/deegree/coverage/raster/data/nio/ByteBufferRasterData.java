@@ -147,6 +147,22 @@ public abstract class ByteBufferRasterData implements RasterData {
      */
 
     /**
+     * Fills the entire buffer with no data values. Note this operation is only possible on writable buffers.
+     */
+    public void fillWithNoData() {
+        if ( !data.isReadOnly() ) {
+            int pos = 0;
+            int cap = data.capacity();
+            byte[] noData = dataInfo.getNoDataPixel( new byte[0] );
+            data.position( 0 );
+            while ( pos != cap ) {
+                data.put( noData );
+                pos = data.position();
+            }
+        }
+    }
+
+    /**
      * Creates a new ByteBufferRasterData instance.
      * 
      * @param view
