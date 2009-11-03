@@ -153,10 +153,11 @@ public class RasterDataInfo {
      * 
      * @param result
      *            an array to put the values into or <code>null</code>
-     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code> or to
+     *         small
      */
     public byte[] getNoDataPixel( byte[] result ) {
-        if ( result == null ) {
+        if ( result == null || result.length < noDataPixel.length ) {
             result = new byte[noDataPixel.length];
         }
         System.arraycopy( noDataPixel, 0, result, 0, result.length );
