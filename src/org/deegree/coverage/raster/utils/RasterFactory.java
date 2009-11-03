@@ -61,6 +61,8 @@ import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import javax.media.jai.DataBufferFloat;
+
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -281,11 +283,14 @@ public class RasterFactory {
      *            of the raster
      * @param originLocation
      *            the mapped location of the world coordinate origin on the upper left raster coordinate.
+     * @param options
+     *            with information about the image.
      * @return a geo referenced AbstractRaster.
      */
     public static AbstractRaster createRasterFromImage( RenderedImage image, Envelope envelope,
-                                                        RasterGeoReference.OriginLocation originLocation ) {
-        ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image );
+                                                        RasterGeoReference.OriginLocation originLocation,
+                                                        RasterIOOptions options ) {
+        ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image, options );
         RasterGeoReference ref = RasterGeoReference.create( originLocation, envelope, image.getWidth(),
                                                             image.getHeight() );
         return new SimpleRaster( rasterDataFromImage, envelope, ref );
@@ -428,7 +433,7 @@ public class RasterFactory {
             outputRaster = Raster.createWritableRaster( sm, null );
 
             // one pixel at a time.
-            int[] ibuf = new int[pixelStride];
+            int[] ibuf = new int[bands];
             for ( int y = 0; y < height; y++ ) {
                 for ( int x = 0; x < width; x++ ) {
                     raster.getIntPixel( x, y, ibuf );
@@ -437,16 +442,23 @@ public class RasterFactory {
             }
             break;
         case FLOAT:
-            float[] fbuf = new float[pixelStride];
-            sm = new BandedSampleModel( DataBuffer.TYPE_FLOAT, width, height, bands );
-            outputRaster = Raster.createWritableRaster( sm, null );
+            float[] dataBuffer = new float[bands * width * height];
+            float[] floatValues = new float[bands];
             for ( int y = 0; y < height; y++ ) {
                 for ( int x = 0; x < width; x++ ) {
-                    raster.getFloatPixel( x, y, fbuf );
-                    outputRaster.setDataElements( x, y, fbuf );
+                    raster.getFloatPixel( x, y, floatValues );
+                    System.arraycopy( floatValues, 0, dataBuffer, ( ( y * width ) + x ) * bands, bands );
+
                 }
             }
-            break;
+            // set data does not work.. it will round to int :-)
+            SampleModel fm = new BandedSampleModel( DataBuffer.TYPE_FLOAT, raster.getWidth(), raster.getHeight(), bands );
+            DataBuffer db = new DataBufferFloat( dataBuffer, dataBuffer.length );
+            WritableRaster wr = Raster.createWritableRaster( fm, db, null );
+            BufferedImage floatImage = new BufferedImage( new FloatColorModel( sourceRaster.getNullPixel( null ) ), wr,
+                                                          false, null );
+            return floatImage;
+            // break;
         case SHORT:
         case USHORT:
             outputType = TYPE_USHORT_GRAY;
@@ -538,9 +550,11 @@ public class RasterFactory {
 
     /**
      * @param img
+     * @param options
+     *            which can hold information about the image read, may be <code>null</code>
      * @return the rasterdata object from the image or <code>null</code> if the given img is <code>null</code>
      */
-    public static ByteBufferRasterData rasterDataFromImage( RenderedImage img ) {
+    public static ByteBufferRasterData rasterDataFromImage( RenderedImage img, RasterIOOptions options ) {
         ByteBufferRasterData result = null;
         if ( img != null ) {
 
@@ -570,8 +584,9 @@ public class RasterFactory {
                     }
                 }
             }
+            byte[] noData = options != null ? options.getNoDataValue() : null;
             // rb: are we sure it is always pixel interleaved?
-            RasterDataInfo rdi = new RasterDataInfo( bandTypes, type, InterleaveType.PIXEL );
+            RasterDataInfo rdi = new RasterDataInfo( noData, bandTypes, type, InterleaveType.PIXEL );
 
             result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, rdi );
             ByteBuffer byteBuffer = result.getByteBuffer();
