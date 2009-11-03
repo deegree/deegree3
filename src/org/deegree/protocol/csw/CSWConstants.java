@@ -38,6 +38,15 @@ package org.deegree.protocol.csw;
 
 import org.deegree.commons.types.ows.Version;
 
+/**
+ * 
+ * TODO add class documentation here
+ * 
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author last edited by: $Author: thomas $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class CSWConstants {
 	
 	/** Namespace for elements from the CSW 2.0.2 specification 
@@ -55,7 +64,15 @@ public class CSWConstants {
 	/** CSW protocol version 2.0.2 */
     public static final Version VERSION_202 = Version.parseVersion( "2.0.2" );
 
-	
+	/**
+	 * 
+	 * TODO add class documentation here
+	 * 
+	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+	 * @author last edited by: $Author: thomas $
+	 * 
+	 * @version $Revision: $, $Date: $
+	 */
 	public enum CSWRequestType{
 		
 		/** Retrieve the capabilities of the service. */
@@ -68,6 +85,15 @@ public class CSWConstants {
 		GetRecordById
 	}
 	
+	/**
+	 * 
+	 * TODO add class documentation here
+	 * 
+	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+	 * @author last edited by: $Author: thomas $
+	 * 
+	 * @version $Revision: $, $Date: $
+	 */
 	 public enum Sections {
 
 	        /***/
