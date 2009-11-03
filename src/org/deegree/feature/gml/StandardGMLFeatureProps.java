@@ -398,21 +398,35 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
 
     public boolean setPropertyValue( QName propName, int occurence, Object value, GMLVersion version ) {
 
-        // TODO
-
         switch ( version ) {
         case GML_2: {
-            if ( PT_DESCRIPTION_GML2.equals( propName ) ) {
-            } else if ( PT_NAME_GML2.equals( propName ) ) {
-            } else if ( PT_BOUNDED_BY_GML2.equals( propName ) ) {
+            if ( PT_DESCRIPTION_GML2.getName().equals( propName ) ) {
+                description = new StringOrRef ((String) value, null);
+            } else if ( PT_NAME_GML2.getName().equals( propName ) ) {
+                if (names == null || names.length == 0) {
+                    names = new CodeType[1];
+                }
+                names [0] = new CodeType ((String) value, null);                
+            } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
+                boundedBy = (Envelope) value;
             }
             break;
         }
         case GML_31: {
-            if ( PT_META_DATA_PROPERTY_GML31.equals( propName ) ) {
-            } else if ( PT_DESCRIPTION_GML31.equals( propName ) ) {
-            } else if ( PT_NAME_GML31.equals( propName ) ) {
-            } else if ( PT_BOUNDED_BY_GML31.equals( propName ) ) {
+            if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) ) {
+                if (metadata == null || metadata.length == 0) {
+                    metadata = new Object[1];
+                }
+                metadata [0] = value;
+            } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) ) {
+                description = (StringOrRef) value;
+            } else if ( PT_NAME_GML31.getName().equals( propName ) ) {
+                if (names == null || names.length == 0) {
+                    names = new CodeType[1];
+                }
+                names [0] = (CodeType) value;
+            } else if ( PT_BOUNDED_BY_GML31.getName().equals( propName ) ) {
+                boundedBy = (Envelope) value;
             }
             break;
         }

@@ -209,7 +209,7 @@ public abstract class AbstractFeature implements Feature {
 
     @Override
     public void setPropertyValue( QName propName, int occurence, Object value, GMLVersion version ) {
-        if ( standardProps != null || !standardProps.setPropertyValue( propName, occurence, value, version ) ) {
+        if ( standardProps == null || !standardProps.setPropertyValue( propName, occurence, value, version ) ) {
             setPropertyValue( propName, occurence, value );
         }
     }
