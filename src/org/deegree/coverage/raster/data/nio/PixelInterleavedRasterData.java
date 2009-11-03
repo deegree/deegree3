@@ -208,13 +208,17 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
             if ( ( srcRasterPosy + possibleSrcHeight ) >= raster.rasterHeight ) {
                 possibleSrcHeight = raster.rasterHeight - srcRasterPosy;
             }
-            // reset to the view.
+            // reset to the view, for the calculation of the position
             srcRasterPosx -= raster.view.x;
             srcRasterPosy -= raster.view.y;
 
             // find the smallest denominator of all values.
-            int subWidth = clampSize( getWidth(), dstX, possibleSrcWidth, srcRasterPosx, width );
-            int subHeight = clampSize( getHeight(), dstY, possibleSrcHeight, srcRasterPosy, height );
+            int subWidth = clampSize( getWidth(), dstX, possibleSrcWidth,
+                                      0/* the possible srcWidth has been determined */, width );
+            int subHeight = clampSize( getHeight(), dstY, possibleSrcHeight, 0/*
+                                                                               * the possible srcWidth has been
+                                                                               * determined
+                                                                               */, height );
 
             if ( subHeight <= 0 || subWidth <= 0 ) {
                 return;
