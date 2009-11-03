@@ -549,6 +549,9 @@ public class RasterFactory {
     }
 
     /**
+     * Creates a buffered image from the given raster data. The options can be used to modify the outcome of the
+     * buffered image.
+     * 
      * @param img
      * @param options
      *            which can hold information about the image read, may be <code>null</code>
@@ -725,5 +728,16 @@ public class RasterFactory {
             }
         }
         return BandType.fromBufferedImageType( imageType, raster.getNumBands() );
+    }
+
+    /**
+     * Creates a buffered image from the given raster data by calling the
+     * {@link RasterFactory#rasterDataFromImage(RenderedImage, RasterIOOptions)} method without any options. *
+     * 
+     * @param img
+     * @return the rasterdata object from the image or <code>null</code> if the given img is <code>null</code>
+     */
+    public static ByteBufferRasterData rasterDataFromImage( BufferedImage img ) {
+        return rasterDataFromImage( img, null );
     }
 }
