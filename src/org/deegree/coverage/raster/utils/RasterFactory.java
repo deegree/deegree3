@@ -283,8 +283,24 @@ public class RasterFactory {
      *            of the raster
      * @param originLocation
      *            the mapped location of the world coordinate origin on the upper left raster coordinate.
+     * @return a geo referenced AbstractRaster.
+     */
+    public static AbstractRaster createRasterFromImage( RenderedImage image, Envelope envelope,
+                                                        RasterGeoReference.OriginLocation originLocation ) {
+        return createRasterFromImage( image, envelope, originLocation, null );
+    }
+
+    /**
+     * Creates a simple raster from a given {@link BufferedImage} and sets the geo reference to the given envelope.
+     * 
+     * @param image
+     *            to get as a raster
+     * @param envelope
+     *            of the raster
+     * @param originLocation
+     *            the mapped location of the world coordinate origin on the upper left raster coordinate.
      * @param options
-     *            with information about the image.
+     *            with information about the image and resulting raster.
      * @return a geo referenced AbstractRaster.
      */
     public static AbstractRaster createRasterFromImage( RenderedImage image, Envelope envelope,
