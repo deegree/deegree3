@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function;
+package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -48,28 +48,24 @@ import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>StringPosition</code>
+ * <code>ChangeCase</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StringPosition extends Function {
-
-    private StringBuffer lookup;
-
-    private Continuation<StringBuffer> lookupContn;
+public class ChangeCase extends Function {
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
-    private boolean forward = true;
+    private boolean toupper = true;
 
     /***/
-    public StringPosition() {
-        super( "StringPosition", null );
+    public ChangeCase() {
+        super( "ChangeCase", null );
     }
 
     @Override
@@ -78,16 +74,7 @@ public class StringPosition extends Function {
         if ( contn != null ) {
             contn.evaluate( sb, f );
         }
-
-        String val = sb.toString();
-        sb.setLength( 0 );
-        sb.append( lookup.toString().trim() );
-        if ( lookupContn != null ) {
-            lookupContn.evaluate( sb, f );
-        }
-        String lookup = sb.toString();
-
-        return new Object[] { ( ( forward ? val.indexOf( lookup ) : val.lastIndexOf( lookup ) ) + 1 ) + "" };
+        return new Object[] { toupper ? sb.toString().toUpperCase() : sb.toString().toLowerCase() };
     }
 
     /**
@@ -96,20 +83,16 @@ public class StringPosition extends Function {
      */
     public void parse( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, null, "StringPosition" );
+        in.require( START_ELEMENT, null, "ChangeCase" );
 
-        String dir = in.getAttributeValue( null, "searchDirection" );
+        String dir = in.getAttributeValue( null, "direction" );
         if ( dir != null ) {
-            forward = !dir.equals( "backToFront" );
+            toupper = dir.equals( "toUpper" );
         }
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "StringPosition" ) ) ) {
+        while ( !( in.isEndElement() && in.getLocalName().equals( "ChangeCase" ) ) ) {
             in.nextTag();
 
-            if ( in.getLocalName().equals( "LookupString" ) ) {
-                lookup = new StringBuffer();
-                lookupContn = updateOrContinue( in, "LookupString", lookup, SBUPDATER, null );
-            }
             if ( in.getLocalName().equals( "StringValue" ) ) {
                 value = new StringBuffer();
                 contn = updateOrContinue( in, "StringValue", value, SBUPDATER, null );
@@ -117,7 +100,7 @@ public class StringPosition extends Function {
 
         }
 
-        in.require( END_ELEMENT, null, "StringPosition" );
+        in.require( END_ELEMENT, null, "ChangeCase" );
     }
 
 }

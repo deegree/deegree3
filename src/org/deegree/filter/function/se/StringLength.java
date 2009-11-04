@@ -33,15 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function;
+package org.deegree.filter.function.se;
 
-import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
-
-import java.text.DecimalFormat;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -51,43 +48,32 @@ import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>FormatNumber</code>
+ * <code>StringLength</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FormatNumber extends Function {
+public class StringLength extends Function {
 
-    private String decimalPoint, groupingSeparator;
+    private StringBuffer value;
 
-    private StringBuffer numericValue;
-
-    private Continuation<StringBuffer> numericValueContn;
-
-    private DecimalFormat pattern, negativePattern;
+    private Continuation<StringBuffer> contn;
 
     /***/
-    public FormatNumber() {
-        super( "FormatNumber", null );
+    public StringLength() {
+        super( "StringLength", null );
     }
 
     @Override
     public Object[] evaluate( MatchableObject f ) {
-        double nr;
-        if ( numericValueContn != null ) {
-            StringBuffer sb = new StringBuffer();
-            sb.append( numericValue );
-            numericValueContn.evaluate( sb, f );
-            nr = parseDouble( sb.toString() );
-        } else {
-            nr = parseDouble( numericValue.toString() );
+        StringBuffer sb = new StringBuffer( value.toString().trim() );
+        if ( contn != null ) {
+            contn.evaluate( sb, f );
         }
-        if ( nr < 0 && negativePattern != null ) {
-            return new Object[] { negativePattern.format( nr ) };
-        }
-        return new Object[] { pattern.format( nr ) };
+
+        return new Object[] { sb.length() + "" };
     }
 
     /**
@@ -96,40 +82,19 @@ public class FormatNumber extends Function {
      */
     public void parse( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, null, "FormatNumber" );
+        in.require( START_ELEMENT, null, "StringLength" );
 
-        decimalPoint = in.getAttributeValue( null, "decimalPoint" );
-        decimalPoint = decimalPoint == null ? "." : decimalPoint;
-        groupingSeparator = in.getAttributeValue( null, "groupingSeparator" );
-        groupingSeparator = groupingSeparator == null ? "," : groupingSeparator;
-
-        String pat = "", neg = null;
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "FormatNumber" ) ) ) {
+        while ( !( in.isEndElement() && in.getLocalName().equals( "StringLength" ) ) ) {
             in.nextTag();
 
-            if ( in.getLocalName().equals( "NumericValue" ) ) {
-                numericValue = new StringBuffer();
-                numericValueContn = updateOrContinue( in, "NumericValue", numericValue, SBUPDATER, null );
+            if ( in.getLocalName().equals( "StringValue" ) ) {
+                value = new StringBuffer();
+                contn = updateOrContinue( in, "StringValue", value, SBUPDATER, null );
             }
 
-            if ( in.getLocalName().equals( "Pattern" ) ) {
-                pat = in.getElementText();
-            }
-
-            if ( in.getLocalName().equals( "NegativePattern" ) ) {
-                neg = in.getElementText();
-            }
         }
 
-        if ( neg == null ) {
-            neg = "-" + pat;
-        }
-
-        pattern = new DecimalFormat( pat );
-        negativePattern = new DecimalFormat( neg );
-
-        in.require( END_ELEMENT, null, "FormatNumber" );
+        in.require( END_ELEMENT, null, "StringLength" );
     }
 
 }

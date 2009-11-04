@@ -33,12 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function;
+package org.deegree.filter.function.se;
 
+import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
+
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -48,24 +52,28 @@ import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>ChangeCase</code>
+ * <code>Recode</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ChangeCase extends Function {
+public class Recode extends Function {
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
-    private boolean toupper = true;
+    private LinkedList<Double> datas = new LinkedList<Double>();
+
+    private LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+
+    private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
 
     /***/
-    public ChangeCase() {
-        super( "ChangeCase", null );
+    public Recode() {
+        super( "Recode", null );
     }
 
     @Override
@@ -74,7 +82,23 @@ public class ChangeCase extends Function {
         if ( contn != null ) {
             contn.evaluate( sb, f );
         }
-        return new Object[] { toupper ? sb.toString().toUpperCase() : sb.toString().toLowerCase() };
+
+        double val = parseDouble( sb.toString() );
+
+        Iterator<Double> data = datas.iterator();
+        Iterator<StringBuffer> vals = values.iterator();
+        Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
+        while ( data.hasNext() ) {
+            StringBuffer target = new StringBuffer( vals.next().toString().trim() );
+            Continuation<StringBuffer> contn = contns.next();
+
+            if ( data.next().doubleValue() == val ) {
+                contn.evaluate( target, f );
+                return new Object[] { target.toString() };
+            }
+        }
+
+        return new Object[] { "" + val };
     }
 
     /**
@@ -83,24 +107,35 @@ public class ChangeCase extends Function {
      */
     public void parse( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, null, "ChangeCase" );
+        in.require( START_ELEMENT, null, "Recode" );
 
-        String dir = in.getAttributeValue( null, "direction" );
-        if ( dir != null ) {
-            toupper = dir.equals( "toUpper" );
-        }
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "ChangeCase" ) ) ) {
+        while ( !( in.isEndElement() && in.getLocalName().equals( "Recode" ) ) ) {
             in.nextTag();
 
-            if ( in.getLocalName().equals( "StringValue" ) ) {
+            if ( in.getLocalName().equals( "LookupValue" ) ) {
                 value = new StringBuffer();
-                contn = updateOrContinue( in, "StringValue", value, SBUPDATER, null );
+                contn = updateOrContinue( in, "LookupValue", value, SBUPDATER, null );
+            }
+
+            if ( in.getLocalName().equals( "MapItem" ) ) {
+                while ( !( in.isEndElement() && in.getLocalName().equals( "MapItem" ) ) ) {
+                    in.nextTag();
+
+                    if ( in.getLocalName().equals( "Data" ) ) {
+                        datas.add( Double.valueOf( in.getElementText() ) );
+                    }
+
+                    if ( in.getLocalName().equals( "Value" ) ) {
+                        StringBuffer sb = new StringBuffer();
+                        valueContns.add( updateOrContinue( in, "Value", sb, SBUPDATER, null ) );
+                        values.add( sb );
+                    }
+                }
             }
 
         }
 
-        in.require( END_ELEMENT, null, "ChangeCase" );
+        in.require( END_ELEMENT, null, "Recode" );
     }
 
 }

@@ -33,16 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function;
+package org.deegree.filter.function.se;
 
-import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
-
-import java.util.Iterator;
-import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -52,28 +48,26 @@ import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>Recode</code>
+ * <code>Trim</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Recode extends Function {
+public class Trim extends Function {
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
-    private LinkedList<Double> datas = new LinkedList<Double>();
+    private boolean leading = true, trailing;
 
-    private LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
-
-    private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+    private String substr;
 
     /***/
-    public Recode() {
-        super( "Recode", null );
+    public Trim() {
+        super( "Trim", null );
     }
 
     @Override
@@ -83,22 +77,20 @@ public class Recode extends Function {
             contn.evaluate( sb, f );
         }
 
-        double val = parseDouble( sb.toString() );
+        String res = sb.toString();
 
-        Iterator<Double> data = datas.iterator();
-        Iterator<StringBuffer> vals = values.iterator();
-        Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
-        while ( data.hasNext() ) {
-            StringBuffer target = new StringBuffer( vals.next().toString().trim() );
-            Continuation<StringBuffer> contn = contns.next();
-
-            if ( data.next().doubleValue() == val ) {
-                contn.evaluate( target, f );
-                return new Object[] { target.toString() };
+        final int subLen = substr.length();
+        if ( leading ) {
+            while ( res.startsWith( substr ) ) {
+                res = res.substring( subLen );
             }
         }
-
-        return new Object[] { "" + val };
+        if ( trailing ) {
+            while ( res.endsWith( substr ) ) {
+                res = res.substring( 0, res.length() - subLen );
+            }
+        }
+        return new Object[] { res };
     }
 
     /**
@@ -107,35 +99,32 @@ public class Recode extends Function {
      */
     public void parse( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, null, "Recode" );
+        in.require( START_ELEMENT, null, "Trim" );
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Recode" ) ) ) {
+        String pos = in.getAttributeValue( null, "stripOffPosition" );
+        if ( pos != null ) {
+            if ( pos.equals( "trailing" ) ) {
+                leading = false;
+                trailing = true;
+            }
+            if ( pos.equals( "both" ) ) {
+                trailing = true;
+            }
+        }
+        String ch = in.getAttributeValue( null, "stripOffChar" );
+        substr = ch == null ? " " : ch;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "Trim" ) ) ) {
             in.nextTag();
 
-            if ( in.getLocalName().equals( "LookupValue" ) ) {
+            if ( in.getLocalName().equals( "StringValue" ) ) {
                 value = new StringBuffer();
-                contn = updateOrContinue( in, "LookupValue", value, SBUPDATER, null );
-            }
-
-            if ( in.getLocalName().equals( "MapItem" ) ) {
-                while ( !( in.isEndElement() && in.getLocalName().equals( "MapItem" ) ) ) {
-                    in.nextTag();
-
-                    if ( in.getLocalName().equals( "Data" ) ) {
-                        datas.add( Double.valueOf( in.getElementText() ) );
-                    }
-
-                    if ( in.getLocalName().equals( "Value" ) ) {
-                        StringBuffer sb = new StringBuffer();
-                        valueContns.add( updateOrContinue( in, "Value", sb, SBUPDATER, null ) );
-                        values.add( sb );
-                    }
-                }
+                contn = updateOrContinue( in, "StringValue", value, SBUPDATER, null );
             }
 
         }
 
-        in.require( END_ELEMENT, null, "Recode" );
+        in.require( END_ELEMENT, null, "Trim" );
     }
 
 }

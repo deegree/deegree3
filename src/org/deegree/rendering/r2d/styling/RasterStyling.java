@@ -42,8 +42,8 @@ import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 import java.util.HashMap;
 
 import org.deegree.coverage.raster.data.info.BandType;
-import org.deegree.filter.function.Categorize;
-import org.deegree.filter.function.Interpolate;
+import org.deegree.filter.function.se.Categorize;
+import org.deegree.filter.function.se.Interpolate;
 import org.deegree.rendering.r2d.RasterRenderingException;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.components.UOM;

@@ -88,17 +88,20 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.expression.Sub;
-import org.deegree.filter.function.Categorize;
-import org.deegree.filter.function.ChangeCase;
-import org.deegree.filter.function.Concatenate;
-import org.deegree.filter.function.FormatDate;
-import org.deegree.filter.function.FormatNumber;
-import org.deegree.filter.function.Interpolate;
-import org.deegree.filter.function.Recode;
-import org.deegree.filter.function.StringLength;
-import org.deegree.filter.function.StringPosition;
-import org.deegree.filter.function.Substring;
-import org.deegree.filter.function.Trim;
+import org.deegree.filter.function.geometry.IsCurve;
+import org.deegree.filter.function.geometry.IsPoint;
+import org.deegree.filter.function.geometry.IsSurface;
+import org.deegree.filter.function.se.Categorize;
+import org.deegree.filter.function.se.ChangeCase;
+import org.deegree.filter.function.se.Concatenate;
+import org.deegree.filter.function.se.FormatDate;
+import org.deegree.filter.function.se.FormatNumber;
+import org.deegree.filter.function.se.Interpolate;
+import org.deegree.filter.function.se.Recode;
+import org.deegree.filter.function.se.StringLength;
+import org.deegree.filter.function.se.StringPosition;
+import org.deegree.filter.function.se.Substring;
+import org.deegree.filter.function.se.Trim;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
@@ -476,14 +479,25 @@ public class Filter110XMLDecoder {
         }
 
         xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
+        String name = getRequiredAttributeValue( xmlStream, "name" );
         xmlStream.nextTag();
-        String name = getRequiredAttributeValue( xmlStream, null, "name" );
         List<Expression> params = new ArrayList<Expression>();
         while ( xmlStream.getEventType() == START_ELEMENT ) {
             params.add( parseExpression( xmlStream ) );
             xmlStream.nextTag();
         }
         xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
+
+        if ( name.equals( "IsPoint" ) ) {
+            return new IsPoint( params );
+        }
+        if ( name.equals( "IsCurve" ) ) {
+            return new IsCurve( params );
+        }
+        if ( name.equals( "IsSurface" ) ) {
+            return new IsSurface( params );
+        }
+
         return new Function( name, params );
     }
 
@@ -955,6 +969,7 @@ public class Filter110XMLDecoder {
         List<String> names = new LinkedList<String>();
         for ( Enum<?> e : enumClass.getEnumConstants() ) {
             QName qname = map.get( e );
+            System.out.println( e );
             names.add( qname.toString() );
         }
         return ArrayUtils.join( ", ", names );

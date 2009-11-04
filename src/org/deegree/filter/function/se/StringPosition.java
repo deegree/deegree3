@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function;
+package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -48,22 +48,28 @@ import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
- * <code>StringLength</code>
+ * <code>StringPosition</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StringLength extends Function {
+public class StringPosition extends Function {
+
+    private StringBuffer lookup;
+
+    private Continuation<StringBuffer> lookupContn;
 
     private StringBuffer value;
 
     private Continuation<StringBuffer> contn;
 
+    private boolean forward = true;
+
     /***/
-    public StringLength() {
-        super( "StringLength", null );
+    public StringPosition() {
+        super( "StringPosition", null );
     }
 
     @Override
@@ -73,7 +79,15 @@ public class StringLength extends Function {
             contn.evaluate( sb, f );
         }
 
-        return new Object[] { sb.length() + "" };
+        String val = sb.toString();
+        sb.setLength( 0 );
+        sb.append( lookup.toString().trim() );
+        if ( lookupContn != null ) {
+            lookupContn.evaluate( sb, f );
+        }
+        String lookup = sb.toString();
+
+        return new Object[] { ( ( forward ? val.indexOf( lookup ) : val.lastIndexOf( lookup ) ) + 1 ) + "" };
     }
 
     /**
@@ -82,11 +96,20 @@ public class StringLength extends Function {
      */
     public void parse( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, null, "StringLength" );
+        in.require( START_ELEMENT, null, "StringPosition" );
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "StringLength" ) ) ) {
+        String dir = in.getAttributeValue( null, "searchDirection" );
+        if ( dir != null ) {
+            forward = !dir.equals( "backToFront" );
+        }
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "StringPosition" ) ) ) {
             in.nextTag();
 
+            if ( in.getLocalName().equals( "LookupString" ) ) {
+                lookup = new StringBuffer();
+                lookupContn = updateOrContinue( in, "LookupString", lookup, SBUPDATER, null );
+            }
             if ( in.getLocalName().equals( "StringValue" ) ) {
                 value = new StringBuffer();
                 contn = updateOrContinue( in, "StringValue", value, SBUPDATER, null );
@@ -94,7 +117,7 @@ public class StringLength extends Function {
 
         }
 
-        in.require( END_ELEMENT, null, "StringLength" );
+        in.require( END_ELEMENT, null, "StringPosition" );
     }
 
 }

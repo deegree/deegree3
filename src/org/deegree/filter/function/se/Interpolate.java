@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.function;
+package org.deegree.filter.function.se;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.toHexString;

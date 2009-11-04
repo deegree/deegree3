@@ -50,8 +50,8 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.deegree.filter.function.Categorize;
-import org.deegree.filter.function.Interpolate;
+import org.deegree.filter.function.se.Categorize;
+import org.deegree.filter.function.se.Interpolate;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.parser.SymbologyParserTest;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
