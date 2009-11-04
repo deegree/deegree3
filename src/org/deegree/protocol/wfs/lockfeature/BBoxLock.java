@@ -46,7 +46,7 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * 
  * @version $Revision$, $Date$
  */
-public class BBoxLock implements Lock {
+public class BBoxLock implements LockOperation {
 
     private Envelope bbox;
 
@@ -69,7 +69,7 @@ public class BBoxLock implements Lock {
     /**
      * @return the bbox
      */
-    public Envelope getBbox() {
+    public Envelope getBBox() {
         return bbox;
     }
 

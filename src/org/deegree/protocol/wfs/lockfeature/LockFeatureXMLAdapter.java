@@ -130,7 +130,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         }
 
         List<OMElement> lockElements = getRequiredElements( rootElement, new XPath( "wfs:Lock", nsContext ) );
-        Lock[] locks = new Lock[lockElements.size()];
+        LockOperation[] locks = new LockOperation[lockElements.size()];
         int i = 0;
         for ( OMElement lockElement : lockElements ) {
             locks[i++] = parseLock100( lockElement );
@@ -138,7 +138,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return new LockFeature( VERSION_100, handle, locks, expiry, lockAll );
     }
 
-    private Lock parseLock100( OMElement lockElement ) {
+    private LockOperation parseLock100( OMElement lockElement ) {
 
         String handle = getNodeAsString( lockElement, new XPath( "@handle", nsContext ), null );
         // TODO can there be an alias for the typeName ??
@@ -189,7 +189,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         }
 
         List<OMElement> lockElements = getRequiredElements( rootElement, new XPath( "wfs:Lock", nsContext ) );
-        Lock[] locks = new Lock[lockElements.size()];
+        LockOperation[] locks = new LockOperation[lockElements.size()];
         int i = 0;
         for ( OMElement lockElement : lockElements ) {
             locks[i++] = parseLock110( lockElement );
@@ -197,7 +197,7 @@ public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return new LockFeature( VERSION_110, handle, locks, expiry, lockAll );
     }
 
-    private Lock parseLock110( OMElement lockElement ) {
+    private LockOperation parseLock110( OMElement lockElement ) {
 
         String handle = getNodeAsString( lockElement, new XPath( "@handle", nsContext ), null );
         // TODO can there be an alias for the typeName ??

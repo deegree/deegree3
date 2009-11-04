@@ -84,6 +84,10 @@ class DefaultLock implements Lock {
 
     private final Date expires;
 
+    private final int numFailed;
+
+    private final int numLocked;
+
     /**
      * Creates a new {@link DefaultLock} instance.
      * 
@@ -97,18 +101,35 @@ class DefaultLock implements Lock {
      *            time that the lock has been acquired, never null
      * @param expires
      *            time that the lock will expire, never null
+     * @param numLocked
+     *            number of locked features
+     * @param numFailed
+     *            number of features that have been requested to be locked, but which couldn't
      */
-    DefaultLock( DefaultLockManager manager, String jdbcConnId, String id, Date acquired, Date expires ) {
+    DefaultLock( DefaultLockManager manager, String jdbcConnId, String id, Date acquired, Date expires, int numLocked,
+                 int numFailed ) {
         this.manager = manager;
         this.jdbcConnId = jdbcConnId;
         this.id = id;
         this.acquired = acquired;
         this.expires = expires;
+        this.numLocked = numLocked;
+        this.numFailed = numFailed;
     }
 
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public int getNumLocked() {
+        return numLocked;
+    }
+
+    @Override
+    public int getNumFailedToLock() {
+        return numFailed;
     }
 
     @Override
@@ -136,6 +157,37 @@ class DefaultLock implements Lock {
             } catch ( SQLException e ) {
                 close( rs, stmt, conn, LOG );
                 String msg = "Could not retrieve ids of locked features: " + e.getMessage();
+                LOG.debug( msg, e );
+                throw new FeatureStoreException( msg, e );
+            }
+        }
+        return fidIter;
+    }
+
+    @Override
+    public CloseableIterator<String> getFailedToLockFeatures()
+                            throws FeatureStoreException {
+        CloseableIterator<String> fidIter = null;
+        synchronized ( manager ) {
+            manager.releaseExpiredLocks();
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rs = null;
+            try {
+                conn = ConnectionManager.getConnection( jdbcConnId );
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery( "SELECT FID FROM LOCK_FAILED_FIDS WHERE LOCK_ID=" + id );
+
+                fidIter = new ResultSetIterator<String>( rs, conn, stmt ) {
+                    @Override
+                    protected String createElement( ResultSet rs )
+                                            throws SQLException {
+                        return rs.getString( 1 );
+                    }
+                };
+            } catch ( SQLException e ) {
+                close( rs, stmt, conn, LOG );
+                String msg = "Could not retrieve ids of failed to lock features: " + e.getMessage();
                 LOG.debug( msg, e );
                 throw new FeatureStoreException( msg, e );
             }
@@ -175,9 +227,15 @@ class DefaultLock implements Lock {
                             throws FeatureStoreException {
         synchronized ( manager ) {
             try {
-                // delete entries from LOCK_FIDS table
+                // delete entries from LOCKED_FIDS table
                 Connection conn = ConnectionManager.getConnection( jdbcConnId );
                 PreparedStatement stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE LOCK_ID=?" );
+                stmt.setString( 1, id );
+                stmt.execute();
+                stmt.close();
+
+                // delete entries from LOCK_FAILED_FIDS table
+                stmt = conn.prepareStatement( "DELETE FROM LOCK_FAILED_FIDS WHERE LOCK_ID=?" );
                 stmt.setString( 1, id );
                 stmt.execute();
                 stmt.close();

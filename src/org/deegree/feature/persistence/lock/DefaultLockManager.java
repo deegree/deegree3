@@ -47,11 +47,10 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.utils.CloseableIterator;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
@@ -59,8 +58,16 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.geometry.Envelope;
+import org.deegree.protocol.wfs.getfeature.BBoxQuery;
+import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.Query;
+import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.lockfeature.BBoxLock;
+import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
+import org.deegree.protocol.wfs.lockfeature.FilterLock;
+import org.deegree.protocol.wfs.lockfeature.LockOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,6 +150,20 @@ public class DefaultLockManager implements LockManager {
             } else {
                 LOG.debug( "Table 'LOCKED_FIDS' already exists." );
             }
+            rs.close();
+
+            rs = dbMetaData.getTables( null, null, "LOCK_FAILED_FIDS", new String[] { "TABLE" } );
+            if ( !rs.next() ) {
+                LOG.debug( "Creating table 'LOCK_FAILED_FIDS'." );
+                String sql = "CREATE TABLE LOCK_FAILED_FIDS (";
+                sql += "LOCK_ID INT REFERENCES LOCKS,";
+                sql += "FID VARCHAR(255) NOT NULL UNIQUE";
+                sql += ")";
+                stmt.execute( sql );
+            } else {
+                LOG.debug( "Table 'LOCK_FAILED_FIDS' already exists." );
+            }
+            rs.close();
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "LOCK_DB_CREATE_ERROR", e.getMessage() );
             LOG.debug( msg, e );
@@ -153,81 +174,117 @@ public class DefaultLockManager implements LockManager {
     }
 
     @Override
-    public Lock acquireLock( QName ftName, Filter filter, boolean mustLockAll, long expireTimeout )
+    public Lock acquireLock( LockOperation[] lockRequests, boolean mustLockAll, long expireTimeout )
                             throws FeatureStoreException {
 
         Lock lock = null;
 
         synchronized ( this ) {
             releaseExpiredLocks();
-            Query query = new FilterQuery( ftName, null, null, filter );
 
             Connection conn = null;
-            PreparedStatement stmt = null;
+            PreparedStatement insertLockstmt = null;
+            PreparedStatement checkStmt = null;
+            PreparedStatement lockedStmt = null;
+            PreparedStatement failedToLockStmt = null;
             ResultSet rs = null;
-            try {
-                // TODO don't actually fetch the feature collection, but only the fids of the features
-                FeatureCollection fc = store.performQuery( query );
 
+            try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 conn.setAutoCommit( false );
 
                 // create entry in LOCKS table
-                stmt = conn.prepareStatement( "INSERT INTO LOCKS (ACQUIRED,EXPIRES) VALUES (?,?)",
-                                              Statement.RETURN_GENERATED_KEYS );
+                insertLockstmt = conn.prepareStatement( "INSERT INTO LOCKS (ACQUIRED,EXPIRES) VALUES (?,?)",
+                                                        Statement.RETURN_GENERATED_KEYS );
                 Date acquired = new Date();
                 Date expires = new Date( acquired.getTime() + expireTimeout );
-                stmt.setTimestamp( 1, new Timestamp( acquired.getTime() ) );
-                stmt.setTimestamp( 2, new Timestamp( expires.getTime() ) );
-                stmt.execute();
+                insertLockstmt.setTimestamp( 1, new Timestamp( acquired.getTime() ) );
+                insertLockstmt.setTimestamp( 2, new Timestamp( expires.getTime() ) );
+                insertLockstmt.execute();
 
-                rs = stmt.getGeneratedKeys();
+                rs = insertLockstmt.getGeneratedKeys();
                 rs.next();
                 int lockId = rs.getInt( 1 );
                 rs.close();
                 rs = null;
-                lock = new DefaultLock( this, jdbcConnId, "" + lockId, acquired, expires );
 
-                // create entries in LOCKED_FIDS table
-                PreparedStatement checkStmt = conn.prepareStatement( "SELECT COUNT(LOCK_ID) FROM LOCKED_FIDS WHERE FID=?" );
-                stmt = conn.prepareStatement( "INSERT INTO LOCKED_FIDS (LOCK_ID, FID) VALUES (?,?)" );
+                int numLocked = 0;
+                int numFailed = 0;
 
-                for ( Feature feature : fc ) {
-                    String fid = feature.getId();
+                for ( LockOperation lockRequest : lockRequests ) {
 
-                    // check if feature is locked already
-                    checkStmt.setString( 1, fid );
-                    rs = checkStmt.executeQuery();
-                    rs.next();
-                    int count = rs.getInt( 1 );
-                    rs.close();
-                    rs = null;
-                    if ( count > 0 ) {
-                        if ( mustLockAll ) {
-                            conn.rollback();
-                            checkStmt = conn.prepareStatement( "SELECT A.ACQUIRED,A.EXPIRES FROM LOCKS A INNER JOIN LOCKED_FIDS B ON A.ID=B.LOCK_ID WHERE B.FID=?" );
-                            checkStmt.setString( 1, fid );
-                            rs = checkStmt.executeQuery();
-                            rs.next();
-                            Timestamp acquired2 = rs.getTimestamp( 1 );
-                            Timestamp expires2 = rs.getTimestamp( 2 );
-                            rs.close();
-                            String msg = Messages.getMessage( "LOCK_CANNOT_LOCK_ALL", fid, expires2, acquired2 );
-                            throw new FeatureStoreException( msg );
+                    // TODO don't actually fetch the feature collection, but only the fids of the features
+                    Query query = null;
+                    if ( lockRequest instanceof BBoxLock ) {
+                        BBoxLock bboxLock = (BBoxLock) lockRequest;
+                        TypeName[] typeNames = bboxLock.getTypeNames();
+                        Envelope bbox = bboxLock.getBBox();
+                        query = new BBoxQuery( "lock", typeNames, null, null, null, null, null, bbox );
+                    } else if ( lockRequest instanceof FeatureIdLock ) {
+                        FeatureIdLock fidLock = (FeatureIdLock) lockRequest;
+                        TypeName[] typeNames = fidLock.getTypeNames();
+                        String[] featureIds = fidLock.getFeatureIds();
+                        query = new FeatureIdQuery( "lock", typeNames, featureIds, null, null, null, null, null );
+                    } else if ( lockRequest instanceof FilterLock ) {
+                        FilterLock filterLock = (FilterLock) lockRequest;
+                        TypeName[] typeNames = new TypeName[] { filterLock.getTypeName() };
+                        Filter filter = filterLock.getFilter();
+                        query = new FilterQuery( "lock", typeNames, null, null, null, null, null, null, filter );
+                    }
+                    FeatureCollection fc = store.performQuery( query );
+
+                    // create entries in LOCKED_FIDS/LOCK_FAILED_FIDS tables
+                    checkStmt = conn.prepareStatement( "SELECT LOCK_ID FROM LOCKED_FIDS WHERE FID=?" );
+                    lockedStmt = conn.prepareStatement( "INSERT INTO LOCKED_FIDS (LOCK_ID, FID) VALUES (?,?)" );
+                    failedToLockStmt = conn.prepareStatement( "INSERT INTO LOCK_FAILED_FIDS (LOCK_ID, FID) VALUES (?,?)" );
+
+                    for ( Feature feature : fc ) {
+                        String fid = feature.getId();
+                        int currentLockId = -1;
+
+                        // check if feature is locked already
+                        checkStmt.setString( 1, fid );
+                        rs = checkStmt.executeQuery();
+                        if ( rs.next() ) {
+                            currentLockId = rs.getInt( 1 );
                         }
-                    } else {
-                        stmt.setInt( 1, lockId );
-                        stmt.setString( 2, fid );
-                        stmt.execute();
+                        rs.close();
+
+                        rs = null;
+                        if ( currentLockId != lockId ) {
+                            if ( currentLockId != -1 ) {
+                                if ( mustLockAll ) {
+                                    conn.rollback();
+                                    checkStmt = conn.prepareStatement( "SELECT A.ACQUIRED,A.EXPIRES FROM LOCKS A INNER JOIN LOCKED_FIDS B ON A.ID=B.LOCK_ID WHERE B.FID=?" );
+                                    checkStmt.setString( 1, fid );
+                                    rs = checkStmt.executeQuery();
+                                    rs.next();
+                                    Timestamp acquired2 = rs.getTimestamp( 1 );
+                                    Timestamp expires2 = rs.getTimestamp( 2 );
+                                    rs.close();
+                                    String msg = Messages.getMessage( "LOCK_CANNOT_LOCK_ALL", fid, expires2, acquired2 );
+                                    throw new FeatureStoreException( msg );
+                                }
+                                failedToLockStmt.setInt( 1, lockId );
+                                failedToLockStmt.setString( 2, fid );
+                                failedToLockStmt.execute();
+                                numFailed++;
+                            } else {
+                                lockedStmt.setInt( 1, lockId );
+                                lockedStmt.setString( 2, fid );
+                                lockedStmt.execute();
+                                numLocked++;
+                            }
+                        }
                     }
                 }
                 conn.commit();
+                lock = new DefaultLock( this, jdbcConnId, "" + lockId, acquired, expires, numLocked, numFailed );
             } catch ( SQLException e ) {
                 try {
                     conn.rollback();
                 } catch ( SQLException e1 ) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                    LOG.warn( "Error performing rollback on lock db: " + e.getMessage(), e );
                 }
                 throw new FeatureStoreException( e.getMessage(), e );
             } catch ( FilterEvaluationException e ) {
@@ -237,10 +294,30 @@ public class DefaultLockManager implements LockManager {
                 try {
                     conn.setAutoCommit( true );
                 } catch ( SQLException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.warn( "Error resetting auto commit on lock db connection: " + e.getMessage(), e );
                 }
-                close( rs, stmt, conn, LOG );
+                close( rs, insertLockstmt, conn, LOG );
+                if ( checkStmt != null ) {
+                    try {
+                        checkStmt.close();
+                    } catch ( SQLException e ) {
+                        LOG.error( "Unable to close Statement: " + e.getMessage() );
+                    }
+                }
+                if ( lockedStmt != null ) {
+                    try {
+                        lockedStmt.close();
+                    } catch ( SQLException e ) {
+                        LOG.error( "Unable to close Statement: " + e.getMessage() );
+                    }
+                }
+                if ( failedToLockStmt != null ) {
+                    try {
+                        failedToLockStmt.close();
+                    } catch ( SQLException e ) {
+                        LOG.error( "Unable to close Statement: " + e.getMessage() );
+                    }
+                }
             }
         }
         return lock;
@@ -267,8 +344,19 @@ public class DefaultLockManager implements LockManager {
                     @Override
                     protected Lock createElement( ResultSet rs )
                                             throws SQLException {
-                        return new DefaultLock( manager, jdbcConnId, rs.getString( 1 ), rs.getTimestamp( 2 ),
-                                                rs.getTimestamp( 3 ) );
+                        String lockId = rs.getString( 1 );
+                        Timestamp acquired = rs.getTimestamp( 2 );
+                        Timestamp expires = rs.getTimestamp( 3 );
+
+                        Statement stmt = rs.getStatement().getConnection().createStatement();
+                        ResultSet rs2 = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE LOCK_ID=" + lockId );
+                        rs2.next();
+                        int numLocked = rs2.getInt( 1 );
+                        rs2 = stmt.executeQuery( "SELECT COUNT(*) FROM LOCK_FAILED_FIDS WHERE LOCK_ID=" + lockId );
+                        rs2.next();
+                        int numFailed = rs.getInt( 1 );
+                        stmt.close();
+                        return new DefaultLock( manager, jdbcConnId, lockId, acquired, expires, numLocked, numFailed );
                     }
                 };
             } catch ( SQLException e ) {
@@ -286,6 +374,14 @@ public class DefaultLockManager implements LockManager {
                             throws FeatureStoreException {
 
         Lock lock = null;
+
+        int lockIdInt = -1;
+        try {
+            lockIdInt = Integer.parseInt( lockId );
+        } catch ( NumberFormatException e ) {
+            // not a number -> use -1 (which is never used)
+        }        
+        
         synchronized ( this ) {
             releaseExpiredLocks();
             Connection conn = null;
@@ -294,12 +390,20 @@ public class DefaultLockManager implements LockManager {
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 stmt = conn.createStatement();
-                rs = stmt.executeQuery( "SELECT ACQUIRED,EXPIRES FROM LOCKS WHERE ID=" + lockId + "" );
+                rs = stmt.executeQuery( "SELECT ACQUIRED,EXPIRES FROM LOCKS WHERE ID=" + lockIdInt + "" );
                 if ( !rs.next() ) {
                     String msg = Messages.getMessage( "LOCK_NO_SUCH_ID", lockId );
-                    throw new FeatureStoreException( msg );
+                    throw new InvalidParameterValueException( msg, "lockId" );
                 }
-                lock = new DefaultLock( this, jdbcConnId, lockId, rs.getTimestamp( 1 ), rs.getTimestamp( 2 ) );
+                Timestamp acquired = rs.getTimestamp( 1 );
+                Timestamp expires = rs.getTimestamp( 2 );                
+                rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE LOCK_ID=" + lockIdInt );
+                rs.next();
+                int numLocked = rs.getInt( 1 );
+                rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCK_FAILED_FIDS WHERE LOCK_ID=" + lockIdInt );
+                rs.next();
+                int numFailed = rs.getInt( 1 );
+                lock = new DefaultLock( this, jdbcConnId, lockId, acquired, expires, numLocked, numFailed );
             } catch ( SQLException e ) {
                 String msg = "Could not retrieve lock with id '" + lockId + "':" + e.getMessage();
                 LOG.debug( msg, e );
@@ -342,9 +446,18 @@ public class DefaultLockManager implements LockManager {
     @Override
     public boolean isFeatureModifiable( String fid, String lockId )
                             throws FeatureStoreException {
+
         if ( lockId == null ) {
             return !isFeatureLocked( fid );
         }
+
+        int lockIdInt = -1;
+        try {
+            lockIdInt = Integer.parseInt( lockId );
+        } catch ( NumberFormatException e ) {
+            // not a number -> use -1 (which is never used)
+        }
+
         boolean isModifiable = false;
         synchronized ( this ) {
             releaseExpiredLocks();
@@ -355,7 +468,7 @@ public class DefaultLockManager implements LockManager {
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID='" + fid + "' AND LOCK_ID<>"
-                                        + lockId );
+                                        + lockIdInt );
                 rs.next();
                 int count = rs.getInt( 1 );
                 isModifiable = count == 0;
@@ -382,12 +495,19 @@ public class DefaultLockManager implements LockManager {
             PreparedStatement stmt = null;
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
+
                 stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE LOCK_ID IN (SELECT ID FROM LOCKS WHERE EXPIRES <=?)" );
                 stmt.setTimestamp( 1, now );
                 int deleted = stmt.executeUpdate();
                 LOG.debug( "Deleted " + deleted + " row(s) from table LOCKED_FIDS." );
-
                 stmt.close();
+
+                stmt = conn.prepareStatement( "DELETE FROM LOCK_FAILED_FIDS WHERE LOCK_ID IN (SELECT ID FROM LOCKS WHERE EXPIRES <=?)" );
+                stmt.setTimestamp( 1, now );
+                deleted = stmt.executeUpdate();
+                LOG.debug( "Deleted " + deleted + " row(s) from table LOCK_FAILED_FIDS." );
+                stmt.close();
+
                 stmt = conn.prepareStatement( "DELETE FROM LOCKS WHERE EXPIRES <=?" );
                 stmt.setTimestamp( 1, now );
                 deleted = stmt.executeUpdate();

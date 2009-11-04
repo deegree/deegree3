@@ -56,6 +56,9 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
+import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.lockfeature.FilterLock;
+import org.deegree.protocol.wfs.lockfeature.LockOperation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -91,9 +94,10 @@ public class DefaultLockManagerTest {
                             throws FeatureStoreException {
 
         // acquire lock on all Philosopher features
-        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );        
-        Lock lock = lockManager.acquireLock( ftName, null, true, 600 * 1000 );
-        
+        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );
+        LockOperation lockRequest = new FilterLock( null, new TypeName( ftName, null ), null );
+        Lock lock = lockManager.acquireLock( new LockOperation[] { lockRequest }, true, 600 * 1000 );
+
         // check that all seven instances are locked
         List<String> lockedFids = lock.getLockedFeatures().getAsListAndClose();
         assertEquals( 7, lockedFids.size() );
@@ -102,7 +106,7 @@ public class DefaultLockManagerTest {
             assertTrue( lockManager.isFeatureLocked( fid ) );
             assertTrue( lockManager.isFeatureModifiable( fid, lock.getId() ) );
             // must not be modifiable when specifying any other lock id
-            assertFalse( lockManager.isFeatureModifiable( fid, lock.getId()  + "42") );
+            assertFalse( lockManager.isFeatureModifiable( fid, lock.getId() + "42" ) );
         }
 
         // unlock all features

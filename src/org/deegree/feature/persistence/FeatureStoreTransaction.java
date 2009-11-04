@@ -40,9 +40,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.crs.CRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
+import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
@@ -113,13 +113,13 @@ public interface FeatureStoreTransaction {
      *            properties and their replacement values
      * @param filter
      *            selects the feature instances that are to be updated
-     * @param lockId
-     *            optional id of associated lock, may be null
+     * @param lock
+     *            optional lock object, may be <code>null</code>
      * @return number of updated feature instances
      * @throws FeatureStoreException
      *             if the update fails
      */
-    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, String lockId )
+    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException;
 
     /**
@@ -129,13 +129,13 @@ public interface FeatureStoreTransaction {
      *            feature type of the features to be deleted, must not be null and served by the store
      * @param filter
      *            filter that determines the features to be deleted
-     * @param lockId
-     *            optional id of associated lock, may be null
+     * @param lock
+     *            optional lock object, may be <code>null</code>
      * @return number of deleted feature instances
      * @throws FeatureStoreException
      *             if the deletion fails
      */
-    public int performDelete( QName ftName, OperatorFilter filter, String lockId )
+    public int performDelete( QName ftName, OperatorFilter filter, Lock lock )
                             throws FeatureStoreException;
 
     /**
@@ -143,12 +143,12 @@ public interface FeatureStoreTransaction {
      * 
      * @param filter
      *            filter that determines the features to be deleted
-     * @param lockId
-     *            optional id of associated lock, may be null
+     * @param lock
+     *            optional lock object, may be <code>null</code>
      * @return number of deleted feature instances
      * @throws FeatureStoreException
      *             if the deletion fails
      */
-    public int performDelete( IdFilter filter, String lockId )
+    public int performDelete( IdFilter filter, Lock lock )
                             throws FeatureStoreException;
 }

@@ -72,6 +72,16 @@ public abstract class ResultSetIterator<T> implements CloseableIterator<T> {
 
     private final Statement stmt;
 
+    /**
+     * Creates a new {@link ResultSetIterator} instance.
+     * 
+     * @param rs
+     *            result set that the iterator uses to build the elements, must not be <code>null</code>
+     * @param conn
+     *            connection that was used to obtain the result set, must not be <code>null</code>
+     * @param stmt
+     *            statement that was used to obtain the result set, must not be <code>null</code>
+     */
     protected ResultSetIterator( ResultSet rs, Connection conn, Statement stmt ) {
         this.rs = rs;
         this.conn = conn;
@@ -120,6 +130,15 @@ public abstract class ResultSetIterator<T> implements CloseableIterator<T> {
         return element;
     }
 
+    /**
+     * Invoked to create the next element in the iteration sequence from the {@link ResultSet} (usually from one row).
+     * 
+     * @param rs
+     *            result set that is used to build the element, this is never <code>null</code>
+     * @return new element from the iteration sequence
+     * @throws SQLException
+     *             if the accessing of the result set or element creation fails
+     */
     protected abstract T createElement( ResultSet rs )
                             throws SQLException;
 

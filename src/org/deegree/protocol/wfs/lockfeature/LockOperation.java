@@ -45,6 +45,6 @@ package org.deegree.protocol.wfs.lockfeature;
  * 
  * @version $Revision$, $Date$
  */
-public interface Lock {
+public interface LockOperation {
     // marker interface
 }

@@ -60,6 +60,20 @@ public interface Lock {
     public String getId();
 
     /**
+     * Returns the number of locked features.
+     * 
+     * @return the number of locked features
+     */
+    public int getNumLocked();
+
+    /**
+     * Returns the number of features that have been requested to be locked, but which couldn't.
+     * 
+     * @return the number of features that have been requested to be locked, but which couldn't
+     */
+    public int getNumFailedToLock();
+
+    /**
      * Returns the ids of all locked features.
      * <p>
      * NOTE: The caller <b>must</b> invoke {@link CloseableIterator#close()} after it's not needed anymore -- otherwise,
@@ -70,6 +84,19 @@ public interface Lock {
      * @throws FeatureStoreException
      */
     public CloseableIterator<String> getLockedFeatures()
+                            throws FeatureStoreException;
+
+    /**
+     * Returns the ids of all features that have been requested to be locked, but which couldn't.
+     * <p>
+     * NOTE: The caller <b>must</b> invoke {@link CloseableIterator#close()} after it's not needed anymore -- otherwise,
+     * backing resources (such as database connections) may not be freed.
+     * </p>
+     * 
+     * @return an iterator for all locked feature ids
+     * @throws FeatureStoreException
+     */
+    public CloseableIterator<String> getFailedToLockFeatures()
                             throws FeatureStoreException;
 
     /**
@@ -92,7 +119,7 @@ public interface Lock {
                             throws FeatureStoreException;
 
     /**
-     * Releases the specified feature from the lock.
+     * Releases the specified feature from the lock (if it was locked).
      * 
      * @param fid
      *            id of the feature

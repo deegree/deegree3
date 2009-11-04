@@ -124,6 +124,18 @@ public class TransactionXMLAdapter {
 
         // optional: '@releaseAction'
         ReleaseAction releaseAction = null;
+        String releaseActionString = getAttributeValue( xmlStream, "releaseAction" );
+        if ( releaseActionString != null ) {
+            if ( "SOME".equals( releaseActionString ) ) {
+                releaseAction = ReleaseAction.SOME;
+            } else if ( "ALL".equals( releaseActionString ) ) {
+                releaseAction = ReleaseAction.ALL;
+            } else {
+                String msg = "Invalid value (=" + releaseActionString
+                             + ") for release action parameter. Valid values are 'ALL' or 'SOME'.";
+                throw new InvalidParameterValueException( msg, "releaseAction" );
+            }
+        }
 
         // optional: 'wfs:LockId'
         String lockId = null;

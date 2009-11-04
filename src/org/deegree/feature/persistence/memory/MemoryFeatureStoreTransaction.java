@@ -48,6 +48,8 @@ import java.util.UUID;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.gml.GMLVersion;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -57,6 +59,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.IDGenMode;
+import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -96,21 +99,39 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performDelete( QName ftName, OperatorFilter filter, String lockId )
+    public int performDelete( QName ftName, OperatorFilter filter, Lock lock )
                             throws FeatureStoreException {
 
+        String lockId = lock != null ? lock.getId() : null;
         FeatureType ft = store.getSchema().getFeatureType( ftName );
         if ( ft == null ) {
             throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
         }
+
         FeatureCollection fc = store.getCollection( ft );
         int deleted = 0;
         if ( fc != null ) {
             try {
                 FeatureCollection newFc = fc.getMembers( filter );
+
+                // check if all can be deleted
+                for ( Feature feature : newFc ) {
+                    if ( !store.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
+                        if ( lockId == null ) {
+                            throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID",
+                                                                             feature.getId() ), "lockId" );
+                        }
+                        throw new InvalidParameterValueException( getMessage( "TA_DELETE_LOCKED_WRONG_LOCK_ID",
+                                                                              feature.getId() ), "lockId" );
+                    }
+                }
+
                 deleted = newFc.size();
                 for ( Feature feature : newFc ) {
                     store.removeObject( feature.getId() );
+                    if ( lock != null ) {
+                        lock.release( feature.getId() );
+                    }
                 }
             } catch ( FilterEvaluationException e ) {
                 throw new FeatureStoreException( e.getMessage(), e );
@@ -120,11 +141,26 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performDelete( IdFilter filter, String lockId )
+    public int performDelete( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
+
+        String lockId = lock != null ? lock.getId() : null;
+       
+        // check if all features can be deleted
+        for ( String id : filter.getMatchingIds() ) {
+            if ( !store.lockManager.isFeatureModifiable( id, lockId ) ) {
+                if ( lockId == null ) {
+                    throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID", id ), "lockId" );
+                }
+                throw new InvalidParameterValueException( getMessage( "TA_DELETE_LOCKED_WRONG_LOCK_ID", id ), "lockId" );
+            }
+        }
 
         for ( String id : filter.getMatchingIds() ) {
             store.removeObject( id );
+            if ( lock != null ) {
+                lock.release( id );
+            }
         }
         return filter.getMatchingIds().size();
     }
@@ -200,7 +236,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 throw new FeatureStoreException( msg );
             }
         }
-        
+
         store.addFeatures( features );
         try {
             store.addGeometriesWithId( geometries );
@@ -256,23 +292,42 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, String lockId )
+    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException {
+
+        String lockId = lock != null ? lock.getId() : null;
 
         FeatureType ft = store.getSchema().getFeatureType( ftName );
         if ( ft == null ) {
             throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
         }
+
         FeatureCollection fc = store.getCollection( ft );
         int updated = 0;
         if ( fc != null ) {
             try {
                 FeatureCollection newFc = fc.getMembers( filter );
+
+                // check if all features can be updated
+                for ( Feature feature : newFc ) {
+                    if ( !store.lockManager.isFeatureModifiable( feature.getId(), lockId ) ) {
+                        if ( lockId == null ) {
+                            throw new MissingParameterException( getMessage( "TA_UPDATE_LOCKED_NO_LOCK_ID",
+                                                                             feature.getId() ), "lockId" );
+                        }
+                        throw new InvalidParameterValueException( getMessage( "TA_UPDATE_LOCKED_WRONG_LOCK_ID",
+                                                                              feature.getId() ), "lockId" );
+                    }
+                }
+
                 updated = newFc.size();
                 for ( Feature feature : newFc ) {
                     for ( Property<?> prop : replacementProps ) {
-                        // TODO what about multi properties, strategy for proper handling of GML version                        
+                        // TODO what about multi properties, strategy for proper handling of GML version
                         feature.setPropertyValue( prop.getType().getName(), 0, prop.getValue(), GMLVersion.GML_31 );
+                    }
+                    if ( lock != null ) {
+                        lock.release( feature.getId() );
                     }
                 }
             } catch ( FilterEvaluationException e ) {

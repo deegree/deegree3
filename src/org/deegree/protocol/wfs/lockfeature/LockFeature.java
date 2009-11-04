@@ -48,7 +48,7 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  */
 public class LockFeature extends AbstractWFSRequest {
 
-    private Lock[] locks;
+    private LockOperation[] locks;
 
     private Integer expiry;
 
@@ -69,7 +69,7 @@ public class LockFeature extends AbstractWFSRequest {
      *            true means that the request should fail if not all requested locks can be acquired, may be null
      *            (unspecified)
      */
-    public LockFeature( Version version, String handle, Lock[] locks, Integer expiry, Boolean lockAll ) {
+    public LockFeature( Version version, String handle, LockOperation[] locks, Integer expiry, Boolean lockAll ) {
         super( version, handle );
         this.locks = locks;
         this.expiry = expiry;
@@ -81,7 +81,7 @@ public class LockFeature extends AbstractWFSRequest {
      * 
      * @return the locks to be acquired, never null and always contains at least one entry
      */
-    public Lock[] getLocks() {
+    public LockOperation[] getLocks() {
         return locks;
     }
 

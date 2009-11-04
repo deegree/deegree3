@@ -35,12 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.lock;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.filter.Filter;
+import org.deegree.protocol.wfs.lockfeature.LockOperation;
 
 /**
  * Keeps track of the lock state of the features stored in a {@link FeatureStore}.
@@ -70,16 +68,19 @@ public interface LockManager {
      * the WFS spec.).
      * </p>
      * 
-     * @param ftName
-     *            name of the feature type to be locked
-     * @param filter
+     * @param lockRequests
+     *            lock requests to be executed, must not be <code>null</code>
      * @param mustLockAll
+     *            if true, a {@link FeatureStoreException} is thrown if any of the requested feature instances could not
+     *            be locked
      * @param expireTimeout
      *            number of milliseconds before the lock is automatically released
-     * @return lock identifier
+     * @return lock identifier, never <code>null</code>
      * @throws FeatureStoreException
+     *             if an internal error occurs or if <code>mustLockAll</code> is <code>true</code> and at least one
+     *             feature could not be locked
      */
-    public Lock acquireLock( QName ftName, Filter filter, boolean mustLockAll, long expireTimeout )
+    public Lock acquireLock( LockOperation[] lockRequests, boolean mustLockAll, long expireTimeout )
                             throws FeatureStoreException;
 
     /**
@@ -120,7 +121,7 @@ public interface LockManager {
      * Returns whether the specified feature is modifiable for the owner of the specified lock.
      * 
      * @param fid
-     *            id of the feature
+     *            id of the feature, must not be <code>null</code>
      * @param lockId
      *            if of the lock, may be null (in this case the feature is only modifiable if the feature is not locked
      *            at all)

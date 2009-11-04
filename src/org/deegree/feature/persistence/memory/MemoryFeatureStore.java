@@ -112,14 +112,14 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private final Map<String, Object> idToObject = new HashMap<String, Object>();
 
-    private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
-
-    private final DefaultLockManager lockManager;
+    private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();    
 
     private MemoryFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
 
+    final DefaultLockManager lockManager;    
+    
     /**
      * Creates a new {@link MemoryFeatureStore} for the given {@link ApplicationSchema}.
      * 

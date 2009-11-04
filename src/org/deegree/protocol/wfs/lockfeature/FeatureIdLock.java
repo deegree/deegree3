@@ -44,7 +44,7 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureIdLock implements Lock {
+public class FeatureIdLock implements LockOperation {
 
     private final String[] featureIds;
 
@@ -76,7 +76,7 @@ public class FeatureIdLock implements Lock {
     /**
      * @return the typeName
      */
-    public TypeName[] getTypeName() {
+    public TypeName[] getTypeNames() {
         return typeNames;
     }
 }

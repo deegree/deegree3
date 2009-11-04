@@ -39,7 +39,7 @@ import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * {@link Lock} that specifies the features instances to be locked using a {@link Filter} expression.
+ * {@link LockOperation} that specifies the features instances to be locked using a {@link Filter} expression.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -47,7 +47,7 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * 
  * @version $Revision$, $Date$
  */
-public class FilterLock implements Lock {
+public class FilterLock implements LockOperation {
 
     private String handle;
 

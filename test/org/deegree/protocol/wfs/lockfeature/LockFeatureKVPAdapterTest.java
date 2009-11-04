@@ -127,7 +127,7 @@ public class LockFeatureKVPAdapterTest extends TestCase {
         assertTrue( lockFeature.getLockAll() );
         assertEquals( new Integer( 5 ), lockFeature.getExpiry() );
 
-        Lock[] locks = lockFeature.getLocks();
+        LockOperation[] locks = lockFeature.getLocks();
         assertEquals( 2, locks.length );
 
         FilterLock filterLock1 = (FilterLock) locks[0];
