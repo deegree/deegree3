@@ -16,7 +16,7 @@
   </configurations>
     <publications>
       <artifact name="${jar.name}" type="jar" conf="${module.name}-build" ext="jar"/>
-      <artifact name="${javadoc.name}" type="zip" conf="${module.name}-javadoc" />      
+      <artifact name="${javadoc.name}" type="zip" conf="${module.name}-javadoc" />
       <artifact name="${src.name}" type="zip" conf="${module.name}-src" />
       <artifact name="${report.name}" type="html" conf="${module.name}-report" />
   </publications>
@@ -28,7 +28,23 @@
     <dependency org="jai" name="jai_core" rev="" transitive="false" conf="${module.name}-build" />
     <dependency org="jai" name="jai_imageio" rev="" transitive="false" conf="${module.name}-build" />
     <dependency org="jai" name="jai_codec" rev="" transitive="false" conf="${module.name}-build" />
-    
+
+    <!-- For svg reading/rendering of simple svgs -->
+    <!-- required for compiling: -->
+    <dependency org="batik" name="batik-bridge" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-dom" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-gvt" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-svg-dom" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="xml-apis-ext" rev="" transitive="false" conf="${module.name}-build" />
+    <!-- additionally required for running: -->
+    <dependency org="batik" name="batik-anim" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-awt-util" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-css" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-ext" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-parser" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-script" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-util" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="batik" name="batik-xml" rev="" transitive="false" conf="${module.name}-build" />
 
     <!-- Needed for various calculations on points -->
     <dependency org="java3d" name="vecmath" rev="1.5.2" conf="${module.name}-build" />
