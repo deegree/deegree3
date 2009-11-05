@@ -124,7 +124,7 @@ public class MemoryFeatureStore implements FeatureStore {
      * Creates a new {@link MemoryFeatureStore} for the given {@link ApplicationSchema}.
      * 
      * @param schema
-     *            application schema, must not be null
+     *            application schema, must not be <code>null</code>
      * @throws FeatureStoreException
      */
     public MemoryFeatureStore( ApplicationSchema schema ) throws FeatureStoreException {

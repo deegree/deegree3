@@ -51,7 +51,7 @@ import javax.xml.stream.XMLStreamReader;
 import junit.framework.TestCase;
 
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.feature.persistence.IDGenMode;
+import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.junit.Test;

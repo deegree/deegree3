@@ -58,7 +58,6 @@ import org.deegree.feature.gml.FeatureReference;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.IDGenMode;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;

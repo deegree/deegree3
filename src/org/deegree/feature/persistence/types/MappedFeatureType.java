@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,25 +33,25 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+package org.deegree.feature.persistence.types;
 
-package org.deegree.feature.persistence;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.PropertyType;
 
 /**
- * Enum type for discriminating the different object id generation policies for {@link FeatureStore}s.
+ * {@link FeatureType} that is associated with a {@link FeatureStore} and which provides a mapping to the respective
+ * backend.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public enum IDGenMode {
+public interface MappedFeatureType extends FeatureType {
 
-    /** Use provided ids. */
-    USE_EXISTING,
-
-    /** Use provided ids, generate new id if object with same id already exists in the {@link FeatureStore}. */
-    REPLACE_DUPLICATE,
-
-    /** Always generate new ids. */
-    GENERATE_NEW
+    public Object getFtMapping ();
+    
+    public Object getPtMapping (PropertyType pt);
+    
 }

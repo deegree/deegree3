@@ -38,26 +38,25 @@ package org.deegree.feature.persistence;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.crs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.Function;
-import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.protocol.wfs.getfeature.Query;
-import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * Base interface of the {@l ink Feature} persistence layer, provides access to stored {@link Feature} instances.
+ * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
  * <p>
  * Note that a {@link FeatureStore} instance is always associated with exactly one {@link ApplicationSchema} instance.
+ * </p>
+ * <p>
  * <h4>Implementation requirements</h4>
- * Implementations must be thread-safe, because {@link FeatureStore} instances are usually used in multiple threads.
+ * Implementations must be thread-safe, because {@link FeatureStore} instances are usually used in multiple threads
+ * concurrently.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -66,7 +65,7 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * @version $Revision: $, $Date: $
  */
 public interface FeatureStore {
-
+   
     /**
      * Called by the container to indicate that this {@link FeatureStore} instance is being placed into service.
      * 
@@ -136,8 +135,8 @@ public interface FeatureStore {
                                     boolean exact )
                             throws FeatureStoreException, FilterEvaluationException;
 
-//    public FeatureCollection query( TypeName[] fts, String featureVersion, CRS srsName, Function[] functions,
-//                                    SortProperty[] sortBy, Filter filter );
+    // public FeatureCollection query( TypeName[] fts, String featureVersion, CRS srsName, Function[] functions,
+    // SortProperty[] sortBy, Filter filter );
 
     /**
      * Performs the given {@link Query} and returns the matching features as a {@link FeatureCollection}.

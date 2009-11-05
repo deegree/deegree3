@@ -55,6 +55,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
