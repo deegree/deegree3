@@ -131,7 +131,7 @@ public class FeatureStoreManager {
                 LOG.error( msg, e );
                 throw new FeatureStoreException( msg, e );
             }
-            fs = new ShapeFeatureStore( shapeFileName, crs, null );
+            fs = new ShapeFeatureStore( shapeFileName, crs, null );           
         } else if ( config instanceof MemoryFeatureStoreType ) {
             MemoryFeatureStoreType memoryDsConfig = (MemoryFeatureStoreType) config;
             XMLAdapter resolver = new XMLAdapter();
@@ -150,7 +150,6 @@ public class FeatureStoreManager {
             }
 
             fs = new MemoryFeatureStore( schema );
-            fs.init();
 
             for ( String datasetFile : memoryDsConfig.getGMLFeatureCollectionFileURL() ) {
                 if ( datasetFile != null ) {
@@ -186,9 +185,8 @@ public class FeatureStoreManager {
                 throw new FeatureStoreException( msg );
             }
             LOG.info( "Registering global feature store (" + fs + ") with id '" + id + "'." );
-        } else {
-            fs.init();
             idToFs.put( id, fs );
+            fs.init();
         }
         return fs;
     }
