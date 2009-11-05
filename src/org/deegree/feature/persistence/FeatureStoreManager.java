@@ -112,6 +112,7 @@ public class FeatureStoreManager {
                 String msg = Messages.getMessage( "STORE_MANAGER_NO_SUCH_ID", storeId );
                 throw new FeatureStoreException( msg );
             }
+            return fs;
         }
 
         // any other FeatureStoreType requires the creation of a new FeatureStore instance
@@ -131,7 +132,7 @@ public class FeatureStoreManager {
                 LOG.error( msg, e );
                 throw new FeatureStoreException( msg, e );
             }
-            fs = new ShapeFeatureStore( shapeFileName, crs, null );           
+            fs = new ShapeFeatureStore( shapeFileName, crs, null );
         } else if ( config instanceof MemoryFeatureStoreType ) {
             MemoryFeatureStoreType memoryDsConfig = (MemoryFeatureStoreType) config;
             XMLAdapter resolver = new XMLAdapter();
@@ -179,6 +180,8 @@ public class FeatureStoreManager {
             throw new FeatureStoreException( msg );
         }
 
+        fs.init();
+
         if ( id != null ) {
             if ( idToFs.containsKey( id ) ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
@@ -186,8 +189,8 @@ public class FeatureStoreManager {
             }
             LOG.info( "Registering global feature store (" + fs + ") with id '" + id + "'." );
             idToFs.put( id, fs );
-            fs.init();
         }
+
         return fs;
     }
 }
