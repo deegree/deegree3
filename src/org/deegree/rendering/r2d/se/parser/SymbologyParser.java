@@ -398,7 +398,7 @@ public class SymbologyParser {
 
             sym: if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
                 LOG.debug( "Loading mark from external file." );
-                InputStream is = getOnlineResourceOrInlineContent( in );
+                InputStream is = getOnlineResourceOrInlineContent( in ).first;
                 in.nextTag();
 
                 in.require( START_ELEMENT, null, "Format" );
@@ -474,15 +474,17 @@ public class SymbologyParser {
         return new Pair<Mark, Continuation<Mark>>( base, contn );
     }
 
-    private static InputStream getOnlineResourceOrInlineContent( XMLStreamReader in )
+    private static Pair<InputStream, String> getOnlineResourceOrInlineContent( XMLStreamReader in )
                             throws XMLStreamException {
         if ( in.getLocalName().equals( "OnlineResource" ) ) {
             String str = in.getAttributeValue( XLNNS, "href" );
+            String strUrl = null;
             try {
                 URL url = resolve( str, in );
+                strUrl = url.toExternalForm();
                 LOG.debug( "Loading from URL '{}'", url );
                 in.nextTag();
-                return url.openStream();
+                return new Pair<InputStream, String>( url.openStream(), strUrl );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Could not retrieve content at URL '{}'.", str );
@@ -493,7 +495,8 @@ public class SymbologyParser {
         if ( in.getLocalName().equals( "InlineContent" ) ) {
             String format = in.getAttributeValue( null, "encoding" );
             if ( format.equalsIgnoreCase( "base64" ) ) {
-                return new ByteArrayInputStream( Base64.decode( in.getElementText() ) );
+                return new Pair<InputStream, String>( new ByteArrayInputStream( Base64.decode( in.getElementText() ) ),
+                                                      null );
             }
             if ( format.equalsIgnoreCase( "xml" ) ) {
                 // TODO
@@ -503,15 +506,15 @@ public class SymbologyParser {
         return null;
     }
 
-    private static BufferedImage parseExternalGraphic( XMLStreamReader in )
+    private static Pair<BufferedImage, String> parseExternalGraphic( XMLStreamReader in )
                             throws IOException, XMLStreamException {
         // TODO color replacement
-        // TODO in case of svg, load/render it with batik
 
         in.require( START_ELEMENT, null, "ExternalGraphic" );
 
         String format = null;
         BufferedImage img = null;
+        String url = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "ExternalGraphic" ) ) ) {
             in.nextTag();
@@ -520,14 +523,15 @@ public class SymbologyParser {
                 format = in.getElementText();
             }
             if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
-                InputStream is = getOnlineResourceOrInlineContent( in );
-                if ( is != null ) {
-                    img = ImageIO.read( is );
+                Pair<InputStream, String> p = getOnlineResourceOrInlineContent( in );
+                if ( p.first != null && format != null && !format.equalsIgnoreCase( "image/svg" ) ) {
+                    img = ImageIO.read( p.first );
                 }
+                url = p.second;
             }
         }
 
-        return img;
+        return new Pair<BufferedImage, String>( img, url );
     }
 
     private static Pair<Graphic, Continuation<Graphic>> parseGraphic( XMLStreamReader in )
@@ -557,7 +561,9 @@ public class SymbologyParser {
             }
             if ( in.getLocalName().equals( "ExternalGraphic" ) ) {
                 try {
-                    base.image = parseExternalGraphic( in );
+                    Pair<BufferedImage, String> p = parseExternalGraphic( in );
+                    base.image = p.first;
+                    base.imageURL = p.second;
                 } catch ( IOException e ) {
                     LOG.debug( "Stack trace", e );
                     LOG.warn( get( "R2D.EXTERNAL_GRAPHIC_NOT_LOADED" ),
@@ -681,7 +687,6 @@ public class SymbologyParser {
     }
 
     private static UOM getUOM( String uom ) {
-        UOM res = Pixel;
         if ( uom != null ) {
             String u = uom.toLowerCase();
             if ( u.endsWith( "metre" ) || u.endsWith( "meter" ) ) {
@@ -695,7 +700,7 @@ public class SymbologyParser {
             }
         }
 
-        return res;
+        return Pixel;
     }
 
     /**

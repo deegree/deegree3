@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d.styling.components;
 
@@ -42,10 +42,10 @@ import org.deegree.rendering.r2d.styling.Copyable;
 
 /**
  * <code>Graphic</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class Graphic implements Copyable<Graphic> {
@@ -91,7 +91,12 @@ public class Graphic implements Copyable<Graphic> {
     public BufferedImage image;
 
     /**
-     * Default is null.
+     * Is set to the image's URL. Image may still be null if image format is a vector format.
+     */
+    public String imageURL;
+
+    /**
+     * Default is a default mark.
      */
     public Mark mark = new Mark();
 

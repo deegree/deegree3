@@ -48,6 +48,8 @@ import static java.awt.Font.PLAIN;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.rendering.r2d.RenderHelper.getShapeFromMark;
+import static org.deegree.rendering.r2d.RenderHelper.getShapeFromSvg;
 import static org.deegree.rendering.r2d.RenderHelper.renderMark;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -55,6 +57,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.TexturePaint;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
@@ -79,6 +82,7 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
+import org.deegree.rendering.r2d.strokes.ShapeStroke;
 import org.deegree.rendering.r2d.strokes.TextStroke;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
@@ -221,57 +225,63 @@ public class Java2DRenderer implements Renderer {
             graphics.setPaint( new Color( 0, 0, 0, 0 ) );
             return;
         }
-        if ( stroke.stroke == null && stroke.fill == null ) {
+        if ( stroke.fill == null ) {
             graphics.setPaint( stroke.color );
-        }
-        if ( stroke.fill != null ) {
+        } else {
             applyGraphicFill( stroke.fill, uom );
         }
         if ( stroke.stroke != null ) {
-            LOG.warn( "Used graphical stroke. This is not supported yet! " );
-        }
-
-        int linecap = CAP_SQUARE;
-        if ( stroke.linecap != null ) {
-            switch ( stroke.linecap ) {
-            case BUTT:
-                linecap = CAP_BUTT;
-                break;
-            case ROUND:
-                linecap = CAP_ROUND;
-                break;
-            case SQUARE:
-                linecap = CAP_SQUARE;
-                break;
+            if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
+                Shape shape = getShapeFromSvg( stroke.stroke.imageURL, considerUOM( stroke.stroke.size, uom ) );
+                graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap, uom ) ) );
+            } else if ( stroke.stroke.mark != null ) {
+                Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ) );
+                graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap, uom ) ) );
+            } else {
+                LOG.warn( "Rendering of raster images along lines is not supported yet." );
             }
-        }
-        int linejoin = JOIN_MITER;
-        float miterLimit = 10;
-        if ( stroke.linejoin != null ) {
-            switch ( stroke.linejoin ) {
-            case BEVEL:
-                linejoin = JOIN_BEVEL;
-                break;
-            case MITRE:
-                linejoin = JOIN_MITER;
-                break;
-            case ROUND:
-                linejoin = JOIN_ROUND;
-                break;
+        } else {
+            int linecap = CAP_SQUARE;
+            if ( stroke.linecap != null ) {
+                switch ( stroke.linecap ) {
+                case BUTT:
+                    linecap = CAP_BUTT;
+                    break;
+                case ROUND:
+                    linecap = CAP_ROUND;
+                    break;
+                case SQUARE:
+                    linecap = CAP_SQUARE;
+                    break;
+                }
             }
-        }
-        float dashoffset = (float) considerUOM( stroke.dashoffset, uom );
-        float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
-        if ( stroke.dasharray != null ) {
-            for ( int i = 0; i < stroke.dasharray.length; ++i ) {
-                dasharray[i] = (float) considerUOM( stroke.dasharray[i], uom );
+            int linejoin = JOIN_MITER;
+            float miterLimit = 10;
+            if ( stroke.linejoin != null ) {
+                switch ( stroke.linejoin ) {
+                case BEVEL:
+                    linejoin = JOIN_BEVEL;
+                    break;
+                case MITRE:
+                    linejoin = JOIN_MITER;
+                    break;
+                case ROUND:
+                    linejoin = JOIN_ROUND;
+                    break;
+                }
             }
+            float dashoffset = (float) considerUOM( stroke.dashoffset, uom );
+            float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
+            if ( stroke.dasharray != null ) {
+                for ( int i = 0; i < stroke.dasharray.length; ++i ) {
+                    dasharray[i] = (float) considerUOM( stroke.dasharray[i], uom );
+                }
+            }
+
+            BasicStroke bs = new BasicStroke( (float) considerUOM( stroke.width, uom ), linecap, linejoin, miterLimit,
+                                              dasharray, dashoffset );
+            graphics.setStroke( bs );
         }
-
-        BasicStroke bs = new BasicStroke( (float) considerUOM( stroke.width, uom ), linecap, linejoin, miterLimit,
-                                          dasharray, dashoffset );
-
-        graphics.setStroke( bs );
     }
 
     private <T> T transform( T g ) {
