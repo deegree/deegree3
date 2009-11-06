@@ -40,7 +40,7 @@ import org.deegree.commons.types.ows.Version;
 
 /**
  * 
- * TODO add class documentation here
+ * Container for, in the specification defined, static specified elements
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -48,62 +48,106 @@ import org.deegree.commons.types.ows.Version;
  * @version $Revision: $, $Date: $
  */
 public class CSWConstants {
-	
-	/** Namespace for elements from the CSW 2.0.2 specification 
-	 * <p>
-	 * Namespace="http://www.opengis.net/cat/csw/2.0.2" 
-	 * */
+
+    /**
+     * Namespace for elements from the CSW 2.0.2 specification
+     * <p>
+     * Namespace="http://www.opengis.net/cat/csw/2.0.2"
+     * */
     public static final String CSW_202_NS = "http://www.opengis.net/cat/csw/2.0.2";
-    
+
     /** Location of the schema */
     public static final String CSW_202_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd";
 
     /** Common namespace prefix for elements from the CSW specification */
-    public static final String CSW_PREFIX = "csw";	
-	
-	/** CSW protocol version 2.0.2 */
+    public static final String CSW_PREFIX = "csw";
+
+    /** CSW protocol version 2.0.2 */
     public static final Version VERSION_202 = Version.parseVersion( "2.0.2" );
 
-	/**
-	 * 
-	 * TODO add class documentation here
-	 * 
-	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: thomas $
-	 * 
-	 * @version $Revision: $, $Date: $
-	 */
-	public enum CSWRequestType{
-		
-		/** Retrieve the capabilities of the service. */
+    /**
+     * 
+     * Operations that is the webservice capable of <br>
+     * <li>GetCapabilities</li> <li>DescribeRecord</li> <li>GetRecords</li> <li>GetRecordById</li> <br>
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum CSWRequestType {
+
+        /** Retrieve the capabilities of the service. */
         GetCapabilities,
         /** Discover elements of the service */
-		DescribeRecord, 
-		/** Resource discovery combines the two operations - search and present */
-		GetRecords, 
-		/** Retrieve the default representation of the service */
-		GetRecordById
-	}
-	
-	/**
-	 * 
-	 * TODO add class documentation here
-	 * 
-	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: thomas $
-	 * 
-	 * @version $Revision: $, $Date: $
-	 */
-	 public enum Sections {
+        DescribeRecord,
+        /** Resource discovery combines the two operations - search and present */
+        GetRecords,
+        /** Retrieve the default representation of the service */
+        GetRecordById
+    }
 
-	        /***/
-	        ServiceIdentification,
-	        /***/
-	        ServiceProvider,
-	        /***/
-	        OperationsMetadata,
-	        /***/
-	        Filter_Capabilities
-	    }
+    /**
+     * 
+     * Sections are informations about the service represented in the GetCapabilities operation <br>
+     * <li>ServiceIdentification</li> <li>ServiceProvider</li> <li>OperationsMetadata</li> <li>Filter_Capabilities</li> <br>
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum Sections {
+
+        /***/
+        ServiceIdentification,
+        /***/
+        ServiceProvider,
+        /***/
+        OperationsMetadata,
+        /***/
+        Filter_Capabilities
+    }
+
+    /**
+     * Specifies the mode of the response that is requested. The modes are: <br>
+     * <li>hits (default)</li> <li>results</li> <li>validate</li> <br>
+     * 
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum ResultType {
+
+        /** returns an empty SearchResults element that include the size of the result set */
+        hits,
+        /** returns one or more records from the result set up to the maximum number of records specified in the request */
+        results,
+        /** validates the request message */
+        validate
+
+    }
+
+    /**
+     * 
+     * Specifies the elements that should be returned in the response <br>
+     * <li>brief</li> <li>summary</li> <li>full</li> <br>
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum SetOfReturnableElements {
+
+        brief,
+
+        summary,
+
+        full
+
+    }
 
 }

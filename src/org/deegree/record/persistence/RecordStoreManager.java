@@ -101,10 +101,10 @@ public class RecordStoreManager {
             //XMLAdapter resolver = new XMLAdapter();
             //resolver.setSystemId( baseURL );
 
-            rs = new DCRecordStore(new QName ("","Record", "csw"));
-            rs.describeRecord();
+            rs = new DCRecordStore();
+            //rs.describeRecord();
         }else if(config instanceof ISORecordStoreType){
-            //TODO
+            //TODO falsch, ebRim müsste das heißen oder eben was anderes...
         }
         else {
             String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", config.getClass() );

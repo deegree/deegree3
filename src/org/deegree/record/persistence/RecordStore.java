@@ -35,9 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
+import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+
+import java.sql.SQLException;
+
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.record.Record;
 
@@ -81,14 +88,37 @@ public interface RecordStore {
     public void describeRecord();
 
     /**
+     * Exports the XML for the requested records.
+     * 
+     * @param writer
+     *            writer to export to, must not be <code>null</code>
+     * @param typeName
+     *            typeName for the requested record
+     * @param returnableElement
+     *            which representation should be generated: <Code>brief</Code>, <Code>summary</Code> or
+     *            <Code>full</Code>
+     * @param connection
+     *            JDBC connection attributes
+     * @param resultType
+     *            the mode which result should be generated: <Code>hits</Code> as default, <Code>results</Code> or
+     *            <Code>validate</Code>
+     * @throws SQLException
+     * @throws XMLStreamException
+     */
+    public void getRecords( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnableElement,
+                            JDBCConnections connection, ResultType resultType, String conId )
+                            throws SQLException, XMLStreamException;
+
+    /**
      * Returns the TypeNames that are known in the Backend
      * 
      * @return QName
      */
-    public QName getTypeNames();
-    
+    public QName getTypeName();
+
     /**
      * Is for a dummyimplementation
+     * 
      * @return
      */
     public String getOutput();
