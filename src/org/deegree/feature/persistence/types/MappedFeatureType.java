@@ -40,8 +40,8 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
- * {@link FeatureType} that is associated with a {@link FeatureStore} and which provides a mapping to the respective
- * backend.
+ * {@link FeatureType} that is associated with a {@link FeatureStore} and which provides a mapping to the data model of
+ * the respective backend.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -50,8 +50,7 @@ import org.deegree.feature.types.property.PropertyType;
  */
 public interface MappedFeatureType extends FeatureType {
 
-    public Object getFtMapping ();
-    
-    public Object getPtMapping (PropertyType pt);
-    
+    public Object getFtMapping();
+
+    public Object getPtMapping( PropertyType pt );
 }
