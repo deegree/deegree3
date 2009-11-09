@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
 import java.io.File;
@@ -61,14 +61,14 @@ import org.slf4j.LoggerFactory;
  * <li>fragments: each fragment describes a certain region of the geometry at a certain LOD</li>
  * </ul>
  * </p>
- *
+ * 
  * @see SelectiveRefinement
  * @see SpatialSelection
  * @see LODCriterion
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class MultiresolutionMesh {
@@ -92,10 +92,12 @@ public class MultiresolutionMesh {
 
     private static final int INDEX_HEADER_SIZE = 4 * 4;
 
+    private float[][] renderDomain;
+
     /**
      * Creates a new {@link MultiresolutionMesh} by reading the fragment ({@link #FRAGMENTS_FILE_NAME}) and index (
      * {@link #INDEX_FILE_NAME}) blobs in the given directory.
-     *
+     * 
      * @param dir
      *            directory that contains the fragment and index blobs to be read
      * @throws IOException
@@ -107,7 +109,7 @@ public class MultiresolutionMesh {
     /**
      * Creates a new {@link MultiresolutionMesh} by reading the specified fragment ({@link #FRAGMENTS_FILE_NAME}) and
      * index ( {@link #INDEX_FILE_NAME}) blobs.
-     *
+     * 
      * @param mrIndex
      *            index blob
      * @param meshFragments
@@ -160,11 +162,25 @@ public class MultiresolutionMesh {
         nodes = createNodes( nodesBuffer );
         arcs = createArcs( arcsBuffer );
         fragments = createFragmentInfos( fragmentsInfoBuffer, new MeshFragmentDataReader( meshFragments ) );
+        if ( fragments != null && fragments[0] != null && fragments[0].bbox != null ) {
+            renderDomain = new float[2][3];
+            System.arraycopy( fragments[0].bbox[0], 0, renderDomain[0], 0, 3 );
+            System.arraycopy( fragments[0].bbox[1], 0, renderDomain[1], 0, 3 );
+        } else {
+            LOG.error( "Could not load fragments, determination of valid rendering domain has failed." );
+        }
+    }
+
+    /**
+     * @return the domain of this multiresolution mesh as read from the first macro triangle fragment.
+     */
+    public final float[][] getBBox() {
+        return renderDomain;
     }
 
     /**
      * Extracts the smallest LOD that satisfies the given LOD criterion.
-     *
+     * 
      * @param crit
      *            criterion that the LOD must satisfies
      * @return smallest LOD that satisfies the given LOD criterion
@@ -175,7 +191,7 @@ public class MultiresolutionMesh {
 
     /**
      * Extracts the smallest LOD fragment that satisfies the given LOD criterion .
-     *
+     * 
      * @param crit
      *            criterion that the LOD must satisfies
      * @param roi

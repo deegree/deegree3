@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
@@ -67,14 +67,14 @@ import org.slf4j.LoggerFactory;
 import com.sun.opengl.util.GLUT;
 
 /**
- *
+ * 
  * The <code>TerrainRenderingManager</code> class manages the current fragments, it uses fragment shaders if multiple
  * texture are requested.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author: rbezema $
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class TerrainRenderingManager {
 
@@ -94,7 +94,7 @@ public class TerrainRenderingManager {
     private double maxProjectedTexelSize;
 
     /**
-     *
+     * 
      * @param fragmentManager
      * @param maxPixelError
      * @param maxProjectedTexelSize
@@ -109,7 +109,7 @@ public class TerrainRenderingManager {
     /**
      * Renders a view-optimized representation of the terrain geometry using the given scale and textures to the
      * specified GL context.
-     *
+     * 
      * @param glRenderContext
      * @param disableElevationModel
      * @param textureManagers
@@ -324,6 +324,13 @@ public class TerrainRenderingManager {
         gl.glColor3f( 1.0f, 1.0f, 1.0f );
     }
 
+    /**
+     * @return the fragmentManager
+     */
+    public final RenderFragmentManager getFragmentManager() {
+        return fragmentManager;
+    }
+
     private class TextureWorker implements Callable<Map<RenderMeshFragment, FragmentTexture>> {
 
         private final RenderContext glRenderContext;
@@ -348,4 +355,5 @@ public class TerrainRenderingManager {
             return textureManager.getTextures( glRenderContext, maxProjTexelSize, fragments );
         }
     }
+
 }
