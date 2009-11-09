@@ -48,7 +48,7 @@
         </sequence>
       </extension>
     </complexContent>
-  </complexType>  
+  </complexType>
   
   <element name="MemoryFeatureStore" substitutionGroup="ds:FeatureStore" type="ds:MemoryFeatureStoreType">
     <annotation>
@@ -64,5 +64,20 @@
         </sequence>
       </extension>
     </complexContent>
-  </complexType>  
+  </complexType>
+  
+  <element name="PostGISFeatureStore" substitutionGroup="ds:FeatureStore" type="ds:PostGISFeatureStoreType">
+    <annotation>
+      <documentation>FeatureStore that is backed by a PostgreSQL/PostGIS database.</documentation>
+    </annotation>
+  </element>
+  <complexType name="PostGISFeatureStoreType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <sequence>
+          <element name="MappedPostGISAppSchema" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
 </schema>

@@ -19,21 +19,36 @@
 
 	<target name="bind-commons-configuration" depends="bind, publish-local" description="Bind the commons configuration files and publish the result." />
 
-	<target name="bind-ft-definition" depends="resolve" description="Bind featuretype_definition.xsd">
+	<target name="bind-appschema" depends="resolve" description="Bind appschema.xsd">
 		<!-- Support jaxb tasks -->
 		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
 			<classpath refid="build.path" />
 		</taskdef>
-		<property name="schema.file" value="featuretype_definition.xsd" />
+		<property name="schema.file" value="appschema.xsd" />
 		<property name="schema.name" value="feature" />
 		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
-		<property name="src.output.dir" value="${src.dir}/org/deegree/feature/types/jaxb" />
-
+		<property name="src.output.dir" value="${src.dir}/org/deegree/feature/types/jaxbconfig" />
 		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
 			<depends dir="${schema.dir}" includes="**/*.xsd" />
 			<produces dir="${src.output.dir}" includes="**/*.java" />
 		</xjc>
 	</target>
+
+	<target name="bind-postgis-appschema" depends="resolve" description="Bind postgis_appschema.xsd">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+        <property name="schema.file" value="postgis_appschema.xsd" />
+        <property name="schema.name" value="feature" />
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/feature/persistence/postgis/jaxbconfig" />
+
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+            <depends dir="${schema.dir}" includes="**/*.xsd" />
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+    </target>			
 
 	<target name="bind-ds" depends="resolve">
 		<!-- Support jaxb tasks -->
