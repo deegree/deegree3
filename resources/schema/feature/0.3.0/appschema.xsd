@@ -25,15 +25,7 @@
     <complexType>
       <sequence>
         <element ref="ft:FeatureType" minOccurs="1" maxOccurs="unbounded" />
-      </sequence>
-      <attribute name="targetNamespace" type="anyURI">
-        <annotation>
-          <documentation>
-            Target namespace (where all defined feature types live
-            in).
-          </documentation>
-        </annotation>
-      </attribute>
+      </sequence>      
     </complexType>
   </element>
   <!--

@@ -24,24 +24,9 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="Mapping">
-          <complexType>
-            <sequence>
-              <element name="JDBCConnId" type="string" />
-              <element name="UseObjectLookupTable" type="boolean" />
-            </sequence>
-          </complexType>
-        </element>      
+        <element ref="ft:GlobalMappingHints" />      
         <element ref="ft:FeatureType" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="targetNamespace" type="anyURI">
-        <annotation>
-          <documentation>
-            Target namespace (where all defined feature types live
-            in).
-          </documentation>
-        </annotation>
-      </attribute>
     </complexType>
   </element>
   <!--
@@ -56,14 +41,7 @@
       </appinfo>
     </annotation>
     <sequence>
-      <element name="Mapping">
-        <complexType>
-          <sequence>
-           <element name="DBTable" type="string"/>
-           <element name="GMLDefaultProps" type="boolean"/>
-          </sequence>
-        </complexType>
-      </element>
+      <element ref="ft:FeatureTypeMappingHints"/>
       <element ref="ft:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
     <attribute name="name" type="QName">
@@ -165,14 +143,7 @@
       <complexContent>
         <extension base="ft:AbstractPropertyType">
           <sequence>
-            <element name="Mapping">
-              <complexType>
-                <choice>
-                  <element ref="ft:DBColumn"/>
-                  <element ref="ft:PropertyTable"/>
-                </choice>
-              </complexType>
-            </element>
+            <element ref="ft:SimplePropertyMapping"/>
           </sequence>
           <attribute name="type" type="ft:PrimitiveType">
             <annotation>
@@ -232,18 +203,11 @@
           <jaxb:class name="FeaturePropertyDecl" />
         </appinfo>
       </annotation>
-      <complexContent>
+      <complexContent>      
         <extension base="ft:AbstractPropertyType">
           <sequence>
-            <element name="Mapping">
-              <complexType>
-                <choice>
-                  <element ref="ft:DBColumn"/>
-                  <element ref="ft:FeatureJoinTable"/>
-                </choice>
-              </complexType>
-            </element>
-          </sequence>        
+            <element ref="ft:FeaturePropertyMapping"/>
+          </sequence>
           <attribute name="type" type="QName" use="optional">
             <annotation>
               <documentation>
@@ -271,14 +235,7 @@
       <complexContent>
         <extension base="ft:AbstractPropertyType">
           <sequence>
-            <element name="Mapping">
-              <complexType>
-                <choice>
-                  <element ref="ft:GeometryDBColumn"/>
-                  <element ref="ft:GeometryPropertyTable"/>
-                </choice>
-              </complexType>
-            </element>
+            <element ref="ft:GeometryPropertyMapping"/>
           </sequence>        
           <attribute name="type" type="ft:GeometryType">
             <annotation>
@@ -360,6 +317,62 @@
   <!--
     === Mapping related element/type definitions ===
    -->
+  <element name="GlobalMappingHints">
+    <complexType>
+      <sequence>
+        <element name="JDBCConnId" type="string" />
+        <element name="UseObjectLookupTable" type="boolean" />
+      </sequence>
+    </complexType>
+  </element>
+  <element name="FeatureTypeMappingHints">
+    <complexType>
+      <sequence>
+       <element name="DBTable" type="string"/>
+       <element name="GMLDefaultProps" type="boolean"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="PropertyMapping" abstract="true" type="ft:PropertyMappingType"/>
+  <complexType name="PropertyMappingType" abstract="true"/>      
+  
+  <element name="SimplePropertyMapping" substitutionGroup="ft:PropertyMapping" type="ft:SimplePropertyMappingType"/>
+  <complexType name="SimplePropertyMappingType">
+    <complexContent>
+      <extension base="ft:PropertyMappingType">
+        <choice>
+          <element ref="ft:DBColumn"/>
+          <element ref="ft:PropertyTable"/>
+        </choice>      
+      </extension>
+    </complexContent>  
+  </complexType>  
+
+  <element name="FeaturePropertyMapping" substitutionGroup="ft:PropertyMapping" type="ft:FeaturePropertyMappingType"/>
+  <complexType name="FeaturePropertyMappingType">
+    <complexContent>
+      <extension base="ft:PropertyMappingType">
+        <choice>
+          <element ref="ft:DBColumn" />
+          <element ref="ft:FeatureJoinTable" />
+        </choice>
+      </extension>
+    </complexContent>
+  </complexType>  
+
+  <element name="GeometryPropertyMapping" substitutionGroup="ft:PropertyMapping" type="ft:GeometryPropertyMappingType"/>
+  <complexType name="GeometryPropertyMappingType">
+    <complexContent>
+      <extension base="ft:PropertyMappingType">
+        <choice>
+          <element ref="ft:GeometryDBColumn" />
+          <element ref="ft:GeometryPropertyTable" />
+        </choice>
+      </extension>
+    </complexContent>
+  </complexType>
+
   <element name="DBColumn">
     <complexType>
       <attribute name="name" type="string" />

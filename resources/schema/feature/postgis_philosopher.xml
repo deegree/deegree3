@@ -7,7 +7,7 @@
     xsi:schemaLocation="http://www.deegree.org/feature/featuretype ./0.3.0/postgis_appschema.xsd">
 
   <!-- Global mapping information -->
-  <Mapping>
+  <GlobalMappingHints>
     <!-- Identifier of the JDBC connection. -->
     <JDBCConnId>conn1</JDBCConnId>
     <!--
@@ -18,117 +18,117 @@
       - Not usable for application schemas that use feature properties containing abstract feature types 
     -->
     <UseObjectLookupTable>true</UseObjectLookupTable>
-  </Mapping>
+  </GlobalMappingHints>
 
   <!-- Feature type {http://www.deegree.org/app}Philosopher -->
   <FeatureType name="app:Philosopher">
-    <Mapping>
+    <FeatureTypeMappingHints>
       <DBTable>PHILOSOPHER</DBTable>
       <GMLDefaultProps>true</GMLDefaultProps>
-    </Mapping>
+    </FeatureTypeMappingHints>
     <SimpleProperty name="id" type="integer">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="ID" sqlType="INTEGER"/>
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
     <SimpleProperty name="name" type="string">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="NAME" sqlType="VARCHAR(100)" />
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
     <SimpleProperty name="sex" type="string">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="NAME" sqlType="CHAR(1)" />
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
     <SimpleProperty name="subject" type="string" minOccurs="0" maxOccurs="unbounded">
-      <Mapping>
+      <SimplePropertyMapping>
         <PropertyTable table="SUBJECT" column="NAME" sqlType="VARCHAR(100)"/>
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
     <FeatureProperty name="isAuthorOf" type="app:Book" minOccurs="0" maxOccurs="unbounded">
-      <Mapping>
+      <FeaturePropertyMapping>
         <FeatureJoinTable table="IS_AUTHOR_OF"/>
-      </Mapping>
+      </FeaturePropertyMapping>
     </FeatureProperty>
     <SimpleProperty name="dateOfBirth" type="date">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="DATE_OF_BIRTH" sqlType="DATE" />
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
     <FeatureProperty name="placeOfBirth" type="app:Place">
-      <Mapping>
+      <FeaturePropertyMapping>
         <DBColumn name="PLACE_OF_BIRTH"/>
-      </Mapping>
+      </FeaturePropertyMapping>
     </FeatureProperty>
     <SimpleProperty name="dateOfDeath" type="date">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="DATE_OF_DEATH" sqlType="DATE" />
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
     <FeatureProperty name="placeOfDeath" type="app:Place">
-      <Mapping>
+      <FeaturePropertyMapping>
         <DBColumn name="PLACE_OF_DEATH"/>
-      </Mapping>
+      </FeaturePropertyMapping>
     </FeatureProperty>
     <FeatureProperty name="friend" type="app:Philosopher" maxOccurs="unbounded">
-      <Mapping>
+      <FeaturePropertyMapping>
         <FeatureJoinTable table="IS_FRIENDS_WITH"/>
-      </Mapping>
+      </FeaturePropertyMapping>
     </FeatureProperty>
   </FeatureType>
 
   <!-- Feature type {http://www.deegree.org/app}Book -->
   <FeatureType name="Book">
-    <Mapping>
+    <FeatureTypeMappingHints>
       <DBTable>BOOK</DBTable>
       <GMLDefaultProps>true</GMLDefaultProps>
-    </Mapping>  
+    </FeatureTypeMappingHints>  
     <SimpleProperty name="title" type="string">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="TITLE" sqlType="VARCHAR(200)" />
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
     <SimpleProperty name="publicationDate" type="date">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="PUB_DATE" sqlType="DATE" />
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
   </FeatureType>
 
   <!-- Feature type {http://www.deegree.org/app}Place -->
   <FeatureType name="Place">
-    <Mapping>
+    <FeatureTypeMappingHints>
       <DBTable>PLACE</DBTable>
       <GMLDefaultProps>true</GMLDefaultProps>   
-    </Mapping>
+    </FeatureTypeMappingHints>
     <SimpleProperty name="name" type="string">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="NAME" sqlType="VARCHAR(100)" />
-      </Mapping>    
+      </SimplePropertyMapping>    
     </SimpleProperty>
     <FeatureProperty name="country" type="Country">
-      <Mapping>
+      <FeaturePropertyMapping>
         <DBColumn name="COUNTRY_ID" sqlType="INTEGER" />
-      </Mapping>
+      </FeaturePropertyMapping>
     </FeatureProperty>
   </FeatureType>
 
   <!-- Feature type {http://www.deegree.org/app}Country -->
   <FeatureType name="Country">
-    <Mapping>
+    <FeatureTypeMappingHints>
       <DBTable>COUNTRY</DBTable>
       <GMLDefaultProps>true</GMLDefaultProps>
-    </Mapping>
+    </FeatureTypeMappingHints>
     <SimpleProperty name="name" type="string">
-      <Mapping>
+      <SimplePropertyMapping>
         <DBColumn name="NAME" sqlType="VARCHAR(100)" />
-      </Mapping>
+      </SimplePropertyMapping>
     </SimpleProperty>
     <GeometryProperty name="geom" type="MultiSurface" coordinateDimension="2D">
-      <Mapping>
+      <GeometryPropertyMapping>
         <GeometryDBColumn name="NAME" sqlType="MULTIPOLYON" dimension="2" srid="4326"/>
-      </Mapping>
+      </GeometryPropertyMapping>
     </GeometryProperty>
   </FeatureType>
  

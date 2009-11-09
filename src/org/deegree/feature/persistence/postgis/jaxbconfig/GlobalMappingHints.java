@@ -10,7 +10,7 @@ package org.deegree.feature.persistence.postgis.jaxbconfig;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -24,8 +24,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="sqlType" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;sequence>
+ *         &lt;element name="JDBCConnId" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="UseObjectLookupTable" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -34,61 +36,56 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "DBColumn")
-public class DBColumn {
+@XmlType(name = "", propOrder = {
+    "jdbcConnId",
+    "useObjectLookupTable"
+})
+@XmlRootElement(name = "GlobalMappingHints")
+public class GlobalMappingHints {
 
-    @XmlAttribute
-    protected String name;
-    @XmlAttribute
-    protected String sqlType;
+    @XmlElement(name = "JDBCConnId", required = true)
+    protected String jdbcConnId;
+    @XmlElement(name = "UseObjectLookupTable")
+    protected boolean useObjectLookupTable;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the jdbcConnId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getJDBCConnId() {
+        return jdbcConnId;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the jdbcConnId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setJDBCConnId(String value) {
+        this.jdbcConnId = value;
     }
 
     /**
-     * Gets the value of the sqlType property.
+     * Gets the value of the useObjectLookupTable property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getSqlType() {
-        return sqlType;
+    public boolean isUseObjectLookupTable() {
+        return useObjectLookupTable;
     }
 
     /**
-     * Sets the value of the sqlType property.
+     * Sets the value of the useObjectLookupTable property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
-    public void setSqlType(String value) {
-        this.sqlType = value;
+    public void setUseObjectLookupTable(boolean value) {
+        this.useObjectLookupTable = value;
     }
 
 }

@@ -35,16 +35,33 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
-import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.persistence.postgis.jaxbconfig.ApplicationSchemaDecl;
+import org.deegree.feature.types.ApplicationSchema;
 
 /**
- * Defines the relational mapping of a {@link PropertyType} that belongs to a {@link PostGISFeatureType}.
+ * Adapter between JAXB {@link ApplicationSchemaDecl} and {@link ApplicationSchema} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class PostGISPropertyMapping {
+public class JAXBApplicationSchemaAdapter {
 
+    /**
+     * Converts a JAXB {@link ApplicationSchemaDecl} object (that represents a mapped PostGIS application schema) into
+     * an {@link ApplicationSchema} object.
+     * 
+     * @param jaxbAppSchema
+     *            mapped PostGIS application schema, must not be <code>null</code>
+     * @return internal application schema object, never <code>null</code>
+     */
+    public static ApplicationSchema toApplicationSchema( ApplicationSchemaDecl jaxbAppSchema ) {
+
+        return null;
+    }
+
+    public static ApplicationSchemaDecl toJAXB( ApplicationSchema schema ) {
+        return null;
+    }
 }
