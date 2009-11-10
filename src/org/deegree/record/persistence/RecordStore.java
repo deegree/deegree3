@@ -106,7 +106,7 @@ public interface RecordStore {
      * @throws XMLStreamException
      */
     public void getRecords( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnableElement,
-                            JDBCConnections connection, ResultType resultType, String conId )
+                            JDBCConnections connection, ResultType resultType, String namespace )
                             throws SQLException, XMLStreamException;
 
     /**

@@ -40,14 +40,30 @@ import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMNamespace;
@@ -56,8 +72,14 @@ import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.record.XMLReading;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * {@link RecordStore} implementation of Dublin Core.
@@ -73,8 +95,10 @@ public class DCRecordStore implements RecordStore {
 
     private final QName typeNames = new QName( "", "Record", "csw" );
 
-    public DCRecordStore() {
-
+    private String connectionId;
+    
+    public DCRecordStore(String connectionId) {
+        this.connectionId = connectionId;
     }
 
     /*
@@ -153,31 +177,18 @@ public class DCRecordStore implements RecordStore {
      */
     @Override
     public void getRecords( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnatbleElement,
-                            JDBCConnections con, ResultType resultType, String conId )
+                            JDBCConnections con, ResultType resultType, String namespace )
                             throws SQLException, XMLStreamException {
 
-        String formatType = null;
-        switch ( returnatbleElement ) {
-
-        case brief:
-            formatType = "RecordBrief";
-            break;
-        case summary:
-            formatType = "RecordSummary";
-            break;
-        case full:
-            formatType = "RecordFull";
-            break;
-        }// muss dann noch gecatcht werden
-
+        
         switch ( resultType ) {
         case results:
 
-            doResultsOnGetRecord( writer, typeName, formatType, returnatbleElement, con );
+            doResultsOnGetRecord( writer, typeName, returnatbleElement, con, namespace );
             break;
         case hits:
 
-            doHitsOnGetRecord( writer, typeName, formatType, returnatbleElement, con, conId );
+            doHitsOnGetRecord( writer, typeName, returnatbleElement, con );
             break;
         case validate:
 
@@ -197,8 +208,8 @@ public class DCRecordStore implements RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, String formatType, SetOfReturnableElements returnatbleElement,
-                                    JDBCConnections con, String conId )
+    private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnatbleElement,
+                                    JDBCConnections con )
                             throws SQLException, XMLStreamException {
 
         int countRows = 0;
@@ -206,7 +217,7 @@ public class DCRecordStore implements RecordStore {
 
         // ConnectionManager.addConnections( con );
         for ( PooledConnection pool : con.getPooledConnection() ) {
-            Connection conn = ConnectionManager.getConnection( conId );
+            Connection conn = ConnectionManager.getConnection( connectionId );
             ResultSet rs = conn.createStatement().executeQuery( selectStMt );
 
             while ( rs.next() ) {
@@ -241,19 +252,98 @@ public class DCRecordStore implements RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, String formatType,
-                                       SetOfReturnableElements returnatbleElement, JDBCConnections con )
+    
+    private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, 
+                                       SetOfReturnableElements returnatbleElement, JDBCConnections con, String namespace )
                             throws SQLException, XMLStreamException {
-        String selectStMt = "SELECT count(id) FROM datasets";
+        
+        
+        int countRows = 0;
+        String selectCountRows = "SELECT count(id) FROM datasets";
 
+        // ConnectionManager.addConnections( con );
         for ( PooledConnection pool : con.getPooledConnection() ) {
-            Connection conn = ConnectionManager.getConnection( pool.getId() );
-            ResultSet rs = conn.createStatement().executeQuery( selectStMt );
-
-            while ( rs.next() ) {
-
+            Connection conn = ConnectionManager.getConnection( connectionId );
+            
+            
+            ResultSet rsCountRows = conn.createStatement().executeQuery( selectCountRows );
+            while ( rsCountRows.next() ) {
+                countRows = rsCountRows.getInt( 1 );
+                System.out.println( rsCountRows.getInt( 1 ) );
             }
 
+            writer.writeAttribute( "elementSet", returnatbleElement.name() );
+
+            // writer.writeAttribute( "recordSchema", "");
+
+            writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
+
+            writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( countRows ) );
+
+            //TODO static at the moment...should be considered to change to dynamic
+            writer.writeAttribute( "nextRecord", Integer.toString( 0 ) );
+
+            writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+
+            
+            String formatType = null;
+            switch ( returnatbleElement ) {
+
+            case brief:
+                formatType = "recordbrief";
+                String selectBrief = "SELECT rb.data FROM datasets AS ds, " + formatType + " AS rb WHERE rb.fk_datasets = ds.id";
+                ResultSet rsBrief = conn.createStatement().executeQuery( selectBrief );
+                
+                while ( rsBrief.next() ) {
+                    String result = rsBrief.getString( 1 );
+                    System.out.println( result );
+                    
+                    XMLReading rd = new XMLReading(result);
+                    
+                    String s = rd.toString();
+                    
+                    writer.writeStartElement(namespace , "BriefRecord" );
+                    
+                    writer.writeCData( s );
+                    
+                    writer.writeEndElement();
+                }
+                break;
+            case summary:
+                formatType = "recordsummary";
+                String selectSummary = "SELECT rb.data FROM datasets AS ds, " + formatType + " AS rb WHERE rb.fk_datasets = ds.id";
+                ResultSet rsSummary = conn.createStatement().executeQuery( selectSummary );
+                
+                while ( rsSummary.next() ) {
+                    String result = rsSummary.getString( 1 );
+                    
+                    
+                    
+                    InputStream in = new ByteArrayInputStream(result.getBytes());
+                    XMLInputFactory fac = XMLInputFactory.newInstance();
+                    
+                    XMLStreamReader parser = fac.createXMLStreamReader( in );
+                    //System.out.println( result );
+                    
+                    writer.writeStartElement(namespace , "SummaryRecord" );
+                    
+                    
+                    
+                    writer.writeCData( result );
+                    
+                    
+                    writer.writeEndElement();
+                    
+                    
+                }
+                break;
+            case full:
+                formatType = "recordfull";
+                break;
+            }// muss dann noch gecatcht werden
+
+            
+            
             conn.close();
         }
 

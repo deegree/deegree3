@@ -94,14 +94,16 @@ public class RecordStoreManager {
                             throws RecordStoreException {
         RecordStore rs = null;
         String id = config.getDataSourceName();
+        
 
         if ( config instanceof DCRecordStoreType ) {
 
-            //DCRecordStoreType dcConfig = (DCRecordStoreType) config;
+            DCRecordStoreType dcConfig = (DCRecordStoreType) config;
+           
             //XMLAdapter resolver = new XMLAdapter();
             //resolver.setSystemId( baseURL );
 
-            rs = new DCRecordStore();
+            rs = new DCRecordStore(dcConfig.getConnId());
             //rs.describeRecord();
         }else if(config instanceof ISORecordStoreType){
             //TODO falsch, ebRim müsste das heißen oder eben was anderes...
