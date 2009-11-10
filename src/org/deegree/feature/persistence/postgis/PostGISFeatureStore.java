@@ -43,7 +43,6 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.postgis.mapping.SchemaMapping;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -62,22 +61,16 @@ import org.deegree.protocol.wfs.getfeature.Query;
  */
 public class PostGISFeatureStore implements FeatureStore {
 
-    private ApplicationSchema schema;
-
-    private SchemaMapping mapping;
+    private final PostGISApplicationSchema mappedSchema;
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
      * 
-     * @param schema
-     *            application schema, must not be <code>null</code>
-     * @param mapping
+     * @param mappedSchema
      *            mapping information, must not be <code>null</code>
-     * @throws FeatureStoreException
-     */
-    public PostGISFeatureStore( ApplicationSchema schema, SchemaMapping mapping ) throws FeatureStoreException {
-        this.schema = schema;
-        this.mapping = mapping;
+s     */
+    public PostGISFeatureStore( PostGISApplicationSchema mappedSchema ) {
+        this.mappedSchema = mappedSchema;
     }
 
     @Override
@@ -121,7 +114,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
     @Override
     public ApplicationSchema getSchema() {
-        return schema;
+        return mappedSchema.getSchema();
     }
 
     @Override
