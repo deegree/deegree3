@@ -102,6 +102,9 @@ public abstract class ByteBufferRasterData implements RasterData {
      */
     protected ByteBuffer data;
 
+    /** information on this raster data */
+    public String info;
+
     /**
      * ==================== Abstract method declarations ====================
      */
@@ -255,6 +258,7 @@ public abstract class ByteBufferRasterData implements RasterData {
     @Override
     public RasterData asReadOnly() {
         ByteBufferRasterData copy = createCompatibleEmptyRasterData();
+        copy.info = info;
         copy.data = this.getByteBuffer().asReadOnlyBuffer();
         return copy;
     }
@@ -721,6 +725,7 @@ public abstract class ByteBufferRasterData implements RasterData {
         ByteBufferRasterData result = createCompatibleRasterData( new DataView( newOrigx, newOrigy, newWidth,
                                                                                 newHeight,
                                                                                 createRasterDataInfo( bands ), dataInfo ) );
+        result.info = info;
         result.data = this.data.asReadOnlyBuffer();
 
         // RASTERRECT viewRect = new RasterRect( ( view.x + rasterRect.x ), ( view.y + rasterRect.y ), rasterRect.width,
