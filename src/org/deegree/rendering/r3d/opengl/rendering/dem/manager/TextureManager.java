@@ -227,10 +227,11 @@ public class TextureManager {
             // check if the texture gets too large with respect to the maximum texture size
             metersPerPixel = clipResolution( metersPerPixel, fragmentBBox, glRenderContext.getMaxTextureSize() );
 
-            float minX = fragment.getBBox()[0][0] - (float) translationToLocalCRS[0];
-            float minY = fragment.getBBox()[0][1] - (float) translationToLocalCRS[1];
-            float maxX = fragment.getBBox()[1][0] - (float) translationToLocalCRS[0];
-            float maxY = fragment.getBBox()[1][1] - (float) translationToLocalCRS[1];
+            // rb: note the following values are still in center.
+            float minX = fragmentBBox[0][0] - (float) translationToLocalCRS[0];
+            float minY = fragmentBBox[0][1] - (float) translationToLocalCRS[1];
+            float maxX = fragmentBBox[1][0] - (float) translationToLocalCRS[0];
+            float maxY = fragmentBBox[1][1] - (float) translationToLocalCRS[1];
 
             if ( LOG.isTraceEnabled() ) {
                 LOG.trace( "frag bbox: " + fragmentBBox[0][0] + "," + fragmentBBox[0][1] + " | " + fragmentBBox[1][0]
