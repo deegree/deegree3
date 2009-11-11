@@ -59,6 +59,9 @@ public class CSWConstants {
     /** Location of the schema */
     public static final String CSW_202_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd";
 
+    /** Location of the schema */
+    public static final String CSW_202_RECORD = "http://schemas.opengis.net/csw/2.0.2/record.xsd";
+
     /** Common namespace prefix for elements from the CSW specification */
     public static final String CSW_PREFIX = "csw";
 
@@ -147,6 +150,28 @@ public class CSWConstants {
         summary,
 
         full
+
+    }
+    
+    
+    /**
+     * 
+     * Specifies in which filter mode the query has to be processed. Either there is a OGC XML filter encoding after the
+     * filterspecification document <a href="http://www.opengeospatial.org/standards/filter">OGC 04-095</a> or there is
+     * a common query language string (CqlText) which can be seen as an explicit typed statement like an SQL statement.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum ConstraintLanguage {
+
+        /** Common Queryable Language Text filtering */
+        CQLTEXT,
+
+        /** Filterexpression specified in OGC Spec document 04-095 */
+        FILTER
 
     }
 

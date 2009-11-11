@@ -35,21 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.dc;
 
-import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringBufferInputStream;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,11 +46,8 @@ import java.util.Date;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -72,14 +58,11 @@ import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.record.XMLReading;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * {@link RecordStore} implementation of Dublin Core.
@@ -96,8 +79,10 @@ public class DCRecordStore implements RecordStore {
     private final QName typeNames = new QName( "", "Record", "csw" );
 
     private String connectionId;
-    
-    public DCRecordStore(String connectionId) {
+
+    private String filterExpression;
+
+    public DCRecordStore( String connectionId ) {
         this.connectionId = connectionId;
     }
 
@@ -176,23 +161,22 @@ public class DCRecordStore implements RecordStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public void getRecords( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnatbleElement,
-                            JDBCConnections con, ResultType resultType, String namespace )
+    public void getRecords( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnableElement,
+                            JDBCConnections con, ResultType resultType, ConstraintLanguage constraintLanguage, String constraint, String namespace )
                             throws SQLException, XMLStreamException {
 
-        
         switch ( resultType ) {
         case results:
 
-            doResultsOnGetRecord( writer, typeName, returnatbleElement, con, namespace );
+            doResultsOnGetRecord( writer, typeName, returnableElement, con,  namespace );
             break;
         case hits:
 
-            doHitsOnGetRecord( writer, typeName, returnatbleElement, con );
+            doHitsOnGetRecord( writer, typeName, returnableElement, con );
             break;
         case validate:
 
-            doValidateOnGetRecord( writer, typeName, returnatbleElement, con );
+            doValidateOnGetRecord( writer, typeName, returnableElement, con );
             break;
         }
 
@@ -203,17 +187,17 @@ public class DCRecordStore implements RecordStore {
      * @param writer
      * @param typeName
      * @param formatType
-     * @param returnatbleElement
+     * @param returnableElement
      * @param con
      * @throws SQLException
      * @throws XMLStreamException
      */
-    private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnatbleElement,
+    private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnableElement,
                                     JDBCConnections con )
                             throws SQLException, XMLStreamException {
 
         int countRows = 0;
-        String selectStMt = "SELECT count(id) FROM datasets";
+        String selectStMt = "SELECT count(ds.id) FROM datasets AS ds ";// + sqlFilterExpression;
 
         // ConnectionManager.addConnections( con );
         for ( PooledConnection pool : con.getPooledConnection() ) {
@@ -225,7 +209,7 @@ public class DCRecordStore implements RecordStore {
                 System.out.println( rs.getInt( 1 ) );
             }
 
-            writer.writeAttribute( "elementSet", returnatbleElement.name() );
+            writer.writeAttribute( "elementSet", returnableElement.name() );
 
             // writer.writeAttribute( "recordSchema", "");
 
@@ -237,6 +221,7 @@ public class DCRecordStore implements RecordStore {
 
             writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
 
+            rs.close();
             conn.close();
         }
 
@@ -247,32 +232,28 @@ public class DCRecordStore implements RecordStore {
      * @param writer
      * @param typeName
      * @param formatType
-     * @param returnatbleElement
+     * @param returnableElement
      * @param con
      * @throws SQLException
      * @throws XMLStreamException
      */
-    
-    private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, 
-                                       SetOfReturnableElements returnatbleElement, JDBCConnections con, String namespace )
+    private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName,
+                                       SetOfReturnableElements returnableElement, JDBCConnections con, String namespace )
                             throws SQLException, XMLStreamException {
-        
-        
+
         int countRows = 0;
         String selectCountRows = "SELECT count(id) FROM datasets";
 
-        // ConnectionManager.addConnections( con );
         for ( PooledConnection pool : con.getPooledConnection() ) {
             Connection conn = ConnectionManager.getConnection( connectionId );
-            
-            
+
             ResultSet rsCountRows = conn.createStatement().executeQuery( selectCountRows );
             while ( rsCountRows.next() ) {
                 countRows = rsCountRows.getInt( 1 );
                 System.out.println( rsCountRows.getInt( 1 ) );
             }
 
-            writer.writeAttribute( "elementSet", returnatbleElement.name() );
+            writer.writeAttribute( "elementSet", returnableElement.name() );
 
             // writer.writeAttribute( "recordSchema", "");
 
@@ -280,73 +261,109 @@ public class DCRecordStore implements RecordStore {
 
             writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( countRows ) );
 
-            //TODO static at the moment...should be considered to change to dynamic
+            // TODO static at the moment...should be considered to change to dynamic
+            // in addition with maxRecords
             writer.writeAttribute( "nextRecord", Integer.toString( 0 ) );
 
             writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
 
-            
             String formatType = null;
-            switch ( returnatbleElement ) {
+            switch ( returnableElement ) {
 
             case brief:
                 formatType = "recordbrief";
-                String selectBrief = "SELECT rb.data FROM datasets AS ds, " + formatType + " AS rb WHERE rb.fk_datasets = ds.id";
+                String selectBrief = "SELECT rb.data FROM datasets AS ds, " + formatType
+                                     + " AS rb WHERE rb.fk_datasets = ds.id ";
                 ResultSet rsBrief = conn.createStatement().executeQuery( selectBrief );
-                
+
                 while ( rsBrief.next() ) {
                     String result = rsBrief.getString( 1 );
-                    System.out.println( result );
-                    
-                    XMLReading rd = new XMLReading(result);
-                    
-                    String s = rd.toString();
-                    
-                    writer.writeStartElement(namespace , "BriefRecord" );
-                    
-                    writer.writeCData( s );
-                    
-                    writer.writeEndElement();
+
+                    readXMLFragment( result, writer );
+
                 }
+                rsBrief.close();
                 break;
             case summary:
                 formatType = "recordsummary";
-                String selectSummary = "SELECT rb.data FROM datasets AS ds, " + formatType + " AS rb WHERE rb.fk_datasets = ds.id";
+                String selectSummary = "SELECT rb.data FROM datasets AS ds, " + formatType
+                                       + " AS rb WHERE rb.fk_datasets = ds.id";
                 ResultSet rsSummary = conn.createStatement().executeQuery( selectSummary );
-                
+
                 while ( rsSummary.next() ) {
                     String result = rsSummary.getString( 1 );
-                    
-                    
-                    
-                    InputStream in = new ByteArrayInputStream(result.getBytes());
-                    XMLInputFactory fac = XMLInputFactory.newInstance();
-                    
-                    XMLStreamReader parser = fac.createXMLStreamReader( in );
-                    //System.out.println( result );
-                    
-                    writer.writeStartElement(namespace , "SummaryRecord" );
-                    
-                    
-                    
-                    writer.writeCData( result );
-                    
-                    
-                    writer.writeEndElement();
-                    
-                    
+
+                    readXMLFragment( result, writer );
+
                 }
+
+                rsSummary.close();
                 break;
             case full:
                 formatType = "recordfull";
+
+                String selectFull = "SELECT rb.data FROM datasets AS ds, " + formatType
+                                    + " AS rb WHERE rb.fk_datasets = ds.id ";
+                ResultSet rsFull = conn.createStatement().executeQuery( selectFull );
+
+                while ( rsFull.next() ) {
+                    String result = rsFull.getString( 1 );
+
+                    readXMLFragment( result, writer );
+
+                }
+                rsFull.close();
+
                 break;
             }// muss dann noch gecatcht werden
 
-            
-            
             conn.close();
         }
 
+    }
+
+    /**
+     * Reads a valid XML fragment
+     * 
+     * @param result
+     * @param xmlWriter
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     */
+    private void readXMLFragment( String result, XMLStreamWriter xmlWriter ) {
+
+        XMLStreamReader xmlReader;
+        try {
+            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( result ) );
+
+            // skip START_DOCUMENT
+            xmlReader.nextTag();
+
+            XMLAdapter.writeElement( xmlWriter, xmlReader );
+
+            xmlReader.close();
+
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( FactoryConfigurationError e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    
+    private String getFilterExpression(){
+        
+        String filter = "";
+        
+        
+        return "";
+    }
+    
+    public void setFilterExpression(String filterExpression){
+        
     }
 
     /**
@@ -363,6 +380,33 @@ public class DCRecordStore implements RecordStore {
                             throws SQLException, XMLStreamException {
         // TODO Auto-generated method stub
 
+    }
+    
+    
+    /**
+     * Transformation operation for the parsed filter expression.
+     * 
+     * @param constraint
+     * @param constraintLanguage
+     * @return
+     */
+    private String transformFilterExpression( ConstraintLanguage constraintLanguage, String constraint ) {
+
+        String isoqp_title = "";
+        String rest = "";
+        constraint = constraint.replace( "\"", "" );
+
+        for ( String s : constraint.split( " = " ) ) {
+            if ( s.equals( "title" ) ) {
+                isoqp_title = "isoqp_title";
+            } else {
+                rest = s;
+            }
+        }
+
+        String sqlExpression = "INNER JOIN " + isoqp_title + " ON (ds.id = " + isoqp_title + ".fk_datasets) WHERE " + isoqp_title + ".title = " + rest;
+
+        return sqlExpression;
     }
 
 }

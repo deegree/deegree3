@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
+import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 
@@ -106,7 +107,7 @@ public interface RecordStore {
      * @throws XMLStreamException
      */
     public void getRecords( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnableElement,
-                            JDBCConnections connection, ResultType resultType, String namespace )
+                            JDBCConnections connection, ResultType resultType, ConstraintLanguage constraintLanguage, String constraint, String namespace )
                             throws SQLException, XMLStreamException;
 
     /**
