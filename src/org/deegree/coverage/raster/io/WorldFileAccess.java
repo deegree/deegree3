@@ -47,6 +47,7 @@ import java.io.Reader;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -160,7 +161,7 @@ public class WorldFileAccess {
                                    + ( ( filePath != null ) ? " (" + filePath + ")" : "" ) + "." );
         }
 
-        br.close();
+        // br.close();
 
         double resx = values[0];
         double resy = values[3];
@@ -200,7 +201,9 @@ public class WorldFileAccess {
         }
 
         BufferedReader br = new BufferedReader( new FileReader( worldFile ) );
-        return readRasterReference( br, worldFile.getAbsolutePath(), options );
+        RasterGeoReference result = readRasterReference( br, worldFile.getAbsolutePath(), options );
+        br.close();
+        return result;
     }
 
     /**
@@ -235,7 +238,7 @@ public class WorldFileAccess {
 
         sb.append( renv.getResolutionX() ).append( "\n" ).append( renv.getRotationY() ).append( "\n" );
         sb.append( renv.getRotationX() ).append( "\n" ).append( renv.getResolutionY() ).append( "\n" );
-        double[] orig = renv.getOrigin();
+        double[] orig = renv.getOrigin( OriginLocation.CENTER );
         sb.append( orig[0] ).append( "\n" );
         sb.append( orig[1] ).append( "\n" );
 
