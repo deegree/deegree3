@@ -39,6 +39,8 @@
 package org.deegree.coverage.raster.geom;
 
 import static junit.framework.Assert.assertEquals;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import junit.framework.Assert;
 
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
@@ -425,6 +427,39 @@ public class RasterGeoRefTest {
         assertEquals( 980, min[1], 0.00001 );
         assertEquals( 1030, max[0], 0.00001 );
         assertEquals( 1000, max[1], 0.00001 );
+    }
+
+    /**
+     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, int, int, CRS)}
+     */
+    @Test
+    public void getEnvelopeWithTarget() {
+
+        int width = 3;
+        int height = 2;
+
+        // CENTER
+        Envelope env = REF_CENTER.getEnvelope( OriginLocation.OUTER, width, height, defaultCRS );
+        double[] min = env.getMin().getAsArray();
+        double[] max = env.getMax().getAsArray();
+        assertEquals( 30, env.getSpan0(), 0.00001 );
+        assertEquals( 20, env.getSpan1(), 0.00001 );
+
+        assertEquals( 995, min[0], 0.00001 );
+        assertEquals( 985, min[1], 0.00001 );
+        assertEquals( 1025, max[0], 0.00001 );
+        assertEquals( 1005, max[1], 0.00001 );
+
+        env = REF_OUTER.getEnvelope( OriginLocation.CENTER, width, height, defaultCRS );
+        min = env.getMin().getAsArray();
+        max = env.getMax().getAsArray();
+        assertEquals( 30, env.getSpan0(), 0.00001 );
+        assertEquals( 20, env.getSpan1(), 0.00001 );
+
+        assertEquals( 1005, min[0], 0.00001 );
+        assertEquals( 975, min[1], 0.00001 );
+        assertEquals( 1035, max[0], 0.00001 );
+        assertEquals( 995, max[1], 0.00001 );
 
     }
 
@@ -549,7 +584,7 @@ public class RasterGeoRefTest {
      * Test the {@link RasterGeoReference#createRelocatedReference(Envelope)} method.
      */
     @Test
-    public void createSubEnvelope() {
+    public void createRelocatedReference() {
         Envelope env = geomFactor.createEnvelope( 1005, 975, 1035, 995, defaultCRS );
         RasterGeoReference result = REF_CENTER.createRelocatedReference( env );
         double[] origin = result.getOrigin();
@@ -570,6 +605,60 @@ public class RasterGeoRefTest {
         Assert.assertEquals( 0, result.getRotationX(), 0.00001 );
         Assert.assertEquals( 0, result.getRotationY(), 0.00001 );
         Assert.assertEquals( OriginLocation.OUTER, result.getOriginLocation() );
+
+    }
+
+    /**
+     * Test the {@link RasterGeoReference#createRelocatedReference(Envelope)} method.
+     */
+    @Test
+    public void createRelocatedReferenceWithTarget() {
+        Envelope env = geomFactor.createEnvelope( 1005, 975, 1035, 995, defaultCRS );
+        RasterGeoReference result = REF_CENTER.createRelocatedReference( OUTER, env );
+        double[] origin = result.getOrigin();
+        Assert.assertEquals( 1005, origin[0], 0.00001 );
+        Assert.assertEquals( 995, origin[1], 0.00001 );
+        Assert.assertEquals( 10, result.getResolutionX(), 0.00001 );
+        Assert.assertEquals( -10, result.getResolutionY(), 0.00001 );
+        Assert.assertEquals( 0, result.getRotationX(), 0.00001 );
+        Assert.assertEquals( 0, result.getRotationY(), 0.00001 );
+        Assert.assertEquals( OUTER, result.getOriginLocation() );
+
+        result = REF_OUTER.createRelocatedReference( CENTER, env );
+        origin = result.getOrigin();
+        Assert.assertEquals( 1005, origin[0], 0.00001 );
+        Assert.assertEquals( 995, origin[1], 0.00001 );
+        Assert.assertEquals( 10, result.getResolutionX(), 0.00001 );
+        Assert.assertEquals( -10, result.getResolutionY(), 0.00001 );
+        Assert.assertEquals( 0, result.getRotationX(), 0.00001 );
+        Assert.assertEquals( 0, result.getRotationY(), 0.00001 );
+        Assert.assertEquals( CENTER, result.getOriginLocation() );
+
+    }
+
+    /**
+     * Test the {@link RasterGeoReference#relocateEnvelope(OriginLocation,Envelope)} method.
+     */
+    @Test
+    public void relocateEnvelope() {
+        Envelope env = geomFactor.createEnvelope( 1005, 975, 1035, 995, defaultCRS );
+        Envelope result = REF_CENTER.relocateEnvelope( OUTER, env );
+        double[] min = result.getMin().getAsArray();
+        double[] max = result.getMax().getAsArray();
+        Assert.assertEquals( 1000, min[0], 0.00001 );
+        Assert.assertEquals( 980, min[1], 0.00001 );
+        Assert.assertEquals( 1030, max[0], 0.00001 );
+        Assert.assertEquals( 1000, max[1], 0.00001 );
+        Assert.assertEquals( env.getCoordinateSystem(), defaultCRS );
+
+        result = REF_OUTER.relocateEnvelope( CENTER, env );
+        min = result.getMin().getAsArray();
+        max = result.getMax().getAsArray();
+        Assert.assertEquals( 1010, min[0], 0.00001 );
+        Assert.assertEquals( 970, min[1], 0.00001 );
+        Assert.assertEquals( 1040, max[0], 0.00001 );
+        Assert.assertEquals( 990, max[1], 0.00001 );
+        Assert.assertEquals( env.getCoordinateSystem(), defaultCRS );
 
     }
 
