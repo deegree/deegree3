@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.container;
 
 import org.deegree.coverage.raster.data.RasterData;
@@ -41,45 +41,45 @@ import org.deegree.coverage.raster.io.RasterDataReader;
 /**
  * This interface is for abstraction of RasterData providers. Implementations of this interface can control the loading
  * and unloading of the raster data (i.e. caching, etc).
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public interface RasterDataContainer {
     /**
      * Sets the source of the raster data.
-     *
-     * @param reader the raster data reader for this container
+     * 
+     * @param reader
+     *            the raster data reader for this container
      */
     public void setRasterDataReader( RasterDataReader reader );
 
     /**
      * Returns the RasterData
-     *
+     * 
      * @return RasterData
      */
     public RasterData getRasterData();
 
     /**
      * Returns the RasterData as a read-only copy. Only a read-only RasterData supports thread-safe read operations.
-     *
+     * 
      * @return RasterData
      */
     public RasterData getReadOnlyRasterData();
 
-
     /**
-     * Returns the columns / with in pixel of the raster
-     *
+     * Returns the columns / width in pixel of the raster
+     * 
      * @return columns of the raster
      */
     public int getColumns();
 
     /**
      * Returns the rows / height in pixel of the raster
-     *
+     * 
      * @return rows of the raster
      */
     public int getRows();
