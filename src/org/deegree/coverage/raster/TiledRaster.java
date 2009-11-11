@@ -46,6 +46,7 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
@@ -127,15 +128,26 @@ public class TiledRaster extends AbstractRaster {
 
     @Override
     public TiledRaster getSubRaster( Envelope env, BandType[] bands ) {
+        return this.getSubRaster( env, bands, null );
+    }
+
+    /**
+     * Get a subraster which has it's origin location at the given location.
+     * 
+     * @param env
+     *            of the subraster
+     * @param bands
+     *            defining the bands of the sub raster
+     * @param targetLocation
+     *            the new origin's location definition.
+     * @return a subraster of the size of the given envelope, having the given bands and the given target location.
+     */
+    public TiledRaster getSubRaster( Envelope env, BandType[] bands, OriginLocation targetLocation ) {
         if ( getEnvelope().equals( env ) && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
             return this;
         }
-        // min: (2576192.0,5630576.0), max: (2584384.0,5638768.0)
-        // min: (2584384.0,5635491.2), max: (2587660.8,5638768.0)
-        // ((2584384.0,5638768.0, NaN), (2584384.0,5635491.2, NaN))
-
         // determine the new raster geo reference for the requested envelope.
-        RasterGeoReference ref = getRasterReference().createRelocatedReference( env );
+        RasterGeoReference ref = getRasterReference().createRelocatedReference( targetLocation, env );
         // merging with the existing one, will result in getting the origin right.
         // ref = RasterGeoReference.merger( getRasterReference(), ref );
 
@@ -263,7 +275,15 @@ public class TiledRaster extends AbstractRaster {
                 result.setSubRaster( subsetEnv, r );
             }
         }
-
+        // try {
+        // RasterFactory.saveRasterToFile( result,
+        // new File( "/tmp/" + result.getRasterReference().getResolutionX() + "_"
+        // + Arrays.toString( result.getRasterReference().getOrigin() )
+        // + "_result.png" ) );
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
         return result;
     }
 
