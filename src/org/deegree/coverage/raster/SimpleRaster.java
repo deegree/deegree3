@@ -63,11 +63,11 @@ public class SimpleRaster extends AbstractRaster {
      * 
      * @param envelope
      *            The envelope of the new raster.
-     * @param rasterEnv
+     * @param rasterReference
      *            The raster envelope of the new raster.
      */
-    protected SimpleRaster( Envelope envelope, RasterGeoReference rasterEnv ) {
-        super( envelope, rasterEnv );
+    protected SimpleRaster( Envelope envelope, RasterGeoReference rasterReference ) {
+        super( envelope, rasterReference );
     }
 
     /**
@@ -77,11 +77,11 @@ public class SimpleRaster extends AbstractRaster {
      *            content for the SimpleRaster
      * @param envelope
      *            The envelope of the new raster.
-     * @param rasterEnv
+     * @param rasterReference
      *            The raster envelope of the new raster.
      */
-    public SimpleRaster( RasterData raster, Envelope envelope, RasterGeoReference rasterEnv ) {
-        this( envelope, rasterEnv );
+    public SimpleRaster( RasterData raster, Envelope envelope, RasterGeoReference rasterReference ) {
+        this( envelope, rasterReference );
 
         this.rasterDataContainer = new MemoryRasterDataContainer( raster );
     }
@@ -93,11 +93,11 @@ public class SimpleRaster extends AbstractRaster {
      *            data source for the SimpleRaster
      * @param envelope
      *            boundary of the new raster
-     * @param rasterEnv
+     * @param rasterReference
      *            RasterReference for the new raster
      */
-    public SimpleRaster( RasterDataContainer rasterDataContainer, Envelope envelope, RasterGeoReference rasterEnv ) {
-        this( envelope, rasterEnv );
+    public SimpleRaster( RasterDataContainer rasterDataContainer, Envelope envelope, RasterGeoReference rasterReference ) {
+        this( envelope, rasterReference );
         this.rasterDataContainer = rasterDataContainer;
     }
 
@@ -185,9 +185,9 @@ public class SimpleRaster extends AbstractRaster {
             return this;
         }
         RasterRect rasterRect = getRasterReference().convertEnvelopeToRasterCRS( envelope );
-        RasterGeoReference rasterEnv = getRasterReference().createRelocatedReference( envelope );
+        RasterGeoReference rasterReference = getRasterReference().createRelocatedReference( envelope );
         RasterData view = getReadOnlyRasterData().getSubset( rasterRect, bands );
-        return new SimpleRaster( view, envelope, rasterEnv );
+        return new SimpleRaster( view, envelope, rasterReference );
     }
 
     @Override
