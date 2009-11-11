@@ -39,14 +39,10 @@
 package org.deegree.coverage.raster.geom;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.ceil;
-import static java.lang.Math.cos;
-import static java.lang.Math.floor;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static java.lang.Math.round;
-import static java.lang.Math.sin;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.geom.AffineTransform;
@@ -103,6 +99,12 @@ public class RasterGeoReference {
 
     private final double rotY;
 
+    private final double delta;
+
+    private final static int DECIMAL_ACCURACY = 10000;
+
+    private final static double INV_DECIMAL_ACCURACY = 0.0001;
+
     /**
      * The <code>OriginLocation</code> defines the mapping location of the world origin to the underlying raster.
      * 
@@ -156,9 +158,20 @@ public class RasterGeoReference {
         } else {
             transformer = null;
         }
+        // define a delta to which calculations will be correct. It is dependent on the highest resolution. (smallest
+        // value).
+        delta = Math.min( Math.abs( resolutionX ), Math.abs( resolutionY ) ) * 1E-6;
+        // remove rounding errors from resolution and origin
+        this.resX = removeImprecisions( resolutionX );
+        this.resY = removeImprecisions( resolutionY );
+        this.rotX = removeImprecisions( rotationX );
+        this.rotY = removeImprecisions( rotationY );
+        double orig0 = removeImprecisions( origin0 );
+        double orig1 = removeImprecisions( origin1 );
 
-        transform = new AffineTransform( cos( rotationX ) * resolutionX, sin( rotationY ), -sin( rotationX ),
-                                         cos( rotationY ) * resolutionY, origin0, origin1 );
+        // transform = new AffineTransform( cos( rotationX ) * resolutionX, sin( rotationY ), -sin( rotationX ),
+        // cos( rotationY ) * resolutionY, origin0, origin1 );
+        transform = new AffineTransform( this.resX, 0, 0, this.resY, orig0, orig1 );
         try {
             invTransform = transform.createInverse();
         } catch ( NoninvertibleTransformException e ) {
@@ -168,10 +181,6 @@ public class RasterGeoReference {
                                                                         + e.getLocalizedMessage() );
         }
         this.location = location;
-        this.resX = resolutionX;
-        this.resY = resolutionY;
-        this.rotX = rotationX;
-        this.rotY = rotationY;
     }
 
     /**
@@ -245,8 +254,10 @@ public class RasterGeoReference {
                     // assume xaxis is first.
                 }
             }
-            double resX = envelope.getSpan( xAxis ) / width;
-            double resY = -envelope.getSpan( yAxis ) / height;
+            double span0 = envelope.getSpan( xAxis );
+            double span1 = envelope.getSpan( yAxis );
+            double resX = span0 / width;
+            double resY = -span1 / height;
             double origin0 = envelope.getMin().get0();
             double origin1 = envelope.getMax().get1();
             return new RasterGeoReference( location, resX, resY, origin0, origin1, crs );
@@ -264,7 +275,8 @@ public class RasterGeoReference {
      * @return the (rounded) raster coordinate which the given world coordinate maps to.
      */
     public int[] getRasterCoordinate( double worldX, double worldY ) {
-        Point2D rslt = invTransform.transform( new Point2D.Double( worldX, worldY ), null );
+        Point2D rslt = invTransform.transform( new Point2D.Double( removeImprecisions( worldX ),
+                                                                   removeImprecisions( worldY ) ), null );
         if ( location == CENTER ) {
             return new int[] { (int) round( rslt.getX() ), (int) round( rslt.getY() ) };
         }
@@ -285,6 +297,8 @@ public class RasterGeoReference {
         double[] incoming = new double[] { worldX, worldY };
         double[] result = new double[2];
         invTransform.transform( incoming, 0, result, 0, 1 );
+        result[0] = removeImprecisions( result[0] );
+        result[1] = removeImprecisions( result[1] );
         if ( location == CENTER ) {
             // add 0.5, because the world origin has a center offset of 0.5
             result[0] += 0.5;
@@ -312,6 +326,10 @@ public class RasterGeoReference {
             input[1] -= 0.5;
         }
         transform.transform( input, 0, result, 0, 1 );
+        // get rid of rounding errors
+        result[0] = removeImprecisions( result[0] );
+        result[1] = removeImprecisions( result[1] );
+
         return result;
     }
 
@@ -367,15 +385,10 @@ public class RasterGeoReference {
             double[] rrUL = getRasterCoordinateUnrounded( ulX, ulY );
             double[] rrLR = getRasterCoordinateUnrounded( lrX, lrY );
 
-            // if ( location == CENTER ) {
             // floor the unrounded min, ceil the unrounded max, this equals the outer representation, for example the
             // point 1.1, 3.1 must result in a span of 1-4. (Draw it out :-) ) e.g a width of 3
             result.width = (int) abs( floor( rrUL[0] ) - ceil( rrLR[0] ) );
             result.height = (int) abs( floor( rrUL[1] ) - ceil( rrLR[1] ) );
-            // } else {
-            // result.width = ( abs( rrUpperLeft[0] - rrLowerRight[0] ) );
-            // result.height = ( abs( rrUpperLeft[1] - rrLowerRight[1] ) );
-            // }
         }
         return result;
     }
@@ -395,17 +408,62 @@ public class RasterGeoReference {
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs ) {
+        return getEnvelope( location, width, height, crs );
+    }
+
+    /**
+     * Returns an Envelope for a raster with given size.
+     * 
+     * The calculation considers the origin and resolution of the raster.
+     * 
+     * @param targetLocation
+     *            of the origin, specifies if the the newly created envelope should consider the origin located at the
+     *            OUTER or CENTER of a pixel.
+     * @param width
+     *            in raster coordinates
+     * @param height
+     *            in raster coordinates
+     * @param crs
+     *            the coordinate system for the envelope
+     * 
+     * @return the calculated envelope
+     */
+    public Envelope getEnvelope( OriginLocation targetLocation, int width, int height, CRS crs ) {
 
         double tw = width;
         double th = height;
         if ( location == CENTER ) {
-            // add a half pixel, because we need to get the world coordinate of the center of the pixel.
+            // add half a pixel, because we need to get the world coordinate of the center of the pixel.
             tw += 0.5;
             th += 0.5;
         }
 
+        if ( location != targetLocation ) {
+            if ( targetLocation == OUTER ) {
+                // this location is center, the target location is outer, subtract 0.5 pixel from the width|height.
+                tw -= 0.5;
+                th -= 0.5;
+            } else {
+                // this location is outer, the target location is center, add 0.5 pixel to the width|height
+                tw += 0.5;
+                th += 0.5;
+            }
+        }
+
         double[] widthHeightPos = getWorldCoordinate( tw, th );
         double[] origin = getOrigin();
+
+        if ( location != targetLocation ) {
+            if ( targetLocation == OUTER ) {
+                // this location is center, the target location is outer, subtract 0.5 res to the origin.
+                origin[0] -= resX * 0.5;
+                origin[1] -= resY * 0.5;
+            } else {
+                // this location is outer, the target location is center, add 0.5 resolution to the origin
+                origin[0] += resX * 0.5;
+                origin[1] += resY * 0.5;
+            }
+        }
 
         // convert to lower-left and upper-right for the envelope
         double min0 = min( widthHeightPos[0], origin[0] );
@@ -451,8 +509,8 @@ public class RasterGeoReference {
     }
 
     /**
-     * Merge two RasterEnvelopes. Returns a new RasterReference where the upper-left corner is set to the values of the
-     * smallest upper and smallest left ordinate. The resolution is set to the minimum value (i.e. the highest
+     * Merge two Raster references. Returns a new RasterReference where the upper-left corner is set to the values of
+     * the smallest upper and smallest left ordinate. The resolution is set to the minimum value (i.e. the highest
      * resolution [unit/pixel]). Some assumptions are made (not checked):
      * <ul>
      * <li>The pixel location (center/outer) of the origin are equal</li>
@@ -502,7 +560,23 @@ public class RasterGeoReference {
      * @return new RasterGeoReference or <code>null</code> if the envelope is <code>null</code>
      */
     public RasterGeoReference createRelocatedReference( Envelope envelope ) {
+        return this.createRelocatedReference( location, envelope );
+    }
+
+    /**
+     * Returns new RasterGeoReference with the origin set to the min[0],max[1] of the envelope and the OriginLocation to
+     * the given one. Other values are taken from this instance. Attention, the resulting origin is snapped to the
+     * location (center/outer) of the underlying grid, so the min[0] and max[1] values are only approximations to the
+     * new origin!
+     * 
+     * @param targetLocation
+     * @param envelope
+     *            to get the origin from.
+     * @return new RasterGeoReference or <code>null</code> if the envelope is <code>null</code>
+     */
+    public RasterGeoReference createRelocatedReference( OriginLocation targetLocation, Envelope envelope ) {
         if ( envelope != null ) {
+            OriginLocation tLoc = ( targetLocation == null ) ? location : targetLocation;
             Envelope transformedEnv = envelope;
             if ( transformer != null ) {
                 try {
@@ -520,27 +594,152 @@ public class RasterGeoReference {
             double[] max = transformedEnv.getMax().getAsArray();
 
             int[] rasterCoordinate = getRasterCoordinate( min[0], max[1] );
-            double world0 = rasterCoordinate[0];
-            double world1 = rasterCoordinate[1];
+            double raster0 = rasterCoordinate[0];
+            double raster1 = rasterCoordinate[1];
             if ( location == CENTER ) {
-                // take the 'upper' left raster position as the new origin.
-                world0 += 0.5;
-                world1 += 0.5;
+                // take the 'upper' left raster position as the new origin, thus add a half pixel.
+                raster0 += 0.5;
+                raster1 += 0.5;
             }
-            double[] worldCoordinate = getWorldCoordinate( world0, world1 );
+            if ( tLoc != location ) {
+                if ( tLoc == OUTER ) {
+                    // this location is center, the above subtracted 0.5 will get the raster location of the centered
+                    // view, but to get an OUTER view we need to subtract another half a pixel.
+                    raster0 -= 0.5;
+                    raster1 -= 0.5;
+                } else {
+                    // this location is OUTER, add 0.5 to get the center location
+                    raster0 += 0.5;
+                    raster1 += 0.5;
+                }
+            }
+            double[] worldCoordinate = getWorldCoordinate( raster0, raster1 );
 
-            return new RasterGeoReference( this.location, this.getResolutionX(), this.getResolutionY(),
-                                           this.getRotationX(), this.getRotationY(), worldCoordinate[0],
-                                           worldCoordinate[1], this.crs );
+            return new RasterGeoReference( tLoc, this.getResolutionX(), this.getResolutionY(), this.getRotationX(),
+                                           this.getRotationY(), worldCoordinate[0], worldCoordinate[1], this.crs );
         }
         return null;
+    }
+
+    /**
+     * Relocates the given minimum and maximum points of the given envelope to the target origin location definition.
+     * This method does nothing if the given location equals this {@link RasterGeoReference}'s origin location. This
+     * method effectively adds or subtracts half a resolution of the ordinates of the given Envelope. Different CRS's
+     * are supported.
+     * 
+     * @param targetLocation
+     *            the preferred location of the origin. *
+     * @param envelope
+     *            to relocate.
+     * @return a new Envelope which is aligned with the target location or <code>null</code> if the envelope is
+     *         <code>null</code>
+     */
+    public Envelope relocateEnvelope( OriginLocation targetLocation, Envelope envelope ) {
+        if ( envelope == null ) {
+            return null;
+        }
+        if ( targetLocation == location ) {
+            return envelope;
+        }
+        // rb: the envelope will not create copies, neither does the geometryfactory ;-)
+        double[] orig = envelope.getMin().getAsArray();
+        double[] nMin = new double[orig.length];
+        System.arraycopy( orig, 0, nMin, 0, orig.length );
+        orig = envelope.getMax().getAsArray();
+        double[] nMax = new double[orig.length];
+        System.arraycopy( orig, 0, nMax, 0, orig.length );
+        Envelope transformedEnv = geomFactory.createEnvelope( nMin, nMax, envelope.getCoordinateSystem() );
+        if ( targetLocation != location ) {
+            if ( transformer != null && envelope.getCoordinateSystem() != null ) {
+                try {
+                    transformedEnv = transformer.transform( envelope ).getEnvelope();
+                } catch ( IllegalArgumentException e ) {
+                    // just don't transform and go ahead without.
+                } catch ( TransformationException e ) {
+                    // just don't transform and go ahead without.
+                } catch ( UnknownCRSException e ) {
+                    // just don't transform and go ahead without.
+                }
+            }
+            double[] min = transformedEnv.getMin().getAsArray();
+            double[] max = transformedEnv.getMax().getAsArray();
+
+            double[] rasterCoordinateMin = getRasterCoordinateUnrounded( min[0], min[1] );
+            double[] rasterCoordinateMax = getRasterCoordinateUnrounded( max[0], max[1] );
+
+            double world0Min = rasterCoordinateMin[0];
+            double world1Min = rasterCoordinateMin[1];
+
+            double world0Max = rasterCoordinateMax[0];
+            double world1Max = rasterCoordinateMax[1];
+
+            if ( location == CENTER ) {
+                // the targetlocation is OUTER
+                // take the 'upper' left raster position as the new origin.
+                world0Min -= 0.5;
+                world1Min -= 0.5;
+                world0Max -= 0.5;
+                world1Max -= 0.5;
+            } else {
+                // the targetlocation is CENTER
+                world0Min += 0.5;
+                world1Min += 0.5;
+                world0Max += 0.5;
+                world1Max += 0.5;
+            }
+            double[] worldMinCoordinate = getWorldCoordinate( world0Min, world1Min );
+            double[] worldMaxCoordinate = getWorldCoordinate( world0Max, world1Max );
+
+            min[0] = worldMinCoordinate[0];
+            min[1] = worldMinCoordinate[1];
+            max[0] = worldMaxCoordinate[0];
+            max[1] = worldMaxCoordinate[1];
+            transformedEnv = geomFactory.createEnvelope( min, max, transformedEnv.getCoordinateSystem() );
+
+            // no convert back to the requested crs
+            if ( transformer != null && envelope.getCoordinateSystem() != null ) {
+                try {
+                    GeometryTransformer invTrans = new GeometryTransformer(
+                                                                            envelope.getCoordinateSystem().getWrappedCRS() );
+                    transformedEnv = invTrans.transform( transformedEnv ).getEnvelope();
+                } catch ( IllegalArgumentException e ) {
+                    // just don't transform and go ahead without.
+                } catch ( TransformationException e ) {
+                    // just don't transform and go ahead without.
+                } catch ( UnknownCRSException e ) {
+                    // just don't transform and go ahead without.
+                }
+            }
+
+        }
+        return transformedEnv;
     }
 
     /**
      * @return the world coordinate of the origin of the geo referenced raster.
      */
     public double[] getOrigin() {
-        return new double[] { transform.getTranslateX(), transform.getTranslateY() };
+        return getOrigin( location );
+    }
+
+    /**
+     * @param target
+     *            the location the new origin, may be <code>null</code>
+     * @return the world coordinate of the origin of the geo referenced raster.
+     */
+    public double[] getOrigin( OriginLocation target ) {
+        double[] result = new double[2];
+        if ( target != null && target != location ) {
+            if ( location == CENTER ) {
+                result = getWorldCoordinate( -0.5, -0.5 );
+            } else {
+                result = getWorldCoordinate( +0.5, +0.5 );
+            }
+        } else {
+            result[0] = transform.getTranslateX();
+            result[1] = transform.getTranslateY();
+        }
+        return result;
     }
 
     /**
@@ -610,6 +809,87 @@ public class RasterGeoReference {
         sb.append( "xRpt=" ).append( getRotationX() ).append( "," );
         sb.append( "yRot=" ).append( getRotationY() ).append( "}" );
         return sb.toString();
+    }
+
+    /**
+     * A dirty hacking method for getting rid of any imprecision errors in the floating point representation of the
+     * given double value. As it is the {@link AffineTransform} creates lots of these imprecision errors, resulting in
+     * the Math.floor/round/ceil functions being of by one more often than you think!!!
+     * 
+     * @param value
+     *            to clean
+     * @return the cleaned value.
+     */
+    private final double removeImprecisions( double value ) {
+        // quick and dirty, a 0 will always be a 0 (yes it sometimes happens).
+        if ( value == 0 ) {
+            return value;
+        }
+
+        // check if no 'extra' values are given (e.g. 25.6).
+        double result = Math.abs( ( value * DECIMAL_ACCURACY ) - ( Math.round( value * DECIMAL_ACCURACY ) ) );
+        if ( result == 0 ) {
+            // a perfect match, don't do any rounding e.g 25.6
+            return value;
+        }
+        // check the decimal value against the delta (which depends on the resolution).
+        result = ( value - Math.floor( value ) ) * delta;
+        if ( Math.abs( result ) < delta ) {
+            // almost 0, so round it up eg. 25.600000008, but not in sight an ulp
+            return Math.round( value * DECIMAL_ACCURACY ) * INV_DECIMAL_ACCURACY;
+        }
+        // test if we are in reach of an ulp
+        result = value;
+        double nextup = Math.nextUp( value );
+        double nextdown = Math.nextAfter( value, Double.NEGATIVE_INFINITY );
+
+        double upRest = ( ( nextup * DECIMAL_ACCURACY ) - Math.floor( nextup * DECIMAL_ACCURACY ) );
+        double downRest = ( nextdown * DECIMAL_ACCURACY - Math.floor( nextdown * DECIMAL_ACCURACY ) );
+        upRest -= Math.floor( upRest );
+        downRest -= Math.floor( downRest );
+        if ( upRest == 0 ) {
+            // 0 only if the result was of by an ulp
+            result = nextup;
+        } else if ( downRest == 0 ) {
+            result = nextdown;
+        }
+        return result;
+    }
+
+    /**
+     * First get rid of any rounding errors before passing the value to {@link Math#ceil(double)};
+     * 
+     * @param val
+     *            to be ceiled
+     * @return the {@link Math#ceil(double)} of the cleaned value.
+     */
+    private final double ceil( double val ) {
+        val = removeImprecisions( val );
+        return Math.ceil( val );
+    }
+
+    /**
+     * First get rid of any rounding errors before passing the value to {@link Math#round(double)};
+     * 
+     * @param val
+     *            to be rounded
+     * @return the {@link Math#round(double)} of the cleaned value.
+     */
+    private final double round( double val ) {
+        val = removeImprecisions( val );
+        return Math.round( val );
+    }
+
+    /**
+     * First get rid of any rounding errors before passing the value to {@link Math#floor(double)};
+     * 
+     * @param val
+     *            to be floored
+     * @return the {@link Math#floor(double)} of the cleaned value.
+     */
+    private final double floor( double val ) {
+        val = removeImprecisions( val );
+        return Math.floor( val );
     }
 
 }
