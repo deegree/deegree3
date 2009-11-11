@@ -45,6 +45,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import junit.framework.Assert;
 
@@ -99,7 +100,9 @@ public class CenterOuterTest implements CompareValues {
             for ( int x = 0; x < 3; ++x ) {
                 String f = y + "" + x;
                 RasterIOOptions opts = new RasterIOOptions( type );
-                RasterGeoReference ref = readWorldFile( CenterOuterTest.class.getResourceAsStream( f + ".wld" ), opts );
+                InputStream resourceAsStream = CenterOuterTest.class.getResourceAsStream( f + ".wld" );
+                RasterGeoReference ref = readWorldFile( resourceAsStream, opts );
+                resourceAsStream.close();
                 opts.setRasterGeoReference( ref );
                 opts.add( RasterIOOptions.OPT_FORMAT, "png" );
                 AbstractRaster raster = loadRasterFromStream( CenterOuterTest.class.getResourceAsStream( f + ".png" ),
@@ -119,7 +122,9 @@ public class CenterOuterTest implements CompareValues {
                             throws IOException {
         RasterIOOptions opts = new RasterIOOptions( type );
         String f = "00";
-        RasterGeoReference ref = readWorldFile( CenterOuterTest.class.getResourceAsStream( f + ".wld" ), opts );
+        InputStream stream = CenterOuterTest.class.getResourceAsStream( f + ".wld" );
+        RasterGeoReference ref = readWorldFile( stream, opts );
+        stream.close();
         opts.setRasterGeoReference( ref );
         opts.add( RasterIOOptions.OPT_FORMAT, "png" );
         AbstractRaster raster = loadRasterFromStream( CenterOuterTest.class.getResourceAsStream( f + ".png" ), opts );
