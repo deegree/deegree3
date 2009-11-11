@@ -51,7 +51,7 @@ import org.deegree.geometry.Envelope;
  */
 public abstract class AbstractRaster extends AbstractCoverage {
 
-    private RasterGeoReference rasterEnv = null;
+    private RasterGeoReference rasterReference = null;
 
     /**
      * Instantiate an AbstractRaster with no envelope.
@@ -75,12 +75,12 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * 
      * @param envelope
      *            The envelope of the raster.
-     * @param rasterEnv
-     *            The raster envelope of the raster.
+     * @param rasterReference
+     *            The raster reference of the underlying raster.
      */
-    protected AbstractRaster( Envelope envelope, RasterGeoReference rasterEnv ) {
+    protected AbstractRaster( Envelope envelope, RasterGeoReference rasterReference ) {
         super( envelope );
-        this.rasterEnv = rasterEnv;
+        this.rasterReference = rasterReference;
     }
 
     /**
@@ -102,16 +102,16 @@ public abstract class AbstractRaster extends AbstractCoverage {
     }
 
     /**
-     * Extends current RasterReference with rasterEnv. Useful for extending the raster, e.g. adding a tile.
+     * Extends current RasterReference with rasterReference. Useful for extending the raster, e.g. adding a tile.
      * 
-     * @param rasterEnv
+     * @param rasterReference
      *            The raster envelope to add to the current.
      */
-    protected void extendRasterReference( RasterGeoReference rasterEnv ) {
-        if ( this.rasterEnv == null ) {
-            this.rasterEnv = rasterEnv;
+    protected void extendRasterReference( RasterGeoReference rasterReference ) {
+        if ( this.rasterReference == null ) {
+            this.rasterReference = rasterReference;
         } else {
-            this.rasterEnv = RasterGeoReference.merger( this.rasterEnv, rasterEnv );
+            this.rasterReference = RasterGeoReference.merger( this.rasterReference, rasterReference );
         }
     }
 
@@ -256,10 +256,10 @@ public abstract class AbstractRaster extends AbstractCoverage {
     }
 
     /**
-     * @return The raster envelope of the raster.
+     * @return The raster reference of this raster.
      */
     public RasterGeoReference getRasterReference() {
-        return rasterEnv;
+        return rasterReference;
     }
 
     /**
