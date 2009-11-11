@@ -151,11 +151,6 @@ public class MemoryTileContainer implements TileContainer {
         return envelope;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.TileContainer#getRasterEnvelope()
-     */
     public RasterGeoReference getRasterReference() {
         return rasterReference;
     }

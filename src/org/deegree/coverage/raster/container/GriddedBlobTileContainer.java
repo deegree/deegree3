@@ -44,9 +44,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -76,15 +74,20 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 
     private static Logger LOG = LoggerFactory.getLogger( GriddedBlobTileContainer.class );
 
+    /** name of the index file. **/
     public static final String METAINFO_FILE_NAME = "gridded_raster.info";
+
+    /** name of a blob file. **/
+    public static final String BLOB_FILE_NAME = "blob_";
+
+    /** extension of a blob file. **/
+    public static final String BLOB_FILE_EXT = ".bin";
 
     private final long bytesPerTile;
 
     private final int tilesPerBlob;
 
     private final FileChannel[] blobChannels;
-
-    private final TileCache cache;
 
     /**
      * A gridded tile container which reads data from a deegree internal format. See d3_tools/RasterTreeGridifier on how
@@ -113,8 +116,9 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         List<File> blobFiles = new ArrayList<File>();
         long totalSize = 0;
         int blobNo = 0;
+        // find all blob files.
         while ( true ) {
-            File blobFile = new File( blobDir, "blob_" + blobNo + ".bin" );
+            File blobFile = new File( blobDir, BLOB_FILE_NAME + blobNo + BLOB_FILE_EXT );
             if ( !blobFile.exists() ) {
                 break;
             }
@@ -138,37 +142,23 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 
         tilesPerBlob = (int) ( blobFiles.get( 0 ).length() / bytesPerTile );
         LOG.debug( "Tiles per (full) blob: " + tilesPerBlob );
-
-        cache = new TileCache( 50 );
     }
 
+    /**
+     * Reads the index file, 'gridded_raster.info' from the given directory reads the world file information as well as
+     * the number of tiles.
+     * 
+     * @param dir
+     *            to read the gridded_raster.info
+     * @param options
+     *            which will hold information on the file.
+     * @return a {@link GriddedBlobTileContainer} instantiated with the values read from the gridded_raster.info.
+     * @throws IOException
+     */
     public static GriddedBlobTileContainer create( File dir, RasterIOOptions options )
                             throws IOException {
-        //
+
         File metaInfoFile = new File( dir, METAINFO_FILE_NAME );
-        // BufferedReader br = new BufferedReader( new FileReader( metaInfoFile ) );
-        //
-        // // read world file entries
-        // double[] worldFileValues = new double[6];
-        // try {
-        // for ( int i = 0; i < 6; i++ ) {
-        // String line = br.readLine();
-        // if ( line == null ) {
-        // throw new IOException( "invalid metainfo file (" + metaInfoFile.getAbsolutePath() + ")" );
-        // }
-        // line = line.trim();
-        // double val = Double.parseDouble( line.replace( ',', '.' ) );
-        // worldFileValues[i] = val;
-        // }
-        // } catch ( NumberFormatException e ) {
-        // throw new IOException( "invalid metainfo file (" + metaInfoFile.getAbsolutePath() + ")" );
-        // }
-        // double resx = worldFileValues[0];
-        // double resy = worldFileValues[3];
-        // double xmin = worldFileValues[4];
-        // double ymax = worldFileValues[5];
-        // RasterGeoReference renv = new RasterGeoReference( xmin, ymax, resx, resy );
-        // use the WorldFileReader
         BufferedReader br = new BufferedReader( new FileReader( metaInfoFile ) );
         RasterGeoReference worldFile = WorldFileAccess.readWorldFile( br, options );
 
@@ -178,75 +168,57 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         int tileSamplesX = Integer.parseInt( br.readLine() );
         int tileSamplesY = Integer.parseInt( br.readLine() );
 
-        Envelope env = worldFile.getEnvelope( tileSamplesX * columns, tileSamplesY * rows, null );
+        // convert the envelopes to OUTER, because the world files are in center.
+        Envelope env = worldFile.getEnvelope( OriginLocation.OUTER, tileSamplesX * columns, tileSamplesY * rows, null );
         br.close();
-        return new GriddedBlobTileContainer( options.getRasterOriginLocation(), dir, env, rows, columns, tileSamplesX,
-                                             tileSamplesY );
+        return new GriddedBlobTileContainer( OriginLocation.OUTER, dir, env, rows, columns, tileSamplesX, tileSamplesY );
     }
 
     @Override
     public AbstractRaster getTile( int rowId, int columnId ) {
 
         int tileId = getTileId( columnId, rowId );
-        SimpleRaster tile = cache.get( tileId );
+        long begin = System.currentTimeMillis();
+        Envelope tileEnvelope = getTileEnvelope( rowId, columnId );
+        RasterGeoReference tileRasterReference = RasterGeoReference.create( getRasterReference().getOriginLocation(),
+                                                                            tileEnvelope, tileSamplesX, tileSamplesY );
 
-        if ( tile == null ) {
-            long begin = System.currentTimeMillis();
-            Envelope tileEnvelope = getTileEnvelope( rowId, columnId );
-            RasterGeoReference tileRasterReference = RasterGeoReference.create(
-                                                                                getRasterReference().getOriginLocation(),
-                                                                                tileEnvelope, tileSamplesX,
-                                                                                tileSamplesY );
+        ByteBufferRasterData tileData = RasterDataFactory.createRasterData( tileSamplesX, tileSamplesY,
+                                                                            new BandType[] { BandType.RED,
+                                                                                            BandType.GREEN,
+                                                                                            BandType.BLUE },
+                                                                            DataType.BYTE, InterleaveType.PIXEL );
+        ByteBuffer buffer = tileData.getByteBuffer();
+        buffer.rewind();
+        int blobNo = tileId / tilesPerBlob;
+        int tileInBlob = tileId % tilesPerBlob;
+        // set information of the read file in the raster data.
+        tileData.info = blobNo + "_" + tileInBlob + "_" + rowId + "," + columnId + ".png";
+        // transfer the data from the blob
+        try {
+            LOG.debug( "Tile id: " + tileId + " -> blob no " + blobNo + ", pos in blob: " + tileInBlob );
 
-            ByteBufferRasterData tileData = RasterDataFactory.createRasterData( tileSamplesX, tileSamplesY,
-                                                                                new BandType[] { BandType.RED,
-                                                                                                BandType.GREEN,
-                                                                                                BandType.BLUE },
-                                                                                DataType.BYTE, InterleaveType.PIXEL );
-            ByteBuffer buffer = tileData.getByteBuffer();
+            FileChannel channel = blobChannels[blobNo];
+            channel.position( tileInBlob * bytesPerTile );
+            channel.read( buffer );
             buffer.rewind();
 
-            // transfer the data from the blob
-            try {
-                int blobNo = tileId / tilesPerBlob;
-                int tileInBlob = tileId % tilesPerBlob;
-
-                LOG.debug( "Tile id: " + tileId + " -> blob no " + blobNo + ", pos in blob: " + tileInBlob );
-
-                FileChannel channel = blobChannels[blobNo];
-                channel.position( tileInBlob * bytesPerTile );
-                channel.read( buffer );
-                buffer.rewind();
-
-            } catch ( IOException e ) {
-                LOG.error( "Error reading tile data from blob: " + e.getMessage(), e );
-            }
-
-            long elapsed = System.currentTimeMillis() - begin;
-            LOG.debug( "Loading of tile (" + tileSamplesX + "x" + tileSamplesY + ") in " + elapsed + " ms." );
-
-            tile = new SimpleRaster( tileData, tileEnvelope, tileRasterReference );
-            // cache.put( tileId, tile );
+        } catch ( IOException e ) {
+            LOG.error( "Error reading tile data from blob: " + e.getMessage(), e );
         }
+
+        long elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Loading of tile (" + tileSamplesX + "x" + tileSamplesY + ") in " + elapsed + " ms." );
+
+        SimpleRaster tile = new SimpleRaster( tileData, tileEnvelope, tileRasterReference );
+        // try {
+        // RasterFactory.saveRasterToFile( tile, new File( "/tmp/" + blobNo + "_" + tileInBlob + "_" + rowId + ","
+        // + columnId + ".png" ) );
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+
         return tile;
     }
-
-    /**
-     * Inner class that provides a simple in-memory cache of tiles with an LRU strategy.
-     */
-    private class TileCache extends LinkedHashMap<Integer, SimpleRaster> {
-
-        private int maxEntries;
-
-        private TileCache( int maxEntries ) {
-            super( 100, 0.1f, true );
-            this.maxEntries = maxEntries;
-        }
-
-        @Override
-        protected boolean removeEldestEntry( Map.Entry<Integer, SimpleRaster> eldest ) {
-            return size() > maxEntries;
-        }
-    }
-
 }

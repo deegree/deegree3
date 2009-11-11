@@ -115,7 +115,7 @@ public abstract class GriddedTileContainer implements TileContainer {
                                                                                                       * rows );
         geomFac = new GeometryFactory();
         LOG.debug( "envelope: " + envelope );
-        LOG.debug( "raster envelope: " + rasterReference );
+        LOG.debug( "raster reference: " + rasterReference );
     }
 
     /**
@@ -217,6 +217,7 @@ public abstract class GriddedTileContainer implements TileContainer {
         if ( x < envelope.getMin().get0() || x > envelope.getMax().get0() ) {
             String msg = "Specified x coordinate (=" + x + ") is out of range [" + envelope.getMin().get0() + ";"
                          + envelope.getMax().get0() + "]";
+            LOG.debug( msg );
             throw new IllegalArgumentException( msg );
         }
 
@@ -236,6 +237,7 @@ public abstract class GriddedTileContainer implements TileContainer {
         if ( y < envelope.getMin().get1() || y > envelope.getMax().get1() ) {
             String msg = "Specified y coordinate (=" + y + ") is out of range [" + envelope.getMin().get1() + ";"
                          + envelope.getMax().get1() + "]";
+            LOG.debug( msg );
             throw new IllegalArgumentException( msg );
         }
 
