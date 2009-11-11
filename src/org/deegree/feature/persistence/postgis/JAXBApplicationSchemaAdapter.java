@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,14 +77,14 @@ import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 public class JAXBApplicationSchemaAdapter {
 
     /**
-     * Converts a JAXB {@link ApplicationSchemaDecl} object (that represents a mapped PostGIS application schema) into
-     * an {@link ApplicationSchema} object.
+     * Converts a JAXB {@link ApplicationSchemaDecl} object (that represents a mapped PostGIS application schema) into a
+     * {@link PostGISApplicationSchema} object.
      * 
      * @param jaxbAppSchema
      *            mapped PostGIS application schema, must not be <code>null</code>
      * @return internal application schema object, never <code>null</code>
      */
-    public static PostGISApplicationSchema toApplicationSchema( ApplicationSchemaDecl jaxbAppSchema ) {
+    public static PostGISApplicationSchema toInternal( ApplicationSchemaDecl jaxbAppSchema ) {
         FeatureType[] fts = new FeatureType[jaxbAppSchema.getFeatureType().size()];
         Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
         int i = 0;
@@ -100,7 +102,9 @@ public class JAXBApplicationSchemaAdapter {
         Map<QName, PropertyMappingType> propNameToMapping = new HashMap<QName, PropertyMappingType>();
         List<PropertyType> props = new ArrayList<PropertyType>();
         for ( JAXBElement<? extends AbstractPropertyDecl> jaxbPropertyEl : jaxbFt.getAbstractProperty() ) {
-            Pair<? extends PropertyType, ? extends PropertyMappingType> propAndMapping = toPropertyType( jaxbPropertyEl.getValue(), ftName );
+            Pair<? extends PropertyType, ? extends PropertyMappingType> propAndMapping = toPropertyType(
+                                                                                                         jaxbPropertyEl.getValue(),
+                                                                                                         ftName );
             props.add( propAndMapping.first );
             propNameToMapping.put( propAndMapping.first.getName(), propAndMapping.second );
         }
@@ -118,7 +122,7 @@ public class JAXBApplicationSchemaAdapter {
                                                                                                QName ftName ) {
         Pair<? extends PropertyType, ? extends PropertyMappingType> ptAndMapping = null;
         QName propName = jaxbPropertyDecl.getName();
-        if ( propName.getPrefix() == null || "".equals( propName.getPrefix())) {
+        if ( propName.getPrefix() == null || "".equals( propName.getPrefix() ) ) {
             propName = new QName( ftName.getNamespaceURI(), propName.getLocalPart() );
         }
         if ( jaxbPropertyDecl instanceof SimplePropertyDecl ) {
@@ -145,7 +149,7 @@ public class JAXBApplicationSchemaAdapter {
             break;
         }
         case INTEGER: {
-            type = PrimitiveType.NUMBER;
+            type = PrimitiveType.INTEGER;
             break;
         }
         case BOOLEAN: {
@@ -157,11 +161,7 @@ public class JAXBApplicationSchemaAdapter {
             break;
         }
         case DECIMAL: {
-            type = PrimitiveType.NUMBER;
-            break;
-        }
-        case FLOAT: {
-            type = PrimitiveType.NUMBER;
+            type = PrimitiveType.DECIMAL;
             break;
         }
         }
@@ -215,5 +215,126 @@ public class JAXBApplicationSchemaAdapter {
             }
         }
         return maxOccurs;
+    }
+
+    /**
+     * Converts a {@link PostGISApplicationSchema} object into a JAXB {@link ApplicationSchemaDecl}.
+     * 
+     * @param postgisSchema
+     *            PostGIS application schema, must not be <code>null</code>
+     * @return JAXB representation, never <code>null</code>
+     */
+    public static ApplicationSchemaDecl toJAXB( PostGISApplicationSchema postgisSchema ) {
+
+        ApplicationSchemaDecl jaxbSchema = new ApplicationSchemaDecl();
+        jaxbSchema.setGlobalMappingHints( postgisSchema.getGlobalHints() );
+        jaxbSchema.getFeatureType().addAll( toJAXBFeatureTypeDecls( postgisSchema ) );
+        return jaxbSchema;
+    }
+
+    private static List<FeatureTypeDecl> toJAXBFeatureTypeDecls( PostGISApplicationSchema postgisSchema ) {
+        List<FeatureTypeDecl> ftDecls = new ArrayList<FeatureTypeDecl>();
+        for ( FeatureType ft : postgisSchema.getSchema().getFeatureTypes() ) {
+            ftDecls.add( toJAXBFeatureTypeDecls( ft, postgisSchema.getFtMapping( ft.getName() ) ) );
+        }
+        return ftDecls;
+    }
+
+    private static FeatureTypeDecl toJAXBFeatureTypeDecls( FeatureType ft, FeatureTypeMapping ftMapping ) {
+        FeatureTypeDecl ftDecl = new FeatureTypeDecl();
+        ftDecl.setAbstract( ft.isAbstract() ? Boolean.TRUE : null );
+        ftDecl.setName( ft.getName() );
+        ftDecl.setFeatureTypeMappingHints( ftMapping.getFeatureTypeHints() );
+        ftDecl.getAbstractProperty().addAll( toJAXBPropertyDecls( ft, ftMapping ) );
+        return ftDecl;
+    }
+
+    private static Collection<? extends JAXBElement<? extends AbstractPropertyDecl>> toJAXBPropertyDecls(
+                                                                                                          FeatureType ft,
+                                                                                                          FeatureTypeMapping ftMapping ) {
+        Collection<JAXBElement<AbstractPropertyDecl>> propDecls = new ArrayList<JAXBElement<AbstractPropertyDecl>>();
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            propDecls.add( toJAXBPropertyDecl( pt, ftMapping.getPropertyHints( pt.getName() ) ) );
+        }
+        return propDecls;
+    }
+
+    private static JAXBElement<AbstractPropertyDecl> toJAXBPropertyDecl( PropertyType pt,
+                                                                         PropertyMappingType propertyHints ) {
+        AbstractPropertyDecl propDecl = null;
+        QName elName = null;
+
+        if ( pt instanceof SimplePropertyType<?> ) {
+            propDecl = new SimplePropertyDecl();
+            elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}SimpleProperty" );
+            ((SimplePropertyDecl) propDecl).setSimplePropertyMapping( (SimplePropertyMappingType) propertyHints );
+            org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.STRING;
+            PrimitiveType primitiveType = ((SimplePropertyType) pt).getPrimitiveType();
+            switch (primitiveType) {
+            case BOOLEAN: {
+                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.BOOLEAN;
+                break;
+            }
+            case DATE: {
+                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.DATE;
+                break;
+            }
+            case DATE_TIME: {
+                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.DATE;
+                break;
+            }
+            case DECIMAL: {
+                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.FLOAT;
+                break;
+            }
+            case DOUBLE: {
+                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.FLOAT;
+                break;
+            }            
+            case INTEGER: {
+                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.INTEGER;
+                break;
+            }
+            case STRING: {
+                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.STRING;
+                break;
+            }
+            case TIME: {
+                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.DATE;
+                break;
+            }            
+            }
+            ((SimplePropertyDecl) propDecl).setType( jaxbPrimitiveType );
+        } else if ( pt instanceof GeometryPropertyType ) {
+            propDecl = new GeometryPropertyDecl();
+            elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}GeometryProperty" );
+            ((GeometryPropertyDecl) propDecl).setGeometryPropertyMapping( (GeometryPropertyMappingType) propertyHints );
+        } else if ( pt instanceof FeaturePropertyType ) {
+            elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}FeatureProperty" );
+            propDecl = new FeaturePropertyDecl();
+            if ( ( (FeaturePropertyType) pt ).getFTName() != null ) {
+                ( (FeaturePropertyDecl) propDecl ).setType( ( (FeaturePropertyType) pt ).getFTName() );
+            }
+            ((FeaturePropertyDecl) propDecl).setFeaturePropertyMapping( (FeaturePropertyMappingType) propertyHints );            
+        } else {
+            // TODO
+            elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}SimpleProperty" );
+            propDecl = new SimplePropertyDecl();
+        }
+
+        propDecl.setName( pt.getName() );
+        if ( pt.getMinOccurs() != 1 ) {
+            propDecl.setMinOccurs( BigInteger.valueOf( pt.getMinOccurs() ) );
+        }
+        if ( pt.getMaxOccurs() != 1 ) {
+            if ( pt.getMaxOccurs() != -1 ) {
+                propDecl.setMaxOccurs( "" + pt.getMaxOccurs() );
+            } else {
+                propDecl.setMaxOccurs( "unbounded" );
+            }
+        }
+
+        return new JAXBElement<AbstractPropertyDecl>( elName, (Class<AbstractPropertyDecl>) propDecl.getClass(),
+                                                      propDecl );
     }
 }

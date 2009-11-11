@@ -41,8 +41,11 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
@@ -67,7 +70,7 @@ import org.junit.Test;
 public class JAXBAdapterTest {
 
     @Test
-    public void testPostGISPhilosopherExample()
+    public void testToInternal()
                             throws JAXBException {
 
         JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
@@ -75,7 +78,7 @@ public class JAXBAdapterTest {
         ApplicationSchemaDecl jaxbAppSchema = (ApplicationSchemaDecl) u.unmarshal( this.getClass().getResource(
                                                                                                                 "postgis_philosopher.xml" ) );
 
-        PostGISApplicationSchema mappedSchema = JAXBApplicationSchemaAdapter.toApplicationSchema( jaxbAppSchema );
+        PostGISApplicationSchema mappedSchema = JAXBApplicationSchemaAdapter.toInternal( jaxbAppSchema );
 
         GlobalMappingHints globalHints = mappedSchema.getGlobalHints();
         assertNotNull( globalHints );
@@ -121,6 +124,25 @@ public class JAXBAdapterTest {
 
         FeatureType bookFt = schema.getFeatureType( QName.valueOf( "{http://www.deegree.org/app}Book" ) );
         assertNotNull( bookFt );
-        assertFalse( bookFt.isAbstract() );
+        assertFalse( bookFt.isAbstract() );        
     }
+    
+    @Test
+    public void testToJAXB()
+                            throws JAXBException {
+
+        JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
+        Unmarshaller u = jc.createUnmarshaller();
+        ApplicationSchemaDecl jaxbAppSchema = (ApplicationSchemaDecl) u.unmarshal( this.getClass().getResource(
+                                                                                                                "postgis_philosopher.xml" ) );
+
+        PostGISApplicationSchema postgisSchema = JAXBApplicationSchemaAdapter.toInternal( jaxbAppSchema );
+        jaxbAppSchema = JAXBApplicationSchemaAdapter.toJAXB( postgisSchema );
+        
+        jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
+        Marshaller m = jc.createMarshaller();
+        m.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+        m.setProperty( Marshaller.JAXB_SCHEMA_LOCATION, "http://www.deegree.org/feature/featuretype http://schemas.deegree.org/feature/0.3.0/postgis_appschema.xsd" );
+        m.marshal( jaxbAppSchema, new File ("/tmp/out.txt") );
+    }    
 }

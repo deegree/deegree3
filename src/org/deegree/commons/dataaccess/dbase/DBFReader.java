@@ -47,6 +47,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -178,7 +180,7 @@ public class DBFReader {
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.STRING );
                 break;
             case 'N':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.NUMBER);
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.INTEGER );
                 break;
             case 'L':
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.BOOLEAN );
@@ -187,13 +189,13 @@ public class DBFReader {
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DATE );
                 break;
             case 'F':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.NUMBER );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DECIMAL );
                 break;
             case 'T':
                 LOG.warn( "Date/Time fields are not supported. Please send the file to the devs, so they can implement it." );
                 break;
             case 'I':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.NUMBER );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.INTEGER );
                 break;
             case '@':
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DATE_TIME );
@@ -269,11 +271,21 @@ public class DBFReader {
             case 'F': {
                 in.readFully( bs );
                 String val = getString( bs, encoding ).trim();
-                if ( field.propertyType.getPrimitiveType() == PrimitiveType.NUMBER ) {
-                    property = new GenericProperty<Integer>( field.propertyType, val.isEmpty() ? null
-                                                                                              : Integer.valueOf( val ) );
-                } else {
+                switch ( field.propertyType.getPrimitiveType() ) {
+                case DECIMAL: {
+                    property = new GenericProperty<BigDecimal>( field.propertyType, val.isEmpty() ? null
+                                                                                                 : new BigDecimal( val ) );
+                    break;
+                }
+                case DOUBLE: {
                     property = new GenericProperty<Double>( field.propertyType, val.isEmpty() ? null : valueOf( val ) );
+                    break;
+                }
+                case INTEGER: {
+                    property = new GenericProperty<BigInteger>( field.propertyType, val.isEmpty() ? null
+                                                                                                 : new BigInteger( val ) );
+                    break;
+                }
                 }
                 break;
             }

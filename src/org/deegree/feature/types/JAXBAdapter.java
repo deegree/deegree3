@@ -130,7 +130,7 @@ public class JAXBAdapter {
             break;
         }
         case INTEGER: {
-            type = PrimitiveType.NUMBER;
+            type = PrimitiveType.INTEGER;
             break;
         }
         case BOOLEAN: {
@@ -142,11 +142,7 @@ public class JAXBAdapter {
             break;
         }
         case DECIMAL: {
-            type = PrimitiveType.NUMBER;
-            break;
-        }
-        case FLOAT: {
-            type = PrimitiveType.NUMBER;
+            type = PrimitiveType.DECIMAL;
             break;
         }
         }

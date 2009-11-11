@@ -49,7 +49,7 @@ import org.deegree.feature.types.FeatureType;
  *
  * @version $Revision:$, $Date:$
  */
-public class FeaturePropertyType extends AbstractPropertyType {
+public class FeaturePropertyType extends AbstractPropertyType<Feature> {
 
     private QName valueFtName;
 

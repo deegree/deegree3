@@ -47,7 +47,7 @@ import org.deegree.geometry.Geometry;
  *
  * @version $Revision:$, $Date:$
  */
-public class GeometryPropertyType extends AbstractPropertyType {
+public class GeometryPropertyType extends AbstractPropertyType<Geometry> {
 
     public enum GeometryType {
         /** Any kind of geometry (primitive, composite or aggregate). */

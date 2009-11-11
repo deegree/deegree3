@@ -47,7 +47,7 @@ import org.deegree.geometry.Envelope;
  * 
  * @version $Revision: $, $Date: $
  */
-public class EnvelopePropertyType extends AbstractPropertyType {
+public class EnvelopePropertyType extends AbstractPropertyType<Envelope> {
 
     public EnvelopePropertyType( QName name, int minOccurs, int maxOccurs ) {
         super( name, minOccurs, maxOccurs );

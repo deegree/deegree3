@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,34 +32,47 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @param <T>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericProperty<T> implements Property<T> {
 
-    private PropertyType declaration;
+    private PropertyType<T> declaration;
 
     private QName name;
 
     private T value;
 
     /**
-     * Creates a new {@link GenericProperty} instance.
-     *
+     * Creates a new {@link GenericProperty} instance that is of type {@link SimplePropertyType}.
+     * 
+     * @param declaration
+     *            type information
+     * @param value
+     *            property value
+     */
+    public GenericProperty( PropertyType<T> declaration, T value ) {
+        this( declaration, null, value );
+    }
+
+    /**
+     * Creates a new {@link GenericProperty} instance that is of type {@link SimplePropertyType}.
+     * 
      * @param declaration
      *            type information
      * @param name
@@ -67,20 +80,24 @@ public class GenericProperty<T> implements Property<T> {
      * @param value
      *            property value
      */
-    public GenericProperty( PropertyType declaration, QName name, T value ) {
+    public GenericProperty( PropertyType<T> declaration, QName name, T value ) {
         this.declaration = declaration;
         this.name = name;
+        if ( name == null ) {
+            this.name = declaration.getName();
+        }
         this.value = value;
-    }
 
-    /**
-     * Creates a new {@link GenericProperty} instance.
-     *
-     * @param declaration
-     * @param value
-     */
-    public GenericProperty( PropertyType declaration, T value ) {
-        this( declaration, declaration.getName(), value );
+        if ( declaration instanceof SimplePropertyType<?> ) {
+            if ( value != null
+                 && value.getClass() != ( (SimplePropertyType<?>) declaration ).getPrimitiveType().getValueClass() ) {
+                String msg = "Invalid simple property (PrimitiveType="
+                             + ( (SimplePropertyType<?>) declaration ).getPrimitiveType().name() + "): required class="
+                             + ( (SimplePropertyType<?>) declaration ).getPrimitiveType().getValueClass()
+                             + ", but given '" + value.getClass() + ".";
+                throw new IllegalArgumentException( msg );
+            }
+        }
     }
 
     @Override
@@ -94,7 +111,7 @@ public class GenericProperty<T> implements Property<T> {
     }
 
     @Override
-    public PropertyType getType() {
+    public PropertyType<T> getType() {
         return declaration;
     }
 

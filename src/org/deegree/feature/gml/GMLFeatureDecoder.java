@@ -39,6 +39,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -494,9 +495,16 @@ public class GMLFeatureDecoder extends XMLAdapter {
             }
             break;
         }
-        case NUMBER: {
-            // TODO use slimmer types, perform checking
+        case DECIMAL: {
             propValue = new BigDecimal( s );
+            break;
+        }
+        case DOUBLE: {
+            propValue = new Double( s );
+            break;
+        }
+        case INTEGER: {
+            propValue = new BigInteger( s );
             break;
         }
         case STRING: {
@@ -515,7 +523,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
             LOG.warn( "Unhandled primitive type " + propDecl.getPrimitiveType() + " -- treating as string value." );
         }
         }
-        return new GenericProperty<Object>( propDecl, propValue );
+        return new GenericProperty<Object>( propDecl, null, propValue );
     }
 
     /**

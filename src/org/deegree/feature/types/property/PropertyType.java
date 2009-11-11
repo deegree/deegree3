@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
 import javax.xml.namespace.QName;
@@ -41,33 +41,36 @@ import org.deegree.feature.types.FeatureType;
 
 /**
  * Declares a named property of a {@link FeatureType}.
- *
+ * 
  * @see FeatureType
-
+ * 
+ * @param <T>
+ *            type of the values
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public interface PropertyType {
+public interface PropertyType<T> {
 
     /**
      * Returns the name of the property.
-     *
+     * 
      * @return the name of the property
      */
     public QName getName();
 
     /**
      * Specifies the minimum number of times that this property must be present in a feature instance.
-     *
+     * 
      * @return the minimum number of times that this property must be present
      */
     public int getMinOccurs();
 
     /**
      * Specifies the maximum number of times that this property must be present in a feature instance.
-     *
+     * 
      * @return the maximum number of times that this property must be present, or -1 (=unbounded)
      */
     public int getMaxOccurs();

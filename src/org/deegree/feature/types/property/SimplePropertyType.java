@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,39 +32,74 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.types.datetime.DateTime;
+import org.deegree.commons.types.datetime.Time;
+
 /**
  * A {@link PropertyType} that defines a property with a primitive value, e.g. a string or a number.
- *
+ * 
+ * @see PrimitiveType
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class SimplePropertyType extends AbstractPropertyType {
+public class SimplePropertyType<T> extends AbstractPropertyType<T> {
 
     /**
-     * Known primitive types.
-     * <p>
-     * TODO add missing types
-     * </p>
-     *
+     * Primitive type system. Designed to cope with everything from XML schema, but stripped down to leave out
+     * distinctions that are not necessary in the feature model.
+     * 
      * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
      * @author last edited by: $Author: schneider $
-     *
+     * 
      * @version $Revision: $, $Date: $
      */
     public enum PrimitiveType {
-        STRING,
-        BOOLEAN,
-        NUMBER,
-        DATE,
-        DATE_TIME,
-        TIME
+        /** Property value is of class <code>String</code>. */
+        STRING (String.class),
+        /** Property value is of class <code>Boolean</code>. */
+        BOOLEAN (Boolean.class),
+        /** Property value is of class <code>BigDecimal</code>. */
+        DECIMAL (BigDecimal.class),
+        /**
+         * Property value is of class <code>Double</code> (needed because BigDecimal cannot express "NaN", "-INF" and
+         * "INF"), which are required by <code>xs:double</code> / <code>xs:float</code>.
+         */
+        DOUBLE (Double.class),
+        /** Property value is of class <code>BigInteger</code>. */
+        INTEGER (BigInteger.class),
+        /** Property value is of class {@link Date}. */
+        DATE (Date.class),
+        /** Property value is of class {@link DateTime}. */
+        DATE_TIME (DateTime.class),
+        /** Property value is of class {@link Time}. */
+        TIME (Time.class);
+        
+        private Class<?> valueClass;
+
+        private PrimitiveType (Class<?> valueClass) {
+            this.valueClass = valueClass;
+        }
+        
+        /**
+         * Returns the class that primitive values of this type must have.
+         *  
+         * @return the corresponding class for values
+         */
+        public Class<?> getValueClass () {
+            return valueClass;
+        }
     }
 
     private PrimitiveType primitiveType;
@@ -74,6 +109,11 @@ public class SimplePropertyType extends AbstractPropertyType {
         this.primitiveType = type;
     }
 
+    /**
+     * Returns the primitive type.
+     * 
+     * @return the primitive type, never <code>null</code>
+     */
     public PrimitiveType getPrimitiveType() {
         return primitiveType;
     }

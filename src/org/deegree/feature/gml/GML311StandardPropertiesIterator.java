@@ -116,16 +116,16 @@ public class GML311StandardPropertiesIterator implements Iterator<Property<?>> {
             if ( props.getDescription() != null ) {
                 currentPropType = PROPERTY.DESCRIPTION;
                 currentPropIdx = 0;
-                prop = new GenericProperty<String>( DESCRIPTION_TYPE, props.getDescription().getString() );
+                prop = new GenericProperty<String>( DESCRIPTION_TYPE, null, props.getDescription().getString() );
             } else if ( props.getNames().length > 0 ) {
                 currentPropType = PROPERTY.NAME;
                 currentPropIdx = 0;
                 // TODO what about the codespace?
-                prop = new GenericProperty<String>( NAME_TYPE, props.getNames()[0].getCode() );
+                prop = new GenericProperty<String>( NAME_TYPE, null, props.getNames()[0].getCode() );
             } else if ( props.getBoundedBy() != null ) {
                 currentPropType = PROPERTY.BOUNDED_BY;
                 currentPropIdx = 0;
-                prop = new GenericProperty<Envelope>( BOUNDED_BY_TYPE, props.getBoundedBy() );
+                prop = new GenericProperty<Envelope>( BOUNDED_BY_TYPE, null, props.getBoundedBy() );
             }
             break;
         case DESCRIPTION:
@@ -133,22 +133,22 @@ public class GML311StandardPropertiesIterator implements Iterator<Property<?>> {
                 currentPropType = PROPERTY.NAME;
                 currentPropIdx = 0;
                 // TODO what about the codespace?
-                prop = new GenericProperty<String>( NAME_TYPE, props.getNames()[0].getCode() );
+                prop = new GenericProperty<String>( NAME_TYPE, null, props.getNames()[0].getCode() );
             } else if ( props.getBoundedBy() != null ) {
                 currentPropType = PROPERTY.BOUNDED_BY;
                 currentPropIdx = 0;
-                prop = new GenericProperty<Envelope>( BOUNDED_BY_TYPE, props.getBoundedBy() );
+                prop = new GenericProperty<Envelope>( BOUNDED_BY_TYPE, null, props.getBoundedBy() );
             }
             break;
         case NAME:
             if ( currentPropIdx < props.getNames().length - 1) {
                 currentPropIdx++;
                 // TODO what about the codespace?
-                prop = new GenericProperty<String>( NAME_TYPE, props.getNames()[currentPropIdx].getCode() );
+                prop = new GenericProperty<String>( NAME_TYPE, null, props.getNames()[currentPropIdx].getCode() );
             } else if ( props.getBoundedBy() != null ) {
                 currentPropType = PROPERTY.BOUNDED_BY;
                 currentPropIdx = 0;
-                prop = new GenericProperty<Envelope>( BOUNDED_BY_TYPE, props.getBoundedBy() );
+                prop = new GenericProperty<Envelope>( BOUNDED_BY_TYPE, null, props.getBoundedBy() );
             }
             break;
         }

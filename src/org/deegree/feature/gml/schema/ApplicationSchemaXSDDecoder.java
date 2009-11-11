@@ -40,8 +40,10 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -647,6 +649,8 @@ public class ApplicationSchemaXSDDecoder {
     private PrimitiveType getPrimitiveType( XSSimpleType typeDef ) {
 
         PrimitiveType pt = null;
+//        encounteredTypes.add( new QName( typeDef.getNamespace(), typeDef.getName() ) );
+
         switch ( typeDef.getBuiltInKind() ) {
 
         // date and time types
@@ -662,27 +666,51 @@ public class ApplicationSchemaXSDDecoder {
             pt = PrimitiveType.TIME;
             break;
         }
-        
-        // numeric types
-        case XSConstants.BYTE_DT:        
+
+            // numeric types
+            // -1.23, 0, 123.4, 1000.00
         case XSConstants.DECIMAL_DT:
+            // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (equivalent to double-precision 64-bit floating point)
         case XSConstants.DOUBLE_DT:
-        case XSConstants.FLOAT_DT:            
-        case XSConstants.INT_DT:
-        case XSConstants.INTEGER_DT:
-        case XSConstants.NONNEGATIVEINTEGER_DT:
-        case XSConstants.NONPOSITIVEINTEGER_DT:
-        case XSConstants.POSITIVEINTEGER_DT:
-        case XSConstants.SHORT_DT:            
-        case XSConstants.UNSIGNEDBYTE_DT:
-        case XSConstants.UNSIGNEDINT_DT:
-        case XSConstants.UNSIGNEDLONG_DT:
-        case XSConstants.UNSIGNEDSHORT_DT: {
-            pt = PrimitiveType.NUMBER;
+            // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (single-precision 32-bit floating point)
+        case XSConstants.FLOAT_DT: {
+            pt = PrimitiveType.DECIMAL;
             break;
         }
 
-        // other types
+            // integer types
+
+            // ...-1, 0, 1, ...
+        case XSConstants.INTEGER_DT:
+            // 1, 2, ...
+        case XSConstants.POSITIVEINTEGER_DT:
+            // ... -2, -1
+        case XSConstants.NEGATIVEINTEGER_DT:
+            // 0, 1, 2, ...
+        case XSConstants.NONNEGATIVEINTEGER_DT:
+            // ... -2, -1, 0
+        case XSConstants.NONPOSITIVEINTEGER_DT:
+            // -9223372036854775808, ... -1, 0, 1, ... 9223372036854775807
+        case XSConstants.LONG_DT:
+            // 0, 1, ... 18446744073709551615
+        case XSConstants.UNSIGNEDLONG_DT:
+            // -2147483648, ... -1, 0, 1, ... 2147483647
+        case XSConstants.INT_DT:
+            // 0, 1, ...4294967295
+        case XSConstants.UNSIGNEDINT_DT:
+            // -32768, ... -1, 0, 1, ... 32767
+        case XSConstants.SHORT_DT:
+            // 0, 1, ... 65535
+        case XSConstants.UNSIGNEDSHORT_DT:
+            // -128, ...-1, 0, 1, ... 127
+        case XSConstants.BYTE_DT:
+            // 0, 1, ... 255
+        case XSConstants.UNSIGNEDBYTE_DT: {
+            pt = PrimitiveType.INTEGER;
+            break;
+        }
+
+            // other types
         case XSConstants.ANYSIMPLETYPE_DT:
         case XSConstants.ANYURI_DT:
         case XSConstants.BASE64BINARY_DT:
@@ -700,7 +728,6 @@ public class ApplicationSchemaXSDDecoder {
         case XSConstants.LANGUAGE_DT:
         case XSConstants.LIST_DT:
         case XSConstants.LISTOFUNION_DT:
-        case XSConstants.LONG_DT:
         case XSConstants.NAME_DT:
         case XSConstants.NCNAME_DT:
         case XSConstants.NORMALIZEDSTRING_DT:
@@ -710,9 +737,23 @@ public class ApplicationSchemaXSDDecoder {
         case XSConstants.TOKEN_DT:
         case XSConstants.UNAVAILABLE_DT: {
             pt = PrimitiveType.STRING;
+            break;
+        }
+        default: {
+            throw new RuntimeException( "Unexpected simple type: " + typeDef.getBuiltInKind() );
         }
         }
         LOG.debug( "Mapped '" + typeDef.getName() + "' (base type: '" + typeDef.getBaseType() + "') -> '" + pt + "'" );
         return pt;
+    }
+
+    private Set<QName> encounteredTypes = new HashSet<QName>();
+
+    /**
+     * After parsing, this method can be called to find out all referenced types that have been encountered (for
+     * debugging).
+     */
+    public Set<QName> getAllEncounteredTypes() {
+        return encounteredTypes;
     }
 }

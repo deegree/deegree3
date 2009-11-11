@@ -71,10 +71,10 @@ import org.deegree.geometry.Envelope;
 public class StandardGMLFeatureProps extends StandardGMLObjectProps {
 
     /** GML 2 standard property type 'gml:description' */
-    public static final SimplePropertyType PT_DESCRIPTION_GML2;
+    public static final SimplePropertyType<String> PT_DESCRIPTION_GML2;
 
     /** GML 2 standard property type 'gml:name' */
-    public static final SimplePropertyType PT_NAME_GML2;
+    public static final SimplePropertyType<String> PT_NAME_GML2;
 
     /** GML 2 standard property type 'gml:boundedBy' */
     public static final PropertyType PT_BOUNDED_BY_GML2;
@@ -147,7 +147,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         switch ( version ) {
         case GML_2:
             if ( description != null ) {
-                props.add( new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML2, description ) );
+                props.add( new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() ) );
             }
             if ( names.length > 0 ) {
                 props.add( new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() ) );
@@ -194,7 +194,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         switch ( version ) {
         case GML_2:
             if ( PT_DESCRIPTION_GML2.getName().equals( propName ) && description != null ) {
-                prop = new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML2, description );
+                prop = new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() );
             } else if ( PT_NAME_GML2.getName().equals( propName ) && names != null && names.length > 0 ) {
                 prop = new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() );
             } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) && boundedBy != null ) {
@@ -274,7 +274,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         switch ( version ) {
         case GML_2:
             if ( PT_DESCRIPTION_GML2.getName().equals( propName ) && description != null ) {
-                props = new Property<?>[] { new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML2, description ) };
+                props = new Property<?>[] { new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() ) };
             } else if ( PT_NAME_GML2.getName().equals( propName ) && names != null && names.length > 0 ) {
                 props = new Property<?>[] { new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() ) };
             } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) && boundedBy != null ) {

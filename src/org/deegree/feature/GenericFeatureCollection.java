@@ -46,7 +46,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.gml.GMLVersion;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -158,7 +157,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
             props[i++] = property;
         }
         for ( Feature feature : memberFeatures ) {
-            props[i++] = new GenericProperty<Feature>( featureMemberDecl, feature );
+            props[i++] = new GenericProperty<Feature>( featureMemberDecl, null, feature );
         }       
         return props;
     }

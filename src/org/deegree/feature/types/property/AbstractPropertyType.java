@@ -53,7 +53,7 @@ import javax.xml.namespace.QName;
  * 
  * @version $Revision:$, $Date:$
  */
-public abstract class AbstractPropertyType implements PropertyType {
+public abstract class AbstractPropertyType<T> implements PropertyType<T> {
 
     /** The name of the property. */
     protected QName name;
