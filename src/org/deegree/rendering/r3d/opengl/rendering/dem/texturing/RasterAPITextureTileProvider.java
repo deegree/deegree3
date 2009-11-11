@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
@@ -90,7 +89,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
 
         Envelope subsetEnv = fac.createEnvelope( minX, minY, maxX, maxY, null );
 
-        AbstractRaster subset = raster.getSubRaster( subsetEnv );
+        TiledRaster subset = raster.getSubRaster( subsetEnv, null, OriginLocation.OUTER );
 
         // extract raw byte buffer (RGB, pixel interleaved)
         long begin2 = System.currentTimeMillis();
