@@ -38,12 +38,27 @@
 
 package org.deegree.coverage.raster;
 
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.gc;
+
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+import javax.media.jai.BorderExtender;
+import javax.media.jai.ImageLayout;
+import javax.media.jai.JAI;
+import javax.media.jai.OperationRegistry;
+import javax.media.jai.ParameterBlockJAI;
+import javax.media.jai.ParameterListDescriptor;
+import javax.media.jai.RegistryElementDescriptor;
+import javax.media.jai.RegistryMode;
+import javax.media.jai.RenderedOp;
 
 import junit.framework.Assert;
 
@@ -103,7 +118,118 @@ public class RasterFactory {
                 Assert.assertEquals( compareVal, realVal );
             }
         }
-        ImageIO.write( img, "tif", new File( "/tmp/out.tif" ) );
+        // ImageIO.write( img, "tif", new File( "/tmp/out.tif" ) );
+    }
+
+    /**
+     * Test the creation of a float buffered image.
+     * 
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public synchronized void testTiledImage()
+                            throws IOException, InterruptedException {
+
+        long t = System.currentTimeMillis();
+
+        RenderedOp tiff = getJAIImage( "test_tiled_image_lzw.tif" );
+        RenderedOp tiffNone = getJAIImage( "test_tiled_image.tif" );
+
+        long ret = currentTimeMillis();
+        saveSubset( tiff, "jai_tif_1", 0, 0, 250, 260 );
+        System.out.println( "subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
+        ret = currentTimeMillis();
+        saveSubset( tiff, "jai_tif_2", 4998, 4900, 10500, 13080 );
+        System.out.println( "subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+
+        gc();
+        gc();
+        gc();
+        gc();
+        gc();
+        gc();
+        ret = currentTimeMillis();
+        saveSubset( tiffNone, "jai_tif_none_1", 0, 0, 250, 260 );
+        System.out.println( "subset none 1: " + ( currentTimeMillis() - ret ) + "millis" );
+        ret = currentTimeMillis();
+        saveSubset( tiffNone, "jai_tif_none_2", 4998, 4900, 10500, 13080 );
+        System.out.println( "subset none 2: " + ( currentTimeMillis() - ret ) + "millis" );
+
+        System.out.println( "jai total: " + ( currentTimeMillis() - t ) + "millis" );
+        t = System.currentTimeMillis();
+    }
+
+    private void saveSubset( RenderedOp image, String name, int x, int y, int w, int h )
+                            throws IOException {
+        System.out.println( "getting subset: " + name );
+        WritableRaster jpgRaster = image.getColorModel().createCompatibleWritableRaster( w, h ).createWritableTranslatedChild(
+                                                                                                                               x,
+                                                                                                                               y );
+        image.copyExtendedData( jpgRaster, BorderExtender.createInstance( BorderExtender.BORDER_ZERO ) );
+        System.out.println( "wrote subset: " + name );
+    }
+
+    private RenderedOp getJAIImage( String file )
+                            throws IOException {
+        File f = new File( file );
+        ImageInputStream iis = ImageIO.createImageInputStream( f );
+        ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
+        pbj.setParameter( "Input", iis );
+
+        RenderedOp result = JAI.create( "ImageRead", pbj, null );
+
+        int width = result.getWidth();
+        int height = result.getHeight();
+        int tileWidth = width;
+        int tileHeight = height;
+        double scaleWidth = width / 500.d;
+        double scaleHeight = height / 500.d;
+        if ( scaleWidth > 1 ) {
+            tileWidth = (int) Math.floor( width / scaleWidth );
+        }
+
+        if ( scaleWidth > 1 ) {
+            tileHeight = (int) Math.floor( height / scaleHeight );
+        }
+        ImageLayout layout = new ImageLayout();
+        layout.setTileWidth( tileWidth );
+        layout.setTileHeight( tileHeight );
+
+        result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
+
+        return result;
+    }
+
+    private void outputJAIParams() {
+        JAI jai = JAI.getDefaultInstance();
+        OperationRegistry reg = jai.getOperationRegistry();
+        RenderingHints renderingHints = jai.getRenderingHints();
+        System.out.println( renderingHints.values() );
+
+        String[] modeNames = RegistryMode.getModeNames();
+        for ( String modeName : modeNames ) {
+            System.out.println( "**** " + modeName + " ****" );
+            String[] descriptorNames = reg.getDescriptorNames( modeName );
+            for ( String dn : descriptorNames ) {
+                System.out.println( "- " + dn );
+                RegistryElementDescriptor descriptor = reg.getDescriptor( modeName, dn );
+                String[] supportedModes = descriptor.getSupportedModes();
+                for ( String sm : supportedModes ) {
+                    System.out.println( " - " + sm );
+                    ParameterListDescriptor parameterListDescriptor = descriptor.getParameterListDescriptor( sm );
+                    if ( parameterListDescriptor != null ) {
+                        String[] parameterNames = parameterListDescriptor.getParamNames();
+                        if ( parameterNames != null ) {
+                            for ( String parameterName : parameterNames ) {
+                                System.out.println( "  - " + parameterName );
+                            }
+                        }
+                    } else {
+                        System.out.println( "  - no parameters" );
+                    }
+                }
+            }
+        }
 
     }
 }
