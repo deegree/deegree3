@@ -35,19 +35,27 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
+import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStore} implementation that uses a PostGIS/PostgreSQL database as backend.
@@ -61,30 +69,68 @@ import org.deegree.protocol.wfs.getfeature.Query;
  */
 public class PostGISFeatureStore implements FeatureStore {
 
-    private final PostGISApplicationSchema mappedSchema;
+    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );      
+    
+    private PostGISFeatureStoreTransaction activeTransaction;
+
+    private Thread transactionHolder;
+
+    private final ApplicationSchema schema;
+
+    private final String jdbcConnId;
+    
+    private DefaultLockManager lockManager;        
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
      * 
-     * @param mappedSchema
-     *            mapping information, must not be <code>null</code>
-s     */
-    public PostGISFeatureStore( PostGISApplicationSchema mappedSchema ) {
-        this.mappedSchema = mappedSchema;
+     * @param schema
+     *            schema information, must not be <code>null</code>
+     * @param jdbcConnId
+     */
+    public PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId ) {
+        this.schema = schema;
+        this.jdbcConnId = jdbcConnId;
     }
 
     @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+
+        while ( this.activeTransaction != null ) {
+            Thread holder = this.transactionHolder;
+            // check if transaction holder variable has (just) been cleared or if the other thread
+            // has been killed (avoid deadlocks)
+            if ( holder == null || !holder.isAlive() ) {
+                this.activeTransaction = null;
+                this.transactionHolder = null;
+                break;
+            }
+
+            try {
+                // wait until the transaction holder wakes us, but not longer than 5000
+                // milliseconds (as the transaction holder may very rarely get killed without
+                // signalling us)
+                wait( 5000 );
+            } catch ( InterruptedException e ) {
+                // nothing to do
+            }
+        }
+
+        try {
+            Connection conn = ConnectionManager.getConnection( jdbcConnId );
+            conn.setAutoCommit( false );
+            this.activeTransaction = new PostGISFeatureStoreTransaction( this, conn );
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
+        }
+        this.transactionHolder = Thread.currentThread();
+        return this.activeTransaction;
     }
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-
-    }
+        LOG.debug( "destroy" );    }
 
     @Override
     public Envelope getEnvelope( QName ftName ) {
@@ -95,8 +141,7 @@ s     */
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+        return lockManager;
     }
 
     @Override
@@ -114,13 +159,14 @@ s     */
 
     @Override
     public ApplicationSchema getSchema() {
-        return mappedSchema.getSchema();
+        return schema;
     }
 
     @Override
     public void init()
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
+        LOG.debug( "init" );
+        lockManager = new DefaultLockManager( this, "LOCK_DB" );
     }
 
     @Override
@@ -149,5 +195,30 @@ s     */
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    /**
+     * Returns the transaction to the datastore. This makes the transaction available to other clients again (via
+     * {@link #acquireTransaction()}.
+     * <p>
+     * The transaction should be terminated, i.e. commit() or rollback() must have been called before.
+     * 
+     * @param ta
+     *            the PostGISFeatureStoreTransaction to be returned
+     * @throws FeatureStoreException
+     */
+    void releaseTransaction( PostGISFeatureStoreTransaction ta )
+                            throws FeatureStoreException {
+        if ( ta.getStore() != this ) {
+            String msg = Messages.getMessage( "TA_NOT_OWNER" );
+            throw new FeatureStoreException( msg );
+        }
+        if ( ta != this.activeTransaction ) {
+            String msg = Messages.getMessage( "TA_NOT_ACTIVE" );
+            throw new FeatureStoreException( msg );
+        }
+        this.activeTransaction = null;
+        this.transactionHolder = null;
+        // notifyAll();
     }
 }

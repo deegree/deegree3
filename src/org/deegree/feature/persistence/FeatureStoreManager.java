@@ -45,6 +45,7 @@ import java.util.Map;
 import org.deegree.commons.datasource.configuration.FeatureStoreReferenceType;
 import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
+import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.gml.GMLVersion;
@@ -57,6 +58,7 @@ import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
+import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.slf4j.Logger;
@@ -176,6 +178,24 @@ public class FeatureStoreManager {
                     }
                 }
             }
+        } else if ( config instanceof PostGISFeatureStoreType ) {
+            PostGISFeatureStoreType postgisDsConfig = (PostGISFeatureStoreType) config;
+            XMLAdapter resolver = new XMLAdapter();
+            resolver.setSystemId( baseURL );
+
+            ApplicationSchema schema = null;
+            try {
+                URL schemaURL = resolver.resolve( postgisDsConfig.getGMLSchemaFileURL().trim() );
+                ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31,
+                                                                                       schemaURL.toString() );
+                schema = decoder.extractFeatureTypeSchema();
+            } catch ( Exception e ) {
+                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+                LOG.error( msg, e );
+                throw new FeatureStoreException( msg, e );
+            }
+
+            fs = new PostGISFeatureStore( schema, postgisDsConfig.getJDBCConnId() );
         } else {
             String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", config.getClass() );
             throw new FeatureStoreException( msg );

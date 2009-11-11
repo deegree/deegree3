@@ -75,7 +75,8 @@
     <complexContent>
       <extension base="ds:FeatureStoreType">
         <sequence>
-          <element name="MappedPostGISAppSchema" type="string" />
+          <element name="JDBCConnId" type="string" />
+          <element name="GMLSchemaFileURL" type="string" />
         </sequence>
       </extension>
     </complexContent>

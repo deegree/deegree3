@@ -140,111 +140,157 @@ public class PostGISApplicationSchema {
     }
 
     private void writeCreateGeneral( PrintWriter writer ) {
-        writer.println( "/* Global tables and sequence for internal ids */" );
-        writer.println( "CREATE SEQUENCE INTERNAL_ID_SEQ;" );
+
+        writer.println( "/* --- BEGIN global section --- */" );
         writer.println();
-        writer.println( "CREATE TABLE OBJECT_TYPES (" );
-        writer.println( "    ID SMALLINT PRIMARY KEY," );
-        writer.println( "    QNAME VARCHAR(64) NOT NULL," );
-        writer.println( "    TABLENAME VARCHAR(32) NOT NULL" );
+        writer.println( "CREATE SEQUENCE internal_id_seq;" );
+        writer.println();
+        writer.println( "CREATE TABLE feature_types (" );
+        writer.println( "    id SMALLINT PRIMARY KEY," );
+        writer.println( "    qname VARCHAR(64) NOT NULL," );
+        writer.println( "    tablename VARCHAR(32) NOT NULL" );
         writer.println( ");" );
+        writer.println ("COMMENT ON TABLE feature_types IS 'All concrete feature types and their tables';");
         writer.println();
+        writer.println( "SELECT ADDGEOMETRYCOLUMN('', 'feature_types','wgs84bbox','4326','POLYGON',2);" );
+        writer.println( "ALTER TABLE feature_types ADD CONSTRAINT feature_types_check_bbox CHECK (isvalid(wgs84bbox));" );
+        writer.println( "/* (no spatial index needed, as envelope is only used for keeping track of feature type extents) */" );
 
         int typeId = 0;
         for ( FeatureType ft : appSchema.getFeatureTypes() ) {
             if ( !ft.isAbstract() ) {
                 QName qName = ft.getName();
                 String tableName = ftNamesToHints.get( qName ).getFeatureTypeHints().getDBTable();
-                writer.println( "INSERT INTO OBJECT_TYPES (ID,QNAME,TABLENAME) VALUES (" + ( typeId++ ) + ",'" + qName
-                                + "', '" + tableName + "')" );
+                writer.println( "INSERT INTO feature_types (id,qname,tablename) VALUES (" + ( typeId++ ) + ",'" + qName
+                                + "', '" + tableName + "');" );
             }
         }
 
-        writer.println();        
-        writer.println( "CREATE TABLE OBJECT_IDS (" );
-        writer.println( "    ID INTEGER PRIMARY KEY," );
-        writer.println( "    GML_ID VARCHAR(32) UNIQUE NOT NULL," );
-        writer.println( "    TYPE SMALLINT NOT NULL REFERENCES OBJECT_TYPES" );
-        writer.println( ");" );        
+        writer.println();
+        writer.println( "CREATE TABLE gml_objects (" );
+        writer.println( "    id INTEGER PRIMARY KEY," );
+        writer.println( "    gml_id VARCHAR(32) UNIQUE NOT NULL," );
+        writer.println( "    gml_description VARCHAR(256)," );
+        writer.println( "    ft_type SMALLINT REFERENCES feature_types," );
+        writer.println( "    binary_object OID NOT NULL" );
+        writer.println( ");" );
+        writer.println ("COMMENT ON TABLE gml_objects IS 'All objects (features and geometries)';");
+
+        writer.println( "SELECT ADDGEOMETRYCOLUMN('', 'gml_objects','gml_bounded_by','-1','POLYGON',2);" );
+        writer.println( "ALTER TABLE gml_objects ADD CONSTRAINT gml_objects_check_bounded_by CHECK (isvalid(gml_bounded_by));" );
+        writer.println( "CREATE INDEX gml_objects_idx_spatial ON gml_objects USING GIST ( gml_bounded_by GIST_GEOMETRY_OPS );" );
+        writer.println();
+
+        writer.println( "CREATE TABLE gml_names (" );
+        writer.println( "    gml_object_id INTEGER REFERENCES GML_OBJECTS," );
+        writer.println( "    name VARCHAR(32) NOT NULL," );
+        writer.println( "    prop_idx SMALLINT NOT NULL" );
+        writer.println( ");" );
+        writer.println();
+        writer.println( "/* --- END global section --- */" );
     }
 
     private void writeCreateFeatureType( FeatureType ft, PrintWriter writer ) {
 
         List<String> additionalCreates = new ArrayList<String>();
-
         FeatureTypeMapping ftMapping = getFtMapping( ft.getName() );
-        writer.println( "/* Feature type '" + ft.getName() + "' */" );
-        writer.println( "CREATE TABLE " + ftMapping.getFeatureTypeHints().getDBTable() + " (" );
-        writer.print( "    ID INTEGER PRIMARY KEY REFERENCES OBJECT_IDS" );
+        String tableName = ftMapping.getFeatureTypeHints().getDBTable().toLowerCase();
+        int i = 1;
+
+        writer.println( "/* --- BEGIN Feature type '" + ft.getName() + "' --- */" );
+        writer.println();
+        writer.println( "CREATE TABLE " + tableName + " (" );
+        writer.print( "    id INTEGER PRIMARY KEY REFERENCES GML_OBJECTS" );
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             PropertyMappingType propMapping = ftMapping.getPropertyHints( pt.getName() );
             if ( propMapping instanceof SimplePropertyMappingType ) {
                 SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) propMapping;
                 if ( simplePropMapping.getDBColumn() != null ) {
                     DBColumn dbColumn = simplePropMapping.getDBColumn();
-                    writer.print( ",\n    " + dbColumn.getName() + " " + dbColumn.getSqlType() );
+                    writer.print( ",\n    " + dbColumn.getName().toLowerCase() + " " + dbColumn.getSqlType() );
                 } else {
-                    additionalCreates.add( createPropertyTable( simplePropMapping.getPropertyTable() ) );
+                    additionalCreates.add( createPropertyTable( tableName, simplePropMapping.getPropertyTable() ) );
                 }
             } else if ( propMapping instanceof GeometryPropertyMappingType ) {
                 GeometryPropertyMappingType geometryPropMapping = (GeometryPropertyMappingType) propMapping;
                 if ( geometryPropMapping.getGeometryDBColumn() != null ) {
                     GeometryDBColumn dbColumn = geometryPropMapping.getGeometryDBColumn();
-                    String create = "ADDGEOMETRYCOLUMN('','" + ftMapping.getFeatureTypeHints().getDBTable() + "','"
-                                    + dbColumn.getName() + "','" + dbColumn.getSrid() + "','" + dbColumn.getSqlType()
-                                    + "'," + dbColumn.getDimension() + ");\n";
+                    writer.print( ",\n    " + dbColumn.getName() + "_ID INTEGER REFERENCES GML_OBJECTS" );
+                    String create = "SELECT ADDGEOMETRYCOLUMN('','" + tableName + "','" + dbColumn.getName().toLowerCase()
+                                    + "','" + dbColumn.getSrid() + "','" + dbColumn.getSqlType() + "',"
+                                    + dbColumn.getDimension() + ");\n";
+                    create += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + "_check_geom" + i
+                              + " CHECK (isvalid(" + dbColumn.getName().toLowerCase() + "));\n";
+                    create += "CREATE INDEX " + tableName + "_idx_spatial" + i + " ON " + tableName + " USING GIST ( "
+                              + dbColumn.getName().toLowerCase() + " GIST_GEOMETRY_OPS );\n";
                     additionalCreates.add( create );
+                    writer.print( ",\n    " + dbColumn.getName().toLowerCase() + "_xlink VARCHAR(1024)" );
+                    i++;
                 } else {
-                    additionalCreates.add( createPropertyTable( geometryPropMapping.getGeometryPropertyTable() ) );
+                    additionalCreates.add( createPropertyTable( tableName, geometryPropMapping.getGeometryPropertyTable() ) );
                 }
             } else if ( propMapping instanceof FeaturePropertyMappingType ) {
                 FeaturePropertyMappingType featurePropMapping = (FeaturePropertyMappingType) propMapping;
                 if ( featurePropMapping.getDBColumn() != null ) {
                     DBColumn dbColumn = featurePropMapping.getDBColumn();
-                    writer.print( ",\n    " + dbColumn.getName() + " INTEGER REFERENCES OBJECT_IDS" );
-                    writer.print( ",\n    " + dbColumn.getName() + "_XLINK VARCHAR(1024)" );
+                    writer.print( ",\n    " + dbColumn.getName().toLowerCase() + " INTEGER REFERENCES GML_OBJECTS" );
+                    writer.print( ",\n    " + dbColumn.getName().toLowerCase() + "_xlink VARCHAR(1024)" );
                 } else {
-                    additionalCreates.add( createPropertyTable( featurePropMapping.getFeatureJoinTable() ) );
+                    additionalCreates.add( createPropertyTable( tableName, featurePropMapping.getFeatureJoinTable() ) );
                 }
             } else {
                 throw new RuntimeException( "Unhandled property mapping: " + propMapping.getClass() );
             }
         }
         writer.println( "\n);" );
+        writer.println ("COMMENT ON TABLE " + tableName + " IS '" + ft.getName()+ " main table';");
 
-        // writer collected creates for property and join tables
+        // write collected creates for property and join tables
         for ( String create : additionalCreates ) {
             writer.println();
             writer.print( create );
         }
+        writer.println();
+        writer.println( "/* --- END Feature type '" + ft.getName() + "' --- */" );
     }
 
-    private String createPropertyTable( PropertyTable propTable ) {
+    private String createPropertyTable(String sourcefeatureTable, PropertyTable propTable ) {
+        String tableName = propTable.getTable().toLowerCase();
         String s = "";
-        s += "CREATE TABLE " + propTable.getTable() + " (\n";
-        s += "    FEATURE INTEGER NOT NULL REFERENCES OBJECT_IDS,\n";
-        s += "    " + propTable.getColumn() + " " + propTable.getSqlType() + " NOT NULL\n";
+        s += "CREATE TABLE " + tableName + " (\n";
+        s += "    feature_id INTEGER NOT NULL REFERENCES " + sourcefeatureTable + ",\n";
+        s += "    " + propTable.getColumn().toLowerCase() + " " + propTable.getSqlType() + " NOT NULL,\n";
+        s += "    prop_idx SMALLINT NOT NULL\n";
         s += ");\n";
         return s;
     }
 
-    private String createPropertyTable( GeometryPropertyTable propTable ) {
+    private String createPropertyTable(String sourcefeatureTable, GeometryPropertyTable propTable ) {
+        String tableName = propTable.getTable().toLowerCase();
         String s = "";
-        s += "CREATE TABLE " + propTable.getTable() + " (\n";
-        s += "    FEATURE INTEGER NOT NULL REFERENCES OBJECT_IDS\n";
-        s += "    GEOM_EXT" + " BLOB\n";
+        s += "CREATE TABLE " + tableName + " (\n";
+        s += "    feature_id INTEGER NOT NULL REFERENCES " + sourcefeatureTable + " ,\n";
+        s += "    geometry_id INTEGER NOT NULL REFERENCES " + sourcefeatureTable + ",\n";
+        s += "    geometry_xlink VARCHAR(1024),\n";
+        s += "    prop_idx SMALLINT NOT NULL\n";
         s += ");\n";
-        s += "ADDGEOMETRYCOLUMN('','" + propTable.getTable() + "','GEOM','" + propTable.getSrid() + "','"
+        s += "SELECT ADDGEOMETRYCOLUMN('','" + tableName + "','geometry','" + propTable.getSrid() + "','"
              + propTable.getSqlType() + "'," + propTable.getDimension() + ");\n";
+        s += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName
+             + "_check_geometry CHECK (isvalid(geometry));\n";
+        s += "CREATE INDEX " + tableName + "_idx_spatial ON " + tableName
+             + " USING GIST ( geometry GIST_GEOMETRY_OPS );\n";
         return s;
     }
 
-    private String createPropertyTable( FeatureJoinTable joinTable ) {
+    private String createPropertyTable(String sourcefeatureTable, FeatureJoinTable joinTable ) {
+        String tableName = joinTable.getTable().toLowerCase();
         String s = "";
-        s += "CREATE TABLE " + joinTable.getTable() + " (\n";
-        s += "    FROM_FEATURE INTEGER NOT NULL REFERENCES OBJECT_IDS,\n";
-        s += "    TO_FEATURE INTEGER REFERENCES OBJECT_IDS,\n";
-        s += "    TO_FEATURE_XLINK VARCHAR(1024)\n";
+        s += "CREATE TABLE " + tableName + " (\n";
+        s += "    feature_id_from INTEGER NOT NULL REFERENCES " + sourcefeatureTable + ",\n";
+        s += "    feature_id_to INTEGER REFERENCES gml_objects,\n";
+        s += "    feature_id_to_xlink VARCHAR(1024),\n";
+        s += "    prop_idx SMALLINT NOT NULL\n";
         s += ");\n";
         return s;
     }

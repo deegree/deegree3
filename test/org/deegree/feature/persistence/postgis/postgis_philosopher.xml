@@ -26,11 +26,6 @@
       <DBTable>PHILOSOPHER</DBTable>
       <GMLDefaultProps>true</GMLDefaultProps>
     </FeatureTypeMappingHints>
-    <SimpleProperty name="id" type="integer">
-      <SimplePropertyMapping>
-        <DBColumn name="ID" sqlType="INTEGER"/>
-      </SimplePropertyMapping>
-    </SimpleProperty>
     <SimpleProperty name="name" type="string">
       <SimplePropertyMapping>
         <DBColumn name="NAME" sqlType="VARCHAR(100)" />
@@ -127,7 +122,7 @@
     </SimpleProperty>
     <GeometryProperty name="geom" type="MultiSurface" coordinateDimension="2D">
       <GeometryPropertyMapping>
-        <GeometryDBColumn name="NAME" sqlType="MULTIPOLYON" dimension="2" srid="4326"/>
+        <GeometryDBColumn name="GEOM" sqlType="MULTIPOLYGON" dimension="2" srid="4326"/>
       </GeometryPropertyMapping>
     </GeometryProperty>
   </FeatureType>
