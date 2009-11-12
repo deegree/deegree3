@@ -42,6 +42,7 @@ import java.util.List;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.slf4j.Logger;
@@ -76,13 +77,38 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     private final double tileHeight;
 
-    private final GeometryFactory geomFac;
+    private final static GeometryFactory geomFac = new GeometryFactory();
 
     /** Number of samples of each raster tile in x-direction. */
     protected final int tileSamplesX;
 
     /** Number of samples of each raster tile in y-direction. */
     protected final int tileSamplesY;
+
+    /**
+     * Creates a new {@link GriddedTileContainer} instances.
+     * 
+     * @param infoFile
+     *            containing the relevant information.
+     * 
+     */
+    protected GriddedTileContainer( GridMetaInfoFile infoFile ) {
+        this.envelope = infoFile.getEnvelope( OriginLocation.OUTER );
+        this.envelopeWidth = envelope.getMax().get0() - envelope.getMin().get0();
+        this.envelopeHeight = envelope.getMax().get1() - envelope.getMin().get1();
+        // this.envelopeWidth = envelope.getSpan0();
+        // this.envelopeHeight = envelope.getSpan1();
+        this.rows = infoFile.getRows();
+        this.columns = infoFile.getColumns();
+        this.tileSamplesX = infoFile.getTileSamplesX();
+        this.tileSamplesY = infoFile.getTileSamplesY();
+        this.tileWidth = envelopeWidth / columns;
+        this.tileHeight = envelopeHeight / rows;
+
+        this.rasterReference = infoFile.getGeoReference();
+        LOG.debug( "envelope: " + envelope );
+        LOG.debug( "raster reference: " + rasterReference );
+    }
 
     /**
      * Creates a new {@link GriddedTileContainer} instances.
@@ -113,7 +139,6 @@ public abstract class GriddedTileContainer implements TileContainer {
         this.tileHeight = envelopeHeight / rows;
         this.rasterReference = RasterGeoReference.create( location, envelope, tileSamplesX * columns, tileSamplesY
                                                                                                       * rows );
-        geomFac = new GeometryFactory();
         LOG.debug( "envelope: " + envelope );
         LOG.debug( "raster reference: " + rasterReference );
     }

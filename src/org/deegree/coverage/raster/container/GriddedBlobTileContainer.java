@@ -36,10 +36,10 @@
 
 package org.deegree.coverage.raster.container;
 
-import java.io.BufferedReader;
+import static org.deegree.coverage.raster.io.grid.GridMetaInfoFile.METAINFO_FILE_NAME;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -56,7 +56,7 @@ import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.coverage.raster.io.WorldFileAccess;
+import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,9 +74,6 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 
     private static Logger LOG = LoggerFactory.getLogger( GriddedBlobTileContainer.class );
 
-    /** name of the index file. **/
-    public static final String METAINFO_FILE_NAME = "gridded_raster.info";
-
     /** name of a blob file. **/
     public static final String BLOB_FILE_NAME = "blob_";
 
@@ -85,33 +82,36 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 
     private final long bytesPerTile;
 
-    private final int tilesPerBlob;
+    // how much tiles are in a blob (except for the last blob)
+    private int tilesPerBlob;
 
-    private final FileChannel[] blobChannels;
+    private FileChannel[] blobChannels;
+
+    private final long expectedBlobSize;
+
+    /**
+     * @param metaInfoFile
+     */
+    private GriddedBlobTileContainer( GridMetaInfoFile metaInfoFile ) {
+        super( metaInfoFile );
+        bytesPerTile = tileSamplesX * tileSamplesY * 3;
+        LOG.debug( "Bytes per tile: " + bytesPerTile );
+
+        expectedBlobSize = (long) getRows() * getColumns() * bytesPerTile;
+        LOG.debug( "Expected blob size: " + expectedBlobSize );
+    }
 
     /**
      * A gridded tile container which reads data from a deegree internal format. See d3_tools/RasterTreeGridifier on how
      * to create the format.
      * 
-     * @param originLocation
+     * @param metaInfoFile
+     *            encapsulating the values read from the grid meta info file.
      * @param blobDir
-     * @param envelope
-     * @param rows
-     * @param columns
-     * @param tileSamplesX
-     * @param tileSamplesY
      * @throws IOException
      */
-    public GriddedBlobTileContainer( OriginLocation originLocation, File blobDir, Envelope envelope, int rows,
-                                     int columns, int tileSamplesX, int tileSamplesY ) throws IOException {
-
-        super( originLocation, envelope, rows, columns, tileSamplesX, tileSamplesY );
-
-        bytesPerTile = tileSamplesX * tileSamplesY * 3;
-        LOG.debug( "Bytes per tile: " + bytesPerTile );
-
-        long expectedBlobSize = (long) rows * columns * bytesPerTile;
-        LOG.debug( "Expected blob size: " + expectedBlobSize );
+    public GriddedBlobTileContainer( GridMetaInfoFile metaInfoFile, File blobDir ) throws IOException {
+        this( metaInfoFile );
 
         List<File> blobFiles = new ArrayList<File>();
         long totalSize = 0;
@@ -139,9 +139,38 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
             FileInputStream fis = new FileInputStream( blobFiles.get( i ) );
             blobChannels[i] = fis.getChannel();
         }
-
         tilesPerBlob = (int) ( blobFiles.get( 0 ).length() / bytesPerTile );
         LOG.debug( "Tiles per (full) blob: " + tilesPerBlob );
+    }
+
+    /**
+     * A gridded tile container which reads data from a deegree internal format. See d3_tools/RasterTreeGridifier on how
+     * to create the format. This methods takes a single bob file instead of scanning a given directory
+     * 
+     * @param blobFile
+     *            to read the tiles from.
+     * @param metaInfoFile
+     * @throws IOException
+     */
+    public GriddedBlobTileContainer( File blobFile, GridMetaInfoFile metaInfoFile ) throws IOException {
+        this( metaInfoFile );
+
+        if ( !blobFile.exists() ) {
+            throw new IOException( "Given blobfile:" + blobFile + " does not exist." );
+        }
+        long totalSize = blobFile.length();
+        LOG.debug( "Real blob size: " + totalSize );
+
+        if ( expectedBlobSize != totalSize ) {
+            String msg = "Size of blobs  (=" + totalSize + ") does not match the expected size (=" + expectedBlobSize
+                         + ").";
+            throw new IllegalArgumentException( msg );
+        }
+
+        blobChannels = new FileChannel[1];
+        FileInputStream fis = new FileInputStream( blobFile );
+        blobChannels[0] = fis.getChannel();
+        tilesPerBlob = (int) ( blobFile.length() / bytesPerTile );
     }
 
     /**
@@ -159,19 +188,11 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
                             throws IOException {
 
         File metaInfoFile = new File( dir, METAINFO_FILE_NAME );
-        BufferedReader br = new BufferedReader( new FileReader( metaInfoFile ) );
-        RasterGeoReference worldFile = WorldFileAccess.readWorldFile( br, options );
-
-        // read grid info
-        int rows = Integer.parseInt( br.readLine() );
-        int columns = Integer.parseInt( br.readLine() );
-        int tileSamplesX = Integer.parseInt( br.readLine() );
-        int tileSamplesY = Integer.parseInt( br.readLine() );
-
-        // convert the envelopes to OUTER, because the world files are in center.
-        Envelope env = worldFile.getEnvelope( OriginLocation.OUTER, tileSamplesX * columns, tileSamplesY * rows, null );
-        br.close();
-        return new GriddedBlobTileContainer( OriginLocation.OUTER, dir, env, rows, columns, tileSamplesX, tileSamplesY );
+        if ( !metaInfoFile.exists() ) {
+            throw new IOException( "Could not find the " + METAINFO_FILE_NAME + " in the given directory, " + dir );
+        }
+        GridMetaInfoFile readFromFile = GridMetaInfoFile.readFromFile( metaInfoFile, options );
+        return new GriddedBlobTileContainer( readFromFile, dir );
     }
 
     @Override
@@ -180,8 +201,8 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         int tileId = getTileId( columnId, rowId );
         long begin = System.currentTimeMillis();
         Envelope tileEnvelope = getTileEnvelope( rowId, columnId );
-        RasterGeoReference tileRasterReference = RasterGeoReference.create( getRasterReference().getOriginLocation(),
-                                                                            tileEnvelope, tileSamplesX, tileSamplesY );
+        RasterGeoReference tileRasterReference = RasterGeoReference.create( OriginLocation.OUTER, tileEnvelope,
+                                                                            tileSamplesX, tileSamplesY );
 
         ByteBufferRasterData tileData = RasterDataFactory.createRasterData( tileSamplesX, tileSamplesY,
                                                                             new BandType[] { BandType.RED,
