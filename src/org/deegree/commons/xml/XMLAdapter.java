@@ -75,6 +75,7 @@ import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.i18n.Messages;
+import org.deegree.commons.types.ows.Version;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,23 +85,24 @@ import org.slf4j.LoggerFactory;
  * and exporters in deegree. Classes that extend <code>XMLAdapter</code> provide the binding between a certain type of
  * XML documents and their corresponding Java bean representation.
  * <p>
- * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It
- * provides the following functionality:
+ * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It provides
+ * the following functionality:
  * <ul>
  * <li>Lookup of nodes using XPath expressions.</li>
  * <li>Lookup of <i>required</i> nodes. These methods throw an {@link XMLParsingException} if the expression does not
  * have a result.</li>
- * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or
- * common Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the
- * expected type, an {@link XMLParsingException} is thrown.
- * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>,
- * <code>InputStream</code>). </li>
+ * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or common
+ * Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the expected type,
+ * an {@link XMLParsingException} is thrown.
+ * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>, <code>InputStream</code>).
+ * </li>
  * <li>Resolving of relative URLs that occur in the document content, i.e. that refer to resources that are located
  * relative to the document.</li>
  * </ul>
  * </p>
  * <p>
- * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object Model)</a>.
+ * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object
+ * Model)</a>.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -291,8 +293,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the
-     * 'xsi:schemaLocation' attribute of the wrapped XML element.
+     * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the 'xsi:schemaLocation'
+     * attribute of the wrapped XML element.
      * 
      * @return keys are URIs (namespaces), values are URLs (schema locations)
      * @throws XMLProcessingException
@@ -341,8 +343,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the
-     * SystemId, too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the SystemId,
+     * too.
      * 
      * @param url
      *            source of the xml content
@@ -407,8 +409,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets
-     * the system id to the {@link #DEFAULT_URL}
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets the
+     * system id to the {@link #DEFAULT_URL}
      * 
      * @param resourceStream
      *            to load the xml from.
@@ -458,8 +460,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the
-     * SystemId, too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the SystemId,
+     * too.
      * 
      * @param reader
      *            source of the XML content
@@ -497,8 +499,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code> and sets the
-     * system id to the {@link #DEFAULT_URL}
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code> and sets the system
+     * id to the {@link #DEFAULT_URL}
      * 
      * @param reader
      *            to load the xml from.
@@ -866,6 +868,17 @@ public class XMLAdapter {
         return value;
     }
 
+    public Version getNodeAsVersion( OMElement context, XPath xpath, Version defaultValue )
+                            throws XMLParsingException {
+        Version value = defaultValue;
+        String s = getNodeAsString( context, xpath, null );
+        if ( s != null ) {
+            value = value.parseVersion( s );
+        }
+        return value;
+
+    }
+
     public List getNodes( OMElement context, XPath xpath )
                             throws XMLParsingException {
         List<?> nodes;
@@ -1028,6 +1041,16 @@ public class XMLAdapter {
         return value;
     }
 
+    public Version getRequiredNodeAsVersion( OMElement context, XPath xpath )
+                            throws XMLParsingException {
+        Version value = getNodeAsVersion( context, xpath, null );
+        if ( value == null ) {
+            String msg = Messages.getMessage( "XML_REQUIRED_NODE_MISSING", xpath, context.getQName() );
+            throw new XMLParsingException( this, context, msg );
+        }
+        return value;
+    }
+
     public List getRequiredNodes( OMElement context, XPath xpath )
                             throws XMLParsingException {
         List nodes = getNodes( context, xpath );
@@ -1122,11 +1145,12 @@ public class XMLAdapter {
      *            the text value of the element
      * @param attrNS
      *            the namespace of the attribute, <code>null</null> if the local namespace of the element should be used
-     * @param attribPRE to use for the namespace binding
+     * @param attribPRE
+     *            to use for the namespace binding
      * @param attrName
      *            the attribute name
      * @param attrValue
-     *            the attribute value, if <code>null</code> the attribute will not be written. 
+     *            the attribute value, if <code>null</code> the attribute will not be written.
      * @throws XMLStreamException
      */
     public static void writeElement( XMLStreamWriter writer, String namespace, String elemName, String value,
@@ -1151,8 +1175,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Write an optional attribute at the current position of the writer. If the value is empty or <code>null</code>
-     * no attribute will be written.
+     * Write an optional attribute at the current position of the writer. If the value is empty or <code>null</code> no
+     * attribute will be written.
      * 
      * @param writer
      * @param name
@@ -1167,8 +1191,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Write an optional attribute at the current position of the writer. If the value is empty or <code>null</code>
-     * no attribute will be written.
+     * Write an optional attribute at the current position of the writer. If the value is empty or <code>null</code> no
+     * attribute will be written.
      * 
      * @param writer
      * @param namespace
