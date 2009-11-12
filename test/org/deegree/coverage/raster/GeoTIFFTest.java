@@ -119,7 +119,7 @@ public class GeoTIFFTest {
 
         double[] renvMin = raster.getEnvelope().getMin().getAsArray();
         double[] renvMax = raster.getEnvelope().getMax().getAsArray();
-        double delta = 1E-6;
+        double delta = 1E-4;
         Assert.assertEquals( -113.69474315, renvMin[0], delta );
         Assert.assertEquals( 39.10223806, renvMin[1], delta );
         Assert.assertEquals( -110.35882409, renvMax[0], delta );
@@ -141,7 +141,8 @@ public class GeoTIFFTest {
      */
     @Test
     public void geoTIFFRasterEnvelope() {
-        double delta = 0.0000000001;
+        // double delta = 0.0000000001;
+        double delta = 0.000001;
         RasterGeoReference renv = raster.getRasterReference();
         // actual values by gdalinfo
         double[] orig = renv.getOrigin();
