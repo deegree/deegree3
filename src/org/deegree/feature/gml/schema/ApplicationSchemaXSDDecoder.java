@@ -73,13 +73,12 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.LengthPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
+import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -373,15 +372,26 @@ public class ApplicationSchemaXSDDecoder {
                         LOG.debug( "Identified a CodePropertyType." );
                         pt = new CodePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}BoundingShapeType" ) ) ) {
-                        LOG.debug( "Identified a EnvelopePropertyType." );
+                        LOG.debug( "Identified an EnvelopePropertyType." );
                         pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}MeasureType" ) ) ) {
-                        LOG.debug( "Identified a MeasurePropertyType." );
+                        LOG.debug( "Identified a MeasurePropertyType (GENERIC)." );
                         pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}LengthType" ) ) ) {
-                        LOG.debug( "Identified a LengthPropertyType." );
-                        pt = new LengthPropertyType( ptName, minOccurs, maxOccurs );
-
+                        LOG.debug( "Identified a MeasurePropertyType (LENGTH)." );
+                        pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
+                    } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}AngleType" ) ) ) {
+                        LOG.debug( "Identified a MeasurePropertyType (ANGLE)." );
+                        pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
+                    } else if ( typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml}XP_VariableGeometrieType" ) )
+                                || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_FlaechengeometrieType" ) )
+                                || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_LiniengeometrieType" ) )
+                                || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_PunktgeometrieType" ) )
+                                || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_VariableGeometrieType" ) ) ) {
+                        // xplan hack!!!
+                        pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs,
+                                                       GeometryPropertyType.GeometryType.GEOMETRY,
+                                                       GeometryPropertyType.CoordinateDimension.DIM_2 );
                     } else {
                         pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeName );
                     }
@@ -649,7 +659,9 @@ public class ApplicationSchemaXSDDecoder {
     private PrimitiveType getPrimitiveType( XSSimpleType typeDef ) {
 
         PrimitiveType pt = null;
-//        encounteredTypes.add( new QName( typeDef.getNamespace(), typeDef.getName() ) );
+        if ( typeDef.getName() != null ) {
+            encounteredTypes.add( new QName( typeDef.getNamespace(), typeDef.getName() ) );
+        }
 
         switch ( typeDef.getBuiltInKind() ) {
 

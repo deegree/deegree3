@@ -36,6 +36,7 @@
 package org.deegree.feature.gml;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.feature.types.property.PrimitiveType.STRING;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,17 +83,15 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
     /** GML 3.0/3.1 standard property type 'gml:boundedBy' */
     public static final PropertyType PT_BOUNDED_BY_GML31;
 
-    private final static Map<QName, PropertyType> GML2PropNameToPropType = new LinkedHashMap<QName, PropertyType>();
+    private final static Map<QName, PropertyType<?>> GML2PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
 
-    private final static Map<QName, PropertyType> GML31PropNameToPropType = new LinkedHashMap<QName, PropertyType>();
+    private final static Map<QName, PropertyType<?>> GML31PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
 
-    private final static Map<QName, PropertyType> GML32PropNameToPropType = new LinkedHashMap<QName, PropertyType>();
+    private final static Map<QName, PropertyType<?>> GML32PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
 
     static {
-        PT_DESCRIPTION_GML2 = new SimplePropertyType( new QName( GMLNS, "description" ), 0, 1,
-                                                      SimplePropertyType.PrimitiveType.STRING );
-        PT_NAME_GML2 = new SimplePropertyType( new QName( GMLNS, "name" ), 0, 1,
-                                               SimplePropertyType.PrimitiveType.STRING );
+        PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING );
+        PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
         PT_BOUNDED_BY_GML2 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1 );
@@ -353,9 +352,9 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
      *            GML version, must not be <code>null</code>
      * @return standard GML property types, in expected order
      */
-    public static Collection<PropertyType> getPropertyTypes( GMLVersion version ) {
+    public static Collection<PropertyType<?>> getPropertyTypes( GMLVersion version ) {
 
-        Collection<PropertyType> pts = null;
+        Collection<PropertyType<?>> pts = null;
         switch ( version ) {
         case GML_2:
             pts = GML2PropNameToPropType.values();

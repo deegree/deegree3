@@ -37,7 +37,9 @@ package org.deegree.feature.persistence.postgis;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,23 +50,29 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.postgis.jaxbconfig.AbstractPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxbconfig.ApplicationSchemaDecl;
+import org.deegree.feature.persistence.postgis.jaxbconfig.CustomComplexPropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxbconfig.CustomPropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.FeaturePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxbconfig.FeaturePropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.FeatureTypeDecl;
 import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappingType;
+import org.deegree.feature.persistence.postgis.jaxbconfig.MeasurePropertyDecl;
+import org.deegree.feature.persistence.postgis.jaxbconfig.MeasurePropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingType;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.MeasurePropertyType;
+import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 
 /**
  * Adapter between JAXB {@link ApplicationSchemaDecl} and {@link ApplicationSchema} objects.
@@ -131,43 +139,26 @@ public class JAXBApplicationSchemaAdapter {
             ptAndMapping = toGeometryPropertyType( propName, (GeometryPropertyDecl) jaxbPropertyDecl );
         } else if ( jaxbPropertyDecl instanceof FeaturePropertyDecl ) {
             ptAndMapping = toFeaturePropertyType( propName, (FeaturePropertyDecl) jaxbPropertyDecl );
+        } else if ( jaxbPropertyDecl instanceof MeasurePropertyDecl ) {
+            ptAndMapping = toMeasurePropertyType( propName, (MeasurePropertyDecl) jaxbPropertyDecl );
         } else {
             throw new RuntimeException( "Unhandled property type: " + jaxbPropertyDecl.getClass() );
         }
         return ptAndMapping;
     }
 
-    private static Pair<SimplePropertyType, SimplePropertyMappingType> toSimplePropertyType(
-                                                                                             QName propName,
-                                                                                             SimplePropertyDecl jaxbPropertyDecl ) {
+    private static Pair<SimplePropertyType<?>, SimplePropertyMappingType> toSimplePropertyType( QName propName,
+
+    SimplePropertyDecl jaxbPropertyDecl ) {
         int minOccurs = getMinOccurs( jaxbPropertyDecl );
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
-        PrimitiveType type = null;
-        switch ( jaxbPropertyDecl.getType() ) {
-        case STRING: {
-            type = PrimitiveType.STRING;
-            break;
-        }
-        case INTEGER: {
-            type = PrimitiveType.INTEGER;
-            break;
-        }
-        case BOOLEAN: {
-            type = PrimitiveType.BOOLEAN;
-            break;
-        }
-        case DATE: {
-            type = PrimitiveType.DATE;
-            break;
-        }
-        case DECIMAL: {
-            type = PrimitiveType.DECIMAL;
-            break;
-        }
-        }
-        return new Pair<SimplePropertyType, SimplePropertyMappingType>( new SimplePropertyType( propName, minOccurs,
-                                                                                                maxOccurs, type ),
-                                                                        jaxbPropertyDecl.getSimplePropertyMapping() );
+        // identical types due to convention
+        PrimitiveType type = PrimitiveType.valueOf( jaxbPropertyDecl.getType().name() );
+        return new Pair<SimplePropertyType<?>, SimplePropertyMappingType>( new SimplePropertyType<Object>( propName,
+                                                                                                           minOccurs,
+                                                                                                           maxOccurs,
+                                                                                                           type ),
+                                                                           jaxbPropertyDecl.getSimplePropertyMapping() );
     }
 
     private static Pair<GeometryPropertyType, GeometryPropertyMappingType> toGeometryPropertyType(
@@ -195,6 +186,16 @@ public class JAXBApplicationSchemaAdapter {
                                                                                                    maxOccurs,
                                                                                                    valueFtName ),
                                                                           jaxbPropertyDecl.getFeaturePropertyMapping() );
+    }
+
+    private static Pair<MeasurePropertyType, MeasurePropertyMappingType> toMeasurePropertyType(
+                                                                                                QName propName,
+                                                                                                MeasurePropertyDecl jaxbPropertyDecl ) {        
+        int minOccurs = getMinOccurs( jaxbPropertyDecl );
+        int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
+        return new Pair<MeasurePropertyType, MeasurePropertyMappingType>( new MeasurePropertyType( propName, minOccurs,
+                                                                                                   maxOccurs ),
+                                                                          jaxbPropertyDecl.getMeasurePropertyMapping() );
     }
 
     private static int getMinOccurs( AbstractPropertyDecl propertyDecl ) {
@@ -234,7 +235,14 @@ public class JAXBApplicationSchemaAdapter {
 
     private static List<FeatureTypeDecl> toJAXBFeatureTypeDecls( PostGISApplicationSchema postgisSchema ) {
         List<FeatureTypeDecl> ftDecls = new ArrayList<FeatureTypeDecl>();
-        for ( FeatureType ft : postgisSchema.getSchema().getFeatureTypes() ) {
+        FeatureType[] fts = postgisSchema.getSchema().getFeatureTypes();
+        Arrays.sort( fts, new Comparator<FeatureType>() {
+            @Override
+            public int compare( FeatureType o1, FeatureType o2 ) {
+                return o1.getName().toString().compareTo( o2.getName().toString() );
+            }
+        } );
+        for ( FeatureType ft : fts ) {
             ftDecls.add( toJAXBFeatureTypeDecls( ft, postgisSchema.getFtMapping( ft.getName() ) ) );
         }
         return ftDecls;
@@ -244,8 +252,10 @@ public class JAXBApplicationSchemaAdapter {
         FeatureTypeDecl ftDecl = new FeatureTypeDecl();
         ftDecl.setAbstract( ft.isAbstract() ? Boolean.TRUE : null );
         ftDecl.setName( ft.getName() );
-        ftDecl.setFeatureTypeMappingHints( ftMapping.getFeatureTypeHints() );
-        ftDecl.getAbstractProperty().addAll( toJAXBPropertyDecls( ft, ftMapping ) );
+        if ( !ft.isAbstract() ) {
+            ftDecl.setFeatureTypeMappingHints( ftMapping.getFeatureTypeHints() );
+            ftDecl.getAbstractProperty().addAll( toJAXBPropertyDecls( ft, ftMapping ) );
+        }
         return ftDecl;
     }
 
@@ -267,59 +277,31 @@ public class JAXBApplicationSchemaAdapter {
         if ( pt instanceof SimplePropertyType<?> ) {
             propDecl = new SimplePropertyDecl();
             elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}SimpleProperty" );
-            ((SimplePropertyDecl) propDecl).setSimplePropertyMapping( (SimplePropertyMappingType) propertyHints );
-            org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.STRING;
-            PrimitiveType primitiveType = ((SimplePropertyType) pt).getPrimitiveType();
-            switch (primitiveType) {
-            case BOOLEAN: {
-                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.BOOLEAN;
-                break;
-            }
-            case DATE: {
-                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.DATE;
-                break;
-            }
-            case DATE_TIME: {
-                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.DATE;
-                break;
-            }
-            case DECIMAL: {
-                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.FLOAT;
-                break;
-            }
-            case DOUBLE: {
-                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.FLOAT;
-                break;
-            }            
-            case INTEGER: {
-                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.INTEGER;
-                break;
-            }
-            case STRING: {
-                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.STRING;
-                break;
-            }
-            case TIME: {
-                jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.DATE;
-                break;
-            }            
-            }
-            ((SimplePropertyDecl) propDecl).setType( jaxbPrimitiveType );
+            ( (SimplePropertyDecl) propDecl ).setSimplePropertyMapping( (SimplePropertyMappingType) propertyHints );
+            // identical types due to convention (TODO)
+            org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType jaxbPrimitiveType = org.deegree.feature.persistence.postgis.jaxbconfig.PrimitiveType.valueOf( ( (SimplePropertyType) pt ).getPrimitiveType().name() );
+            ( (SimplePropertyDecl) propDecl ).setType( jaxbPrimitiveType );
         } else if ( pt instanceof GeometryPropertyType ) {
             propDecl = new GeometryPropertyDecl();
             elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}GeometryProperty" );
-            ((GeometryPropertyDecl) propDecl).setGeometryPropertyMapping( (GeometryPropertyMappingType) propertyHints );
+            ( (GeometryPropertyDecl) propDecl ).setGeometryPropertyMapping( (GeometryPropertyMappingType) propertyHints );
         } else if ( pt instanceof FeaturePropertyType ) {
             elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}FeatureProperty" );
             propDecl = new FeaturePropertyDecl();
             if ( ( (FeaturePropertyType) pt ).getFTName() != null ) {
                 ( (FeaturePropertyDecl) propDecl ).setType( ( (FeaturePropertyType) pt ).getFTName() );
             }
-            ((FeaturePropertyDecl) propDecl).setFeaturePropertyMapping( (FeaturePropertyMappingType) propertyHints );            
+            ( (FeaturePropertyDecl) propDecl ).setFeaturePropertyMapping( (FeaturePropertyMappingType) propertyHints );
+        } else if ( pt instanceof MeasurePropertyType ) {
+            elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}MeasureProperty" );
+            propDecl = new MeasurePropertyDecl();
+            ( (MeasurePropertyDecl) propDecl ).setMeasurePropertyMapping( (MeasurePropertyMappingType) propertyHints );
+        } else if ( pt instanceof CustomPropertyType ) {
+            elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}CustomProperty" );
+            propDecl = new CustomComplexPropertyDecl();
+            ( (CustomComplexPropertyDecl) propDecl ).setCustomPropertyMapping( (CustomPropertyMappingType) propertyHints );
         } else {
-            // TODO
-            elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}SimpleProperty" );
-            propDecl = new SimplePropertyDecl();
+            throw new RuntimeException();
         }
 
         propDecl.setName( pt.getName() );

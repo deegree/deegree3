@@ -36,6 +36,7 @@
 package org.deegree.feature.gml;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.feature.types.property.PrimitiveType.STRING;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -69,15 +70,9 @@ public class GML311StandardPropertiesIterator implements Iterator<Property<?>> {
 
     private int currentPropIdx = 0;
 
-    private final static PropertyType DESCRIPTION_TYPE = new SimplePropertyType(
-                                                                                 new QName( GMLNS, "description" ),
-                                                                                 0,
-                                                                                 1,
-                                                                                 SimplePropertyType.PrimitiveType.STRING );
-
-    private final static PropertyType NAME_TYPE = new SimplePropertyType( new QName( GMLNS, "name" ), 0, -1,
-                                                                          SimplePropertyType.PrimitiveType.STRING );
-
+    private final static PropertyType DESCRIPTION_TYPE = new SimplePropertyType( new QName( GMLNS, "description" ), 0,
+                                                                                 1, STRING );
+    private final static PropertyType NAME_TYPE = new SimplePropertyType( new QName( GMLNS, "name" ), 0, -1, STRING );
     private final static PropertyType BOUNDED_BY_TYPE = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1 );
 
     public GML311StandardPropertiesIterator( StandardGMLFeatureProps props ) {
@@ -141,7 +136,7 @@ public class GML311StandardPropertiesIterator implements Iterator<Property<?>> {
             }
             break;
         case NAME:
-            if ( currentPropIdx < props.getNames().length - 1) {
+            if ( currentPropIdx < props.getNames().length - 1 ) {
                 currentPropIdx++;
                 // TODO what about the codespace?
                 prop = new GenericProperty<String>( NAME_TYPE, null, props.getNames()[currentPropIdx].getCode() );

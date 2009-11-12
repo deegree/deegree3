@@ -158,36 +158,46 @@
   </element>
   <simpleType name="PrimitiveType">
     <restriction base="string">
-      <enumeration value="string">
+      <enumeration value="STRING">
         <annotation>
           <documentation>String-valued property (=xs:string)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="boolean">
+      <enumeration value="BOOLEAN">
         <annotation>
           <documentation>Boolean-valued property (=xs:boolean)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="integer">
-        <annotation>
-          <documentation>Integer-valued property (=xs:integer)</documentation>
-        </annotation>
-      </enumeration>
-      <enumeration value="decimal">
+      <enumeration value="DECIMAL">
         <annotation>
           <documentation>Decimal-valued property (=xs:decimal)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="float">
+      <enumeration value="DOUBLE">
         <annotation>
-          <documentation>Float-valued property (=xs:float)</documentation>
+          <documentation>Double-valued property (=xs:double)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="date">
+      <enumeration value="INTEGER">
+        <annotation>
+          <documentation>Integer-valued property (=xs:integer)</documentation>
+        </annotation>
+      </enumeration>      
+      <enumeration value="DATE">
         <annotation>
           <documentation>Date-valued property (=xs:date)</documentation>
         </annotation>
       </enumeration>
+      <enumeration value="DATE_TIME">
+        <annotation>
+          <documentation>Date-valued property (=xs:dateTime)</documentation>
+        </annotation>        
+      </enumeration>
+      <enumeration value="TIME">
+        <annotation>
+          <documentation>Time-valued property (=xs:time)</documentation>
+        </annotation>        
+      </enumeration>      
       <!-- TODO other primitive data types -->
     </restriction>
   </simpleType>
@@ -298,19 +308,43 @@
     </restriction>
   </simpleType>
   <!--
+    === Measure property definition ===
+  -->
+  <element name="MeasureProperty" substitutionGroup="ft:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a measure property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="MeasurePropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="ft:AbstractPropertyType">
+          <sequence>
+            <element ref="ft:MeasurePropertyMapping"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>    
+  <!--
     === Custom complex property definition ===
   -->
   <element name="CustomComplexProperty" substitutionGroup="ft:AbstractProperty">
-    <annotation>
-      <documentation>Definition of a complex-valued property of a
-        feature type.</documentation>
-      <appinfo>
-        <jaxb:class name="CustomComplexPropertyDecl" />
-      </appinfo>
-    </annotation>
     <complexType>
+      <annotation>
+        <documentation>Definition of a complex-valued property of a
+          feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="CustomComplexPropertyDecl" />
+        </appinfo>
+      </annotation>    
       <complexContent>
-        <extension base="ft:AbstractPropertyType" />
+        <extension base="ft:AbstractPropertyType">
+          <sequence>
+            <element ref="ft:CustomPropertyMapping"/>
+          </sequence>
+        </extension>
       </complexContent>
     </complexType>
   </element>  
@@ -372,6 +406,29 @@
       </extension>
     </complexContent>
   </complexType>
+  
+  <element name="MeasurePropertyMapping" substitutionGroup="ft:PropertyMapping" type="ft:MeasurePropertyMappingType"/>
+  <complexType name="MeasurePropertyMappingType">
+    <complexContent>
+      <extension base="ft:PropertyMappingType">
+        <choice>
+          <element ref="ft:DBColumn"/>
+          <element ref="ft:PropertyTable"/>
+        </choice>      
+      </extension>
+    </complexContent>  
+  </complexType>
+  
+  <element name="CustomPropertyMapping" substitutionGroup="ft:PropertyMapping" type="ft:CustomPropertyMappingType"/>
+  <complexType name="CustomPropertyMappingType">
+    <complexContent>
+      <extension base="ft:PropertyMappingType">
+        <sequence>
+          <element name="xsdType"/>
+        </sequence>      
+      </extension>
+    </complexContent>  
+  </complexType>  
 
   <element name="DBColumn">
     <complexType>

@@ -15,19 +15,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * Definition of a complex-valued property of a
- *           feature type.
- * 
- * <p>Java class for anonymous complex type.
+ * <p>Java class for CustomPropertyMappingType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
+ * &lt;complexType name="CustomPropertyMappingType">
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.deegree.org/feature/featuretype}AbstractPropertyType">
+ *     &lt;extension base="{http://www.deegree.org/feature/featuretype}PropertyMappingType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.deegree.org/feature/featuretype}CustomPropertyMapping"/>
+ *         &lt;element name="xsdType" type="{http://www.w3.org/2001/XMLSchema}anyType"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -37,38 +34,38 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "customPropertyMapping"
+@XmlType(name = "CustomPropertyMappingType", propOrder = {
+    "xsdType"
 })
-public class CustomComplexPropertyDecl
-    extends AbstractPropertyDecl
+public class CustomPropertyMappingType
+    extends PropertyMappingType
 {
 
-    @XmlElement(name = "CustomPropertyMapping", required = true)
-    protected CustomPropertyMappingType customPropertyMapping;
+    @XmlElement(required = true)
+    protected Object xsdType;
 
     /**
-     * Gets the value of the customPropertyMapping property.
+     * Gets the value of the xsdType property.
      * 
      * @return
      *     possible object is
-     *     {@link CustomPropertyMappingType }
+     *     {@link Object }
      *     
      */
-    public CustomPropertyMappingType getCustomPropertyMapping() {
-        return customPropertyMapping;
+    public Object getXsdType() {
+        return xsdType;
     }
 
     /**
-     * Sets the value of the customPropertyMapping property.
+     * Sets the value of the xsdType property.
      * 
      * @param value
      *     allowed object is
-     *     {@link CustomPropertyMappingType }
+     *     {@link Object }
      *     
      */
-    public void setCustomPropertyMapping(CustomPropertyMappingType value) {
-        this.customPropertyMapping = value;
+    public void setXsdType(Object value) {
+        this.xsdType = value;
     }
 
 }

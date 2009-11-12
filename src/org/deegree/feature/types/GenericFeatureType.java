@@ -108,7 +108,7 @@ public class GenericFeatureType implements FeatureType {
 
     @Override
     public List<PropertyType> getPropertyDeclarations( GMLVersion version ) {
-        Collection<PropertyType> stdProps = StandardGMLFeatureProps.getPropertyTypes( version );
+        Collection<PropertyType<?>> stdProps = StandardGMLFeatureProps.getPropertyTypes( version );
         List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() + stdProps.size() );
         propDecls.addAll( stdProps );
         for ( QName propName : propNameToDecl.keySet() ) {

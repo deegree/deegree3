@@ -15,12 +15,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for SimplePropertyMappingType complex type.
+ * <p>Java class for MeasurePropertyMappingType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="SimplePropertyMappingType">
+ * &lt;complexType name="MeasurePropertyMappingType">
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.deegree.org/feature/featuretype}PropertyMappingType">
  *       &lt;choice>
@@ -35,11 +35,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SimplePropertyMappingType", propOrder = {
+@XmlType(name = "MeasurePropertyMappingType", propOrder = {
     "dbColumn",
     "propertyTable"
 })
-public class SimplePropertyMappingType
+public class MeasurePropertyMappingType
     extends PropertyMappingType
 {
 

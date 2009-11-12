@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.feature.types;
 
@@ -56,18 +56,18 @@ import org.deegree.feature.types.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.types.jaxb.SimplePropertyDecl;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 
 /**
  * Adapter for converting the contents of a deegree application schema declaration document to an
  * {@link ApplicationSchema}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class JAXBAdapter {
@@ -90,7 +90,7 @@ public class JAXBAdapter {
         for ( FeatureTypeDecl jaxbFt : jaxbSchema.getFeatureType() ) {
             fts[i++] = convert( jaxbFt );
         }
-        return new ApplicationSchema( fts, new HashMap<FeatureType,FeatureType>(), null );
+        return new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
     }
 
     private FeatureType convert( FeatureTypeDecl jaxbFt ) {
@@ -99,8 +99,8 @@ public class JAXBAdapter {
         for ( JAXBElement<? extends AbstractPropertyDecl> jaxbPropertyEl : jaxbFt.getAbstractProperty() ) {
             props.add( convert( jaxbPropertyEl.getValue() ) );
         }
-        if ("".equals( ftName.getPrefix())) {
-            ftName = new QName (jaxbSchema.getTargetNamespace(), ftName.getLocalPart());
+        if ( "".equals( ftName.getPrefix() ) ) {
+            ftName = new QName( jaxbSchema.getTargetNamespace(), ftName.getLocalPart() );
         }
         return new GenericFeatureType( ftName, props, false );
     }
@@ -163,19 +163,19 @@ public class JAXBAdapter {
         int minOccurs = getMinOccurs( jaxbPropertyDecl );
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         QName valueFtName = jaxbPropertyDecl.getType();
-        if ("".equals( valueFtName.getPrefix())) {
-            valueFtName = new QName (jaxbSchema.getTargetNamespace(), valueFtName.getLocalPart());
+        if ( "".equals( valueFtName.getPrefix() ) ) {
+            valueFtName = new QName( jaxbSchema.getTargetNamespace(), valueFtName.getLocalPart() );
         }
         return new FeaturePropertyType( propName, minOccurs, maxOccurs, valueFtName );
     }
 
     private QName getPropertyName( AbstractPropertyDecl jaxbPropertyDecl ) {
-        return normalizeQName( jaxbPropertyDecl.getName());
+        return normalizeQName( jaxbPropertyDecl.getName() );
     }
 
     private QName normalizeQName( QName name ) {
-        if ("".equals( name.getPrefix())) {
-            name = new QName (jaxbSchema.getTargetNamespace(), name.getLocalPart());
+        if ( "".equals( name.getPrefix() ) ) {
+            name = new QName( jaxbSchema.getTargetNamespace(), name.getLocalPart() );
         }
         return name;
     }

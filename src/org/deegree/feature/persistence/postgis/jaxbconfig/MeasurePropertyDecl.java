@@ -15,8 +15,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * Definition of a complex-valued property of a
- *           feature type.
+ * Definition of a measure property of a feature type.
  * 
  * <p>Java class for anonymous complex type.
  * 
@@ -27,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.deegree.org/feature/featuretype}AbstractPropertyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.deegree.org/feature/featuretype}CustomPropertyMapping"/>
+ *         &lt;element ref="{http://www.deegree.org/feature/featuretype}MeasurePropertyMapping"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -38,37 +37,37 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "customPropertyMapping"
+    "measurePropertyMapping"
 })
-public class CustomComplexPropertyDecl
+public class MeasurePropertyDecl
     extends AbstractPropertyDecl
 {
 
-    @XmlElement(name = "CustomPropertyMapping", required = true)
-    protected CustomPropertyMappingType customPropertyMapping;
+    @XmlElement(name = "MeasurePropertyMapping", required = true)
+    protected MeasurePropertyMappingType measurePropertyMapping;
 
     /**
-     * Gets the value of the customPropertyMapping property.
+     * Gets the value of the measurePropertyMapping property.
      * 
      * @return
      *     possible object is
-     *     {@link CustomPropertyMappingType }
+     *     {@link MeasurePropertyMappingType }
      *     
      */
-    public CustomPropertyMappingType getCustomPropertyMapping() {
-        return customPropertyMapping;
+    public MeasurePropertyMappingType getMeasurePropertyMapping() {
+        return measurePropertyMapping;
     }
 
     /**
-     * Sets the value of the customPropertyMapping property.
+     * Sets the value of the measurePropertyMapping property.
      * 
      * @param value
      *     allowed object is
-     *     {@link CustomPropertyMappingType }
+     *     {@link MeasurePropertyMappingType }
      *     
      */
-    public void setCustomPropertyMapping(CustomPropertyMappingType value) {
-        this.customPropertyMapping = value;
+    public void setMeasurePropertyMapping(MeasurePropertyMappingType value) {
+        this.measurePropertyMapping = value;
     }
 
 }

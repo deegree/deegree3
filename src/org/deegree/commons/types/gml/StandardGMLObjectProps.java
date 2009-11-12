@@ -37,6 +37,7 @@
 package org.deegree.commons.types.gml;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.feature.types.property.PrimitiveType.STRING;
 
 import javax.xml.namespace.QName;
 
@@ -46,6 +47,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
@@ -112,10 +114,10 @@ import org.deegree.geometry.Geometry;
 public class StandardGMLObjectProps {
 
     /** GML 2 standard property type 'gml:description' */
-    public static final SimplePropertyType PT_DESCRIPTION_GML2;
+    public static final SimplePropertyType<String> PT_DESCRIPTION_GML2;
 
     /** GML 2 standard property type 'gml:name' */
-    public static final SimplePropertyType PT_NAME_GML2;
+    public static final SimplePropertyType<String> PT_NAME_GML2;
 
     /** GML 2 standard property type 'gml:boundedBy' */
     public static final PropertyType PT_BOUNDED_BY_GML2;
@@ -130,10 +132,8 @@ public class StandardGMLObjectProps {
     public static final CodePropertyType PT_NAME_GML31;
 
     static {
-        PT_DESCRIPTION_GML2 = new SimplePropertyType( new QName( GMLNS, "description" ), 0, 1,
-                                                      SimplePropertyType.PrimitiveType.STRING );
-        PT_NAME_GML2 = new SimplePropertyType( new QName( GMLNS, "name" ), 0, 1,
-                                               SimplePropertyType.PrimitiveType.STRING );
+        PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING );
+        PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
         PT_BOUNDED_BY_GML2 = new GeometryPropertyType( new QName( GMLNS, "boundedBy" ), 0, 1,
@@ -142,7 +142,7 @@ public class StandardGMLObjectProps {
 
         // TODO correct this (should be a MetaDataPropertyType)
         PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null );
-        // TODO correct this (should be a StringOrRefType)        
+        // TODO correct this (should be a StringOrRefType)
         PT_DESCRIPTION_GML31 = new StringOrRefPropertyType( new QName( GMLNS, "description" ), 0, 1 );
         PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1 );
     }
