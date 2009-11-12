@@ -513,7 +513,8 @@ public class RasterGeoReference {
      * the smallest upper and smallest left ordinate. The resolution is set to the minimum value (i.e. the highest
      * resolution [unit/pixel]). Some assumptions are made (not checked):
      * <ul>
-     * <li>The pixel location (center/outer) of the origin are equal</li>
+     * <li>The pixel location (center/outer) of the origin are equal, if not, the location of the first reference will
+     * be used (translated origin of second)</li>
      * <li>Crs is identical</li>
      * <li>rotation around axis are equal</li>
      * </ul>
@@ -531,14 +532,21 @@ public class RasterGeoReference {
         if ( geoRef2 == null ) {
             return geoRef1;
         }
+        RasterGeoReference geoRef2Copy = geoRef2;
+        if ( geoRef1.location != geoRef2.location ) {
+            double[] orig = geoRef2.getOrigin( geoRef1.location );
+            geoRef2Copy = new RasterGeoReference( geoRef1.location, geoRef2.getResolutionX(), geoRef2.getResolutionY(),
+                                                  geoRef2.getRotationX(), geoRef2.getRotationY(), orig[0], orig[1],
+                                                  geoRef2.crs );
+        }
         double[] origin1 = geoRef1.getOrigin();
-        double[] origin2 = geoRef2.getOrigin();
+        double[] origin2 = geoRef2Copy.getOrigin();
 
         double res1x = geoRef1.getResolutionX();
         double res1y = geoRef1.getResolutionY();
 
-        double res2x = geoRef2.getResolutionX();
-        double res2y = geoRef2.getResolutionY();
+        double res2x = geoRef2Copy.getResolutionX();
+        double res2y = geoRef2Copy.getResolutionY();
 
         double nResx = ( res1x < 0 ) ? max( res1x, res2x ) : min( res1x, res2x );
         double nResy = ( res1y < 0 ) ? max( res1y, res2y ) : min( res1y, res2y );
