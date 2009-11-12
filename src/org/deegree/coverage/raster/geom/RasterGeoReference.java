@@ -101,9 +101,9 @@ public class RasterGeoReference {
 
     private final double delta;
 
-    private final static int DECIMAL_ACCURACY = 10000;
+    private final static int DECIMAL_ACCURACY = 1000000;
 
-    private final static double INV_DECIMAL_ACCURACY = 0.0001;
+    private final static double INV_DECIMAL_ACCURACY = 0.000001;
 
     /**
      * The <code>OriginLocation</code> defines the mapping location of the world origin to the underlying raster.
