@@ -36,6 +36,9 @@
 
 package org.deegree.coverage.raster.container;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -163,6 +166,15 @@ public abstract class GriddedTileContainer implements TileContainer {
         int minRowId = getRowIdx( env.getMax().get1() - 0.00001 );
         int maxColumnId = getColumnIdx( env.getMax().get0() - 0.00001 );
         int maxRowId = getRowIdx( env.getMin().get1() + 0.00001 );
+        // the requested envelope is outside the boundaries of the data
+        if ( ( maxColumnId == -1 ) || ( maxRowId == -1 ) || ( minColumnId == columns ) || ( minRowId == rows ) ) {
+            return tiles;
+        }
+        // reset values to maximal/minimal allowed
+        minColumnId = max( minColumnId, 0 );
+        minRowId = max( minRowId, 0 );
+        maxColumnId = min( maxColumnId, columns - 1 );
+        maxRowId = min( maxRowId, rows - 1 );
 
         for ( int rowId = minRowId; rowId <= maxRowId; rowId++ ) {
             for ( int columnId = minColumnId; columnId <= maxColumnId; columnId++ ) {
@@ -239,40 +251,44 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     private int getColumnIdx( double x ) {
 
-        if ( x < envelope.getMin().get0() || x > envelope.getMax().get0() ) {
-            String msg = "Specified x coordinate (=" + x + ") is out of range [" + envelope.getMin().get0() + ";"
-                         + envelope.getMax().get0() + "]";
-            LOG.debug( msg );
-            throw new IllegalArgumentException( msg );
-        }
+        // if ( x < envelope.getMin().get0() || x > envelope.getMax().get0() ) {
+        // String msg = "Specified x coordinate (=" + x + ") is out of range [" + envelope.getMin().get0() + ";"
+        // + envelope.getMax().get0() + "]";
+        // LOG.debug( msg );
+        // throw new IllegalArgumentException( msg );
+        // }
 
         double dx = x - envelope.getMin().get0();
-        int columnIdx = (int) ( columns * dx / envelopeWidth );
+        int columnIdx = (int) Math.floor( ( columns * dx ) / envelopeWidth );
         if ( columnIdx < 0 ) {
-            columnIdx = 0;
+            // signal outside
+            return -1;
         }
         if ( columnIdx > columns - 1 ) {
-            columnIdx = columns - 1;
+            // signal outside
+            return columns;
         }
         return columnIdx;
     }
 
     private int getRowIdx( double y ) {
 
-        if ( y < envelope.getMin().get1() || y > envelope.getMax().get1() ) {
-            String msg = "Specified y coordinate (=" + y + ") is out of range [" + envelope.getMin().get1() + ";"
-                         + envelope.getMax().get1() + "]";
-            LOG.debug( msg );
-            throw new IllegalArgumentException( msg );
-        }
+        // if ( y < envelope.getMin().get1() || y > envelope.getMax().get1() ) {
+        // String msg = "Specified y coordinate (=" + y + ") is out of range [" + envelope.getMin().get1() + ";"
+        // + envelope.getMax().get1() + "]";
+        // LOG.debug( msg );
+        // throw new IllegalArgumentException( msg );
+        // }
 
         double dy = y - envelope.getMin().get1();
-        int rowIdx = (int) ( rows * ( envelopeHeight - dy ) / envelopeHeight );
+        int rowIdx = (int) Math.floor( ( ( rows * ( envelopeHeight - dy ) ) / envelopeHeight ) );
         if ( rowIdx < 0 ) {
-            rowIdx = 0;
+            // signal outside
+            return -1;
         }
         if ( rowIdx > rows - 1 ) {
-            rowIdx = rows - 1;
+            // signal outside
+            return rows;
         }
         return rowIdx;
     }

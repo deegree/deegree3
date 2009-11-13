@@ -184,7 +184,7 @@ public class GriddedTileContainerTest extends CenterOuterTest {
     /**
      * Overlap and exceed the 00.png file.
      */
-    // @Test
+    @Test
     public void ul0Overlap() {
         Envelope request = geomFac.createEnvelope( getPositionX( 998 ), getPositionY( 2028 ), getPositionX( 1002 ),
                                                    getPositionY( 2032 ), null );
@@ -211,7 +211,7 @@ public class GriddedTileContainerTest extends CenterOuterTest {
     /**
      * get lower right corner of the 22.png file.
      */
-    // @Test
+    @Test
     public void lr9Overlap() {
         Envelope request = geomFac.createEnvelope( getPositionX( 1028.5 ), getPositionY( 1998 ),
                                                    getPositionX( 1031.5 ), getPositionY( 2002 ), null );
@@ -237,7 +237,7 @@ public class GriddedTileContainerTest extends CenterOuterTest {
     /**
      * test the tile raster totally outside (e.g. only no data values).
      */
-    // @Test
+    @Test
     public void ul0Outside() {
         Envelope request = geomFac.createEnvelope( getPositionX( 996 ), getPositionY( 2026 ), getPositionX( 998 ),
                                                    getPositionY( 2032 ), null );
@@ -367,7 +367,7 @@ public class GriddedTileContainerTest extends CenterOuterTest {
     /**
      * Bounding box overlaps and exceeds all raster data
      */
-    // @Test
+    @Test
     public void allOverlap() {
         Envelope request = geomFac.createEnvelope( getPositionX( 998 ), getPositionY( 1998 ), getPositionX( 1031.5 ),
                                                    getPositionY( 2031.5 ), null );
