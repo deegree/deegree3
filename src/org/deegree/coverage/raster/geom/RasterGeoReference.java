@@ -39,8 +39,10 @@
 package org.deegree.coverage.raster.geom;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.cos;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.Math.sin;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -161,17 +163,14 @@ public class RasterGeoReference {
         // define a delta to which calculations will be correct. It is dependent on the highest resolution. (smallest
         // value).
         delta = Math.min( Math.abs( resolutionX ), Math.abs( resolutionY ) ) * 1E-6;
-        // remove rounding errors from resolution and origin
-        this.resX = removeImprecisions( resolutionX );
-        this.resY = removeImprecisions( resolutionY );
-        this.rotX = removeImprecisions( rotationX );
-        this.rotY = removeImprecisions( rotationY );
-        double orig0 = removeImprecisions( origin0 );
-        double orig1 = removeImprecisions( origin1 );
 
-        // transform = new AffineTransform( cos( rotationX ) * resolutionX, sin( rotationY ), -sin( rotationX ),
-        // cos( rotationY ) * resolutionY, origin0, origin1 );
-        transform = new AffineTransform( this.resX, 0, 0, this.resY, orig0, orig1 );
+        this.resX = resolutionX;
+        this.resY = resolutionY;
+        this.rotX = rotationX;
+        this.rotY = rotationY;
+
+        transform = new AffineTransform( cos( rotationX ) * resolutionX, sin( rotationY ), -sin( rotationX ),
+                                         cos( rotationY ) * resolutionY, origin0, origin1 );
         try {
             invTransform = transform.createInverse();
         } catch ( NoninvertibleTransformException e ) {
@@ -275,8 +274,7 @@ public class RasterGeoReference {
      * @return the (rounded) raster coordinate which the given world coordinate maps to.
      */
     public int[] getRasterCoordinate( double worldX, double worldY ) {
-        Point2D rslt = invTransform.transform( new Point2D.Double( removeImprecisions( worldX ),
-                                                                   removeImprecisions( worldY ) ), null );
+        Point2D rslt = invTransform.transform( new Point2D.Double( worldX, worldY ), null );
         if ( location == CENTER ) {
             return new int[] { (int) round( rslt.getX() ), (int) round( rslt.getY() ) };
         }
