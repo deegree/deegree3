@@ -140,6 +140,7 @@ public class PostGISApplicationSchema {
             writer.println();
             writer.println( "CREATE SCHEMA " + dbSchema + ";" );
             writer.println( "SET search_path TO " + dbSchema + ",public;" );
+            writer.println();
             writer.println( "/* --- END schema setup --- */" );
             writer.println();
         }
@@ -175,7 +176,7 @@ public class PostGISApplicationSchema {
         writer.println( "CREATE TABLE feature_types (" );
         writer.println( "    id smallint PRIMARY KEY," );
         writer.println( "    qname text NOT NULL," );
-        writer.println( "    tablename varchar(32) NOT NULL" );
+        writer.println( "    tablename char(32) NOT NULL" );
         writer.println( ");" );
         writer.println( "COMMENT ON TABLE feature_types IS 'All concrete feature types and their tables';" );
         writer.println();
@@ -205,8 +206,8 @@ public class PostGISApplicationSchema {
 
         writer.println( "SELECT ADDGEOMETRYCOLUMN('" + dbSchema
                         + "', 'gml_objects','gml_bounded_by','-1','POLYGON',2);" );
-        writer.println( "ALTER TABLE gml_objects ADD CONSTRAINT gml_objects_check_bounded_by CHECK (isvalid(gml_bounded_by));" );
-        writer.println( "CREATE INDEX gml_objects_idx_spatial ON gml_objects USING GIST ( gml_bounded_by GIST_GEOMETRY_OPS );" );
+        writer.println( "ALTER TABLE gml_objects ADD CONSTRAINT gml_objects_geochk CHECK (isvalid(gml_bounded_by));" );
+        writer.println( "CREATE INDEX gml_objects_sidx ON gml_objects USING GIST ( gml_bounded_by GIST_GEOMETRY_OPS );" );
         writer.println();
 
         writer.println( "CREATE TABLE gml_names (" );
@@ -236,6 +237,9 @@ public class PostGISApplicationSchema {
                 if ( simplePropMapping.getDBColumn() != null ) {
                     DBColumn dbColumn = simplePropMapping.getDBColumn();
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + " " + dbColumn.getSqlType() );
+                    if (pt.getMinOccurs() > 0) {
+                        writer.print( " NOT NULL");
+                    }
                 } else {
                     additionalCreates.add( createPropertyTable( tableName, simplePropMapping.getPropertyTable() ) );
                     String comment = "COMMENT ON TABLE " + simplePropMapping.getPropertyTable().getTable() + " IS '"
@@ -251,9 +255,9 @@ public class PostGISApplicationSchema {
                     String create = "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "','" + tableName + "','"
                                     + dbColumn.getName().toLowerCase() + "','" + dbColumn.getSrid() + "','"
                                     + dbColumn.getSqlType() + "'," + dbColumn.getDimension() + ");\n";
-                    create += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + "_check_geom" + i
+                    create += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + "_geochk" + i
                               + " CHECK (isvalid(" + dbColumn.getName().toLowerCase() + "));\n";
-                    create += "CREATE INDEX " + tableName + "_idx_spatial" + i + " ON " + tableName + " USING GIST ( "
+                    create += "CREATE INDEX " + tableName + "_sidx" + i + " ON " + tableName + " USING GIST ( "
                               + dbColumn.getName().toLowerCase() + " GIST_GEOMETRY_OPS );\n";
                     additionalCreates.add( create );
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + "_xlink text" );
@@ -295,6 +299,9 @@ public class PostGISApplicationSchema {
                 if ( measurePropMapping.getDBColumn() != null ) {
                     DBColumn dbColumn = measurePropMapping.getDBColumn();
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + " double precision" );
+                    if (pt.getMinOccurs() > 0) {
+                        writer.print( " NOT NULL");
+                    }
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + "_uom text" );
                 } else {
                     additionalCreates.add( createMeasurePropertyTable( tableName, measurePropMapping.getPropertyTable() ) );
@@ -342,8 +349,8 @@ public class PostGISApplicationSchema {
         s += "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "','" + tableName + "','geometry','" + propTable.getSrid()
              + "','" + propTable.getSqlType() + "'," + propTable.getDimension() + ");\n";
         s += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName
-             + "_check_geometry CHECK (isvalid(geometry));\n";
-        s += "CREATE INDEX " + tableName + "_idx_spatial ON " + tableName
+             + "_geo_check CHECK (isvalid(geometry));\n";
+        s += "CREATE INDEX " + tableName + "_sidx ON " + tableName
              + " USING GIST ( geometry GIST_GEOMETRY_OPS );\n";
         return s;
     }
