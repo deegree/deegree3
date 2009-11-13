@@ -175,7 +175,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         RasterData data = raster.getAsSimpleRaster().getRasterData(), newData = data;
         RasterDataUtility rasutil = new RasterDataUtility( raster );
         rasutil.setContrastEnhancement( contrastEnhancement );
-        rasutil.precomputeContrastEnhancements( -1, contrastEnhancement);
+        rasutil.precomputeContrastEnhancements( -1, contrastEnhancement );
         for ( int band = 0; band < data.getBands(); band++ )
             newData = setEnhancedChannelData( newData, rasutil, band, band, contrastEnhancement );
 
@@ -210,13 +210,13 @@ public class Java2DRasterRenderer implements RasterRenderer {
             newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, DataType.BYTE,
                                                           data.getDataInfo().interleaveType );
 
-            rasutil.precomputeContrastEnhancements( redIndex, channels.channelContrastEnhancements.get( "red" ));
+            rasutil.precomputeContrastEnhancements( redIndex, channels.channelContrastEnhancements.get( "red" ) );
             newData = setEnhancedChannelData( newData, rasutil, redIndex, 0,
                                               channels.channelContrastEnhancements.get( "red" ) );
-            rasutil.precomputeContrastEnhancements( greenIndex, channels.channelContrastEnhancements.get( "green" ));
+            rasutil.precomputeContrastEnhancements( greenIndex, channels.channelContrastEnhancements.get( "green" ) );
             newData = setEnhancedChannelData( newData, rasutil, greenIndex, 1,
                                               channels.channelContrastEnhancements.get( "green" ) );
-            rasutil.precomputeContrastEnhancements( blueIndex, channels.channelContrastEnhancements.get( "blue" ));
+            rasutil.precomputeContrastEnhancements( blueIndex, channels.channelContrastEnhancements.get( "blue" ) );
             newData = setEnhancedChannelData( newData, rasutil, blueIndex, 2,
                                               channels.channelContrastEnhancements.get( "blue" ) );
 
@@ -256,7 +256,8 @@ public class Java2DRasterRenderer implements RasterRenderer {
         int i = 0, j = 0, val = 0, cols = newData.getWidth(), rows = newData.getHeight();
 
         rasutil.setContrastEnhancement( enhancement );
-        LOG.trace( "Using gamma {} for channel '{}'...", enhancement.gamma, inIndex );
+        if ( enhancement != null )
+            LOG.trace( "Using gamma {} for channel '{}'...", enhancement.gamma, inIndex );
         for ( i = 0; i < cols; i++ )
             for ( j = 0; j < rows; j++ ) {
                 val = (int) rasutil.getEnhanced( i, j, inIndex );

@@ -746,7 +746,6 @@ public class SymbologyParser {
         Common common = new Common();
         RasterStyling baseOrEvaluated = new RasterStyling();
         baseOrEvaluated.uom = uom;
-        RasterChannelSelection channelSelection = null;
         Continuation<RasterStyling> contn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "RasterSymbolizer" ) ) ) {

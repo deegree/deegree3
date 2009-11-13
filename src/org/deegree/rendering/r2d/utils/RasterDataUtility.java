@@ -146,7 +146,6 @@ public class RasterDataUtility {
             if ( blist[i] == BandType.ALPHA )
                 alphaIndex = i;
         setGamma( 1.0 );
-//        createGammaTable( gamma );
     }
 
     /**
@@ -478,10 +477,6 @@ public class RasterDataUtility {
         gamma = g;
     }
 
-    public void resetGamma() {
-        gamma = 1.0;
-    }
-
     /* Create a look-up table for gamma-altered values */
     private int[] createGammaTable( double gamma ) {
         int[] table = new int[256];
@@ -501,11 +496,12 @@ public class RasterDataUtility {
      * dependent on the input raster data. All subsequent calls to <code>getEnhanced(col,row)</code> will use this
      * contrast enhancement.
      * 
-     * NOTE: This function overrides the effects of <code>setGamma()</code> and <code>resetGamma()</code>.
+     * NOTE: This function overrides the effects of <code>setGamma()</code>.
      * 
      * @param index
      *            target channel number.
      * @param enhancement
+     *            desired contrast enhancement
      */
     public void precomputeContrastEnhancements( int index, ContrastEnhancement enhancement ) {
         LOG.trace( "Precomputing contrast tables ..." );
@@ -553,7 +549,7 @@ public class RasterDataUtility {
             min = ( 0 < rastermin ? 0 : rastermin );
             max = ( rastermax < 255 ? rastermax : 255 );
             for ( i = min; i <= max; i++ )
-                normalizeTable[i] = 255 * i / ( rastermax - rastermin );
+                normalizeTable[i] = 255 * i / ( rastermax - rastermin + 1 );
         }
 
         // Histogram
@@ -579,7 +575,7 @@ public class RasterDataUtility {
                 int nonnegpixels = width * height - cdf[0];
                 // And precompute the histogram normalization lookup table (only for BYTE data)
                 for ( i = 0; i < 256; i++ )
-                    histogramTable[i] = (int) Math.floor( 255.0 * ( cdf[i] - cdf[0] ) / nonnegpixels);
+                    histogramTable[i] = (int) Math.floor( 255.0 * ( cdf[i] - cdf[0] ) / nonnegpixels );
                 break;
             default:
                 LOG.error( "Datatype '{}' is not suitable for histogram contrast enhancement.",
