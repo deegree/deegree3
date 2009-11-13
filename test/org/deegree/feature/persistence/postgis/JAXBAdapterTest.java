@@ -91,19 +91,11 @@ public class JAXBAdapterTest {
         FeatureType philosopherFt = schema.getFeatureType( QName.valueOf( "{http://www.deegree.org/app}Philosopher" ) );
         assertNotNull( philosopherFt );
         assertFalse( philosopherFt.isAbstract() );
-        assertEquals( 10, philosopherFt.getPropertyDeclarations().size() );
+        assertEquals( 9, philosopherFt.getPropertyDeclarations().size() );
         FeatureTypeMapping philosopherMapping = mappedSchema.getFtMapping( philosopherFt.getName() );
         assertNotNull( philosopherMapping );
         assertEquals( "PHILOSOPHER", philosopherMapping.getFeatureTypeHints().getDBTable() );
         assertTrue( philosopherMapping.getFeatureTypeHints().isGMLDefaultProps() );
-
-        PropertyType idProp = philosopherFt.getPropertyDeclaration( QName.valueOf( "{http://www.deegree.org/app}id" ) );
-        assertNotNull( idProp );
-        SimplePropertyMappingType idPropMapping = (SimplePropertyMappingType) philosopherMapping.getPropertyHints( idProp.getName() );
-        assertNotNull( idPropMapping.getDBColumn() );
-        assertNull( idPropMapping.getPropertyTable() );
-        assertEquals( "ID", idPropMapping.getDBColumn().getName() );
-        assertEquals( "INTEGER", idPropMapping.getDBColumn().getSqlType() );
 
         FeaturePropertyType placeOfBirthProp = (FeaturePropertyType) philosopherFt.getPropertyDeclaration( QName.valueOf( "{http://www.deegree.org/app}placeOfBirth" ) );
         assertNotNull( placeOfBirthProp );
