@@ -69,7 +69,7 @@ public class RasterRendererApplet extends JApplet {
 
     public static final Logger LOG = LoggerFactory.getLogger( RasterRendererApplet.class );
 
-    private AbstractRaster image, car, dem, doll;
+    private AbstractRaster image, car, dem, doll, snow;
 
     @Override
     public void paint( Graphics g ) {
@@ -188,6 +188,7 @@ public class RasterRendererApplet extends JApplet {
     private void renderRasterSelectedChannels() {
         RasterStyling style = loadRasterStylingFromXml( "setest20.xml" );
         Graphics2D g2d = (Graphics2D) this.getGraphics().create( 400, 310, 370, 370 );
+//        Graphics2D g2d = (Graphics2D) this.getGraphics();
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
         r.render( style, doll );
     }
@@ -206,8 +207,10 @@ public class RasterRendererApplet extends JApplet {
             dem = RasterFactory.loadRasterFromFile( new File( uri ) );
 
             uri = RasterRendererApplet.class.getResource( "RussianDoll.jpg" ).toURI();
-            // uri = RasterRendererApplet.class.getResource( "parintele.jpg" ).toURI();
             doll = RasterFactory.loadRasterFromFile( new File( uri ) );
+            
+            uri = RasterRendererApplet.class.getResource( "snow.jpg" ).toURI();
+            snow = RasterFactory.loadRasterFromFile( new File( uri ) );
 
             LOG.trace( "Loaded images" );
         } catch ( Exception e ) {

@@ -40,7 +40,6 @@ import java.util.HashMap;
 
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.rendering.r2d.RasterRenderingException;
-import org.deegree.rendering.r2d.styling.RasterStyling.ChannelSelectionMode;
 import org.deegree.rendering.r2d.styling.RasterStyling.ContrastEnhancement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,21 +68,34 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
 
     /** Contrast Enhancements for all channels. */
     public HashMap<String, ContrastEnhancement> channelContrastEnhancements = new HashMap<String, ContrastEnhancement>();
+    
+    /**
+     * 
+     * <code>ChannelSelectionMode</code>
+     * 
+     * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
+     * @author last edited by: $Author: aaiordachioaie$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static enum ChannelSelectionMode {
+        RGB, GRAY, INVALID, NONE
+    };
 
-    public RasterChannelSelection( String redChannel, String greenChannel, String blueChannel, String grayChannel ) {
+    public RasterChannelSelection( String redChannel, String greenChannel, String blueChannel, String grayChannel, HashMap<String, ContrastEnhancement> enhancements ) {
         this.redChannel = redChannel;
         this.greenChannel = greenChannel;
         this.blueChannel = blueChannel;
         this.grayChannel = grayChannel;
+        this.channelContrastEnhancements = enhancements;
     }
 
     public RasterChannelSelection() {
     }
 
     public RasterChannelSelection copy() {
-        RasterChannelSelection copy = new RasterChannelSelection( redChannel, greenChannel, blueChannel, grayChannel );
+        RasterChannelSelection copy = new RasterChannelSelection( redChannel, greenChannel, blueChannel, grayChannel, channelContrastEnhancements );
         copy.evaluate( bands );
-        copy.channelContrastEnhancements = this.channelContrastEnhancements;
         return copy;
     }
     
@@ -103,6 +115,10 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
         return ChannelSelectionMode.INVALID;
     }
 
+    /** Compute the indexes of selected channel for a particular raster (given its channels)
+     * 
+     * @param bands array of information about each band
+     */
     public void evaluate( BandType[] bands ) {
         redIndex = findChannelIndex( redChannel, bands );
         greenIndex = findChannelIndex( greenChannel, bands );

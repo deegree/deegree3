@@ -41,10 +41,8 @@ import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
 import java.util.HashMap;
 
-import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.filter.function.se.Categorize;
 import org.deegree.filter.function.se.Interpolate;
-import org.deegree.rendering.r2d.RasterRenderingException;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.components.UOM;
 import org.slf4j.Logger;
@@ -183,19 +181,6 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
         /** */
         RANDOM
     }
-
-    /**
-     * 
-     * <code>ChannelSelectionMode</code>
-     * 
-     * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
-     * @author last edited by: $Author: aaiordachioaie$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public static enum ChannelSelectionMode {
-        RGB, GRAY, INVALID, NONE
-    };
 
     public RasterStyling copy() {
         RasterStyling copy = new RasterStyling();

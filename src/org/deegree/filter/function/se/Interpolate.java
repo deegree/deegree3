@@ -60,7 +60,7 @@ import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.styling.RasterStyling;
-import org.deegree.rendering.r2d.utils.Raster2RawData;
+import org.deegree.rendering.r2d.utils.RasterDataUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -441,7 +441,7 @@ public class Interpolate extends Function {
         buildLookupArrays();
 
         try {
-            Raster2RawData rawData = new Raster2RawData( raster );
+            RasterDataUtility rawData = new RasterDataUtility( raster );
 
             img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
             LOG.debug( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );

@@ -765,6 +765,8 @@ public class SymbologyParser {
 
             if ( in.getLocalName().equals( "ChannelSelection" ) ) {
                 String red = null, green = null, blue = null, gray = null;
+                HashMap<String, ContrastEnhancement> enhancements = new HashMap<String, ContrastEnhancement>( 10 );
+                
                 while ( !( in.isEndElement() && in.getLocalName().equals( "ChannelSelection" ) ) ) {
                     in.nextTag();
 
@@ -775,7 +777,7 @@ public class SymbologyParser {
                         in.nextTag();
                         ContrastEnhancement enh = parseContrastEnhancement( in );
                         if ( enh != null ) {
-                            baseOrEvaluated.channelContrastEnhancements.put( "red", enh );
+                            enhancements.put( "red", enh );
                         }
                         in.nextTag();
                     }
@@ -786,7 +788,7 @@ public class SymbologyParser {
                         in.nextTag();
                         ContrastEnhancement enh = parseContrastEnhancement( in );
                         if ( enh != null ) {
-                            baseOrEvaluated.channelContrastEnhancements.put( "green", enh );
+                            enhancements.put( "green", enh );
                         }
                         in.nextTag();
                     }
@@ -797,7 +799,7 @@ public class SymbologyParser {
                         in.nextTag();
                         ContrastEnhancement enh = parseContrastEnhancement( in );
                         if ( enh != null ) {
-                            baseOrEvaluated.channelContrastEnhancements.put( "blue", enh );
+                            enhancements.put( "blue", enh );
                         }
                         in.nextTag();
                     }
@@ -809,13 +811,13 @@ public class SymbologyParser {
                         in.nextTag();
                         ContrastEnhancement enh = parseContrastEnhancement( in );
                         if ( enh != null ) {
-                            baseOrEvaluated.channelContrastEnhancements.put( "gray", enh );
+                            enhancements.put( "gray", enh );
                         }
                         in.nextTag();
                     }
                 }
 
-                baseOrEvaluated.channelSelection = new RasterChannelSelection( red, green, blue, gray );
+                baseOrEvaluated.channelSelection = new RasterChannelSelection( red, green, blue, gray, enhancements );
             }
 
             if ( in.getLocalName().equals( "OverlapBehavior" ) ) {

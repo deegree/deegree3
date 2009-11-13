@@ -57,7 +57,7 @@ import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.styling.RasterStyling;
-import org.deegree.rendering.r2d.utils.Raster2RawData;
+import org.deegree.rendering.r2d.utils.RasterDataUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +148,7 @@ public class Categorize extends Function {
         buildLookupArrays();
 
         try {
-            Raster2RawData converter = new Raster2RawData( raster, style.channelSelection );
+            RasterDataUtility converter = new RasterDataUtility( raster, style.channelSelection );
 
             img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
             LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );

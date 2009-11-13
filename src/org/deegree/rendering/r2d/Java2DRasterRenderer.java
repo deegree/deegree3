@@ -52,8 +52,9 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r2d.styling.RasterChannelSelection;
 import org.deegree.rendering.r2d.styling.RasterStyling;
-import org.deegree.rendering.r2d.styling.RasterStyling.ChannelSelectionMode;
-import org.deegree.rendering.r2d.utils.Raster2RawData;
+import org.deegree.rendering.r2d.styling.RasterChannelSelection.ChannelSelectionMode;
+import org.deegree.rendering.r2d.styling.RasterStyling.ContrastEnhancement;
+import org.deegree.rendering.r2d.utils.RasterDataUtility;
 import org.slf4j.Logger;
 
 /**
@@ -103,6 +104,12 @@ public class Java2DRasterRenderer implements RasterRenderer {
         this.graphics = graphics;
     }
 
+    /**
+     * Render a raster with a styling.
+     * 
+     * @param styling
+     * @param raster
+     */
     public void render( RasterStyling styling, AbstractRaster raster ) {
         LOG.trace( "Rendering raster with style..." );
         BufferedImage img = null;
@@ -116,7 +123,9 @@ public class Java2DRasterRenderer implements RasterRenderer {
             return;
         }
 
-        styling.channelSelection.evaluate( raster.getRasterDataInfo().bandInfo );
+        if ( styling.channelSelection != null )
+            // Compute channel selection indexes on current raster
+            styling.channelSelection.evaluate( raster.getRasterDataInfo().bandInfo );
 
         if ( styling.categorize != null || styling.interpolate != null || styling.shaded != null ) {
             LOG.trace( "Creating raster ColorMap..." );
@@ -130,7 +139,10 @@ public class Java2DRasterRenderer implements RasterRenderer {
             }
         } else if ( styling.channelSelection.isEnabled() ) {
             raster = evaluateChannelSelections( styling.channelSelection, raster );
-            raster = evaluateConstrastEnhancements( styling, raster );
+        }
+
+        if ( styling.contrastEnhancement != null ) {
+            raster = performContrastEnhancement( raster, styling.contrastEnhancement );
         }
 
         if ( styling.opacity != 1 ) {
@@ -146,6 +158,41 @@ public class Java2DRasterRenderer implements RasterRenderer {
         LOG.trace( "Done rendering raster." );
     }
 
+    /**
+     * Performs contrast enhancement on all bands of a raster and returns the modified raster.
+     * 
+     * @param raster
+     *            initial raster
+     * @param contrastEnhancement
+     * @return the enhanced raster
+     */
+    private AbstractRaster performContrastEnhancement( AbstractRaster raster, ContrastEnhancement contrastEnhancement ) {
+        if ( contrastEnhancement == null )
+            return raster;
+
+        long start = System.nanoTime();
+        LOG.trace( "Enhancing contrast for overall raster..." );
+        RasterData data = raster.getAsSimpleRaster().getRasterData(), newData = data;
+        RasterDataUtility rasutil = new RasterDataUtility( raster );
+        rasutil.setContrastEnhancement( contrastEnhancement );
+        rasutil.precomputeContrastEnhancements( -1, contrastEnhancement);
+        for ( int band = 0; band < data.getBands(); band++ )
+            newData = setEnhancedChannelData( newData, rasutil, band, band, contrastEnhancement );
+
+        AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference() );
+        long end = System.nanoTime();
+        LOG.trace( "Enhancing contrast for overall raster done. ({} ms)", ( end - start ) / 1000000 );
+        return newRaster;
+    }
+
+    /**
+     * Create a new raster according to the specified channel selections (after performing needed contrast
+     * enhancements).
+     * 
+     * @param channels
+     * @param raster
+     * @return
+     */
     private AbstractRaster evaluateChannelSelections( RasterChannelSelection channels, AbstractRaster raster ) {
         if ( channels.getMode() == ChannelSelectionMode.NONE )
             return raster;
@@ -153,21 +200,35 @@ public class Java2DRasterRenderer implements RasterRenderer {
         long start = System.nanoTime();
         RasterData data = raster.getAsSimpleRaster().getRasterData();
         int cols = data.getWidth(), rows = data.getHeight();
+        int redIndex = channels.getRedChannelIndex(), greenIndex = channels.getGreenChannelIndex();
+        int blueIndex = channels.getBlueChannelIndex(), grayIndex = channels.getGrayChannelIndex();
+        RasterDataUtility rasutil = new RasterDataUtility( raster, channels );
         RasterData newData = raster.getAsSimpleRaster().getRasterData();
         BandType[] bandTypes = null;
         if ( channels.getMode() == ChannelSelectionMode.RGB && data.getBands() > 1 ) {
             bandTypes = new BandType[] { BandType.RED, BandType.GREEN, BandType.BLUE };
-            newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, data.getDataType(),
+            newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, DataType.BYTE,
                                                           data.getDataInfo().interleaveType );
-            newData.setSubset( 0, 0, cols, rows, 0, data, channels.getRedChannelIndex() );
-            newData.setSubset( 0, 0, cols, rows, 1, data, channels.getGreenChannelIndex() );
-            newData.setSubset( 0, 0, cols, rows, 2, data, channels.getBlueChannelIndex() );
+
+            rasutil.precomputeContrastEnhancements( redIndex, channels.channelContrastEnhancements.get( "red" ));
+            newData = setEnhancedChannelData( newData, rasutil, redIndex, 0,
+                                              channels.channelContrastEnhancements.get( "red" ) );
+            rasutil.precomputeContrastEnhancements( greenIndex, channels.channelContrastEnhancements.get( "green" ));
+            newData = setEnhancedChannelData( newData, rasutil, greenIndex, 1,
+                                              channels.channelContrastEnhancements.get( "green" ) );
+            rasutil.precomputeContrastEnhancements( blueIndex, channels.channelContrastEnhancements.get( "blue" ));
+            newData = setEnhancedChannelData( newData, rasutil, blueIndex, 2,
+                                              channels.channelContrastEnhancements.get( "blue" ) );
+
         }
         if ( channels.getMode() == ChannelSelectionMode.GRAY ) {
             bandTypes = new BandType[] { BandType.BAND_0 };
-            newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, data.getDataType(),
+            newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, DataType.BYTE,
                                                           data.getDataInfo().interleaveType );
-            newData.setSubset( 0, 0, cols, rows, 0, data, channels.getGrayChannelIndex() );
+
+            newData = setEnhancedChannelData( newData, rasutil, grayIndex, 0,
+                                              channels.channelContrastEnhancements.get( "gray" ) );
+
         }
         AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference() );
         long end = System.nanoTime();
@@ -175,52 +236,45 @@ public class Java2DRasterRenderer implements RasterRenderer {
         return newRaster;
     }
 
-    private AbstractRaster evaluateConstrastEnhancements( RasterStyling styling, AbstractRaster raster ) {
-        // TODO
-        return raster;
+    /**
+     * Perform contrast enhancement on one channel and copy the result to a RasterData object.
+     * 
+     * @param newData
+     *            RasterData output container
+     * @param rasutil
+     *            channel data source
+     * @param inIndex
+     *            input channel index
+     * @param outIndex
+     *            output channel index
+     * @param enhancement
+     *            ContrastEnhancement to perform
+     * @return modified RasterData container
+     */
+    private RasterData setEnhancedChannelData( RasterData newData, RasterDataUtility rasutil, int inIndex,
+                                               int outIndex, ContrastEnhancement enhancement ) {
+        int i = 0, j = 0, val = 0, cols = newData.getWidth(), rows = newData.getHeight();
+
+        rasutil.setContrastEnhancement( enhancement );
+        LOG.trace( "Using gamma {} for channel '{}'...", enhancement.gamma, inIndex );
+        for ( i = 0; i < cols; i++ )
+            for ( j = 0; j < rows; j++ ) {
+                val = (int) rasutil.getEnhanced( i, j, inIndex );
+                newData.setByteSample( i, j, outIndex, int2byte( val ) );
+            }
+
+        return newData;
     }
 
-    // /** Make sure that the selected channels are valid for a raster. Throws an exception in case of error. */
-    // private void checkChannelNames( RasterStyling styling, AbstractRaster raster )
-    // throws RasterRenderingException {
-    // BandType[] bands = raster.getRasterDataInfo().getBandInfo();
-    //
-    // if ( styling.grayChannel != null )
-    // if ( validateChannelName( styling.grayChannel, bands ) == false ) {
-    // LOG.error( "Invalid name for gray channel: {}", styling.grayChannel );
-    // throw new RasterRenderingException( "Invalid name for gray channel: " + styling.grayChannel );
-    // }
-    // if ( styling.redChannel != null )
-    // if ( validateChannelName( styling.redChannel, bands ) == false ) {
-    // LOG.error( "Invalid name for red channel: {}", styling.redChannel );
-    // throw new RasterRenderingException( "Invalid name for red channel: " + styling.redChannel );
-    // }
-    // if ( styling.greenChannel != null )
-    // if ( validateChannelName( styling.greenChannel, bands ) == false ) {
-    // LOG.error( "Invalid name for green channel: {}", styling.greenChannel );
-    // throw new RasterRenderingException( "Invalid name for green channel: " + styling.greenChannel );
-    // }
-    // if ( styling.blueChannel != null )
-    // if ( validateChannelName( styling.blueChannel, bands ) == false ) {
-    // LOG.error( "Invalid name for blue channel: {}", styling.blueChannel );
-    // throw new RasterRenderingException( "Invalid name for blue channel: " + styling.blueChannel );
-    // }
-    //
-    // LOG.trace( "Channel names are valid." );
-    // }
-    //
-    // /** Validate a channel name as a number (1,2,...etc) or by name. */
-    // private boolean validateChannelName( String name, BandType[] bands ) {
-    // try {
-    // int c = Integer.parseInt( name );
-    // return ( c > 0 && c <= bands.length );
-    // } catch ( NumberFormatException e ) {
-    // for ( int i = 0; i < bands.length; i++ )
-    // if ( bands[i].name().equals( name ) )
-    // return true;
-    // }
-    // return false;
-    // }
+    public int byte2int( byte val ) {
+        return ( val >= 0 ? val : val - 2 * Byte.MIN_VALUE );
+    }
+
+    public byte int2byte( int val ) {
+        // if ( val < 0 )
+        // return int2byte( val - 2 * Byte.MIN_VALUE );
+        return ( val < 128 ? (byte) val : (byte) ( val + 2 * Byte.MIN_VALUE ) );
+    }
 
     /**
      * Perform the hill-shading algorithm on a DEM raster. Based on algorithm presented at
@@ -234,7 +288,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         LOG.trace( "Performing Hill-Shading ... " );
         long start = System.nanoTime();
         int cols = raster.getColumns(), rows = raster.getRows();
-        Raster2RawData data = new Raster2RawData( raster, style.channelSelection );
+        RasterDataUtility data = new RasterDataUtility( raster, style.channelSelection );
         RasterData shadeData = RasterDataFactory.createRasterData( cols - 2, rows - 2, DataType.BYTE );
         SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), raster.getRasterReference() );
 
