@@ -83,34 +83,6 @@ public class XYZReader implements RasterReader {
 
     private final static GeometryFactory factory = new GeometryFactory();
 
-    /**
-     * 
-     * The <code>Dimensions</code> class encapsulates the dimensions of this file.
-     * 
-     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * @author last edited by: $Author: rbezema $
-     * @version $Revision: $, $Date: $
-     * 
-     */
-    class Dimensions {
-        int width = -1;
-
-        int height = -1;
-
-        double res = Double.NaN;
-
-        boolean fromOptions( RasterIOOptions options ) {
-            try {
-                width = options.get( "WIDTH" ) == null ? -1 : Integer.parseInt( options.get( "WIDTH" ) );
-                height = options.get( "HEIGHT" ) == null ? -1 : Integer.parseInt( options.get( "HEIGHT" ) );
-                res = options.get( "RES" ) == null ? Double.NaN : Double.parseDouble( options.get( "RES" ) );
-            } catch ( NumberFormatException e ) {
-                //
-            }
-            return width != -1 && height != -1 && !Double.isNaN( res );
-        }
-    }
-
     // saves a point in the raster grid (eg. each line becomes a GridPoint)
     private class GridPoint {
         /**
@@ -207,10 +179,15 @@ public class XYZReader implements RasterReader {
         double resolution = 1;
 
         float[] xyzValues = new float[3];
+        String separator = options.get( XYZRasterIOProvider.XYZ_SEPARATOR );
+        if ( separator == null ) {
+            // the regex for the given trim.
+            separator = "\\s";
+        }
         while ( ( line = reader.readLine() ) != null ) {
             try {
                 // StringTokenizer tokenizer = new StringTokenizer( line );
-                String[] xyz = line.split( "\\s" );
+                String[] xyz = line.split( separator );
 
                 xyzValues[0] = Float.valueOf( xyz[0] );
                 xyzValues[1] = Float.valueOf( xyz[1] );

@@ -55,6 +55,9 @@ import org.deegree.coverage.raster.io.RasterWriter;
  */
 public class XYZRasterIOProvider implements RasterIOProvider {
 
+    /** a key for the RasterIO options */
+    public final static String XYZ_SEPARATOR = "xyz_separator";
+
     /**
      * Supported formats
      */
@@ -78,12 +81,14 @@ public class XYZRasterIOProvider implements RasterIOProvider {
 
     @Override
     public RasterWriter getRasterWriter( String type ) {
+        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
+            return new XYZWriter();
+        }
         return null;
     }
 
     @Override
     public Set<String> getRasterWriterFormats() {
-        return new HashSet<String>();
+        return new HashSet<String>( XYZRasterIOProvider.FORMATS );
     }
-
 }
