@@ -628,6 +628,23 @@ public class RasterGeoReference {
     }
 
     /**
+     * Returns new RasterGeoReference with the origin set to the given target location. Other values are taken from this
+     * instance.
+     * 
+     * @param targetLocation
+     *            of the new reference
+     * @return new RasterGeoReference or this if the target location is <code>null</code> or equals this one.
+     */
+    public RasterGeoReference createRelocatedReference( OriginLocation targetLocation ) {
+        if ( targetLocation == null || location == targetLocation ) {
+            return this;
+        }
+        double[] newOrigin = getOrigin( targetLocation );
+        return new RasterGeoReference( targetLocation, this.getResolutionX(), this.getResolutionY(),
+                                       this.getRotationX(), this.getRotationY(), newOrigin[0], newOrigin[1], this.crs );
+    }
+
+    /**
      * Relocates the given minimum and maximum points of the given envelope to the target origin location definition.
      * This method does nothing if the given location equals this {@link RasterGeoReference}'s origin location. This
      * method effectively adds or subtracts half a resolution of the ordinates of the given Envelope. Different CRS's
@@ -737,7 +754,7 @@ public class RasterGeoReference {
         double[] result = new double[2];
         if ( target != null && target != location ) {
             if ( location == CENTER ) {
-                result = getWorldCoordinate( -0.5, -0.5 );
+                result = getWorldCoordinate( 0, 0 );
             } else {
                 result = getWorldCoordinate( +0.5, +0.5 );
             }
