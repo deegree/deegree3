@@ -564,6 +564,10 @@ public class Java2DRenderer implements Renderer {
                 applyFill( styling.fill, styling.uom );
                 graphics.fill( polygon );
                 applyStroke( styling.stroke, styling.uom );
+                double poff = considerUOM( styling.perpendicularOffset, styling.uom );
+                if ( !isZero( poff ) ) {
+                    graphics.setStroke( new OffsetStroke( poff, graphics.getStroke() ) );
+                }
                 graphics.draw( polygon );
             } else {
                 throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
