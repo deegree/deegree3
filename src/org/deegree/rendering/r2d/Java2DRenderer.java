@@ -505,14 +505,14 @@ public class Java2DRenderer implements Renderer {
             return;
         }
 
-        geom = transform( geom );
-
         LOG.trace( "Drawing {} with {}", geom, styling );
 
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with line styling." );
         }
         if ( geom instanceof Curve ) {
+            geom = transform( geom );
+
             Double line = fromCurve( (Curve) geom );
             applyStroke( styling.stroke, styling.uom );
             double poff = considerUOM( styling.perpendicularOffset, styling.uom );
