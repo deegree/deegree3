@@ -86,7 +86,8 @@ public class OffsetStroke implements Stroke {
         final double ny = y2 - y1;
         if ( isZero( nx ) && isZero( ny ) ) {
             if ( last != null ) {
-                LOG.warn( "Two subsequent points in a curve have been the same. Using the last normal..." );
+                LOG.debug( "Two subsequent points in a curve have been the same. Using the last normal..." );
+                LOG.debug( "Please implement proper generalization so this won't happen..." );
                 return last;
             }
             LOG.warn( "Two subsequent points in a curve have been the same. Using the first of the two points instead of the normal..." );
