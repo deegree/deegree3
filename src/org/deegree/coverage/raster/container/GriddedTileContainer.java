@@ -103,8 +103,8 @@ public abstract class GriddedTileContainer implements TileContainer {
         // this.envelopeHeight = envelope.getSpan1();
         this.rows = infoFile.getRows();
         this.columns = infoFile.getColumns();
-        this.tileSamplesX = infoFile.getTileSamplesX();
-        this.tileSamplesY = infoFile.getTileSamplesY();
+        this.tileSamplesX = infoFile.getTileRasterWidth();
+        this.tileSamplesY = infoFile.getTileRasterHeight();
         this.tileWidth = envelopeWidth / columns;
         this.tileHeight = envelopeHeight / rows;
 

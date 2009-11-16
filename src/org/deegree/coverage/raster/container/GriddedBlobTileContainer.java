@@ -39,25 +39,14 @@ package org.deegree.coverage.raster.container;
 import static org.deegree.coverage.raster.io.grid.GridMetaInfoFile.METAINFO_FILE_NAME;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.RasterDataFactory;
-import org.deegree.coverage.raster.data.info.BandType;
-import org.deegree.coverage.raster.data.info.DataType;
-import org.deegree.coverage.raster.data.info.InterleaveType;
-import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
-import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
-import org.deegree.geometry.Envelope;
+import org.deegree.coverage.raster.io.grid.GridReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,25 +69,16 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
     /** extension of a blob file. **/
     public static final String BLOB_FILE_EXT = ".bin";
 
-    private final long bytesPerTile;
-
     // how much tiles are in a blob (except for the last blob)
     private int tilesPerBlob;
 
-    private FileChannel[] blobChannels;
-
-    private final long expectedBlobSize;
+    private GridReader[] blobReaders;
 
     /**
      * @param metaInfoFile
      */
     private GriddedBlobTileContainer( GridMetaInfoFile metaInfoFile ) {
         super( metaInfoFile );
-        bytesPerTile = tileSamplesX * tileSamplesY * 3;
-        LOG.debug( "Bytes per tile: " + bytesPerTile );
-
-        expectedBlobSize = (long) getRows() * getColumns() * bytesPerTile;
-        LOG.debug( "Expected blob size: " + expectedBlobSize );
     }
 
     /**
@@ -116,6 +96,7 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         List<File> blobFiles = new ArrayList<File>();
         long totalSize = 0;
         int blobNo = 0;
+
         // find all blob files.
         while ( true ) {
             File blobFile = new File( blobDir, BLOB_FILE_NAME + blobNo + BLOB_FILE_EXT );
@@ -126,21 +107,20 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
             blobNo++;
             totalSize += blobFile.length();
         }
-        LOG.debug( "Real blob size: " + totalSize );
+        LOG.debug( "Concatenated grid size (of all blob files): " + totalSize );
 
+        blobReaders = new GridReader[blobFiles.size()];
+        for ( int i = 0; i < blobReaders.length; ++i ) {
+            blobReaders[i] = new GridReader( metaInfoFile, blobFiles.get( i ) );
+        }
+        tilesPerBlob = blobReaders[0].getNumberOfTiles();
+        long expectedBlobSize = metaInfoFile.getRows() * metaInfoFile.getColumns() * blobReaders[0].getBytesPerTile();
         if ( expectedBlobSize != totalSize ) {
-            String msg = "Size of blobs  (=" + totalSize + ") does not match the expected size (=" + expectedBlobSize
-                         + ").";
+            String msg = "Size of grid (all blob file) (=" + totalSize + ") does not match the expected size (="
+                         + expectedBlobSize + ").";
             throw new IllegalArgumentException( msg );
         }
 
-        blobChannels = new FileChannel[blobFiles.size()];
-        for ( int i = 0; i < blobChannels.length; i++ ) {
-            FileInputStream fis = new FileInputStream( blobFiles.get( i ) );
-            blobChannels[i] = fis.getChannel();
-        }
-        tilesPerBlob = (int) ( blobFiles.get( 0 ).length() / bytesPerTile );
-        LOG.debug( "Tiles per (full) blob: " + tilesPerBlob );
     }
 
     /**
@@ -161,16 +141,16 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         long totalSize = blobFile.length();
         LOG.debug( "Real blob size: " + totalSize );
 
+        blobReaders = new GridReader[1];
+        blobReaders[0] = new GridReader( metaInfoFile, blobFile );
+        tilesPerBlob = blobReaders[0].getNumberOfTiles();
+        long expectedBlobSize = metaInfoFile.getRows() * metaInfoFile.getColumns() * blobReaders[0].getBytesPerTile();
         if ( expectedBlobSize != totalSize ) {
-            String msg = "Size of blobs  (=" + totalSize + ") does not match the expected size (=" + expectedBlobSize
+            String msg = "Size of gridfile (=" + totalSize + ") does not match the expected size (=" + expectedBlobSize
                          + ").";
             throw new IllegalArgumentException( msg );
         }
 
-        blobChannels = new FileChannel[1];
-        FileInputStream fis = new FileInputStream( blobFile );
-        blobChannels[0] = fis.getChannel();
-        tilesPerBlob = (int) ( blobFile.length() / bytesPerTile );
     }
 
     /**
@@ -197,49 +177,14 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 
     @Override
     public AbstractRaster getTile( int rowId, int columnId ) {
-
         int tileId = getTileId( columnId, rowId );
-        long begin = System.currentTimeMillis();
-        Envelope tileEnvelope = getTileEnvelope( rowId, columnId );
-        RasterGeoReference tileRasterReference = RasterGeoReference.create( OriginLocation.OUTER, tileEnvelope,
-                                                                            tileSamplesX, tileSamplesY );
-
-        ByteBufferRasterData tileData = RasterDataFactory.createRasterData( tileSamplesX, tileSamplesY,
-                                                                            new BandType[] { BandType.RED,
-                                                                                            BandType.GREEN,
-                                                                                            BandType.BLUE },
-                                                                            DataType.BYTE, InterleaveType.PIXEL );
-        ByteBuffer buffer = tileData.getByteBuffer();
-        buffer.rewind();
         int blobNo = tileId / tilesPerBlob;
-        int tileInBlob = tileId % tilesPerBlob;
-        // set information of the read file in the raster data.
-        tileData.info = blobNo + "_" + tileInBlob + "_" + rowId + "," + columnId + ".png";
-        // transfer the data from the blob
+        AbstractRaster result = null;
         try {
-            LOG.debug( "Tile id: " + tileId + " -> blob no " + blobNo + ", pos in blob: " + tileInBlob );
-
-            FileChannel channel = blobChannels[blobNo];
-            channel.position( tileInBlob * bytesPerTile );
-            channel.read( buffer );
-            buffer.rewind();
-
+            result = blobReaders[blobNo].getTile( rowId, columnId );
         } catch ( IOException e ) {
             LOG.error( "Error reading tile data from blob: " + e.getMessage(), e );
         }
-
-        long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Loading of tile (" + tileSamplesX + "x" + tileSamplesY + ") in " + elapsed + " ms." );
-
-        SimpleRaster tile = new SimpleRaster( tileData, tileEnvelope, tileRasterReference );
-        // try {
-        // RasterFactory.saveRasterToFile( tile, new File( "/tmp/" + blobNo + "_" + tileInBlob + "_" + rowId + ","
-        // + columnId + ".png" ) );
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-
-        return tile;
+        return result;
     }
 }
