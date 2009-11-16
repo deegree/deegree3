@@ -72,6 +72,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.gml.refs.GeometryReference;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
@@ -602,6 +603,9 @@ public class Java2DRenderer implements Renderer {
     }
 
     public void render( Styling styling, Geometry geom ) {
+        if ( geom instanceof GeometryReference<?> ) {
+            render( styling, ( (GeometryReference<?>) geom ).getReferencedGeometry() );
+        }
         if ( styling instanceof PointStyling ) {
             render( (PointStyling) styling, geom );
         }
