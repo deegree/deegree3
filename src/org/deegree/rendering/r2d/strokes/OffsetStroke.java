@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d.strokes;
 
@@ -57,10 +57,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>OffsetStroke</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class OffsetStroke implements Stroke {
@@ -80,10 +80,15 @@ public class OffsetStroke implements Stroke {
         this.stroke = stroke;
     }
 
-    private static final double[] calcNormal( final double x1, final double y1, final double x2, final double y2 ) {
+    private static final double[] calcNormal( final double x1, final double y1, final double x2, final double y2,
+                                              final double[] last ) {
         final double nx = x2 - x1;
         final double ny = y2 - y1;
         if ( isZero( nx ) && isZero( ny ) ) {
+            if ( last != null ) {
+                LOG.warn( "Two subsequent points in a curve have been the same. Using the last normal..." );
+                return last;
+            }
             LOG.warn( "Two subsequent points in a curve have been the same. Using the first of the two points instead of the normal..." );
             return new double[] { x1, y1 };
         }
@@ -125,14 +130,16 @@ public class OffsetStroke implements Stroke {
             case SEG_CLOSE:
                 break;
             case SEG_CUBICTO:
-                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1] ) );
-                normals.add( calcNormal( pair.second[0], pair.second[1], pair.second[2], pair.second[3] ) );
-                normals.add( calcNormal( pair.second[2], pair.second[3], pair.second[4], pair.second[5] ) );
+                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1], normals.peekLast() ) );
+                normals.add( calcNormal( pair.second[0], pair.second[1], pair.second[2], pair.second[3],
+                                         normals.peekLast() ) );
+                normals.add( calcNormal( pair.second[2], pair.second[3], pair.second[4], pair.second[5],
+                                         normals.peekLast() ) );
                 lastx = pair.second[4];
                 lasty = pair.second[5];
                 break;
             case SEG_LINETO:
-                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1] ) );
+                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1], normals.peekLast() ) );
                 lastx = pair.second[0];
                 lasty = pair.second[1];
                 break;
@@ -141,8 +148,9 @@ public class OffsetStroke implements Stroke {
                 lasty = pair.second[1];
                 break;
             case SEG_QUADTO:
-                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1] ) );
-                normals.add( calcNormal( pair.second[0], pair.second[1], pair.second[2], pair.second[3] ) );
+                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1], normals.peekLast() ) );
+                normals.add( calcNormal( pair.second[0], pair.second[1], pair.second[2], pair.second[3],
+                                         normals.peekLast() ) );
                 lastx = pair.second[2];
                 lasty = pair.second[3];
                 break;
