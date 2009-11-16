@@ -124,6 +124,7 @@ public class TextStyling implements Copyable<TextStyling>, Styling {
         copy.anchorPointY = anchorPointY;
         copy.linePlacement = linePlacement == null ? null : linePlacement.copy();
         copy.halo = halo == null ? null : halo.copy();
+        copy.uom = uom;
         return copy;
     }
 

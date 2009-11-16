@@ -203,6 +203,8 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
         copy.categorize = categorize;
         copy.interpolate = interpolate;
 
+        copy.uom = uom;
+
         return copy;
     }
 }

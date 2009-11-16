@@ -90,6 +90,7 @@ public class PolygonStyling implements Copyable<PolygonStyling>, Styling {
         copy.displacementX = displacementX;
         copy.displacementY = displacementY;
         copy.perpendicularOffset = perpendicularOffset;
+        copy.uom = uom;
         return copy;
     }
 

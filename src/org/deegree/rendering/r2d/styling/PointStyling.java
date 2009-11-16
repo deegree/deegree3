@@ -64,6 +64,7 @@ public class PointStyling implements Copyable<PointStyling>, Styling {
     public PointStyling copy() {
         PointStyling other = new PointStyling();
         other.graphic = graphic.copy();
+        other.uom = uom;
         return other;
     }
 

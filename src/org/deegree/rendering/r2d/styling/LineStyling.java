@@ -77,6 +77,7 @@ public class LineStyling implements Copyable<LineStyling>, Styling {
         LineStyling copy = new LineStyling();
         copy.stroke = stroke.copy();
         copy.perpendicularOffset = perpendicularOffset;
+        copy.uom = uom;
         return copy;
     }
 
