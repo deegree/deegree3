@@ -82,6 +82,20 @@ public class RasterGeoRefTest {
                                                                                 defaultCRS );
 
     /**
+     * Test the newly located origin.
+     */
+    @Test
+    public void relocatedOrigin() {
+        double[] origin = REF_CENTER.getOrigin( OUTER );
+        Assert.assertEquals( 995., origin[0] );
+        Assert.assertEquals( 1005., origin[1] );
+
+        origin = REF_OUTER.getOrigin( CENTER );
+        Assert.assertEquals( 1005., origin[0] );
+        Assert.assertEquals( 995., origin[1] );
+    }
+
+    /**
      * Test {@link RasterGeoReference#getRasterCoordinate(double, double)} for a center reference
      */
     @Test
