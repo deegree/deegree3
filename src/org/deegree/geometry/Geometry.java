@@ -84,7 +84,7 @@ import org.deegree.geometry.primitive.Point;
  * <h4>Notes on the representation of GML geometries</h4>
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
- * They are modelled using the {@link ObjectProperties} class. This design decision has been driven by the goal to make
+ * They are modelled using the {@link StandardGMLObjectProps} class. This design decision has been driven by the goal to make
  * the implementation less GML (and GML-version) specific and to allow for example to export a {@link Geometry} instance
  * as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard properties).
  * </p>
