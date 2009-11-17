@@ -102,6 +102,8 @@ public class GetObservation {
         }
         this.resultFilter = resultFilter;
         this.resultModel = resultModel == null ? "" : resultModel;
+        // TODO the responseFormat appears to be mandatory (both in spec and schema). Shoudn't we raise an exception if
+        // it is null???
         this.responseFormat = responseFormat == null ? "" : responseFormat;
         this.responseMode = responseMode == null ? "" : responseMode;
         this.srsName = srsName == null ? "" : srsName;
