@@ -303,15 +303,14 @@ public class PostGISFeatureStore implements FeatureStore {
 
     @Override
     public boolean isAvailable() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public int performHitsQuery( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return 0;
+        // TODO
+        return performQuery( query ).size();
     }
 
     @Override
