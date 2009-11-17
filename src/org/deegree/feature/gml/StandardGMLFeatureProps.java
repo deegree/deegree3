@@ -135,6 +135,16 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
     }
 
     /**
+     * Sets the value for the <code>boundedBy</code> property.
+     * 
+     * @param boundedBy
+     *            the value for the <code>boundedBy</code> property (or <code>null</code> to clear it)
+     */
+    public void setBoundedBy( Envelope boundedBy ) {
+        this.boundedBy = boundedBy;
+    }
+
+    /**
      * Returns the corresponding {@link Property} instances for a specific GML version.
      * 
      * @param version

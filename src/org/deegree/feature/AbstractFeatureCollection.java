@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import java.util.ArrayList;
@@ -40,13 +40,14 @@ import java.util.List;
 
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.geometry.Envelope;
 
 /**
  * Abstract base class for {@link FeatureCollection} implementations.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
@@ -62,5 +63,21 @@ public abstract class AbstractFeatureCollection extends AbstractFeature implemen
             }
         }
         return new GenericFeatureCollection( null, matchingFeatures );
+    }
+
+    @Override
+    protected Envelope calcEnvelope() {
+        Envelope fcBBox = null;
+        for ( Feature feature : this ) {
+            Envelope memberBBox = feature.getEnvelope();
+            if ( memberBBox != null ) {
+                if ( fcBBox != null ) {
+                    fcBBox = fcBBox.merge( memberBBox );
+                } else {
+                    fcBBox = memberBBox;
+                }
+            }
+        }
+        return fcBBox;
     }
 }

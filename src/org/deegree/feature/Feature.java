@@ -225,7 +225,7 @@ public interface Feature extends MatchableObject {
     /**
      * Returns the envelope of the feature.
      * 
-     * @return the envelope of the feature, or null if the feature has no geometry properties
+     * @return the envelope of the feature, or null if the feature has no envelope information / geometry properties
      */
     public Envelope getEnvelope();
 

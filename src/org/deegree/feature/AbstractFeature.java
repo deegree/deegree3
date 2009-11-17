@@ -36,16 +36,13 @@
 package org.deegree.feature;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.utils.Pair;
-import org.deegree.feature.gml.FeatureReference;
 import org.deegree.feature.gml.StandardGMLFeatureProps;
 import org.deegree.feature.xpath.AttributeNode;
 import org.deegree.feature.xpath.CustomElementNode;
@@ -69,8 +66,6 @@ import org.jaxen.XPath;
 public abstract class AbstractFeature implements Feature {
 
     protected StandardGMLFeatureProps standardProps;
-
-    private Envelope envelope;
 
     public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
                             throws JaxenException {
@@ -97,47 +92,36 @@ public abstract class AbstractFeature implements Feature {
         return resultValues;
     }
 
+    @Override
     public Envelope getEnvelope() {
-        if ( envelope == null ) {
-            envelope = getEnvelope( this, new HashSet<Feature>() );
+        if ( standardProps == null ) {
+            standardProps = new StandardGMLFeatureProps( null, null, null, null );
         }
-        return envelope;
+        if ( standardProps.getBoundedBy() == null ) {
+            standardProps.setBoundedBy( calcEnvelope() );
+        }
+        return standardProps.getBoundedBy();
     }
 
     /**
-     * Helper method for calculating the envelope of a feature (or feature collection), respects multiple geometry
-     * properties, subfeatures and cycles in the feature structure.
+     * Helper method for calculating the envelope of a feature.
      * 
-     * TODO use caching to prevent permanent recalculation of bbox
-     * 
-     * @param feature
-     *            feature for which the envelope is requested
-     * @param visited
-     *            features that have already been visited in the top-down traversal
-     * @return envelope of the feature
+     * @return envelope of all geometry properties of the feature
      */
-    private static Envelope getEnvelope( Feature feature, Set<Feature> visited ) {
+    protected Envelope calcEnvelope() {
         Envelope featureBBox = null;
-        if ( !visited.contains( feature ) ) {
-            visited.add( feature );
-            if ( !( feature instanceof FeatureReference ) || ( (FeatureReference) feature ).isLocal() ) {
-                for ( Property<?> prop : feature.getProperties() ) {
-                    Object propValue = prop.getValue();
-                    Envelope propBBox = null;
-                    if ( propValue instanceof Geometry ) {
-                        Geometry geom = (Geometry) propValue;
-                        propBBox = geom.getEnvelope();
-                    } else if ( propValue instanceof Feature ) {
-                        Feature subFeature = (Feature) propValue;
-                        propBBox = getEnvelope( subFeature, visited );
-                    }
-                    if ( propBBox != null ) {
-                        if ( featureBBox != null ) {
-                            featureBBox = featureBBox.merge( propBBox );
-                        } else {
-                            featureBBox = propBBox;
-                        }
-                    }
+        for ( Property<?> prop : this.getProperties() ) {
+            Object propValue = prop.getValue();
+            Envelope propBBox = null;
+            if ( propValue instanceof Geometry ) {
+                Geometry geom = (Geometry) propValue;
+                propBBox = geom.getEnvelope();
+            }
+            if ( propBBox != null ) {
+                if ( featureBBox != null ) {
+                    featureBBox = featureBBox.merge( propBBox );
+                } else {
+                    featureBBox = propBBox;
                 }
             }
         }
