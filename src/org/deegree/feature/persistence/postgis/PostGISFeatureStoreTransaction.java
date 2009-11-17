@@ -61,7 +61,12 @@ import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.postgis.LinearRing;
+import org.postgis.PGgeometry;
+import org.postgis.Point;
+import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,12 +156,12 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             try {
                 insertFeature( feature );
             } catch ( SQLException e ) {
-                LOG.debug (e.getMessage(), e);
+                LOG.debug( e.getMessage(), e );
                 throw new FeatureStoreException( e.getMessage(), e );
             }
         }
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug ("Insertion of " + features.size() + " features: " + elapsed + " [ms]");
+        LOG.debug( "Insertion of " + features.size() + " features: " + elapsed + " [ms]" );
 
         return new ArrayList<String>( fids );
     }
@@ -168,7 +173,7 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         stmt.setString( 1, feature.getId() );
         stmt.setString( 2, "TODO: gml_description" );
         stmt.setShort( 3, store.getFtId( feature.getName() ) );
-        stmt.setObject( 4, null );
+        stmt.setObject( 4, toPGPolygon( feature.getEnvelope() ) );
         stmt.executeUpdate();
         stmt.close();
 
@@ -189,6 +194,31 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
         rs.close();
         stmt2.close();
+    }
+
+    private PGgeometry toPGPolygon( Envelope envelope ) {
+        PGgeometry pgGeometry = null;
+        if ( envelope != null ) {
+            if (! envelope.getMin().equals( envelope.getMax() ) ) {
+                double minX = envelope.getMin().get0();
+                double minY = envelope.getMin().get1();
+                double maxX = envelope.getMax().get0();
+                double maxY = envelope.getMax().get1();
+                Point[] points = new Point[] { new Point( minX, minY ), new Point( maxX, minY ),
+                                              new Point( maxX, maxY ), new Point( minX, maxY ), new Point( minX, minY ) };
+                LinearRing outer = new LinearRing( points );
+                Polygon polygon = new Polygon( new LinearRing[] { outer } );
+                // TODO
+                polygon.setSrid( -1 );
+                pgGeometry = new PGgeometry( polygon );
+            } else {
+                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1());
+                // TODO
+                point.setSrid( -1 );
+                pgGeometry = new PGgeometry( point );
+            }
+        }
+        return pgGeometry;
     }
 
     private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features,

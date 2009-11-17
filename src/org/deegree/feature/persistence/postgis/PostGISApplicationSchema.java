@@ -180,7 +180,7 @@ public class PostGISApplicationSchema {
         writer.println( ");" );
         writer.println( "COMMENT ON TABLE feature_types IS 'All concrete feature types and their tables';" );
         writer.println();
-        writer.println( "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "', 'feature_types','wgs84bbox','4326','POLYGON',2);" );
+        writer.println( "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "', 'feature_types','wgs84bbox','4326','GEOMETRY',2);" );
         writer.println( "ALTER TABLE feature_types ADD CONSTRAINT feature_types_check_bbox CHECK (isvalid(wgs84bbox));" );
         writer.println( "/* (no spatial index needed, as envelope is only used for keeping track of feature type extents) */" );
 
@@ -205,7 +205,7 @@ public class PostGISApplicationSchema {
         writer.println( "COMMENT ON TABLE gml_objects IS 'All objects (features and geometries)';" );
 
         writer.println( "SELECT ADDGEOMETRYCOLUMN('" + dbSchema
-                        + "', 'gml_objects','gml_bounded_by','-1','POLYGON',2);" );
+                        + "', 'gml_objects','gml_bounded_by','-1','GEOMETRY',2);" );
         writer.println( "ALTER TABLE gml_objects ADD CONSTRAINT gml_objects_geochk CHECK (isvalid(gml_bounded_by));" );
         writer.println( "CREATE INDEX gml_objects_sidx ON gml_objects USING GIST ( gml_bounded_by GIST_GEOMETRY_OPS );" );
         writer.println();
