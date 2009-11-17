@@ -34,22 +34,88 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.feature.gml.generic.GenericCustomPropertyParser;
+import org.deegree.feature.types.GenericCustomPropertyValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
+import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.BinaryComparisonOperator;
 import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.comparison.PropertyIsBetween;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.comparison.PropertyIsGreaterThan;
+import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
+import org.deegree.filter.comparison.PropertyIsLessThan;
+import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
+import org.deegree.filter.comparison.PropertyIsLike;
+import org.deegree.filter.comparison.PropertyIsNotEqualTo;
+import org.deegree.filter.comparison.PropertyIsNull;
+import org.deegree.filter.comparison.ComparisonOperator.SubType;
+import org.deegree.filter.expression.Add;
+import org.deegree.filter.expression.Div;
+import org.deegree.filter.expression.Function;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.Mul;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.expression.Sub;
+import org.deegree.filter.function.se.Categorize;
+import org.deegree.filter.function.se.ChangeCase;
+import org.deegree.filter.function.se.Concatenate;
+import org.deegree.filter.function.se.FormatDate;
+import org.deegree.filter.function.se.FormatNumber;
+import org.deegree.filter.function.se.Interpolate;
+import org.deegree.filter.function.se.Recode;
+import org.deegree.filter.function.se.StringLength;
+import org.deegree.filter.function.se.StringPosition;
+import org.deegree.filter.function.se.Substring;
+import org.deegree.filter.function.se.Trim;
+import org.deegree.filter.i18n.Messages;
+import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
+import org.deegree.filter.logical.Not;
+import org.deegree.filter.logical.Or;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Beyond;
+import org.deegree.filter.spatial.Contains;
+import org.deegree.filter.spatial.Crosses;
+import org.deegree.filter.spatial.DWithin;
+import org.deegree.filter.spatial.Disjoint;
+import org.deegree.filter.spatial.Equals;
+import org.deegree.filter.spatial.Intersects;
+import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.spatial.Touches;
+import org.deegree.filter.spatial.Within;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML21GeometryDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,655 +279,646 @@ public class Filter100XMLDecoder {
     public static Filter parse( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
 
-        // Filter filter = null;
-        // xmlStream.require( START_ELEMENT, OGC_NS, "Filter" );
-        // xmlStream.nextTag();
-        // if ( xmlStream.getEventType() != START_ELEMENT ) {
-        // throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_FILTER_EMPTY",
-        // new QName( OGC_NS, "Filter" ) ) );
-        // }
-        // QName elementName = xmlStream.getName();
-        // if ( GML_OBJECT_ID_ELEMENT.equals( elementName ) || FEATURE_ID_ELEMENT.equals( elementName ) ) {
-        // LOG.debug( "Building id filter" );
-        // filter = parseIdFilter( xmlStream );
-        // } else {
-        // LOG.debug( "Building operator filter" );
-        // Operator rootOperator = parseOperator( xmlStream );
-        // filter = new OperatorFilter( rootOperator );
-        // xmlStream.nextTag();
-        // }
-        //
-        // xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "Filter" );
-        // return filter;
-        return null;
+        Filter filter = null;
+        xmlStream.require( START_ELEMENT, OGC_NS, "Filter" );
+        xmlStream.nextTag();
+        if ( xmlStream.getEventType() != START_ELEMENT ) {
+            throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_FILTER_EMPTY",
+                                                                           new QName( OGC_NS, "Filter" ) ) );
+        }
+        QName elementName = xmlStream.getName();
+        if ( FEATURE_ID_ELEMENT.equals( elementName ) ) {
+            LOG.debug( "Building id filter" );
+            filter = parseIdFilter( xmlStream );
+        } else {
+            LOG.debug( "Building operator filter" );
+            Operator rootOperator = parseOperator( xmlStream );
+            filter = new OperatorFilter( rootOperator );
+            xmlStream.nextTag();
+            System.out.println( xmlStream.getLocalName() );
+        }
+
+        System.out.println( xmlStream.getLocalName() );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "Filter" );
+        return filter;
     }
 
-    // /**
-    // * Returns the object representation for the given <code>ogc:expression</code> element event that the cursor of
-    // the
-    // * associated <code>XMLStreamReader</code> points at.
-    // * <p>
-    // * The element must be one of the following:
-    // * <ul>
-    // * <li>ogc:Add</li>
-    // * <li>ogc:Sub</li>
-    // * <li>ogc:Div</li>
-    // * <li>ogc:Mul</li>
-    // * <li>ogc:PropertyName</li>
-    // * <li>ogc:Literal</li>
-    // * <li>ogc:Function</li>
-    // * </ul>
-    // * </p>
-    // * <p>
-    // * <ul>
-    // * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
-    // * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
-    // (&lt;/ogc:expression&gt;)</li>
-    // * </ul>
-    // * </p>
-    // *
-    // * @param xmlStream
-    // * cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
-    // * corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
-    // * @return corresponding {@link Expression} object
-    // * @throws XMLParsingException
-    // * if the element is not a valid "ogc:expression" element
-    // * @throws XMLStreamException
-    // */
-    // public static Expression parseExpression( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // Expression expression = null;
-    //
-    // // check if element name is a valid expression element
-    // require( xmlStream, START_ELEMENT );
-    // Expression.Type type = elementNameToExpressionType.get( xmlStream.getName() );
-    // if ( type == null ) {
-    // String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
-    // elemNames( Expression.Type.class, expressionTypeToElementName ) );
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    //
-    // switch ( type ) {
-    // case ADD: {
-    // xmlStream.nextTag();
-    // Expression param1 = parseExpression( xmlStream );
-    // xmlStream.nextTag();
-    // Expression param2 = parseExpression( xmlStream );
-    // expression = new Add( param1, param2 );
-    // break;
-    // }
-    // case SUB: {
-    // xmlStream.nextTag();
-    // Expression param1 = parseExpression( xmlStream );
-    // xmlStream.nextTag();
-    // Expression param2 = parseExpression( xmlStream );
-    // expression = new Add( param1, param2 );
-    // break;
-    // }
-    // case MUL: {
-    // xmlStream.nextTag();
-    // Expression param1 = parseExpression( xmlStream );
-    // xmlStream.nextTag();
-    // Expression param2 = parseExpression( xmlStream );
-    // expression = new Add( param1, param2 );
-    // break;
-    // }
-    // case DIV: {
-    // xmlStream.nextTag();
-    // Expression param1 = parseExpression( xmlStream );
-    // xmlStream.nextTag();
-    // Expression param2 = parseExpression( xmlStream );
-    // expression = new Add( param1, param2 );
-    // break;
-    // }
-    // case PROPERTY_NAME: {
-    // expression = parsePropertyName( xmlStream );
-    // break;
-    // }
-    // case LITERAL: {
-    // expression = parseLiteral( xmlStream );
-    // break;
-    // }
-    // case FUNCTION: {
-    // expression = parseFunction( xmlStream );
-    // break;
-    // }
-    // }
-    // return expression;
-    // }
-    //
-    // /**
-    // * Returns the object representation for the given <code>ogc:expression</code> element event that the cursor of
-    // the
-    // * associated <code>XMLStreamReader</code> points at.
-    // * <p>
-    // * The element must be one of the following:
-    // * <ul>
-    // * <li>ogc:Add</li>
-    // * <li>ogc:Sub</li>
-    // * <li>ogc:Div</li>
-    // * <li>ogc:Mul</li>
-    // * <li>ogc:PropertyName</li>
-    // * <li>ogc:Literal</li>
-    // * <li>ogc:Function</li>
-    // * </ul>
-    // * </p>
-    // * <p>
-    // * <ul>
-    // * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
-    // * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
-    // (&lt;/ogc:expression&gt;)</li>
-    // * </ul>
-    // * </p>
-    // *
-    // * @param xmlStream
-    // * cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
-    // * corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
-    // * @return corresponding {@link Expression} object
-    // * @throws XMLParsingException
-    // * if the element is not a valid "ogc:expression" element
-    // * @throws XMLStreamException
-    // */
-    // public static Function parseFunction( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // if ( xmlStream.getLocalName().equals( "FormatNumber" ) ) {
-    // FormatNumber fun = new FormatNumber();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "FormatDate" ) ) {
-    // FormatDate fun = new FormatDate();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "Substring" ) ) {
-    // Substring fun = new Substring();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "Concatenate" ) ) {
-    // Concatenate fun = new Concatenate();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "ChangeCase" ) ) {
-    // ChangeCase fun = new ChangeCase();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "Trim" ) ) {
-    // Trim fun = new Trim();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "StringPosition" ) ) {
-    // StringPosition fun = new StringPosition();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "StringLength" ) ) {
-    // StringLength fun = new StringLength();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "Categorize" ) ) {
-    // Categorize fun = new Categorize();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "Interpolate" ) ) {
-    // Interpolate fun = new Interpolate();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    // if ( xmlStream.getLocalName().equals( "Recode" ) ) {
-    // Recode fun = new Recode();
-    // fun.parse( xmlStream );
-    // return fun;
-    // }
-    //
-    // xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
-    // xmlStream.nextTag();
-    // String name = getRequiredAttributeValue( xmlStream, null, "name" );
-    // List<Expression> params = new ArrayList<Expression>();
-    // while ( xmlStream.getEventType() == START_ELEMENT ) {
-    // params.add( parseExpression( xmlStream ) );
-    // xmlStream.nextTag();
-    // }
-    // xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
-    // return new Function( name, params );
-    // }
-    //
-    // /**
-    // * Returns the object representation for the given <code>ogc:comparisonOps</code> element event that the cursor of
-    // * the associated <code>XMLStreamReader</code> points at.
-    // * <p>
-    // * The element must be one of the following:
-    // * <ul>
-    // * <li>ogc:PropertyIsEqualTo</li>
-    // * <li>ogc:PropertyIsGreaterThan</li>
-    // * <li>ogc:PropertyIsGreaterThanOrEqualTo</li>
-    // * <li>ogc:PropertyIsLessThan</li>
-    // * <li>ogc:PropertyIsLessThanOrEqualTo</li>
-    // * <li>ogc:PropertyIsNotEqualTo</li>
-    // * <li>ogc:PropertyIsBetween</li>
-    // * <li>ogc:PropertyIsLike</li>
-    // * <li>ogc:PropertyIsNull</li>
-    // * </ul>
-    // * </p>
-    // * <p>
-    // * <ul>
-    // * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:comparisonOps&gt;)</li>
-    // * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
-    // (&lt;/ogc:comparisonOps&gt;)
-    // * </li>
-    // * </ul>
-    // * </p>
-    // *
-    // * @param xmlStream
-    // * cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:comparisonOps&gt;), points at the
-    // * corresponding <code>END_ELEMENT</code> event (&lt;/ogc:comparisonOps&gt;) afterwards
-    // * @return corresponding {@link Expression} object
-    // * @throws XMLParsingException
-    // * if the element is not a valid "ogc:comparisonOps" element
-    // * @throws XMLStreamException
-    // */
-    // public static ComparisonOperator parseComparisonOperator( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // ComparisonOperator comparisonOperator = null;
-    //
-    // // check if element name is a valid comparison operator element
-    // ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( xmlStream.getName() );
-    // if ( type == null ) {
-    // String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
-    // elemNames( ComparisonOperator.SubType.class,
-    // comparisonOperatorTypeToElementName ) );
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    //
-    // switch ( type ) {
-    // case PROPERTY_IS_EQUAL_TO:
-    // case PROPERTY_IS_GREATER_THAN:
-    // case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
-    // case PROPERTY_IS_LESS_THAN:
-    // case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
-    // case PROPERTY_IS_NOT_EQUAL_TO:
-    // comparisonOperator = parseBinaryComparisonOperator( xmlStream, type );
-    // break;
-    // case PROPERTY_IS_BETWEEN:
-    // comparisonOperator = parsePropertyIsBetweenOperator( xmlStream );
-    // break;
-    // case PROPERTY_IS_LIKE:
-    // comparisonOperator = parsePropertyIsLikeOperator( xmlStream );
-    // break;
-    // case PROPERTY_IS_NULL:
-    // comparisonOperator = parsePropertyIsNullOperator( xmlStream );
-    // break;
-    // }
-    // return comparisonOperator;
-    // }
-    //
-    // private static Operator parseOperator( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // Operator operator = null;
-    //
-    // // check if element name is a valid operator element
-    // Operator.Type type = elementNameToOperatorType.get( xmlStream.getName() );
-    // if ( type == null ) {
-    // String expectedList = elemNames( Operator.Type.class, logicalOperatorTypeToElementName ) + ", "
-    // + elemNames( Operator.Type.class, spatialOperatorTypeToElementName ) + ", "
-    // + elemNames( Operator.Type.class, comparisonOperatorTypeToElementName );
-    // String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(), expectedList );
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    //
-    // switch ( type ) {
-    // case COMPARISON:
-    // LOG.debug( "Building comparison operator" );
-    // operator = parseComparisonOperator( xmlStream );
-    // break;
-    // case LOGICAL:
-    // LOG.debug( "Building logical operator" );
-    // operator = parseLogicalOperator( xmlStream );
-    // break;
-    // case SPATIAL:
-    // LOG.debug( "Building spatial operator" );
-    // operator = parseSpatialOperator( xmlStream );
-    // break;
-    // }
-    // return operator;
-    // }
-    //
-    // private static IdFilter parseIdFilter( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // Set<String> matchingIds = new HashSet<String>();
-    //
-    // while ( xmlStream.getEventType() == START_ELEMENT ) {
-    // QName childElementName = xmlStream.getName();
-    // if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) ) {
-    // String id = xmlStream.getAttributeValue( GML_NS, "id" );
-    // if ( id == null || id.length() == 0 ) {
-    // String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", GML_OBJECT_ID_ELEMENT,
-    // GML_ID_ATTR_NAME );
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    // matchingIds.add( id );
-    // xmlStream.nextTag();
-    // xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "GmlObjectId" );
-    // } else if ( FEATURE_ID_ELEMENT.equals( childElementName ) ) {
-    // String id = xmlStream.getAttributeValue( null, "fid" );
-    // if ( id == null || id.length() == 0 ) {
-    // String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", FEATURE_ID_ELEMENT,
-    // FID_ATTR_NAME );
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    // matchingIds.add( id );
-    // xmlStream.nextTag();
-    // xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "FeatureId" );
-    // } else {
-    // String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", childElementName,
-    // GML_OBJECT_ID_ELEMENT, FEATURE_ID_ELEMENT );
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    // xmlStream.nextTag();
-    // }
-    // return new IdFilter( matchingIds );
-    // }
-    //
-    // private static ComparisonOperator parseBinaryComparisonOperator( XMLStreamReader xmlStream, SubType type )
-    // throws XMLStreamException {
-    //
-    // BinaryComparisonOperator comparisonOperator = null;
-    //
-    // boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
-    //
-    // StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
-    // Expression parameter1 = parseExpression( xmlStream );
-    // StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
-    // Expression parameter2 = parseExpression( xmlStream );
-    // StAXParsingHelper.requireNextTag( xmlStream, END_ELEMENT );
-    //
-    // switch ( type ) {
-    // case PROPERTY_IS_EQUAL_TO:
-    // comparisonOperator = new PropertyIsEqualTo( parameter1, parameter2, matchCase );
-    // break;
-    // case PROPERTY_IS_NOT_EQUAL_TO:
-    // comparisonOperator = new PropertyIsNotEqualTo( parameter1, parameter2, matchCase );
-    // break;
-    // case PROPERTY_IS_LESS_THAN:
-    // comparisonOperator = new PropertyIsLessThan( parameter1, parameter2, matchCase );
-    // break;
-    // case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
-    // comparisonOperator = new PropertyIsLessThanOrEqualTo( parameter1, parameter2, matchCase );
-    // break;
-    // case PROPERTY_IS_GREATER_THAN:
-    // comparisonOperator = new PropertyIsGreaterThan( parameter1, parameter2, matchCase );
-    // break;
-    // case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
-    // comparisonOperator = new PropertyIsGreaterThanOrEqualTo( parameter1, parameter2, matchCase );
-    // break;
-    // default:
-    // assert false;
-    // }
-    // return comparisonOperator;
-    // }
-    //
-    // private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    // // TODO outfactor generic XML representation and parser to commons
-    // GenericCustomPropertyParser literalParser = new GenericCustomPropertyParser();
-    // GenericCustomPropertyValue value = literalParser.parse( new XMLStreamReaderWrapper( xmlStream, null ) );
-    //
-    // List<GenericCustomPropertyValue> childNodes = value.getChildNodes();
-    // if ( childNodes.size() == 0 ) {
-    // List<String> textNodes = value.getTextNodes();
-    // if ( textNodes.size() >= 1 ) {
-    // return new Literal<String>( textNodes.get( 0 ) );
-    // }
-    // }
-    // return new Literal<GenericCustomPropertyValue>( value );
-    // }
-    //
-    // private static PropertyName parsePropertyName( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
-    // String propName = xmlStream.getElementText().trim();
-    // if ( propName.isEmpty() ) {
-    // // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
-    // // GetObservation100XMLAdapter gets an exception from here as the compliance of the SOS hangs on it's thread
-    // throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_PROPERTY_NAME_EMPTY",
-    // new QName( OGC_NS, "PropertyName" ) ) );
-    // }
-    // return new PropertyName( propName, nsc );
-    // }
-    //
-    // private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // xmlStream.nextTag();
-    // Expression expression = parseExpression( xmlStream );
-    //
-    // xmlStream.nextTag();
-    // xmlStream.require( START_ELEMENT, OGC_NS, "lowerBoundary" );
-    // xmlStream.nextTag();
-    // Expression lowerBoundary = parseExpression( xmlStream );
-    //
-    // xmlStream.nextTag();
-    // xmlStream.require( START_ELEMENT, OGC_NS, "upperBoundary" );
-    // xmlStream.nextTag();
-    // Expression upperBoundary = parseExpression( xmlStream );
-    //
-    // xmlStream.nextTag();
-    // return new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
-    // }
-    //
-    // private static PropertyIsLike parsePropertyIsLikeOperator( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // String wildCard = getRequiredAttributeValue( xmlStream, "wildCard" );
-    // String singleChar = getRequiredAttributeValue( xmlStream, "singleChar" );
-    // String escapeChar = getRequiredAttributeValue( xmlStream, "escapeChar" );
-    //
-    // xmlStream.nextTag();
-    // PropertyName propName = parsePropertyName( xmlStream );
-    //
-    // xmlStream.nextTag();
-    // Literal<?> literal = parseLiteral( xmlStream );
-    // xmlStream.nextTag();
-    // return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar );
-    // }
-    //
-    // private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    // xmlStream.nextTag();
-    // PropertyName propName = parsePropertyName( xmlStream );
-    // xmlStream.nextTag();
-    // return new PropertyIsNull( propName );
-    // }
-    //
-    // private static LogicalOperator parseLogicalOperator( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    //
-    // LogicalOperator logicalOperator = null;
-    //
-    // // check if element name is a valid logical operator element
-    // LogicalOperator.SubType type = elementNameToLogicalOperatorType.get( xmlStream.getName() );
-    // if ( type == null ) {
-    // String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
-    // elemNames( LogicalOperator.SubType.class,
-    // logicalOperatorTypeToElementName ) );
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    //
-    // switch ( type ) {
-    // case AND: {
-    // List<Operator> innerOperators = new ArrayList<Operator>();
-    // while ( xmlStream.nextTag() == START_ELEMENT ) {
-    // innerOperators.add( parseOperator( xmlStream ) );
-    // }
-    // if ( innerOperators.size() < 2 ) {
-    // String msg = "Error while parsing And operator. Must have at least two arguments.";
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    // logicalOperator = new And( innerOperators.toArray( new Operator[innerOperators.size()] ) );
-    // break;
-    // }
-    // case OR: {
-    // List<Operator> innerOperators = new ArrayList<Operator>();
-    // while ( xmlStream.nextTag() == START_ELEMENT ) {
-    // innerOperators.add( parseOperator( xmlStream ) );
-    // }
-    // if ( innerOperators.size() < 2 ) {
-    // String msg = "Error while parsing Or operator. Must have at least two arguments.";
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    // logicalOperator = new Or( innerOperators.toArray( new Operator[innerOperators.size()] ) );
-    // break;
-    // }
-    // case NOT: {
-    // xmlStream.nextTag();
-    // Operator parameter = parseOperator( xmlStream );
-    // logicalOperator = new Not( parameter );
-    // xmlStream.nextTag();
-    // break;
-    // }
-    // }
-    // return logicalOperator;
-    // }
-    //
-    // private static SpatialOperator parseSpatialOperator( XMLStreamReader xmlStream )
-    // throws XMLStreamException {
-    // SpatialOperator spatialOperator = null;
-    //
-    // require( xmlStream, START_ELEMENT );
-    // // check if element name is a valid spatial operator element name
-    // SpatialOperator.SubType type = elementNameToSpatialOperatorType.get( xmlStream.getName() );
-    // if ( type == null ) {
-    // String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
-    // elemNames( SpatialOperator.SubType.class,
-    // spatialOperatorTypeToElementName ) );
-    // throw new XMLParsingException( xmlStream, msg );
-    // }
-    //
-    // xmlStream.nextTag();
-    //
-    // // TODO remove this after GML parser is adapted
-    // XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-    // GML311GeometryDecoder geomParser = new GML21GeometryDecoder();
-    //
-    // // always first parameter: 'ogc:PropertyName'
-    // PropertyName param1 = parsePropertyName( xmlStream );
-    // xmlStream.nextTag();
-    //
-    // try {
-    // switch ( type ) {
-    // case BBOX: {
-    // // second parameter: 'gml:Box'
-    // xmlStream.require( START_ELEMENT, GML_NS, "Box" );
-    // Envelope param2 = geomParser.parseEnvelope( wrapper );
-    // spatialOperator = new BBOX( param1, param2 );
-    // break;
-    // }
-    // case BEYOND: {
-    // // second parameter: 'gml:_Geometry'
-    // Geometry param2 = geomParser.parse( wrapper );
-    // // third parameter: 'ogc:Distance'
-    // xmlStream.nextTag();
-    // xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
-    // String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
-    // xmlStream.nextTag();
-    // Measure distance = new Measure( distanceUnits, null );
-    // spatialOperator = new Beyond( param1, param2, distance );
-    // break;
-    // }
-    // case INTERSECTS: {
-    // // second parameter: 'gml:_Geometry' or 'gml:Envelope'
-    // Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
-    // spatialOperator = new Intersects( param1, param2 );
-    // break;
-    // }
-    // case CONTAINS: {
-    // // second parameter: 'gml:_Geometry' or 'gml:Envelope'
-    // Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
-    // spatialOperator = new Contains( param1, param2 );
-    // break;
-    // }
-    // case CROSSES: {
-    // // second parameter: 'gml:_Geometry' or 'gml:Envelope'
-    // Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
-    // spatialOperator = new Crosses( param1, param2 );
-    // break;
-    // }
-    // case DISJOINT: {
-    // // second parameter: 'gml:_Geometry'
-    // Geometry param2 = geomParser.parse( wrapper );
-    // spatialOperator = new Disjoint( param1, param2 );
-    // break;
-    // }
-    // case DWITHIN: {
-    // // second parameter: 'gml:_Geometry'
-    // Geometry param2 = geomParser.parse( wrapper );
-    // // third parameter: 'ogc:Distance'
-    // xmlStream.nextTag();
-    // xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
-    // String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
-    // Measure distance = new Measure( distanceUnits, null );
-    // spatialOperator = new DWithin( param1, param2, distance );
-    // xmlStream.nextTag();
-    // break;
-    // }
-    // case EQUALS: {
-    // // second parameter: 'gml:_Geometry'
-    // Geometry param2 = geomParser.parse( wrapper, null );
-    // spatialOperator = new Equals( param1, param2 );
-    // break;
-    // }
-    // case OVERLAPS: {
-    // // second parameter: 'gml:_Geometry' or 'gml:Envelope'
-    // Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
-    // spatialOperator = new Overlaps( param1, param2 );
-    // break;
-    // }
-    // case TOUCHES: {
-    // // second parameter: 'gml:_Geometry' or 'gml:Envelope'
-    // Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
-    // spatialOperator = new Touches( param1, param2 );
-    // break;
-    // }
-    // case WITHIN: {
-    // // second parameter: 'gml:_Geometry' or 'gml:Envelope'
-    // Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
-    // spatialOperator = new Within( param1, param2 );
-    // }
-    // }
-    // } catch ( UnknownCRSException e ) {
-    // throw new XMLParsingException( xmlStream, e.getMessage() );
-    // }
-    // xmlStream.nextTag();
-    // return spatialOperator;
-    // }
-    //
-    // /**
-    // * Return a String with all element names of the given enum class.
-    // *
-    // * @param enumClass
-    // * @param map
-    // * the operator type -> element name map
-    // * @return a coma separated list of element names
-    // */
-    // private static String elemNames( Class<? extends Enum<?>> enumClass, Map<? extends Enum<?>, QName> map ) {
-    // List<String> names = new LinkedList<String>();
-    // for ( Enum<?> e : enumClass.getEnumConstants() ) {
-    // QName qname = map.get( e );
-    // names.add( qname.toString() );
-    // }
-    // return ArrayUtils.join( ", ", names );
-    // }
+    /**
+     * Returns the object representation for the given <code>ogc:expression</code> element event that the cursor of the
+     * associated <code>XMLStreamReader</code> points at.
+     * <p>
+     * The element must be one of the following:
+     * <ul>
+     * <li>ogc:Add</li>
+     * <li>ogc:Sub</li>
+     * <li>ogc:Div</li>
+     * <li>ogc:Mul</li>
+     * <li>ogc:PropertyName</li>
+     * <li>ogc:Literal</li>
+     * <li>ogc:Function</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;)</li>
+     * </ul>
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
+     * @return corresponding {@link Expression} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "ogc:expression" element
+     * @throws XMLStreamException
+     */
+    public static Expression parseExpression( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        Expression expression = null;
+
+        // check if element name is a valid expression element
+        require( xmlStream, START_ELEMENT );
+        Expression.Type type = elementNameToExpressionType.get( xmlStream.getName() );
+        if ( type == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+                                              elemNames( Expression.Type.class, expressionTypeToElementName ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case ADD: {
+            xmlStream.nextTag();
+            Expression param1 = parseExpression( xmlStream );
+            xmlStream.nextTag();
+            Expression param2 = parseExpression( xmlStream );
+            expression = new Add( param1, param2 );
+            xmlStream.nextTag();
+            break;
+        }
+        case SUB: {
+            xmlStream.nextTag();
+            Expression param1 = parseExpression( xmlStream );
+            xmlStream.nextTag();
+            Expression param2 = parseExpression( xmlStream );
+            expression = new Sub( param1, param2 );
+            xmlStream.nextTag();
+            break;
+        }
+        case MUL: {
+            xmlStream.nextTag();
+            Expression param1 = parseExpression( xmlStream );
+            xmlStream.nextTag();
+            Expression param2 = parseExpression( xmlStream );
+            expression = new Mul( param1, param2 );
+            xmlStream.nextTag();
+            break;
+        }
+        case DIV: {
+            xmlStream.nextTag();
+            Expression param1 = parseExpression( xmlStream );
+            xmlStream.nextTag();
+            Expression param2 = parseExpression( xmlStream );
+            expression = new Div( param1, param2 );
+            xmlStream.nextTag();
+            break;
+        }
+        case PROPERTY_NAME: {
+            expression = parsePropertyName( xmlStream );
+            break;
+        }
+        case LITERAL: {
+            expression = parseLiteral( xmlStream );
+            break;
+        }
+        case FUNCTION: {
+            expression = parseFunction( xmlStream );
+            break;
+        }
+        }
+        return expression;
+    }
+
+    /**
+     * Returns the object representation for the given <code>ogc:expression</code> element event that the cursor of the
+     * associated <code>XMLStreamReader</code> points at.
+     * <p>
+     * The element must be one of the following:
+     * <ul>
+     * <li>ogc:Add</li>
+     * <li>ogc:Sub</li>
+     * <li>ogc:Div</li>
+     * <li>ogc:Mul</li>
+     * <li>ogc:PropertyName</li>
+     * <li>ogc:Literal</li>
+     * <li>ogc:Function</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;)</li>
+     * </ul>
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
+     * @return corresponding {@link Expression} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "ogc:expression" element
+     * @throws XMLStreamException
+     */
+    public static Function parseFunction( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        if ( xmlStream.getLocalName().equals( "FormatNumber" ) ) {
+            FormatNumber fun = new FormatNumber();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "FormatDate" ) ) {
+            FormatDate fun = new FormatDate();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Substring" ) ) {
+            Substring fun = new Substring();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Concatenate" ) ) {
+            Concatenate fun = new Concatenate();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "ChangeCase" ) ) {
+            ChangeCase fun = new ChangeCase();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Trim" ) ) {
+            Trim fun = new Trim();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "StringPosition" ) ) {
+            StringPosition fun = new StringPosition();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "StringLength" ) ) {
+            StringLength fun = new StringLength();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Categorize" ) ) {
+            Categorize fun = new Categorize();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Interpolate" ) ) {
+            Interpolate fun = new Interpolate();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Recode" ) ) {
+            Recode fun = new Recode();
+            fun.parse( xmlStream );
+            return fun;
+        }
+
+        xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
+        String name = getRequiredAttributeValue( xmlStream, null, "name" );
+        xmlStream.nextTag();
+        List<Expression> params = new ArrayList<Expression>();
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
+            params.add( parseExpression( xmlStream ) );
+            xmlStream.nextTag();
+        }
+        xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
+        return new Function( name, params );
+    }
+
+    /**
+     * Returns the object representation for the given <code>ogc:comparisonOps</code> element event that the cursor of
+     * the associated <code>XMLStreamReader</code> points at.
+     * <p>
+     * The element must be one of the following:
+     * <ul>
+     * <li>ogc:PropertyIsEqualTo</li>
+     * <li>ogc:PropertyIsGreaterThan</li>
+     * <li>ogc:PropertyIsGreaterThanOrEqualTo</li>
+     * <li>ogc:PropertyIsLessThan</li>
+     * <li>ogc:PropertyIsLessThanOrEqualTo</li>
+     * <li>ogc:PropertyIsNotEqualTo</li>
+     * <li>ogc:PropertyIsBetween</li>
+     * <li>ogc:PropertyIsLike</li>
+     * <li>ogc:PropertyIsNull</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:comparisonOps&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:comparisonOps&gt;)
+     * </li>
+     * </ul>
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:comparisonOps&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:comparisonOps&gt;) afterwards
+     * @return corresponding {@link Expression} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "ogc:comparisonOps" element
+     * @throws XMLStreamException
+     */
+    public static ComparisonOperator parseComparisonOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        ComparisonOperator comparisonOperator = null;
+
+        // check if element name is a valid comparison operator element
+        ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( xmlStream.getName() );
+        if ( type == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+                                              elemNames( ComparisonOperator.SubType.class,
+                                                         comparisonOperatorTypeToElementName ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case PROPERTY_IS_EQUAL_TO:
+        case PROPERTY_IS_GREATER_THAN:
+        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
+        case PROPERTY_IS_LESS_THAN:
+        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
+        case PROPERTY_IS_NOT_EQUAL_TO:
+            comparisonOperator = parseBinaryComparisonOperator( xmlStream, type );
+            break;
+        case PROPERTY_IS_BETWEEN:
+            comparisonOperator = parsePropertyIsBetweenOperator( xmlStream );
+            break;
+        case PROPERTY_IS_LIKE:
+            comparisonOperator = parsePropertyIsLikeOperator( xmlStream );
+            break;
+        case PROPERTY_IS_NULL:
+            comparisonOperator = parsePropertyIsNullOperator( xmlStream );
+            break;
+        }
+        return comparisonOperator;
+    }
+
+    private static Operator parseOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        Operator operator = null;
+
+        // check if element name is a valid operator element
+        Operator.Type type = elementNameToOperatorType.get( xmlStream.getName() );
+        if ( type == null ) {
+            String expectedList = elemNames( Operator.Type.class, logicalOperatorTypeToElementName ) + ", "
+                                  + elemNames( Operator.Type.class, spatialOperatorTypeToElementName ) + ", "
+                                  + elemNames( Operator.Type.class, comparisonOperatorTypeToElementName );
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(), expectedList );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case COMPARISON:
+            LOG.debug( "Building comparison operator" );
+            operator = parseComparisonOperator( xmlStream );
+            break;
+        case LOGICAL:
+            LOG.debug( "Building logical operator" );
+            operator = parseLogicalOperator( xmlStream );
+            break;
+        case SPATIAL:
+            LOG.debug( "Building spatial operator" );
+            operator = parseSpatialOperator( xmlStream );
+            break;
+        }
+        return operator;
+    }
+
+    private static IdFilter parseIdFilter( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        Set<String> matchingIds = new HashSet<String>();
+
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
+            QName childElementName = xmlStream.getName();
+            if ( FEATURE_ID_ELEMENT.equals( childElementName ) ) {
+                String id = xmlStream.getAttributeValue( null, "fid" );
+                if ( id == null || id.length() == 0 ) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", FEATURE_ID_ELEMENT,
+                                                      FID_ATTR_NAME );
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                matchingIds.add( id );
+                xmlStream.nextTag();
+                xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "FeatureId" );
+            } else {
+                String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", childElementName,
+                                                  GML_OBJECT_ID_ELEMENT, FEATURE_ID_ELEMENT );
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            xmlStream.nextTag();
+        }
+        return new IdFilter( matchingIds );
+    }
+
+    private static ComparisonOperator parseBinaryComparisonOperator( XMLStreamReader xmlStream, SubType type )
+                            throws XMLStreamException {
+
+        BinaryComparisonOperator comparisonOperator = null;
+
+        StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
+        Expression parameter1 = parseExpression( xmlStream );
+        StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
+        Expression parameter2 = parseExpression( xmlStream );
+        StAXParsingHelper.requireNextTag( xmlStream, END_ELEMENT );
+
+        switch ( type ) {
+        case PROPERTY_IS_EQUAL_TO:
+            comparisonOperator = new PropertyIsEqualTo( parameter1, parameter2, true );
+            break;
+        case PROPERTY_IS_NOT_EQUAL_TO:
+            comparisonOperator = new PropertyIsNotEqualTo( parameter1, parameter2, true );
+            break;
+        case PROPERTY_IS_LESS_THAN:
+            comparisonOperator = new PropertyIsLessThan( parameter1, parameter2, true );
+            break;
+        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
+            comparisonOperator = new PropertyIsLessThanOrEqualTo( parameter1, parameter2, true );
+            break;
+        case PROPERTY_IS_GREATER_THAN:
+            comparisonOperator = new PropertyIsGreaterThan( parameter1, parameter2, true );
+            break;
+        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
+            comparisonOperator = new PropertyIsGreaterThanOrEqualTo( parameter1, parameter2, true );
+            break;
+        default:
+            assert false;
+        }
+        return comparisonOperator;
+    }
+
+    private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        // TODO outfactor generic XML representation and parser to commons
+        GenericCustomPropertyParser literalParser = new GenericCustomPropertyParser();
+        GenericCustomPropertyValue value = literalParser.parse( new XMLStreamReaderWrapper( xmlStream, null ) );
+
+        List<GenericCustomPropertyValue> childNodes = value.getChildNodes();
+        if ( childNodes.size() == 0 ) {
+            List<String> textNodes = value.getTextNodes();
+            if ( textNodes.size() >= 1 ) {
+                return new Literal<String>( textNodes.get( 0 ) );
+            }
+        }
+        return new Literal<GenericCustomPropertyValue>( value );
+    }
+
+    private static PropertyName parsePropertyName( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
+        String propName = xmlStream.getElementText().trim();
+        if ( propName.isEmpty() ) {
+            // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
+            // GetObservation100XMLAdapter gets an exception from here as the compliance of the SOS hangs on it's thread
+            throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_PROPERTY_NAME_EMPTY",
+                                                                           new QName( OGC_NS, "PropertyName" ) ) );
+        }
+        return new PropertyName( propName, nsc );
+    }
+
+    private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        xmlStream.nextTag();
+        Expression expression = parseExpression( xmlStream );
+
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, OGC_NS, "LowerBoundary" );
+        xmlStream.nextTag();
+        Expression lowerBoundary = parseExpression( xmlStream );
+
+        xmlStream.nextTag(); // </ expression >
+        xmlStream.nextTag(); // </LowerBoundary>
+
+        xmlStream.require( START_ELEMENT, OGC_NS, "UpperBoundary" );
+        xmlStream.nextTag();
+        Expression upperBoundary = parseExpression( xmlStream );
+
+        xmlStream.nextTag(); // </ expression >
+        xmlStream.nextTag(); // </UowerBoundary>
+        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
+    }
+
+    private static PropertyIsLike parsePropertyIsLikeOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        String wildCard = getRequiredAttributeValue( xmlStream, "wildCard" );
+        String singleChar = getRequiredAttributeValue( xmlStream, "singleChar" );
+        String escapeChar = getRequiredAttributeValue( xmlStream, "escape" );
+
+        xmlStream.nextTag();
+        PropertyName propName = parsePropertyName( xmlStream );
+
+        xmlStream.nextTag();
+        Literal<?> literal = parseLiteral( xmlStream );
+        xmlStream.nextTag();
+        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar );
+    }
+
+    private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        xmlStream.nextTag();
+        PropertyName propName = parsePropertyName( xmlStream );
+        xmlStream.nextTag();
+        return new PropertyIsNull( propName );
+    }
+
+    private static LogicalOperator parseLogicalOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        LogicalOperator logicalOperator = null;
+
+        // check if element name is a valid logical operator element
+        LogicalOperator.SubType type = elementNameToLogicalOperatorType.get( xmlStream.getName() );
+        if ( type == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+                                              elemNames( LogicalOperator.SubType.class,
+                                                         logicalOperatorTypeToElementName ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case AND: {
+            List<Operator> innerOperators = new ArrayList<Operator>();
+            while ( xmlStream.nextTag() == START_ELEMENT ) {
+                innerOperators.add( parseOperator( xmlStream ) );
+            }
+            if ( innerOperators.size() < 2 ) {
+                String msg = "Error while parsing And operator. Must have at least two arguments.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            logicalOperator = new And( innerOperators.toArray( new Operator[innerOperators.size()] ) );
+            break;
+        }
+        case OR: {
+            List<Operator> innerOperators = new ArrayList<Operator>();
+            while ( xmlStream.nextTag() == START_ELEMENT ) {
+                innerOperators.add( parseOperator( xmlStream ) );
+            }
+            if ( innerOperators.size() < 2 ) {
+                String msg = "Error while parsing Or operator. Must have at least two arguments.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            logicalOperator = new Or( innerOperators.toArray( new Operator[innerOperators.size()] ) );
+            break;
+        }
+        case NOT: {
+            xmlStream.nextTag();
+            Operator parameter = parseOperator( xmlStream );
+            logicalOperator = new Not( parameter );
+            xmlStream.nextTag();
+            break;
+        }
+        }
+        return logicalOperator;
+    }
+
+    private static SpatialOperator parseSpatialOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        SpatialOperator spatialOperator = null;
+
+        require( xmlStream, START_ELEMENT );
+        // check if element name is a valid spatial operator element name
+        SpatialOperator.SubType type = elementNameToSpatialOperatorType.get( xmlStream.getName() );
+        if ( type == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+                                              elemNames( SpatialOperator.SubType.class,
+                                                         spatialOperatorTypeToElementName ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        xmlStream.nextTag();
+
+        // TODO remove this after GML parser is adapted
+        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
+        GML21GeometryDecoder geomParser = new GML21GeometryDecoder();
+
+        // always first parameter: 'ogc:PropertyName'
+        PropertyName param1 = parsePropertyName( xmlStream );
+        xmlStream.nextTag();
+
+        try {
+            switch ( type ) {
+            case BBOX: {
+                // second parameter: 'gml:Box'
+                xmlStream.require( START_ELEMENT, GML_NS, "Box" );
+                Envelope param2 = geomParser.parseBox( wrapper );
+                spatialOperator = new BBOX( param1, param2 );
+                break;
+            }
+            case BEYOND: {
+                // second parameter: 'gml:_Geometry'
+                Geometry param2 = geomParser.parse( wrapper );
+                // third parameter: 'ogc:Distance'
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
+                String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
+                xmlStream.nextTag();
+                Measure distance = new Measure( distanceUnits, null );
+                spatialOperator = new Beyond( param1, param2, distance );
+                break;
+            }
+            case INTERSECTS: {
+                // second parameter: 'gml:_Geometry' or 'gml:Box'
+                Geometry param2 = geomParser.parseGeometryOrBox( wrapper );
+                spatialOperator = new Intersects( param1, param2 );
+                break;
+            }
+            case CONTAINS: {
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrBox( wrapper );
+                spatialOperator = new Contains( param1, param2 );
+                break;
+            }
+            case CROSSES: {
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrBox( wrapper );
+                spatialOperator = new Crosses( param1, param2 );
+                break;
+            }
+            case DISJOINT: {
+                // second parameter: 'gml:_Geometry'
+                Geometry param2 = geomParser.parse( wrapper );
+                spatialOperator = new Disjoint( param1, param2 );
+                break;
+            }
+            case DWITHIN: {
+                // second parameter: 'gml:_Geometry'
+                Geometry param2 = geomParser.parse( wrapper );
+                // third parameter: 'ogc:Distance'
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
+                String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
+                Measure distance = new Measure( distanceUnits, null );
+                spatialOperator = new DWithin( param1, param2, distance );
+                xmlStream.nextTag();
+                break;
+            }
+            case EQUALS: {
+                // second parameter: 'gml:_Geometry'
+                Geometry param2 = geomParser.parse( wrapper, null );
+                spatialOperator = new Equals( param1, param2 );
+                break;
+            }
+            case OVERLAPS: {
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrBox( wrapper );
+                spatialOperator = new Overlaps( param1, param2 );
+                break;
+            }
+            case TOUCHES: {
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrBox( wrapper );
+                spatialOperator = new Touches( param1, param2 );
+                break;
+            }
+            case WITHIN: {
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrBox( wrapper );
+                spatialOperator = new Within( param1, param2 );
+            }
+            }
+        } catch ( UnknownCRSException e ) {
+            throw new XMLParsingException( xmlStream, e.getMessage() );
+        }
+        xmlStream.nextTag();
+        return spatialOperator;
+    }
+
+    /**
+     * Return a String with all element names of the given enum class.
+     * 
+     * @param enumClass
+     * @param map
+     *            the operator type -> element name map
+     * @return a coma separated list of element names
+     */
+    private static String elemNames( Class<? extends Enum<?>> enumClass, Map<? extends Enum<?>, QName> map ) {
+        List<String> names = new LinkedList<String>();
+        for ( Enum<?> e : enumClass.getEnumConstants() ) {
+            QName qname = map.get( e );
+            names.add( qname.toString() );
+        }
+        return ArrayUtils.join( ", ", names );
+    }
 
 }

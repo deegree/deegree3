@@ -36,6 +36,7 @@ package org.deegree.geometry.gml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -51,6 +52,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -89,7 +91,7 @@ public class GML21GeometryDecoder {
 
     private static String FID = "gid";
 
-    private static final String GML21NS = "http://www.opengis.org/gml";
+    private static final String GML21NS = "http://www.opengis.net/gml";
 
     private static final QName GML_X = new QName( GML21NS, "X" );
 
@@ -169,6 +171,45 @@ public class GML21GeometryDecoder {
         }
         return geometry;
 
+    }
+
+    /**
+     * @param xmlStream
+     * @return
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parseGeometryOrBox( XMLStreamReaderWrapper xmlStream )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+        return parseGeometryOrBox( xmlStream, null );
+    }
+
+    /**
+     * @param xmlStream
+     * @param defaultCRS
+     * @return
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parseGeometryOrBox( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+
+        Geometry geometry = null;
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Unexpected element: " + xmlStream.getName()
+                         + "' is not a GML geometry or envelope element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        if ( "Box".equals( xmlStream.getLocalName() ) ) {
+            geometry = parseBox( xmlStream, defaultCRS );
+        } else {
+            geometry = parse( xmlStream, defaultCRS );
+        }
+        return geometry;
     }
 
     /**
