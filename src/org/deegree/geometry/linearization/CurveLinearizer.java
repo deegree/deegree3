@@ -198,27 +198,29 @@ public class CurveLinearizer {
      */
     public LineStringSegment linearizeArc( Arc arc, LinearizationCriterion crit ) {
 
-        if ( !( crit instanceof NumPointsCriterion ) ) {
-            String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
-            throw new IllegalArgumentException( msg );
-        }
-
         LineStringSegment lineSegment = null;
 
-        if ( areCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
-            Points points = null;
-            if ( arc instanceof Circle ) {
-                points = new PointsList(
-                                         Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } ) );
+        if ( crit instanceof NumPointsCriterion ) {
+            if ( areCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
+                Points points = null;
+                if ( arc instanceof Circle ) {
+                    points = new PointsList(
+                                             Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } ) );
+                } else {
+                    points = new PointsList( Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } ) );
+                }
+                lineSegment = geomFac.createLineStringSegment( points );
             } else {
-                points = new PointsList( Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } ) );
+                int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
+                lineSegment = geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(),
+                                                                            arc.getPoint3(), numPoints,
+                                                                            arc instanceof Circle ) );
             }
-            lineSegment = geomFac.createLineStringSegment( points );
+        } else if ( crit instanceof MaxErrorCriterion ) {
+            // TODO
         } else {
-            int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
-            lineSegment = geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(),
-                                                                        arc.getPoint3(), numPoints,
-                                                                        arc instanceof Circle ) );
+            String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
+            throw new IllegalArgumentException( msg );
         }
         return lineSegment;
     }
