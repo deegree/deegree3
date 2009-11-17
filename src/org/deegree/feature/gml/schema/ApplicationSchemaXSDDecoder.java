@@ -153,7 +153,7 @@ public class ApplicationSchemaXSDDecoder {
             if ( !CommonNamespaces.GMLNS.equals( ft.getName().getNamespaceURI() ) ) {
                 ftNameToFt.put( ftName, ft );
             } else {
-                LOG.debug( "Skipping GML internal feature type declaration: '" + ftName + "'." );
+                LOG.trace( "Skipping GML internal feature type declaration: '" + ftName + "'." );
             }
         }
         // resolveFtReferences();
@@ -163,7 +163,7 @@ public class ApplicationSchemaXSDDecoder {
         for ( QName ftName : ftNameToSubstitutionGroupName.keySet() ) {
             QName substitutionFtName = ftNameToSubstitutionGroupName.get( ftName );
             if ( ftName.getNamespaceURI().equals( GMLNS ) || substitutionFtName.getNamespaceURI().equals( GMLNS ) ) {
-                LOG.debug( "Skipping substitution relation: '" + ftName + "' -> '" + substitutionFtName
+                LOG.trace( "Skipping substitution relation: '" + ftName + "' -> '" + substitutionFtName
                            + "' (involves GML internal feature type declaration)." );
                 continue;
             }
@@ -174,7 +174,7 @@ public class ApplicationSchemaXSDDecoder {
 
     private void resolveFtReferences() {
         for ( FeaturePropertyType pt : featurePropertyTypes ) {
-            LOG.debug( "Resolving reference to feature type: '" + pt.getFTName() + "'" );
+            LOG.trace( "Resolving reference to feature type: '" + pt.getFTName() + "'" );
             pt.resolve( ftNameToFt.get( pt.getFTName() ) );
         }
     }
@@ -203,11 +203,11 @@ public class ApplicationSchemaXSDDecoder {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -225,7 +225,7 @@ public class ApplicationSchemaXSDDecoder {
                             }
                         }
                         case XSConstants.WILDCARD: {
-                            LOG.debug( "Unhandled particle: WILDCARD" );
+                            LOG.warn( "Unhandled particle: WILDCARD" );
                             break;
                         }
                         case XSConstants.MODEL_GROUP: {
@@ -244,11 +244,11 @@ public class ApplicationSchemaXSDDecoder {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.debug( "Unhandled particle: WILDCARD" );
+                LOG.warn( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
@@ -259,11 +259,11 @@ public class ApplicationSchemaXSDDecoder {
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            LOG.debug( "Unhandled content type: EMPTY" );
+            LOG.warn( "Unhandled content type: EMPTY" );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_MIXED: {
-            LOG.debug( "Unhandled content type: MIXED" );
+            LOG.warn( "Unhandled content type: MIXED" );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
@@ -286,14 +286,14 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     private void addPropertyTypes( List<PropertyType> pts, XSModelGroup modelGroup ) {
-        LOG.debug( " - processing model group..." );
+        LOG.trace( " - processing model group..." );
         switch ( modelGroup.getCompositor() ) {
         case XSModelGroup.COMPOSITOR_ALL: {
-            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+            LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
             break;
         }
         case XSModelGroup.COMPOSITOR_CHOICE: {
-            LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
+            LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
             break;
         }
         case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -312,7 +312,7 @@ public class ApplicationSchemaXSDDecoder {
                     break;
                 }
                 case XSConstants.WILDCARD: {
-                    LOG.debug( "Unhandled particle: WILDCARD" );
+                    LOG.warn( "Unhandled particle: WILDCARD" );
                     break;
                 }
                 case XSConstants.MODEL_GROUP: {
@@ -333,11 +333,11 @@ public class ApplicationSchemaXSDDecoder {
     private PropertyType buildPropertyType( XSElementDeclaration elementDecl, int minOccurs, int maxOccurs ) {
         PropertyType pt = null;
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
-        LOG.debug( "*** Found property declaration: '" + elementDecl.getName() + "'." );
+        LOG.trace( "*** Found property declaration: '" + elementDecl.getName() + "'." );
         // HACK HACK HACK
         if ( GMLNS.equals( elementDecl.getNamespace() )
              && !( "featureMember".equals( elementDecl.getName() ) || "featureMembers".equals( elementDecl.getName() ) ) ) {
-            LOG.debug( "Omitting from feature type -- GML standard property." );
+            LOG.trace( "Omitting from feature type -- GML standard property." );
         } else {
             XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
             switch ( typeDef.getTypeCategory() ) {
@@ -360,7 +360,7 @@ public class ApplicationSchemaXSDDecoder {
 
         PropertyType pt = null;
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
-        LOG.debug( "- Property definition '" + ptName + "' uses a complex type for content definition." );
+        LOG.trace( "- Property definition '" + ptName + "' uses a complex type for content definition." );
         pt = buildFeaturePropertyType( elementDecl, typeDef, minOccurs, maxOccurs );
         if ( pt == null ) {
             pt = buildGeometryPropertyType( elementDecl, typeDef, minOccurs, maxOccurs );
@@ -369,19 +369,19 @@ public class ApplicationSchemaXSDDecoder {
                     // TODO improve detection of property types
                     QName typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
                     if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}CodeType" ) ) ) {
-                        LOG.debug( "Identified a CodePropertyType." );
+                        LOG.trace( "Identified a CodePropertyType." );
                         pt = new CodePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}BoundingShapeType" ) ) ) {
-                        LOG.debug( "Identified an EnvelopePropertyType." );
+                        LOG.trace( "Identified an EnvelopePropertyType." );
                         pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}MeasureType" ) ) ) {
-                        LOG.debug( "Identified a MeasurePropertyType (GENERIC)." );
+                        LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
                         pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}LengthType" ) ) ) {
-                        LOG.debug( "Identified a MeasurePropertyType (LENGTH)." );
+                        LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
                         pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}AngleType" ) ) ) {
-                        LOG.debug( "Identified a MeasurePropertyType (ANGLE)." );
+                        LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
                         pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml}XP_VariableGeometrieType" ) )
                                 || typeName.equals( QName.valueOf( "{http://www.xplanung.de/xplangml/3/0}XP_FlaechengeometrieType" ) )
@@ -417,7 +417,7 @@ public class ApplicationSchemaXSDDecoder {
                                                           XSComplexTypeDefinition typeDef, int minOccurs, int maxOccurs ) {
 
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
-        LOG.debug( "Checking if element declaration '" + ptName + "' defines a feature property type." );
+        LOG.trace( "Checking if element declaration '" + ptName + "' defines a feature property type." );
 
         FeaturePropertyType pt = buildFeaturePropertyTypeXGml( elementDecl, typeDef, minOccurs, maxOccurs );
         if ( pt != null ) {
@@ -431,7 +431,7 @@ public class ApplicationSchemaXSDDecoder {
 
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
-            LOG.debug( "CONTENTTYPE_ELEMENT" );
+            LOG.trace( "CONTENTTYPE_ELEMENT" );
             XSParticle particle = typeDef.getParticle();
             XSTerm term = particle.getTerm();
             switch ( term.getType() ) {
@@ -439,18 +439,18 @@ public class ApplicationSchemaXSDDecoder {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
-                    LOG.debug( "Found sequence." );
+                    LOG.trace( "Found sequence." );
                     XSObjectList sequence = modelGroup.getParticles();
                     if ( sequence.getLength() != 1 ) {
-                        LOG.debug( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
+                        LOG.trace( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
                         return null;
                     }
                     XSParticle particle2 = (XSParticle) sequence.item( 0 );
@@ -461,7 +461,7 @@ public class ApplicationSchemaXSDDecoder {
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( ftNameToFtElement.get( elementName ) != null ) {
-                            LOG.debug( "Identified a feature property." );
+                            LOG.trace( "Identified a feature property." );
                             pt = null;
                             if ( GMLNS.equals( elementName.getNamespaceURI() ) ) {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null );
@@ -473,11 +473,11 @@ public class ApplicationSchemaXSDDecoder {
                         }
                     }
                     case XSConstants.WILDCARD: {
-                        LOG.debug( "Unhandled particle: WILDCARD" );
+                        LOG.warn( "Unhandled particle: WILDCARD" );
                         break;
                     }
                     case XSConstants.MODEL_GROUP: {
-                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
+                        LOG.warn( "Unhandled particle: MODEL_GROUP" );
                         break;
                     }
                     }
@@ -490,11 +490,11 @@ public class ApplicationSchemaXSDDecoder {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.debug( "Unhandled particle: WILDCARD" );
+                LOG.warn( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
@@ -552,7 +552,7 @@ public class ApplicationSchemaXSDDecoder {
                                                        new XPath( "xs:appinfo/adv:referenziertesElement/text()",
                                                                   nsContext ), null );
             if ( refElement != null ) {
-                LOG.debug( "Identified a feature property (adv style)." );
+                LOG.trace( "Identified a feature property (adv style)." );
                 QName elementName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
                 FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement );
                 featurePropertyTypes.add( pt );
@@ -579,7 +579,7 @@ public class ApplicationSchemaXSDDecoder {
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
-            LOG.debug( "CONTENTTYPE_ELEMENT" );
+            LOG.trace( "CONTENTTYPE_ELEMENT" );
             XSParticle particle = typeDef.getParticle();
             XSTerm term = particle.getTerm();
             switch ( term.getType() ) {
@@ -587,18 +587,18 @@ public class ApplicationSchemaXSDDecoder {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
-                    LOG.debug( "Found sequence." );
+                    LOG.trace( "Found sequence." );
                     XSObjectList sequence = modelGroup.getParticles();
                     if ( sequence.getLength() != 1 ) {
-                        LOG.debug( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
+                        LOG.trace( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
                         return null;
                     }
                     XSParticle particle2 = (XSParticle) sequence.item( 0 );
@@ -609,18 +609,18 @@ public class ApplicationSchemaXSDDecoder {
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( geometryNameToGeometryElement.get( elementName ) != null ) {
-                            LOG.debug( "Identified a geometry property." );
+                            LOG.trace( "Identified a geometry property." );
                             GeometryType geometryType = getGeometryType( elementName );
                             return new GeometryPropertyType( ptName, minOccurs, maxOccurs, geometryType,
                                                              CoordinateDimension.DIM_2_OR_3 );
                         }
                     }
                     case XSConstants.WILDCARD: {
-                        LOG.debug( "Unhandled particle: WILDCARD" );
+                        LOG.warn( "Unhandled particle: WILDCARD" );
                         break;
                     }
                     case XSConstants.MODEL_GROUP: {
-                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
+                        LOG.warn( "Unhandled particle: MODEL_GROUP" );
                         break;
                     }
                     }
@@ -633,11 +633,11 @@ public class ApplicationSchemaXSDDecoder {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.debug( "Unhandled particle: WILDCARD" );
+                LOG.warn( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
@@ -652,7 +652,7 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     private GeometryType getGeometryType( QName gmlGeometryName ) {
-        LOG.debug( "Mapping '" + gmlGeometryName + "'..." );
+        LOG.trace( "Mapping '" + gmlGeometryName + "'..." );
         return null;
     }
 
@@ -755,7 +755,7 @@ public class ApplicationSchemaXSDDecoder {
             throw new RuntimeException( "Unexpected simple type: " + typeDef.getBuiltInKind() );
         }
         }
-        LOG.debug( "Mapped '" + typeDef.getName() + "' (base type: '" + typeDef.getBaseType() + "') -> '" + pt + "'" );
+        LOG.trace( "Mapped '" + typeDef.getName() + "' (base type: '" + typeDef.getBaseType() + "') -> '" + pt + "'" );
         return pt;
     }
 
@@ -764,6 +764,8 @@ public class ApplicationSchemaXSDDecoder {
     /**
      * After parsing, this method can be called to find out all referenced types that have been encountered (for
      * debugging).
+     *
+     * @return 
      */
     public Set<QName> getAllEncounteredTypes() {
         return encounteredTypes;
