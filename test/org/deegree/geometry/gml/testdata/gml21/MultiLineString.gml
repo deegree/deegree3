@@ -1,5 +1,5 @@
 <MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"
-	xmlns="http://www.opengis.org/gml">
+	xmlns="http://www.opengis.net/gml">
 	<lineStringMember>
 		<LineString>
 			<coord>

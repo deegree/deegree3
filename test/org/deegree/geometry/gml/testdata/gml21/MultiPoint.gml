@@ -1,5 +1,5 @@
 <MultiPoint srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"
-	xmlns="http://www.opengis.org/gml">
+	xmlns="http://www.opengis.net/gml">
 	<pointMember>
 		<Point>
 			<coordinates>5.0,40.0</coordinates>

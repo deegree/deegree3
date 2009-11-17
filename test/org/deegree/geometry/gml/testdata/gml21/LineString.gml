@@ -1,4 +1,4 @@
-<LineString xmlns="http://www.opengis.org/gml"
+<LineString xmlns="http://www.opengis.net/gml"
 	srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
 	<coord>
 		<X>0.0</X>

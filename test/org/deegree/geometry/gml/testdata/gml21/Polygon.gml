@@ -1,4 +1,4 @@
-<Polygon xmlns="http://www.opengis.org/gml" gid="_98217"
+<Polygon xmlns="http://www.opengis.net/gml" gid="_98217"
 	srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
 	<outerBoundaryIs>
 		<LinearRing>

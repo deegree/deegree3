@@ -1,5 +1,5 @@
 <MultiPolygon srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"
-	xmlns="http://www.opengis.org/gml">
+	xmlns="http://www.opengis.net/gml">
 	<polygonMember>
 		<Polygon>
 			<outerBoundaryIs>

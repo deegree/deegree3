@@ -72,7 +72,7 @@ public class GML21GeometryDecoderTest extends TestCase {
 
     private static final String BASE_DIR = "testdata/gml21/";
 
-    private static final String GML21NS = "http://www.opengis.org/gml";
+    private static final String GML21NS = "http://www.opengis.net/gml";
 
     private static final String BOX_FILE = "Box.gml";
 
