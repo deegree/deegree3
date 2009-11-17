@@ -35,14 +35,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.crs.CRS;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Features;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.persistence.FeatureCoder;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -50,10 +62,23 @@ import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.protocol.wfs.getfeature.BBoxQuery;
+import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
+import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.Query;
+import org.postgis.PGgeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,17 +94,21 @@ import org.slf4j.LoggerFactory;
  */
 public class PostGISFeatureStore implements FeatureStore {
 
-    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );      
-    
+    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
+
+    private final ApplicationSchema schema;
+
+    private final Map<QName, StoredFeatureTypeMetadata> ftNameToMd = new HashMap<QName, StoredFeatureTypeMetadata>();
+
+    private final Map<QName, Short> ftNameToFtId = new HashMap<QName, Short>();
+
+    private final String jdbcConnId;
+
     private PostGISFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
 
-    private final ApplicationSchema schema;
-
-    private final String jdbcConnId;
-    
-    private DefaultLockManager lockManager;        
+    private LockManager lockManager;
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
@@ -130,12 +159,13 @@ public class PostGISFeatureStore implements FeatureStore {
 
     @Override
     public void destroy() {
-        LOG.debug( "destroy" );    }
+        LOG.debug( "destroy" );
+    }
 
     @Override
     public Envelope getEnvelope( QName ftName ) {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO use information from database
+        return new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
     }
 
     @Override
@@ -146,15 +176,31 @@ public class PostGISFeatureStore implements FeatureStore {
 
     @Override
     public StoredFeatureTypeMetadata getMetadata( QName ftName ) {
-        // TODO Auto-generated method stub
-        return null;
+        return ftNameToMd.get( ftName );
     }
 
     @Override
     public Object getObjectById( String id )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+
+        Object geomOrFeature = null;
+        try {
+            Connection conn = ConnectionManager.getConnection( jdbcConnId );
+            conn.setAutoCommit( false );
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery( "SELECT binary_object FROM gml_objects WHERE gml_id='" + id + "'" );
+            if ( rs.next() ) {
+                LOG.debug( "Recreating object '" + id + "' from blob." );
+                Blob encodedObject = rs.getBlob( 1 );
+                geomOrFeature = FeatureCoder.decode( encodedObject.getBinaryStream(), schema, new CRS( "EPSG:31466" ) );
+                encodedObject.free();
+            }
+        } catch ( Exception e ) {
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.debug( msg, e );
+            throw new FeatureStoreException( msg, e );
+        }
+        return geomOrFeature;
     }
 
     @Override
@@ -167,6 +213,92 @@ public class PostGISFeatureStore implements FeatureStore {
                             throws FeatureStoreException {
         LOG.debug( "init" );
         lockManager = new DefaultLockManager( this, "LOCK_DB" );
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+            // setSearchPath( conn );
+
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT id,qname,tablename,wgs84bbox FROM feature_types" );
+            while ( rs.next() ) {
+                short ftId = rs.getShort( 1 );
+                QName ftName = QName.valueOf( rs.getString( 2 ) );
+                String tableName = rs.getString( 3 ).trim();
+                PGgeometry pgGeom = (PGgeometry) rs.getObject( 4 );
+                LOG.debug( "{" + ftId + "," + ftName + "," + tableName + "," + pgGeom + "}" );
+
+                // create feature type metadata (TODO BBOX, configurability)
+                FeatureType ft = schema.getFeatureType( ftName );
+                if ( ft == null ) {
+                    String msg = "Configuration inconsistency. Feature type '" + ftName
+                                 + "' is not defined in the application schemas of the feature store.";
+                    throw new FeatureStoreException( msg );
+                }
+                if ( ft.isAbstract() ) {
+                    String msg = "Configuration inconsistency. Feature type '" + ftName
+                                 + "' is abstract according to the application schemas of the feature store.";
+                    throw new FeatureStoreException( msg );
+                }
+                String title = ftName.toString() + " served by PostGISFeatureStore";
+                String desc = ftName.toString() + " served by PostGISFeatureStore";
+                CRS nativeCRS = new CRS( "EPSG:31466" );
+                StoredFeatureTypeMetadata ftMd = new StoredFeatureTypeMetadata( ft, this, title, desc, nativeCRS );
+                ftNameToMd.put( ftName, ftMd );
+                ftNameToFtId.put( ftName, ftId );
+            }
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
+        } finally {
+            closeSafely( conn, stmt, null );
+        }
+    }
+
+    // // TODO make this configurable in the JDBC configuration
+    // private void setSearchPath( Connection conn ) {
+    // Statement stmt = null;
+    // try {
+    // stmt = conn.createStatement();
+    // stmt.executeUpdate( "SET search_path TO xplan2,public" );
+    // stmt.close();
+    // } catch ( SQLException e ) {
+    // e.printStackTrace();
+    // } finally {
+    // if ( stmt != null ) {
+    // try {
+    // stmt.close();
+    // } catch ( SQLException e ) {
+    // LOG.debug( e.getMessage(), e );
+    // }
+    // }
+    // }
+    // }
+
+    private void closeSafely( Connection conn, Statement stmt, ResultSet rs ) {
+        if ( rs != null ) {
+            try {
+                rs.close();
+            } catch ( SQLException e ) {
+                LOG.warn( e.getMessage(), e );
+            }
+        }
+        if ( stmt != null ) {
+            try {
+                stmt.close();
+            } catch ( SQLException e ) {
+                LOG.warn( e.getMessage(), e );
+            }
+        }
+        if ( conn != null ) {
+            try {
+                conn.close();
+            } catch ( SQLException e ) {
+                LOG.warn( e.getMessage(), e );
+            }
+        }
     }
 
     @Override
@@ -185,8 +317,93 @@ public class PostGISFeatureStore implements FeatureStore {
     @Override
     public FeatureCollection performQuery( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return null;
+
+        if ( query.getTypeNames().length > 1 ) {
+            String msg = "Queries that target more than one feature type (joins) are not supported yet.";
+            throw new FeatureStoreException( msg );
+        }
+
+        QName ftName = query.getTypeNames()[0].getFeatureTypeName();
+        if ( !ftNameToFtId.containsKey( ftName ) ) {
+            String msg = "Feature type '" + ftName + "' is not served by this feature store.";
+            throw new FeatureStoreException( msg );
+        }
+        short ftId = ftNameToFtId.get( ftName );
+
+        FeatureCollection fc = null;
+        try {
+            Connection conn = ConnectionManager.getConnection( jdbcConnId );
+            conn.setAutoCommit( false );
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );
+
+            // TODO lazy fetching (CloseableIterator etc)
+            List<Feature> members = new LinkedList<Feature>();
+            while ( rs.next() ) {
+                String gml_id = rs.getString( 1 );
+                LOG.debug( "Recreating object '" + gml_id + "' from blob." );
+                Blob encodedFeature = rs.getBlob( 2 );
+                Feature feature = FeatureCoder.decode( encodedFeature.getBinaryStream(), schema, new CRS( "EPSG:31466" ) );
+                encodedFeature.free();
+                members.add( feature );
+            }
+            fc = new GenericFeatureCollection( null, members );
+        } catch ( Exception e ) {
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.debug( msg, e );
+            throw new FeatureStoreException( msg, e );
+        }
+
+        // extract / create filter from query
+        if ( query instanceof FilterQuery ) {
+            Filter filter = ( (FilterQuery) query ).getFilter();
+            if ( filter != null ) {
+                fc = fc.getMembers( filter );
+            }
+        } else if ( query instanceof BBoxQuery ) {
+            Envelope bbox = ( (BBoxQuery) query ).getBBox();
+            PropertyName geoProp = findGeoProp( schema.getFeatureType( ftName ) );
+            Operator bboxOperator = new BBOX( geoProp, bbox );
+            Filter filter = new OperatorFilter( bboxOperator );
+            fc = fc.getMembers( filter );
+        } else if ( query instanceof FeatureIdQuery ) {
+            List<Feature> matches = new LinkedList<Feature>();
+            for ( String fid : ( (FeatureIdQuery) query ).getFeatureIds() ) {
+                Object object = getObjectById( fid );
+                if ( object instanceof Feature ) {
+                    matches.add( (Feature) object );
+                }
+            }
+            fc = new GenericFeatureCollection( null, matches );
+        }
+
+        // sort features
+        SortProperty[] sortCrit = query.getSortBy();
+        if ( sortCrit != null ) {
+            fc = Features.sortFc( fc, sortCrit );
+        }
+        return fc;
+    }
+
+    private PropertyName findGeoProp( FeatureType ft )
+                            throws FilterEvaluationException {
+
+        PropertyName propName = null;
+
+        // TODO what about geometry properties on subfeature levels
+        for ( PropertyType<?> pt : ft.getPropertyDeclarations() ) {
+            if ( pt instanceof GeometryPropertyType ) {
+                propName = new PropertyName( pt.getName() );
+                break;
+            }
+        }
+
+        if ( propName == null ) {
+            String msg = "Cannot perform BBox query: requested feature type ('" + ft.getName()
+                         + "') does not have a geometry property.";
+            throw new FilterEvaluationException( msg );
+        }
+        return propName;
     }
 
     @Override
@@ -220,5 +437,9 @@ public class PostGISFeatureStore implements FeatureStore {
         this.activeTransaction = null;
         this.transactionHolder = null;
         // notifyAll();
+    }
+
+    short getFtId( QName ftName ) {
+        return ftNameToFtId.get( ftName );
     }
 }

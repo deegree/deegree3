@@ -305,7 +305,7 @@ public class MemoryFeatureStore implements FeatureStore {
         PropertyName propName = null;
 
         // TODO what about geometry properties on subfeature levels
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+        for ( PropertyType<?> pt : ft.getPropertyDeclarations() ) {
             if ( pt instanceof GeometryPropertyType ) {
                 propName = new PropertyName( pt.getName() );
                 break;

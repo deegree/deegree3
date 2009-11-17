@@ -36,14 +36,24 @@
 
 package org.deegree.feature.persistence.postgis;
 
+import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
+import org.deegree.feature.gml.FeatureReference;
+import org.deegree.feature.persistence.FeatureCoder;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -51,17 +61,39 @@ import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@link FeatureStoreTransaction} implementation used by the {@link PostGISFeatureStore}.
+ * 
+ * @see PostGISFeatureStore
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreTransaction.class );    
-    
+    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreTransaction.class );
+
     private final PostGISFeatureStore store;
 
     private final Connection conn;
 
+    /**
+     * Creates a new {@link PostGISFeatureStoreTransaction} instance.
+     * 
+     * NOTE: This method is only supposed to be invoked by the {@link PostGISFeatureStore}.
+     * 
+     * @param store
+     *            invoking feature store instance, never <code>null</code>
+     * @param conn
+     *            JDBC connection associated with the transaction, never <code>null</code> and has
+     *            <code>autocommit</code> set to <code>false</code>
+     */
     PostGISFeatureStoreTransaction( PostGISFeatureStore store, Connection conn ) {
         this.store = store;
         this.conn = conn;
@@ -103,8 +135,99 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return null;
+
+        LOG.debug( "performInsert()" );
+
+        Set<Geometry> geometries = new HashSet<Geometry>();
+        Set<Feature> features = new HashSet<Feature>();
+        Set<String> fids = new LinkedHashSet<String>();
+        Set<String> gids = new LinkedHashSet<String>();
+        findFeaturesAndGeometries( fc, geometries, features, fids, gids );
+
+        LOG.debug( features.size() + " features / " + geometries.size() + " geometries" );
+
+        long begin = System.currentTimeMillis();
+        for ( Feature feature : features ) {
+            try {
+                insertFeature( feature );
+            } catch ( SQLException e ) {
+                LOG.debug (e.getMessage(), e);
+                throw new FeatureStoreException( e.getMessage(), e );
+            }
+        }
+        long elapsed = System.currentTimeMillis() - begin;
+        LOG.debug ("Insertion of " + features.size() + " features: " + elapsed + " [ms]");
+
+        return new ArrayList<String>( fids );
+    }
+
+    private void insertFeature( Feature feature )
+                            throws SQLException {
+
+        PreparedStatement stmt = conn.prepareStatement( "INSERT INTO gml_objects (gml_id,gml_description,ft_type,binary_object,gml_bounded_by) VALUES(?,?,?,lo_create(0),?)" );
+        stmt.setString( 1, feature.getId() );
+        stmt.setString( 2, "TODO: gml_description" );
+        stmt.setShort( 3, store.getFtId( feature.getName() ) );
+        stmt.setObject( 4, null );
+        stmt.executeUpdate();
+        stmt.close();
+
+        PreparedStatement stmt2 = conn.prepareStatement( "SELECT binary_object FROM gml_objects WHERE id=(SELECT last_value FROM gml_objects_id_seq)" );
+        ResultSet rs = stmt2.executeQuery();
+        rs.next();
+
+        // write the feature
+        Blob blob = rs.getBlob( 1 );
+        try {
+            FeatureCoder.encode( feature, blob.setBinaryStream( 1 ), LOG );
+        } catch ( Exception e ) {
+            String msg = "Error encoding feature for BLOB: " + e.getMessage();
+            LOG.error( msg, e.getMessage() );
+            throw new SQLException( msg, e );
+        }
+        blob.free();
+
+        rs.close();
+        stmt2.close();
+    }
+
+    private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features,
+                                            Set<String> fids, Set<String> gids ) {
+
+        if ( !features.contains( feature ) ) {
+            if ( feature instanceof FeatureCollection ) {
+                for ( Feature member : (FeatureCollection) feature ) {
+                    findFeaturesAndGeometries( member, geometries, features, fids, gids );
+                }
+            } else {
+                if ( feature.getId() == null || !( fids.contains( feature.getId() ) ) ) {
+                    features.add( feature );
+                    if ( feature.getId() != null ) {
+                        fids.add( feature.getId() );
+                    }
+                }
+                for ( Property<?> property : feature.getProperties() ) {
+                    Object propertyValue = property.getValue();
+                    if ( propertyValue instanceof Feature ) {
+                        if ( !( propertyValue instanceof FeatureReference )
+                             || ( (FeatureReference) propertyValue ).isLocal() ) {
+                            findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
+                        }
+                    } else if ( propertyValue instanceof Geometry ) {
+                        findGeometries( (Geometry) propertyValue, geometries, gids );
+                    }
+                }
+            }
+        }
+    }
+
+    private void findGeometries( Geometry geometry, Set<Geometry> geometries, Set<String> gids ) {
+        if ( geometry.getId() == null || !( gids.contains( geometry.getId() ) ) ) {
+            geometries.add( geometry );
+            if ( geometry.getId() != null ) {
+                gids.add( geometry.getId() );
+            }
+        }
     }
 
     @Override

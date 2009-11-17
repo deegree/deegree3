@@ -74,7 +74,7 @@ import org.deegree.feature.types.property.PropertyType;
  */
 public class PostGISApplicationSchema {
 
-    private final ApplicationSchema appSchema;
+    private final ApplicationSchema appSchema;    
 
     private final GlobalMappingHints globalHints;
 
@@ -176,7 +176,7 @@ public class PostGISApplicationSchema {
         writer.println( "CREATE TABLE feature_types (" );
         writer.println( "    id smallint PRIMARY KEY," );
         writer.println( "    qname text NOT NULL," );
-        writer.println( "    tablename char(32) NOT NULL" );
+        writer.println( "    tablename varchar(32) NOT NULL" );
         writer.println( ");" );
         writer.println( "COMMENT ON TABLE feature_types IS 'All concrete feature types and their tables';" );
         writer.println();
@@ -196,7 +196,7 @@ public class PostGISApplicationSchema {
 
         writer.println();
         writer.println( "CREATE TABLE gml_objects (" );
-        writer.println( "    id integer PRIMARY KEY," );
+        writer.println( "    id SERIAL PRIMARY KEY," );
         writer.println( "    gml_id text UNIQUE NOT NULL," );
         writer.println( "    gml_description text," );
         writer.println( "    ft_type smallint REFERENCES feature_types," );

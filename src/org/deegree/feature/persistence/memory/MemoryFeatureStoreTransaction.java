@@ -69,7 +69,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link FeatureStoreTransaction} implementation used by the {@link MemoryFeatureStore}.
+ * 
+ * @see MemoryFeatureStore
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -82,6 +84,14 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private MemoryFeatureStore store;
 
+    /**
+     * Creates a new {@link MemoryFeatureStoreTransaction} instance.
+     * 
+     * NOTE: This method is only supposed to be invoked by the {@link MemoryFeatureStore}.
+     * 
+     * @param store
+     *            invoking feature store instance, never <code>null</code>
+     */
     MemoryFeatureStoreTransaction( MemoryFeatureStore store ) {
         this.store = store;
     }
@@ -144,7 +154,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
 
         String lockId = lock != null ? lock.getId() : null;
-       
+
         // check if all features can be deleted
         for ( String id : filter.getMatchingIds() ) {
             if ( !store.lockManager.isFeatureModifiable( id, lockId ) ) {

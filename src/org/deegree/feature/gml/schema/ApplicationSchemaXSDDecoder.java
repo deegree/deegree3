@@ -203,11 +203,11 @@ public class ApplicationSchemaXSDDecoder {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -225,7 +225,7 @@ public class ApplicationSchemaXSDDecoder {
                             }
                         }
                         case XSConstants.WILDCARD: {
-                            LOG.warn( "Unhandled particle: WILDCARD" );
+                            LOG.debug( "Unhandled particle: WILDCARD" );
                             break;
                         }
                         case XSConstants.MODEL_GROUP: {
@@ -244,11 +244,11 @@ public class ApplicationSchemaXSDDecoder {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.warn( "Unhandled particle: WILDCARD" );
+                LOG.debug( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
@@ -259,11 +259,11 @@ public class ApplicationSchemaXSDDecoder {
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            LOG.warn( "Unhandled content type: EMPTY" );
+            LOG.debug( "Unhandled content type: EMPTY" );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_MIXED: {
-            LOG.warn( "Unhandled content type: MIXED" );
+            LOG.debug( "Unhandled content type: MIXED" );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
@@ -289,11 +289,11 @@ public class ApplicationSchemaXSDDecoder {
         LOG.trace( " - processing model group..." );
         switch ( modelGroup.getCompositor() ) {
         case XSModelGroup.COMPOSITOR_ALL: {
-            LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
             break;
         }
         case XSModelGroup.COMPOSITOR_CHOICE: {
-            LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+            LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
             break;
         }
         case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -312,7 +312,7 @@ public class ApplicationSchemaXSDDecoder {
                     break;
                 }
                 case XSConstants.WILDCARD: {
-                    LOG.warn( "Unhandled particle: WILDCARD" );
+                    LOG.debug( "Unhandled particle: WILDCARD" );
                     break;
                 }
                 case XSConstants.MODEL_GROUP: {
@@ -439,11 +439,11 @@ public class ApplicationSchemaXSDDecoder {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -473,11 +473,11 @@ public class ApplicationSchemaXSDDecoder {
                         }
                     }
                     case XSConstants.WILDCARD: {
-                        LOG.warn( "Unhandled particle: WILDCARD" );
+                        LOG.debug( "Unhandled particle: WILDCARD" );
                         break;
                     }
                     case XSConstants.MODEL_GROUP: {
-                        LOG.warn( "Unhandled particle: MODEL_GROUP" );
+                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
                         break;
                     }
                     }
@@ -490,11 +490,11 @@ public class ApplicationSchemaXSDDecoder {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.warn( "Unhandled particle: WILDCARD" );
+                LOG.debug( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
@@ -587,11 +587,11 @@ public class ApplicationSchemaXSDDecoder {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -616,11 +616,11 @@ public class ApplicationSchemaXSDDecoder {
                         }
                     }
                     case XSConstants.WILDCARD: {
-                        LOG.warn( "Unhandled particle: WILDCARD" );
+                        LOG.debug( "Unhandled particle: WILDCARD" );
                         break;
                     }
                     case XSConstants.MODEL_GROUP: {
-                        LOG.warn( "Unhandled particle: MODEL_GROUP" );
+                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
                         break;
                     }
                     }
@@ -633,11 +633,11 @@ public class ApplicationSchemaXSDDecoder {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.warn( "Unhandled particle: WILDCARD" );
+                LOG.debug( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
