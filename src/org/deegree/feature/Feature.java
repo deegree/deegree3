@@ -46,8 +46,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 
 /**
- * A feature is a structured object with named properties and an identifier. Properties may have geometric and
- * non-geometric values and may be (nested) features.
+ * A feature is a structured object with named properties, an identifier and type information. Properties may have
+ * geometric and non-geometric values and may be (nested) features.
  * <p>
  * The {@link Feature} interface and related types are designed to be compatible with the following specifications:
  * <p>

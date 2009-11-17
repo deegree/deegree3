@@ -53,8 +53,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Allows the representation of arbitrary {@link Feature}s.
  * <p>
- * Please note that it is more efficient to use the {@link GenericSimpleFeature} class if the feature to be represented
- * does not contain multiple properties or nested features ("complex properties").
+ * Please note that it may be more efficient to use the {@link GenericSimpleFeature} class if the feature to be
+ * represented does not contain multiple properties or nested features ("complex properties").
  * </p>
  * 
  * @see GenericSimpleFeature
@@ -74,6 +74,19 @@ public class GenericFeature extends AbstractFeature {
 
     private List<Property<?>> props;
 
+    /**
+     * Creates a new {@link GenericFeature} instance.
+     * 
+     * @param ft
+     *            feature type, must not be <code>null</code>
+     * @param fid
+     *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
+     * @param props
+     *            properties of the feature
+     * @param version
+     *            GML version (determines the names/types of the standard properties), or <code>null</code> (then no
+     *            standard GML properties are allowed)
+     */
     public GenericFeature( GenericFeatureType ft, String fid, List<Property<?>> props, GMLVersion version ) {
         this.ft = ft;
         this.fid = fid;
@@ -133,7 +146,7 @@ public class GenericFeature extends AbstractFeature {
                 throw new IllegalArgumentException( msg );
             }
         } else {
-             //TODO checks about maxOccurs (and check occurence)
+            // TODO checks about maxOccurs (and check occurence)
         }
 
         int num = 0;

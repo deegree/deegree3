@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -55,11 +55,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add documentation here
- *
+ * Allows the representation of arbitrary {@link FeatureCollection}s, also those that use {@link FeatureCollectionType}s
+ * with their own properties.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericFeatureCollection extends AbstractFeatureCollection {
@@ -82,8 +83,9 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     private static QName FEATURE_MEMBERS = new QName( "http://www.opengis.net/gml", "featureMembers" );
 
     /**
-     * Creates a new <code>GenericFeatureCollection</code> with type information and content.
-     *
+     * Creates a new {@link GenericFeatureCollection} instance with type information and content specified using
+     * properties.
+     * 
      * @param ft
      * @param fid
      * @param props
@@ -110,15 +112,15 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
                 featureMemberDecl = propertyDecl;
             }
         }
-        
-        if (featureMemberDecl == null) {
+
+        if ( featureMemberDecl == null ) {
             featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
         }
     }
 
     /**
-     * Creates a new <code>GenericFeatureCollection</code> without type information that contains the given features.
-     *
+     * Creates a new {@link GenericFeatureCollection} instance without type information that contains the given features.
+     * 
      * @param fid
      * @param memberFeatures
      */
@@ -126,12 +128,17 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         this.fid = fid;
         this.memberFeatures = new ArrayList<Feature>( memberFeatures );
         featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
-        this.ft = new GenericFeatureCollectionType( new QName (GMLNS, "FeatureCollection"), Collections.singletonList( featureMemberDecl ), false );
+        this.ft = new GenericFeatureCollectionType( new QName( GMLNS, "FeatureCollection" ),
+                                                    Collections.singletonList( featureMemberDecl ), false );
     }
 
+    /**
+     * Creates a new empty {@link GenericFeatureCollection} instance without type information.
+     */
     public GenericFeatureCollection() {
         featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
-        this.ft = new GenericFeatureCollectionType( new QName (GMLNS, "FeatureCollection"), Collections.singletonList( featureMemberDecl ), false );
+        this.ft = new GenericFeatureCollectionType( new QName( GMLNS, "FeatureCollection" ),
+                                                    Collections.singletonList( featureMemberDecl ), false );
     }
 
     @Override
@@ -158,7 +165,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         }
         for ( Feature feature : memberFeatures ) {
             props[i++] = new GenericProperty<Feature>( featureMemberDecl, null, feature );
-        }       
+        }
         return props;
     }
 

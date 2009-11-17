@@ -46,7 +46,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
- * A {@link FeatureType} describes a class of {@link Feature}s.
+ * Provides the type information for an (application-defined) class of {@link Feature}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

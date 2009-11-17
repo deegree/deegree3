@@ -82,7 +82,7 @@ public class ApplicationSchema {
     private final XSModel model;
 
     /**
-     * Creates a new <code>ApplicationSchema</code> from the given {@link FeatureType}s and their derivation hierarchy.
+     * Creates a new {@link ApplicationSchema} instance from the given {@link FeatureType}s and their derivation hierarchy.
      * 
      * @param fts
      *            all application feature types (abstract and non-abstract), this must not include any GML base feature

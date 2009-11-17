@@ -56,15 +56,16 @@ import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 
 /**
- * TODO add documentation here
+ * Abstract base class for common {@link Feature} implementations.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public abstract class AbstractFeature implements Feature {
+abstract class AbstractFeature implements Feature {
 
+    /** Stores the default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
     protected StandardGMLFeatureProps standardProps;
 
     public Object[] getPropertyValues( PropertyName propName, GMLVersion version )

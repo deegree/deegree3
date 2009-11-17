@@ -43,7 +43,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 
 /**
- * Abstract base class for {@link FeatureCollection} implementations.
+ * Abstract base class for common {@link FeatureCollection} implementations.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

@@ -60,7 +60,7 @@ public interface FeatureCollection extends Feature, Collection<Feature> {
     /**
      * Returns the type information for this feature collection.
      *
-     * @return the type information
+     * @return the type information, never <code>null</code>
      */
     @Override
     public FeatureCollectionType getType();
@@ -69,7 +69,7 @@ public interface FeatureCollection extends Feature, Collection<Feature> {
      * Returns the contained features that match the given {@link Filter}.
      *
      * @param filter
-     *            <code>Filter</code> to be applied
+     *            <code>Filter</code> to be applied, must not be <code>null</code>
      * @return matching feature instances as a new <code>FeatureCollection</code>
      * @throws FilterEvaluationException
      *             if an exception occurs during the evaluation of the <code>Filter</code>
