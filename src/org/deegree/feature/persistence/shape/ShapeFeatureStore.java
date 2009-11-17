@@ -219,12 +219,12 @@ public class ShapeFeatureStore implements FeatureStore {
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", name );
             GeometryPropertyType geomProp = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY,
-                                                                      DIM_2_OR_3 );
+                                                                      DIM_2_OR_3, false, null );
             ft = new GenericFeatureType( new QName( new File( name ).getName() ),
                                          Collections.<PropertyType> singletonList( geomProp ), false );
         }
         ftMetadata = new StoredFeatureTypeMetadata( ft, this, "" + ft.getName(), "" + ft.getName(), crs );
-        schema = new ApplicationSchema( new FeatureType[] { ft }, null, null );
+        schema = new ApplicationSchema( new FeatureType[] { ft }, null );
     }
 
     private SHPReader getSHP( boolean forceIndexRebuild )
@@ -296,7 +296,7 @@ public class ShapeFeatureStore implements FeatureStore {
                     LOG.debug( "Re-opening the dbf file {}", name );
                     dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( name ) );
                     ft = dbf.getFeatureType();
-                    schema = new ApplicationSchema( new FeatureType[] { ft }, null, null );
+                    schema = new ApplicationSchema( new FeatureType[] { ft }, null );
                     dbfLastModified = dbfFile.lastModified();
                 }
             }

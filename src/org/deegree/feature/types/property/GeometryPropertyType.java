@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
+
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -41,10 +43,10 @@ import org.deegree.geometry.Geometry;
 
 /**
  * {@link PropertyType} that defines a property with a {@link Geometry} value.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GeometryPropertyType extends AbstractPropertyType<Geometry> {
@@ -55,44 +57,21 @@ public class GeometryPropertyType extends AbstractPropertyType<Geometry> {
         /** A primitive geometry. */
         PRIMITIVE,
         /** A composite geometry. */
-        COMPOSITE,
-        POINT,
-        CURVE,
-        LINE_STRING,
-        RING,
-        LINEAR_RING,
-        ORIENTABLE_CURVE,
-        COMPOSITE_CURVE,
-        SURFACE,
-        POLYHEDRAL_SURFACE,
-        TRIANGULATED_SURFACE,
-        TIN,
-        POLYGON,
-        ORIENTABLE_SURFACE,
-        COMPOSITE_SURFACE,
-        SOLID,
-        COMPOSITE_SOLID,
-        MULTI_GEOMETRY,
-        MULTI_POINT,
-        MULTI_CURVE,
-        MULTI_LINE_STRING,
-        MULTI_SURFACE,
-        MULTI_POLYGON,
-        MULTI_SOLID
+        COMPOSITE, POINT, CURVE, LINE_STRING, RING, LINEAR_RING, ORIENTABLE_CURVE, COMPOSITE_CURVE, SURFACE, POLYHEDRAL_SURFACE, TRIANGULATED_SURFACE, TIN, POLYGON, ORIENTABLE_SURFACE, COMPOSITE_SURFACE, SOLID, COMPOSITE_SOLID, MULTI_GEOMETRY, MULTI_POINT, MULTI_CURVE, MULTI_LINE_STRING, MULTI_SURFACE, MULTI_POLYGON, MULTI_SOLID
     }
 
     public enum CoordinateDimension {
-        DIM_2,
-        DIM_3,
-        DIM_2_OR_3,
+        DIM_2, DIM_3, DIM_2_OR_3,
     }
 
     private GeometryType geomType;
 
     private CoordinateDimension dim;
 
-    public GeometryPropertyType (QName name, int minOccurs, int maxOccurs, GeometryType geomType, CoordinateDimension dim) {
-        super (name, minOccurs, maxOccurs);
+    public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, GeometryType geomType,
+                                 CoordinateDimension dim, boolean isAbstract,
+                                 List<PropertyType<?>> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.geomType = geomType;
         this.dim = dim;
     }

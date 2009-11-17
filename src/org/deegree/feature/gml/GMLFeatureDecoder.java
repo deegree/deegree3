@@ -53,9 +53,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSModel;
-import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.datetime.Date;
@@ -116,7 +113,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private ApplicationSchema schema;
 
-    private XSModel xsModel;
+    // private XSModel xsModel;
 
     private final GeometryFactory geomFac;
 
@@ -137,9 +134,6 @@ public class GMLFeatureDecoder extends XMLAdapter {
      */
     public GMLFeatureDecoder( ApplicationSchema schema, GMLIdContext idContext ) {
         this.schema = schema;
-        if ( schema != null ) {
-            this.xsModel = schema.getXSModel();
-        }
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
         this.geomParser = new GML311GeometryDecoder( geomFac, idContext );
@@ -221,7 +215,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
             LOG.debug( "- property '" + propName + "'" );
 
-            if ( isElementSubstitutableForProperty( propName, activeDecl ) ) {
+            if ( findConcretePropertyType( propName, activeDecl ) != null ) {
                 // current property element is equal to active declaration
                 if ( activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs() ) {
                     String msg = Messages.getMessage( "ERROR_PROPERTY_TOO_MANY_OCCURENCES", propName,
@@ -230,7 +224,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 }
             } else {
                 // current property element is not equal to active declaration
-                while ( declIter.hasNext() && !isElementSubstitutableForProperty( propName, activeDecl ) ) {
+                while ( declIter.hasNext() && findConcretePropertyType( propName, activeDecl ) == null ) {
                     if ( propOccurences < activeDecl.getMinOccurs() ) {
                         String msg = null;
                         if ( activeDecl.getMinOccurs() == 1 ) {
@@ -244,13 +238,14 @@ public class GMLFeatureDecoder extends XMLAdapter {
                     activeDecl = declIter.next();
                     propOccurences = 0;
                 }
-                if ( !isElementSubstitutableForProperty( propName, activeDecl ) ) {
+                if ( findConcretePropertyType( propName, activeDecl ) == null ) {
                     String msg = Messages.getMessage( "ERROR_PROPERTY_UNEXPECTED", propName, ft.getName() );
                     throw new XMLParsingException( xmlStream, msg );
                 }
             }
 
-            Property<?> property = parseProperty( xmlStream, activeDecl, activeCRS, propOccurences );
+            Property<?> property = parseProperty( xmlStream, findConcretePropertyType( propName, activeDecl ),
+                                                  activeCRS, propOccurences );
             if ( property != null ) {
                 // if this is the "gml:boundedBy" property, override active CRS (see GML spec. (where???))
                 if ( StandardGMLFeatureProps.PT_BOUNDED_BY_GML31.getName().equals( activeDecl.getName() ) ) {
@@ -314,38 +309,18 @@ public class GMLFeatureDecoder extends XMLAdapter {
         return schema;
     }
 
-    private boolean isElementSubstitutableForProperty( QName elemName, PropertyType pt ) {
+    private PropertyType<?> findConcretePropertyType( QName elemName, PropertyType<?> pt ) {
         LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
 
-        QName ptName = pt.getName();
-        if ( elemName.equals( ptName ) ) {
-            LOG.debug( "Yep. Names match." );
-            return true;
-        }
-
-        // TODO we don't want the xsModel here
-        if ( xsModel != null ) {
-
-            XSElementDeclaration elementDecl = xsModel.getElementDeclaration( elemName.getLocalPart(),
-                                                                              elemName.getNamespaceURI() );
-
-            XSElementDeclaration propElementDecl = xsModel.getElementDeclaration( ptName.getLocalPart(),
-                                                                                  ptName.getNamespaceURI() );
-
-            if ( elementDecl == null || propElementDecl == null ) {
-                LOG.debug( "Not defined as a top level element." );
-                return false;
-            }
-
-            XSObjectList list = xsModel.getSubstitutionGroup( propElementDecl );
-            for ( int i = 0; i < list.getLength(); i++ ) {
-                if ( list.item( i ).equals( elementDecl ) ) {
-                    LOG.debug( "Yep. In substitution group." );
-                    return true;
-                }
+        for ( PropertyType<?> substitutionPt : pt.getSubstitutions() ) {
+            // TODO !substitutionPt.isAbstract()
+            if ( elemName.equals( substitutionPt.getName() ) ) {
+                LOG.debug( "Yep. Substitutable for '" + substitutionPt.getName() + "'" );
+                return substitutionPt;
             }
         }
-        return false;
+        LOG.debug( "Nope." );
+        return null;
     }
 
     /**

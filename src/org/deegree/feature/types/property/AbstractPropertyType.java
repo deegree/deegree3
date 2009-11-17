@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -65,6 +67,14 @@ public abstract class AbstractPropertyType<T> implements PropertyType<T> {
     protected int maxOccurs;
 
     /**
+     * The possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at least one
+     * entry.
+     */
+    protected PropertyType<?>[] substitutions;
+
+    private boolean isAbstract;
+
+    /**
      * Creates a new <code>AbstractPropertyType</code> instance.
      * 
      * @param name
@@ -73,11 +83,23 @@ public abstract class AbstractPropertyType<T> implements PropertyType<T> {
      *            minimum number of times that this property must be present
      * @param maxOccurs
      *            maximum number of times that this property must be present, or -1 (=unbounded)
+     * @param isAbstract
+     *            true, if it is abstract, false otherwise
+     * @param substitutions
+     *            the possible concrete substitutions, can be <code>null</code>
      */
-    protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs ) {
+    protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                                    List<PropertyType<?>> substitutions ) {
         this.name = name;
         this.minOccurs = minOccurs;
         this.maxOccurs = maxOccurs;
+        this.isAbstract = isAbstract;
+        if ( substitutions != null ) {
+            substitutions.add( this );
+            this.substitutions = substitutions.toArray( new PropertyType<?>[substitutions.size()] );
+        } else {
+            this.substitutions = new PropertyType<?>[] { this };
+        }
     }
 
     @Override
@@ -93,5 +115,15 @@ public abstract class AbstractPropertyType<T> implements PropertyType<T> {
     @Override
     public int getMaxOccurs() {
         return maxOccurs;
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
+    @Override
+    public PropertyType<?>[] getSubstitutions() {
+        return substitutions;
     }
 }

@@ -74,4 +74,22 @@ public interface PropertyType<T> {
      * @return the maximum number of times that this property must be present, or -1 (=unbounded)
      */
     public int getMaxOccurs();
+
+    /**
+     * Returns whether this {@link PropertyType} declaration is abstract.
+     * 
+     * @return true, if is abstract, false otherwise
+     */
+    public boolean isAbstract();
+
+    /**
+     * Returns the possible substitutions that are defined for this {@link PropertyType}.
+     * 
+     * NOTE: This is only needed for a number of GML application schemas (e.g. CityGML) that define properties using
+     * abstract element declarations and provide multiple concrete substitutable elements.
+     * 
+     * @return the possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at
+     *         least one entry
+     */
+    public PropertyType<?>[] getSubstitutions();
 }

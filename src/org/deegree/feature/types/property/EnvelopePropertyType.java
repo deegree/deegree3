@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.geometry.Envelope;
@@ -49,13 +51,14 @@ import org.deegree.geometry.Envelope;
  */
 public class EnvelopePropertyType extends AbstractPropertyType<Envelope> {
 
-    public EnvelopePropertyType( QName name, int minOccurs, int maxOccurs ) {
-        super( name, minOccurs, maxOccurs );
+    public EnvelopePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                                 List<PropertyType<?>> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
     }
-    
+
     @Override
     public String toString() {
         String s = "- envelope property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
         return s;
-    }    
+    }
 }

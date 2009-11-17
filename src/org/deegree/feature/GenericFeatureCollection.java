@@ -114,12 +114,13 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         }
 
         if ( featureMemberDecl == null ) {
-            featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
+            featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null );
         }
     }
 
     /**
-     * Creates a new {@link GenericFeatureCollection} instance without type information that contains the given features.
+     * Creates a new {@link GenericFeatureCollection} instance without type information that contains the given
+     * features.
      * 
      * @param fid
      * @param memberFeatures
@@ -127,7 +128,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     public GenericFeatureCollection( String fid, Collection<Feature> memberFeatures ) {
         this.fid = fid;
         this.memberFeatures = new ArrayList<Feature>( memberFeatures );
-        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
+        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null );
         this.ft = new GenericFeatureCollectionType( new QName( GMLNS, "FeatureCollection" ),
                                                     Collections.singletonList( featureMemberDecl ), false );
     }
@@ -136,7 +137,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * Creates a new empty {@link GenericFeatureCollection} instance without type information.
      */
     public GenericFeatureCollection() {
-        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
+        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null );
         this.ft = new GenericFeatureCollectionType( new QName( GMLNS, "FeatureCollection" ),
                                                     Collections.singletonList( featureMemberDecl ), false );
     }

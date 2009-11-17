@@ -90,14 +90,15 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
     private final static Map<QName, PropertyType<?>> GML32PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
 
     static {
-        PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING );
-        PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING );
+        PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING, false,
+                                                              null );
+        PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING, false, null );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
-        PT_BOUNDED_BY_GML2 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1 );
+        PT_BOUNDED_BY_GML2 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1, false, null );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
-        PT_BOUNDED_BY_GML31 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1 );
+        PT_BOUNDED_BY_GML31 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1, false, null );
 
         // fill lookup maps
         GML2PropNameToPropType.put( PT_DESCRIPTION_GML2.getName(), PT_DESCRIPTION_GML2 );

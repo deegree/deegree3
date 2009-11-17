@@ -101,7 +101,7 @@ public class JAXBApplicationSchemaAdapter {
             fts[i++] = ftAndMapping.first;
             ftNameToMapping.put( ftAndMapping.first.getName(), ftAndMapping.second );
         }
-        ApplicationSchema appSchema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
+        ApplicationSchema appSchema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
         return new PostGISApplicationSchema( appSchema, jaxbAppSchema.getGlobalMappingHints(), ftNameToMapping );
     }
 
@@ -157,7 +157,8 @@ public class JAXBApplicationSchemaAdapter {
         return new Pair<SimplePropertyType<?>, SimplePropertyMappingType>( new SimplePropertyType<Object>( propName,
                                                                                                            minOccurs,
                                                                                                            maxOccurs,
-                                                                                                           type ),
+                                                                                                           type, false,
+                                                                                                           null ),
                                                                            jaxbPropertyDecl.getSimplePropertyMapping() );
     }
 
@@ -172,7 +173,7 @@ public class JAXBApplicationSchemaAdapter {
                                                                             new GeometryPropertyType( propName,
                                                                                                       minOccurs,
                                                                                                       maxOccurs, null,
-                                                                                                      dim ),
+                                                                                                      dim, false, null ),
                                                                             jaxbPropertyDecl.getGeometryPropertyMapping() );
     }
 
@@ -184,17 +185,19 @@ public class JAXBApplicationSchemaAdapter {
         QName valueFtName = jaxbPropertyDecl.getType();
         return new Pair<FeaturePropertyType, FeaturePropertyMappingType>( new FeaturePropertyType( propName, minOccurs,
                                                                                                    maxOccurs,
-                                                                                                   valueFtName ),
+                                                                                                   valueFtName, false,
+                                                                                                   null ),
                                                                           jaxbPropertyDecl.getFeaturePropertyMapping() );
     }
 
     private static Pair<MeasurePropertyType, MeasurePropertyMappingType> toMeasurePropertyType(
                                                                                                 QName propName,
-                                                                                                MeasurePropertyDecl jaxbPropertyDecl ) {        
+                                                                                                MeasurePropertyDecl jaxbPropertyDecl ) {
         int minOccurs = getMinOccurs( jaxbPropertyDecl );
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         return new Pair<MeasurePropertyType, MeasurePropertyMappingType>( new MeasurePropertyType( propName, minOccurs,
-                                                                                                   maxOccurs ),
+                                                                                                   maxOccurs, false,
+                                                                                                   null ),
                                                                           jaxbPropertyDecl.getMeasurePropertyMapping() );
     }
 

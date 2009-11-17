@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.types.ows.CodeType;
@@ -49,8 +51,9 @@ import org.deegree.commons.types.ows.CodeType;
  */
 public class CodePropertyType extends AbstractPropertyType {
 
-    public CodePropertyType( QName name, int minOccurs, int maxOccurs ) {
-        super( name, minOccurs, maxOccurs );
+    public CodePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                             List<PropertyType<?>> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
     }
 
     @Override

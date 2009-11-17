@@ -66,7 +66,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
         Assert.assertEquals( 4, fts.length );
         // TODO do more thorough testing
     }
-   
+
     @Test
     public void testParsingCityGML()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
@@ -75,15 +75,14 @@ public class GMLApplicationSchemaXSDDecoderTest {
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
-        FeatureType[] fts = schema.getFeatureTypes();        
+        FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 54, fts.length );
-        FeatureType cityModelFt = schema.getFeatureType( new QName ("http://www.opengis.net/citygml/1.0", "CityModel" ));
-        System.out.println (cityModelFt.getClass());        
-        System.out.println (cityModelFt);
 
-        // TODO do more thorough testing
+        FeatureType buildingFt = schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/citygml/building/1.0}Building" ) );
+        PropertyType<?> pt = buildingFt.getPropertyDeclaration( QName.valueOf( "{http://www.opengis.net/citygml/1.0}_GenericApplicationPropertyOfCityObject" ) );
+        Assert.assertEquals( 8, pt.getSubstitutions().length );
     }
-    
+
     @Test
     public void testParsingCiteSF0()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
@@ -94,7 +93,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 3, fts.length );
     }
-    
+
     @Test
     public void testParsingCiteSF1()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
@@ -105,9 +104,9 @@ public class GMLApplicationSchemaXSDDecoderTest {
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
         for ( FeatureType ft : fts ) {
-            System.out.println ("\nFt: " + ft.getName());
+            System.out.println( "\nFt: " + ft.getName() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                System.out.println (pt);
+                System.out.println( pt );
             }
         }
     }
@@ -121,21 +120,24 @@ public class GMLApplicationSchemaXSDDecoderTest {
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( int i = 0; i < fts.length; i++ ) {
-            System.out.println (fts[i]);
+            System.out.println( fts[i] );
         }
 
         // TODO do more thorough testing
-    }    
-    
-//    @Test
+    }
+
+    // @Test
     public void testParsingXPlanGML20()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
         String schemaURL = "file:/home/schneider/workspace/lkee_xplanung2/resources/schema/XPlanGML_2_0/XPlanGml.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
-        FeatureType ft = adapter.extractFeatureTypeSchema().getFeatureType(new QName("http://www.xplanung.de/xplangml", "BP_Plan"));
-        System.out.println (ft);
+        FeatureType ft = adapter.extractFeatureTypeSchema().getFeatureType(
+                                                                            new QName(
+                                                                                       "http://www.xplanung.de/xplangml",
+                                                                                       "BP_Plan" ) );
+        System.out.println( ft );
         // TODO do more thorough testing
     }
 }

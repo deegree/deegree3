@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.types.ows.StringOrRef;
@@ -49,8 +51,9 @@ import org.deegree.commons.types.ows.StringOrRef;
  */
 public class StringOrRefPropertyType extends AbstractPropertyType {
 
-    public StringOrRefPropertyType( QName name, int minOccurs, int maxOccurs ) {
-        super( name, minOccurs, maxOccurs );
+    public StringOrRefPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                                    List<PropertyType<?>> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
     }
 
     @Override

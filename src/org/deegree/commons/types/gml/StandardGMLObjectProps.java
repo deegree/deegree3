@@ -132,19 +132,21 @@ public class StandardGMLObjectProps {
     public static final CodePropertyType PT_NAME_GML31;
 
     static {
-        PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING );
-        PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING );
+        PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING, false,
+                                                              null );
+        PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING, false, null );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
         PT_BOUNDED_BY_GML2 = new GeometryPropertyType( new QName( GMLNS, "boundedBy" ), 0, 1,
                                                        GeometryPropertyType.GeometryType.GEOMETRY,
-                                                       GeometryPropertyType.CoordinateDimension.DIM_2 );
+                                                       GeometryPropertyType.CoordinateDimension.DIM_2, false, null );
 
         // TODO correct this (should be a MetaDataPropertyType)
-        PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null );
+        PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null,
+                                                              false, null );
         // TODO correct this (should be a StringOrRefType)
-        PT_DESCRIPTION_GML31 = new StringOrRefPropertyType( new QName( GMLNS, "description" ), 0, 1 );
-        PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1 );
+        PT_DESCRIPTION_GML31 = new StringOrRefPropertyType( new QName( GMLNS, "description" ), 0, 1, false, null );
+        PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1, false, null );
     }
 
     protected Object[] metadata;

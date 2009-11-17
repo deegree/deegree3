@@ -71,9 +71,13 @@ public class GML311StandardPropertiesIterator implements Iterator<Property<?>> {
     private int currentPropIdx = 0;
 
     private final static PropertyType DESCRIPTION_TYPE = new SimplePropertyType( new QName( GMLNS, "description" ), 0,
-                                                                                 1, STRING );
-    private final static PropertyType NAME_TYPE = new SimplePropertyType( new QName( GMLNS, "name" ), 0, -1, STRING );
-    private final static PropertyType BOUNDED_BY_TYPE = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1 );
+                                                                                 1, STRING, false, null );
+
+    private final static PropertyType NAME_TYPE = new SimplePropertyType( new QName( GMLNS, "name" ), 0, -1, STRING,
+                                                                          false, null );
+
+    private final static PropertyType BOUNDED_BY_TYPE = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0,
+                                                                                  1, false, null );
 
     public GML311StandardPropertiesIterator( StandardGMLFeatureProps props ) {
         this.props = props;

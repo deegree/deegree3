@@ -90,7 +90,7 @@ public class JAXBAdapter {
         for ( FeatureTypeDecl jaxbFt : jaxbSchema.getFeatureType() ) {
             fts[i++] = convert( jaxbFt );
         }
-        return new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
+        return new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
     }
 
     private FeatureType convert( FeatureTypeDecl jaxbFt ) {
@@ -146,7 +146,7 @@ public class JAXBAdapter {
             break;
         }
         }
-        return new SimplePropertyType( propName, minOccurs, maxOccurs, type );
+        return new SimplePropertyType( propName, minOccurs, maxOccurs, type, false, null );
     }
 
     private GeometryPropertyType convertGeometryPropertyDecl( GeometryPropertyDecl jaxbPropertyDecl ) {
@@ -155,7 +155,7 @@ public class JAXBAdapter {
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         // TODO
         CoordinateDimension dim = CoordinateDimension.DIM_2_OR_3;
-        return new GeometryPropertyType( propName, minOccurs, maxOccurs, null, dim );
+        return new GeometryPropertyType( propName, minOccurs, maxOccurs, null, dim, false, null );
     }
 
     private FeaturePropertyType convertFeaturePropertyDecl( FeaturePropertyDecl jaxbPropertyDecl ) {
@@ -166,7 +166,7 @@ public class JAXBAdapter {
         if ( "".equals( valueFtName.getPrefix() ) ) {
             valueFtName = new QName( jaxbSchema.getTargetNamespace(), valueFtName.getLocalPart() );
         }
-        return new FeaturePropertyType( propName, minOccurs, maxOccurs, valueFtName );
+        return new FeaturePropertyType( propName, minOccurs, maxOccurs, valueFtName, false, null );
     }
 
     private QName getPropertyName( AbstractPropertyDecl jaxbPropertyDecl ) {

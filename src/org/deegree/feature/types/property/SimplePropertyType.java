@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -54,8 +56,9 @@ public class SimplePropertyType<T> extends AbstractPropertyType<T> {
 
     private PrimitiveType primitiveType;
 
-    public SimplePropertyType( QName propName, int minOccurs, int maxOccurs, PrimitiveType type ) {
-        super( propName, minOccurs, maxOccurs );
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
+                               List<PropertyType<?>> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.primitiveType = type;
     }
 

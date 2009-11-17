@@ -54,7 +54,7 @@ public class DefaultGMLTypes {
     static {
         QName name = new QName (GMLNS, "FeatureCollection");
         List<PropertyType> props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType (new QName (GMLNS, "featureMember"), 0, -1, null) );
+        props.add( new FeaturePropertyType (new QName (GMLNS, "featureMember"), 0, -1, null, false, null) );
         GML311_FEATURECOLLECTION = new GenericFeatureCollectionType (name, props, false);
     }
 

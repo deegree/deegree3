@@ -44,7 +44,6 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSModel;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -79,10 +78,9 @@ public class ApplicationSchema {
     // B0 is in substitutionGroup B1, ..., B(n-1) is in substitutionGroup Bn)
     private final Map<FeatureType, List<FeatureType>> ftToSuperFts = new HashMap<FeatureType, List<FeatureType>>();
 
-    private final XSModel model;
-
     /**
-     * Creates a new {@link ApplicationSchema} instance from the given {@link FeatureType}s and their derivation hierarchy.
+     * Creates a new {@link ApplicationSchema} instance from the given {@link FeatureType}s and their derivation
+     * hierarchy.
      * 
      * @param fts
      *            all application feature types (abstract and non-abstract), this must not include any GML base feature
@@ -90,11 +88,10 @@ public class ApplicationSchema {
      * @param ftToSuperFt
      *            key: feature type A, value: feature type B (A extends B), this must not include any GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>)
-     * @param model
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
-    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt, XSModel model )
+    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt )
                             throws IllegalArgumentException {
 
         for ( FeatureType ft : fts ) {
@@ -119,7 +116,7 @@ public class ApplicationSchema {
 
         // resolve values in feature property declarations
         for ( FeatureType ft : fts ) {
-            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            for ( PropertyType<?> pt : ft.getPropertyDeclarations() ) {
                 if ( pt instanceof FeaturePropertyType ) {
                     QName referencedFtName = ( (FeaturePropertyType) pt ).getFTName();
                     if ( referencedFtName != null ) {
@@ -134,13 +131,12 @@ public class ApplicationSchema {
                 }
             }
         }
-        this.model = model;
     }
 
     /**
      * Returns all feature types that are defined in this application schema.
      * 
-     * @return all feature types
+     * @return all feature types, never <code>null</code>
      */
     public FeatureType[] getFeatureTypes() {
         FeatureType[] fts = new FeatureType[ftNameToFt.values().size()];
@@ -151,6 +147,11 @@ public class ApplicationSchema {
         return fts;
     }
 
+    /**
+     * Returns all root feature types that are defined in this application schema.
+     * 
+     * @return all root feature types, never <code>null</code>
+     */
     public FeatureType[] getRootFeatureTypes() {
         // start with all feature types
         Set<FeatureType> fts = new HashSet<FeatureType>( ftNameToFt.values() );
@@ -240,9 +241,5 @@ public class ApplicationSchema {
             }
         }
         return false;
-    }
-
-    public XSModel getXSModel() {
-        return model;
     }
 }

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,20 +32,23 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
+
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
 public class LengthPropertyType extends MeasurePropertyType {
 
-    public LengthPropertyType (QName name, int minOccurs, int maxOccurs) {
-        super (name, minOccurs, maxOccurs );
+    public LengthPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
+                               List<PropertyType<?>> substitutions ) {
+        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
     }
 
     @Override
     public String toString() {
         String s = "- length property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
         return s;
-    }    
+    }
 }
