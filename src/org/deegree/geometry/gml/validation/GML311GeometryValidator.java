@@ -45,7 +45,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -91,7 +91,7 @@ public class GML311GeometryValidator extends XMLAdapter {
      */
     public GML311GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
-        geomParser = new GML311GeometryDecoder( new GeometryFactory(), new GMLIdContext() );
+        geomParser = new GML311GeometryDecoder( new GeometryFactory(), new GMLDocumentIdContext() );
         this.gmlErrorHandler = gmlErrorHandler;
     }
 

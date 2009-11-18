@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
@@ -79,7 +80,7 @@ public class DefaultLockManagerTest {
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException {
+                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException, GMLReferenceResolvingException {
         URL url = DefaultLockManagerTest.class.getResource( "../example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();

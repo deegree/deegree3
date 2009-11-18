@@ -45,7 +45,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
@@ -82,7 +82,7 @@ public class FilterEvaluationTest {
         String schemaURL = this.getClass().getResource( "../feature/gml/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-        GMLIdContext idContext = new GMLIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
 
         URL docURL = this.getClass().getResource( "../feature/gml/testdata/features/Philosopher_FeatureCollection.xml" );
@@ -91,7 +91,7 @@ public class FilterEvaluationTest {
         xmlReader.next();
         fc = (FeatureCollection) gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ),
                                                           null );
-        idContext.resolveXLinks( schema );
+        idContext.resolveLocalRefs();
 
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );

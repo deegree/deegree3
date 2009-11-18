@@ -45,7 +45,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
+import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -80,7 +81,7 @@ public class GMLFeatureEncoderTest {
     public void testValidateExportedFeatures()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
-                            XMLParsingException, UnknownCRSException, TransformationException {
+                            XMLParsingException, UnknownCRSException, TransformationException, GMLReferenceResolvingException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
@@ -89,10 +90,10 @@ public class GMLFeatureEncoderTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLIdContext idContext = new GMLIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
         Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
-        idContext.resolveXLinks( schema );
+        idContext.resolveLocalRefs();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );

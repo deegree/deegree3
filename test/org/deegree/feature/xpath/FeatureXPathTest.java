@@ -43,7 +43,7 @@ import java.util.Set;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
@@ -86,7 +86,7 @@ public class FeatureXPathTest {
         String schemaURL = this.getClass().getResource( "../gml/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-        GMLIdContext idContext = new GMLIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
@@ -95,7 +95,7 @@ public class FeatureXPathTest {
         xmlReader.next();
         fc = (FeatureCollection) gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ),
                                                           null );
-        idContext.resolveXLinks( schema );
+        idContext.resolveLocalRefs();
 
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
@@ -176,7 +176,8 @@ public class FeatureXPathTest {
     public void testXPath7()
                             throws JaxenException {
         XPath xpath = new FeatureXPath(
-                                        "gml:featureMember/app:Philosopher[app:name='Albert Camus' and app:placeOfBirth/*/app:name='Mondovi']/app:placeOfBirth/app:Place/app:name", GMLVersion.GML_31 );
+                                        "gml:featureMember/app:Philosopher[app:name='Albert Camus' and app:placeOfBirth/*/app:name='Mondovi']/app:placeOfBirth/app:Place/app:name",
+                                        GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
         List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
         Assert.assertEquals( 1, selectedNodes.size() );
@@ -189,7 +190,8 @@ public class FeatureXPathTest {
     @Test
     public void testXPath8()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher/app:placeOfBirth/app:Place", GMLVersion.GML_31 );
+        XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher/app:placeOfBirth/app:Place",
+                                        GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
         List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
         Assert.assertEquals( 1, selectedNodes.size() );
@@ -248,7 +250,7 @@ public class FeatureXPathTest {
         Feature feature = featureNode.getFeature();
         Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testXPath12()
@@ -261,7 +263,7 @@ public class FeatureXPathTest {
         Feature feature = featureNode.getFeature();
         Assert.assertEquals( "PHILOSOPHER_6", feature.getId() );
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testXPath13()

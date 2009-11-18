@@ -53,7 +53,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
+import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -151,19 +152,20 @@ public class MemoryFeatureStore implements FeatureStore {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws FeatureStoreException
+     * @throws GMLReferenceResolvingException 
      */
     public MemoryFeatureStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
-                            UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException {
+                            UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException, GMLReferenceResolvingException {
 
         this( schema );
-        GMLIdContext idContext = new GMLIdContext();
-        GMLFeatureDecoder parser = new GMLFeatureDecoder( schema, idContext );
+        GMLFeatureDecoder parser = new GMLFeatureDecoder( schema );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         parser.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
-        idContext.resolveXLinks( schema );
         xmlReader.close();
+        GMLDocumentIdContext idContext = parser.getDocumentIdContext();
+        idContext.resolveLocalRefs();
 
         // add features
         Map<String, Feature> idToFeature = idContext.getFeatures();

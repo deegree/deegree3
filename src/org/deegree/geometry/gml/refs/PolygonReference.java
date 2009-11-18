@@ -38,6 +38,7 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
+import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
@@ -52,8 +53,18 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  */
 public class PolygonReference extends SurfaceReference<Polygon> implements Polygon {
 
-    public PolygonReference (String href, String baseURL) {
-        super (href, baseURL);
+    /**
+     * Creates a new {@link PolygonReference} instance.
+     * 
+     * @param resolver
+     *            used for resolving the reference, must not be <code>null</code>
+     * @param uri
+     *            the geometry's uri, must not be <code>null</code>
+     * @param baseURL
+     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public PolygonReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+        super( resolver, uri, baseURL );
     }
 
     @Override

@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
@@ -50,8 +51,8 @@ import org.deegree.geometry.Geometry;
 import org.jaxen.JaxenException;
 
 /**
- * Represents a reference to the GML representation of a feature, which is usually expressed using an
- * <code>xlink:href</code> attribute in GML (may be document-local or remote).
+ * Represents a reference to a feature, which is usually expressed using an <code>xlink:href</code> attribute in GML
+ * (may be document-local or remote).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -60,162 +61,165 @@ import org.jaxen.JaxenException;
  */
 public class FeatureReference implements Feature {
 
-    private String href;
+    private final GMLObjectResolver resolver;
 
-    private String fid;
+    private final String uri;
+    
+    private final String baseURL;
 
     private Feature feature;
 
-    private FeatureType ft;
-
-    public FeatureReference( String href ) {
-        this.href = href;
-        int pos = href.lastIndexOf( '#' );
-        if ( pos < 0 ) {
-            String msg = "Reference string (='" + href + "') does not contain a '#' character.";
-            throw new IllegalArgumentException( msg );
-        }
-        fid = href.substring( pos + 1 );
+    /**
+     * Creates a new {@link FeatureReference} instance.
+     * 
+     * @param resolver
+     *            used for resolving the reference, must not be <code>null</code>
+     * @param uri
+     *            the feature's uri, must not be <code>null</code>
+     * @param baseURL
+     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public FeatureReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+        this.resolver = resolver;
+        this.uri = uri;
+        this.baseURL = baseURL;
     }
 
-    public FeatureReference( String href, FeatureType ft ) {
-        this( href );
-        this.ft = ft;
+    /**
+     * Returns the URI of the feature.
+     * 
+     * @return the URI of the feature, never <code>null</code>
+     */
+    public String getURI() {
+        return uri;
     }
 
-    public void resolve( Feature feature ) {
-        if ( this.feature != null ) {
-            String msg = "Internal error: Feature reference (" + href + ") has already been resolved.";
-            throw new RuntimeException( msg );
+    /**
+     * Returns whether the URI is local, i.e. if it starts with the <code>#</code> character.
+     * 
+     * @return true, if the URI is local, false otherwise
+     */
+    public boolean isLocal() {
+        return uri.startsWith( "#" );
+    }
+
+    /**
+     * Returns the referenced {@link Feature} instance (may trigger resolving and fetching it).
+     * 
+     * @return the referenced {@link Feature} instance
+     */
+    public Feature getReferencedFeature() {
+        if ( this.feature == null ) {
+            feature = resolver.getFeature( uri, baseURL );
         }
-        this.feature = feature;
+        return feature;
     }
 
     @Override
     public Envelope getEnvelope() {
-        return feature.getEnvelope();
+        return getReferencedFeature().getEnvelope();
     }
 
     @Override
     public Property<Geometry>[] getGeometryProperties() {
-        return feature.getGeometryProperties();
+        return getReferencedFeature().getGeometryProperties();
     }
 
     @Override
     public String getId() {
-        // TODO remove hack (only necessary because ID generation in store does not update reference objects)
-        if ( feature != null ) {
-            return feature.getId();
-        }
-        return fid;
+        return getReferencedFeature().getId();
     }
 
     @Override
     public QName getName() {
-        return feature.getName();
+        return getReferencedFeature().getName();
     }
 
     @Override
     public Property<?>[] getProperties() {
-        return feature.getProperties();
+        return getReferencedFeature().getProperties();
     }
 
     @Override
     public Property<?>[] getProperties( QName propName ) {
-        return feature.getProperties( propName );
+        return getReferencedFeature().getProperties( propName );
     }
 
     @Override
     public Property<?> getProperty( QName propName ) {
-        return feature.getProperty( propName );
+        return getReferencedFeature().getProperty( propName );
     }
 
     @Override
     public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
                             throws JaxenException {
-        return feature.getPropertyValues( propName, version );
+        return getReferencedFeature().getPropertyValues( propName, version );
     }
 
     @Override
     public Object getPropertyValue( QName propName ) {
-        return feature.getPropertyValue( propName );
+        return getReferencedFeature().getPropertyValue( propName );
     }
 
     @Override
     public Object[] getPropertyValues( QName propName ) {
-        return feature.getPropertyValues( propName );
+        return getReferencedFeature().getPropertyValues( propName );
     }
 
     @Override
     public FeatureType getType() {
-        if ( feature == null ) {
-            return ft;
-        }
-        return feature.getType();
+        return getReferencedFeature().getType();
     }
 
     @Override
     public void setId( String id ) {
-        feature.setId( id );
+        getReferencedFeature().setId( id );
     }
 
     @Override
     public void setProperties( List<Property<?>> props )
                             throws IllegalArgumentException {
-        feature.setProperties( props );
+        getReferencedFeature().setProperties( props );
     }
 
     @Override
     public void setPropertyValue( QName propName, int occurence, Object value ) {
-        feature.setPropertyValue( propName, occurence, value );
-    }
-
-    public String getHref() {
-        return href;
-    }
-
-    /**
-     * Returns whether the reference is local or remote.
-     * 
-     * @return true, if the reference is local, false otherwise
-     */
-    public boolean isLocal() {
-        return href.startsWith( "#" );
+        getReferencedFeature().setPropertyValue( propName, occurence, value );
     }
 
     @Override
     public Property<?>[] getProperties( GMLVersion version ) {
-        return feature.getProperties( version );
+        return getReferencedFeature().getProperties( version );
     }
 
     @Override
     public Property<?>[] getProperties( QName propName, GMLVersion version ) {
-        return feature.getProperties( propName, version );
+        return getReferencedFeature().getProperties( propName, version );
     }
 
     @Override
     public Property<?> getProperty( QName propName, GMLVersion version ) {
-        return feature.getProperty( propName, version );
+        return getReferencedFeature().getProperty( propName, version );
     }
 
     @Override
     public Object getPropertyValue( QName propName, GMLVersion version ) {
-        return feature.getPropertyValue( propName, version );
+        return getReferencedFeature().getPropertyValue( propName, version );
     }
 
     @Override
     public Object[] getPropertyValues( QName propName, GMLVersion version ) {
-        return feature.getPropertyValues( propName, version );
+        return getReferencedFeature().getPropertyValues( propName, version );
     }
 
     @Override
     public void setProperties( List<Property<?>> props, GMLVersion version )
                             throws IllegalArgumentException {
-        feature.setProperties( props, version );
+        getReferencedFeature().setProperties( props, version );
     }
 
     @Override
     public void setPropertyValue( QName propName, int occurence, Object value, GMLVersion version ) {
-        feature.setPropertyValue( propName, occurence, value, version );
+        getReferencedFeature().setPropertyValue( propName, occurence, value, version );
     }
 }

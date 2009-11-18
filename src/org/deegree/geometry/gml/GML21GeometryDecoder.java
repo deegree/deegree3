@@ -47,7 +47,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -101,24 +101,33 @@ public class GML21GeometryDecoder {
 
     private GeometryFactory geomFac;
 
-    private GMLIdContext idContext;
+    private GMLDocumentIdContext idContext;
 
     /**
      * 
      */
     public GML21GeometryDecoder() {
-        this( new GeometryFactory(), new GMLIdContext() );
+        this( new GeometryFactory(), new GMLDocumentIdContext() );
     }
 
     /**
      * @param geomFac
      * @param idContext
      */
-    public GML21GeometryDecoder( GeometryFactory geomFac, GMLIdContext idContext ) {
+    public GML21GeometryDecoder( GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
         this.geomFac = geomFac;
         this.idContext = idContext;
     }
 
+    /**
+     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifieres and references.
+     * 
+     * @return the {@link GMLDocumentIdContext}, never <code>null</code>
+     */
+    public GMLDocumentIdContext getDocumentIdContext() {
+        return idContext;
+    }
+    
     /**
      * @param xmlStream
      * @return
@@ -261,7 +270,7 @@ public class GML21GeometryDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            polygon = new PolygonReference( href, xmlStream.getSystemId() );
+            polygon = new PolygonReference( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -337,7 +346,7 @@ public class GML21GeometryDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            lineString = new LineStringReference( href, xmlStream.getSystemId() );
+            lineString = new LineStringReference( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -412,7 +421,7 @@ public class GML21GeometryDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            point = new PointReference( href, xmlStream.getSystemId() );
+            point = new PointReference( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -487,7 +496,7 @@ public class GML21GeometryDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            geometry = new GeometryReference<Geometry>( href, xmlStream.getSystemId() );
+            geometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {

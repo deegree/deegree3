@@ -44,7 +44,7 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -271,7 +271,7 @@ public class GeometryValidatorTest {
                                                                        GML311GeometryDecoderTest.class.getResource( BASE_DIR
                                                                                                                     + fileName ) );
         xmlReader.nextTag();
-        return new GML311GeometryDecoder( geomFac, new GMLIdContext() ).parse( xmlReader, null );
+        return new GML311GeometryDecoder( geomFac, new GMLDocumentIdContext() ).parse( xmlReader, null );
     }
 }
 

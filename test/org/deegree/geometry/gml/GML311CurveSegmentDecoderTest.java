@@ -42,7 +42,7 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -363,7 +363,7 @@ public class GML311CurveSegmentDecoderTest {
 
     private GML311CurveSegmentDecoder getParser()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        GMLIdContext idContext = new GMLIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GeometryFactory geomFac = new GeometryFactory();
         return new GML311CurveSegmentDecoder( new GML311GeometryDecoder(), geomFac );
     }

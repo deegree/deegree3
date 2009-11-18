@@ -184,11 +184,14 @@ public class PostGISFeatureStore implements FeatureStore {
                             throws FeatureStoreException {
 
         Object geomOrFeature = null;
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
         try {
-            Connection conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery( "SELECT binary_object2 FROM gml_objects WHERE gml_id='" + id + "'" );
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT binary_object2 FROM gml_objects WHERE gml_id='" + id + "'" );
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
                 geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ) );
@@ -197,6 +200,8 @@ public class PostGISFeatureStore implements FeatureStore {
             String msg = "Error performing query: " + e.getMessage();
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
+        } finally {
+            closeSafely( conn, stmt, rs );
         }
         return geomOrFeature;
     }
@@ -328,11 +333,14 @@ public class PostGISFeatureStore implements FeatureStore {
         short ftId = ftNameToFtId.get( ftName );
 
         FeatureCollection fc = null;
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
         try {
-            Connection conn = ConnectionManager.getConnection( jdbcConnId );
+            conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery( "SELECT gml_id,binary_object2 FROM gml_objects WHERE ft_type=" + ftId );
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT gml_id,binary_object2 FROM gml_objects WHERE ft_type=" + ftId );
 
             // TODO lazy fetching (CloseableIterator etc)
             List<Feature> members = new LinkedList<Feature>();
@@ -347,6 +355,8 @@ public class PostGISFeatureStore implements FeatureStore {
             String msg = "Error performing query: " + e.getMessage();
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
+        } finally {
+            closeSafely( conn, stmt, rs );
         }
 
         // extract / create filter from query

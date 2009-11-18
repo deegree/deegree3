@@ -49,7 +49,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -166,7 +166,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
     private final GML311SurfacePatchDecoder surfacePatchParser;
 
-    private final GMLIdContext idContext;
+    private final GMLDocumentIdContext idContext;
 
     // local names of all concrete elements substitutable for "gml:_Curve"
     private static final Set<String> curveElements = new HashSet<String>();
@@ -245,18 +245,27 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      * 
      */
     public GML311GeometryDecoder() {
-        this( new GeometryFactory(), new GMLIdContext() );
+        this( new GeometryFactory(), new GMLDocumentIdContext() );
     }
 
     /**
      * @param geomFac
      * @param idContext
      */
-    public GML311GeometryDecoder( GeometryFactory geomFac, GMLIdContext idContext ) {
+    public GML311GeometryDecoder( GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
         super( geomFac );
         this.idContext = idContext;
         curveSegmentParser = new GML311CurveSegmentDecoder( this, geomFac );
         surfacePatchParser = new GML311SurfacePatchDecoder( this, geomFac );
+    }
+
+    /**
+     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifieres and references.
+     * 
+     * @return the {@link GMLDocumentIdContext}, never <code>null</code>
+     */
+    public GMLDocumentIdContext getDocumentIdContext() {
+        return idContext;
     }
 
     /**
@@ -2214,7 +2223,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            point = new PointReference( href, xmlStream.getSystemId() );
+            point = new PointReference( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -2267,7 +2276,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            lineString = new LineStringReference( href, xmlStream.getSystemId() );
+            lineString = new LineStringReference( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -2320,7 +2329,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            curve = new CurveReference<Curve>( href, xmlStream.getSystemId() );
+            curve = new CurveReference<Curve>( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -2368,7 +2377,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            polygon = new PolygonReference( href, xmlStream.getSystemId() );
+            polygon = new PolygonReference( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -2421,7 +2430,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            surface = new SurfaceReference<Surface>( href, xmlStream.getSystemId() );
+            surface = new SurfaceReference<Surface>( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -2469,7 +2478,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            solid = new SolidReference<Solid>( href, xmlStream.getSystemId() );
+            solid = new SolidReference<Solid>( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -2522,7 +2531,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            primitive = new GeometricPrimitiveReference<GeometricPrimitive>( href, xmlStream.getSystemId() );
+            primitive = new GeometricPrimitiveReference<GeometricPrimitive>( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
@@ -2570,7 +2579,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            geometry = new GeometryReference<Geometry>( href, xmlStream.getSystemId() );
+            geometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {

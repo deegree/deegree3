@@ -38,6 +38,7 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
+import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
@@ -57,8 +58,18 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
  */
 public class SurfaceReference<T extends Surface> extends GeometricPrimitiveReference<T> implements Surface {
 
-    public SurfaceReference( String href, String baseURL ) {
-        super( href, baseURL );
+    /**
+     * Creates a new {@link SurfaceReference} instance.
+     * 
+     * @param resolver
+     *            used for resolving the reference, must not be <code>null</code>
+     * @param uri
+     *            the geometry's uri, must not be <code>null</code>
+     * @param baseURL
+     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public SurfaceReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+        super( resolver, uri, baseURL );
     }
 
     @Override

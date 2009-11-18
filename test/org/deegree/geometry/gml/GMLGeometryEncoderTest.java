@@ -45,7 +45,8 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
+import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
@@ -165,7 +166,7 @@ public class GMLGeometryEncoderTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String source : sources ) {
-            GMLIdContext idContext = new GMLIdContext();
+            GMLDocumentIdContext idContext = new GMLDocumentIdContext();
             GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
             URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
@@ -205,7 +206,7 @@ public class GMLGeometryEncoderTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String patchSource : patchSources ) {
-            GMLIdContext idContext = new GMLIdContext();
+            GMLDocumentIdContext idContext = new GMLDocumentIdContext();
             GeometryFactory geomFactory = new GeometryFactory();
             GML311GeometryDecoder geometryParser = new GML311GeometryDecoder( geomFactory, idContext );
             GML311SurfacePatchDecoder parser = new GML311SurfacePatchDecoder( geometryParser, geomFactory );
@@ -248,7 +249,7 @@ public class GMLGeometryEncoderTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String segmentSource : segmentSources ) {
-            GMLIdContext idContext = new GMLIdContext();
+            GMLDocumentIdContext idContext = new GMLDocumentIdContext();
             GeometryFactory geomFactory = new GeometryFactory();
             GML311GeometryDecoder geometryParser = new GML311GeometryDecoder( geomFactory, idContext );
             GML311CurveSegmentDecoder parser = new GML311CurveSegmentDecoder( geometryParser, geomFactory );
@@ -289,7 +290,7 @@ public class GMLGeometryEncoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, TransformationException {
         for ( String envelopeSource : envelopeSources ) {
-            GMLIdContext idContext = new GMLIdContext();
+            GMLDocumentIdContext idContext = new GMLDocumentIdContext();
             GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
             URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + envelopeSource );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
@@ -322,21 +323,23 @@ public class GMLGeometryEncoderTest {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws TransformationException
+     * @throws GMLReferenceResolvingException
      */
     @Test
     public void testValidatingExportedXLinkMultiGeometry1()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, TransformationException {
+                            FactoryConfigurationError, IOException, TransformationException,
+                            GMLReferenceResolvingException {
 
         String source = "XLinkMultiGeometry1.gml";
-        GMLIdContext idContext = new GMLIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
         URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();
         Geometry geom = parser.parseMultiGeometry( xmlReader, null );
 
-        idContext.resolveXLinks( null );
+        idContext.resolveLocalRefs();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -359,16 +362,16 @@ public class GMLGeometryEncoderTest {
     @Test
     public void testValidatingExportedXLinkMultiGeometry2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException, TransformationException {
+                            UnknownCRSException, TransformationException, GMLReferenceResolvingException {
         String source = "XLinkMultiGeometry2.gml";
-        GMLIdContext idContext = new GMLIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
         URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();
         Geometry geom = parser.parseMultiCurve( xmlReader, null );
 
-        idContext.resolveXLinks( null );
+        idContext.resolveLocalRefs();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -392,16 +395,16 @@ public class GMLGeometryEncoderTest {
     @Test
     public void testValidatingExportedXLinkMultiLineString()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException, TransformationException {
+                            UnknownCRSException, TransformationException, GMLReferenceResolvingException {
         String source = "XLinkMultiLineString.gml";
-        GMLIdContext idContext = new GMLIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
         URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();
         Geometry geom = parser.parseMultiLineString( xmlReader, null );
 
-        idContext.resolveXLinks( null );
+        idContext.resolveLocalRefs();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );

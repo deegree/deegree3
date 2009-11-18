@@ -45,7 +45,8 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
+import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRSRegistry;
@@ -780,17 +781,17 @@ public class GML311GeometryDecoderTest {
     @Test
     public void parseXLinkLineString()
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+
         XMLStreamReaderWrapper xmlReader = getParser( "XLinkLineString.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
-        GMLIdContext idContext = new GMLIdContext();
-        LineString geom = new GML311GeometryDecoder( new GeometryFactory(), idContext ).parseLineString( xmlReader,
-                                                                                                         null );
+        GML311GeometryDecoder decoder = new GML311GeometryDecoder();
+        LineString geom = decoder.parseLineString( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), geom.getCoordinateSystem().getWrappedCRS() );
+        decoder.getDocumentIdContext();
 
-        idContext.resolveXLinks( null );
         for ( Point p : geom.getControlPoints() ) {
             System.out.println( p.getId() + ", " + p.getClass() );
             System.out.println( p.get0() );
@@ -799,11 +800,11 @@ public class GML311GeometryDecoderTest {
 
     @Test
     public void parseXLinkMultiGeometry1()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException, GMLReferenceResolvingException {
         XMLStreamReaderWrapper xmlReader = getParser( "XLinkMultiGeometry1.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
-        GMLIdContext idContext = new GMLIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         MultiGeometry<Geometry> geom = new GML311GeometryDecoder( new GeometryFactory(), idContext ).parseMultiGeometry(
                                                                                                                          xmlReader,
                                                                                                                          null );
@@ -811,7 +812,7 @@ public class GML311GeometryDecoderTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
         Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), geom.getCoordinateSystem().getWrappedCRS() );
 
-        idContext.resolveXLinks( null );
+        idContext.resolveLocalRefs();
         LineString ls = (LineString) geom.get( 2 );
         for ( Point p : ls.getControlPoints() ) {
             System.out.println( p.getId() + ", " + p.getClass() );

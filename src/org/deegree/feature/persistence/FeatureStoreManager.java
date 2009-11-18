@@ -47,7 +47,7 @@ import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -158,14 +158,13 @@ public class FeatureStoreManager {
             for ( String datasetFile : memoryDsConfig.getGMLFeatureCollectionFileURL() ) {
                 if ( datasetFile != null ) {
                     try {
-                        GMLIdContext idContext = new GMLIdContext();
-                        GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, idContext );
+                        GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema );
                         URL docURL = resolver.resolve( datasetFile.trim() );
                         XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( docURL );
                         xmlStream.nextTag();
                         LOG.debug( "Populating feature store with features from file '" + docURL + "'..." );
                         FeatureCollection fc = (FeatureCollection) decoder.parseFeature( xmlStream, null );
-                        idContext.resolveXLinks( schema );
+                        decoder.getDocumentIdContext().resolveLocalRefs();
 
                         FeatureStoreTransaction ta = fs.acquireTransaction();
                         List<String> fids = ta.performInsert( fc, IDGenMode.GENERATE_NEW );

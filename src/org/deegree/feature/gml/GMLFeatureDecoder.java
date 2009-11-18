@@ -53,7 +53,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.types.datetime.DateTime;
@@ -119,7 +119,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private final Map<PropertyType, CustomPropertyDecoder<?>> ptToParser = new HashMap<PropertyType, CustomPropertyDecoder<?>>();
 
-    private final GMLIdContext idContext;
+    private final GMLDocumentIdContext idContext;
 
     private final GML311GeometryDecoder geomParser;
 
@@ -132,7 +132,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * @param idContext
      *            id context to be used for registering gml:ids (features and geometries and resolving local xlinks and
      */
-    public GMLFeatureDecoder( ApplicationSchema schema, GMLIdContext idContext ) {
+    public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
@@ -147,7 +147,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
      *            application schema that defines the feature types, must not be <code>null</code>
      */
     public GMLFeatureDecoder( ApplicationSchema schema ) {
-        this( schema, new GMLIdContext() );
+        this( schema, new GMLDocumentIdContext() );
     }
 
     /**
@@ -167,6 +167,15 @@ public class GMLFeatureDecoder extends XMLAdapter {
      */
     public ApplicationSchema getApplicationSchema() {
         return schema;
+    }
+
+    /**
+     * Returns the {@link GMLDocumentIdContext} that keeps track of objects, identifieres and references.
+     * 
+     * @return the {@link GMLDocumentIdContext}, never <code>null</code>
+     */
+    public GMLDocumentIdContext getDocumentIdContext() {
+        return idContext;
     }
 
     /**
@@ -266,7 +275,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         feature = ft.newFeature( fid, propertyList, GMLVersion.GML_31 );
 
         if ( fid != null && !"".equals( fid ) ) {
-            if ( idContext.getFeature( fid ) != null ) {
+            if ( idContext.getFeatureById( fid ) != null ) {
                 String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
                 throw new XMLParsingException( xmlStream, msg );
             }
@@ -357,7 +366,8 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
                 if ( href != null ) {
                     // TODO respect geometry type information (Point, Surface, etc.)
-                    GeometryReference<Geometry> refGeometry = new GeometryReference<Geometry>( href, getSystemId() );
+                    GeometryReference<Geometry> refGeometry = new GeometryReference<Geometry>( idContext, href,
+                                                                                               xmlStream.getSystemId() );
                     // local feature reference?
                     if ( href.startsWith( "#" ) ) {
                         idContext.addGeometryReference( refGeometry );
@@ -371,13 +381,12 @@ public class GMLFeatureDecoder extends XMLAdapter {
                     xmlStream.nextTag();
                 }
             } else if ( propDecl instanceof FeaturePropertyType ) {
-                String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-                if ( href != null ) {
-                    FeatureReference refFeature = new FeatureReference( href,
-                                                                        ( (FeaturePropertyType) propDecl ).getValueFt() );
+                String uri = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+                if ( uri != null ) {
+                    FeatureReference refFeature = new FeatureReference( idContext, uri, xmlStream.getSystemId() );
 
                     // local feature reference?
-                    if ( href.startsWith( "#" ) ) {
+                    if ( uri.startsWith( "#" ) ) {
                         idContext.addFeatureReference( refFeature );
                     }
 

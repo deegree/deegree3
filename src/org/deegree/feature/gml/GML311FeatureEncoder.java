@@ -276,7 +276,7 @@ public class GML311FeatureEncoder {
             writer.writeAttribute( "uom", measure.getUomUri() );
             writer.writeCharacters( String.valueOf( measure.getValue() ) );
             writer.writeEndElement();
-        } else if (propertyType instanceof StringOrRefPropertyType) {
+        } else if ( propertyType instanceof StringOrRefPropertyType ) {
             StringOrRef stringOrRef = (StringOrRef) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             if ( stringOrRef.getRef() != null ) {
@@ -350,8 +350,8 @@ public class GML311FeatureEncoder {
             } else {
                 // must be exported by reference
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                writer.writeAttribute( XLNNS, "href", ref.getHref() );
-                writer.writeComment( "Reference to remote feature '" + ref.getHref() + "'" );
+                writer.writeAttribute( XLNNS, "href", ref.getURI() );
+                writer.writeComment( "Reference to remote feature '" + ref.getURI() + "'" );
                 writer.writeEndElement();
             }
         }

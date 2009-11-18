@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,26 +32,37 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.gml.refs;
 
+import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 
 /**
  * The <code></code> class TODO add class documentation here.
  * 
- * @param <T> 
- *
+ * @param <T>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements GeometricPrimitive {
-
-    public GeometricPrimitiveReference (String href, String baseURL) {
-        super (href, baseURL);
+public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements
+                                                                                                   GeometricPrimitive {
+    /**
+     * Creates a new {@link GeometricPrimitiveReference} instance.
+     * 
+     * @param resolver
+     *            used for resolving the reference, must not be <code>null</code>
+     * @param uri
+     *            the geometry's uri, must not be <code>null</code>
+     * @param baseURL
+     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public GeometricPrimitiveReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+        super( resolver, uri, baseURL );
     }
 
     @Override

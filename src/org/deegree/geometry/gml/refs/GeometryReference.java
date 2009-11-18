@@ -36,21 +36,15 @@
 
 package org.deegree.geometry.gml.refs;
 
-import java.net.URL;
-
-import org.deegree.commons.gml.GMLIdContext;
+import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Represents a reference to the GML representation of a geometry, which is usually expressed using an
@@ -65,80 +59,59 @@ import org.slf4j.LoggerFactory;
  */
 public class GeometryReference<T extends Geometry> implements Geometry {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLIdContext.class );
+    private final GMLObjectResolver resolver;
 
-    protected String href;
+    protected final String uri;
+    
+    protected final String baseURL;
 
-    private String gid;
+    private T geometry;
 
-    private T referencedGeometry;
-
-    /** true: local xlink (#...), false: external xlink */
-    protected boolean isLocal;
-
-    private String baseURL;
-
-    public GeometryReference( String href, String baseURL ) {
-        this.href = href;
+    /**
+     * Creates a new {@link GeometryReference} instance.
+     * 
+     * @param resolver
+     *            used for resolving the reference, must not be <code>null</code>
+     * @param uri
+     *            the geometry's uri, must not be <code>null</code>
+     * @param baseURL
+     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public GeometryReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+        this.resolver = resolver;
+        this.uri = uri;
         this.baseURL = baseURL;
-        int pos = href.lastIndexOf( '#' );
-        if ( pos < 0 ) {
-            isLocal = false;
-        } else {
-            isLocal = true;
-            gid = href.substring( pos + 1 );
-        }
     }
 
     /**
-     * Returns whether the reference is document-local (xlink: #...) or remote.
+     * Returns the URI of the feature.
      * 
-     * @return true, if the reference is document-local, false otherwise
+     * @return the URI of the feature, never <code>null</code>
+     */
+    public String getURI() {
+        return uri;
+    }
+
+    /**
+     * Returns whether the URI is local, i.e. if it starts with the <code>#</code> character.
+     * 
+     * @return true, if the URI is local, false otherwise
      */
     public boolean isLocal() {
-        return isLocal;
-    }
-
-    public void resolve( T geometry ) {
-        if ( this.referencedGeometry != null ) {
-            String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
-            throw new RuntimeException( msg );
-        }
-        this.referencedGeometry = geometry;
+        return uri.startsWith( "#" );
     }
 
     /**
-     * Returns the referenced {@link Geometry} object.
+     * Returns the referenced {@link Geometry} instance (may trigger resolving and fetching it).
      * 
-     * @return the referenced geometry
+     * @return the referenced {@link Geometry} instance
      */
-    @SuppressWarnings("unchecked")
     public T getReferencedGeometry() {
-        if ( referencedGeometry == null ) {
-            if ( isLocal ) {
-                String msg = "Internal error: Reference to local geometry (" + href + ") has not been resolved.";
-                throw new RuntimeException( msg );
-            }
-            LOG.info( "Trying to resolve reference to external geometry: '" + href + "', base system id: " + baseURL );
-            GML311GeometryDecoder decoder = new GML311GeometryDecoder();
-            try {
-                URL resolvedURL = null;
-                if ( baseURL != null ) {
-                    resolvedURL = new URL( new URL( baseURL ), href );
-                } else {
-                    resolvedURL = new URL( href );
-                }
-                XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( resolvedURL );
-                xmlReader.nextTag();
-                referencedGeometry = (T) decoder.parse( xmlReader, null );
-                LOG.debug( "Read GML geometry: '" + referencedGeometry.getClass() + "'" );
-                xmlReader.close();
-            } catch ( Exception e ) {
-                throw new RuntimeException( "Unable to resolve external geometry reference: " + e.getMessage() );
-            }
+        if ( this.geometry == null ) {
+            geometry = (T) resolver.getGeometry( uri, baseURL );
         }
-        return referencedGeometry;
-    }
+        return geometry;
+    }    
 
     @Override
     public boolean contains( Geometry geometry ) {
@@ -197,9 +170,6 @@ public class GeometryReference<T extends Geometry> implements Geometry {
 
     @Override
     public String getId() {
-        if ( isLocal ) {
-            return gid;
-        }
         return getReferencedGeometry().getId();
     }
 

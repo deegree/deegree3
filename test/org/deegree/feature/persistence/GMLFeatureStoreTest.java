@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -87,7 +88,7 @@ public class GMLFeatureStoreTest {
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException {
+                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException, GMLReferenceResolvingException {
         URL url = GMLFeatureStoreTest.class.getResource( "example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
