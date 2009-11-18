@@ -200,24 +200,64 @@ public class CurveLinearizer {
 
         LineStringSegment lineSegment = null;
 
-        if ( crit instanceof NumPointsCriterion ) {
-            if ( areCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
-                Points points = null;
-                if ( arc instanceof Circle ) {
-                    points = new PointsList(
-                                             Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } ) );
-                } else {
-                    points = new PointsList( Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } ) );
-                }
-                lineSegment = geomFac.createLineStringSegment( points );
+        if ( areCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
+            // if the points are already on a line we don't need to apply any linearization algorithm
+            Points points = null;
+            if ( arc instanceof Circle ) {
+                points = new PointsList(
+                                         Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } ) );
             } else {
-                int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
-                lineSegment = geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(),
-                                                                            arc.getPoint3(), numPoints,
-                                                                            arc instanceof Circle ) );
+                points = new PointsList( Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } ) );
             }
+            lineSegment = geomFac.createLineStringSegment( points );
+
+        } else if ( crit instanceof NumPointsCriterion ) {
+            int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
+            lineSegment = geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(),
+                                                                        arc.getPoint3(), numPoints,
+                                                                        arc instanceof Circle ) );
         } else if ( crit instanceof MaxErrorCriterion ) {
-            // TODO
+
+            double error = ( (MaxErrorCriterion) crit ).getMaxError();
+            int maxNumPoints = ( (MaxErrorCriterion) crit ).getMaxNumPoints();
+            lineSegment = geomFac.createLineStringSegment( interpolateWithErrorCriterion( arc.getPoint1(),
+                                                                                          arc.getPoint2(),
+                                                                                          arc.getPoint3(),
+                                                                                          arc instanceof Circle, error,
+                                                                                          maxNumPoints ) );
+            Point p0 = arc.getPoint1();
+            Point p1 = arc.getPoint2();
+            Point p2 = arc.getPoint3();
+
+            Point center = calcCircleCenter( p0, p1, p2 );
+
+            double centerX = center.get0();
+            double centerY = center.get1();
+
+            double dx = p0.get0() - centerX;
+            double dy = p0.get1() - centerY;
+            double ex = p2.get0() - centerX;
+            double ey = p2.get1() - centerY;
+
+            double startAngle = Math.atan2( dy, dx );
+
+            boolean isCircle = arc instanceof Circle;
+            double endAngle = isCircle ? startAngle : Math.atan2( ey, ex );
+            double radius = Math.sqrt( dx * dx + dy * dy );
+
+            double angleStep;
+            long numPoints;
+            if ( arc instanceof Circle ) {
+                angleStep = Math.floor( 2 * Math.acos( 1 - error / radius ) );
+                numPoints = Math.round( 2 * Math.PI / angleStep );
+            } else {
+                angleStep = Math.floor( 2 * Math.acos( 1 - error / radius ) );
+                if ( endAngle < startAngle ) {
+                    endAngle += Math.PI;
+                }
+                numPoints = Math.round( ( endAngle - startAngle ) / angleStep );
+            }
+
         } else {
             String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
             throw new IllegalArgumentException( msg );
@@ -504,6 +544,86 @@ public class CurveLinearizer {
         }
 
         return new PointsList( realPoints );
+    }
+
+    private Points interpolateWithErrorCriterion( Point p0, Point p1, Point p2, boolean isCircle, double error,
+                                                  int maxNumPoints ) {
+
+        // shift the points down (to reduce the occurrence of floating point errors), independently on the x and y axes
+        double minOrd0 = CurveLinearizer.findShiftOrd0( p0, p1, p2 );
+        double minOrd1 = CurveLinearizer.findShiftOrd1( p0, p1, p2 );
+
+        // if the points are already shifted, this does no harm!
+        Point p0Shifted = new DefaultPoint( null, p0.getCoordinateSystem(), p0.getPrecision(),
+                                            new double[] { p0.get0() - minOrd0, p0.get1() - minOrd1 } );
+        Point p1Shifted = new DefaultPoint( null, p1.getCoordinateSystem(), p1.getPrecision(),
+                                            new double[] { p1.get0() - minOrd0, p1.get1() - minOrd1 } );
+        Point p2Shifted = new DefaultPoint( null, p2.getCoordinateSystem(), p2.getPrecision(),
+                                            new double[] { p2.get0() - minOrd0, p2.get1() - minOrd1 } );
+
+        Point center = calcCircleCenter( p0Shifted, p1Shifted, p2Shifted );
+
+        double centerX = center.get0();
+        double centerY = center.get1();
+
+        double dx = p0Shifted.get0() - centerX;
+        double dy = p0Shifted.get1() - centerY;
+        double ex = p2Shifted.get0() - centerX;
+        double ey = p2Shifted.get1() - centerY;
+
+        double startAngle = Math.atan2( dy, dx );
+        double endAngle = Math.atan2( ey, ex );
+        double radius = Math.sqrt( dx * dx + dy * dy );
+
+        double angleStep = 2 * Math.acos( 1 - error / radius );
+        int numPoints;
+        if ( isCircle ) {
+            numPoints = (int) Math.round( 2 * Math.PI / angleStep );
+
+        } else {
+            if ( !isClockwise( p0Shifted, p1Shifted, p2Shifted ) ) {
+                if ( endAngle < startAngle ) {
+                    endAngle += 2 * Math.PI;
+                }
+                numPoints = (int) Math.round( ( endAngle - startAngle ) / angleStep );
+            } else {
+                if ( startAngle < endAngle ) {
+                    startAngle += 2 * Math.PI;
+                }
+                numPoints = (int) Math.round( ( startAngle - endAngle ) / angleStep );
+            }
+        }
+
+        System.out.println( numPoints );
+
+        if ( numPoints > maxNumPoints ) {
+            return interpolate( p0, p1, p2, maxNumPoints, isCircle );
+        }
+
+        CRS crs = p0Shifted.getCoordinateSystem();
+        List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
+        // ensure numerical stability for start point (= use original circle start point)
+        interpolationPoints.add( p0Shifted );
+
+        // calculate intermediate (=interpolated) points on arc
+        for ( int i = 1; i < numPoints - 1; i++ ) {
+            double angle = startAngle + i * angleStep;
+            double x = centerX + Math.cos( angle ) * radius;
+            double y = centerY + Math.sin( angle ) * radius;
+            interpolationPoints.add( geomFac.createPoint( null, new double[] { x, y }, crs ) );
+        }
+        // ensure numerical stability for end point (= use original circle start point)
+        interpolationPoints.add( isCircle ? p0Shifted : p2Shifted );
+
+        // shift the points back up
+        List<Point> realPoints = new ArrayList<Point>( interpolationPoints.size() );
+        for ( Point p : interpolationPoints ) {
+            realPoints.add( new DefaultPoint( null, p.getCoordinateSystem(), p.getPrecision(),
+                                              new double[] { p.get0() + minOrd0, p.get1() + minOrd1 } ) );
+        }
+
+        return new PointsList( realPoints );
+
     }
 
     /**

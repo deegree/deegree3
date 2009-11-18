@@ -115,6 +115,18 @@ public class CurveLinearizerTest {
         }
     }
 
+    private void testLinearizationWithErrorCriterion( Point p0, Point p1, Point p2, double error, int maxNumPoints ) {
+        Point center = linearizer.calcCircleCenter( p0, p1, p2 );
+        double radius = getDistance( center, p0 );
+
+        Arc arc = geomFac.createArc( p0, p1, p2 );
+        Points positions = linearizer.linearize( arc, new MaxErrorCriterion( error, maxNumPoints ) ).getControlPoints();
+        for ( Point point : positions ) {
+            double dist = getDistance( center, point );
+            Assert.assertEquals( radius, dist, error );
+        }
+    }
+
     /**
      * Tests if {@link LinearizationUtil#isClockwise(Position, Position, Position)} determines the correct point order.
      */
@@ -156,12 +168,19 @@ public class CurveLinearizerTest {
         testLinearization( geomFac.createPoint( null, new double[] { 0, 2 }, null ),
                            geomFac.createPoint( null, new double[] { 2, 0 }, null ),
                            geomFac.createPoint( null, new double[] { -2, 0 }, null ), 1000 );
+        testLinearizationWithErrorCriterion( geomFac.createPoint( null, new double[] { 0, 2 }, null ),
+                                             geomFac.createPoint( null, new double[] { 2, 0 }, null ),
+                                             geomFac.createPoint( null, new double[] { -2, 0 }, null ), 0.001, 1000 );
         testLinearization( geomFac.createPoint( null, new double[] { 8, -1 }, null ),
                            geomFac.createPoint( null, new double[] { 3, 1.6 }, null ),
                            geomFac.createPoint( null, new double[] { -110, 16.77777 }, null ), 1000 );
         testLinearization( geomFac.createPoint( null, new double[] { 8, -1 }, null ),
                            geomFac.createPoint( null, new double[] { 3, 1.6 }, null ),
                            geomFac.createPoint( null, new double[] { -110, 16.77777 }, null ), 10 );
+        testLinearizationWithErrorCriterion( geomFac.createPoint( null, new double[] { 8, -1 }, null ),
+                                             geomFac.createPoint( null, new double[] { 3, 1.6 }, null ),
+                                             geomFac.createPoint( null, new double[] { -110, 16.77777 }, null ),
+                                             0.0001, 1000 );
     }
 
     /**
