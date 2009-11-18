@@ -77,7 +77,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
 
     private final String V100_EXAMPLE_6 = "examples_kvp/v100/example6.kvp";
 
-    // private final String V100_EXAMPLE_7 = "examples_kvp/v100/example7.kvp";
+    private final String V100_EXAMPLE_7 = "examples_kvp/v100/example7.kvp";
 
     private final String V100_EXAMPLE_9 = "examples_kvp/v100/example9.kvp";
 
@@ -339,18 +339,23 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         assertEquals( featureId.getFeatureIds()[2], "InWaterA_1M.1015" );
     }
 
-    // /**
-    // * @throws Exception
-    // */
-    // @Test
-    // public void test_V100_EXAMPLE_7()
-    // throws Exception {
-    // URL exampleURL = this.getClass().getResource( V100_EXAMPLE_7 );
-    // Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
-    //
-    // GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
-    //
-    // }
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void test_V100_EXAMPLE_7()
+                            throws Exception {
+        URL exampleURL = this.getClass().getResource( V100_EXAMPLE_7 );
+        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
+
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
+        OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
+        Within within = (Within) opFilter.getOperator();
+        assertEquals( "INWATERA_1M/WKB_GEOM", within.getParam1().getPropertyName() );
+        Envelope env = (Envelope) within.getParam2();
+        verifyEnvelope( env, 10.0, 10.0, 20.0, 20.0 );
+    }
 
     /**
      * @throws Exception
