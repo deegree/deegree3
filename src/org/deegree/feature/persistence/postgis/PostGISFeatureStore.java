@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,6 +56,7 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureCoder;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
@@ -194,7 +194,8 @@ public class PostGISFeatureStore implements FeatureStore {
             rs = stmt.executeQuery( "SELECT binary_object2 FROM gml_objects WHERE gml_id='" + id + "'" );
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
-                geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ) );
+                geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
+                                                       new FeatureStoreGMLIdResolver( this ) );
             }
         } catch ( Exception e ) {
             String msg = "Error performing query: " + e.getMessage();
@@ -347,7 +348,8 @@ public class PostGISFeatureStore implements FeatureStore {
             while ( rs.next() ) {
                 String gml_id = rs.getString( 1 );
                 LOG.debug( "Recreating object '" + gml_id + "' from blob." );
-                Feature feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), schema, new CRS( "EPSG:31466" ) );
+                Feature feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), schema, new CRS( "EPSG:31466" ),
+                                                       new FeatureStoreGMLIdResolver( this ) );
                 members.add( feature );
             }
             fc = new GenericFeatureCollection( null, members );

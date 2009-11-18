@@ -213,6 +213,7 @@ public class PostGISApplicationSchema {
         writer.println( "CREATE TABLE gml_names (" );
         writer.println( "    gml_object_id integer REFERENCES GML_OBJECTS," );
         writer.println( "    name text NOT NULL," );
+        writer.println( "    codespace text," );
         writer.println( "    prop_idx smallint NOT NULL" );
         writer.println( ");" );
         writer.println();

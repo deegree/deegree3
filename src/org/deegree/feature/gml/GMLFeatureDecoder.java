@@ -54,6 +54,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.gml.GMLDocumentIdContext;
+import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.types.datetime.DateTime;
@@ -123,6 +124,8 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private final GML311GeometryDecoder geomParser;
 
+    private GMLObjectResolver specialResolver;
+
     /**
      * Creates a new {@link GMLFeatureDecoder} instance that is configured for building features with the specified
      * feature types.
@@ -148,6 +151,11 @@ public class GMLFeatureDecoder extends XMLAdapter {
      */
     public GMLFeatureDecoder( ApplicationSchema schema ) {
         this( schema, new GMLDocumentIdContext() );
+    }
+
+    public GMLFeatureDecoder( ApplicationSchema schema, GMLObjectResolver specialResolver ) {
+        this( schema, new GMLDocumentIdContext() );
+        this.specialResolver = specialResolver;
     }
 
     /**
@@ -366,8 +374,15 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
                 if ( href != null ) {
                     // TODO respect geometry type information (Point, Surface, etc.)
-                    GeometryReference<Geometry> refGeometry = new GeometryReference<Geometry>( idContext, href,
-                                                                                               xmlStream.getSystemId() );
+                    GeometryReference<Geometry> refGeometry = null;
+                    if (specialResolver != null) {
+                        refGeometry = new GeometryReference<Geometry>( specialResolver, href,
+                                                xmlStream.getSystemId() );
+                    } else {
+                        refGeometry = new GeometryReference<Geometry>( idContext, href,
+                                                xmlStream.getSystemId() );
+                    }
+ 
                     // local feature reference?
                     if ( href.startsWith( "#" ) ) {
                         idContext.addGeometryReference( refGeometry );
@@ -383,7 +398,12 @@ public class GMLFeatureDecoder extends XMLAdapter {
             } else if ( propDecl instanceof FeaturePropertyType ) {
                 String uri = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
                 if ( uri != null ) {
-                    FeatureReference refFeature = new FeatureReference( idContext, uri, xmlStream.getSystemId() );
+                    FeatureReference refFeature = null;
+                    if (specialResolver != null) {
+                        refFeature = new FeatureReference( specialResolver, uri, xmlStream.getSystemId() );
+                    } else {
+                        refFeature = new FeatureReference( idContext, uri, xmlStream.getSystemId() );
+                    }                    
 
                     // local feature reference?
                     if ( uri.startsWith( "#" ) ) {

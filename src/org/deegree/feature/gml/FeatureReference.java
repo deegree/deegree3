@@ -41,6 +41,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.gml.GMLObjectResolver;
+import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
@@ -64,7 +65,7 @@ public class FeatureReference implements Feature {
     private final GMLObjectResolver resolver;
 
     private final String uri;
-    
+
     private final String baseURL;
 
     private Feature feature;
@@ -107,10 +108,17 @@ public class FeatureReference implements Feature {
      * Returns the referenced {@link Feature} instance (may trigger resolving and fetching it).
      * 
      * @return the referenced {@link Feature} instance
+     * @throws GMLReferenceResolvingException
+     *             if the reference cannot be resolved
      */
-    public Feature getReferencedFeature() {
+    public Feature getReferencedFeature()
+                            throws GMLReferenceResolvingException {
         if ( this.feature == null ) {
             feature = resolver.getFeature( uri, baseURL );
+            if ( feature == null ) {
+                String msg = "Unable to resolve feature reference '" + uri + "'.";
+                throw new GMLReferenceResolvingException( msg );
+            }
         }
         return feature;
     }

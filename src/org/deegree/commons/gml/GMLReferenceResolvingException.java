@@ -43,7 +43,7 @@ package org.deegree.commons.gml;
  * 
  * @version $Revision$, $Date$
  */
-public class GMLReferenceResolvingException extends Exception {
+public class GMLReferenceResolvingException extends RuntimeException {
 
     private static final long serialVersionUID = -7702695645031124014L;
 

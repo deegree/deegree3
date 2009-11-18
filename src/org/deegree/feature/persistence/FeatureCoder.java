@@ -52,6 +52,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -115,7 +116,8 @@ public class FeatureCoder {
         // }
     }
 
-    public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs )
+    public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs,
+                                  GMLObjectResolver featureStoreGMLIdResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         BufferedInputStream bis = new BufferedInputStream( is );
@@ -123,7 +125,7 @@ public class FeatureCoder {
         // skip START_DOCUMENT
         xmlStream.nextTag();
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( xmlStream, null );
-        GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema );
+        GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, featureStoreGMLIdResolver );
         return decoder.parseFeature( xmlReader, crs );
     }
 }
