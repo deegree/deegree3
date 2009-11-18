@@ -76,35 +76,43 @@ import org.slf4j.LoggerFactory;
 public class FeatureCoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( FeatureCoder.class );
-    
+
+    private static final XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+
+    static {
+        xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, TRUE );
+    }
+
     public static void encode( Feature feature, OutputStream os, Logger log )
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError,
                             UnknownCRSException, TransformationException, IOException {
 
-        BufferedOutputStream bos = new BufferedOutputStream( os );
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
         xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, TRUE );
-        XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter( bos, "UTF-8" );
+        XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter( os, "UTF-8" );
         // TODO
         xmlWriter.setPrefix( "gml", CommonNamespaces.GMLNS );
         xmlWriter.setPrefix( "xlink", CommonNamespaces.XLNNS );
         xmlWriter.setPrefix( "xplan", feature.getName().getNamespaceURI() );
         GML311FeatureEncoder encoder = new GML311FeatureEncoder( xmlWriter, new CRS( "EPSG:31466" ), "#{}", null, 0,
                                                                  -1, false );
+        long begin = System.currentTimeMillis();
         encoder.export( feature );
         xmlWriter.close();
+        long elapsed = System.currentTimeMillis() - begin;
+        log.debug( "Encoding to XML: " + elapsed );
 
-//        if (log.isDebugEnabled()) {
-//            File tmpFile = File.createTempFile( "encoded_feature", ".xml" );
-//            LOG.debug ("Writing encoded feature to '" + tmpFile + "'.");
-//            xmlWriter = new FormattingXMLStreamWriter( xmlOutputFactory.createXMLStreamWriter( new FileWriter( tmpFile ) ) );
-//            xmlWriter.setPrefix( "gml", CommonNamespaces.GMLNS );
-//            xmlWriter.setPrefix( "xlink", CommonNamespaces.XLNNS );
-//            xmlWriter.setPrefix( "xplan", feature.getName().getNamespaceURI() );
-//            encoder = new GML311FeatureEncoder( xmlWriter, new CRS( "EPSG:31466" ), "#{}", null, 1, -1, false );
-//            encoder.export( feature );
-//            xmlWriter.close();
-//        }
+        // if (log.isDebugEnabled()) {
+        // File tmpFile = File.createTempFile( "encoded_feature", ".xml" );
+        // LOG.debug ("Writing encoded feature to '" + tmpFile + "'.");
+        // xmlWriter = new FormattingXMLStreamWriter( xmlOutputFactory.createXMLStreamWriter( new FileWriter( tmpFile )
+        // ) );
+        // xmlWriter.setPrefix( "gml", CommonNamespaces.GMLNS );
+        // xmlWriter.setPrefix( "xlink", CommonNamespaces.XLNNS );
+        // xmlWriter.setPrefix( "xplan", feature.getName().getNamespaceURI() );
+        // encoder = new GML311FeatureEncoder( xmlWriter, new CRS( "EPSG:31466" ), "#{}", null, 1, -1, false );
+        // encoder.export( feature );
+        // xmlWriter.close();
+        // }
     }
 
     public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs )

@@ -200,7 +200,7 @@ public class PostGISApplicationSchema {
         writer.println( "    gml_id text UNIQUE NOT NULL," );
         writer.println( "    gml_description text," );
         writer.println( "    ft_type smallint REFERENCES feature_types," );
-        writer.println( "    binary_object oid" );
+        writer.println( "    binary_object bytea" );
         writer.println( ");" );
         writer.println( "COMMENT ON TABLE gml_objects IS 'All objects (features and geometries)';" );
 

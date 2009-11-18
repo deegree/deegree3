@@ -36,10 +36,14 @@
 
 package org.deegree.feature.persistence.postgis;
 
-import java.sql.Blob;
+import static org.postgresql.largeobject.LargeObjectManager.READWRITE;
+import static org.postgresql.largeobject.LargeObjectManager.WRITE;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,6 +53,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
@@ -67,6 +72,8 @@ import org.postgis.LinearRing;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
 import org.postgis.Polygon;
+import org.postgresql.largeobject.LargeObject;
+import org.postgresql.largeobject.LargeObjectManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,44 +169,40 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Insertion of " + features.size() + " features: " + elapsed + " [ms]" );
-
         return new ArrayList<String>( fids );
     }
 
     private void insertFeature( Feature feature )
                             throws SQLException {
 
-        PreparedStatement stmt = conn.prepareStatement( "INSERT INTO gml_objects (gml_id,gml_description,ft_type,binary_object,gml_bounded_by) VALUES(?,?,?,lo_create(0),?)" );
+        long t1 = System.currentTimeMillis();
+
+        PreparedStatement stmt = conn.prepareStatement( "INSERT INTO gml_objects (gml_id,gml_description,ft_type,binary_object2,gml_bounded_by) VALUES(?,?,?,?,?)" );
         stmt.setString( 1, feature.getId() );
         stmt.setString( 2, "TODO: gml_description" );
         stmt.setShort( 3, store.getFtId( feature.getName() ) );
-        stmt.setObject( 4, toPGPolygon( feature.getEnvelope() ) );
-        stmt.executeUpdate();
-        stmt.close();
 
-        PreparedStatement stmt2 = conn.prepareStatement( "SELECT binary_object FROM gml_objects WHERE id=(SELECT last_value FROM gml_objects_id_seq)" );
-        ResultSet rs = stmt2.executeQuery();
-        rs.next();
-
-        // write the feature
-        Blob blob = rs.getBlob( 1 );
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            FeatureCoder.encode( feature, blob.setBinaryStream( 1 ), LOG );
+            FeatureCoder.encode( feature, bos, LOG );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e.getMessage() );
             throw new SQLException( msg, e );
         }
-        blob.free();
+        stmt.setBytes( 4, bos.toByteArray() );
 
-        rs.close();
-        stmt2.close();
+        stmt.setObject( 5, toPGPolygon( feature.getEnvelope() ) );
+        stmt.executeUpdate();
+        stmt.close();
+        long t2 = System.currentTimeMillis();
+        LOG.debug( "Insert: " + ( t2 - t1 ) + " [ms]" );
     }
 
     private PGgeometry toPGPolygon( Envelope envelope ) {
         PGgeometry pgGeometry = null;
         if ( envelope != null ) {
-            if (! envelope.getMin().equals( envelope.getMax() ) ) {
+            if ( !envelope.getMin().equals( envelope.getMax() ) ) {
                 double minX = envelope.getMin().get0();
                 double minY = envelope.getMin().get1();
                 double maxX = envelope.getMax().get0();
@@ -212,7 +215,7 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 polygon.setSrid( -1 );
                 pgGeometry = new PGgeometry( polygon );
             } else {
-                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1());
+                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1() );
                 // TODO
                 point.setSrid( -1 );
                 pgGeometry = new PGgeometry( point );

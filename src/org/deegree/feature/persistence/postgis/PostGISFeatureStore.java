@@ -188,12 +188,10 @@ public class PostGISFeatureStore implements FeatureStore {
             Connection conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery( "SELECT binary_object FROM gml_objects WHERE gml_id='" + id + "'" );
+            ResultSet rs = stmt.executeQuery( "SELECT binary_object2 FROM gml_objects WHERE gml_id='" + id + "'" );
             if ( rs.next() ) {
-                LOG.debug( "Recreating object '" + id + "' from blob." );
-                Blob encodedObject = rs.getBlob( 1 );
-                geomOrFeature = FeatureCoder.decode( encodedObject.getBinaryStream(), schema, new CRS( "EPSG:31466" ) );
-                encodedObject.free();
+                LOG.debug( "Recreating object '" + id + "' from bytea." );
+                geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ) );
             }
         } catch ( Exception e ) {
             String msg = "Error performing query: " + e.getMessage();
@@ -334,16 +332,14 @@ public class PostGISFeatureStore implements FeatureStore {
             Connection conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );
+            ResultSet rs = stmt.executeQuery( "SELECT gml_id,binary_object2 FROM gml_objects WHERE ft_type=" + ftId );
 
             // TODO lazy fetching (CloseableIterator etc)
             List<Feature> members = new LinkedList<Feature>();
             while ( rs.next() ) {
                 String gml_id = rs.getString( 1 );
                 LOG.debug( "Recreating object '" + gml_id + "' from blob." );
-                Blob encodedFeature = rs.getBlob( 2 );
-                Feature feature = FeatureCoder.decode( encodedFeature.getBinaryStream(), schema, new CRS( "EPSG:31466" ) );
-                encodedFeature.free();
+                Feature feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), schema, new CRS( "EPSG:31466" ) );
                 members.add( feature );
             }
             fc = new GenericFeatureCollection( null, members );
