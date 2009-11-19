@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
@@ -45,10 +45,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>JavaUtils</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class JavaUtils {
@@ -74,7 +74,7 @@ public class JavaUtils {
                         continue;
                     }
                     f.setAccessible( true );
-                    if ( t.isPrimitive() ) {
+                    if ( t.isPrimitive() || t.isEnum() ) {
                         sb.append( f.getName() ).append( ": " ).append( f.get( o ) ).append( ", " );
                     } else {
                         String s = generateToString( f.get( o ) );
