@@ -36,11 +36,6 @@
 
 package org.deegree.feature.persistence.postgis;
 
-import static org.postgresql.largeobject.LargeObjectManager.READWRITE;
-import static org.postgresql.largeobject.LargeObjectManager.WRITE;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,7 +48,6 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
@@ -72,8 +66,6 @@ import org.postgis.LinearRing;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
 import org.postgis.Polygon;
-import org.postgresql.largeobject.LargeObject;
-import org.postgresql.largeobject.LargeObjectManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +79,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
+public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStoreTransaction.class );
 
@@ -130,6 +122,16 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         return store;
     }
 
+    /**
+     * Returns the underlying JDBC connection. Can be used for performing other operations in the same transaction
+     * context.
+     * 
+     * @return the underlying JDBC connection, never <code>null</code>
+     */
+    public Connection getConnection() {
+        return conn;
+    }
+
     @Override
     public int performDelete( QName ftName, OperatorFilter filter, Lock lock )
                             throws FeatureStoreException {
@@ -140,8 +142,22 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performDelete( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
-        // TODO Auto-generated method stub
-        return 0;
+
+        LOG.debug( "performDelete()" );
+
+        int deleted = 0;
+        try {
+            PreparedStatement stmt = conn.prepareStatement( "DELETE FROM gml_objects WHERE gml_id=?" );
+            for ( String id : filter.getMatchingIds() ) {
+                stmt.setString( 1, id );
+                deleted += stmt.executeUpdate();
+            }
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
+        }
+        LOG.debug( "Deleted " + deleted + " features." );
+        return deleted;
     }
 
     @Override
@@ -177,7 +193,7 @@ class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
         long t1 = System.currentTimeMillis();
 
-        PreparedStatement stmt = conn.prepareStatement( "INSERT INTO gml_objects (gml_id,gml_description,ft_type,binary_object2,gml_bounded_by) VALUES(?,?,?,?,?)" );
+        PreparedStatement stmt = conn.prepareStatement( "INSERT INTO gml_objects (gml_id,gml_description,ft_type,binary_object,gml_bounded_by) VALUES(?,?,?,?,?)" );
         stmt.setString( 1, feature.getId() );
         stmt.setString( 2, "TODO: gml_description" );
         stmt.setShort( 3, store.getFtId( feature.getName() ) );

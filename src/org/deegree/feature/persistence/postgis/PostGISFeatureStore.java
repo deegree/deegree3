@@ -149,6 +149,7 @@ public class PostGISFeatureStore implements FeatureStore {
         try {
             Connection conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
+            setSearchPath( conn );
             this.activeTransaction = new PostGISFeatureStoreTransaction( this, conn );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
@@ -191,7 +192,7 @@ public class PostGISFeatureStore implements FeatureStore {
             conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
             stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT binary_object2 FROM gml_objects WHERE gml_id='" + id + "'" );
+            rs = stmt.executeQuery( "SELECT binary_object FROM gml_objects WHERE gml_id='" + id + "'" );
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
                 geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
@@ -223,7 +224,7 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-            // setSearchPath( conn );
+            setSearchPath( conn );
 
             stmt = conn.createStatement();
             rs = stmt.executeQuery( "SELECT id,qname,tablename,wgs84bbox FROM feature_types" );
@@ -261,25 +262,25 @@ public class PostGISFeatureStore implements FeatureStore {
         }
     }
 
-    // // TODO make this configurable in the JDBC configuration
-    // private void setSearchPath( Connection conn ) {
-    // Statement stmt = null;
-    // try {
-    // stmt = conn.createStatement();
-    // stmt.executeUpdate( "SET search_path TO xplan2,public" );
-    // stmt.close();
-    // } catch ( SQLException e ) {
-    // e.printStackTrace();
-    // } finally {
-    // if ( stmt != null ) {
-    // try {
-    // stmt.close();
-    // } catch ( SQLException e ) {
-    // LOG.debug( e.getMessage(), e );
-    // }
-    // }
-    // }
-    // }
+    // TODO make this configurable in the JDBC configuration
+    private void setSearchPath( Connection conn ) {
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            stmt.executeUpdate( "SET search_path TO xplan2,public" );
+            stmt.close();
+        } catch ( SQLException e ) {
+            e.printStackTrace();
+        } finally {
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.debug( e.getMessage(), e );
+                }
+            }
+        }
+    }
 
     private void closeSafely( Connection conn, Statement stmt, ResultSet rs ) {
         if ( rs != null ) {
@@ -341,7 +342,7 @@ public class PostGISFeatureStore implements FeatureStore {
             conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
             stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT gml_id,binary_object2 FROM gml_objects WHERE ft_type=" + ftId );
+            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );
 
             // TODO lazy fetching (CloseableIterator etc)
             List<Feature> members = new LinkedList<Feature>();

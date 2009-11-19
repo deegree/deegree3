@@ -42,12 +42,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.deegree.commons.datasource.configuration.FeatureStoreReferenceType;
 import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
-import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -88,6 +92,29 @@ public class FeatureStoreManager {
      */
     public static FeatureStore get( String id ) {
         return idToFs.get( id );
+    }
+
+    /**
+     * Adds the feature store defined in the given file.
+     * 
+     * @param configURL
+     * @return corresponding {@link FeatureStore} instance
+     * @throws FeatureStoreException
+     */
+    @SuppressWarnings("unchecked")
+    public static synchronized FeatureStore addStore( URL configURL )
+                            throws FeatureStoreException {
+
+        FeatureStoreType config = null;
+        try {
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.datasource.configuration" );
+            Unmarshaller u = jc.createUnmarshaller();
+            System.out.println( u.unmarshal( configURL ) );
+            config = ( (JAXBElement<FeatureStoreType>) u.unmarshal( configURL ) ).getValue();
+        } catch ( JAXBException e ) {
+            e.printStackTrace();
+        }
+        return create( config, configURL.toString() );
     }
 
     /**
