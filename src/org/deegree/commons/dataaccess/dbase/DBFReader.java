@@ -180,7 +180,7 @@ public class DBFReader {
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.STRING, false, null );
                 break;
             case 'N':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.INTEGER, false, null );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DECIMAL, false, null );
                 break;
             case 'L':
                 pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.BOOLEAN, false, null );
