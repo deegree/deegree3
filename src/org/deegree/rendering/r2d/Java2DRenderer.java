@@ -177,8 +177,8 @@ public class Java2DRenderer implements Renderer {
     }
 
     private Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {
-        double width = graphic.size;
-        double height = graphic.size;
+        double width = considerUOM( graphic.size, uom );
+        double height = considerUOM( graphic.size, uom );
 
         if ( width < 0 ) {
             if ( graphic.image == null ) {
