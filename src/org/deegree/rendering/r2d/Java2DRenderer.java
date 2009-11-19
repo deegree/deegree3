@@ -428,9 +428,10 @@ public class Java2DRenderer implements Renderer {
             img = g.image;
         }
 
-        Rectangle2D.Double rect = getGraphicBounds( g, x, y, styling.uom );
-
-        graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
+        if ( img != null ) {
+            Rectangle2D.Double rect = getGraphicBounds( g, x, y, styling.uom );
+            graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
+        }
     }
 
     public void render( PointStyling styling, Geometry geom ) {

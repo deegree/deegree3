@@ -201,6 +201,10 @@ public class RenderHelper {
      * @return the mark rendered as buffered image in the specified size
      */
     public static BufferedImage renderMark( Mark mark, int size, UOM uom ) {
+        if(size == 0){
+            LOG.debug("Not rendering a symbol because the size is zero.");
+            return null;
+        }
         if ( mark.fill == null && mark.stroke == null ) {
             return new BufferedImage( size, size, TYPE_INT_ARGB );
         }
