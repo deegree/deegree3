@@ -49,6 +49,7 @@ import org.apache.commons.math.linear.DecompositionSolver;
 import org.apache.commons.math.linear.LUDecompositionImpl;
 import org.apache.commons.math.linear.RealMatrix;
 import org.apache.commons.math.linear.RealVector;
+import org.apache.commons.math.linear.SingularMatrixException;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
@@ -63,6 +64,8 @@ import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides methods for the linearization of {@link Curve}s and {@link CurveSegment}s.
@@ -82,6 +85,8 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
  * @version $Revision$, $Date$
  */
 public class CurveLinearizer {
+
+    private static Logger LOG = LoggerFactory.getLogger( CurveLinearizer.class );
 
     private static final double EPSILON = 1E-12;
 
@@ -386,12 +391,22 @@ public class CurveLinearizer {
         return vectorb;
     }
 
+    @SuppressWarnings("null")
     private double[] solveLinearEquation( double[][] matrixA, double[] vectorb ) {
-        RealMatrix coefficients = new Array2DRowRealMatrix( matrixA, false );
-        DecompositionSolver solver = new LUDecompositionImpl( coefficients ).getSolver();
-        RealVector constants = new ArrayRealVector( vectorb, false );
-        RealVector solution = solver.solve( constants );
 
+        RealMatrix coefficients = new Array2DRowRealMatrix( matrixA, false );
+
+        // LU-decomposition
+        DecompositionSolver solver = new LUDecompositionImpl( coefficients ).getSolver();
+
+        RealVector constants = new ArrayRealVector( vectorb, false );
+        RealVector solution = null;
+        try {
+            solution = solver.solve( constants );
+        } catch ( SingularMatrixException e ) {
+            LOG.error( e.getLocalizedMessage() );
+            e.printStackTrace();
+        }
         return solution.getData();
     }
 
@@ -445,9 +460,9 @@ public class CurveLinearizer {
         // middle lines
         for ( int i = 1; i <= n - 1; i++ ) {
             Arrays.fill( matrixA[i], 0 );
-            matrixA[i][0] = h[i - 1];
-            matrixA[i][1] = 2 * ( h[i - 1] + h[i] );
-            matrixA[i][2] = h[i];
+            matrixA[i][i - 1] = h[i - 1];
+            matrixA[i][i] = 2 * ( h[i - 1] + h[i] );
+            matrixA[i][i + 1] = h[i];
         }
 
         Arrays.fill( matrixA[n], 0 );
