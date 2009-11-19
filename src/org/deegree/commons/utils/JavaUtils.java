@@ -65,7 +65,7 @@ public class JavaUtils {
         }
 
         Class<?> c = o.getClass();
-        StringBuffer sb = new StringBuffer( c.getSimpleName() ).append( "[" );
+        StringBuffer sb = new StringBuffer( c.getSimpleName() ).append( " [" );
         do {
             for ( Field f : c.getDeclaredFields() ) {
                 Class<?> t = f.getType();
