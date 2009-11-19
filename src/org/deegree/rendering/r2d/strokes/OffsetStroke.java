@@ -175,7 +175,12 @@ public class OffsetStroke implements Stroke {
                 path.curveTo( n1[0], n1[1], n2[0], n2[1], n3[0], n3[1] );
                 break;
             case SEG_LINETO:
-                n1 = calcNewInner( pair.second[0], pair.second[1], normals.poll(), normals.peek() );
+                n1 = normals.poll();
+                n2 = normals.peek();
+                if ( n1 == n2 ) {
+                    break;
+                }
+                n1 = calcNewInner( pair.second[0], pair.second[1], n1, n2 );
                 path.lineTo( n1[0], n1[1] );
                 break;
             case SEG_MOVETO:
