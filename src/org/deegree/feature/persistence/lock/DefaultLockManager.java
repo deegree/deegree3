@@ -117,7 +117,7 @@ public class DefaultLockManager implements LockManager {
     private void initDatabase()
                             throws FeatureStoreException {
 
-        LOG.info( "Initializing lock database." );
+        LOG.debug( "Initializing lock database." );
         Connection conn = null;
         ResultSet rs = null;
         Statement stmt = null;

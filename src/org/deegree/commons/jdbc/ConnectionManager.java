@@ -155,8 +155,8 @@ public class ConnectionManager {
             int poolMinSize = jaxbConn.getPoolMinSize().intValue();
             int poolMaxSize = jaxbConn.getPoolMaxSize().intValue();
 
-            LOG.info( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, type, url, user, poolMinSize,
-                                           poolMaxSize ) );
+            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, type, url, user, poolMinSize,
+                                            poolMaxSize ) );
             if ( idToPools.containsKey( id ) ) {
                 throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", id ) );
             }
@@ -181,8 +181,8 @@ public class ConnectionManager {
                                       int poolMinSize, int poolMaxSize ) {
         synchronized ( ConnectionManager.class ) {
 
-            LOG.info( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, type, url, user, poolMinSize,
-                                           poolMaxSize ) );
+            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, type, url, user, poolMinSize,
+                                            poolMaxSize ) );
             if ( idToPools.containsKey( id ) ) {
                 throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", id ) );
             }

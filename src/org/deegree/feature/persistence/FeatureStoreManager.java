@@ -109,7 +109,6 @@ public class FeatureStoreManager {
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.datasource.configuration" );
             Unmarshaller u = jc.createUnmarshaller();
-            System.out.println( u.unmarshal( configURL ) );
             config = ( (JAXBElement<FeatureStoreType>) u.unmarshal( configURL ) ).getValue();
         } catch ( JAXBException e ) {
             e.printStackTrace();
