@@ -73,7 +73,9 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wfs.getfeature.BBoxQuery;
 import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
@@ -196,7 +198,7 @@ public class PostGISFeatureStore implements FeatureStore {
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
                 geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
-                                                       new FeatureStoreGMLIdResolver( this ) );
+                                                     new FeatureStoreGMLIdResolver( this ) );
             }
         } catch ( Exception e ) {
             String msg = "Error performing query: " + e.getMessage();
@@ -415,11 +417,69 @@ public class PostGISFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection query( QName featureType, Filter filter, Envelope bbox, boolean withGeometries,
-                                    boolean exact )
+    public FeatureCollection query( QName ftName, Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return null;
+
+        if ( !ftNameToFtId.containsKey( ftName ) ) {
+            String msg = "Feature type '" + ftName + "' is not served by this feature store.";
+            throw new FeatureStoreException( msg );
+        }
+        short ftId = ftNameToFtId.get( ftName );
+
+//        Envelope queryBBox = (Envelope) getCompatibleGeometry( bbox, new CRS( "EPSG:31466" ) );
+//        System.out.println( "bbox: " + bbox );
+//        System.out.println( "query bbox: " + queryBBox );
+
+        FeatureCollection fc = null;
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+            conn.setAutoCommit( false );
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );
+
+            // TODO lazy fetching (CloseableIterator etc)
+            List<Feature> members = new LinkedList<Feature>();
+            while ( rs.next() ) {
+                String gml_id = rs.getString( 1 );
+                LOG.debug( "Recreating object '" + gml_id + "' from blob." );
+                Feature feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), schema, new CRS( "EPSG:31466" ),
+                                                       new FeatureStoreGMLIdResolver( this ) );
+                members.add( feature );
+            }
+            fc = new GenericFeatureCollection( null, members );
+        } catch ( Exception e ) {
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.debug( msg, e );
+            throw new FeatureStoreException( msg, e );
+        } finally {
+            closeSafely( conn, stmt, rs );
+        }
+
+        if ( filter != null ) {
+            fc = fc.getMembers( filter );
+        }
+        return fc;
+    }
+
+    private Geometry getCompatibleGeometry( Geometry literal, CRS crs )
+                            throws FilterEvaluationException {
+
+        Geometry transformedLiteral = literal;
+        CRS literalCRS = literal.getCoordinateSystem();
+        if ( literal != null && literalCRS != null && !( crs.equals( literalCRS ) ) ) {
+            LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getName() + " -> "
+                       + crs.getName() );
+            try {
+                GeometryTransformer transformer = new GeometryTransformer( crs.getWrappedCRS() );
+                transformedLiteral = transformer.transform( literal );
+            } catch ( Exception e ) {
+                throw new FilterEvaluationException( e.getMessage() );
+            }
+        }
+        return transformedLiteral;
     }
 
     /**

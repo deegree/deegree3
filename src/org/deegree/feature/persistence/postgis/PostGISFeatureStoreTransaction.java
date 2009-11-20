@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
@@ -172,6 +173,54 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         Set<String> gids = new LinkedHashSet<String>();
         findFeaturesAndGeometries( fc, geometries, features, fids, gids );
 
+        switch ( mode ) {
+        case GENERATE_NEW: {
+            // TODO don't change incoming features / geometries
+            for ( Feature feature : features ) {
+                String newFid = "FEATURE_" + generateNewId();
+                String oldFid = feature.getId();
+                if ( oldFid != null ) {
+                    fids.remove( oldFid );
+                }
+                fids.add( newFid );
+                feature.setId( newFid );
+            }
+
+            for ( Geometry geometry : geometries ) {
+                String newGid = "GEOMETRY_" + generateNewId();
+                String oldGid = geometry.getId();
+                if ( oldGid != null ) {
+                    gids.remove( oldGid );
+                }
+                gids.add( newGid );
+                geometry.setId( newGid );
+            }
+            break;
+        }
+        case REPLACE_DUPLICATE: {
+            throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
+        }
+        case USE_EXISTING: {
+            // TODO don't change incoming features / geometries
+            for ( Feature feature : features ) {
+                if ( feature.getId() == null ) {
+                    String newFid = "FEATURE_" + generateNewId();
+                    feature.setId( newFid );
+                    fids.add( newFid );
+                }
+            }
+
+            for ( Geometry geometry : geometries ) {
+                if ( geometry.getId() == null ) {
+                    String newGid = "GEOMETRY_" + generateNewId();
+                    geometry.setId( newGid );
+                    gids.add( newGid );
+                }
+            }
+            break;
+        }
+        }        
+        
         LOG.debug( features.size() + " features / " + geometries.size() + " geometries" );
 
         long begin = System.currentTimeMillis();
@@ -188,6 +237,10 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         return new ArrayList<String>( fids );
     }
 
+    private String generateNewId() {
+        return UUID.randomUUID().toString();
+    }    
+    
     private void insertFeature( Feature feature )
                             throws SQLException {
 

@@ -117,7 +117,7 @@ public class FeatureStoreManager {
     }
 
     /**
-     * Creates a {@link FeatureStore} instance from the given configuration object.
+     * Returns an initialized {@link FeatureStore} instance from the given configuration object.
      * <p>
      * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
      * </p>
@@ -126,7 +126,7 @@ public class FeatureStoreManager {
      *            configuration object
      * @param baseURL
      *            base url (used to resolve relative paths in the configuration)
-     * @return corresponding {@link FeatureStore} instance
+     * @return corresponding {@link FeatureStore} instance, already initialized
      * @throws FeatureStoreException
      *             if the creation fails, e.g. due to a configuration error
      */
