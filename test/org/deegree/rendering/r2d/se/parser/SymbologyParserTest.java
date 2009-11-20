@@ -77,7 +77,7 @@ public class SymbologyParserTest extends TestCase {
         final Class<SymbologyParserTest> cls = SymbologyParserTest.class;
         File dir = new File( cls.getResource( "SymbologyParserTest.class" ).getFile() ).getParentFile();
         for ( File f : dir.listFiles() ) {
-            if ( f.getName().endsWith( ".xml" ) || f.getName().endsWith( ".invalid_xml" )) {
+            if ( f.getName().endsWith( ".xml" ) ) {
                 LOG.info( "Expecting {} to parse fine.", f );
                 XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
                 in.next();
