@@ -291,11 +291,6 @@ public class CurveLinearizer {
      */
     public LineStringSegment linearizeCubicSpline( CubicSpline spline, LinearizationCriterion crit ) {
 
-        if ( !( crit instanceof NumPointsCriterion ) ) {
-            String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
-            throw new IllegalArgumentException( msg );
-        }
-
         if ( spline.getCoordinateDimension() != 2 ) {
             throw new UnsupportedOperationException(
                                                      "Linearization of the cubic spline is only suported for a spline in 2D." );
@@ -363,7 +358,21 @@ public class CurveLinearizer {
 
         double[] vectorx = solveLinearEquation( matrixA, vectorb );
 
-        int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
+        int numPoints = -1;
+        if ( crit instanceof NumPointsCriterion ) {
+            numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
+        } else if ( crit instanceof MaxErrorCriterion ) {
+            numPoints = ( (MaxErrorCriterion) crit ).getMaxNumPoints();
+            if ( numPoints <= 0 ) {
+                throw new UnsupportedOperationException(
+                                                         "Linearization of the cubic spline with MaxErrorCriterion is not suported, unless the number of points is provided." );
+                // TODO it is mathematically hard to get an expression of the numOfPoints with respect to the error;
+                // there would be two work-around as I can see them: 1) through a trial-and-error procedure determine
+                // which how small should the sampling interval be, so that the difference in value is less that the
+                // given error; 2) use the mathematical expression used for the arc/circle (something with Math.acos...)
+                // - it needs a good approximation for the radius.
+            }
+        }
 
         double[] interpolated = interpolateSpline( n, h, xcoor, ycoor, vectorx, numPoints );
 
