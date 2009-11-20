@@ -342,6 +342,7 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
+            setSearchPath( conn );
             conn.setAutoCommit( false );
             stmt = conn.createStatement();
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );
@@ -436,6 +437,7 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
+            setSearchPath( conn );
             conn.setAutoCommit( false );
             stmt = conn.createStatement();
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );

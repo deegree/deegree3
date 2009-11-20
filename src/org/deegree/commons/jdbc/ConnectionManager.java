@@ -74,7 +74,7 @@ public class ConnectionManager {
     static {
         // TODO make this configurable
         String tmpDir = System.getProperty( "java.io.tmpdir" );
-        LOG.info( "Using " + tmpDir + " for derby lock database." );
+        LOG.debug( "Using " + tmpDir + " for derby lock database." );
         addConnection( "LOCK_DB", DatabaseType.UNDEFINED, "jdbc:derby:" + tmpDir + "/lockdb;create=true", null, null,
                        0, 10 );
     }
