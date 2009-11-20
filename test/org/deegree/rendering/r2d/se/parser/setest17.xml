@@ -3,7 +3,7 @@
 	<Opacity>0.7</Opacity>
 	<OverlapBehavior>AVERAGE</OverlapBehavior>
 	<ColorMap>
-		<Categorize fallbackValue="#78c818" thresholdsBelongTo="succeeding">
+		<Categorize fallbackValue="#78c818" threshholdsBelongTo="succeeding">
 		<LookupValue>Rasterdata</LookupValue>
             <Value>#00ffff</Value>
             <Threshold>0</Threshold>
