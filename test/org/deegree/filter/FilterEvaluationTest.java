@@ -168,7 +168,7 @@ public class FilterEvaluationTest {
     public void filterCollection10()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
                             JaxenException {
-        Filter filter = parseFilter( "testfilter10.xml" );
+        Filter filter = parseFilter( "testfilter10.invalid_xml" );
         assertResultSet( fc.getMembers( filter ) );
     }
 
