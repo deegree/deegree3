@@ -105,6 +105,7 @@ public class Filter110XMLAdapterTest {
         Assert.assertEquals( Operator.Type.COMPARISON, and.getParameter( 1 ).getType() );
         ComparisonOperator param2Oper = (ComparisonOperator) and.getParameter( 1 );
         Assert.assertEquals( ComparisonOperator.SubType.PROPERTY_IS_EQUAL_TO, param2Oper.getSubType() );
+    
     }
 
     @Test(expected = XMLParsingException.class)
@@ -134,7 +135,7 @@ public class Filter110XMLAdapterTest {
 
     private Filter parse( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL url = Filter110XMLAdapterTest.class.getResource( resourceName );
+        URL url = Filter110XMLAdapterTest.class.getResource( "testdata/v110/" + resourceName );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         xmlStream.nextTag();
@@ -143,5 +144,13 @@ public class Filter110XMLAdapterTest {
         System.out.println( loc.getSystemId() );
         System.out.println( loc.getColumnNumber() );
         return Filter110XMLDecoder.parse( xmlStream );
+    }
+    
+    @Test
+    public void parseBeyondFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter15.xml" );
+        Assert.assertNotNull( filter );
+        
     }
 }

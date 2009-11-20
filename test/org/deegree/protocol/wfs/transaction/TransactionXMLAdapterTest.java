@@ -68,11 +68,11 @@ public class TransactionXMLAdapterTest extends TestCase {
 
     private final String DELETE_110 = "examples_xml/v110/delete.xml";
 
-    private final String INSERT_110 = "examples_xml/v110/insert.xml";
+    private final String INSERT_110 = "examples_xml/v110/insert.invalidxml";
 
     private final String UPDATE_110 = "examples_xml/v110/update.xml";
     
-    private final String COMPLEX_110 = "examples_xml/v110/complex.xml";
+    private final String COMPLEX_110 = "examples_xml/v110/complex.invalidxml";
 
     @Test
     public void testDelete110()
