@@ -32,13 +32,14 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.record;
+ ----------------------------------------------------------------------------*/
+package org.deegree.record.persistence;
 
-import javax.xml.namespace.QName;
+import java.util.Set;
 
-import org.deegree.commons.xml.NamespaceContext;
-import org.deegree.filter.MatchableObject;
+import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 
 /**
  * TODO add class documentation here
@@ -48,14 +49,21 @@ import org.deegree.filter.MatchableObject;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Record extends MatchableObject{
-    
-    public String getId();
-    
-    public QName getTypeName();
-    
-    public NamespaceContext getNsContext();
-    
-    
+public interface ConstraintTransformator {
+
+    /**
+     * The expressionstring that is transformed specified by the language
+     * 
+     * @return
+     */
+    public String getExpression();
+
+    public ResultType getResultType();
+
+    public SetOfReturnableElements getSetOfReturnableElements();
+
+    public Set<String> getTable();
+
+    public Set<String> getColumn();
 
 }

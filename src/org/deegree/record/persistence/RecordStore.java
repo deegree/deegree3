@@ -35,10 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
-import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-
 import java.sql.SQLException;
 
 import javax.xml.namespace.QName;
@@ -47,7 +43,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.record.Record;
 
 /**
  * Base interface of the {@link Record} persistence layer, provides access to stored {@link Record} instances and their
@@ -106,8 +101,8 @@ public interface RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    public void getRecords( XMLStreamWriter writer, QName typeName, SetOfReturnableElements returnableElement,
-                            JDBCConnections connection, ResultType resultType, ConstraintLanguage constraintLanguage, String constraint, String namespace )
+    public void getRecords( XMLStreamWriter writer, QName typeName, JDBCConnections connection,
+                            TransformatorPostGres filterTransformator )
                             throws SQLException, XMLStreamException;
 
     /**
@@ -117,10 +112,4 @@ public interface RecordStore {
      */
     public QName getTypeName();
 
-    /**
-     * Is for a dummyimplementation
-     * 
-     * @return
-     */
-    public String getOutput();
 }

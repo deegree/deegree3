@@ -33,48 +33,51 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.record;
-
-import javax.xml.validation.Schema;
+package org.deegree.record.persistence;
 
 /**
- * This interface provides an access 
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface SchemaComponent {
-    
-    /**
-     * getting the targetNamespace for the internal referencing in the xml document
-     * 
-     * @return
-     */
-    public String getTargetNamespace();
-    
-    /**
-     * If the SchemaComponent is a fragment, there must be referenced a parent schema
-     * 
-     * @return
-     */
-    public String getParentSchema();
-    
-    /**
-     * The language of the schema
-     * <br>
-     * The default is XML Schema
-     * 
-     * @return
-     */
-    public String getSchemaLanguage();
-    
-    /**
-     * The schema response for a request
-     * 
-     * @return
-     */
-    public Schema getXmlSchema();
+public class MappingInfo {
 
+    private String table;
+    
+    private String column;
+    
+    private ColumnType type;
+    
+    MappingInfo (String table, String column, ColumnType type) {
+        this.table = table;
+        this.column = column;
+        this.type = type;
+    }
+    
+    enum ColumnType {
+        STRING,
+        INTEGER,
+        DATE,
+        ENVELOPE
+    }
+
+    /**
+     * @return the table
+     */
+    public String getTable() {
+        return table;
+    }
+
+    /**
+     * @return the column
+     */
+    public String getColumn() {
+        return column;
+    }
+    
+    
+    
 }
