@@ -65,12 +65,7 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.logical.LogicalOperator.SubType;
-import org.deegree.filter.spatial.BBOX;
-import org.deegree.filter.spatial.Beyond;
-import org.deegree.filter.spatial.DWithin;
-import org.deegree.filter.spatial.Disjoint;
 import org.deegree.filter.spatial.SpatialOperator;
-import org.deegree.geometry.Envelope;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 
@@ -98,24 +93,8 @@ public class TransformatorPostGres {
 
     private Set<String> column = new HashSet<String>();
 
-    private static Map<String, MappingInfo> propToTableAndCol = new HashMap<String, MappingInfo>();
-
-    static {
-        propToTableAndCol.put( "Title", new MappingInfo( "isoqp_title", "title", STRING ) );
-        propToTableAndCol.put( "Abstract", new MappingInfo( "isoqp_abstract", "abstract", STRING ) );
-        propToTableAndCol.put( "BoundingBox", new MappingInfo( "isoqp_BoundingBox", "bbox", STRING ) );
-        propToTableAndCol.put( "Type", new MappingInfo( "isoqp_type", "type", STRING ) );
-        propToTableAndCol.put( "Format", new MappingInfo( "isoqp_format", "format", STRING ) );
-        // propToTableAndCol.put( "Language", new MappingInfo( "datasets", "language", STRING ) );
-        propToTableAndCol.put( "Subject", new MappingInfo( "isoqp_topiccategory", "topiccategory", STRING ) );
-        propToTableAndCol.put( "AnyText", new MappingInfo( "datasets", "anytext", STRING ) );
-        propToTableAndCol.put( "Identifier", new MappingInfo( "datasets", "identifier", STRING ) );
-        propToTableAndCol.put( "Modified", new MappingInfo( "datasets", "modified", DATE ) );
-        propToTableAndCol.put( "CRS", new MappingInfo( "isoqp_crs", "crs", STRING ) );
-        propToTableAndCol.put( "Association", new MappingInfo( "isoqp_association", "relation", STRING ) );
-        propToTableAndCol.put( "Source", new MappingInfo( "datasets", "source", STRING ) );
-
-    }
+    private ExpressionFilterHandling expressionFilterHandling = new ExpressionFilterHandling();
+    private ExpressionFilterObject expressObject;
 
     public TransformatorPostGres( Filter constraint, ResultType resultType,
                                   SetOfReturnableElements setOfReturnableElements, int maxRecords ) {
@@ -198,59 +177,7 @@ public class TransformatorPostGres {
 
     }
 
-    /**
-     * Handles the {@link Expression} that is identified during the parsing of the {@link Operator}s
-     * 
-     * @param typeExpression
-     * @param exp
-     */
-    private String expressionFilterHandling( org.deegree.filter.Expression.Type typeExpression, Expression exp ) {
-        switch ( typeExpression ) {
-
-        case ADD:
-            // TODO
-            break;
-
-        case SUB:
-            // TODO
-            break;
-
-        case MUL:
-            // TODO
-            break;
-
-        case DIV:
-            // TODO
-            break;
-
-        case PROPERTY_NAME:
-            PropertyName propertyName = (PropertyName) exp;
-
-            for ( String s : propToTableAndCol.keySet() ) {
-                if ( propertyName.getPropertyName().equals( s ) ) {
-                    MappingInfo m = propToTableAndCol.get( s );
-
-                    table.add( m.getTable() );
-                    column.add( m.getColumn() );
-                    return m.getTable() + "." + m.getColumn();
-
-                }
-            }
-
-            return "";
-
-        case LITERAL:
-            Literal<?> literal = (Literal<?>) exp;
-            String value = "'" + literal.getValue().toString() + "'";
-            return value;
-
-        case FUNCTION:
-            // TODO
-            break;
-
-        }
-        return "";
-    }
+    
 
     /**
      * 
@@ -277,176 +204,8 @@ public class TransformatorPostGres {
 
         case SPATIAL:
             SpatialOperator spaOp = (SpatialOperator) opFilter.getOperator();
-            org.deegree.filter.spatial.SpatialOperator.SubType typeSpatial = spaOp.getSubType();
-            String stringSpatial = "";
-
-            switch ( typeSpatial ) {
-
-            case BBOX:
-
-                BBOX bboxOp = (BBOX) spaOp;
-                Object[] paramsBBox = bboxOp.getParams();
-                stringSpatial = "";
-
-                for ( Object opParam : paramsBBox ) {
-
-                    if ( opParam != bboxOp.getBoundingBox() ) {
-                        String exp = ( (PropertyName) opParam ).getPropertyName();
-                        stringSpatial += expressionFilterHandling(
-                                                                   ( (PropertyName) opParam ).getType(),
-                                                                   new PropertyName(
-                                                                                     exp,
-                                                                                     ( (PropertyName) opParam ).getNsContext() ) );
-                        stringSpatial += " && SetSRID('BOX3D( ";
-                    } else {
-                        double[] minArray = ( (Envelope) opParam ).getMin().getAsArray();
-                        double[] maxArray = ( (Envelope) opParam ).getMax().getAsArray();
-                        for ( double min : minArray ) {
-                            stringSpatial += min + " ";
-                        }
-                        stringSpatial += ",";
-                        for ( double max : maxArray ) {
-                            stringSpatial += max + " ";
-                        }
-                        stringSpatial += " )'::box3d, 4326)";
-                    }
-                    System.out.println( stringSpatial );
-
-                }
-
-                return stringSpatial;
-
-            case BEYOND:
-                Beyond beyondOp = (Beyond) spaOp;
-                Object[] paramsBeyond = beyondOp.getParams();
-                stringSpatial = "";
-
-                for ( Object opParam : paramsBeyond ) {
-
-                    if ( opParam != beyondOp.getParams() ) {
-                        String exp = ( (PropertyName) opParam ).getPropertyName();
-                        stringSpatial += expressionFilterHandling(
-                                                                   ( (PropertyName) opParam ).getType(),
-                                                                   new PropertyName(
-                                                                                     exp,
-                                                                                     ( (PropertyName) opParam ).getNsContext() ) );
-                        stringSpatial += " && SetSRID('BOX3D( ";
-                    } else {
-                        double[] minArray = ( (Envelope) opParam ).getMin().getAsArray();
-                        double[] maxArray = ( (Envelope) opParam ).getMax().getAsArray();
-                        for ( double min : minArray ) {
-                            stringSpatial += min + " ";
-                        }
-                        stringSpatial += ",";
-                        for ( double max : maxArray ) {
-                            stringSpatial += max + " ";
-                        }
-                        stringSpatial += " )'::box3d, 4326)";
-                    }
-                    System.out.println( stringSpatial );
-
-                }
-
-                return stringSpatial;
-
-            case CONTAINS:
-
-                return stringSpatial;
-
-            case CROSSES:
-
-                return stringSpatial;
-
-            case DISJOINT:
-                Disjoint disjointOp = (Disjoint) spaOp;
-                Object[] paramsDisjoint = disjointOp.getParams();
-                stringSpatial = "";
-
-                for ( Object opParam : paramsDisjoint ) {
-
-                    if ( opParam != disjointOp.getParams() ) {
-                        String exp = ( (PropertyName) opParam ).getPropertyName();
-                        stringSpatial += expressionFilterHandling(
-                                                                   ( (PropertyName) opParam ).getType(),
-                                                                   new PropertyName(
-                                                                                     exp,
-                                                                                     ( (PropertyName) opParam ).getNsContext() ) );
-                        stringSpatial += " && SetSRID('BOX3D( ";
-                    } else {
-                        double[] minArray = ( (Envelope) opParam ).getMin().getAsArray();
-                        double[] maxArray = ( (Envelope) opParam ).getMax().getAsArray();
-                        for ( double min : minArray ) {
-                            stringSpatial += min + " ";
-                        }
-                        stringSpatial += ",";
-                        for ( double max : maxArray ) {
-                            stringSpatial += max + " ";
-                        }
-                        stringSpatial += " )'::box3d, 4326)";
-                    }
-                    System.out.println( stringSpatial );
-
-                }
-
-                return stringSpatial;
-
-
-            case DWITHIN:
-                DWithin dWithinOp = (DWithin) spaOp;
-                Object[] paramsDWithin = dWithinOp.getParams();
-                stringSpatial = "";
-
-                for ( Object opParam : paramsDWithin ) {
-
-                    if ( opParam != dWithinOp.getParams() ) {
-                        String exp = ( (PropertyName) opParam ).getPropertyName();
-                        stringSpatial += expressionFilterHandling(
-                                                                   ( (PropertyName) opParam ).getType(),
-                                                                   new PropertyName(
-                                                                                     exp,
-                                                                                     ( (PropertyName) opParam ).getNsContext() ) );
-                        stringSpatial += " && SetSRID('BOX3D( ";
-                    } else {
-                        double[] minArray = ( (Envelope) opParam ).getMin().getAsArray();
-                        double[] maxArray = ( (Envelope) opParam ).getMax().getAsArray();
-                        for ( double min : minArray ) {
-                            stringSpatial += min + " ";
-                        }
-                        stringSpatial += ",";
-                        for ( double max : maxArray ) {
-                            stringSpatial += max + " ";
-                        }
-                        stringSpatial += " )'::box3d, 4326)";
-                    }
-                    System.out.println( stringSpatial );
-
-                }
-
-                return stringSpatial;
-
-            case EQUALS:
-
-                return stringSpatial;
-
-            case INTERSECTS:
-
-                return stringSpatial;
-
-            case OVERLAPS:
-
-                return stringSpatial;
-
-            case TOUCHES:
-
-                return stringSpatial;
-
-            case WITHIN:
-
-                return stringSpatial;
-
-            }
-
-            break;
+            SpatialOperatorTransformingPostGres spa = new SpatialOperatorTransformingPostGres(spaOp);
+            return spa.getSpatialOperation();
 
         case LOGICAL:
             LogicalOperator logOp = (LogicalOperator) opFilter.getOperator();
@@ -601,10 +360,15 @@ public class TransformatorPostGres {
     private String expressionArrayHandling( Expression expression1, String compOp, Expression expression2 ) {
 
         String s = "";
-
-        s += expressionFilterHandling( expression1.getType(), expression1 );
+        expressObject = expressionFilterHandling.expressionFilterHandling( expression1.getType(), expression1 );
+        table.addAll( expressObject.getTable());
+        column.addAll( expressObject.getColumn());
+        s += expressObject.getExpression();
         s += compOp;
-        s += expressionFilterHandling( expression2.getType(), expression2 );
+        expressObject = expressionFilterHandling.expressionFilterHandling( expression2.getType(), expression2 );
+        table.addAll( expressObject.getTable());
+        column.addAll( expressObject.getColumn());
+        s += expressObject.getExpression();
 
         return s;
     }
@@ -617,11 +381,18 @@ public class TransformatorPostGres {
      * @return
      */
     private String propIsBetweenHandling( Expression lowerBoundary, Expression upperBoundary ) {
+        
         String s = "";
         s += " BETWEEN ";
-        s += expressionFilterHandling( lowerBoundary.getType(), lowerBoundary );
+        expressObject = expressionFilterHandling.expressionFilterHandling( lowerBoundary.getType(), lowerBoundary );
+        table.addAll( expressObject.getTable());
+        column.addAll( expressObject.getColumn());
+        s += expressObject.getExpression();
         s += " AND ";
-        s += expressionFilterHandling( upperBoundary.getType(), upperBoundary );
+        expressObject = expressionFilterHandling.expressionFilterHandling( upperBoundary.getType(), upperBoundary );
+        table.addAll( expressObject.getTable());
+        column.addAll( expressObject.getColumn());
+        s += expressObject.getExpression();
 
         return s;
     }
@@ -635,14 +406,19 @@ public class TransformatorPostGres {
     private String propIsLikeHandling( Expression[] compOp ) {
         String s = "";
         int counter = 0;
+        
         for ( Expression exp : compOp ) {
+            expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
+            table.addAll( expressObject.getTable());
+            column.addAll( expressObject.getColumn());
             if ( counter != compOp.length - 1 ) {
                 counter++;
-                s += expressionFilterHandling( exp.getType(), exp );
+                
+                s += expressObject.getExpression();
                 s += " LIKE ";
 
             } else {
-                s += expressionFilterHandling( exp.getType(), exp );
+                s += expressObject.getExpression();
             }
 
         }
@@ -659,8 +435,10 @@ public class TransformatorPostGres {
         String s = "";
 
         for ( Expression exp : compOp ) {
-
-            s += expressionFilterHandling( exp.getType(), exp );
+            expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
+            table.addAll( expressObject.getTable());
+            column.addAll( expressObject.getColumn());
+            s += expressObject.getExpression();
             s += " IS NULL ";
 
         }

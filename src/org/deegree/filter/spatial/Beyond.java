@@ -62,6 +62,35 @@ public class Beyond extends SpatialOperator {
         this.geometry = geometry;
         this.distance = distance;
     }
+    
+    
+
+    /**
+     * @return the propName
+     */
+    public PropertyName getPropName() {
+        return propName;
+    }
+
+
+
+    /**
+     * @return the geometry
+     */
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+
+
+    /**
+     * @return the distance
+     */
+    public Measure getDistance() {
+        return distance;
+    }
+
+
 
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
@@ -77,8 +106,11 @@ public class Beyond extends SpatialOperator {
     }
 
     public String toString( String indent ) {
-        // TODO Auto-generated method stub
-        return null;
+        String s = indent + "-Beyond\n";
+        s += indent + propName + "\n";
+        s += indent + geometry + "\n";
+        s += indent + distance;
+        return s;
     }
 
     @Override

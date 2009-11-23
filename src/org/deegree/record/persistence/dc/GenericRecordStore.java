@@ -280,7 +280,7 @@ public class GenericRecordStore implements RecordStore {
 
                 String selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ), constraint );
                 ResultSet rsBrief = conn.createStatement().executeQuery( selectBrief );
-                System.out.println( selectBrief );
+                
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "brief" ), "results" );
 
@@ -298,7 +298,7 @@ public class GenericRecordStore implements RecordStore {
 
                 String selectSummary = generateSELECTStatement( formatTypeInGenericRecordStore.get( "summary" ), constraint );
                 ResultSet rsSummary = conn.createStatement().executeQuery( selectSummary );
-                System.out.println( selectSummary );
+                
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "summary" ), "results" );
 
@@ -315,7 +315,7 @@ public class GenericRecordStore implements RecordStore {
 
                 String selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint );
                 ResultSet rsFull = conn.createStatement().executeQuery( selectFull );
-                System.out.println( selectFull );
+                
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "full" ), "results" );
 
@@ -394,6 +394,7 @@ public class GenericRecordStore implements RecordStore {
                  + constraint.getMaxRecords();
 
         }
+        System.out.println(s);
         return s;
     }
 
@@ -438,6 +439,7 @@ public class GenericRecordStore implements RecordStore {
                  + constraint.getMaxRecords();
 
         }
+        System.out.println(s);
         return s;
     }
 
