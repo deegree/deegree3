@@ -72,6 +72,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.Query;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
+import org.deegree.feature.persistence.Query.QueryHint;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -342,8 +343,8 @@ public class ShapeFeatureStore implements FeatureStore {
         }
 
         // TODO what about bbox information in the filter?
-        Envelope bbox = (Envelope) query.getHint( Query.HINT_LOOSE_BBOX );
-        boolean withGeometries = query.getHint( Query.HINT_NO_GEOMETRIES ) != null ? true : false;
+        Envelope bbox = (Envelope) query.getHint( QueryHint.HINT_LOOSE_BBOX );
+        boolean withGeometries = query.getHint( QueryHint.HINT_NO_GEOMETRIES ) != null ? true : false;
 
         checkForUpdate();
 

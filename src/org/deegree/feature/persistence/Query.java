@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
+import static org.deegree.feature.persistence.Query.QueryHint.HINT_LOOSE_BBOX;
+import static org.deegree.feature.persistence.Query.QueryHint.HINT_NO_GEOMETRIES;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +50,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Encapsulates the parameter of a query to a {@link FeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -56,9 +59,21 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  */
 public class Query {
 
-    public static final String HINT_LOOSE_BBOX = "HINT_LOOSE_BBOX";
-
-    public static final String HINT_NO_GEOMETRIES = "HINT_NO_GEOMETRIES";
+    /**
+     * Names for hints and additional parameters that a {@link FeatureStore} implementation may take into account to
+     * increase efficient query processing.
+     * 
+     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public enum QueryHint {
+        /** If present, the store shall apply the argument (an {@link Envelope} as a pre-filtering step. */
+        HINT_LOOSE_BBOX,
+        /** If present, the store can omit the geometry objects in the output. */
+        HINT_NO_GEOMETRIES
+    }
 
     private final TypeName[] typeNames;
 
@@ -70,8 +85,14 @@ public class Query {
 
     private final SortProperty[] sortBy;
 
-    private final Map<String, Object> hints = new HashMap<String, Object>();
+    private final Map<QueryHint, Object> hints = new HashMap<QueryHint, Object>();
 
+    /**
+     * @param ftName
+     * @param looseBbox
+     * @param filter
+     * @param withGeometries
+     */
     public Query( QName ftName, Envelope looseBbox, Filter filter, boolean withGeometries ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
@@ -92,19 +113,19 @@ public class Query {
         this.sortBy = sortBy;
     }
 
-    public Object getHint( String code ) {
+    public Object getHint( QueryHint code ) {
         return hints.get( code );
     }
 
     public TypeName[] getTypeNames() {
         return typeNames;
     }
-    
-    public Filter getFilter () {
+
+    public Filter getFilter() {
         return filter;
     }
-    
-    public SortProperty[] getSortProperties () {
+
+    public SortProperty[] getSortProperties() {
         return sortBy;
     }
 }
