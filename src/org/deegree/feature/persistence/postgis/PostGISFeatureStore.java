@@ -58,28 +58,22 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.Query;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
+import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.Operator;
-import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.wfs.getfeature.BBoxQuery;
-import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
-import org.deegree.protocol.wfs.getfeature.Query;
 import org.postgis.PGgeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +105,8 @@ public class PostGISFeatureStore implements FeatureStore {
     private Thread transactionHolder;
 
     private LockManager lockManager;
+
+    private FeatureStoreCache cache = new FeatureStoreCache();
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
@@ -186,26 +182,29 @@ public class PostGISFeatureStore implements FeatureStore {
     public Object getObjectById( String id )
                             throws FeatureStoreException {
 
-        Object geomOrFeature = null;
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
-            conn.setAutoCommit( false );
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT binary_object FROM gml_objects WHERE gml_id='" + id + "'" );
-            if ( rs.next() ) {
-                LOG.debug( "Recreating object '" + id + "' from bytea." );
-                geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
-                                                     new FeatureStoreGMLIdResolver( this ) );
+        Object geomOrFeature = cache.get( id );
+
+        if ( geomOrFeature != null ) {
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rs = null;
+            try {
+                conn = ConnectionManager.getConnection( jdbcConnId );
+                conn.setAutoCommit( false );
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery( "SELECT binary_object FROM gml_objects WHERE gml_id='" + id + "'" );
+                if ( rs.next() ) {
+                    LOG.debug( "Recreating object '" + id + "' from bytea." );
+                    geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
+                                                         new FeatureStoreGMLIdResolver( this ) );
+                }
+            } catch ( Exception e ) {
+                String msg = "Error performing query: " + e.getMessage();
+                LOG.debug( msg, e );
+                throw new FeatureStoreException( msg, e );
+            } finally {
+                closeSafely( conn, stmt, rs );
             }
-        } catch ( Exception e ) {
-            String msg = "Error performing query: " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
-        } finally {
-            closeSafely( conn, stmt, rs );
         }
         return geomOrFeature;
     }
@@ -314,28 +313,21 @@ public class PostGISFeatureStore implements FeatureStore {
     }
 
     @Override
-    public int performHitsQuery( Query query )
+    public FeatureCollection query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO
-        return performQuery( query ).size();
-    }
-
-    @Override
-    public FeatureCollection performQuery( Query query )
-                            throws FeatureStoreException, FilterEvaluationException {
-
-        if ( query.getTypeNames().length > 1 ) {
+    
+        if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
             String msg = "Queries that target more than one feature type (joins) are not supported yet.";
             throw new FeatureStoreException( msg );
         }
-
+    
         QName ftName = query.getTypeNames()[0].getFeatureTypeName();
         if ( !ftNameToFtId.containsKey( ftName ) ) {
             String msg = "Feature type '" + ftName + "' is not served by this feature store.";
             throw new FeatureStoreException( msg );
         }
         short ftId = ftNameToFtId.get( ftName );
-
+    
         FeatureCollection fc = null;
         Connection conn = null;
         Statement stmt = null;
@@ -346,14 +338,20 @@ public class PostGISFeatureStore implements FeatureStore {
             conn.setAutoCommit( false );
             stmt = conn.createStatement();
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );
-
+    
             // TODO lazy fetching (CloseableIterator etc)
             List<Feature> members = new LinkedList<Feature>();
             while ( rs.next() ) {
                 String gml_id = rs.getString( 1 );
-                LOG.debug( "Recreating object '" + gml_id + "' from blob." );
-                Feature feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), schema, new CRS( "EPSG:31466" ),
-                                                       new FeatureStoreGMLIdResolver( this ) );
+                Feature feature = (Feature) cache.get( gml_id );
+                if ( feature == null ) {
+                    LOG.debug( "Cache miss. Recreating object '" + gml_id + "' from blob." );
+                    feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), schema, new CRS( "EPSG:31466" ),
+                                                   new FeatureStoreGMLIdResolver( this ) );
+                    cache.add( gml_id, feature );
+                } else {
+                    LOG.debug( "Cache hit." );
+                }
                 members.add( feature );
             }
             fc = new GenericFeatureCollection( null, members );
@@ -364,36 +362,40 @@ public class PostGISFeatureStore implements FeatureStore {
         } finally {
             closeSafely( conn, stmt, rs );
         }
-
-        // extract / create filter from query
-        if ( query instanceof FilterQuery ) {
-            Filter filter = ( (FilterQuery) query ).getFilter();
-            if ( filter != null ) {
-                fc = fc.getMembers( filter );
-            }
-        } else if ( query instanceof BBoxQuery ) {
-            Envelope bbox = ( (BBoxQuery) query ).getBBox();
-            PropertyName geoProp = findGeoProp( schema.getFeatureType( ftName ) );
-            Operator bboxOperator = new BBOX( geoProp, bbox );
-            Filter filter = new OperatorFilter( bboxOperator );
-            fc = fc.getMembers( filter );
-        } else if ( query instanceof FeatureIdQuery ) {
-            List<Feature> matches = new LinkedList<Feature>();
-            for ( String fid : ( (FeatureIdQuery) query ).getFeatureIds() ) {
-                Object object = getObjectById( fid );
-                if ( object instanceof Feature ) {
-                    matches.add( (Feature) object );
-                }
-            }
-            fc = new GenericFeatureCollection( null, matches );
+    
+        // filter features
+        if ( query.getFilter() != null ) {
+            fc = fc.getMembers( query.getFilter() );
         }
 
         // sort features
-        SortProperty[] sortCrit = query.getSortBy();
+        SortProperty[] sortCrit = query.getSortProperties();
         if ( sortCrit != null ) {
             fc = Features.sortFc( fc, sortCrit );
         }
+
         return fc;
+    }
+
+    @Override
+    public FeatureCollection query( Query[] queries )
+                            throws FeatureStoreException, FilterEvaluationException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int queryHits( Query query )
+                            throws FeatureStoreException, FilterEvaluationException {
+        // TODO
+        return query( query ).size();
+    }
+
+    @Override
+    public int queryHits( Query[] queries )
+                            throws FeatureStoreException, FilterEvaluationException {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
     private PropertyName findGeoProp( FeatureType ft )
@@ -415,55 +417,6 @@ public class PostGISFeatureStore implements FeatureStore {
             throw new FilterEvaluationException( msg );
         }
         return propName;
-    }
-
-    @Override
-    public FeatureCollection query( QName ftName, Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
-                            throws FeatureStoreException, FilterEvaluationException {
-
-        if ( !ftNameToFtId.containsKey( ftName ) ) {
-            String msg = "Feature type '" + ftName + "' is not served by this feature store.";
-            throw new FeatureStoreException( msg );
-        }
-        short ftId = ftNameToFtId.get( ftName );
-
-//        Envelope queryBBox = (Envelope) getCompatibleGeometry( bbox, new CRS( "EPSG:31466" ) );
-//        System.out.println( "bbox: " + bbox );
-//        System.out.println( "query bbox: " + queryBBox );
-
-        FeatureCollection fc = null;
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
-            setSearchPath( conn );
-            conn.setAutoCommit( false );
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );
-
-            // TODO lazy fetching (CloseableIterator etc)
-            List<Feature> members = new LinkedList<Feature>();
-            while ( rs.next() ) {
-                String gml_id = rs.getString( 1 );
-                LOG.debug( "Recreating object '" + gml_id + "' from blob." );
-                Feature feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), schema, new CRS( "EPSG:31466" ),
-                                                       new FeatureStoreGMLIdResolver( this ) );
-                members.add( feature );
-            }
-            fc = new GenericFeatureCollection( null, members );
-        } catch ( Exception e ) {
-            String msg = "Error performing query: " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new FeatureStoreException( msg, e );
-        } finally {
-            closeSafely( conn, stmt, rs );
-        }
-
-        if ( filter != null ) {
-            fc = fc.getMembers( filter );
-        }
-        return fc;
     }
 
     private Geometry getCompatibleGeometry( Geometry literal, CRS crs )

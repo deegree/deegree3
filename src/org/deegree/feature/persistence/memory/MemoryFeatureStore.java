@@ -36,15 +36,12 @@
 
 package org.deegree.feature.persistence.memory;
 
-import static java.util.Collections.singletonList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -58,18 +55,17 @@ import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
-import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.Property;
 import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.Query;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
@@ -77,20 +73,11 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.Operator;
-import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.wfs.getfeature.BBoxQuery;
-import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
-import org.deegree.protocol.wfs.getfeature.Query;
 import org.slf4j.Logger;
 
 /**
@@ -113,14 +100,14 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private final Map<String, Object> idToObject = new HashMap<String, Object>();
 
-    private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();    
+    private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 
     private MemoryFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
 
-    final DefaultLockManager lockManager;    
-    
+    final DefaultLockManager lockManager;
+
     /**
      * Creates a new {@link MemoryFeatureStore} for the given {@link ApplicationSchema}.
      * 
@@ -152,10 +139,11 @@ public class MemoryFeatureStore implements FeatureStore {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws FeatureStoreException
-     * @throws GMLReferenceResolvingException 
+     * @throws GMLReferenceResolvingException
      */
     public MemoryFeatureStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
-                            UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException, GMLReferenceResolvingException {
+                            UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException,
+                            GMLReferenceResolvingException {
 
         this( schema );
         GMLFeatureDecoder parser = new GMLFeatureDecoder( schema );
@@ -239,7 +227,7 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection performQuery( Query query )
+    public FeatureCollection query( Query query )
                             throws FilterEvaluationException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
@@ -266,39 +254,40 @@ public class MemoryFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
-        // extract / create filter from query
-        FeatureCollection fc = null;
-        if ( query instanceof FilterQuery ) {
-            Filter filter = ( (FilterQuery) query ).getFilter();
-            fc = ftToFeatures.get( ft );
-            if ( filter != null ) {
-                fc = fc.getMembers( filter );
-            }
-        } else if ( query instanceof BBoxQuery ) {
-            Envelope bbox = ( (BBoxQuery) query ).getBBox();
-            PropertyName geoProp = findGeoProp( ft );
-            Operator bboxOperator = new BBOX( geoProp, bbox );
-            fc = ftToFeatures.get( ft );
-            Filter filter = new OperatorFilter( bboxOperator );
-            fc = fc.getMembers( filter );
-        } else if ( query instanceof FeatureIdQuery ) {
-            List<Feature> matches = new LinkedList<Feature>();
-            for ( String fid : ( (FeatureIdQuery) query ).getFeatureIds() ) {
-                Object object = idToObject.get( fid );
-                if ( object instanceof Feature ) {
-                    matches.add( (Feature) object );
-                }
-            }
-            fc = new GenericFeatureCollection( null, matches );
+        // determine / filter features
+        FeatureCollection fc = ftToFeatures.get( ft );
+        if ( query.getFilter() != null ) {
+            fc = fc.getMembers( query.getFilter() );
         }
 
         // sort features
-        SortProperty[] sortCrit = query.getSortBy();
+        SortProperty[] sortCrit = query.getSortProperties();
         if ( sortCrit != null ) {
             fc = Features.sortFc( fc, sortCrit );
         }
 
         return fc;
+    }
+
+    @Override
+    public FeatureCollection query( Query[] queries )
+                            throws FeatureStoreException, FilterEvaluationException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int queryHits( org.deegree.feature.persistence.Query query )
+                            throws FilterEvaluationException {
+        // TODO maybe implement this more efficiently
+        return query( query ).size();
+    }
+
+    @Override
+    public int queryHits( Query[] queries )
+                            throws FeatureStoreException, FilterEvaluationException {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
     private PropertyName findGeoProp( FeatureType ft )
@@ -320,13 +309,6 @@ public class MemoryFeatureStore implements FeatureStore {
             throw new FilterEvaluationException( msg );
         }
         return propName;
-    }
-
-    @Override
-    public int performHitsQuery( Query query )
-                            throws FilterEvaluationException {
-        // TODO maybe implement this more efficiently
-        return performQuery( query ).size();
     }
 
     @Override
@@ -423,61 +405,6 @@ public class MemoryFeatureStore implements FeatureStore {
     @Override
     public boolean isAvailable() {
         return true;
-    }
-
-    @Override
-    public FeatureCollection query( QName featureType, Filter filter, Envelope bbox, boolean withGeometries,
-                                    boolean exact )
-                            throws FeatureStoreException, FilterEvaluationException {
-        FeatureCollection res = new GenericFeatureCollection();
-
-        Collection<FeatureType> types;
-        if ( featureType != null ) {
-            FeatureType tp = schema.getFeatureType( featureType );
-            if ( tp == null ) {
-                return res;
-            }
-            types = singletonList( schema.getFeatureType( featureType ) );
-        } else {
-            types = ftToFeatures.keySet();
-        }
-
-        for ( FeatureType ft : types ) {
-            FeatureCollection fc = ftToFeatures.get( ft );
-            Envelope fcenv = fc.getEnvelope();
-            try {
-                // TODO what to do in these cases? especially, why do envelopes sometimes have no coordinate system?
-                Envelope box = ( bbox == null || fcenv == null || fcenv.getCoordinateSystem() == null ) ? null
-                                                                                                       : (Envelope) new GeometryTransformer(
-                                                                                                                                             fcenv.getCoordinateSystem().getWrappedCRS() ).transform( bbox );
-                for ( Feature f : fc ) {
-                    if ( filter == null || filter.evaluate( f ) ) {
-                        if ( box == null ) {
-                            res.add( f );
-                        } else {
-                            if ( f.getGeometryProperties().length == 0 ) {
-                                res.add( f );
-                            } else {
-                                bboxcheck: for ( Property<Geometry> p : f.getGeometryProperties() ) {
-                                    if ( box.intersects( p.getValue() ) ) {
-                                        res.add( f );
-                                        break bboxcheck;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch ( IllegalArgumentException e ) {
-                LOG.debug( "Unknown error", e );
-            } catch ( UnknownCRSException e ) {
-                LOG.debug( "Unknown error", e );
-            } catch ( TransformationException e ) {
-                LOG.debug( "Unknown error", e );
-            }
-        }
-
-        return res;
     }
 
     @Override

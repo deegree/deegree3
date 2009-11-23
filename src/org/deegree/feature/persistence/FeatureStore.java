@@ -42,11 +42,9 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.protocol.wfs.getfeature.Query;
 
 /**
  * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
@@ -65,7 +63,7 @@ import org.deegree.protocol.wfs.getfeature.Query;
  * @version $Revision: $, $Date: $
  */
 public interface FeatureStore {
-   
+
     /**
      * Called by the container to indicate that this {@link FeatureStore} instance is being placed into service.
      * 
@@ -113,57 +111,59 @@ public interface FeatureStore {
     public Envelope getEnvelope( QName ftName );
 
     /**
-     * Query method that reflects the specific needs of the WMS.
-     * <p>
-     * TODO integrate properly with the other query methods
-     * 
-     * @param featureType
-     * @param filter
-     * @param bbox
-     *            if the bbox filter is contained in the filter, it will be evaluated by deegree, if given here, the
-     *            backend will do it
-     * @param withGeometries
-     *            whether to return geometry properties or not
-     * @param exact
-     * @return matching features
-     * @throws FeatureStoreException
-     *             if the query could not be performed
-     * @throws FilterEvaluationException
-     *             if the filter could not be evaluated
-     */
-    public FeatureCollection query( QName featureType, Filter filter, Envelope bbox, boolean withGeometries,
-                                    boolean exact )
-                            throws FeatureStoreException, FilterEvaluationException;
-
-    // public FeatureCollection query( TypeName[] fts, String featureVersion, CRS srsName, Function[] functions,
-    // SortProperty[] sortBy, Filter filter );
-
-    /**
-     * Performs the given {@link Query} and returns the matching features as a {@link FeatureCollection}.
+     * Performs the given query and returns the matching features as a {@link FeatureCollection}.
      * 
      * @param query
-     *            query to be performed
+     *            query to be performed, must not be <code>null</code>
      * @return matching features
      * @throws FeatureStoreException
      *             if the query could not be performed
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    public FeatureCollection performQuery( Query query )
+    public FeatureCollection query( Query query )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**
-     * Returns the number of features that are matched by the given {@link Query}.
+     * Performs the given queries and returns the matching features as a {@link FeatureCollection}.
+     * 
+     * @param queries
+     *            queries to be performed, must not be <code>null</code> and contain at least one entry
+     * @return matching features
+     * @throws FeatureStoreException
+     *             if the query could not be performed
+     * @throws FilterEvaluationException
+     *             if the filter contained in the query could not be evaluated
+     */
+    public FeatureCollection query( Query[] queries )
+                            throws FeatureStoreException, FilterEvaluationException;
+
+    /**
+     * Returns the number of features that are matched by the given query.
      * 
      * @param query
-     *            query to be performed
+     *            query to be performed, must not be <code>null</code>
+     * @return number of matching featuress
+     * @throws FeatureStoreException
+     *             if the query could not be performed
+     * @throws FilterEvaluationException
+     *             if the filter contained in the query could not be evaluated
+     */
+    public int queryHits( Query query )
+                            throws FeatureStoreException, FilterEvaluationException;
+
+    /**
+     * Returns the number of features that are matched by the given queries.
+     * 
+     * @param queries
+     *            queries to be performed, must not be <code>null</code> and contain at least one entry
      * @return number of matching features
      * @throws FeatureStoreException
      *             if the query could not be performed
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    public int performHitsQuery( Query query )
+    public int queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**

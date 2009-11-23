@@ -68,6 +68,10 @@ public class FeatureStoreCache {
         return idToObject.get( id );
     }
 
+    public void add (String id, Object obj) {
+        idToObject.put( id, obj );
+    }
+    
     /**
      * Removes the object with the specified id from the cache (if it exists).
      * 

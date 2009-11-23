@@ -56,13 +56,13 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.Query;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.IdFilter;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
-import org.deegree.protocol.wfs.getfeature.BBoxQuery;
-import org.deegree.protocol.wfs.getfeature.FeatureIdQuery;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
-import org.deegree.protocol.wfs.getfeature.Query;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.protocol.wfs.lockfeature.BBoxLock;
 import org.deegree.protocol.wfs.lockfeature.FeatureIdLock;
@@ -219,19 +219,20 @@ public class DefaultLockManager implements LockManager {
                         BBoxLock bboxLock = (BBoxLock) lockRequest;
                         TypeName[] typeNames = bboxLock.getTypeNames();
                         Envelope bbox = bboxLock.getBBox();
-                        query = new BBoxQuery( "lock", typeNames, null, null, null, null, null, bbox );
+                        BBOX bboxOperator = new BBOX( null, bbox );
+                        Filter filter = new OperatorFilter( bboxOperator );
+                        query = new Query( typeNames, filter, null, null, null );
                     } else if ( lockRequest instanceof FeatureIdLock ) {
                         FeatureIdLock fidLock = (FeatureIdLock) lockRequest;
                         TypeName[] typeNames = fidLock.getTypeNames();
-                        String[] featureIds = fidLock.getFeatureIds();
-                        query = new FeatureIdQuery( "lock", typeNames, featureIds, null, null, null, null, null );
+                        Filter filter = new IdFilter( fidLock.getFeatureIds() );
+                        query = new Query( typeNames, filter, null, null, null );
                     } else if ( lockRequest instanceof FilterLock ) {
                         FilterLock filterLock = (FilterLock) lockRequest;
                         TypeName[] typeNames = new TypeName[] { filterLock.getTypeName() };
-                        Filter filter = filterLock.getFilter();
-                        query = new FilterQuery( "lock", typeNames, null, null, null, null, null, null, filter );
+                        query = new Query( typeNames, filterLock.getFilter(), null, null, null );
                     }
-                    FeatureCollection fc = store.performQuery( query );
+                    FeatureCollection fc = store.query( query );
 
                     // create entries in LOCKED_FIDS/LOCK_FAILED_FIDS tables
                     checkStmt = conn.prepareStatement( "SELECT LOCK_ID FROM LOCKED_FIDS WHERE FID=?" );
@@ -380,8 +381,8 @@ public class DefaultLockManager implements LockManager {
             lockIdInt = Integer.parseInt( lockId );
         } catch ( NumberFormatException e ) {
             // not a number -> use -1 (which is never used)
-        }        
-        
+        }
+
         synchronized ( this ) {
             releaseExpiredLocks();
             Connection conn = null;
@@ -396,7 +397,7 @@ public class DefaultLockManager implements LockManager {
                     throw new InvalidParameterValueException( msg, "lockId" );
                 }
                 Timestamp acquired = rs.getTimestamp( 1 );
-                Timestamp expires = rs.getTimestamp( 2 );                
+                Timestamp expires = rs.getTimestamp( 2 );
                 rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE LOCK_ID=" + lockIdInt );
                 rs.next();
                 int numLocked = rs.getInt( 1 );

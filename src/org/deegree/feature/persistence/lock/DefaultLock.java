@@ -53,10 +53,10 @@ import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.Query;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
-import org.deegree.protocol.wfs.getfeature.Query;
+import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -283,14 +283,15 @@ class DefaultLock implements Lock {
                             throws FeatureStoreException {
 
         synchronized ( this ) {
-            Query query = new FilterQuery( ftName, null, null, filter );
+
+            Query query = new Query( new TypeName[] { new TypeName( ftName, null ) }, filter, null, null, null );
 
             Connection conn = null;
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
                 // TODO don't actually fetch the feature collection, but only the fids of the features
-                FeatureCollection fc = manager.getStore().performQuery( query );
+                FeatureCollection fc = manager.getStore().query( query );
 
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 conn.setAutoCommit( false );

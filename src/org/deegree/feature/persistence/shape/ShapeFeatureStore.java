@@ -70,6 +70,7 @@ import org.deegree.feature.Property;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.Query;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
@@ -83,7 +84,6 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.protocol.wfs.getfeature.Query;
 import org.slf4j.Logger;
 
 /**
@@ -327,14 +327,23 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection query( QName featureType, Filter filter, Envelope bbox, boolean withGeometries,
-                                    boolean exact )
+    public FeatureCollection query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
+
+        if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+            String msg = "Only queries with exactly one or zero type name(s) are supported.";
+            throw new UnsupportedOperationException( msg );
+        }
+        QName featureType = query.getTypeNames()[0].getFeatureTypeName();
 
         if ( featureType != null && !featureType.equals( ft ) ) {
             // or null?
             return new GenericFeatureCollection();
         }
+
+        // TODO what about bbox information in the filter?
+        Envelope bbox = (Envelope) query.getHint( Query.HINT_LOOSE_BBOX );
+        boolean withGeometries = query.getHint( Query.HINT_NO_GEOMETRIES ) != null ? true : false;
 
         checkForUpdate();
 
@@ -347,7 +356,7 @@ public class ShapeFeatureStore implements FeatureStore {
         LinkedList<Pair<Integer, Geometry>> list;
         synchronized ( shp ) {
             try {
-                list = shp.query( bbox, withGeometries, exact );
+                list = shp.query( bbox, withGeometries, false );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace", e );
                 throw new FeatureStoreException( e );
@@ -375,6 +384,7 @@ public class ShapeFeatureStore implements FeatureStore {
             fields.removeLast();
         }
 
+        Filter filter = query.getFilter();
         if ( filter != null ) {
             LOG.debug( "Performing additional filtering:\n{}", filter );
         }
@@ -413,6 +423,27 @@ public class ShapeFeatureStore implements FeatureStore {
         LOG.debug( "After custom filtering {} features match.", feats.size() );
 
         return new GenericFeatureCollection( null, feats );
+    }
+
+    @Override
+    public FeatureCollection query( Query[] queries )
+                            throws FeatureStoreException, FilterEvaluationException {
+        // TODO
+        throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
+    }
+
+    @Override
+    public int queryHits( Query query )
+                            throws FeatureStoreException, FilterEvaluationException {
+        // TODO
+        throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
+    }
+
+    @Override
+    public int queryHits( Query[] queries )
+                            throws FeatureStoreException, FilterEvaluationException {
+        // TODO
+        throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
     }
 
     /**
@@ -478,19 +509,5 @@ public class ShapeFeatureStore implements FeatureStore {
     @Override
     public ApplicationSchema getSchema() {
         return schema;
-    }
-
-    @Override
-    public int performHitsQuery( Query query )
-                            throws FeatureStoreException {
-        // TODO
-        throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
-    }
-
-    @Override
-    public FeatureCollection performQuery( Query query )
-                            throws FeatureStoreException {
-        // TODO
-        throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
     }
 }

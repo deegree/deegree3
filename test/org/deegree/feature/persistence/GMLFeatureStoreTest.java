@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.feature.persistence;
 
@@ -67,16 +67,16 @@ import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
+import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class GMLFeatureStoreTest {
@@ -88,7 +88,8 @@ public class GMLFeatureStoreTest {
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException, GMLReferenceResolvingException {
+                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException,
+                            GMLReferenceResolvingException {
         URL url = GMLFeatureStoreTest.class.getResource( "example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
@@ -98,48 +99,59 @@ public class GMLFeatureStoreTest {
     }
 
     @Test
-    public void testQueryAllPhilosophers() throws FilterEvaluationException {
-        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );
-        FilterQuery query = new FilterQuery( ftName, null, null, null );
-        FeatureCollection fc = store.performQuery( query );
-        Assert.assertEquals( ftName, fc.iterator().next().getName() );
+    public void testQueryAllPhilosophers()
+                            throws FilterEvaluationException {
+        TypeName[] typeNames = new TypeName[] { new TypeName(
+                                                              QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
+                                                              null ) };
+        Query query = new Query( typeNames, null, null, null, null );
+        FeatureCollection fc = store.query( query );
+        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 7, fc.size() );
     }
 
     @Test
-    public void testQueryAllPlaces() throws FilterEvaluationException {
-        QName ftName = new QName( "http://www.deegree.org/app", "Place" );
-        FilterQuery query = new FilterQuery( ftName, null, null, null );
-        FeatureCollection fc = store.performQuery( query );
-        Assert.assertEquals( ftName, fc.iterator().next().getName() );
+    public void testQueryAllPlaces()
+                            throws FilterEvaluationException {
+        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Place" ),
+                                                              null ) };
+        Query query = new Query( typeNames, null, null, null, null );
+        FeatureCollection fc = store.query( query );
+        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 7, fc.size() );
     }
 
     @Test
-    public void testQueryAllCountries() throws FilterEvaluationException {
-        QName ftName = new QName( "http://www.deegree.org/app", "Country" );
-        FilterQuery query = new FilterQuery( ftName, null, null, null );
-        FeatureCollection fc = store.performQuery( query );
-        Assert.assertEquals( ftName, fc.iterator().next().getName() );
+    public void testQueryAllCountries()
+                            throws FilterEvaluationException {
+        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
+                                                              null ) };
+        Query query = new Query( typeNames, null, null, null, null );
+        FeatureCollection fc = store.query( query );
+        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 4, fc.size() );
     }
 
-//    @Test
-    public void testQueryAllBooks() throws FilterEvaluationException {
-        QName ftName = new QName( "http://www.deegree.org/app", "Book" );
-        FilterQuery query = new FilterQuery( ftName, null, null, null );
-        FeatureCollection fc = store.performQuery( query );
-        Assert.assertEquals( ftName, fc.iterator().next().getName() );
+    // @Test
+    public void testQueryAllBooks()
+                            throws FilterEvaluationException {
+        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Book" ), null ) };
+        Query query = new Query( typeNames, null, null, null, null );
+        FeatureCollection fc = store.query( query );
+        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 1, fc.size() );
     }
 
     @Test
-    public void testQueryPhilosopherById() throws FilterEvaluationException {
-        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );
+    public void testQueryPhilosopherById()
+                            throws FilterEvaluationException {
+        TypeName[] typeNames = new TypeName[] { new TypeName(
+                                                              QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
+                                                              null ) };
         Filter filter = new IdFilter( "PHILOSOPHER_1", "PHILOSOPHER_2" );
-        FilterQuery query = new FilterQuery( ftName, null, null, filter );
-        FeatureCollection fc = store.performQuery( query );
-        Assert.assertEquals( ftName, fc.iterator().next().getName() );
+        Query query = new Query( typeNames, filter, null, null, null );
+        FeatureCollection fc = store.query( query );
+        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 2, fc.size() );
     }
 
@@ -156,16 +168,18 @@ public class GMLFeatureStoreTest {
     }
 
     @Test
-    public void testGetObjectByIdGeometry2() throws FileNotFoundException, XMLStreamException, UnknownCRSException, TransformationException {
+    public void testGetObjectByIdGeometry2()
+                            throws FileNotFoundException, XMLStreamException, UnknownCRSException,
+                            TransformationException {
         Object o = store.getObjectById( "RING_1" );
         Assert.assertTrue( o instanceof Ring );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-        OutputStream out = new FileOutputStream( "/tmp/exported_ring.gml");
+        OutputStream out = new FileOutputStream( "/tmp/exported_ring.gml" );
         XMLStreamWriter writer = outputFactory.createXMLStreamWriter( out );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
-        GML311GeometryEncoder exporter = new GML311GeometryEncoder(writer, null );
-        exporter.exportRing( (Ring) o);
-    }        
+        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+        exporter.exportRing( (Ring) o );
+    }
 }
