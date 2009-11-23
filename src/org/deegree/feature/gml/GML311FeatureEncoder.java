@@ -263,7 +263,9 @@ public class GML311FeatureEncoder {
             writer.writeCharacters( codeType.getCode() );
             writer.writeEndElement();
         } else if ( propertyType instanceof EnvelopePropertyType ) {
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             geometryExporter.exportEnvelope( (Envelope) value );
+            writer.writeEndElement();
         } else if ( propertyType instanceof LengthPropertyType ) {
             Length length = (Length) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
