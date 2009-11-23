@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Generates GML application schemas from {@link ApplicationSchema} instances.
  * <p>
- * The following GML flavours are supported:
+ * The following GML flavors are supported:
  * <ul>
  * <li>GML 2 (2.1.2)</li>
  * <li>GML 3 (3.1.1)</li>
@@ -98,6 +98,9 @@ public class ApplicationSchemaXSDEncoder {
     // set to "gml:_Feature" (GML 2 and 3.1) or "gml:AbstractFeatureType" (GML 3.2)
     private String abstractGMLFeatureElement;
 
+    // set to "gml:FeatureAssociationType" (GML 2) or "gml:FeaturePropertyType" (GML 3.1 / GML 3.2)
+    private String featurePropertyType;
+
     /**
      * Creates a new {@link ApplicationSchemaXSDEncoder} for the given GML version and optional import URL.
      * 
@@ -118,6 +121,7 @@ public class ApplicationSchemaXSDEncoder {
         case GML_2:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
+            featurePropertyType = "gml:FeatureAssociationType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
                 this.importURLs.put( gmlNsURI, GML_212_DEFAULT_INCLUDE );
             }
@@ -125,6 +129,7 @@ public class ApplicationSchemaXSDEncoder {
         case GML_31:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
+            featurePropertyType = "gml:FeaturePropertyType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
                 this.importURLs.put( gmlNsURI, GML_311_DEFAULT_INCLUDE );
             }
@@ -132,6 +137,7 @@ public class ApplicationSchemaXSDEncoder {
         case GML_32:
             gmlNsURI = GML3_2_NS;
             abstractGMLFeatureElement = "gml:AbstractFeature";
+            featurePropertyType = "gml:FeaturePropertyType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
                 this.importURLs.put( gmlNsURI, GML_321_DEFAULT_INCLUDE );
             }
@@ -273,7 +279,7 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeEndElement();
     }
 
-    private static void export( XMLStreamWriter writer, PropertyType pt, GMLVersion version )
+    private void export( XMLStreamWriter writer, PropertyType pt, GMLVersion version )
                             throws XMLStreamException {
 
         writer.writeStartElement( XSNS, "element" );
@@ -313,7 +319,7 @@ public class ApplicationSchemaXSDEncoder {
                 // end 'xs:complexType'
                 writer.writeEndElement();
             } else {
-                writer.writeAttribute( "type", "gml:FeaturePropertyType" );
+                writer.writeAttribute( "type", featurePropertyType );
             }
         } else if ( pt instanceof CodePropertyType ) {
             writer.writeAttribute( "type", "gml:CodeType" );
@@ -330,7 +336,7 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeAttribute( "processContents", "lax" );
             writer.writeEndElement();
             writer.writeEndElement();
-            XMLAdapter.writeElement( writer, XSNS, "anyAttribute", null, "processContents", "lax");
+            XMLAdapter.writeElement( writer, XSNS, "anyAttribute", null, "processContents", "lax" );
             writer.writeEndElement();
         }
 
