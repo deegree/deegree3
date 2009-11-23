@@ -123,6 +123,8 @@ public class OffsetStroke implements Stroke {
             i.next();
         }
 
+        double firstx = list.peek().second[0], firsty = list.peek().second[1];
+
         // calc normals
         double lastx = 0, lasty = 0;
 
@@ -159,6 +161,8 @@ public class OffsetStroke implements Stroke {
         }
 
         // calc new path
+        double[] firstNormal = normals.peek();
+        double[] lastNormal = normals.peekLast();
         Path2D.Double path = new Path2D.Double();
         for ( Pair<Integer, double[]> pair : list ) {
             switch ( pair.first ) {
@@ -195,6 +199,11 @@ public class OffsetStroke implements Stroke {
                 path.quadTo( n1[0], n1[1], n2[0], n2[1] );
                 break;
             }
+        }
+
+        if ( isZero( lastx - firstx ) && isZero( lasty - firsty ) ) {
+            double[] pt = calcNewInner( firstx, firsty, firstNormal, lastNormal );
+            path.lineTo( pt[0], pt[1] );
         }
 
         if ( LOG.isTraceEnabled() ) {
