@@ -100,6 +100,8 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private final String jdbcConnId;
 
+    private final String dbSchema;
+
     private PostGISFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
@@ -114,10 +116,14 @@ public class PostGISFeatureStore implements FeatureStore {
      * @param schema
      *            schema information, must not be <code>null</code>
      * @param jdbcConnId
+     *            id of the deegree DB connection pool, must not be <code>null</code>
+     * @param dbSchema
+     *            name of the database schema, can be <code>null</code> (-> public schema)
      */
-    public PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId ) {
+    public PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema ) {
         this.schema = schema;
         this.jdbcConnId = jdbcConnId;
+        this.dbSchema = dbSchema;
     }
 
     @Override
@@ -147,7 +153,6 @@ public class PostGISFeatureStore implements FeatureStore {
         try {
             Connection conn = ConnectionManager.getConnection( jdbcConnId );
             conn.setAutoCommit( false );
-            setSearchPath( conn );
             this.activeTransaction = new PostGISFeatureStoreTransaction( this, conn );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
@@ -192,7 +197,8 @@ public class PostGISFeatureStore implements FeatureStore {
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 conn.setAutoCommit( false );
                 stmt = conn.createStatement();
-                rs = stmt.executeQuery( "SELECT binary_object FROM gml_objects WHERE gml_id='" + id + "'" );
+                rs = stmt.executeQuery( "SELECT binary_object FROM " + qualifyTableName( "gml_objects" )
+                                        + " WHERE gml_id='" + id + "'" );
                 if ( rs.next() ) {
                     LOG.debug( "Recreating object '" + id + "' from bytea." );
                     geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
@@ -225,10 +231,8 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-            setSearchPath( conn );
-
             stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT id,qname,tablename,wgs84bbox FROM feature_types" );
+            rs = stmt.executeQuery( "SELECT id,qname,tablename,wgs84bbox FROM " + qualifyTableName( "feature_types" ) );
             while ( rs.next() ) {
                 short ftId = rs.getShort( 1 );
                 QName ftName = QName.valueOf( rs.getString( 2 ) );
@@ -263,24 +267,18 @@ public class PostGISFeatureStore implements FeatureStore {
         }
     }
 
-    // TODO make this configurable in the JDBC configuration
-    private void setSearchPath( Connection conn ) {
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate( "SET search_path TO xplan2,public" );
-            stmt.close();
-        } catch ( SQLException e ) {
-            e.printStackTrace();
-        } finally {
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.debug( e.getMessage(), e );
-                }
-            }
+    /**
+     * Returns the given table name qualified with the db schema.
+     * 
+     * @param tableName
+     *            name of the table to be qualified
+     * @return dbSchema + "." + tableName, or tableName if dbSchema is <code>null</code>
+     */
+    String qualifyTableName( String tableName ) {
+        if ( dbSchema == null ) {
+            return tableName;
         }
+        return dbSchema + "." + tableName;
     }
 
     private void closeSafely( Connection conn, Statement stmt, ResultSet rs ) {
@@ -315,30 +313,30 @@ public class PostGISFeatureStore implements FeatureStore {
     @Override
     public FeatureCollection query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-    
+
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
             String msg = "Queries that target more than one feature type (joins) are not supported yet.";
             throw new FeatureStoreException( msg );
         }
-    
+
         QName ftName = query.getTypeNames()[0].getFeatureTypeName();
         if ( !ftNameToFtId.containsKey( ftName ) ) {
             String msg = "Feature type '" + ftName + "' is not served by this feature store.";
             throw new FeatureStoreException( msg );
         }
         short ftId = ftNameToFtId.get( ftName );
-    
+
         FeatureCollection fc = null;
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-            setSearchPath( conn );
             conn.setAutoCommit( false );
             stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM gml_objects WHERE ft_type=" + ftId );
-    
+            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
+                                    + " WHERE ft_type=" + ftId );
+
             // TODO lazy fetching (CloseableIterator etc)
             List<Feature> members = new LinkedList<Feature>();
             while ( rs.next() ) {
@@ -362,7 +360,7 @@ public class PostGISFeatureStore implements FeatureStore {
         } finally {
             closeSafely( conn, stmt, rs );
         }
-    
+
         // filter features
         if ( query.getFilter() != null ) {
             fc = fc.getMembers( query.getFilter() );

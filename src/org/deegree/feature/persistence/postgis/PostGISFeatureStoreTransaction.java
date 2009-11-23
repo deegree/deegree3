@@ -147,15 +147,28 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         LOG.debug( "performDelete()" );
 
         int deleted = 0;
+        PreparedStatement stmt = null;
         try {
-            PreparedStatement stmt = conn.prepareStatement( "DELETE FROM gml_objects WHERE gml_id=?" );
+            stmt = conn.prepareStatement( "DELETE FROM " + store.qualifyTableName( "gml_objects" ) + " WHERE gml_id=?" );
             for ( String id : filter.getMatchingIds() ) {
                 stmt.setString( 1, id );
-                deleted += stmt.executeUpdate();
+                stmt.addBatch();
+            }
+            int[] deletes = stmt.executeBatch();
+            for ( int noDeleted : deletes ) {
+                deleted += noDeleted;
             }
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
+        } finally {
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    e.printStackTrace();
+                }
+            }
         }
         LOG.debug( "Deleted " + deleted + " features." );
         return deleted;
@@ -219,19 +232,26 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             }
             break;
         }
-        }        
-        
+        }
+
         LOG.debug( features.size() + " features / " + geometries.size() + " geometries" );
 
         long begin = System.currentTimeMillis();
-        for ( Feature feature : features ) {
-            try {
-                insertFeature( feature );
-            } catch ( SQLException e ) {
-                LOG.debug( e.getMessage(), e );
-                throw new FeatureStoreException( e.getMessage(), e );
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement( "INSERT INTO "
+                                                            + store.qualifyTableName( "gml_objects" )
+                                                            + " (gml_id,gml_description,ft_type,binary_object,gml_bounded_by) VALUES(?,?,?,?,?)" );
+            for ( Feature feature : features ) {
+                insertFeature( stmt, feature );
             }
+            stmt.executeBatch();
+            stmt.close();
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            throw new FeatureStoreException( e.getMessage(), e );
         }
+
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Insertion of " + features.size() + " features: " + elapsed + " [ms]" );
         return new ArrayList<String>( fids );
@@ -239,14 +259,11 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private String generateNewId() {
         return UUID.randomUUID().toString();
-    }    
-    
-    private void insertFeature( Feature feature )
+    }
+
+    private void insertFeature( PreparedStatement stmt, Feature feature )
                             throws SQLException {
 
-        long t1 = System.currentTimeMillis();
-
-        PreparedStatement stmt = conn.prepareStatement( "INSERT INTO gml_objects (gml_id,gml_description,ft_type,binary_object,gml_bounded_by) VALUES(?,?,?,?,?)" );
         stmt.setString( 1, feature.getId() );
         stmt.setString( 2, "TODO: gml_description" );
         stmt.setShort( 3, store.getFtId( feature.getName() ) );
@@ -260,12 +277,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new SQLException( msg, e );
         }
         stmt.setBytes( 4, bos.toByteArray() );
-
         stmt.setObject( 5, toPGPolygon( feature.getEnvelope() ) );
-        stmt.executeUpdate();
-        stmt.close();
-        long t2 = System.currentTimeMillis();
-        LOG.debug( "Insert: " + ( t2 - t1 ) + " [ms]" );
+        stmt.addBatch();
     }
 
     private PGgeometry toPGPolygon( Envelope envelope ) {

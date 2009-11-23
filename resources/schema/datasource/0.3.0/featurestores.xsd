@@ -76,6 +76,7 @@
       <extension base="ds:FeatureStoreType">
         <sequence>
           <element name="JDBCConnId" type="string" />
+          <element name="DBSchemaQualifier" type="string" minOccurs="0"/>
           <element name="GMLSchemaFileURL" type="string" />
         </sequence>
       </extension>
