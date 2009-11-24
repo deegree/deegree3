@@ -153,4 +153,76 @@ public class Filter110XMLAdapterTest {
         Assert.assertNotNull( filter );
         
     }
+    
+    @Test
+    public void parseDisjointFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter16.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
+    
+    @Test
+    public void parseContainsFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter17.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
+    
+    @Test
+    public void parseCrossesFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter18.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
+    
+    @Test
+    public void parseDWithinFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter19.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
+    
+    @Test
+    public void parseIntersectsFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter20.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
+    
+    @Test
+    public void parseEqualsFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter21.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
+    
+    @Test
+    public void parseOverlapsFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter22.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
+    
+    @Test
+    public void parseTouchesFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter23.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
+    
+    @Test
+    public void parseWithinFilter()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "testfilter24.xml" );
+        Assert.assertNotNull( filter );
+        
+    }
 }
