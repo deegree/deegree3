@@ -52,6 +52,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.gml.GMLReferenceResolvingException;
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -146,7 +147,7 @@ public class MemoryFeatureStore implements FeatureStore {
                             GMLReferenceResolvingException {
 
         this( schema );
-        GMLFeatureDecoder parser = new GMLFeatureDecoder( schema );
+        GMLFeatureDecoder parser = new GMLFeatureDecoder( schema, GMLVersion.GML_31 );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();

@@ -347,7 +347,8 @@ public class ApplicationSchemaXSDDecoder {
 
         // HACK HACK HACK
         if ( GMLNS.equals( elementDecl.getNamespace() )
-             && !( "featureMember".equals( elementDecl.getName() ) || "featureMembers".equals( elementDecl.getName() ) ) ) {
+             && ( "boundedBy".equals( elementDecl.getName() ) || "name".equals( elementDecl.getName() )
+                  || "description".equals( elementDecl.getName() ) || "metaDataProperty".equals( elementDecl.getName() ) ) ) {
             LOG.trace( "Omitting from feature type -- GML standard property." );
         } else {
             XSTypeDefinition typeDef = elementDecl.getTypeDefinition();

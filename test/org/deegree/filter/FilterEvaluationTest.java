@@ -83,7 +83,7 @@ public class FilterEvaluationTest {
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLDocumentIdContext idContext = new GMLDocumentIdContext();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext, GMLVersion.GML_31 );
 
         URL docURL = this.getClass().getResource( "../feature/gml/testdata/features/Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -178,7 +178,7 @@ public class FilterEvaluationTest {
                             JaxenException {
         Filter filter = parseFilter( "testfilter11.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
-    }     
+    }
 
     @Test
     public void filterCollection12()
@@ -186,8 +186,8 @@ public class FilterEvaluationTest {
                             JaxenException {
         Filter filter = parseFilter( "testfilter12.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2", "PHILOSOPHER_3" );
-    }     
-    
+    }
+
     @Test
     public void filterCollection13()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
@@ -200,8 +200,8 @@ public class FilterEvaluationTest {
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter14.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1" );
-    }    
-    
+    }
+
     private void assertResultSet( FeatureCollection fc, String... expectedIds ) {
         Assert.assertEquals( expectedIds.length, fc.size() );
         Set<String> ids = new HashSet<String>();

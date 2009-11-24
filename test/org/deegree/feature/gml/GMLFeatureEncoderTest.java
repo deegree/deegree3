@@ -81,7 +81,8 @@ public class GMLFeatureEncoderTest {
     public void testValidateExportedFeatures()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
-                            XMLParsingException, UnknownCRSException, TransformationException, GMLReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, TransformationException,
+                            GMLReferenceResolvingException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
@@ -91,7 +92,7 @@ public class GMLFeatureEncoderTest {
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLDocumentIdContext idContext = new GMLDocumentIdContext();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext, GMLVersion.GML_31 );
         Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         idContext.resolveLocalRefs();
 
@@ -110,6 +111,6 @@ public class GMLFeatureEncoderTest {
         exporter.export( feature );
         writer.flush();
         writer.close();
-//        XMLAssert.assertValidity( memoryWriter.getReader() );
+        // XMLAssert.assertValidity( memoryWriter.getReader() );
     }
 }

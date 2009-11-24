@@ -252,7 +252,7 @@ public class FeatureStoreManager {
         for ( String datasetFile : jaxbConfig.getGMLFeatureCollectionFileURL() ) {
             if ( datasetFile != null ) {
                 try {
-                    GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema );
+                    GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, GMLVersion.GML_31 );
                     URL docURL = resolver.resolve( datasetFile.trim() );
                     XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( docURL );
                     xmlStream.nextTag();
@@ -310,7 +310,8 @@ public class FeatureStoreManager {
             throw new FeatureStoreException( msg, e );
         }
 
-        PostGISFeatureStore fs = new PostGISFeatureStore( schema, jaxbConfig.getJDBCConnId(), jaxbConfig.getDBSchemaQualifier() );
+        PostGISFeatureStore fs = new PostGISFeatureStore( schema, jaxbConfig.getJDBCConnId(),
+                                                          jaxbConfig.getDBSchemaQualifier() );
         registerAndInit( fs, id );
         return fs;
     }

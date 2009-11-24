@@ -84,7 +84,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
     }
 
     @Test
-    public void testParsingCiteSF0()
+    public void testParsingCite110SF0()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -95,7 +95,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
     }
 
     @Test
-    public void testParsingCiteSF1()
+    public void testParsingCite110SF1()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -112,7 +112,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
     }
 
     @Test
-    public void testParsingCiteSF2()
+    public void testParsingCite110SF2()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -124,6 +124,17 @@ public class GMLApplicationSchemaXSDDecoderTest {
         }
 
         // TODO do more thorough testing
+    }
+
+    @Test
+    public void testParsingCite100DataFeatures()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = this.getClass().getResource( "../testdata/schema/cite/all.xsd" ).toString();
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_2, schemaURL );
+        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        Assert.assertEquals( 19, fts.length );
     }
 
     // @Test

@@ -40,7 +40,6 @@ import static java.lang.Boolean.TRUE;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,6 +52,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.gml.GMLObjectResolver;
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -125,7 +125,7 @@ public class FeatureCoder {
         // skip START_DOCUMENT
         xmlStream.nextTag();
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( xmlStream, null );
-        GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, featureStoreGMLIdResolver );
+        GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, featureStoreGMLIdResolver, GMLVersion.GML_31 );
         return decoder.parseFeature( xmlReader, crs );
     }
 }

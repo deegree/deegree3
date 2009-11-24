@@ -89,6 +89,7 @@ import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.gml.GML21GeometryDecoder;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.gml.refs.GeometryReference;
 import org.slf4j.Logger;
@@ -122,9 +123,13 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private final GMLDocumentIdContext idContext;
 
-    private final GML311GeometryDecoder geomParser;
+    private final GML21GeometryDecoder geom21Parser;
+
+    private final GML311GeometryDecoder geom311Parser;
 
     private GMLObjectResolver specialResolver;
+
+    private final GMLVersion version;
 
     /**
      * Creates a new {@link GMLFeatureDecoder} instance that is configured for building features with the specified
@@ -134,12 +139,16 @@ public class GMLFeatureDecoder extends XMLAdapter {
      *            application schema that defines the feature types, must not be <code>null</code>
      * @param idContext
      *            id context to be used for registering gml:ids (features and geometries and resolving local xlinks and
+     * @param version
+     *            GML version, must not be <code>null</code>
      */
-    public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext ) {
+    public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLVersion version ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
-        this.geomParser = new GML311GeometryDecoder( geomFac, idContext );
+        this.geom21Parser = new GML21GeometryDecoder( geomFac, idContext );
+        this.geom311Parser = new GML311GeometryDecoder( geomFac, idContext );
+        this.version = version;
     }
 
     /**
@@ -148,13 +157,22 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * 
      * @param schema
      *            application schema that defines the feature types, must not be <code>null</code>
+     * @param version
+     *            GML version, must not be <code>null</code>
      */
-    public GMLFeatureDecoder( ApplicationSchema schema ) {
-        this( schema, new GMLDocumentIdContext() );
+    public GMLFeatureDecoder( ApplicationSchema schema, GMLVersion version ) {
+        this( schema, new GMLDocumentIdContext(), version );
+
     }
 
-    public GMLFeatureDecoder( ApplicationSchema schema, GMLObjectResolver specialResolver ) {
-        this( schema, new GMLDocumentIdContext() );
+    /**
+     * @param schema
+     * @param specialResolver
+     * @param version
+     *            GML version, must not be <code>null</code>
+     */
+    public GMLFeatureDecoder( ApplicationSchema schema, GMLObjectResolver specialResolver, GMLVersion version ) {
+        this( schema, new GMLDocumentIdContext(), version );
         this.specialResolver = specialResolver;
     }
 
@@ -216,7 +234,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
 
         // parse properties
-        Iterator<PropertyType> declIter = ft.getPropertyDeclarations( GMLVersion.GML_31 ).iterator();
+        Iterator<PropertyType> declIter = ft.getPropertyDeclarations( version ).iterator();
 
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
@@ -280,7 +298,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         }
         LOG.debug( " - parsing feature (end): " + xmlStream.getCurrentEventInfo() );
 
-        feature = ft.newFeature( fid, propertyList, GMLVersion.GML_31 );
+        feature = ft.newFeature( fid, propertyList, version );
 
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getFeatureById( fid ) != null ) {
@@ -299,7 +317,8 @@ public class GMLFeatureDecoder extends XMLAdapter {
             throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_NO_SCHEMA_LOCATION",
                                                                            xmlStream.getSystemId() ) );
         }
-        String[] tokens = schemaLocation.split( "\\s" );
+
+        String[] tokens = schemaLocation.trim().split( "\\s+" );
         if ( tokens.length % 2 != 0 ) {
             throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_SCHEMA_LOCATION_TOKENS_COUNT",
                                                                            xmlStream.getSystemId() ) );
@@ -317,7 +336,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         // TODO handle multi-namespace schemas
         ApplicationSchema schema = null;
         try {
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaUrls );
+            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( version, schemaUrls );
             schema = decoder.extractFeatureTypeSchema();
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -375,14 +394,12 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 if ( href != null ) {
                     // TODO respect geometry type information (Point, Surface, etc.)
                     GeometryReference<Geometry> refGeometry = null;
-                    if (specialResolver != null) {
-                        refGeometry = new GeometryReference<Geometry>( specialResolver, href,
-                                                xmlStream.getSystemId() );
+                    if ( specialResolver != null ) {
+                        refGeometry = new GeometryReference<Geometry>( specialResolver, href, xmlStream.getSystemId() );
                     } else {
-                        refGeometry = new GeometryReference<Geometry>( idContext, href,
-                                                xmlStream.getSystemId() );
+                        refGeometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
                     }
- 
+
                     // local feature reference?
                     if ( href.startsWith( "#" ) ) {
                         idContext.addGeometryReference( refGeometry );
@@ -391,7 +408,12 @@ public class GMLFeatureDecoder extends XMLAdapter {
                     xmlStream.nextTag();
                 } else {
                     xmlStream.nextTag();
-                    Geometry geometry = geomParser.parse( xmlStream, crs );
+                    Geometry geometry = null;
+                    if ( version.equals( GMLVersion.GML_2 ) ) {
+                        geometry = geom21Parser.parse( xmlStream, crs );
+                    } else {
+                        geometry = geom311Parser.parse( xmlStream, crs );
+                    }
                     property = new GenericProperty<Geometry>( propDecl, propName, geometry );
                     xmlStream.nextTag();
                 }
@@ -399,11 +421,11 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 String uri = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
                 if ( uri != null ) {
                     FeatureReference refFeature = null;
-                    if (specialResolver != null) {
+                    if ( specialResolver != null ) {
                         refFeature = new FeatureReference( specialResolver, uri, xmlStream.getSystemId() );
                     } else {
                         refFeature = new FeatureReference( idContext, uri, xmlStream.getSystemId() );
-                    }                    
+                    }
 
                     // local feature reference?
                     if ( uri.startsWith( "#" ) ) {
@@ -437,8 +459,13 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 property = new GenericProperty<Object>( propDecl, propName, value );
             } else if ( propDecl instanceof EnvelopePropertyType ) {
                 xmlStream.nextTag();
-                Object value = geomParser.parseEnvelope( xmlStream, crs );
-                property = new GenericProperty<Object>( propDecl, propName, value );
+                Envelope env = null;
+                if ( version.equals( GMLVersion.GML_2 ) ) {
+                    env = geom21Parser.parseBox( xmlStream, crs );
+                } else {
+                    env = geom311Parser.parseEnvelope( xmlStream, crs );
+                }
+                property = new GenericProperty<Object>( propDecl, propName, env );
                 xmlStream.nextTag();
             } else if ( propDecl instanceof CodePropertyType ) {
                 String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
