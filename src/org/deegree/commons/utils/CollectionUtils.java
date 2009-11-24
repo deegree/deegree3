@@ -39,6 +39,7 @@ package org.deegree.commons.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -86,6 +87,64 @@ public class CollectionUtils {
             list2.add( pair.second );
         }
         return new Pair<ArrayList<T>, ArrayList<U>>( list1, list2 );
+    }
+
+    /**
+     * Wraps a for loop and the creation of a new list.
+     * 
+     * @param <T>
+     * @param <U>
+     * @param col
+     * @param mapper
+     * @return a list where the mapper has been applied to each element in the map
+     */
+    public static <T, U> LinkedList<T> map( U[] col, Mapper<T, U> mapper ) {
+        LinkedList<T> list = new LinkedList<T>();
+
+        for ( U u : col ) {
+            list.add( mapper.apply( u ) );
+        }
+
+        return list;
+    }
+
+    /**
+     * Wraps a for loop and the creation of a new list.
+     * 
+     * @param <T>
+     * @param <U>
+     * @param col
+     * @param mapper
+     * @return a list where the mapper has been applied to each element in the map
+     */
+    public static <T, U> LinkedList<T> map( Collection<U> col, Mapper<T, U> mapper ) {
+        LinkedList<T> list = new LinkedList<T>();
+
+        for ( U u : col ) {
+            list.add( mapper.apply( u ) );
+        }
+
+        return list;
+    }
+
+    /**
+     * <code>Mapper</code> gives a name to a simple function.
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     * @param <T>
+     *            the return type of the function
+     * @param <U>
+     *            the argument type of the function
+     */
+    public static interface Mapper<T, U> {
+        /**
+         * @param u
+         * @return an implementation defined value
+         */
+        public T apply( U u );
     }
 
 }
