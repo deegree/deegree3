@@ -205,6 +205,8 @@ public class TransformatorPostGres {
         case SPATIAL:
             SpatialOperator spaOp = (SpatialOperator) opFilter.getOperator();
             SpatialOperatorTransformingPostGres spa = new SpatialOperatorTransformingPostGres(spaOp);
+            table.addAll( spa.getTable() );
+            column.addAll( spa.getColumn() );
             return spa.getSpatialOperation();
 
         case LOGICAL:
