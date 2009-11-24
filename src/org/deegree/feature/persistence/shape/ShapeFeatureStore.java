@@ -337,7 +337,7 @@ public class ShapeFeatureStore implements FeatureStore {
         }
         QName featureType = query.getTypeNames()[0].getFeatureTypeName();
 
-        if ( featureType != null && !featureType.equals( ft ) ) {
+        if ( featureType != null && !featureType.equals( ft.getName() ) ) {
             // or null?
             return new GenericFeatureCollection();
         }
