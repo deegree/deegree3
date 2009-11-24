@@ -36,12 +36,16 @@
 package org.deegree.geometry;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.InputStream;
 
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+
+import com.vividsolutions.jts.io.InputStreamInStream;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Writes {@link Geometry} objects as Well-Known Text (WKT).
+ * Reads {@link Geometry} objects encoded as Well-Known Binary (WKB).
  * 
  * TODO re-implement without delegating to JTS
  * TODO add support for non-SFS geometries (e.g. non-linear curves)
@@ -51,16 +55,20 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  * 
  * @version $Revision$, $Date$
  */
-public class WKTWriter {
+public class WKBReader {
 
-    private static final com.vividsolutions.jts.io.WKTWriter jtsWriter = new com.vividsolutions.jts.io.WKTWriter();
+    // TODO remove the need for this object
+    private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
 
-    public static String write( Geometry geom ) {
-        return jtsWriter.write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
+    public static Geometry read( byte[] wkb )
+                            throws ParseException {
+        // com.vividsolutions.jts.io.WKBReader() is not thread safe
+        return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( wkb ) );
     }
 
-    public static void write( Geometry geom, Writer writer )
-                            throws IOException {
-        jtsWriter.write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(), writer );
+    public static Geometry read( InputStream is )
+                            throws IOException, ParseException {
+        // com.vividsolutions.jts.io.WKBReader() is not thread safe        
+        return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( new InputStreamInStream( is ) ) );
     }
 }

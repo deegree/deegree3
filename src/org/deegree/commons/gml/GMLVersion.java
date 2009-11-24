@@ -50,5 +50,5 @@ public enum GMLVersion {
     /** GML version 3.0 and 3.1 series (3.0.0 up to 3.1.1) */
     GML_31,
     /** GML version 3.2 series (3.2.1) */
-    GML_32
+    GML_32       
 }

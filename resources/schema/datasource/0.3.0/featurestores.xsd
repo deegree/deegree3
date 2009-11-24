@@ -3,11 +3,13 @@
     This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
   -->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cm="http://www.deegree.org/commons"
   xmlns:ds="http://www.deegree.org/datasource"
   xmlns="http://www.w3.org/2001/XMLSchema" 
   targetNamespace="http://www.deegree.org/datasource"
   elementFormDefault="qualified">
 
+  <import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.3.0/commons.xsd" />
   <include schemaLocation="datasource.xsd" />
 
   <element name="FeatureStore" substitutionGroup="ds:AbstractDataSource" type="ds:FeatureStoreType" abstract="true">
@@ -59,8 +61,24 @@
     <complexContent>
       <extension base="ds:FeatureStoreType">
         <sequence>
-          <element name="GMLSchemaFileURL" type="string" />
-          <element name="GMLFeatureCollectionFileURL" type="string" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="GMLSchemaFileURL" maxOccurs="unbounded">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="gmlVersion" type="cm:GMLVersionType" use="required"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="GMLFeatureCollectionFileURL" minOccurs="0" maxOccurs="unbounded">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="gmlVersion" type="cm:GMLVersionType" use="required"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>            
         </sequence>
       </extension>
     </complexContent>
@@ -77,7 +95,15 @@
         <sequence>
           <element name="JDBCConnId" type="string" />
           <element name="DBSchemaQualifier" type="string" minOccurs="0"/>
-          <element name="GMLSchemaFileURL" type="string" />
+          <element name="GMLSchemaFileURL" maxOccurs="unbounded">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="gmlVersion" type="cm:GMLVersionType" use="required"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
         </sequence>
       </extension>
     </complexContent>

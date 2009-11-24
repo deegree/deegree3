@@ -13,36 +13,34 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for DatabaseType.
+ * <p>Java class for GMLVersionType.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="DatabaseType">
+ * &lt;simpleType name="GMLVersionType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="POSTGIS"/>
- *     &lt;enumeration value="ORACLE"/>
- *     &lt;enumeration value="MYSQL"/>
- *     &lt;enumeration value="UNDEFINED"/>
+ *     &lt;enumeration value="GML_2"/>
+ *     &lt;enumeration value="GML_31"/>
+ *     &lt;enumeration value="GML_32"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "DatabaseType")
+@XmlType(name = "GMLVersionType")
 @XmlEnum
-public enum DatabaseType {
+public enum GMLVersionType {
 
-    POSTGIS,
-    ORACLE,
-    MYSQL,
-    UNDEFINED;
+    GML_2,
+    GML_31,
+    GML_32;
 
     public String value() {
         return name();
     }
 
-    public static DatabaseType fromValue(String v) {
+    public static GMLVersionType fromValue(String v) {
         return valueOf(v);
     }
 

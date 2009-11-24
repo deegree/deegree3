@@ -274,4 +274,11 @@
         use="optional" />
     </xs:complexType>
   </xs:element>
+  <xs:simpleType name="GMLVersionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="GML_2" />
+      <xs:enumeration value="GML_31" />
+      <xs:enumeration value="GML_32" />
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>

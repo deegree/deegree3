@@ -47,11 +47,13 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.configuration.GMLVersionType;
 import org.deegree.commons.datasource.configuration.FeatureStoreReferenceType;
 import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
+import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType.GMLFeatureCollectionFileURL;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -237,9 +239,17 @@ public class FeatureStoreManager {
 
         ApplicationSchema schema = null;
         try {
-            URL schemaURL = resolver.resolve( jaxbConfig.getGMLSchemaFileURL().trim() );
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31,
-                                                                                   schemaURL.toString() );
+            String[] schemaURLs = new String[jaxbConfig.getGMLSchemaFileURL().size()];
+            int i = 0;
+            GMLVersionType gmlVersionType = null;
+            for ( MemoryFeatureStoreType.GMLSchemaFileURL jaxbSchemaURL : jaxbConfig.getGMLSchemaFileURL() ) {
+                schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+                // TODO what about different versions at the same time?
+                gmlVersionType = jaxbSchemaURL.getGmlVersion();
+            }
+            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
+                                                                                   GMLVersion.valueOf( gmlVersionType.name() ),
+                                                                                   schemaURLs );
             schema = decoder.extractFeatureTypeSchema();
         } catch ( Exception e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
@@ -249,11 +259,13 @@ public class FeatureStoreManager {
 
         MemoryFeatureStore fs = new MemoryFeatureStore( schema );
 
-        for ( String datasetFile : jaxbConfig.getGMLFeatureCollectionFileURL() ) {
+        for ( GMLFeatureCollectionFileURL datasetFile : jaxbConfig.getGMLFeatureCollectionFileURL() ) {
             if ( datasetFile != null ) {
                 try {
-                    GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, GMLVersion.GML_31 );
-                    URL docURL = resolver.resolve( datasetFile.trim() );
+                    GMLFeatureDecoder decoder = new GMLFeatureDecoder(
+                                                                       schema,
+                                                                       GMLVersion.valueOf( datasetFile.getGmlVersion().name() ) );
+                    URL docURL = resolver.resolve( datasetFile.getValue().trim() );
                     XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( docURL );
                     xmlStream.nextTag();
                     LOG.debug( "Populating feature store with features from file '" + docURL + "'..." );
@@ -300,9 +312,17 @@ public class FeatureStoreManager {
 
         ApplicationSchema schema = null;
         try {
-            URL schemaURL = resolver.resolve( jaxbConfig.getGMLSchemaFileURL().trim() );
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31,
-                                                                                   schemaURL.toString() );
+            String[] schemaURLs = new String[jaxbConfig.getGMLSchemaFileURL().size()];
+            int i = 0;
+            GMLVersionType gmlVersionType = null;
+            for ( PostGISFeatureStoreType.GMLSchemaFileURL jaxbSchemaURL : jaxbConfig.getGMLSchemaFileURL() ) {
+                schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
+                // TODO what about different versions at the same time?
+                gmlVersionType = jaxbSchemaURL.getGmlVersion();
+            }
+            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
+                                                                                   GMLVersion.valueOf( gmlVersionType.name() ),
+                                                                                   schemaURLs );
             schema = decoder.extractFeatureTypeSchema();
         } catch ( Exception e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
