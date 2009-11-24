@@ -176,14 +176,14 @@ public class RasterRendererApplet extends JApplet {
 
     /* Render a raster after hill-shading */
     private void renderHillShadedRaster() {
-        RasterStyling style = loadRasterStylingFromXml( "setest19.xml" );
+        RasterStyling style = loadRasterStylingFromXml( "setest21.xml" );
         LOG.debug( "Found hill-shading: {}", style.shaded );
         LOG.debug( "Found interpolate: {}", style.interpolate );
         Graphics2D g2d = (Graphics2D) this.getGraphics().create( 10, 310, 370, 370 );
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
         r.render( style, dem );
     }
-
+    
     /* Render a raster after selecting (actually swapping) channels */
     private void renderRasterSelectedChannels() {
         RasterStyling style = loadRasterStylingFromXml( "setest20.xml" );

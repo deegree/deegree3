@@ -765,7 +765,7 @@ public class SymbologyParser {
             if ( in.getLocalName().equals( "ChannelSelection" ) ) {
                 String red = null, green = null, blue = null, gray = null;
                 HashMap<String, ContrastEnhancement> enhancements = new HashMap<String, ContrastEnhancement>( 10 );
-                
+
                 while ( !( in.isEndElement() && in.getLocalName().equals( "ChannelSelection" ) ) ) {
                     in.nextTag();
 
@@ -866,6 +866,12 @@ public class SymbologyParser {
                     }
                     if ( in.getLocalName().equals( "ReliefFactor" ) ) {
                         baseOrEvaluated.shaded.reliefFactor = parseDouble( in.getElementText() );
+                    }
+                    if ( in.getLocalName().equals( "AzimuthAngle" ) ) {
+                        baseOrEvaluated.shaded.azimuthAngle = parseDouble( in.getElementText() );
+                    }
+                    if ( in.getLocalName().equals( "IlluminationAngle" ) ) {
+                        baseOrEvaluated.shaded.Alt = parseDouble( in.getElementText() );
                     }
                 }
             }

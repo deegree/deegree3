@@ -112,9 +112,9 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
         /** Shaded Relief parameters - Private fields */
         /** Azimuth angle = Illumination direction. Default is Nord-West. */
-        public int azimuthAngle = 315;
+        public double azimuthAngle = 315;
 
-        /** Angle of illumination source. Default is 45 degrees. */
+        /** Vertical angle of illumination source. Default is 45 degrees. */
         public double Alt = 45;
 
         public ShadedRelief copy() {
@@ -128,7 +128,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
         public String toString() {
             return "ShadedRelief: { BrightnessOnly: " + brightnessOnly + ", ReliefFactor: " + reliefFactor
-                   + "Illumination Angle: " + azimuthAngle + ", Illumination Altitude: " + Alt + "}";
+                   + ", Illumination Angle: " + azimuthAngle + ", Illumination Altitude: " + Alt + "}";
         }
     }
 
