@@ -40,6 +40,7 @@ import static java.awt.Color.BLACK;
 import static org.deegree.rendering.r2d.styling.components.Mark.SimpleMark.SQUARE;
 
 import java.awt.Font;
+import java.awt.Shape;
 
 import org.deegree.rendering.r2d.styling.Copyable;
 
@@ -77,6 +78,9 @@ public class Mark implements Copyable<Mark> {
      * Default is null.
      */
     public Stroke stroke = new Stroke();
+
+    /** Default is null. */
+    public Shape shape = null;
 
     /**
      *

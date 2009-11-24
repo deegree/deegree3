@@ -89,6 +89,7 @@ import org.deegree.filter.MatchableObject;
 import org.deegree.filter.function.se.Categorize;
 import org.deegree.filter.function.se.Interpolate;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
@@ -398,7 +399,8 @@ public class SymbologyParser {
 
             sym: if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
                 LOG.debug( "Loading mark from external file." );
-                InputStream is = getOnlineResourceOrInlineContent( in ).first;
+                Pair<InputStream, String> pair = getOnlineResourceOrInlineContent( in );
+                InputStream is = pair.first;
                 in.nextTag();
 
                 in.require( START_ELEMENT, null, "Format" );
@@ -420,6 +422,11 @@ public class SymbologyParser {
                         if ( format.equalsIgnoreCase( "type1" ) ) {
                             font = createFont( TYPE1_FONT, is );
                         }
+                        
+                        if(format.equalsIgnoreCase("svg")){
+                            base.shape = RenderHelper.getShapeFromSvg( is,pair.second );
+                        }
+                        
                         if ( font == null ) {
                             LOG.warn( "Font was not loaded, because the format '{}' is not supported.", format );
                             break sym;
@@ -434,10 +441,10 @@ public class SymbologyParser {
                         base.font = font;
                     } catch ( FontFormatException e ) {
                         LOG.debug( "Stack trace:", e );
-                        LOG.warn( "The font file was not a valid '{}' file: '{}'", format, e.getLocalizedMessage() );
+                        LOG.warn( "The file was not a valid '{}' file: '{}'", format, e.getLocalizedMessage() );
                     } catch ( IOException e ) {
                         LOG.debug( "Stack trace:", e );
-                        LOG.warn( "The font file could not be read: '{}'.", e.getLocalizedMessage() );
+                        LOG.warn( "The file could not be read: '{}'.", e.getLocalizedMessage() );
                     }
                 }
             }

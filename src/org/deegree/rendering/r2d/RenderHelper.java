@@ -36,8 +36,11 @@
 
 package org.deegree.rendering.r2d;
 
+import static java.awt.geom.AffineTransform.getScaleInstance;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Math.PI;
+import static java.lang.Math.max;
+import static org.apache.batik.bridge.BridgeContext.DYNAMIC;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -52,6 +55,8 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashSet;
 
 import org.apache.batik.bridge.BridgeContext;
@@ -151,6 +156,14 @@ public class RenderHelper {
      * @return a shape representing the mark
      */
     public static Shape getShapeFromMark( Mark mark, double size ) {
+        if ( mark.shape != null ) {
+            Rectangle2D box = mark.shape.getBounds2D();
+            double cur = max( box.getWidth(), box.getHeight() );
+            double fac = size / cur;
+            AffineTransform trans = AffineTransform.getScaleInstance( fac, fac );
+            return trans.createTransformedShape( mark.shape );
+        }
+
         GeneralPath shape = new GeneralPath();
 
         if ( mark.font != null ) {
@@ -201,8 +214,8 @@ public class RenderHelper {
      * @return the mark rendered as buffered image in the specified size
      */
     public static BufferedImage renderMark( Mark mark, int size, UOM uom ) {
-        if(size == 0){
-            LOG.debug("Not rendering a symbol because the size is zero.");
+        if ( size == 0 ) {
+            LOG.debug( "Not rendering a symbol because the size is zero." );
             return null;
         }
         if ( mark.fill == null && mark.stroke == null ) {
@@ -235,14 +248,35 @@ public class RenderHelper {
      * @param size
      * @return a shape object from the given svg
      */
-    public static Shape getShapeFromSvg( String url, double size ) {
+    public static GeneralPath getShapeFromSvg( String url, double size ) {
         try {
-            SVGDocument doc = new SAXSVGDocumentFactory( "org.apache.xerces.parsers.SAXParser" ).createSVGDocument( url );
+            GeneralPath shape = getShapeFromSvg( new URL( url ).openStream(), url );
+            if ( shape != null ) {
+                shape.transform( getScaleInstance( size, size ) );
+                return shape;
+            }
+        } catch ( IOException e ) {
+            LOG.warn( "The svg image at '{}' could not be read: {}", url, e.getLocalizedMessage() );
+            LOG.debug( "Stack trace", e );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param in
+     * @param url
+     * @return a shape object
+     */
+    public static GeneralPath getShapeFromSvg( InputStream in, String url ) {
+        try {
+            SAXSVGDocumentFactory fac = new SAXSVGDocumentFactory( "org.apache.xerces.parsers.SAXParser" );
+            SVGDocument doc = fac.createSVGDocument( url, in );
             GVTBuilder builder = new GVTBuilder();
             UserAgent userAgent = new UserAgentAdapter();
             DocumentLoader loader = new DocumentLoader( userAgent );
             BridgeContext ctx = new BridgeContext( userAgent, loader );
-            ctx.setDynamicState( BridgeContext.DYNAMIC );
+            ctx.setDynamicState( DYNAMIC );
             RootGraphicsNode root = builder.build( ctx, doc ).getRoot();
 
             AffineTransform t = new AffineTransform();
@@ -259,8 +293,6 @@ public class RenderHelper {
                 node.setTransform( t );
                 shape.append( node.getOutline(), false );
             }
-
-            shape.transform( AffineTransform.getScaleInstance( size, size ) );
 
             return shape;
         } catch ( IOException e ) {
