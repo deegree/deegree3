@@ -75,6 +75,22 @@ public class Intersects extends SpatialOperator {
         }
         return false;
     }
+    
+    
+
+    /**
+     * @return the propName
+     */
+    public PropertyName getPropName() {
+        return propName;
+    }
+
+    /**
+     * @return the geometry
+     */
+    public Geometry getGeometry() {
+        return geometry;
+    }
 
     @Override
     public String toString( String indent ) {

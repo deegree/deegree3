@@ -41,7 +41,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 
 /**
- * TODO add documentation here
+ * If a geometry is spatially contained in an other geometry. 
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -70,10 +70,28 @@ public class Contains extends SpatialOperator {
         }
         return false;
     }
+    
+    
+
+    /**
+     * @return the propName
+     */
+    public PropertyName getPropName() {
+        return propName;
+    }
+
+    /**
+     * @return the geometry
+     */
+    public Geometry getGeometry() {
+        return geometry;
+    }
 
     public String toString( String indent ) {
-        // TODO Auto-generated method stub
-        return null;
+        String s = indent + "-Contains\n";
+        s += indent + propName + "\n";
+        s += indent + geometry;
+        return s;
     }
 
     @Override

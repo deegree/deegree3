@@ -71,11 +71,20 @@ public class Disjoint extends SpatialOperator {
         }
         return false;
     }
+    
+    /**
+     * @return the geometry
+     */
+    public Geometry getGeometry() {
+        return geometry;
+    }
 
     @Override
     public String toString( String indent ) {
-        // TODO Auto-generated method stub
-        return null;
+        String s = indent + "-Disjoint\n";
+        s += indent + propName + "\n";
+        s += indent + geometry;
+        return s;
     }
     
     @Override

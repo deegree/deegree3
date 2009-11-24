@@ -42,7 +42,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 
 /**
- * TODO add documentation here
+ * If geometries are outside the specified distance of one another. 
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

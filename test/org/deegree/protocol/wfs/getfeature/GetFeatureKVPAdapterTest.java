@@ -352,8 +352,8 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
         Within within = (Within) opFilter.getOperator();
-        assertEquals( "INWATERA_1M/WKB_GEOM", within.getParam1().getPropertyName() );
-        Envelope env = (Envelope) within.getParam2();
+        assertEquals( "INWATERA_1M/WKB_GEOM", within.getPropName().getPropertyName() );
+        Envelope env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10.0, 10.0, 20.0, 20.0 );
     }
 
@@ -372,9 +372,9 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         OperatorFilter filter = (OperatorFilter) filterq.getFilter();
         assertTrue( filter.getOperator() instanceof Within );
         Within within = (Within) filter.getOperator();
-        assertEquals( "InWaterA_1M/wkbGeom", within.getParam1().getPropertyName() );
-        assertTrue( within.getParam2() instanceof Envelope );
-        Envelope env = (Envelope) within.getParam2();
+        assertEquals( "InWaterA_1M/wkbGeom", within.getPropName().getPropertyName() );
+        assertTrue( within.getGeometry() instanceof Envelope );
+        Envelope env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10.0, 10.0, 20.0, 20.0 );
     }
 
@@ -394,9 +394,9 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         OperatorFilter filter = (OperatorFilter) filterq.getFilter();
         assertTrue( filter.getOperator() instanceof Within );
         Within within = (Within) filter.getOperator();
-        assertEquals( "InWaterA_1M/wkbGeom", within.getParam1().getPropertyName() );
-        assertTrue( within.getParam2() instanceof Envelope );
-        Envelope env = (Envelope) within.getParam2();
+        assertEquals( "InWaterA_1M/wkbGeom", within.getPropName().getPropertyName() );
+        assertTrue( within.getGeometry() instanceof Envelope );
+        Envelope env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10.0, 10.0, 20.0, 20.0 );
     }
 
@@ -573,18 +573,18 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         OperatorFilter filter = (OperatorFilter) query0.getFilter();
         assertTrue( filter.getOperator() instanceof Within );
         Within within = (Within) filter.getOperator();
-        assertEquals( "InWaterA_1M/wkbGeom", within.getParam1().getPropertyName() );
+        assertEquals( "InWaterA_1M/wkbGeom", within.getPropName().getPropertyName() );
 
-        Envelope env = (Envelope) within.getParam2();
+        Envelope env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10.0, 10.0, 20.0, 20.0 );
 
         FilterQuery query1 = (FilterQuery) getFeature.getQueries()[1];
         filter = (OperatorFilter) query1.getFilter();
         assertTrue( filter.getOperator() instanceof Within );
         within = (Within) filter.getOperator();
-        assertEquals( "BuiltUpA_1M/wkbGeom", within.getParam1().getPropertyName() );
+        assertEquals( "BuiltUpA_1M/wkbGeom", within.getPropName().getPropertyName() );
 
-        env = (Envelope) within.getParam2();
+        env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10.0, 10.0, 20.0, 20.0 );
     }
 
@@ -612,15 +612,15 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         Operator op = ( (OperatorFilter) filter0.getFilter() ).getOperator();
         assertTrue( op instanceof Within );
         Within within = (Within) op;
-        assertEquals( "InWaterA_1M/wkbGeom|InWaterA_1M/wkbGeom", within.getParam1().getPropertyName() );
-        Envelope env = (Envelope) within.getParam2();
+        assertEquals( "InWaterA_1M/wkbGeom|InWaterA_1M/wkbGeom", within.getPropName().getPropertyName() );
+        Envelope env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10.0, 10.0, 20.0, 20.0 );
 
         op = ( (OperatorFilter) filter1.getFilter() ).getOperator();
         assertTrue( op instanceof Within );
         within = (Within) op;
-        assertEquals( "InWaterA_1M/wkbGeom", within.getParam1().getPropertyName() );
-        env = (Envelope) within.getParam2();
+        assertEquals( "InWaterA_1M/wkbGeom", within.getPropName().getPropertyName() );
+        env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10.0, 10.0, 20.0, 20.0 );
     }
 

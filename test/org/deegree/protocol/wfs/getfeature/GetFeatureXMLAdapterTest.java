@@ -429,8 +429,8 @@ public class GetFeatureXMLAdapterTest extends TestCase {
 
         OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
         Within within = (Within) opFilter.getOperator();
-        assertEquals( "myns:PATH", within.getParam1().getPropertyName() );
-        Envelope env = (Envelope) within.getParam2();
+        assertEquals( "myns:PATH", within.getPropName().getPropertyName() );
+        Envelope env = (Envelope) within.getGeometry();
         assertEquals( 50.0, env.getMin().get0() );
         assertEquals( 40.0, env.getMin().get1() );
         assertEquals( 100.0, env.getMax().get0() );

@@ -74,15 +74,17 @@ public class Within extends SpatialOperator {
 
     @Override
     public String toString( String indent ) {
-        // TODO Auto-generated method stub
-        return null;
+        String s = indent + "-Within\n";
+        s += indent + propName + "\n";
+        s += indent + geometry;
+        return s;
     }
 
-    public PropertyName getParam1() {
+    public PropertyName getPropName() {
         return propName;
     }
 
-    public Geometry getParam2() {
+    public Geometry getGeometry() {
         return geometry;
     }
 

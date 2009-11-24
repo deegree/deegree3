@@ -136,8 +136,8 @@ public class LockFeatureKVPAdapterTest extends TestCase {
         assertTrue( filter1.getOperator() instanceof Within );
 
         Within within = (Within) filter1.getOperator();
-        assertEquals( "wkbGeom", within.getParam1().getPropertyName() );
-        Envelope env = (Envelope) within.getParam2();
+        assertEquals( "wkbGeom", within.getPropName().getPropertyName() );
+        Envelope env = (Envelope) within.getGeometry();
         verifyEnvelope( env, 10, 10, 20, 20 );
 
     }

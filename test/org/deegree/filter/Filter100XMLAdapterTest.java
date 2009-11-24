@@ -390,9 +390,9 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         And and = (And) opFilter.getOperator();
         Within within = (Within) and.getParameter( 0 );
-        PropertyName propName = within.getParam1();
+        PropertyName propName = within.getPropName();
         assertEquals( "WKB_GEOM", propName.getPropertyName() );
-        Polygon polygon = (Polygon) within.getParam2();
+        Polygon polygon = (Polygon) within.getGeometry();
         Points points = polygon.getExteriorRingCoordinates();
         // -98.5485,24.2633 100.0,100.0 100.0,100.0 100.0,100.0
         assertEquals( -98.5485, points.get( 0 ).get0() );

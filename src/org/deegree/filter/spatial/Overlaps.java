@@ -71,11 +71,29 @@ public class Overlaps extends SpatialOperator {
         }
         return false;
     }
+    
+    
+
+    /**
+     * @return the propName
+     */
+    public PropertyName getPropName() {
+        return propName;
+    }
+
+    /**
+     * @return the geometry
+     */
+    public Geometry getGeometry() {
+        return geometry;
+    }
 
     @Override
     public String toString( String indent ) {
-        // TODO Auto-generated method stub
-        return null;
+        String s = indent + "-Overlaps\n";
+        s += indent + propName + "\n";
+        s += indent + geometry;
+        return s;
     }
 
     @Override
