@@ -237,6 +237,8 @@ public class Java2DRenderer implements Renderer {
                 graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) ) );
             } else if ( stroke.stroke.mark != null ) {
                 Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ) );
+                applyFill( stroke.stroke.mark.fill, uom );
+                applyStroke( stroke.stroke.mark.stroke, uom );
                 graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) ) );
             } else {
                 LOG.warn( "Rendering of raster images along lines is not supported yet." );
