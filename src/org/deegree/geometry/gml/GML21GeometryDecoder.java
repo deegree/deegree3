@@ -127,7 +127,7 @@ public class GML21GeometryDecoder {
     public GMLDocumentIdContext getDocumentIdContext() {
         return idContext;
     }
-    
+
     /**
      * @param xmlStream
      * @return
@@ -856,9 +856,12 @@ public class GML21GeometryDecoder {
         String text = xmlStream.getElementText();
 
         List<String> tuples = new LinkedList<String>();
-        StringTokenizer tupleTokenizer = new StringTokenizer( text, tupleSeparator );
+        StringTokenizer tupleTokenizer = new StringTokenizer( text, tupleSeparator + "\n" );
         while ( tupleTokenizer.hasMoreTokens() ) {
-            tuples.add( tupleTokenizer.nextToken() );
+            String newToken = tupleTokenizer.nextToken();
+            if ( newToken != null && newToken.trim().length() > 0 ) {
+                tuples.add( newToken );
+            }
         }
 
         List<Point> points = new ArrayList<Point>( tuples.size() );
