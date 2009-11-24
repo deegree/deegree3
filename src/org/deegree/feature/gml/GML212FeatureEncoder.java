@@ -47,6 +47,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
@@ -134,7 +135,7 @@ public class GML212FeatureEncoder {
         if ( feature.getId() != null ) {
             writer.writeAttribute( "fid", feature.getId() );
         }
-        for ( Property<?> prop : feature.getProperties() ) {
+        for ( Property<?> prop : feature.getProperties( GMLVersion.GML_2 ) ) {
             export( prop );
         }
         writer.writeEndElement();
