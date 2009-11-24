@@ -164,9 +164,9 @@ public class DefaultLockManager implements LockManager {
                 LOG.debug( "Table 'LOCK_FAILED_FIDS' already exists." );
             }
             rs.close();
-        } catch ( SQLException e ) {
+        } catch ( SQLException e ) {         
             String msg = Messages.getMessage( "LOCK_DB_CREATE_ERROR", e.getMessage() );
-            LOG.debug( msg, e );
+            LOG.error( msg, e );              
             throw new FeatureStoreException( msg, e );
         } finally {
             close( rs, stmt, conn, LOG );

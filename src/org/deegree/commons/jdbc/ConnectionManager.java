@@ -38,6 +38,7 @@ package org.deegree.commons.jdbc;
 
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,8 +76,26 @@ public class ConnectionManager {
         // TODO make this configurable
         String tmpDir = System.getProperty( "java.io.tmpdir" );
         LOG.debug( "Using " + tmpDir + " for derby lock database." );
+
+        try {
+            Class.forName( "org.apache.derby.jdbc.EmbeddedDriver" ).newInstance();
+        } catch ( Exception e ) {
+            LOG.error( "Error loading derby JDBC driver: " + e.getMessage(), e );
+        }
+
         addConnection( "LOCK_DB", DatabaseType.UNDEFINED, "jdbc:derby:" + tmpDir + "/lockdb;create=true", null, null,
                        0, 10 );
+    }
+
+    /**
+     * 
+     */
+    public static void destroy() {
+        try {
+            DriverManager.getConnection( "jdbc:derby:;shutdown=true" );
+        } catch ( SQLException e ) {
+            LOG.debug( "Exception caught shutting down derby databases: " + e.getMessage(), e );
+        }
     }
 
     /**
@@ -153,6 +172,19 @@ public class ConnectionManager {
             String id = jaxbConn.getId();
             String url = jaxbConn.getUrl();
             DatabaseType type = jaxbConn.getDatabaseType();
+
+            if ( type != null ) {
+                switch ( type ) {
+                case POSTGIS: {
+                    try {
+                        Class.forName( "org.postgresql.Driver" ).newInstance();
+                    } catch ( Exception e ) {
+                        LOG.error( "Error loading PostGIS JDBC driver: " + e.getMessage(), e );
+                    }
+                }
+                }
+            }
+
             String user = jaxbConn.getUser();
             String password = jaxbConn.getPassword();
             int poolMinSize = jaxbConn.getPoolMinSize().intValue();
@@ -188,6 +220,18 @@ public class ConnectionManager {
                                             poolMaxSize ) );
             if ( idToPools.containsKey( id ) ) {
                 throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", id ) );
+            }
+
+            if ( type != null ) {
+                switch ( type ) {
+                case POSTGIS: {
+                    try {
+                        Class.forName( "org.postgresql.Driver" ).newInstance();
+                    } catch ( Exception e ) {
+                        LOG.error( "Error loading PostGIS JDBC driver: " + e.getMessage(), e );
+                    }
+                }
+                }
             }
 
             ConnectionPool pool = new ConnectionPool( id, type, url, user, password, poolMinSize, poolMaxSize );
