@@ -344,7 +344,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
         // TODO what about bbox information in the filter?
         Envelope bbox = (Envelope) query.getHint( QueryHint.HINT_LOOSE_BBOX );
-        boolean withGeometries = query.getHint( QueryHint.HINT_NO_GEOMETRIES ) != null ? true : false;
+        boolean withGeometries = query.getHint( QueryHint.HINT_NO_GEOMETRIES ) == null;
 
         checkForUpdate();
 
@@ -379,10 +379,6 @@ public class ShapeFeatureStore implements FeatureStore {
         GeometryPropertyType geom = (GeometryPropertyType) ft.getPropertyDeclarations().get( geomIdx );
         if ( withGeometries ) {
             fields.add( geom );
-        }
-
-        if ( withGeometries ) {
-            fields.removeLast();
         }
 
         Filter filter = query.getFilter();
