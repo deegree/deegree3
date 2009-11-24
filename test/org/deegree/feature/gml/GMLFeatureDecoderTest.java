@@ -218,7 +218,7 @@ public class GMLFeatureDecoderTest {
     public void testParsingCite100()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
-                            XMLParsingException, UnknownCRSException {
+                            XMLParsingException, UnknownCRSException, TransformationException {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -230,16 +230,21 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         idContext.resolveLocalRefs();
 
-        // XMLStreamWriter writer = new FormattingXMLStreamWriter(
-        // XMLOutputFactory.newInstance().createXMLStreamWriter(
-        // new FileWriter(
-        // "/tmp/out.xml" ) ) );
-        // writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        // writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-        // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        // GML_311FeatureEncoder encoder = new GML_311FeatureEncoder( writer, null );
-        // encoder.export( fc );
-        // writer.close();
+        XMLStreamWriter writer = new FormattingXMLStreamWriter(
+                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                      new FileWriter(
+                                                                                                                                      "/tmp/out.xml" ) ) );
+        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
+        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        writer.setPrefix( "cgf", "http://www.opengis.net/cite/geometry" );
+        writer.setPrefix( "ccf", "http://www.opengis.net/cite/complex" );
+        writer.setPrefix( "uri", "http://www.opengis.net/cite/data" );
+        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        GML212FeatureEncoder encoder = new GML212FeatureEncoder( writer, null );
+        encoder.export( fc );
+        writer.close();
     }
 
     // @Test
