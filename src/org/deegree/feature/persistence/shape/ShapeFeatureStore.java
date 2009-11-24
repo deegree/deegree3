@@ -429,8 +429,20 @@ public class ShapeFeatureStore implements FeatureStore {
     @Override
     public FeatureCollection query( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO
-        throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
+        // dumb implementation
+        if ( queries.length == 0 ) {
+            return new GenericFeatureCollection();
+        }
+
+        FeatureCollection col = query( queries[0] );
+        for ( Query q : queries ) {
+            if ( queries[0] == q ) {
+                continue;
+            }
+            col.addAll( query( q ) );
+        }
+
+        return col;
     }
 
     @Override
