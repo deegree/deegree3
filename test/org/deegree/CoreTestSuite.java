@@ -87,7 +87,6 @@ import org.slf4j.LoggerFactory;
                 org.deegree.crs.projections.conic.LambertConformalConicTest.class,
                 org.deegree.crs.projections.cylindric.TransverseMercatorTest.class,
                 org.deegree.crs.transformations.TransformationAccuracyTest.class,
-                org.deegree.feature.gml.GML311StandardPropertiesIteratorTest.class,
                 org.deegree.feature.gml.GMLFeatureDecoderTest.class,
                 org.deegree.feature.gml.GMLFeatureEncoderTest.class,
                 org.deegree.feature.gml.schema.ApplicationSchemaXSDEncoderTest.class,
