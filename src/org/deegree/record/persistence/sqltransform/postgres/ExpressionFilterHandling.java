@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence;
+package org.deegree.record.persistence.sqltransform.postgres;
 
 import static org.deegree.record.persistence.MappingInfo.ColumnType.DATE;
 import static org.deegree.record.persistence.MappingInfo.ColumnType.STRING;
@@ -47,6 +47,7 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.Operator;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.record.persistence.MappingInfo;
 
 /**
  * TODO add class documentation here

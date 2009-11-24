@@ -51,13 +51,13 @@ public class MappingInfo {
     
     private ColumnType type;
     
-    MappingInfo (String table, String column, ColumnType type) {
+    public MappingInfo (String table, String column, ColumnType type) {
         this.table = table;
         this.column = column;
         this.type = type;
     }
     
-    enum ColumnType {
+    public enum ColumnType {
         STRING,
         INTEGER,
         DATE,

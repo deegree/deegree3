@@ -43,6 +43,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGres;
 
 /**
  * Base interface of the {@link Record} persistence layer, provides access to stored {@link Record} instances and their
@@ -84,20 +85,17 @@ public interface RecordStore {
     public void describeRecord();
 
     /**
+     * 
      * Exports the XML for the requested records.
      * 
      * @param writer
      *            writer to export to, must not be <code>null</code>
      * @param typeName
      *            typeName for the requested record
-     * @param returnableElement
-     *            which representation should be generated: <Code>brief</Code>, <Code>summary</Code> or
-     *            <Code>full</Code>
      * @param connection
      *            JDBC connection attributes
-     * @param resultType
-     *            the mode which result should be generated: <Code>hits</Code> as default, <Code>results</Code> or
-     *            <Code>validate</Code>
+     * @param filterTransformator
+     *            PostGresFilterTransformator that transforms the filterexpression into an SQL compatible fragment
      * @throws SQLException
      * @throws XMLStreamException
      */

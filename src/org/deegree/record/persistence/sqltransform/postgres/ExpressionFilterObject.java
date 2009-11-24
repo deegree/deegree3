@@ -33,12 +33,12 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence;
+package org.deegree.record.persistence.sqltransform.postgres;
 
 import java.util.Set;
 
 /**
- * TODO add class documentation here
+ * Object that encapsules methods for the expression of a filter
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $

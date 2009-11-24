@@ -33,14 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence;
+package org.deegree.record.persistence.sqltransform.postgres;
 
-import static org.deegree.record.persistence.MappingInfo.ColumnType.DATE;
-import static org.deegree.record.persistence.MappingInfo.ColumnType.STRING;
-
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.deegree.filter.Expression;
@@ -58,8 +53,6 @@ import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
-import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
@@ -94,6 +87,7 @@ public class TransformatorPostGres {
     private Set<String> column = new HashSet<String>();
 
     private ExpressionFilterHandling expressionFilterHandling = new ExpressionFilterHandling();
+
     private ExpressionFilterObject expressObject;
 
     public TransformatorPostGres( Filter constraint, ResultType resultType,
@@ -177,8 +171,6 @@ public class TransformatorPostGres {
 
     }
 
-    
-
     /**
      * 
      * Handles an {@link Expression} that should be parsed by XPath
@@ -204,7 +196,7 @@ public class TransformatorPostGres {
 
         case SPATIAL:
             SpatialOperator spaOp = (SpatialOperator) opFilter.getOperator();
-            SpatialOperatorTransformingPostGres spa = new SpatialOperatorTransformingPostGres(spaOp);
+            SpatialOperatorTransformingPostGres spa = new SpatialOperatorTransformingPostGres( spaOp );
             table.addAll( spa.getTable() );
             column.addAll( spa.getColumn() );
             return spa.getSpatialOperation();
@@ -363,13 +355,13 @@ public class TransformatorPostGres {
 
         String s = "";
         expressObject = expressionFilterHandling.expressionFilterHandling( expression1.getType(), expression1 );
-        table.addAll( expressObject.getTable());
-        column.addAll( expressObject.getColumn());
+        table.addAll( expressObject.getTable() );
+        column.addAll( expressObject.getColumn() );
         s += expressObject.getExpression();
         s += compOp;
         expressObject = expressionFilterHandling.expressionFilterHandling( expression2.getType(), expression2 );
-        table.addAll( expressObject.getTable());
-        column.addAll( expressObject.getColumn());
+        table.addAll( expressObject.getTable() );
+        column.addAll( expressObject.getColumn() );
         s += expressObject.getExpression();
 
         return s;
@@ -383,17 +375,17 @@ public class TransformatorPostGres {
      * @return
      */
     private String propIsBetweenHandling( Expression lowerBoundary, Expression upperBoundary ) {
-        
+
         String s = "";
         s += " BETWEEN ";
         expressObject = expressionFilterHandling.expressionFilterHandling( lowerBoundary.getType(), lowerBoundary );
-        table.addAll( expressObject.getTable());
-        column.addAll( expressObject.getColumn());
+        table.addAll( expressObject.getTable() );
+        column.addAll( expressObject.getColumn() );
         s += expressObject.getExpression();
         s += " AND ";
         expressObject = expressionFilterHandling.expressionFilterHandling( upperBoundary.getType(), upperBoundary );
-        table.addAll( expressObject.getTable());
-        column.addAll( expressObject.getColumn());
+        table.addAll( expressObject.getTable() );
+        column.addAll( expressObject.getColumn() );
         s += expressObject.getExpression();
 
         return s;
@@ -408,14 +400,14 @@ public class TransformatorPostGres {
     private String propIsLikeHandling( Expression[] compOp ) {
         String s = "";
         int counter = 0;
-        
+
         for ( Expression exp : compOp ) {
             expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
-            table.addAll( expressObject.getTable());
-            column.addAll( expressObject.getColumn());
+            table.addAll( expressObject.getTable() );
+            column.addAll( expressObject.getColumn() );
             if ( counter != compOp.length - 1 ) {
                 counter++;
-                
+
                 s += expressObject.getExpression();
                 s += " LIKE ";
 
@@ -438,8 +430,8 @@ public class TransformatorPostGres {
 
         for ( Expression exp : compOp ) {
             expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
-            table.addAll( expressObject.getTable());
-            column.addAll( expressObject.getColumn());
+            table.addAll( expressObject.getTable() );
+            column.addAll( expressObject.getColumn() );
             s += expressObject.getExpression();
             s += " IS NULL ";
 

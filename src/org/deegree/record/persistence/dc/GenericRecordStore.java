@@ -61,7 +61,7 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.record.persistence.TransformatorPostGres;
+import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGres;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 
