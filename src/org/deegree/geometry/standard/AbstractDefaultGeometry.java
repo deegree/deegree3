@@ -297,7 +297,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      *         null if the given geometry is an empty collection
      */
     @SuppressWarnings("unchecked")
-    protected AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
+    public AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
 
         AbstractDefaultGeometry geom = null;
         if ( jtsGeom instanceof com.vividsolutions.jts.geom.Point ) {
