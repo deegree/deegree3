@@ -234,8 +234,7 @@ public class RenderHelper {
             g.fill( shape );
         }
         if ( mark.stroke != null ) {
-            renderer.applyStroke( mark.stroke, uom );
-            g.draw( shape );
+            renderer.applyStroke( mark.stroke, uom, shape );
         }
 
         g.dispose();
@@ -302,9 +301,5 @@ public class RenderHelper {
 
         return null;
     }
-
-    // System.out.println( getShapeFromSvg(
-    // "file:///home/stranger/workspace/lkee_xplanung2/resources/configurations/deegree-xplan-wms/conf/wms/symbols/SymbolElektrizitaet.svg"
-    // ) );
 
 }

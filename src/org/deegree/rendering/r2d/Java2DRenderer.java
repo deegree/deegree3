@@ -221,7 +221,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    void applyStroke( Stroke stroke, UOM uom ) {
+    void applyStroke( Stroke stroke, UOM uom, Shape object ) {
         if ( stroke == null || isZero( stroke.width ) ) {
             graphics.setPaint( new Color( 0, 0, 0, 0 ) );
             return;
@@ -237,9 +237,18 @@ public class Java2DRenderer implements Renderer {
                 graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) ) );
             } else if ( stroke.stroke.mark != null ) {
                 Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ) );
-                applyFill( stroke.stroke.mark.fill, uom );
-                applyStroke( stroke.stroke.mark.stroke, uom );
-                graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) ) );
+                ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) );
+                Shape transed = s.createStrokedShape( object );
+                if ( stroke.stroke.mark.fill != null ) {
+                    applyFill( stroke.stroke.mark.fill, uom );
+                    graphics.fill( transed );
+                }
+                if ( stroke.stroke.mark.stroke != null ) {
+                    graphics.setStroke( new BasicStroke() );
+                    applyStroke( stroke.stroke.mark.stroke, uom, transed );
+                    graphics.draw( transed );
+                }
+                return;
             } else {
                 LOG.warn( "Rendering of raster images along lines is not supported yet." );
             }
@@ -285,6 +294,8 @@ public class Java2DRenderer implements Renderer {
                                               dasharray, dashoffset );
             graphics.setStroke( bs );
         }
+
+        graphics.draw( object );
     }
 
     private <T> T transform( T g ) {
@@ -503,6 +514,26 @@ public class Java2DRenderer implements Renderer {
         return line;
     }
 
+    private void renderStrokedShape( LineStyling styling, Shape shape ) {
+        double poff = considerUOM( styling.perpendicularOffset, styling.uom );
+        if ( !isZero( poff ) ) {
+            graphics.setStroke( new OffsetStroke( poff, null ) );
+        }
+        applyStroke( styling.stroke, styling.uom, shape );
+
+        // if ( styling.stroke.stroke != null && styling.stroke.stroke.mark != null ) {
+        // if ( styling.stroke.stroke.mark.fill != null ) {
+        // applyFill( styling.stroke.stroke.mark.fill, styling.uom );
+        // graphics.fill( shape );
+        // }
+        // if ( styling.stroke.stroke.mark.stroke != null ) {
+        // applyStroke( styling.stroke.stroke.mark.stroke, styling.uom );
+        // }
+        // }
+
+        // graphics.draw( shape );
+    }
+
     public void render( LineStyling styling, Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
@@ -518,12 +549,7 @@ public class Java2DRenderer implements Renderer {
             geom = transform( geom );
 
             Double line = fromCurve( (Curve) geom );
-            applyStroke( styling.stroke, styling.uom );
-            double poff = considerUOM( styling.perpendicularOffset, styling.uom );
-            if ( !isZero( poff ) ) {
-                graphics.setStroke( new OffsetStroke( poff, graphics.getStroke() ) );
-            }
-            graphics.draw( line );
+            renderStrokedShape( styling, line );
         }
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
@@ -567,12 +593,11 @@ public class Java2DRenderer implements Renderer {
 
                 applyFill( styling.fill, styling.uom );
                 graphics.fill( polygon );
-                applyStroke( styling.stroke, styling.uom );
                 double poff = considerUOM( styling.perpendicularOffset, styling.uom );
                 if ( !isZero( poff ) ) {
-                    graphics.setStroke( new OffsetStroke( poff, graphics.getStroke() ) );
+                    graphics.setStroke( new OffsetStroke( poff, null ) );
                 }
-                graphics.draw( polygon );
+                applyStroke( styling.stroke, styling.uom, polygon );
             } else {
                 throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
             }
