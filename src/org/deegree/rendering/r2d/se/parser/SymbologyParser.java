@@ -400,6 +400,10 @@ public class SymbologyParser {
             sym: if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
                 LOG.debug( "Loading mark from external file." );
                 Pair<InputStream, String> pair = getOnlineResourceOrInlineContent( in );
+                if ( pair == null ) {
+                    in.nextTag();
+                    break sym;
+                }
                 InputStream is = pair.first;
                 in.nextTag();
 
@@ -422,11 +426,11 @@ public class SymbologyParser {
                         if ( format.equalsIgnoreCase( "type1" ) ) {
                             font = createFont( TYPE1_FONT, is );
                         }
-                        
-                        if(format.equalsIgnoreCase("svg")){
-                            base.shape = RenderHelper.getShapeFromSvg( is,pair.second );
+
+                        if ( format.equalsIgnoreCase( "svg" ) ) {
+                            base.shape = RenderHelper.getShapeFromSvg( is, pair.second );
                         }
-                        
+
                         if ( font == null ) {
                             LOG.warn( "Font was not loaded, because the format '{}' is not supported.", format );
                             break sym;
