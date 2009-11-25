@@ -342,13 +342,13 @@ public class GML311FeatureEncoder {
             if ( ( traverseXlinkDepth > 0 && inlineLevels < traverseXlinkDepth ) || referenceTemplate == null
                  || traverseXlinkDepth == -1 ) {
                 // must be exported inline
-                String msg = "Inlining of remote feature references is not implemented yet.";
-                throw new XMLStreamException( msg );
-                // exportedIds.add( subFeature.getId() );
-                // writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                // writer.writeComment( "Inlined feature '" + subFeature.getId() + "'" );
-                // export( subFeature, inlineLevels + 1 );
-                // writer.writeEndElement();
+                LOG.warn( "Inlining of remote feature references is not implemented yet." );
+                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XLNNS, "href", ref.getURI() );
+                writer.writeComment( "Reference to remote feature '"
+                                     + ref.getURI()
+                                     + "' (should have been inlined, but inlining of remote features is not implemented yet." );
+                writer.writeEndElement();
             } else {
                 // must be exported by reference
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
