@@ -70,12 +70,12 @@ public class Mark implements Copyable<Mark> {
     public int markIndex;
 
     /**
-     * Default is null.
+     * Default is a gray fill.
      */
     public Fill fill = new Fill();
 
     /**
-     * Default is null.
+     * Default is a black stroke.
      */
     public Stroke stroke = new Stroke();
 
