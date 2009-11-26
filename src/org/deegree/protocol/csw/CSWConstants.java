@@ -87,7 +87,9 @@ public class CSWConstants {
         /** Resource discovery combines the two operations - search and present */
         GetRecords,
         /** Retrieve the default representation of the service */
-        GetRecordById
+        GetRecordById,
+        /** Creates, modifys and deletes catalogue records */
+        Transaction
     }
 
     /**
@@ -152,8 +154,7 @@ public class CSWConstants {
         full
 
     }
-    
-    
+
     /**
      * 
      * Specifies in which filter mode the query has to be processed. Either there is a OGC XML filter encoding after the
@@ -172,6 +173,26 @@ public class CSWConstants {
 
         /** Filterexpression specified in OGC Spec document 04-095 */
         FILTER
+
+    }
+
+    /**
+     * 
+     * Defined in the CSW-publication.xsd. Specifies the data manipulation operations <br>
+     * <li>insert</li> <li>delete</li> <li>update</li> <br>
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum TransactionType {
+
+        INSERT,
+
+        DELETE,
+
+        UPDATE
 
     }
 
