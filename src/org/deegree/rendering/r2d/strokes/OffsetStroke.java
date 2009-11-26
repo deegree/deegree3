@@ -161,6 +161,7 @@ public class OffsetStroke implements Stroke {
         }
 
         // calc new path
+        // ATTENTION: at least for cubic to this does not work! VM crash...
         double[] firstNormal = normals.peek();
         double[] lastNormal = normals.peekLast();
         Path2D.Double path = new Path2D.Double();
@@ -212,7 +213,7 @@ public class OffsetStroke implements Stroke {
             LOG.trace( "Offset shape: " + prettyPrintShape( path ) );
         }
 
-        return stroke.createStrokedShape( path );
+        return stroke == null ? path : stroke.createStrokedShape( path );
     }
 
 }

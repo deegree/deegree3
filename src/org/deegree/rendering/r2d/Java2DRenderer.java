@@ -236,21 +236,20 @@ public class Java2DRenderer implements Renderer {
                 Shape shape = getShapeFromSvg( stroke.stroke.imageURL, considerUOM( stroke.stroke.size, uom ) );
                 graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) ) );
             } else if ( stroke.stroke.mark != null ) {
+                double poff = considerUOM( perpendicularOffset, uom );
+                Shape transed = object;
+                if ( !isZero( poff ) ) {
+                    transed = new OffsetStroke( poff, null ).createStrokedShape( transed );
+                }
                 Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ), true );
                 ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) );
-                Shape transed = s.createStrokedShape( object );
-                double poff = considerUOM( perpendicularOffset, uom );
+                transed = s.createStrokedShape( transed );
                 if ( stroke.stroke.mark.fill != null ) {
                     applyFill( stroke.stroke.mark.fill, uom );
                     graphics.fill( transed );
                 }
                 if ( stroke.stroke.mark.stroke != null ) {
-                    if ( !isZero( poff ) ) {
-                        graphics.setStroke( new OffsetStroke( poff, null ) );
-                    } else {
-                        graphics.setStroke( new BasicStroke() );
-                    }
-                    applyStroke( stroke.stroke.mark.stroke, uom, transed, perpendicularOffset );
+                    applyStroke( stroke.stroke.mark.stroke, uom, transed, 0 );
                     graphics.draw( transed );
                 }
                 return;
