@@ -58,6 +58,7 @@ import org.deegree.geometry.standard.multi.DefaultMultiGeometry;
 import org.deegree.geometry.standard.multi.DefaultMultiLineString;
 import org.deegree.geometry.standard.multi.DefaultMultiPoint;
 import org.deegree.geometry.standard.multi.DefaultMultiPolygon;
+import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
@@ -105,6 +106,14 @@ public class SimpleGeometryFactory {
         }
         return inspected;
     }
+    
+    protected Points inspect( Points points ) {
+        Points inspected = points;
+        for ( GeometryInspector inspector : inspectors ) {
+            inspected = inspector.inspect( inspected );
+        }
+        return inspected;
+    }    
 
     /**
      * Creates a {@link Point} in 2D space.
@@ -155,6 +164,17 @@ public class SimpleGeometryFactory {
      */
     public Point createPoint( String id, double[] coordinates, CRS crs ) {
         return (Point) inspect( new DefaultPoint( id, crs, pm, coordinates ) );
+    }
+
+    /**
+     * Creates a {@link Points} object from the given list of {@link Point} instances.
+     * 
+     * @param points
+     *            list of points, must not be <code>null</code>
+     * @return created {@link Points}
+     */
+    public Points createPoints (List<Point> points) {
+        return inspect (new PointsList( points ));
     }
 
     /**

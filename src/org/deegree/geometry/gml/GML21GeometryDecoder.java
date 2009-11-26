@@ -71,7 +71,6 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -616,7 +615,7 @@ public class GML21GeometryDecoder {
             String msg = "Error in 'gml:LineString' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        LineString lineString = geomFac.createLineString( gid, crs, new PointsList( points ) );
+        LineString lineString = geomFac.createLineString( gid, crs, geomFac.createPoints( points ) );
         idContext.addGeometry( lineString );
         return lineString;
     }
@@ -739,7 +738,7 @@ public class GML21GeometryDecoder {
                 } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
             }
         }
-        return new PointsList( controlPoints );
+        return geomFac.createPoints( controlPoints );
     }
 
     /**

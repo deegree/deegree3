@@ -74,7 +74,6 @@ import org.deegree.geometry.primitive.segments.Knot;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
-import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -418,7 +417,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
         }
 
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "ArcStringByBulge" );
-        return geomFac.createArcStringByBulge( points, bulges, new PointsList( normals ) );
+        return geomFac.createArcStringByBulge( points, bulges, geomFac.createPoints( normals ) );
     }
 
     /**
@@ -738,7 +737,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
         xmlStream.nextTag();
 
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "AffinePlacement" );
-        return new AffinePlacement( location, new PointsList( refDirections ), inDimension, outDimension );
+        return new AffinePlacement( location, geomFac.createPoints( refDirections ), inDimension, outDimension );
     }
 
     /**
@@ -880,7 +879,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "GeodesicString" );
-        return geomFac.createGeodesicString( new PointsList( points ) );
+        return geomFac.createGeodesicString( geomFac.createPoints( points ) );
     }
 
     /**
@@ -1024,7 +1023,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                 } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
             }
         }
-        return new PointsList( controlPoints );
+        return geomFac.createPoints( controlPoints );
     }
 
     private void validateInterpolationAttribute( XMLStreamReaderWrapper xmlStream, String expected )

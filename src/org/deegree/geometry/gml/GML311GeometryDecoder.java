@@ -104,7 +104,6 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
-import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1089,7 +1088,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
             String msg = "Error in 'gml:LineString' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        LineString lineString = geomFac.createLineString( gid, crs, new PointsList( points ) );
+        LineString lineString = geomFac.createLineString( gid, crs, geomFac.createPoints( points ) );
         lineString.setAttachedProperties( standardProps );
         idContext.addGeometry( lineString );
         return lineString;
@@ -1527,7 +1526,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
 
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
-        Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, new PointsList( controlPoints ),
+        Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, geomFac.createPoints( controlPoints ),
                                      memberPatches );
         tin.setAttachedProperties( standardProps );
         idContext.addGeometry( tin );

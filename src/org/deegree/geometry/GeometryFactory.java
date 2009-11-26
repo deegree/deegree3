@@ -129,7 +129,7 @@ import org.deegree.geometry.standard.surfacepatches.DefaultTriangle;
 
 /**
  * Augments the {@link SimpleGeometryFactory} with additional methods for building complex {@link Geometry} and
- * geometry-related objects (e.g. {@link CurveSegment})s.
+ * geometry-related objects ({@link CurveSegment}s and {@link SurfacePatch}es).
  * 
  * @see SimpleGeometryFactory
  * @see GeometryInspector

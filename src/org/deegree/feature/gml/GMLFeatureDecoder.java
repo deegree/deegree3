@@ -123,9 +123,9 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private final GMLDocumentIdContext idContext;
 
-    private final GML21GeometryDecoder geom21Parser;
+    private GML21GeometryDecoder geom21Parser;
 
-    private final GML311GeometryDecoder geom311Parser;
+    private GML311GeometryDecoder geom311Parser;
 
     private GMLObjectResolver specialResolver;
 
@@ -176,6 +176,10 @@ public class GMLFeatureDecoder extends XMLAdapter {
         this.specialResolver = specialResolver;
     }
 
+    public void setGeometryDecoder (GML311GeometryDecoder decoder) {
+        this.geom311Parser = decoder;
+    }
+    
     /**
      * Registers a {@link CustomPropertyDecoder} that is invoked to parse properties of a certain type.
      * 

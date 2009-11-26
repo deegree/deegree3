@@ -61,7 +61,6 @@ import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.Triangle;
-import org.deegree.geometry.standard.points.PointsList;
 
 /**
  * Handles the parsing of <code>gml:_SurfacePatch</code> elements, i.e concrete element declarations that are in the
@@ -200,7 +199,7 @@ class GML311SurfacePatchDecoder extends GML311BaseDecoder {
                     xmlStream.nextTag();
                 }
             }
-            grid.add( new PointsList( currentRow ) );
+            grid.add( geomFac.createPoints( currentRow ) );
             xmlStream.require( END_ELEMENT, GMLNS, "row" );
             xmlStream.nextTag();
         }
@@ -262,7 +261,7 @@ class GML311SurfacePatchDecoder extends GML311BaseDecoder {
                     xmlStream.nextTag();
                 }
             }
-            grid.add( new PointsList( currentRow ) );
+            grid.add( geomFac.createPoints( currentRow ) );
             xmlStream.require( END_ELEMENT, GMLNS, "row" );
             xmlStream.nextTag();
         }
@@ -324,7 +323,7 @@ class GML311SurfacePatchDecoder extends GML311BaseDecoder {
                     xmlStream.nextTag();
                 }
             }
-            grid.add( new PointsList( currentRow ) );
+            grid.add( geomFac.createPoints( currentRow ) );
             xmlStream.require( END_ELEMENT, GMLNS, "row" );
             xmlStream.nextTag();
         }

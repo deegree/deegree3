@@ -35,11 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 
 /**
- * Enables the inspection of {@link Geometry} objects created by {@link GeometryFactory}.
+ * Enables the inspection of {@link Geometry} objects created in a {@link GeometryFactory}.
  * <p>
  * Implementations can perform such tasks as topological validation or repairing of defects.
  * </p>
@@ -47,9 +48,9 @@ import org.deegree.geometry.primitive.segments.CurveSegment;
  * @see GeometryFactory
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
 public interface GeometryInspector {
 
@@ -88,4 +89,15 @@ public interface GeometryInspector {
      */
     public SurfacePatch inspect( SurfacePatch patch )
                             throws GeometryInspectionException;
+
+    /**
+     * Invokes the inspection of the given {@link Points}.
+     * 
+     * @param points
+     *            points to be inspected, never <code>null</code>
+     * @return inspected patch, may be a different (repaired) instance
+     * @throws GeometryInspectionException
+     *             if the inspector rejects the {@link Points}
+     */
+    public Points inspect( Points points );
 }
