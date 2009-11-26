@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.gml.validation;
 
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
@@ -69,10 +69,10 @@ import org.slf4j.LoggerFactory;
  * The validator's reaction on topological issues can be customized by providing a {@link GMLValidationEventHandler}
  * which is also suitable for generating validation reports.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GML311GeometryValidator extends XMLAdapter {
@@ -112,7 +112,8 @@ public class GML311GeometryValidator extends XMLAdapter {
         }
     }
 
-    private void validateGeometryElement() throws UnknownCRSException {
+    private void validateGeometryElement()
+                            throws UnknownCRSException {
         Location location = xmlStream.getLocation();
         LOG.debug( "Validating GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
                    + location.getLineNumber() + ", column: " + location.getColumnNumber() + "." );
@@ -121,7 +122,7 @@ public class GML311GeometryValidator extends XMLAdapter {
         ValidationEventRedirector eventRedirector = new ValidationEventRedirector( gmlErrorHandler, identifier );
         GeometryValidator geometryValidator = new GeometryValidator( eventRedirector );
         try {
-            geometryValidator.validateGeometry( geomParser.parse(xmlStream, new CRS("EPSG:28992") ) );
+            geometryValidator.validateGeometry( geomParser.parse( xmlStream, new CRS( "EPSG:28992" ) ) );
         } catch ( XMLParsingException e ) {
             gmlErrorHandler.geometryParsingError( identifier, e );
         } catch ( XMLStreamException e ) {
@@ -143,92 +144,79 @@ public class GML311GeometryValidator extends XMLAdapter {
 
         @Override
         public boolean curveDiscontinuity( Curve curve, int segmentIdx, List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.curveDiscontinuity( curve, segmentIdx, affectedGeometryParticles, getAffectedElements() );
-            return false;
+            return gmlErrorHandler.curveDiscontinuity( curve, segmentIdx, affectedGeometryParticles, getAffectedElements() );
         }
 
         @Override
         public boolean curvePointDuplication( Curve curve, Point point, List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.curvePointDuplication( curve, point, affectedGeometryParticles, getAffectedElements() );
-            return false;
+            return gmlErrorHandler.curvePointDuplication( curve, point, affectedGeometryParticles, getAffectedElements() );
         }
 
         @Override
         public boolean curveSelfIntersection( Curve curve, Point location, List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.curveSelfIntersection( curve, location, affectedGeometryParticles, getAffectedElements() );
-            return false;
+            return gmlErrorHandler.curveSelfIntersection( curve, location, affectedGeometryParticles, getAffectedElements() );
         }
 
         @Override
         public boolean exteriorRingCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.exteriorRingCW( patch, affectedGeometryParticles, getAffectedElements() );
-            return false;
+            return gmlErrorHandler.exteriorRingCW( patch, affectedGeometryParticles, getAffectedElements() );
         }
 
         @Override
         public boolean interiorRingCCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.interiorRingCCW( patch, affectedGeometryParticles, getAffectedElements() );
-            return false;
+            return gmlErrorHandler.interiorRingCCW( patch, affectedGeometryParticles, getAffectedElements() );
         }
 
         @Override
         public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx,
                                                        List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.interiorRingIntersectsExterior( patch, ringIdx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingIntersectsExterior( patch, ringIdx, affectedGeometryParticles,
                                                             getAffectedElements() );
-            return false;
         }
 
         @Override
         public boolean interiorRingOutsideExterior( PolygonPatch patch, int ringIdx,
                                                     List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles,
                                                          getAffectedElements() );
-            return false;
         }
 
         @Override
         public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx,
                                                     List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.interiorRingTouchesExterior( patch, ringIdx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingTouchesExterior( patch, ringIdx, affectedGeometryParticles,
                                                          getAffectedElements() );
-            return false;
         }
 
         @Override
         public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx,
                                                List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.interiorRingsIntersect( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingsIntersect( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
                                                     getAffectedElements() );
-            return false;
         }
 
         @Override
         public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx,
                                            List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.interiorRingsTouch( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingsTouch( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
                                                 getAffectedElements() );
-            return false;
         }
 
         @Override
         public boolean interiorRingsWithin( PolygonPatch patch, int ring1Idx, int ring2Idx,
                                             List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.interiorRingsWithin( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
+            return gmlErrorHandler.interiorRingsWithin( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
                                                  getAffectedElements() );
-            return false;
         }
 
         @Override
         public boolean ringNotClosed( Ring ring, List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.ringNotClosed( ring, affectedGeometryParticles, getAffectedElements() );
-            return false;
+            return gmlErrorHandler.ringNotClosed( ring, affectedGeometryParticles, getAffectedElements() );
         }
 
         @Override
         public boolean ringSelfIntersection( Ring ring, Point location, List<Object> affectedGeometryParticles ) {
-            gmlErrorHandler.ringSelfIntersection( ring, location, affectedGeometryParticles, getAffectedElements() );
-            return false;
+            return gmlErrorHandler.ringSelfIntersection( ring, location, affectedGeometryParticles, getAffectedElements() );
         }
 
         private List<GMLElementIdentifier> getAffectedElements() {

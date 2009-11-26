@@ -132,6 +132,8 @@ import org.deegree.geometry.standard.surfacepatches.DefaultTriangle;
  * geometry-related objects (e.g. {@link CurveSegment})s.
  * 
  * @see SimpleGeometryFactory
+ * @see GeometryInspector
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -140,12 +142,28 @@ import org.deegree.geometry.standard.surfacepatches.DefaultTriangle;
  */
 public class GeometryFactory extends SimpleGeometryFactory {
 
-    public GeometryFactory () {
-        this.pm = PrecisionModel.DEFAULT_PRECISION_MODEL;
+    public GeometryFactory() {
+        super( PrecisionModel.DEFAULT_PRECISION_MODEL );
     }
-    
-    public GeometryFactory (PrecisionModel pm) {
-        this.pm = pm;
+
+    public GeometryFactory( PrecisionModel pm ) {
+        super( pm );
+    }
+
+    private CurveSegment inspect( CurveSegment segment ) {
+        CurveSegment inspected = segment;
+        for ( GeometryInspector inspector : inspectors ) {
+            inspected = inspector.inspect( inspected );
+        }
+        return inspected;
+    }
+
+    private SurfacePatch inspect( SurfacePatch patch ) {
+        SurfacePatch inspected = patch;
+        for ( GeometryInspector inspector : inspectors ) {
+            inspected = inspector.inspect( inspected );
+        }
+        return inspected;
     }
 
     /**
@@ -161,7 +179,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Curve}
      */
     public Curve createCurve( String id, CurveSegment[] segments, CRS crs ) {
-        return new DefaultCurve( id, crs, pm, Arrays.asList( segments ) );
+        return (Curve) inspect( new DefaultCurve( id, crs, pm, Arrays.asList( segments ) ) );
     }
 
     /**
@@ -172,7 +190,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link CurveSegment}
      */
     public LineStringSegment createLineStringSegment( Points points ) {
-        return new DefaultLineStringSegment( points );
+        return (LineStringSegment) inspect( new DefaultLineStringSegment( points ) );
     }
 
     /**
@@ -188,7 +206,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Arc}
      */
     public Arc createArc( Point p1, Point p2, Point p3 ) {
-        return new DefaultArc( p1, p2, p3 );
+        return (Arc) inspect( new DefaultArc( p1, p2, p3 ) );
     }
 
     /**
@@ -205,7 +223,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link ArcStringByBulge}
      */
     public ArcByBulge createArcByBulge( Point p1, Point p2, double bulge, Point normal ) {
-        return new DefaultArcByBulge( p1, p2, bulge, normal );
+        return (ArcByBulge) inspect( new DefaultArcByBulge( p1, p2, bulge, normal ) );
     }
 
     /**
@@ -218,7 +236,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link ArcByCenterPoint}
      */
     public ArcByCenterPoint createArcByCenterPoint( Point midPoint, Length radius, Angle startAngle, Angle endAngle ) {
-        return new DefaultArcByCenterPoint( midPoint, radius, startAngle, endAngle );
+        return (ArcByCenterPoint) inspect( new DefaultArcByCenterPoint( midPoint, radius, startAngle, endAngle ) );
     }
 
     /**
@@ -229,7 +247,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link ArcString}
      */
     public ArcString createArcString( Points points ) {
-        return new DefaultArcString( points );
+        return (ArcString) inspect( new DefaultArcString( points ) );
     }
 
     /**
@@ -247,7 +265,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link ArcStringByBulge}
      */
     public ArcStringByBulge createArcStringByBulge( Points points, double[] bulges, Points normals ) {
-        return new DefaultArcStringByBulge( points, bulges, normals );
+        return (ArcStringByBulge) inspect( new DefaultArcStringByBulge( points, bulges, normals ) );
     }
 
     /**
@@ -264,7 +282,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Bezier}
      */
     public Bezier createBezier( Points points, int degree, Knot knot1, Knot knot2 ) {
-        return new DefaultBezier( points, degree, knot1, knot2 );
+        return (Bezier) inspect( new DefaultBezier( points, degree, knot1, knot2 ) );
     }
 
     /**
@@ -281,7 +299,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link BSpline}
      */
     public BSpline createBSpline( Points points, int degree, List<Knot> knots, boolean isPolynomial ) {
-        return new DefaultBSpline( points, degree, knots, isPolynomial );
+        return (BSpline) inspect( new DefaultBSpline( points, degree, knots, isPolynomial ) );
     }
 
     /**
@@ -297,7 +315,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Arc}
      */
     public Circle createCircle( Point p1, Point p2, Point p3 ) {
-        return new DefaultCircle( p1, p2, p3 );
+        return (Circle) inspect( new DefaultCircle( p1, p2, p3 ) );
     }
 
     /**
@@ -309,7 +327,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link CircleByCenterPoint}
      */
     public CircleByCenterPoint createCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle ) {
-        return new DefaultCircleByCenterPoint( midPoint, radius, startAngle );
+        return (CircleByCenterPoint) inspect( new DefaultCircleByCenterPoint( midPoint, radius, startAngle ) );
     }
 
     /**
@@ -322,7 +340,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Geodesic}
      */
     public Geodesic createGeodesic( Point p1, Point p2 ) {
-        return new DefaultGeodesic( p1, p2 );
+        return (Geodesic) inspect( new DefaultGeodesic( p1, p2 ) );
     }
 
     /**
@@ -333,7 +351,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link GeodesicString}
      */
     public GeodesicString createGeodesicString( Points points ) {
-        return new DefaultGeodesicString( points );
+        return (GeodesicString) inspect( new DefaultGeodesicString( points ) );
     }
 
     /**
@@ -348,7 +366,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link GeodesicString}
      */
     public OffsetCurve createOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
-        return new DefaultOffsetCurve( baseCurve, direction, distance );
+        return (OffsetCurve) inspect( new DefaultOffsetCurve( baseCurve, direction, distance ) );
     }
 
     /**
@@ -364,7 +382,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Surface}
      */
     public Surface createSurface( String id, List<SurfacePatch> patches, CRS crs ) {
-        return new DefaultSurface( id, crs, pm, patches );
+        return (Surface) inspect( new DefaultSurface( id, crs, pm, patches ) );
     }
 
     /**
@@ -377,7 +395,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link PolygonPatch}
      */
     public PolygonPatch createPolygonPatch( Ring exteriorRing, List<Ring> interiorRings ) {
-        return new DefaultPolygonPatch( exteriorRing, interiorRings );
+        return (PolygonPatch) inspect( new DefaultPolygonPatch( exteriorRing, interiorRings ) );
     }
 
     /**
@@ -392,7 +410,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Ring}
      */
     public Ring createRing( String id, CRS crs, List<Curve> members ) {
-        return new DefaultRing( id, crs, pm, members );
+        return (Ring) inspect( new DefaultRing( id, crs, pm, members ) );
     }
 
     /**
@@ -407,7 +425,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Ring}
      */
     public LinearRing createLinearRing( String id, CRS crs, Points points ) {
-        return new DefaultLinearRing( id, crs, pm, points );
+        return (LinearRing) inspect( new DefaultLinearRing( id, crs, pm, points ) );
     }
 
     /**
@@ -424,7 +442,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link OrientableCurve}
      */
     public OrientableCurve createOrientableCurve( String id, CRS crs, Curve baseCurve, boolean isReversed ) {
-        return new DefaultOrientableCurve( id, crs, baseCurve, isReversed );
+        return (OrientableCurve) inspect( new DefaultOrientableCurve( id, crs, baseCurve, isReversed ) );
     }
 
     /**
@@ -435,7 +453,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Triangle}
      */
     public Triangle createTriangle( LinearRing exterior ) {
-        return new DefaultTriangle( exterior );
+        return (Triangle) inspect( new DefaultTriangle( exterior ) );
     }
 
     /**
@@ -446,7 +464,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Rectangle}
      */
     public Rectangle createRectangle( LinearRing exterior ) {
-        return new DefaultRectangle( exterior );
+        return (Rectangle) inspect( new DefaultRectangle( exterior ) );
     }
 
     /**
@@ -463,7 +481,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link OrientableCurve}
      */
     public OrientableSurface createOrientableSurface( String id, CRS crs, Surface baseSurface, boolean isReversed ) {
-        return new DefaultOrientableSurface( id, crs, baseSurface, isReversed );
+        return (OrientableSurface) inspect( new DefaultOrientableSurface( id, crs, baseSurface, isReversed ) );
     }
 
     /**
@@ -478,7 +496,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link PolyhedralSurface}
      */
     public PolyhedralSurface createPolyhedralSurface( String id, CRS crs, List<PolygonPatch> memberPatches ) {
-        return new DefaultPolyhedralSurface( id, crs, pm, memberPatches );
+        return (PolyhedralSurface) inspect( new DefaultPolyhedralSurface( id, crs, pm, memberPatches ) );
     }
 
     /**
@@ -493,7 +511,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link TriangulatedSurface}
      */
     public TriangulatedSurface createTriangulatedSurface( String id, CRS crs, List<Triangle> memberPatches ) {
-        return new DefaultTriangulatedSurface( id, crs, pm, memberPatches );
+        return (TriangulatedSurface) inspect( new DefaultTriangulatedSurface( id, crs, pm, memberPatches ) );
     }
 
     /**
@@ -507,13 +525,13 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @param breakLines
      * @param maxLength
      * @param controlPoints
-     * @param patches 
+     * @param patches
      * @return created {@link Tin}
      */
     public Tin createTin( String id, CRS crs, List<List<LineStringSegment>> stopLines,
                           List<List<LineStringSegment>> breakLines, Length maxLength, Points controlPoints,
                           List<Triangle> patches ) {
-        return new DefaultTin( id, crs, pm, stopLines, breakLines, maxLength, controlPoints, patches );
+        return (Tin) inspect( new DefaultTin( id, crs, pm, stopLines, breakLines, maxLength, controlPoints, patches ) );
     }
 
     /**
@@ -532,7 +550,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      */
     public Clothoid createClothoid( AffinePlacement referenceLocation, double scaleFactor, double startParameter,
                                     double endParameter ) {
-        return new DefaultClothoid( referenceLocation, scaleFactor, startParameter, endParameter );
+        return (Clothoid) inspect( new DefaultClothoid( referenceLocation, scaleFactor, startParameter, endParameter ) );
     }
 
     /**
@@ -543,7 +561,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Cone}
      */
     public Cone createCone( List<Points> grid ) {
-        return new DefaultCone( grid );
+        return (Cone) inspect( new DefaultCone( grid ) );
     }
 
     /**
@@ -554,7 +572,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Cylinder}
      */
     public Cylinder createCylinder( List<Points> grid ) {
-        return new DefaultCylinder( grid );
+        return (Cylinder) inspect( new DefaultCylinder( grid ) );
     }
 
     /**
@@ -565,7 +583,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Sphere}
      */
     public Sphere createSphere( List<Points> grid ) {
-        return new DefaultSphere( grid );
+        return (Sphere) inspect( new DefaultSphere( grid ) );
     }
 
     /**
@@ -580,9 +598,9 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Clothoid}
      */
     public CubicSpline createCubicSpline( Points points, Point vectorAtStart, Point vectorAtEnd ) {
-        return new DefaultCubicSpline( points, vectorAtStart, vectorAtEnd );
-    }    
-    
+        return (CubicSpline) inspect( new DefaultCubicSpline( points, vectorAtStart, vectorAtEnd ) );
+    }
+
     /**
      * Creates a {@link Solid}.
      * 
@@ -597,7 +615,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link Solid}
      */
     public Solid createSolid( String id, CRS crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
-        return new DefaultSolid( id, crs, pm, exteriorSurface, interiorSurfaces );
+        return (Solid) inspect( new DefaultSolid( id, crs, pm, exteriorSurface, interiorSurfaces ) );
     }
 
     /**
@@ -612,7 +630,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link MultiCurve}
      */
     public MultiCurve createMultiCurve( String id, CRS crs, List<Curve> members ) {
-        return new DefaultMultiCurve( id, crs, pm, members );
+        return (MultiCurve) inspect( new DefaultMultiCurve( id, crs, pm, members ) );
     }
 
     /**
@@ -627,7 +645,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link MultiSurface}
      */
     public MultiSurface createMultiSurface( String id, CRS crs, List<Surface> members ) {
-        return new DefaultMultiSurface( id, crs, pm, members );
+        return (MultiSurface) inspect( new DefaultMultiSurface( id, crs, pm, members ) );
     }
 
     /**
@@ -642,9 +660,9 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link MultiSolid}
      */
     public MultiSolid createMultiSolid( String id, CRS crs, List<Solid> members ) {
-        return new DefaultMultiSolid( id, crs, pm, members );
-    }    
-    
+        return (MultiSolid) inspect( new DefaultMultiSolid( id, crs, pm, members ) );
+    }
+
     /**
      * Creates a {@link CompositeCurve} from a list of passed {@link Curve}s.
      * 
@@ -658,7 +676,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link CompositeCurve}
      */
     public CompositeCurve createCompositeCurve( String id, CRS crs, List<Curve> members ) {
-        return new DefaultCompositeCurve( id, crs, pm, members );
+        return (CompositeCurve) inspect( new DefaultCompositeCurve( id, crs, pm, members ) );
     }
 
     /**
@@ -674,7 +692,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link CompositeSurface}
      */
     public CompositeSurface createCompositeSurface( String id, CRS crs, List<Surface> memberSurfaces ) {
-        return new DefaultCompositeSurface( id, crs, pm, memberSurfaces );
+        return (CompositeSurface) inspect( new DefaultCompositeSurface( id, crs, pm, memberSurfaces ) );
     }
 
     /**
@@ -690,7 +708,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @return created {@link CompositeSolid}
      */
     public CompositeSolid createCompositeSolid( String id, CRS crs, List<Solid> memberSolids ) {
-        return new DefaultCompositeSolid( id, crs, pm, memberSolids );
+        return (CompositeSolid) inspect( new DefaultCompositeSolid( id, crs, pm, memberSolids ) );
     }
 
     /**
@@ -703,8 +721,10 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @param memberPrimitives
      * @return created {@link CompositeGeometry}
      */
+    @SuppressWarnings("unchecked")
     public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CRS crs,
                                                                           List<GeometricPrimitive> memberPrimitives ) {
-        return new DefaultCompositeGeometry( id, crs, pm, memberPrimitives );
+        return (CompositeGeometry<GeometricPrimitive>) inspect( new DefaultCompositeGeometry( id, crs, pm,
+                                                                                              memberPrimitives ) );
     }
 }

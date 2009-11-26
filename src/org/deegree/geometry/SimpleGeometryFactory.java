@@ -36,6 +36,7 @@
 
 package org.deegree.geometry;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
@@ -50,6 +51,8 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.multi.DefaultMultiGeometry;
 import org.deegree.geometry.standard.multi.DefaultMultiLineString;
@@ -61,8 +64,10 @@ import org.deegree.geometry.standard.primitive.DefaultPolygon;
 
 /**
  * Supplies utility methods for building simple {@link Geometry} objects.
- *
+ * 
  * @see GeometryFactory
+ * @see GeometryInspector
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
@@ -70,16 +75,37 @@ import org.deegree.geometry.standard.primitive.DefaultPolygon;
  */
 public class SimpleGeometryFactory {
 
-    protected PrecisionModel pm;    
+    protected List<GeometryInspector> inspectors = new ArrayList<GeometryInspector>();
 
-    public SimpleGeometryFactory () {
+    protected PrecisionModel pm;
+
+    public SimpleGeometryFactory() {
         this.pm = PrecisionModel.DEFAULT_PRECISION_MODEL;
     }
-    
-    public SimpleGeometryFactory (PrecisionModel pm) {
+
+    public SimpleGeometryFactory( PrecisionModel pm ) {
         this.pm = pm;
     }
-    
+
+    /**
+     * Adds the given {@link GeometryInspector} which will be invoked for every {@link Geometry} / {@link CurveSegment}
+     * or {@link SurfacePatch} instance created by this factory.
+     * 
+     * @param inspector
+     *            inspector to be added, must not be <code>null</code>
+     */
+    public void addInspector( GeometryInspector inspector ) {
+        inspectors.add( inspector );
+    }
+
+    protected Geometry inspect( Geometry geom ) {
+        Geometry inspected = geom;
+        for ( GeometryInspector inspector : inspectors ) {
+            inspected = inspector.inspect( inspected );
+        }
+        return inspected;
+    }
+
     /**
      * Creates a {@link Point} in 2D space.
      * 
@@ -94,7 +120,7 @@ public class SimpleGeometryFactory {
      * @return created {@link Point}
      */
     public Point createPoint( String id, double x, double y, CRS crs ) {
-        return new DefaultPoint( id, crs, pm, new double[] { x, y } );
+        return (Point) inspect( new DefaultPoint( id, crs, pm, new double[] { x, y } ) );
     }
 
     /**
@@ -113,7 +139,7 @@ public class SimpleGeometryFactory {
      * @return created {@link Point}
      */
     public Point createPoint( String id, double x, double y, double z, CRS crs ) {
-        return new DefaultPoint( id, crs, pm, new double[] { x, y, z } );
+        return (Point) inspect( new DefaultPoint( id, crs, pm, new double[] { x, y, z } ) );
     }
 
     /**
@@ -128,8 +154,8 @@ public class SimpleGeometryFactory {
      * @return created {@link Point}
      */
     public Point createPoint( String id, double[] coordinates, CRS crs ) {
-        return new DefaultPoint( id, crs, pm, coordinates );
-    }    
+        return (Point) inspect( new DefaultPoint( id, crs, pm, coordinates ) );
+    }
 
     /**
      * Creates a {@link Polygon} surface.
@@ -145,8 +171,8 @@ public class SimpleGeometryFactory {
      * @return created {@link Polygon}
      */
     public Polygon createPolygon( String id, CRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
-        return new DefaultPolygon( id, crs, pm, exteriorRing, interiorRings );
-    }    
+        return (Polygon) inspect( new DefaultPolygon( id, crs, pm, exteriorRing, interiorRings ) );
+    }
 
     /**
      * Creates a {@link LineString} geometry.
@@ -160,9 +186,8 @@ public class SimpleGeometryFactory {
      * @return created {@link LineString}
      */
     public LineString createLineString( String id, CRS crs, Points points ) {
-        return new DefaultLineString( id, crs, pm, points );
+        return (LineString) inspect( new DefaultLineString( id, crs, pm, points ) );
     }
-
 
     /**
      * Creates an {@link Envelope}.
@@ -176,8 +201,8 @@ public class SimpleGeometryFactory {
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double[] min, double[] max, CRS crs ) {
-        return new DefaultEnvelope( null, crs, pm, new DefaultPoint( null, crs, pm, min ), new DefaultPoint( null, crs,
-                                                                                                             pm, max ) );
+        return (Envelope) inspect( new DefaultEnvelope( null, crs, pm, new DefaultPoint( null, crs, pm, min ),
+                                                        new DefaultPoint( null, crs, pm, max ) ) );
     }
 
     /**
@@ -219,7 +244,7 @@ public class SimpleGeometryFactory {
             uc[i] = upperCorner.get( i );
         }
         return createEnvelope( lc, uc, crs );
-    }    
+    }
 
     /**
      * Creates an untyped multi geometry from a list of {@link Geometry}s.
@@ -231,8 +256,9 @@ public class SimpleGeometryFactory {
      * @param members
      * @return created {@link MultiGeometry}
      */
+    @SuppressWarnings("unchecked")
     public MultiGeometry<Geometry> createMultiGeometry( String id, CRS crs, List<Geometry> members ) {
-        return new DefaultMultiGeometry<Geometry>( id, crs, pm, members );
+        return (MultiGeometry<Geometry>) inspect( new DefaultMultiGeometry<Geometry>( id, crs, pm, members ) );
     }
 
     /**
@@ -247,7 +273,7 @@ public class SimpleGeometryFactory {
      * @return created {@link MultiPoint}
      */
     public MultiPoint createMultiPoint( String id, CRS crs, List<Point> members ) {
-        return new DefaultMultiPoint( id, crs, pm, members );
+        return (MultiPoint) inspect( new DefaultMultiPoint( id, crs, pm, members ) );
     }
 
     /**
@@ -262,7 +288,7 @@ public class SimpleGeometryFactory {
      * @return created {@link MultiLineString}
      */
     public MultiLineString createMultiLineString( String id, CRS crs, List<LineString> members ) {
-        return new DefaultMultiLineString( id, crs, pm, members );
+        return (MultiLineString) inspect( new DefaultMultiLineString( id, crs, pm, members ) );
     }
 
     /**
@@ -277,6 +303,6 @@ public class SimpleGeometryFactory {
      * @return created {@link MultiPolygon}
      */
     public MultiPolygon createMultiPolygon( String id, CRS crs, List<Polygon> members ) {
-        return new DefaultMultiPolygon( id, crs, pm, members );
+        return (MultiPolygon) inspect( new DefaultMultiPolygon( id, crs, pm, members ) );
     }
 }
