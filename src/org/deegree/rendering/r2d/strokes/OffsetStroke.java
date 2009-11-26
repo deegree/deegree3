@@ -107,7 +107,7 @@ public class OffsetStroke implements Stroke {
         // calc intersection point of the two lines that are parallel to the original geometry lines
         double ox = px + offset * n2[0];
         double oy = py + offset * n2[1];
-        double lam = ( n1[1] * ( oy - ny ) + n1[0] * ( ox - nx ) ) * ( n2[0] * n1[1] - n1[0] * n2[1] );
+        double lam = ( n1[1] * ( oy - ny ) + n1[0] * ( ox - nx ) ) / ( n2[0] * n1[1] - n1[0] * n2[1] );
         return new double[] { ox + lam * n2[1], oy - lam * n2[0] };
     }
 
@@ -202,7 +202,7 @@ public class OffsetStroke implements Stroke {
         }
 
         if ( isZero( lastx - firstx ) && isZero( lasty - firsty ) ) {
-            double[] pt = calcNewInner( firstx, firsty, firstNormal, lastNormal );
+            double[] pt = calcNewInner( firstx, firsty, lastNormal, firstNormal );
             path.lineTo( pt[0], pt[1] );
         }
 

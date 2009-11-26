@@ -221,7 +221,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    void applyStroke( Stroke stroke, UOM uom, Shape object ) {
+    void applyStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset ) {
         if ( stroke == null || isZero( stroke.width ) ) {
             graphics.setPaint( new Color( 0, 0, 0, 0 ) );
             return;
@@ -239,13 +239,18 @@ public class Java2DRenderer implements Renderer {
                 Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ), true );
                 ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) );
                 Shape transed = s.createStrokedShape( object );
+                double poff = considerUOM( perpendicularOffset, uom );
                 if ( stroke.stroke.mark.fill != null ) {
                     applyFill( stroke.stroke.mark.fill, uom );
                     graphics.fill( transed );
                 }
                 if ( stroke.stroke.mark.stroke != null ) {
-                    graphics.setStroke( new BasicStroke() );
-                    applyStroke( stroke.stroke.mark.stroke, uom, transed );
+                    if ( !isZero( poff ) ) {
+                        graphics.setStroke( new OffsetStroke( poff, null ) );
+                    } else {
+                        graphics.setStroke( new BasicStroke() );
+                    }
+                    applyStroke( stroke.stroke.mark.stroke, uom, transed, perpendicularOffset );
                     graphics.draw( transed );
                 }
                 return;
@@ -292,7 +297,12 @@ public class Java2DRenderer implements Renderer {
 
             BasicStroke bs = new BasicStroke( (float) considerUOM( stroke.width, uom ), linecap, linejoin, miterLimit,
                                               dasharray, dashoffset );
-            graphics.setStroke( bs );
+            double poff = considerUOM( perpendicularOffset, uom );
+            if ( !isZero( poff ) ) {
+                graphics.setStroke( new OffsetStroke( poff, bs ) );
+            } else {
+                graphics.setStroke( bs );
+            }
         }
 
         graphics.draw( object );
@@ -515,26 +525,6 @@ public class Java2DRenderer implements Renderer {
         return line;
     }
 
-    private void renderStrokedShape( LineStyling styling, Shape shape ) {
-        double poff = considerUOM( styling.perpendicularOffset, styling.uom );
-        if ( !isZero( poff ) ) {
-            graphics.setStroke( new OffsetStroke( poff, null ) );
-        }
-        applyStroke( styling.stroke, styling.uom, shape );
-
-        // if ( styling.stroke.stroke != null && styling.stroke.stroke.mark != null ) {
-        // if ( styling.stroke.stroke.mark.fill != null ) {
-        // applyFill( styling.stroke.stroke.mark.fill, styling.uom );
-        // graphics.fill( shape );
-        // }
-        // if ( styling.stroke.stroke.mark.stroke != null ) {
-        // applyStroke( styling.stroke.stroke.mark.stroke, styling.uom );
-        // }
-        // }
-
-        // graphics.draw( shape );
-    }
-
     public void render( LineStyling styling, Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
@@ -550,7 +540,7 @@ public class Java2DRenderer implements Renderer {
             geom = transform( geom );
 
             Double line = fromCurve( (Curve) geom );
-            renderStrokedShape( styling, line );
+            applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset );
         }
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
@@ -594,11 +584,7 @@ public class Java2DRenderer implements Renderer {
 
                 applyFill( styling.fill, styling.uom );
                 graphics.fill( polygon );
-                double poff = considerUOM( styling.perpendicularOffset, styling.uom );
-                if ( !isZero( poff ) ) {
-                    graphics.setStroke( new OffsetStroke( poff, null ) );
-                }
-                applyStroke( styling.stroke, styling.uom, polygon );
+                applyStroke( styling.stroke, styling.uom, polygon, styling.perpendicularOffset );
             } else {
                 throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
             }
