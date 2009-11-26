@@ -42,6 +42,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -50,10 +51,15 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.deegree.rendering.r2d.styling.LineStyling;
+import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.RasterChannelSelection;
 import org.deegree.rendering.r2d.styling.RasterStyling;
+import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.RasterChannelSelection.ChannelSelectionMode;
 import org.deegree.rendering.r2d.styling.RasterStyling.ContrastEnhancement;
+import org.deegree.rendering.r2d.utils.Raster2Feature;
 import org.deegree.rendering.r2d.utils.RasterDataUtility;
 import org.slf4j.Logger;
 
@@ -149,13 +155,24 @@ public class Java2DRasterRenderer implements RasterRenderer {
             LOG.trace( "Using opacity: " + styling.opacity );
             graphics.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, (float) styling.opacity ) );
         }
-
+        
         LOG.trace( "Rendering raster..." );
         if ( img != null )
             render( img );
         else
             render( raster );
         LOG.trace( "Done rendering raster." );
+        
+        if (styling.imageOutline != null)
+        {
+            LOG.trace( "Rendering image outline..." );
+            Geometry geom = Raster2Feature.createPolygonGeometry( raster );
+            Java2DRenderer vectorRenderer = new Java2DRenderer( graphics );
+            Pair<Styling, Geometry> pair = (Pair<Styling, Geometry>) styling.imageOutline.evaluate( null );
+            Styling ls = pair.first;
+            vectorRenderer.render(ls, geom);
+            LOG.trace( "Done rendering image outline." );
+        }
     }
 
     /**

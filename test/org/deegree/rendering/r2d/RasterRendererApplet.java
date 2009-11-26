@@ -74,7 +74,6 @@ public class RasterRendererApplet extends JApplet {
     @Override
     public void paint( Graphics g ) {
         loadRasters();
-        // renderTwoTransparentRasters();
 
         renderRasterWithCategorize();
         renderRasterWithInterpolate();
@@ -85,19 +84,6 @@ public class RasterRendererApplet extends JApplet {
     @Override
     public void init() {
         this.setSize( 840, 800 );
-    }
-
-    public void renderTwoTransparentRasters() {
-        Graphics2D g2d = (Graphics2D) this.getGraphics().create( 150, 350, 200, 50 );
-        Java2DRasterRenderer renderer = new Java2DRasterRenderer( g2d );
-        RasterStyling style = new RasterStyling();
-        style.opacity = 0.05;
-        renderer.render( style, image );
-
-        g2d = (Graphics2D) this.getGraphics().create( 550, 350, 200, 50 );
-        renderer = new Java2DRasterRenderer( g2d );
-        style.opacity = 0.6;
-        renderer.render( style, image );
     }
 
     public Categorize loadCategorizeFromXml( String name ) {
@@ -131,7 +117,7 @@ public class RasterRendererApplet extends JApplet {
             }
             in.require( XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer" );
             Symbolizer<RasterStyling> symb = SymbologyParser.parseRasterSymbolizer( in, null );
-            rs = symb.getBase();
+            rs = symb.evaluate( null ).first;
             LOG.debug( "Loaded SE XML" );
         } catch ( Exception e ) {
             LOG.error( "Could not load XML file...", e );
@@ -183,12 +169,11 @@ public class RasterRendererApplet extends JApplet {
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
         r.render( style, dem );
     }
-    
+
     /* Render a raster after selecting (actually swapping) channels */
     private void renderRasterSelectedChannels() {
         RasterStyling style = loadRasterStylingFromXml( "setest20.xml" );
         Graphics2D g2d = (Graphics2D) this.getGraphics().create( 400, 310, 370, 370 );
-//        Graphics2D g2d = (Graphics2D) this.getGraphics();
         Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
         r.render( style, doll );
     }
@@ -208,7 +193,7 @@ public class RasterRendererApplet extends JApplet {
 
             uri = RasterRendererApplet.class.getResource( "RussianDoll.jpg" ).toURI();
             doll = RasterFactory.loadRasterFromFile( new File( uri ) );
-            
+
             uri = RasterRendererApplet.class.getResource( "snow.jpg" ).toURI();
             snow = RasterFactory.loadRasterFromFile( new File( uri ) );
 
