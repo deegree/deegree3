@@ -204,6 +204,7 @@ public class OffsetStroke implements Stroke {
         if ( isZero( lastx - firstx ) && isZero( lasty - firsty ) ) {
             double[] pt = calcNewInner( firstx, firsty, lastNormal, firstNormal );
             path.lineTo( pt[0], pt[1] );
+            path.closePath();
         }
 
         if ( LOG.isTraceEnabled() ) {
