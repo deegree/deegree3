@@ -65,6 +65,8 @@ import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.gvt.GVTTreeWalker;
+import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.RootGraphicsNode;
 import org.deegree.rendering.r2d.styling.components.Mark;
 import org.deegree.rendering.r2d.styling.components.UOM;
@@ -289,17 +291,14 @@ public class RenderHelper {
 
             root.setTransform( t );
 
-            // unknown if this is actually necessary sometimes or not
-            // GVTTreeWalker walker = new GVTTreeWalker( root );
-            // GraphicsNode node = root;
-            // GeneralPath shape = new GeneralPath( root.getOutline() );
-            // System.out.println(GeometryUtils.prettyPrintShape(root.getOutline() ));
-            // while ( ( node = walker.nextGraphicsNode() ) != null ) {
-            // node.setTransform( t );
-            // shape.append( node.getOutline(), false );
-            // System.out.println("yes, here" + node.getClass().getName());
-            // System.out.println(GeometryUtils.prettyPrintShape(node.getOutline() ));
-            // }
+            GVTTreeWalker walker = new GVTTreeWalker( root );
+            GraphicsNode node = root;
+            // should not include root's shape in the path as it doesn't always work properly
+            GeneralPath shape = new GeneralPath();
+            while ( ( node = walker.nextGraphicsNode() ) != null ) {
+                node.setTransform( t );
+                shape.append( node.getOutline(), false );
+            }
 
             return root.getOutline();
         } catch ( IOException e ) {
