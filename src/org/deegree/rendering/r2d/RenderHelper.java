@@ -239,7 +239,7 @@ public class RenderHelper {
             g.fill( shape );
         }
         if ( mark.stroke != null ) {
-            renderer.applyStroke( mark.stroke, uom, shape );
+            renderer.applyStroke( mark.stroke, uom, shape, 0 );
         }
 
         g.dispose();
