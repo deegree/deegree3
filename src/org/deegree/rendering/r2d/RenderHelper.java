@@ -65,8 +65,6 @@ import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
-import org.apache.batik.gvt.GVTTreeWalker;
-import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.RootGraphicsNode;
 import org.deegree.rendering.r2d.styling.components.Mark;
 import org.deegree.rendering.r2d.styling.components.UOM;
@@ -153,14 +151,21 @@ public class RenderHelper {
     /**
      * @param mark
      * @param size
+     * @param center
      * @return a shape representing the mark
      */
-    public static Shape getShapeFromMark( Mark mark, double size ) {
+    public static Shape getShapeFromMark( Mark mark, double size, boolean center ) {
         if ( mark.shape != null ) {
             Rectangle2D box = mark.shape.getBounds2D();
             double cur = max( box.getWidth(), box.getHeight() );
             double fac = size / cur;
-            AffineTransform trans = AffineTransform.getScaleInstance( fac, fac );
+            AffineTransform trans = getScaleInstance( fac, fac );
+            if ( center ) {
+                trans.translate( -box.getWidth() / 2, -box.getHeight() / 2 );
+                trans.translate( -box.getMinX(), -box.getMinY() );
+            } else {
+                trans.translate( -box.getMinX(), -box.getMinY() );
+            }
             return trans.createTransformedShape( mark.shape );
         }
 
@@ -227,7 +232,7 @@ public class RenderHelper {
 
         Java2DRenderer renderer = new Java2DRenderer( g );
 
-        Shape shape = getShapeFromMark( mark, size - 1 );
+        Shape shape = getShapeFromMark( mark, size - 1, false );
 
         if ( mark.fill != null ) {
             renderer.applyFill( mark.fill, uom );
@@ -247,12 +252,11 @@ public class RenderHelper {
      * @param size
      * @return a shape object from the given svg
      */
-    public static GeneralPath getShapeFromSvg( String url, double size ) {
+    public static Shape getShapeFromSvg( String url, double size ) {
         try {
-            GeneralPath shape = getShapeFromSvg( new URL( url ).openStream(), url );
+            Shape shape = getShapeFromSvg( new URL( url ).openStream(), url );
             if ( shape != null ) {
-                shape.transform( getScaleInstance( size, size ) );
-                return shape;
+                return getScaleInstance( size, size ).createTransformedShape( shape );
             }
         } catch ( IOException e ) {
             LOG.warn( "The svg image at '{}' could not be read: {}", url, e.getLocalizedMessage() );
@@ -267,7 +271,7 @@ public class RenderHelper {
      * @param url
      * @return a shape object
      */
-    public static GeneralPath getShapeFromSvg( InputStream in, String url ) {
+    public static Shape getShapeFromSvg( InputStream in, String url ) {
         try {
             SAXSVGDocumentFactory fac = new SAXSVGDocumentFactory( "org.apache.xerces.parsers.SAXParser" );
             SVGDocument doc = fac.createSVGDocument( url, in );
@@ -285,15 +289,19 @@ public class RenderHelper {
 
             root.setTransform( t );
 
-            GVTTreeWalker walker = new GVTTreeWalker( root );
-            GraphicsNode node = root;
-            GeneralPath shape = new GeneralPath( root.getOutline() );
-            while ( ( node = walker.nextGraphicsNode() ) != null ) {
-                node.setTransform( t );
-                shape.append( node.getOutline(), false );
-            }
+            // unknown if this is actually necessary sometimes or not
+            // GVTTreeWalker walker = new GVTTreeWalker( root );
+            // GraphicsNode node = root;
+            // GeneralPath shape = new GeneralPath( root.getOutline() );
+            // System.out.println(GeometryUtils.prettyPrintShape(root.getOutline() ));
+            // while ( ( node = walker.nextGraphicsNode() ) != null ) {
+            // node.setTransform( t );
+            // shape.append( node.getOutline(), false );
+            // System.out.println("yes, here" + node.getClass().getName());
+            // System.out.println(GeometryUtils.prettyPrintShape(node.getOutline() ));
+            // }
 
-            return shape;
+            return root.getOutline();
         } catch ( IOException e ) {
             LOG.warn( "The svg image at '{}' could not be read: {}", url, e.getLocalizedMessage() );
             LOG.debug( "Stack trace", e );

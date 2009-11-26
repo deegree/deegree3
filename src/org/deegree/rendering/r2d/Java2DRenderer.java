@@ -236,7 +236,7 @@ public class Java2DRenderer implements Renderer {
                 Shape shape = getShapeFromSvg( stroke.stroke.imageURL, considerUOM( stroke.stroke.size, uom ) );
                 graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) ) );
             } else if ( stroke.stroke.mark != null ) {
-                Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ) );
+                Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ), true );
                 ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) );
                 Shape transed = s.createStrokedShape( object );
                 if ( stroke.stroke.mark.fill != null ) {
@@ -436,6 +436,7 @@ public class Java2DRenderer implements Renderer {
         Graphic g = styling.graphic;
 
         if ( g.image == null ) {
+            // TODO optimize
             img = renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom );
         } else {
             img = g.image;
@@ -452,13 +453,13 @@ public class Java2DRenderer implements Renderer {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
-        geom = transform( geom );
 
         if ( LOG.isTraceEnabled() ) {
             LOG.trace( "Drawing " + geom + " with " + styling );
         }
 
         if ( geom instanceof Point ) {
+            geom = transform( geom );
             render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
         }
         // TODO properly convert'em

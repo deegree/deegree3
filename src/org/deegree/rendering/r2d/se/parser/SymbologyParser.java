@@ -431,12 +431,12 @@ public class SymbologyParser {
                             base.shape = RenderHelper.getShapeFromSvg( is, pair.second );
                         }
 
-                        if ( font == null ) {
-                            LOG.warn( "Font was not loaded, because the format '{}' is not supported.", format );
+                        if ( font == null && base.shape == null ) {
+                            LOG.warn( "Mark was not loaded, because the format '{}' is not supported.", format );
                             break sym;
                         }
 
-                        if ( base.markIndex >= font.getNumGlyphs() - 1 ) {
+                        if ( font != null && base.markIndex >= font.getNumGlyphs() - 1 ) {
                             LOG.warn( "The font only contains {} glyphs, but the index given was {}.",
                                       font.getNumGlyphs(), base.markIndex );
                             break sym;
