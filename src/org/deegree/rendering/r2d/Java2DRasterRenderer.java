@@ -153,22 +153,21 @@ public class Java2DRasterRenderer implements RasterRenderer {
             LOG.trace( "Using opacity: " + styling.opacity );
             graphics.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, (float) styling.opacity ) );
         }
-        
+
         LOG.trace( "Rendering raster..." );
         if ( img != null )
             render( img );
         else
             render( raster );
         LOG.trace( "Done rendering raster." );
-        
-        if (styling.imageOutline != null)
-        {
+
+        if ( styling.imageOutline != null ) {
             LOG.trace( "Rendering image outline..." );
             Geometry geom = Raster2Feature.createPolygonGeometry( raster );
             Java2DRenderer vectorRenderer = new Java2DRenderer( graphics );
-            Pair<Styling, Geometry> pair = (Pair<Styling, Geometry>) styling.imageOutline.evaluate( null );
+            Pair<Styling, Geometry> pair = (Pair) styling.imageOutline.evaluate( null );
             Styling ls = pair.first;
-            vectorRenderer.render(ls, geom);
+            vectorRenderer.render( ls, geom );
             LOG.trace( "Done rendering image outline." );
         }
     }
