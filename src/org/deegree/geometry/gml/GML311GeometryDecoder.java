@@ -233,8 +233,8 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         aggregateElements.add( "MultiSurface" );
 
         // substitutions for "gml:_ImplicitGeometry"
-        aggregateElements.add( "Grid" );
-        aggregateElements.add( "RectifiedGrid" );
+        implictGeometryElements.add( "Grid" );
+        implictGeometryElements.add( "RectifiedGrid" );
 
         // "gml:GeometricComplex"
         complexElements.add( "GeometricComplex" );
@@ -689,10 +689,10 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String name = xmlStream.getLocalName();
         if ( name.equals( "Grid" ) ) {
-            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not supported.";
             throw new XMLParsingException( xmlStream, msg );
         } else if ( name.equals( "RectifiedGrid" ) ) {
-            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not supported.";
             throw new XMLParsingException( xmlStream, msg );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName() + "' is not a GML geometry element.";

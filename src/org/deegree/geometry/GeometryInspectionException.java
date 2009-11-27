@@ -47,4 +47,26 @@ public class GeometryInspectionException extends GeometryException {
 
     private static final long serialVersionUID = -5464465536498293360L;
 
+   /**
+    */
+    public GeometryInspectionException() {
+        super();
+    }
+
+    /**
+     * 
+     * @param message
+     * @param throwable
+     */
+    public GeometryInspectionException( String message, Throwable throwable ) {
+        super( message, throwable );
+    }
+
+    /**
+     * 
+     * @param message
+     */
+    public GeometryInspectionException( String message ) {
+        super( message );
+    }
 }
