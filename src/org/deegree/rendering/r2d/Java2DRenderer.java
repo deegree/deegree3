@@ -59,6 +59,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.TexturePaint;
+import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
@@ -66,6 +67,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -94,6 +96,7 @@ import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Graphic;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.UOM;
+import org.deegree.rendering.r2d.styling.components.Font.Style;
 import org.slf4j.Logger;
 
 /**
@@ -379,6 +382,7 @@ public class Java2DRenderer implements Renderer {
         }
 
         geom = transform( geom );
+        AffineTransform shear = null;
 
         int style = styling.font.bold ? BOLD : PLAIN;
         switch ( styling.font.fontStyle ) {
@@ -389,8 +393,9 @@ public class Java2DRenderer implements Renderer {
             style += PLAIN; // yes, it's zero, but the code looks nicer this way
             break;
         case OBLIQUE:
-            LOG.warn( "The oblique font style is not supported, using italic instead." );
-            style += ITALIC; // TODO something better here?
+            // Shear the font horizontally to achieve obliqueness
+            shear = new AffineTransform();
+            shear.shear( -0.2, 0 );
             break;
         }
 
@@ -403,6 +408,9 @@ public class Java2DRenderer implements Renderer {
                 break;
             }
         }
+
+        if ( styling.font.fontStyle == Style.OBLIQUE && shear != null )
+            font = font.deriveFont( shear );
 
         if ( geom instanceof Point ) {
             render( styling, font, text, (Point) geom );
