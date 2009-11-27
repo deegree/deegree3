@@ -100,7 +100,7 @@ public class GML212FeatureEncoder {
      */
     public GML212FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, true, exportedIds );
+        geometryExporter = null;// new GML311GeometryEncoder( writer, outputCRS, true, exportedIds );
     }
 
     // public void export( FeatureCollection featureCol ) throws XMLStreamException {
