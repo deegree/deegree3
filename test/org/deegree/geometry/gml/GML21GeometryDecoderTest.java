@@ -78,6 +78,8 @@ public class GML21GeometryDecoderTest extends TestCase {
 
     private static final String POINT_FILE = "Point.gml";
 
+    private static final String POINT2_FILE = "Point2.gml";
+
     private static final String POLYGON_FILE = "Polygon.gml";
 
     private static final String LINESTRING_FILE = "LineString.gml";
@@ -141,6 +143,23 @@ public class GML21GeometryDecoderTest extends TestCase {
         Assert.assertEquals( 40.0, point.get1(), DELTA );
         Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
 
+    }
+
+    /**
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
+    public void testPoint2()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       this.getClass().getResource(
+                                                                                                    BASE_DIR
+                                                                                                                            + POINT2_FILE ) );
+        xmlReader.nextTag();
+        Point point = new GML21GeometryDecoder().parsePoint( xmlReader, null );
+        Assert.assertEquals( 5.0, point.get0(), DELTA );
+        Assert.assertEquals( 30.0, point.get1(), DELTA );
     }
 
     /**
