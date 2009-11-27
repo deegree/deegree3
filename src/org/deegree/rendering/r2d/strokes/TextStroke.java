@@ -380,7 +380,6 @@ public class TextStroke implements Stroke {
                         t.setToTranslation( x, y );
                         t.rotate( angle );
                         t.translate( -px - advance, -py );
-                        t.translate( -glyph.getBounds2D().getWidth() / 2, glyph.getBounds().getHeight() / 2 );
                         result.append( t.createTransformedShape( glyph ), false );
                         next += ( advance + nextAdvance );
                         currentChar++;
