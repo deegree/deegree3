@@ -124,8 +124,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     /**
-     * Returns the underlying JDBC connection. Can be used for performing other operations in the same transaction
-     * context.
+     * Returns the underlying JDBC connection. Can be used for performing other operations in the
+     * same transaction context.
      * 
      * @return the underlying JDBC connection, never <code>null</code>
      */
@@ -324,9 +324,11 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 for ( Property<?> property : feature.getProperties() ) {
                     Object propertyValue = property.getValue();
                     if ( propertyValue instanceof Feature ) {
-                        if ( !( propertyValue instanceof FeatureReference )
-                             || ( (FeatureReference) propertyValue ).isLocal() ) {
+                        if ( !( propertyValue instanceof FeatureReference ) ) {
                             findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
+                        } else if ( ( (FeatureReference) propertyValue ).isLocal() ) {
+                            findFeaturesAndGeometries( ( (FeatureReference) propertyValue ).getReferencedFeature(),
+                                                       geometries, features, fids, gids );
                         }
                     } else if ( propertyValue instanceof Geometry ) {
                         findGeometries( (Geometry) propertyValue, geometries, gids );
