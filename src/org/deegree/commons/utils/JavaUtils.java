@@ -39,7 +39,9 @@ package org.deegree.commons.utils;
 import static java.lang.reflect.Modifier.STATIC;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 
@@ -74,7 +76,8 @@ public class JavaUtils {
                         continue;
                     }
                     f.setAccessible( true );
-                    if ( t.isPrimitive() || t.isEnum() ) {
+                    if ( t.isPrimitive() || t.isEnum() || f.get( o ) instanceof Color
+                         || f.get( o ) instanceof Collection<?> ) {
                         sb.append( f.getName() ).append( ": " ).append( f.get( o ) ).append( ", " );
                     } else {
                         String s = generateToString( f.get( o ) );
