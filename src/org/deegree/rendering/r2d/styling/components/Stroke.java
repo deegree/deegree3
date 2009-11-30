@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,21 +32,22 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d.styling.components;
 
+import static org.deegree.commons.utils.JavaUtils.generateToString;
+
 import java.awt.Color;
-import java.util.Arrays;
 
 import org.deegree.rendering.r2d.styling.Copyable;
 
 /**
  * <code>Stroke</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class Stroke implements Copyable<Stroke> {
@@ -103,10 +104,10 @@ public class Stroke implements Copyable<Stroke> {
 
     /**
      * <code>LineJoin</code>
-     *
+     * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
      */
     public static enum LineJoin {
@@ -118,10 +119,10 @@ public class Stroke implements Copyable<Stroke> {
 
     /**
      * <code>LineCap</code>
-     *
+     * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
      */
     public static enum LineCap {
@@ -148,17 +149,7 @@ public class Stroke implements Copyable<Stroke> {
 
     @Override
     public String toString() {
-        return "Stroke [color: "
-               + color
-               + ( linejoin == null ? "" : ( ", linejoin: " + linejoin ) )
-               + ( linecap == null ? "" : ( ", linecap: " + linecap ) )
-               + ", width: "
-               + width
-               + ( dasharray == null ? ""
-                                    : ( ", dashoffset: " + dashoffset + ", dasharray: " + Arrays.toString( dasharray ) ) )
-               + ( stroke == null ? ""
-                                 : ( stroke + ", stroke-gap: " + strokeGap + ", stroke-initial-gap" + strokeInitialGap ) )
-               + ( fill == null ? "" : fill ) + "]";
+        return generateToString( this );
     }
 
 }

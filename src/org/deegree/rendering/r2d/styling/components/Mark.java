@@ -37,6 +37,7 @@
 package org.deegree.rendering.r2d.styling.components;
 
 import static java.awt.Color.BLACK;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.rendering.r2d.styling.components.Mark.SimpleMark.SQUARE;
 
 import java.awt.Font;
@@ -113,6 +114,11 @@ public class Mark implements Copyable<Mark> {
         STAR, /** * */
         CROSS, /** * */
         X
+    }
+
+    @Override
+    public String toString() {
+        return generateToString( this );
     }
 
 }

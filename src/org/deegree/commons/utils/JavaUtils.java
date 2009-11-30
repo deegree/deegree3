@@ -36,6 +36,7 @@
 
 package org.deegree.commons.utils;
 
+import static java.lang.Integer.toHexString;
 import static java.lang.reflect.Modifier.STATIC;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -76,9 +77,11 @@ public class JavaUtils {
                         continue;
                     }
                     f.setAccessible( true );
-                    if ( t.isPrimitive() || t.isEnum() || f.get( o ) instanceof Color
-                         || f.get( o ) instanceof Collection<?> ) {
+                    if ( t.isPrimitive() || t.isEnum() || f.get( o ) instanceof Collection<?> ) {
                         sb.append( f.getName() ).append( ": " ).append( f.get( o ) ).append( ", " );
+                    } else if ( f.get( o ) instanceof Color ) {
+                        sb.append( f.getName() ).append( ": #" ).append( toHexString( ( (Color) f.get( o ) ).getRGB() ) );
+                        sb.append( ", " );
                     } else {
                         String s = generateToString( f.get( o ) );
                         if ( s != null ) {

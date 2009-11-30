@@ -376,6 +376,7 @@ public class Java2DRenderer implements Renderer {
             LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
             // coordinate representation is still subject to change...
             for ( Point point : segment.getControlPoints() ) {
+                point.setCoordinateSystem( curve.getCoordinateSystem() );
                 render( styling, point );
             }
         }
