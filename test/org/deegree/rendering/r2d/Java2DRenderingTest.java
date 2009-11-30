@@ -486,10 +486,11 @@ public class Java2DRenderingTest extends TestCase {
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
-        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
-                                                                                                            5000d },
-                                                                       null ) );
+        Java2DRenderer r2d = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                                 geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
+                                                                                                              5000d },
+                                                                         null ) );
+        Java2DTextRenderer r = new Java2DTextRenderer( r2d );
 
         LinkedList<Point> points = new LinkedList<Point>();
         for ( int i = 0; i < 50; ++i ) {
@@ -580,10 +581,11 @@ public class Java2DRenderingTest extends TestCase {
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
-        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
-                                                                                                            5000d },
-                                                                       null ) );
+        Java2DRenderer r2d = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                                 geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
+                                                                                                              5000d },
+                                                                         null ) );
+        Java2DTextRenderer r = new Java2DTextRenderer( r2d );
 
         LinkedList<Curve> curves = new LinkedList<Curve>();
         for ( int y = 0; y < 4; ++y ) {
@@ -601,59 +603,59 @@ public class Java2DRenderingTest extends TestCase {
         styling.font.fontSize = 15;
         styling.font.fontFamily.add( "Lucida Sans" );
         styling.font.fontFamily.add( "Comic Sans" );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         styling.linePlacement.repeat = true;
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         styling.linePlacement.perpendicularOffset = 17.5;
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         styling.linePlacement.perpendicularOffset = 0;
         styling.linePlacement.initialGap = 20;
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         styling.linePlacement.gap = 10;
         styling.font.fontSize = 12;
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        r.render( lineStyle, curves.peek() );
+        r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
 
         g.dispose();
