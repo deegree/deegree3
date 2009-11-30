@@ -189,7 +189,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
         Object geomOrFeature = cache.get( id );
 
-        if ( geomOrFeature != null ) {
+        if ( geomOrFeature == null ) {
             Connection conn = null;
             Statement stmt = null;
             ResultSet rs = null;
@@ -203,6 +203,7 @@ public class PostGISFeatureStore implements FeatureStore {
                     LOG.debug( "Recreating object '" + id + "' from bytea." );
                     geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
                                                          new FeatureStoreGMLIdResolver( this ) );
+                    cache.add( id, geomOrFeature );
                 }
             } catch ( Exception e ) {
                 String msg = "Error performing query: " + e.getMessage();
