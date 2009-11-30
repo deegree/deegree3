@@ -88,8 +88,8 @@ public class GML21GeometryEncoder {
             exportLineString( (LineString) geometry );
         } else if ( geometry instanceof Envelope ) {
             exportEnvelope( (Envelope) geometry );
-        } else if ( geometry instanceof MultiGeometry ) {
-            exportMultiGeometry( (MultiGeometry) geometry );
+        } else if ( geometry instanceof MultiGeometry<?> ) {
+            exportMultiGeometry( (MultiGeometry<?>) geometry );
         } else if ( geometry instanceof MultiPoint ) {
             exportMultiPoint( (MultiPoint) geometry );
         } else if ( geometry instanceof MultiLineString ) {
@@ -111,30 +111,23 @@ public class GML21GeometryEncoder {
         writer.writeAttribute( null, "srsName", point.getCoordinateSystem().getName() );
 
         writer.writeStartElement( "gml", "coord", GML21NS );
-        switch ( point.getCoordinateDimension() ) {
-        case 1:
-            writer.writeStartElement( "gml", "X", GML21NS );
-            writer.writeCharacters( String.valueOf( point.get0() ) );
-            writer.writeEndElement();
-            if ( point.getCoordinateDimension() == 1 ) {
-                break;
-            }
-            //$FALL-THROUGH$
-        case 2:
+
+        writer.writeStartElement( "gml", "X", GML21NS );
+        writer.writeCharacters( String.valueOf( point.get0() ) );
+        writer.writeEndElement();
+        if ( point.getCoordinateDimension() > 1 ) {
+
             writer.writeStartElement( "gml", "Y", GML21NS );
             writer.writeCharacters( String.valueOf( point.get1() ) );
             writer.writeEndElement();
-            if ( point.getCoordinateDimension() == 2 ) {
-                break;
+            if ( point.getCoordinateDimension() > 2 ) {
+
+                writer.writeStartElement( "gml", "Z", GML21NS );
+                writer.writeCharacters( String.valueOf( point.get2() ) );
+                writer.writeEndElement();
             }
-            //$FALL-THROUGH$
-        case 3:
-            writer.writeStartElement( "gml", "Z", GML21NS );
-            writer.writeCharacters( String.valueOf( point.get2() ) );
-            writer.writeEndElement();
         }
         writer.writeEndElement(); // </gml:coord>
-
         writer.writeEndElement(); // </gml:Point>
     }
 
