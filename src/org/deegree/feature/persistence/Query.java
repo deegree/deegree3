@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.crs.CRS;
 import org.deegree.filter.Filter;
+import org.deegree.filter.IdFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.getfeature.TypeName;
@@ -88,10 +89,18 @@ public class Query {
     private final Map<QueryHint, Object> hints = new HashMap<QueryHint, Object>();
 
     /**
+     * Creates a new {@link Query} instance.
+     * 
      * @param ftName
+     *            name of the requested feature type, must not be <code>null</code>
      * @param looseBbox
+     *            bounding box used for pre-filtering the features, can be <code>null</code> (no pre-filtering)
+     *            {@link QueryHint#HINT_LOOSE_BBOX}
      * @param filter
+     *            additional filter constraints, may be <code>null</code>
      * @param withGeometries
+     *            if false, the feature store may omit the geometry property values in the result
+     *            {@link QueryHint#HINT_NO_GEOMETRIES}
      */
     public Query( QName ftName, Envelope looseBbox, Filter filter, boolean withGeometries ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
@@ -105,8 +114,42 @@ public class Query {
         }
     }
 
+    /**
+     * Creates a new {@link Query} instance.
+     * 
+     * @param typeNames
+     *            feature type names to be queried, must not be <code>null</code> and contain at least one entry
+     * @param filter
+     *            filter to be applied, can be <code>null</code>
+     * @param featureVersion
+     *            specific feature version to be returned, can be <code>null</code>
+     * @param srsName
+     *            SRS for the returned geometries, can be <code>null</code>
+     * @param sortBy
+     *            sort criteria to be applied, can be <code>null</code>
+     */
     public Query( TypeName[] typeNames, Filter filter, String featureVersion, CRS srsName, SortProperty[] sortBy ) {
         this.typeNames = typeNames;
+        this.filter = filter;
+        this.featureVersion = featureVersion;
+        this.srsName = srsName;
+        this.sortBy = sortBy;
+    }
+
+    /**
+     * Creates a new {@link Query} instance that selects features based on an {@link IdFilter}.
+     * 
+     * @param filter
+     *            filter to be applied, must not be <code>null</code>
+     * @param featureVersion
+     *            specific feature version to be returned, can be <code>null</code>
+     * @param srsName
+     *            SRS for the returned geometries, can be <code>null</code>
+     * @param sortBy
+     *            sort criteria to be applied, can be <code>null</code>
+     */
+    public Query( IdFilter filter, String featureVersion, CRS srsName, SortProperty[] sortBy ) {
+        this.typeNames = new TypeName[0];
         this.filter = filter;
         this.featureVersion = featureVersion;
         this.srsName = srsName;

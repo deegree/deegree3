@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.postgis;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -67,7 +68,10 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.IdFilter;
+import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
@@ -315,16 +319,99 @@ public class PostGISFeatureStore implements FeatureStore {
     public FeatureCollection query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
 
-        if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-            String msg = "Queries that target more than one feature type (joins) are not supported yet.";
-            throw new FeatureStoreException( msg );
+        Filter filter = query.getFilter();
+        FeatureCollection fc = null;
+        if ( filter != null && filter instanceof OperatorFilter ) {
+            if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+                String msg = "Queries that target more than one feature type (joins) are not supported yet.";
+                throw new FeatureStoreException( msg );
+            }
+            fc = queryByOperatorFilter( query.getTypeNames()[0].getFeatureTypeName(), (OperatorFilter) filter );
+
+            // filter features
+            if ( query.getFilter() != null ) {
+                fc = fc.getMembers( query.getFilter() );
+            }
+        } else {
+            fc = queryByIdFilter( (IdFilter) filter );
         }
 
-        QName ftName = query.getTypeNames()[0].getFeatureTypeName();
-        if ( !ftNameToFtId.containsKey( ftName ) ) {
-            String msg = "Feature type '" + ftName + "' is not served by this feature store.";
-            throw new FeatureStoreException( msg );
+        // sort features
+        SortProperty[] sortCrit = query.getSortProperties();
+        if ( sortCrit != null ) {
+            fc = Features.sortFc( fc, sortCrit );
         }
+
+        return fc;
+    }
+
+    private FeatureCollection queryByIdFilter( IdFilter filter )
+                            throws FeatureStoreException {
+
+        FeatureCollection fc = null;
+        Connection conn = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+
+            // create temp table with ids
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate( "CREATE TEMP TABLE temp_ids (fid TEXT)" );
+            stmt.close();
+
+            // fill temp table
+            PreparedStatement insertFid = conn.prepareStatement( "INSERT INTO temp_ids (fid) VALUES (?)" );
+            for ( String fid : filter.getMatchingIds() ) {
+                insertFid.setString( 1, fid );
+                insertFid.addBatch();
+            }
+            insertFid.executeBatch();
+
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT binary_object FROM " + qualifyTableName( "gml_objects" )
+                                    + " A, temp_ids B WHERE A.gml_id=b.fid" );
+
+            // TODO lazy fetching (CloseableIterator etc)
+            List<Feature> members = new LinkedList<Feature>();
+            while ( rs.next() ) {
+                String gml_id = rs.getString( 1 );
+                Feature feature = (Feature) cache.get( gml_id );
+                if ( feature == null ) {
+                    LOG.debug( "Cache miss. Recreating object '" + gml_id + "' from blob." );
+                    feature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
+                                                   new FeatureStoreGMLIdResolver( this ) );
+                    cache.add( gml_id, feature );
+                } else {
+                    LOG.debug( "Cache hit." );
+                }
+                members.add( feature );
+            }
+            fc = new GenericFeatureCollection( null, members );
+        } catch ( Exception e ) {
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.debug( msg, e );
+            throw new FeatureStoreException( msg, e );
+        } finally {
+            if ( conn != null ) {
+                Statement stmt;
+                try {
+                    // drop temp table
+                    stmt = conn.createStatement();
+                    stmt.executeUpdate( "DROP TABLE temp_ids " );
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    String msg = "Error dropping temp table.";
+                    LOG.debug( msg, e );
+                }
+            }
+            closeSafely( conn, null, rs );
+        }
+        return fc;
+    }
+
+    private FeatureCollection queryByOperatorFilter( QName ftName, OperatorFilter filter )
+                            throws FeatureStoreException {
+
         short ftId = ftNameToFtId.get( ftName );
 
         FeatureCollection fc = null;
@@ -333,7 +420,6 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-            conn.setAutoCommit( false );
             stmt = conn.createStatement();
             rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
                                     + " WHERE ft_type=" + ftId );
@@ -361,18 +447,6 @@ public class PostGISFeatureStore implements FeatureStore {
         } finally {
             closeSafely( conn, stmt, rs );
         }
-
-        // filter features
-        if ( query.getFilter() != null ) {
-            fc = fc.getMembers( query.getFilter() );
-        }
-
-        // sort features
-        SortProperty[] sortCrit = query.getSortProperties();
-        if ( sortCrit != null ) {
-            fc = Features.sortFc( fc, sortCrit );
-        }
-
         return fc;
     }
 
@@ -459,6 +533,11 @@ public class PostGISFeatureStore implements FeatureStore {
         this.activeTransaction = null;
         this.transactionHolder = null;
         // notifyAll();
+        try {
+            ta.getConnection().close();
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( "Error closing connection: " + e.getMessage() );
+        }
     }
 
     short getFtId( QName ftName ) {
