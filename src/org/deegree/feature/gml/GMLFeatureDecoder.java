@@ -91,6 +91,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.gml.GML21GeometryDecoder;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
+import org.deegree.geometry.gml.GMLGeometryDecoder;
 import org.deegree.geometry.gml.refs.GeometryReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,9 +124,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private final GMLDocumentIdContext idContext;
 
-    private GML21GeometryDecoder geom21Parser;
-
-    private GML311GeometryDecoder geom311Parser;
+    private GMLGeometryDecoder geomParser;
 
     private GMLObjectResolver specialResolver;
 
@@ -146,8 +145,11 @@ public class GMLFeatureDecoder extends XMLAdapter {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
-        this.geom21Parser = new GML21GeometryDecoder( geomFac, idContext );
-        this.geom311Parser = new GML311GeometryDecoder( geomFac, idContext );
+        if ( version.equals( GMLVersion.GML_2 ) ) {
+            this.geomParser = new GML21GeometryDecoder( geomFac, idContext );
+        } else {
+            this.geomParser = new GML311GeometryDecoder( geomFac, idContext );
+        }
         this.version = version;
     }
 
@@ -176,10 +178,10 @@ public class GMLFeatureDecoder extends XMLAdapter {
         this.specialResolver = specialResolver;
     }
 
-    public void setGeometryDecoder (GML311GeometryDecoder decoder) {
-        this.geom311Parser = decoder;
+    public void setGeometryDecoder( GMLGeometryDecoder decoder ) {
+        this.geomParser = decoder;
     }
-    
+
     /**
      * Registers a {@link CustomPropertyDecoder} that is invoked to parse properties of a certain type.
      * 
@@ -413,11 +415,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 } else {
                     xmlStream.nextTag();
                     Geometry geometry = null;
-                    if ( version.equals( GMLVersion.GML_2 ) ) {
-                        geometry = geom21Parser.parse( xmlStream, crs );
-                    } else {
-                        geometry = geom311Parser.parse( xmlStream, crs );
-                    }
+                    geometry = geomParser.parse( xmlStream, crs );
                     property = new GenericProperty<Geometry>( propDecl, propName, geometry );
                     xmlStream.nextTag();
                 }
@@ -464,11 +462,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
             } else if ( propDecl instanceof EnvelopePropertyType ) {
                 xmlStream.nextTag();
                 Envelope env = null;
-                if ( version.equals( GMLVersion.GML_2 ) ) {
-                    env = geom21Parser.parseBox( xmlStream, crs );
-                } else {
-                    env = geom311Parser.parseEnvelope( xmlStream, crs );
-                }
+                env = geomParser.parseEnvelope( xmlStream, crs );
                 property = new GenericProperty<Object>( propDecl, propName, env );
                 xmlStream.nextTag();
             } else if ( propDecl instanceof CodePropertyType ) {

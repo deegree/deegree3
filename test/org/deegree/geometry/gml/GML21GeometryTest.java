@@ -121,7 +121,7 @@ public class GML21GeometryTest extends TestCase {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Box" ), xmlReader.getName() );
 
-        Envelope envelope = new GML21GeometryDecoder().parseBox( xmlReader, null );
+        Envelope envelope = new GML21GeometryDecoder().parseEnvelope( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( GML21NS, "Box" ), xmlReader.getName() );
         Assert.assertEquals( 0.0, envelope.getMin().get0(), DELTA );

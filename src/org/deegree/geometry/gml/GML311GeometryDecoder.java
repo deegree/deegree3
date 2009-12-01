@@ -153,7 +153,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GML311GeometryDecoder extends GML311BaseDecoder {
+public class GML311GeometryDecoder extends GML311BaseDecoder implements GMLGeometryDecoder {
 
     private static Logger LOG = LoggerFactory.getLogger( GML311GeometryDecoder.class );
 
@@ -329,6 +329,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
+    @Override
     public Geometry parse( XMLStreamReaderWrapper xmlStream )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
         return parse( xmlStream, null );
@@ -2139,6 +2140,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      * @throws XMLStreamException
      * @throws XMLParsingException
      */
+    @Override
     public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException {
 

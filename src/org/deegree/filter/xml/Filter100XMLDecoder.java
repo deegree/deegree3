@@ -821,7 +821,7 @@ public class Filter100XMLDecoder {
             case BBOX: {
                 // second parameter: 'gml:Box'
                 xmlStream.require( START_ELEMENT, GML_NS, "Box" );
-                Envelope param2 = geomParser.parseBox( wrapper );
+                Envelope param2 = geomParser.parseEnvelope( wrapper );
                 spatialOperator = new BBOX( param1, param2 );
                 break;
             }

@@ -84,7 +84,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class GML21GeometryDecoder {
+public class GML21GeometryDecoder implements GMLGeometryDecoder {
 
     private static Logger LOG = LoggerFactory.getLogger( GML21GeometryDecoder.class );
 
@@ -132,6 +132,7 @@ public class GML21GeometryDecoder {
      * @return
      * @throws XMLStreamException
      */
+    @Override
     public Geometry parse( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
         return parse( xmlStream, null );
@@ -163,7 +164,7 @@ public class GML21GeometryDecoder {
         } else if ( name.equals( "LineString" ) ) {
             geometry = parseLineString( xmlStream, defaultCRS );
         } else if ( name.equals( "Box" ) ) {
-            geometry = parseBox( xmlStream, defaultCRS );
+            geometry = parseEnvelope( xmlStream, defaultCRS );
         } else if ( name.equals( "MultiGeometry" ) ) {
             geometry = parseMultiGeometry( xmlStream, defaultCRS );
         } else if ( name.equals( "MultiPoint" ) ) {
@@ -213,7 +214,7 @@ public class GML21GeometryDecoder {
         }
 
         if ( "Box".equals( xmlStream.getLocalName() ) ) {
-            geometry = parseBox( xmlStream, defaultCRS );
+            geometry = parseEnvelope( xmlStream, defaultCRS );
         } else {
             geometry = parse( xmlStream, defaultCRS );
         }
@@ -521,9 +522,9 @@ public class GML21GeometryDecoder {
      * @return
      * @throws XMLStreamException
      */
-    public Envelope parseBox( XMLStreamReaderWrapper xmlStream )
+    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
-        return parseBox( xmlStream, null );
+        return parseEnvelope( xmlStream, null );
     }
 
     /**
@@ -532,7 +533,7 @@ public class GML21GeometryDecoder {
      * @return
      * @throws XMLStreamException
      */
-    public Envelope parseBox( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException {
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
         xmlStream.nextTag();
