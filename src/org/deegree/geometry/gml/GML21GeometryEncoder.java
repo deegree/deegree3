@@ -67,7 +67,7 @@ import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
 
 /**
- * Exports a Geometry bean (that belongs to GML 2.1.*) to a {@link XMLStreamWriter}.
+ * Exports a Geometry bean (that belongs to GML 2.1.*) via a {@link XMLStreamWriter}.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -105,6 +105,7 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
      * @param geometry
      * @throws XMLStreamException
      */
+    @Override
     public void export( Geometry geometry )
                             throws XMLStreamException {
 
@@ -133,6 +134,7 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
      * @param point
      * @throws XMLStreamException
      */
+    @Override
     public void exportPoint( Point point )
                             throws XMLStreamException {
 
@@ -257,6 +259,7 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
      * @param envelope
      * @throws XMLStreamException
      */
+    @Override
     public void exportEnvelope( Envelope envelope )
                             throws XMLStreamException {
         exportedIds.add( envelope.getId() );
@@ -279,6 +282,7 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
      * @param multiGeometry
      * @throws XMLStreamException
      */
+    @Override
     public void exportMultiGeometry( MultiGeometry<? extends Geometry> multiGeometry )
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "MultiGeometry", GML21NS );

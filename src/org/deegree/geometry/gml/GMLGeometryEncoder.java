@@ -56,6 +56,9 @@ import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
 
 /**
+ * Interface that makes the usage of Geometry Encoders simpler, not depending on their version anymore. Any new version
+ * of a GML encoder should implement this interface.
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
  * @author last edited by: $Author$
@@ -66,6 +69,9 @@ import org.deegree.geometry.primitive.TriangulatedSurface;
 public interface GMLGeometryEncoder {
 
     /**
+     * Exports a general geometry. This is the method to call when there is no information about the geometry (the case
+     * switching is done here).
+     * 
      * @param geometry
      * @throws XMLStreamException
      * @throws UnknownCRSException
