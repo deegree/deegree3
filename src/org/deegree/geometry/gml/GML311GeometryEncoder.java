@@ -834,17 +834,27 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "Envelope", envelope );
 
-        writer.writeStartElement( "gml", "lowerCorner", GMLNS );
+        if ( version30 ) {
+            writer.writeStartElement( "gml", "pos", GMLNS );
+        } else {
+            writer.writeStartElement( "gml", "lowerCorner", GMLNS );
+        }
         double[] ordinates = getTransformedCoordinate( envelope.getCoordinateSystem(), envelope.getMin().getAsArray() );
-        for ( int i = 0; i < ordinates.length; i++ ) {
-            writer.writeCharacters( String.valueOf( ordinates[i] ) + " " );
+        writer.writeCharacters( String.valueOf( ordinates[0] ) );
+        for ( int i = 1; i < ordinates.length; i++ ) {
+            writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
         }
         writer.writeEndElement();
 
-        writer.writeStartElement( GMLNS, "upperCorner" );
+        if ( version30 ) {
+            writer.writeStartElement( "gml", "pos", GMLNS );
+        } else {
+            writer.writeStartElement( "gml", "upperCorner", GMLNS );
+        }
         ordinates = getTransformedCoordinate( envelope.getCoordinateSystem(), envelope.getMax().getAsArray() );
-        for ( int i = 0; i < ordinates.length; i++ ) {
-            writer.writeCharacters( String.valueOf( ordinates[i] ) + " " );
+        writer.writeCharacters( String.valueOf( ordinates[0] ) );
+        for ( int i = 1; i < ordinates.length; i++ ) {
+            writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
         }
         writer.writeEndElement();
         writer.writeEndElement();
