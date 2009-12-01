@@ -37,13 +37,12 @@
 package org.deegree.rendering.r2d;
 
 import static java.awt.geom.AffineTransform.getScaleInstance;
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.awt.geom.AffineTransform.getTranslateInstance;
 import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static org.apache.batik.bridge.BridgeContext.DYNAMIC;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
@@ -53,7 +52,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -218,35 +216,31 @@ public class RenderHelper {
      * @param mark
      * @param size
      * @param uom
-     * @return the mark rendered as buffered image in the specified size
+     * @param renderer
+     * @param x
+     * @param y
      */
-    public static BufferedImage renderMark( Mark mark, int size, UOM uom ) {
+    public static void renderMark( Mark mark, int size, UOM uom, Java2DRenderer renderer, double x, double y ) {
         if ( size == 0 ) {
             LOG.debug( "Not rendering a symbol because the size is zero." );
-            return null;
+            return;
         }
         if ( mark.fill == null && mark.stroke == null ) {
-            return new BufferedImage( size, size, TYPE_INT_ARGB );
+            LOG.debug( "Not rendering a symbol because no fill/stroke is available/configured." );
+            return;
         }
 
-        BufferedImage img = new BufferedImage( size, size, TYPE_INT_ARGB );
-        Graphics2D g = img.createGraphics();
-
-        Java2DRenderer renderer = new Java2DRenderer( g );
-
         Shape shape = getShapeFromMark( mark, size - 1, false );
+        Rectangle2D box = shape.getBounds2D();
+        shape = getTranslateInstance( x - box.getWidth() / 2, y - box.getHeight() / 2 ).createTransformedShape( shape );
 
         if ( mark.fill != null ) {
             renderer.applyFill( mark.fill, uom );
-            g.fill( shape );
+            renderer.graphics.fill( shape );
         }
         if ( mark.stroke != null ) {
             renderer.applyStroke( mark.stroke, uom, shape, 0 );
         }
-
-        g.dispose();
-
-        return img;
     }
 
     /**

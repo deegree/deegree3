@@ -42,6 +42,7 @@ import static java.awt.BasicStroke.CAP_SQUARE;
 import static java.awt.BasicStroke.JOIN_BEVEL;
 import static java.awt.BasicStroke.JOIN_MITER;
 import static java.awt.BasicStroke.JOIN_ROUND;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromMark;
@@ -191,7 +192,12 @@ public class Java2DRenderer implements Renderer {
         BufferedImage img;
 
         if ( graphic.image == null ) {
-            img = renderMark( graphic.mark, graphic.size < 0 ? 6 : round( considerUOM( graphic.size, uom ) ), uom );
+            int size = round( considerUOM( graphic.size, uom ) );
+            img = new BufferedImage( size, size, TYPE_INT_ARGB );
+            Graphics2D g = img.createGraphics();
+            Java2DRenderer renderer = new Java2DRenderer( g );
+            renderMark( graphic.mark, graphic.size < 0 ? 6 : size, uom, renderer, 0, 0 );
+            g.dispose();
         } else {
             img = graphic.image;
         }
@@ -321,16 +327,16 @@ public class Java2DRenderer implements Renderer {
         x = p.x;
         y = p.y;
 
-        BufferedImage img;
+        BufferedImage img = null;
 
         Graphic g = styling.graphic;
 
         if ( g.image == null ) {
-            // TODO optimize
-            img = renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom );
-        } else {
-            img = g.image;
+            renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this, x, y );
+            return;
         }
+
+        img = g.image;
 
         if ( img != null ) {
             Rectangle2D.Double rect = getGraphicBounds( g, x, y, styling.uom );
