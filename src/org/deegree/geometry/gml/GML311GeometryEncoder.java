@@ -124,7 +124,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GML311GeometryEncoder {
+public class GML311GeometryEncoder implements GMLGeometryEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML311GeometryEncoder.class );
 
@@ -196,15 +196,16 @@ public class GML311GeometryEncoder {
      * @throws TransformationException
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void export( Geometry geometry )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         // TODO properly
-        if (geometry instanceof GeometryReference<?>) {
+        if ( geometry instanceof GeometryReference<?> ) {
             exportReference( (GeometryReference) geometry );
             return;
         }
-        
+
         switch ( geometry.getGeometryType() ) {
         case COMPOSITE_GEOMETRY:
             exportCompositeGeometry( (CompositeGeometry<GeometricPrimitive>) geometry );
@@ -234,10 +235,12 @@ public class GML311GeometryEncoder {
         }
     }
 
-    public void exportReference (GeometryReference<Geometry> geometryRef) throws XMLStreamException, UnknownCRSException, TransformationException {
+    @Override
+    public void exportReference( GeometryReference<Geometry> geometryRef )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
         export( geometryRef.getReferencedGeometry() );
     }
-    
+
     /**
      * Exporting a multi-geometry via the XMLStreamWriter given when the class was constructed
      * 
@@ -248,6 +251,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportMultiGeometry( MultiGeometry<? extends Geometry> geometry )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
@@ -373,6 +377,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportPoint( Point point )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "Point", point );
@@ -402,6 +407,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportCurve( Curve curve )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         switch ( curve.getCurveType() ) {
@@ -466,6 +472,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportSurface( Surface surface )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         switch ( surface.getSurfaceType() ) {
@@ -518,6 +525,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportTriangulatedSurface( TriangulatedSurface triangSurface )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         writer.writeStartElement( GMLNS, "TriangulatedSurface" );
@@ -546,6 +554,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportTin( Tin tin )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "Tin", tin );
@@ -660,6 +669,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportSolid( Solid solid )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         switch ( solid.getSolidType() ) {
@@ -696,6 +706,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportRing( Ring ring )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         switch ( ring.getRingType() ) {
@@ -733,6 +744,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportCompositeCurve( CompositeCurve compositeCurve )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "CompositeCurve", compositeCurve );
@@ -755,6 +767,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportCompositeSurface( CompositeSurface compositeSurface )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "CompositeSurface", compositeSurface );
@@ -778,6 +791,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportCompositeSolid( CompositeSolid compositeSolid )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "CompositeSolid", compositeSolid );
@@ -806,6 +820,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportEnvelope( Envelope envelope )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "Envelope", envelope );
@@ -1004,6 +1019,7 @@ public class GML311GeometryEncoder {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Override
     public void exportCompositeGeometry( CompositeGeometry<GeometricPrimitive> geometryComplex )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "GeometricComplex", geometryComplex );
