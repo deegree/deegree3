@@ -137,13 +137,15 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
     @Override
     public void exportPoint( Point point )
                             throws XMLStreamException {
-
-        exportedIds.add( point.getId() );
-
         writer.writeStartElement( "gml", "Point", GML21NS );
 
-        writer.writeAttribute( null, "gid", point.getId() );
-        writer.writeAttribute( null, "srsName", point.getCoordinateSystem().getName() );
+        if ( point.getId() != null ) {
+            exportedIds.add( point.getId() );
+            writer.writeAttribute( "gid", point.getId() );
+        }
+        if ( point.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", point.getCoordinateSystem().getName() );
+        }
 
         exportCoord( point );
         writer.writeEndElement(); // </gml:Point>
@@ -151,7 +153,7 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
 
     private void exportCoord( Point point )
                             throws XMLStreamException {
-        writer.writeStartElement( "coord", GML21NS );
+        writer.writeStartElement( "gml", "coord", GML21NS );
 
         writer.writeStartElement( "gml", "X", GML21NS );
         writer.writeCharacters( String.valueOf( point.get0() ) );
@@ -183,12 +185,15 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
             writer.writeAttribute( XLNNS, "href", "#" + polygon.getId() );
         } else {
 
-            exportedIds.add( polygon.getId() );
-
             writer.writeStartElement( "gml", "Polygon", GML21NS );
 
-            writer.writeAttribute( null, "gid", polygon.getId() );
-            writer.writeAttribute( null, "srsName", polygon.getCoordinateSystem().getName() );
+            if ( polygon.getId() != null ) {
+                exportedIds.add( polygon.getId() );
+                writer.writeAttribute( "gid", polygon.getId() );
+            }
+            if ( polygon.getCoordinateSystem().getName() != null ) {
+                writer.writeAttribute( "srsName", polygon.getCoordinateSystem().getName() );
+            }
 
             LinearRing outerRing = (LinearRing) polygon.getExteriorRing();
             if ( exportedIds.contains( outerRing.getId() ) ) {
@@ -203,15 +208,17 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
 
             List<Ring> rings = polygon.getInteriorRings();
             if ( rings != null ) {
-                writer.writeStartElement( "gml", "innerBoundaryIs", GML21NS );
+
                 for ( Ring ring : rings ) {
+                    writer.writeStartElement( "gml", "innerBoundaryIs", GML21NS );
                     if ( exportedIds.contains( ring.getId() ) ) {
                         writer.writeAttribute( "xlink", XLNNS, "href", "#" + ring.getId() );
+
                     } else {
                         exportLinearRing( (LinearRing) ring ); // in GML 2.1 the interior rings are linear rings
                     }
+                    writer.writeEndElement(); // </gml:innerBoundaryIs>
                 }
-                writer.writeEndElement(); // </gml:innerBoundaryIs>
             }
             writer.writeEndElement(); // </gml:Polygon>
         }
@@ -223,12 +230,15 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
      */
     public void exportLinearRing( LinearRing linearRing )
                             throws XMLStreamException {
-        exportedIds.add( linearRing.getId() );
-
         writer.writeStartElement( "gml", "LinearRing", GML21NS );
 
-        writer.writeAttribute( null, "gid", linearRing.getId() );
-        writer.writeAttribute( null, "srsName", linearRing.getCoordinateSystem().getName() );
+        if ( linearRing.getId() != null ) {
+            exportedIds.add( linearRing.getId() );
+            writer.writeAttribute( "gid", linearRing.getId() );
+        }
+        if ( linearRing.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", linearRing.getCoordinateSystem().getName() );
+        }
 
         for ( Point point : linearRing.getControlPoints() ) {
             exportCoord( point );
@@ -242,12 +252,15 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
      */
     public void exportLineString( LineString linearString )
                             throws XMLStreamException {
-        exportedIds.add( linearString.getId() );
-
         writer.writeStartElement( "gml", "LineString", GML21NS );
 
-        writer.writeAttribute( null, "gid", linearString.getId() );
-        writer.writeAttribute( null, "srsName", linearString.getCoordinateSystem().getName() );
+        if ( linearString.getId() != null ) {
+            exportedIds.add( linearString.getId() );
+            writer.writeAttribute( "gid", linearString.getId() );
+        }
+        if ( linearString.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", linearString.getCoordinateSystem().getName() );
+        }
 
         for ( Point point : linearString.getControlPoints() ) {
             exportCoord( point );
@@ -262,12 +275,15 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
     @Override
     public void exportEnvelope( Envelope envelope )
                             throws XMLStreamException {
-        exportedIds.add( envelope.getId() );
-
         writer.writeStartElement( "gml", "Box", GML21NS );
 
-        writer.writeAttribute( "gml", GML21NS, "gid", envelope.getId() );
-        writer.writeAttribute( "gml", GML21NS, "srsName", envelope.getCoordinateSystem().getName() );
+        if ( envelope.getId() != null ) {
+            exportedIds.add( envelope.getId() );
+            writer.writeAttribute( "gid", envelope.getId() );
+        }
+        if ( envelope.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getName() );
+        }
 
         Point min = envelope.getMin();
         exportCoord( min );
@@ -287,8 +303,12 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "MultiGeometry", GML21NS );
 
-        writer.writeAttribute( null, "gid", multiGeometry.getId() );
-        writer.writeAttribute( null, "srsName", multiGeometry.getCoordinateSystem().getName() );
+        if ( multiGeometry.getId() != null ) {
+            writer.writeAttribute( "gid", multiGeometry.getId() );
+        }
+        if ( multiGeometry.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", multiGeometry.getCoordinateSystem().getName() );
+        }
 
         for ( Geometry geom : multiGeometry ) {
             if ( exportedIds.contains( geom.getId() ) ) {
@@ -312,8 +332,12 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "MultiPoint", GML21NS );
 
-        writer.writeAttribute( null, "gid", multiPoint.getId() );
-        writer.writeAttribute( null, "srsName", multiPoint.getCoordinateSystem().getName() );
+        if ( multiPoint.getId() != null ) {
+            writer.writeAttribute( "gid", multiPoint.getId() );
+        }
+        if ( multiPoint.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", multiPoint.getCoordinateSystem().getName() );
+        }
 
         for ( Point point : multiPoint ) {
             if ( exportedIds.contains( point.getId() ) ) {
@@ -337,8 +361,12 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "MultiLineString", GML21NS );
 
-        writer.writeAttribute( null, "gid", multiLineString.getId() );
-        writer.writeAttribute( null, "srsName", multiLineString.getCoordinateSystem().getName() );
+        if ( multiLineString.getId() != null ) {
+            writer.writeAttribute( "gid", multiLineString.getId() );
+        }
+        if ( multiLineString.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", multiLineString.getCoordinateSystem().getName() );
+        }
 
         for ( LineString lineString : multiLineString ) {
             if ( exportedIds.contains( lineString.getId() ) ) {
@@ -362,8 +390,8 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "MultiPolygon", GML21NS );
 
-        writer.writeAttribute( null, "gid", multiPolygon.getId() );
-        writer.writeAttribute( null, "srsName", multiPolygon.getCoordinateSystem().getName() );
+        writer.writeAttribute( "gid", multiPolygon.getId() );
+        writer.writeAttribute( "srsName", multiPolygon.getCoordinateSystem().getName() );
 
         for ( Polygon polygon : multiPolygon ) {
             if ( exportedIds.contains( polygon.getId() ) ) {
