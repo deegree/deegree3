@@ -46,7 +46,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.gml.GMLDocumentIdContext;
-import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -79,10 +78,9 @@ public class GMLFeatureEncoderTest {
 
     @Test
     public void testValidateExportedFeatures()
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
-                            XMLParsingException, UnknownCRSException, TransformationException,
-                            GMLReferenceResolvingException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();

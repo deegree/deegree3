@@ -141,6 +141,8 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
 
     private final boolean exportSf;
 
+    private boolean version30;
+
     /**
      * Creates a new {@link GML311GeometryEncoder} instance.
      * 
@@ -151,7 +153,7 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
      *            used)
      */
     public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCRS ) {
-        this( writer, outputCRS, false, new HashSet<String>() );
+        this( writer, outputCRS, false, new HashSet<String>(), false );
     }
 
     /**
@@ -166,8 +168,11 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
      *            if true, the generated GML must to conform to the GML-SF profile (only simple geometries are used and
      *            they are exported without id attributes)
      * @param exportedIds
+     * @param version30
+     *            whether it is a GML version 3.0 geometry or not.
      */
-    public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCrs, boolean exportSf, Set<String> exportedIds ) {
+    public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCrs, boolean exportSf, Set<String> exportedIds,
+                                  boolean version30 ) {
         this.writer = writer;
         this.outputCRS = outputCrs;
         // TODO
@@ -183,6 +188,7 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
             }
         }
         this.exportedIds = exportedIds;
+        this.version30 = version30;
     }
 
     /**
@@ -740,7 +746,10 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
      * @param compositeCurve
      *            the {@link CompositeCurve} object
      * @throws XMLStreamException
+     * @throws XMLStreamException
      *             if an error occured writing to the xml stream
+     * @throws TransformationException
+     * @throws UnknownCRSException
      * @throws UnknownCRSException
      * @throws TransformationException
      */
@@ -1426,23 +1435,29 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
             }
         }
         if ( !hasID ) { // if not then use the <posList> element to export the points
-            writer.writeStartElement( "gml", "posList", GMLNS );
+            if ( !version30 ) {
+                writer.writeStartElement( "gml", "posList", GMLNS );
 
-            // TODO CITE
-            // writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
-            boolean first = true;
-            for ( Point p : points ) {
-                double[] ordinates = getTransformedCoordinate( p.getCoordinateSystem(), p.getAsArray() );
-                for ( int i = 0; i < ordinates.length; i++ ) {
-                    if ( !first ) {
-                        writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
-                    } else {
-                        writer.writeCharacters( String.valueOf( ordinates[i] ) );
-                        first = false;
+                // TODO CITE
+                // writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
+                boolean first = true;
+                for ( Point p : points ) {
+                    double[] ordinates = getTransformedCoordinate( p.getCoordinateSystem(), p.getAsArray() );
+                    for ( int i = 0; i < ordinates.length; i++ ) {
+                        if ( !first ) {
+                            writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
+                        } else {
+                            writer.writeCharacters( String.valueOf( ordinates[i] ) );
+                            first = false;
+                        }
                     }
                 }
+                writer.writeEndElement();
+            } else {
+                for ( Point p : points ) {
+                    exportAsPos( p );
+                }
             }
-            writer.writeEndElement();
         } else { // if there are points with IDs, see whether an ID was already encountered
             for ( Point point : points ) {
                 writer.writeStartElement( "gml", "pointProperty", GMLNS );

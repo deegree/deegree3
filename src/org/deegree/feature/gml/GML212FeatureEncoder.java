@@ -67,7 +67,8 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.gml.GML311GeometryEncoder;
+import org.deegree.geometry.gml.GML21GeometryEncoder;
+import org.deegree.geometry.gml.GMLGeometryEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class GML212FeatureEncoder {
+public class GML212FeatureEncoder implements GMLFeatureEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML212FeatureEncoder.class );
 
@@ -90,7 +91,7 @@ public class GML212FeatureEncoder {
 
     private XMLStreamWriter writer;
 
-    private GML311GeometryEncoder geometryExporter;
+    private GMLGeometryEncoder geometryExporter;
 
     /**
      * @param writer
@@ -100,7 +101,7 @@ public class GML212FeatureEncoder {
      */
     public GML212FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, true, exportedIds );
+        geometryExporter = new GML21GeometryEncoder( writer, exportedIds );
     }
 
     // public void export( FeatureCollection featureCol ) throws XMLStreamException {
@@ -127,6 +128,7 @@ public class GML212FeatureEncoder {
      * @throws TransformationException
      * @throws UnknownCRSException
      */
+    @Override
     public void export( Feature feature )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         QName featureName = feature.getName();
@@ -174,7 +176,7 @@ public class GML212FeatureEncoder {
     private void export( Property<?> property )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         QName propName = property.getName();
-        PropertyType propertyType = property.getType();
+        PropertyType<?> propertyType = property.getType();
         Object value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
             Feature fValue = (Feature) value;
@@ -187,7 +189,7 @@ public class GML212FeatureEncoder {
                 export( fValue );
                 writer.writeEndElement();
             }
-        } else if ( propertyType instanceof SimplePropertyType ) {
+        } else if ( propertyType instanceof SimplePropertyType<?> ) {
             if ( value != null ) {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeCharacters( value.toString() );
@@ -233,6 +235,11 @@ public class GML212FeatureEncoder {
         }
     }
 
+    /**
+     * @param namespaceURI
+     * @param localname
+     * @throws XMLStreamException
+     */
     void writeStartElementWithNS( String namespaceURI, String localname )
                             throws XMLStreamException {
         if ( namespaceURI == null || namespaceURI.length() == 0 )
@@ -241,11 +248,21 @@ public class GML212FeatureEncoder {
             writer.writeStartElement( namespaceURI, localname );
     }
 
+    /**
+     * @param namespaceURI
+     * @param localname
+     * @throws XMLStreamException
+     */
     void writeEmptyElementWithNS( String namespaceURI, String localname )
                             throws XMLStreamException {
         if ( namespaceURI == null || namespaceURI.length() == 0 )
             writer.writeEmptyElement( localname );
         else
             writer.writeEmptyElement( namespaceURI, localname );
+    }
+
+    @Override
+    public boolean isExported( String memberFid ) {
+        return exportedIds.contains( memberFid );
     }
 }

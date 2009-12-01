@@ -95,7 +95,7 @@ public class FeatureCoder {
         xmlWriter.setPrefix( "xlink", CommonNamespaces.XLNNS );
         xmlWriter.setPrefix( "xplan", feature.getName().getNamespaceURI() );
         GML311FeatureEncoder encoder = new GML311FeatureEncoder( xmlWriter, new CRS( "EPSG:31466" ), "#{}", null, 0,
-                                                                 -1, false );
+                                                                 -1, false, false );
         long begin = System.currentTimeMillis();
         encoder.export( feature );
         xmlWriter.close();

@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
@@ -99,6 +100,11 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
      * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
+     * @param prefixToNamespace
+     *            only for 1.0.0 version; the prefix-namespace map given in the NamespaceHints in the configuration
+     * @param configFeatures
+     *            only for 1.0.0 version; in case the typeNames in queries are not bound to a namespace, have this array
+     *            of feature name to search for a potential match
      * @return parsed {@link GetFeature} request
      * @throws Exception
      */
@@ -123,6 +129,8 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
     /**
      * @param kvpParams
+     * @param prefixToNamespace
+     *            only for 1.0.0 version; the prefix-namespace map given in the NamespaceHints in the configuration
      * @return
      * @throws Exception
      */
@@ -145,10 +153,10 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return result;
     }
 
+    @SuppressWarnings("boxing")
     private static GetFeature parse100( Map<String, String> kvpParams )
                             throws Exception {
         // optional: MAXFEATURES
-        @SuppressWarnings("boxing")
         Integer maxFeatures = null;
         String maxFeatureStr = kvpParams.get( "MAXFEATURES" );
         if ( maxFeatureStr != null ) {
@@ -544,7 +552,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 }
             }
         } else {
-            result = new TypeName [0];
+            result = new TypeName[0];
         }
         return result;
     }
@@ -557,7 +565,22 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             result = new TypeName[typeList.length];
 
             for ( int i = 0; i < typeList.length; i++ ) {
-                result[i] = new TypeName( new QName( typeList[i] ), null );
+                String alias = null;
+                String theRest = typeList[i];
+                if ( typeList[i].contains( "=" ) ) {
+                    alias = typeList[i].split( "=" )[0];
+                    theRest = typeList[i].split( "=" )[1];
+                }
+
+                String prefix = null;
+                String local = theRest;
+                if ( theRest.contains( ":" ) ) {
+                    prefix = theRest.split( ":" )[0];
+                    local = theRest.split( ":" )[1];
+                }
+
+                QName qName = prefix == null ? new QName( local ) : new QName( XMLConstants.NULL_NS_URI, local, prefix );
+                result[i] = new TypeName( qName, alias );
             }
         }
         return result;

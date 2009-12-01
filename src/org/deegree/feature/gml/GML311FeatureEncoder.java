@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GML311FeatureEncoder {
+public class GML311FeatureEncoder implements GMLFeatureEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML311FeatureEncoder.class );
 
@@ -121,7 +121,7 @@ public class GML311FeatureEncoder {
      */
     public GML311FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, false, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, false, exportedIds, false );
     }
 
     /**
@@ -141,7 +141,7 @@ public class GML311FeatureEncoder {
      */
     public GML311FeatureEncoder( XMLStreamWriter writer, CRS outputCRS, String referenceTemplate,
                                  PropertyName[] requestedProps, int traverseXlinkDepth, int traverseXlinkExpiry,
-                                 boolean exportSfGeometries ) {
+                                 boolean exportSfGeometries, boolean version30 ) {
         this.writer = writer;
         this.referenceTemplate = referenceTemplate;
         if ( requestedProps != null ) {
@@ -151,16 +151,24 @@ public class GML311FeatureEncoder {
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
-        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportSfGeometries, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, outputCRS, exportSfGeometries, exportedIds, version30 );
         // TODO
         this.exportSf = false;
     }
 
+    @Override
     public void export( Feature feature )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         export( feature, 0 );
     }
 
+    /**
+     * @param fc
+     * @param name
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
     public void export( FeatureCollection fc, QName name )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         LOG.debug( "Exporting feature collection with explicit name." );
@@ -225,11 +233,18 @@ public class GML311FeatureEncoder {
         }
     }
 
+    /**
+     * @param property
+     * @param inlineLevels
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
     protected void export( Property<?> property, int inlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
-        PropertyType propertyType = property.getType();
+        PropertyType<?> propertyType = property.getType();
         if ( propertyType.getMinOccurs() == 0 ) {
             LOG.debug( "Optional property '" + propName + "', checking if it is requested." );
             if ( !isPropertyRequested( propName ) ) {
@@ -241,7 +256,7 @@ public class GML311FeatureEncoder {
         Object value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
             exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, inlineLevels );
-        } else if ( propertyType instanceof SimplePropertyType ) {
+        } else if ( propertyType instanceof SimplePropertyType<?> ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             writer.writeCharacters( value.toString() );
             writer.writeEndElement();
@@ -405,6 +420,7 @@ public class GML311FeatureEncoder {
         }
     }
 
+    @Override
     public boolean isExported( String memberFid ) {
         return exportedIds.contains( memberFid );
     }

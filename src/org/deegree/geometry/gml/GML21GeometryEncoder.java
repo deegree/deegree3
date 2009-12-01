@@ -408,87 +408,69 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
     }
 
     @Override
-    public void exportCompositeCurve( CompositeCurve compositeCurve )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception(
-                             "Cannot export CompositeCurve in GML 2.1 as this geometry is not supported in this version of GML." );
+    public void exportCompositeCurve( CompositeCurve compositeCurve ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export CompositeCurve in GML 2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportCompositeGeometry( CompositeGeometry<GeometricPrimitive> geometryComplex )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception(
-                             "Cannot export CompositeGeometry in GML 2.1 as this geometry is not supported in this version of GML." );
+    public void exportCompositeGeometry( CompositeGeometry<GeometricPrimitive> geometryComplex ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export CompositeGeometry in GML 2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportCompositeSolid( CompositeSolid compositeSolid )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception(
-                             "Cannot export CompositeSolid in GML 2.1 as this geometry is not supported in this version of GML." );
+    public void exportCompositeSolid( CompositeSolid compositeSolid ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export CompositeSolid in GML 2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportCompositeSurface( CompositeSurface compositeSurface )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception(
-                             "Cannot export CompositeSurface in GML 2.1 as this geometry is not supported in this version of GML." );
+    public void exportCompositeSurface( CompositeSurface compositeSurface ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export CompositeSurface in GML 2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportCurve( Curve curve )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception( "Cannot export Curve in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportCurve( Curve curve ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export Curve in GML2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportReference( GeometryReference<Geometry> geometryRef )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception(
-                             "Cannot export GeometryReference in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportReference( GeometryReference<Geometry> geometryRef ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export GeometryReference in GML2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportRing( Ring ring )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception( "Cannot export Ring in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportRing( Ring ring ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export Ring in GML2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportSolid( Solid solid )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception( "Cannot export Solid in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportSolid( Solid solid ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export Solid in GML2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportSurface( Surface surface )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception(
-                             "Cannot export Surface in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportSurface( Surface surface ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export Surface in GML2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportTin( Tin tin )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception( "Cannot export Tin in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportTin( Tin tin ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export Tin in GML2.1 as this geometry is not supported in this version of GML." );
     }
 
     @Override
-    public void exportTriangulatedSurface( TriangulatedSurface triangSurface )
-                            throws Exception {
-        // TODO throw a suitable exception
-        throw new Exception(
-                             "Cannot export TriangulatedSurface in GML2.1 as this geometry is not supported in this version of GML." );
+    public void exportTriangulatedSurface( TriangulatedSurface triangSurface ) {
+        throw new UnsupportedOperationException(
+                                                 "Cannot export TriangulatedSurface in GML2.1 as this geometry is not supported in this version of GML." );
     }
 
 }

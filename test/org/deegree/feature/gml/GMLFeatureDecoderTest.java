@@ -147,12 +147,18 @@ public class GMLFeatureDecoderTest {
         }
     }
 
+    /**
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
     @Test
     public void testParsingCiteSF1()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            GMLReferenceResolvingException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException, TransformationException {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf1.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -216,9 +222,7 @@ public class GMLFeatureDecoderTest {
 
     @Test
     public void testParsingCite100()
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
-                            XMLParsingException, UnknownCRSException, TransformationException {
+                            throws FactoryConfigurationError, Exception {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
