@@ -174,6 +174,17 @@ public class GML311FeatureEncoder implements GMLFeatureEncoder {
         LOG.debug( "Exporting feature collection with explicit name." );
         writer.setPrefix( "gml", GMLNS );
         writer.writeStartElement( name.getNamespaceURI(), name.getLocalPart() );
+
+        // gml:boundedBy (mandatory)
+        Envelope fcEnv = fc.getEnvelope();
+        writeStartElementWithNS( GMLNS, "boundedBy" );
+        if ( fcEnv != null ) {
+            geometryExporter.exportEnvelope( fc.getEnvelope() );
+        } else {
+            writer.writeEmptyElement( GMLNS, "Null" );
+        }
+        writer.writeEndElement();
+
         for ( Feature member : fc ) {
             String memberFid = member.getId();
             writer.writeStartElement( "http://www.opengis.net/gml", "featureMember" );
