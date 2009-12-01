@@ -259,7 +259,8 @@ public class PostGISFeatureStore implements FeatureStore {
                 }
                 String title = ftName.toString() + " served by PostGISFeatureStore";
                 String desc = ftName.toString() + " served by PostGISFeatureStore";
-                CRS nativeCRS = new CRS( "EPSG:31466" );
+                // TODO make this configurable
+                CRS nativeCRS = new CRS( "EPSG:25833" );
                 StoredFeatureTypeMetadata ftMd = new StoredFeatureTypeMetadata( ft, this, title, desc, nativeCRS );
                 ftNameToMd.put( ftName, ftMd );
                 ftNameToFtId.put( ftName, ftId );

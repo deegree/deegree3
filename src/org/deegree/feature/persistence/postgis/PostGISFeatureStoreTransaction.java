@@ -41,7 +41,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -124,8 +123,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     /**
-     * Returns the underlying JDBC connection. Can be used for performing other operations in the
-     * same transaction context.
+     * Returns the underlying JDBC connection. Can be used for performing other operations in the same transaction
+     * context.
      * 
      * @return the underlying JDBC connection, never <code>null</code>
      */
@@ -180,8 +179,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
         LOG.debug( "performInsert()" );
 
-        Set<Geometry> geometries = new HashSet<Geometry>();
-        Set<Feature> features = new HashSet<Feature>();
+        Set<Geometry> geometries = new LinkedHashSet<Geometry>();
+        Set<Feature> features = new LinkedHashSet<Feature>();
         Set<String> fids = new LinkedHashSet<String>();
         Set<String> gids = new LinkedHashSet<String>();
         findFeaturesAndGeometries( fc, geometries, features, fids, gids );
@@ -309,30 +308,35 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features,
                                             Set<String> fids, Set<String> gids ) {
 
-        if ( !features.contains( feature ) ) {
-            if ( feature instanceof FeatureCollection ) {
-                for ( Feature member : (FeatureCollection) feature ) {
-                    findFeaturesAndGeometries( member, geometries, features, fids, gids );
+        if ( feature instanceof FeatureCollection ) {
+            // try to keep document order
+            for ( Feature member : (FeatureCollection) feature ) {
+                if ( !( member instanceof FeatureReference ) ) {
+                    features.add( member );
                 }
-            } else {
-                if ( feature.getId() == null || !( fids.contains( feature.getId() ) ) ) {
-                    features.add( feature );
-                    if ( feature.getId() != null ) {
-                        fids.add( feature.getId() );
-                    }
+            }
+            for ( Feature member : (FeatureCollection) feature ) {
+                findFeaturesAndGeometries( member, geometries, features, fids, gids );
+            }
+        } else {
+            if ( feature.getId() == null || !( fids.contains( feature.getId() ) ) ) {
+                features.add( feature );
+                if ( feature.getId() != null ) {
+                    fids.add( feature.getId() );
                 }
-                for ( Property<?> property : feature.getProperties() ) {
-                    Object propertyValue = property.getValue();
-                    if ( propertyValue instanceof Feature ) {
-                        if ( !( propertyValue instanceof FeatureReference ) ) {
-                            findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
-                        } else if ( ( (FeatureReference) propertyValue ).isLocal() ) {
-                            findFeaturesAndGeometries( ( (FeatureReference) propertyValue ).getReferencedFeature(),
-                                                       geometries, features, fids, gids );
-                        }
-                    } else if ( propertyValue instanceof Geometry ) {
-                        findGeometries( (Geometry) propertyValue, geometries, gids );
+            }
+            for ( Property<?> property : feature.getProperties() ) {
+                Object propertyValue = property.getValue();
+                if ( propertyValue instanceof Feature ) {
+                    if ( !( propertyValue instanceof FeatureReference ) && !features.contains( propertyValue ) ) {
+                        findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
+                    } else if ( ( (FeatureReference) propertyValue ).isLocal()
+                                && !( features.contains( ( (FeatureReference) propertyValue ).getReferencedFeature() ) ) ) {
+                        findFeaturesAndGeometries( ( (FeatureReference) propertyValue ).getReferencedFeature(),
+                                                   geometries, features, fids, gids );
                     }
+                } else if ( propertyValue instanceof Geometry ) {
+                    findGeometries( (Geometry) propertyValue, geometries, gids );
                 }
             }
         }
