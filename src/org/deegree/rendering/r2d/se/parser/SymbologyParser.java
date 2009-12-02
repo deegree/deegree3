@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -108,6 +109,7 @@ import org.deegree.rendering.r2d.styling.components.Graphic;
 import org.deegree.rendering.r2d.styling.components.Halo;
 import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.deegree.rendering.r2d.styling.components.Mark;
+import org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.UOM;
 import org.deegree.rendering.r2d.styling.components.Font.Style;
@@ -971,6 +973,7 @@ public class SymbologyParser {
             }
 
             if ( in.getLocalName().equals( "PerpendicularOffset" ) ) {
+                baseOrEvaluated.perpendicularOffsetType = getPerpendicularOffsetType( in );
                 contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<LineStyling>() {
                     @Override
                     public void update( LineStyling obj, String val ) {
@@ -1042,6 +1045,7 @@ public class SymbologyParser {
             }
 
             if ( in.getLocalName().equals( "PerpendicularOffset" ) ) {
+                baseOrEvaluated.perpendicularOffsetType = getPerpendicularOffsetType( in );
                 contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<PolygonStyling>() {
                     @Override
                     public void update( PolygonStyling obj, String val ) {
@@ -1426,6 +1430,20 @@ public class SymbologyParser {
         return new Pair<Halo, Continuation<Halo>>( baseOrEvaluated, contn );
     }
 
+    private static PerpendicularOffsetType getPerpendicularOffsetType( XMLStreamReader in ) {
+        String type = in.getAttributeValue( null, "type" );
+        if ( type != null ) {
+            try {
+                return PerpendicularOffsetType.valueOf( type );
+            } catch ( IllegalArgumentException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "The value '{}' is not a valid type for perpendicular offsets. Valid types are: {}",
+                          Arrays.toString( PerpendicularOffsetType.values() ) );
+            }
+        }
+        return null;
+    }
+
     private static Pair<LinePlacement, Continuation<LinePlacement>> parseLinePlacement( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "LinePlacement" );
@@ -1437,6 +1455,7 @@ public class SymbologyParser {
             in.nextTag();
 
             if ( in.getLocalName().equals( "PerpendicularOffset" ) ) {
+                baseOrEvaluated.perpendicularOffsetType = getPerpendicularOffsetType( in );
                 contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<LinePlacement>() {
                     @Override
                     public void update( LinePlacement obj, String val ) {

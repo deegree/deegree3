@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,72 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.rendering.r2d.styling.components;
 
-import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Standard;
-
-import org.deegree.rendering.r2d.styling.Copyable;
-
 /**
- * <code>LinePlacement</code>
+ * <code>PerpendicularOffsetType</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class LinePlacement implements Copyable<LinePlacement> {
+public enum PerpendicularOffsetType {
 
-    /**
-     * Default is 0.
-     */
-    public double perpendicularOffset;
-
-    /** Default is Standard. */
-    public PerpendicularOffsetType perpendicularOffsetType = Standard;
-
-    /**
-     * Default is false.
-     */
-    public boolean repeat;
-
-    /**
-     * Default is 0.
-     */
-    public double initialGap;
-
-    /**
-     * Default is 0.
-     */
-    public double gap;
-
-    /**
-     * Default is true.
-     */
-    public boolean isAligned = true;
-
-    /**
-     * Default is false.
-     */
-    public boolean generalizeLine;
-
-    public LinePlacement copy() {
-        LinePlacement copy = new LinePlacement();
-        copy.perpendicularOffset = perpendicularOffset;
-        copy.perpendicularOffsetType = perpendicularOffsetType;
-        copy.repeat = repeat;
-        copy.initialGap = initialGap;
-        copy.gap = gap;
-        copy.isAligned = isAligned;
-        copy.generalizeLine = generalizeLine;
-        return copy;
-    }
-
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+    /***/
+    Standard, /***/
+    Round, /***/
+    Edged, /***/
+    Strict
 
 }

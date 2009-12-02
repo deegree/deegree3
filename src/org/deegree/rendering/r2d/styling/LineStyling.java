@@ -36,9 +36,11 @@
 
 package org.deegree.rendering.r2d.styling;
 
-import static org.deegree.commons.utils.math.MathUtils.isZero;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Standard;
 import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
+import org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.UOM;
 
@@ -67,16 +69,19 @@ public class LineStyling implements Copyable<LineStyling>, Styling {
      */
     public double perpendicularOffset;
 
+    /** Default is Standard. */
+    public PerpendicularOffsetType perpendicularOffsetType = Standard;
+
     @Override
     public String toString() {
-        return "LineStyling [" + stroke
-               + ( isZero( perpendicularOffset ) ? "" : ( ", Perpendicular offset: " + perpendicularOffset ) ) + "]";
+        return generateToString( this );
     }
 
     public LineStyling copy() {
         LineStyling copy = new LineStyling();
         copy.stroke = stroke.copy();
         copy.perpendicularOffset = perpendicularOffset;
+        copy.perpendicularOffsetType = perpendicularOffsetType;
         copy.uom = uom;
         return copy;
     }
