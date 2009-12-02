@@ -54,6 +54,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.WKTWriter;
+import org.deegree.geometry.WKTWriter.WKTFlag;
 
 /**
  * Transforms the spatial query into a PostGreSQL statement. It encapsules the required methods.
@@ -135,6 +136,8 @@ public class SpatialOperatorTransformingPostGres {
         stringSpatialGeometry = "";
 
         String geometryString = "";
+        
+        Set<WKTFlag> flag;
 
         switch ( typeSpatial ) {
 
@@ -144,7 +147,9 @@ public class SpatialOperatorTransformingPostGres {
             Object[] paramsBBox = bboxOp.getParams();
             stringSpatial = "";
             stringSpatialGeom = new LinkedList<String>();
-            wktWriter = new WKTWriter();
+            flag = new HashSet<WKTFlag>();
+            
+            wktWriter = new WKTWriter(flag);
 
             for ( Object opParam : paramsBBox ) {
                 if ( opParam != bboxOp.getBoundingBox() ) {
@@ -165,7 +170,9 @@ public class SpatialOperatorTransformingPostGres {
             Object[] paramsBeyond = beyondOp.getParams();
             stringSpatial += "DISTANCE(";
             stringSpatialGeom = new LinkedList<String>();
-            wktWriter = new WKTWriter();
+            flag = new HashSet<WKTFlag>();
+            wktWriter = new WKTWriter(flag);
+            
 
             counter = 0;
 
