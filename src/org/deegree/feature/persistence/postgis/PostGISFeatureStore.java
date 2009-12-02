@@ -330,11 +330,11 @@ public class PostGISFeatureStore implements FeatureStore {
             fc = queryByOperatorFilter( query.getTypeNames()[0].getFeatureTypeName(), (OperatorFilter) filter );
 
             // filter features
-            if ( query.getFilter() != null ) {
-                fc = fc.getMembers( query.getFilter() );
-            }
-        } else {
+            fc = fc.getMembers( filter );
+        } else if ( filter != null ) {
             fc = queryByIdFilter( (IdFilter) filter );
+        } else {
+            fc = queryByOperatorFilter( query.getTypeNames()[0].getFeatureTypeName(), null );
         }
 
         // sort features
