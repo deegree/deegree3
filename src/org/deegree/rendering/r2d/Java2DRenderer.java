@@ -310,13 +310,13 @@ public class Java2DRenderer implements Renderer {
                 return (T) transformer.transform( (Geometry) g );
             } catch ( IllegalArgumentException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry before rendering, this may lead to problems." );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.", g.getClass().getSimpleName() );
             } catch ( TransformationException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry before rendering, this may lead to problems." );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.", g.getClass().getSimpleName() );
             } catch ( UnknownCRSException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry before rendering, this may lead to problems." );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.", g.getClass().getSimpleName() );
             }
         }
         return g;
@@ -435,6 +435,9 @@ public class Java2DRenderer implements Renderer {
                 if ( patch instanceof PolygonPatch ) {
                     PolygonPatch polygonPatch = (PolygonPatch) patch;
                     for ( Curve curve : polygonPatch.getBoundaryRings() ) {
+                        if ( curve.getCoordinateSystem() == null ) {
+                            curve.setCoordinateSystem( surface.getCoordinateSystem() );
+                        }
                         render( styling, curve );
                     }
                 } else {

@@ -48,12 +48,14 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.transformations.Transformation;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.multi.MultiCurve;
+import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -177,12 +179,16 @@ public class GeometryTransformer extends Transformer {
         try {
             if ( geo instanceof Point ) {
                 transformedGeometry = transform( (Point) geo, trans );
+            } else if ( geo instanceof LineString ) {
+                transformedGeometry = transform( (LineString) geo, trans );
             } else if ( geo instanceof Curve ) {
                 transformedGeometry = transform( (Curve) geo, trans );
             } else if ( geo instanceof Surface ) {
                 transformedGeometry = transform( (Surface) geo, trans );
             } else if ( geo instanceof MultiPoint ) {
                 transformedGeometry = transform( (MultiPoint) geo, trans );
+            } else if ( geo instanceof MultiLineString ) {
+                transformedGeometry = transform( (MultiLineString) geo, trans );
             } else if ( geo instanceof MultiCurve ) {
                 transformedGeometry = transform( (MultiCurve) geo, trans );
             } else if ( geo instanceof MultiSurface ) {
@@ -192,7 +198,7 @@ public class GeometryTransformer extends Transformer {
             } else if ( geo instanceof Envelope ) {
                 transformedGeometry = transform( (Envelope) geo, trans );
             } else {
-                throw new IllegalArgumentException( "Unspupported geometry:" + geo.getClass().getName() );
+                throw new IllegalArgumentException( "Unsupported geometry:" + geo.getClass().getName() );
             }
         } catch ( GeometryException ge ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORMATION_ERROR",
@@ -258,6 +264,14 @@ public class GeometryTransformer extends Transformer {
         return transformedEnvGeometry.getEnvelope();
     }
 
+    private LineString transform( LineString geo, Transformation trans )
+                            throws TransformationException {
+        LineStringSegment segment = (LineStringSegment) geo.getCurveSegments().get( 0 ); // only one for a line string?
+        Points pos = segment.getControlPoints();
+        pos = transform( pos, trans );
+        return geomFactory.createLineString( geo.getId(), new CRS( trans.getTargetCRS() ), pos );
+    }
+
     /**
      * transforms the submitted curve to the target coordinate reference system
      * 
@@ -277,6 +291,15 @@ public class GeometryTransformer extends Transformer {
             curveSegments[i++] = geomFactory.createLineStringSegment( pos );
         }
         return geomFactory.createCurve( geo.getId(), curveSegments, new CRS( trans.getTargetCRS() ) );
+    }
+
+    private MultiLineString transform( MultiLineString geo, Transformation trans )
+                            throws TransformationException {
+        List<LineString> lines = new ArrayList<LineString>( geo.size() );
+        for ( LineString line : geo ) {
+            lines.add( transform( line, trans ) );
+        }
+        return geomFactory.createMultiLineString( geo.getId(), new CRS( trans.getTargetCRS() ), lines );
     }
 
     /**
