@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSurface;
@@ -48,7 +49,11 @@ import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.linearization.SurfaceLinearizer;
+import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.multi.MultiLineString;
+import org.deegree.geometry.multi.MultiPoint;
+import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
@@ -87,8 +92,8 @@ public class WKTWriter {
 
     private static final com.vividsolutions.jts.io.WKTWriter jtsWriter = new com.vividsolutions.jts.io.WKTWriter();
 
-    private String geometryString;
-
+    private StringBuilder geometryString = new StringBuilder();
+    
     private Set<WKTFlag> flags = new HashSet<WKTFlag>();
 
     public enum WKTFlag {
@@ -104,26 +109,52 @@ public class WKTWriter {
         USE_LINEARIZATION,
         /** COMPOSITEGEOMETRY(), COMPOSITECURVE(), COMPOSITESOLID() */
         USE_COMPOSITES,
+        /** COMPOUNDCURVE */
+        USE_COMPOUND,
+        /** Use deegree-WKT-extensions (object ids, properties, all geometry types) */
+        USE_DKT
+
     }
 
     /**
      * @return the geometryString
      */
-    public String getGeometryString() {
+    public StringBuilder getGeometryString() {
         return geometryString;
     }
 
-    public void createSFS11Writer() {
+    /**
+     * @return the flags
+     */
+    public Set<WKTFlag> getFlags() {
+        return flags;
+    }
+
+    /**
+     * @param flags
+     *            the flags to set
+     */
+    public void setFlags( Set<WKTFlag> flags ) {
+        this.flags = flags;
+    }
+
+    /*public void createSFS11Writer() {
 
         new WKTWriter();
     }
 
-    public void createSFS12Writer() {
+    public void createSFS12Writer( Set<WKTFlag> falgs ) {
+        this.flags = falgs;
 
+        new WKTWriter();
+    }
+    */
+    public WKTWriter(Set<WKTFlag> flags){
+        
     }
 
     public void writeGeometry( Geometry geometry ) {
-        geometryString = "";
+        //geometryString = "";
         switch ( geometry.getGeometryType() ) {
         case COMPOSITE_GEOMETRY:
             writeCompositeGeometry( (CompositeGeometry<GeometricPrimitive>) geometry );
@@ -164,31 +195,35 @@ public class WKTWriter {
     /**
      * @param geometry
      */
-    public void writePoint( Point geometry ) {
-
-        geometryString += "POINT(";
-        geometryString += geometry.get0();
-        geometryString += " ";
-        geometryString += geometry.get1();
-        if ( geometry.getCoordinateDimension() == 3 ) {
-            geometryString += " ";
-            geometryString += geometry.get2();
-        }
-        geometryString += ")";
+    public StringBuilder writePoint( Point geometry ) {
+        geometryString.append( "POINT");
+        appendObjectProps( geometryString, geometry );
+        geometryString.append( "(");
+        geometryString.append( writePointWithoutPrefix( geometry ));
+        geometryString.append( ")");
+        
+        return geometryString;
     }
 
     /**
      * @param geometry
      */
-    public String writePointWithoutPrefix( Point geometry ) {
+    private StringBuilder writePointWithoutPrefix( Point geometry ) {
 
-        String s = "";
-        s += geometry.get0();
-        s += " ";
-        s += geometry.get1();
-        if ( geometry.getCoordinateDimension() == 3 ) {
-            s += " ";
-            s += geometry.get2();
+        StringBuilder s = new StringBuilder();
+        if ( flags.contains( WKTFlag.USE_3D ) ) {
+            s.append( geometry.get0());
+            s.append( " ");
+            s.append( geometry.get1());
+            s.append( " ");
+            s.append( geometry.get2());
+
+        } else {
+
+            s.append( geometry.get0());
+            s.append( " ");
+            s.append( geometry.get1());
+
         }
 
         return s;
@@ -197,7 +232,7 @@ public class WKTWriter {
     /**
      * @param geometry
      */
-    //TODO
+    // TODO
     private void writeSolid( Solid geometry ) {
         switch ( geometry.getSolidType() ) {
 
@@ -247,162 +282,133 @@ public class WKTWriter {
      */
     private void writeTin( Tin geometry ) {
         // TODO Auto-generated method stub
-        
+
     }
 
     /**
      * @param geometry
      */
-    private void writeSurfaceGeometry( Surface geometry ) {
-        SurfaceLinearizer cl = new SurfaceLinearizer( new GeometryFactory() );
-        LinearizationCriterion crit = new NumPointsCriterion( 10 );
-        Surface surface = cl.linearize( geometry, crit );
-        geometryString += "MULTIPOLYGON((";
-        int counter = 0;
-        List<? extends SurfacePatch> l = surface.getPatches();
-        for ( SurfacePatch p : l ) {
-            Polygon poly;
-            switch ( p.getSurfacePatchType() ) {
-            case GRIDDED_SURFACE_PATCH:
-                GriddedSurfacePatch gsp = ((GriddedSurfacePatch)p);
-                switch(gsp.getGriddedSurfaceType()){
+    private StringBuilder writeSurfaceGeometry( Surface geometry ) {
+        StringBuilder geometryString = new StringBuilder("MULTIPOLYGON(");
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+
+        } else {
+            SurfaceLinearizer cl = new SurfaceLinearizer( new GeometryFactory() );
+            LinearizationCriterion crit = new NumPointsCriterion( 10 );
+            Surface surface = cl.linearize( geometry, crit );
+
+            int counter = 0;
+            List<? extends SurfacePatch> l = surface.getPatches();
+            for ( SurfacePatch p : l ) {
+                Polygon poly;
+                switch ( p.getSurfacePatchType() ) {
                 case GRIDDED_SURFACE_PATCH:
-                    //TODO
+                    GriddedSurfacePatch gsp = ( (GriddedSurfacePatch) p );
+                    switch ( gsp.getGriddedSurfaceType() ) {
+                    case GRIDDED_SURFACE_PATCH:
+                        // TODO
+                        break;
+                    case CONE:
+                        // TODO
+                        break;
+                    case CYLINDER:
+                        // TODO
+                        break;
+                    case SPHERE:
+                        // TODO
+                        break;
+                    }
                     break;
-                case CONE:
-                  //TODO
+                case POLYGON_PATCH:
+                    counter++;
+                    PolygonPatch polyPatch = (PolygonPatch) p;
+
+                    poly = new DefaultPolygon( surface.getId(), surface.getCoordinateSystem(), surface.getPrecision(),
+                                               polyPatch.getExteriorRing(), polyPatch.getInteriorRings() );
+                    geometryString.append(  writePolygonWithoutPrefix( poly ));
+
                     break;
-                case CYLINDER:
-                  //TODO
+                case RECTANGLE:
+                    counter++;
+                    Rectangle rectangle = ( (Rectangle) p );
+                    poly = new DefaultPolygon( surface.getId(), surface.getCoordinateSystem(), surface.getPrecision(),
+                                               rectangle.getExteriorRing(), rectangle.getInteriorRings() );
+                    geometryString.append( writePolygonWithoutPrefix( poly ));
                     break;
-                case SPHERE:
-                  //TODO
+                case TRIANGLE:
+                    counter++;
+                    Triangle triangle = ( (Triangle) p );
+                    poly = new DefaultPolygon( surface.getId(), surface.getCoordinateSystem(), surface.getPrecision(),
+                                               triangle.getExteriorRing(), triangle.getInteriorRings() );
+                    geometryString.append(  writePolygonWithoutPrefix( poly ));
                     break;
                 }
-                break;
-            case POLYGON_PATCH:
-                counter++;
-                PolygonPatch polyPatch = (PolygonPatch) p;
-                
-                poly = new DefaultPolygon( surface.getId(), surface.getCoordinateSystem(),
-                                                   surface.getPrecision(), polyPatch.getExteriorRing(),
-                                                   polyPatch.getInteriorRings() );
-                geometryString += writePolygonWithoutPrefix( poly );
+                if ( counter < l.size() ) {
+                    geometryString.append( ",");
+                }
 
-                break;
-            case RECTANGLE:
-                counter++;
-                Rectangle rectangle = ((Rectangle)p);
-                poly = new DefaultPolygon(surface.getId(), surface.getCoordinateSystem(),
-                                          surface.getPrecision(), rectangle.getExteriorRing(), 
-                                          rectangle.getInteriorRings());
-                geometryString += writePolygonWithoutPrefix( poly );
-                break;
-            case TRIANGLE:
-                counter++;
-                Triangle triangle = ((Triangle)p);
-                poly = new DefaultPolygon(surface.getId(), surface.getCoordinateSystem(),
-                                          surface.getPrecision(), triangle.getExteriorRing(), 
-                                          triangle.getInteriorRings());
-                geometryString += writePolygonWithoutPrefix( poly );
-                break;
             }
-            if(counter < l.size()){
-                geometryString += ",";
-            }
-            
-        
         }
 
-        geometryString += "))";
+        geometryString.append(  ")");
+        return geometryString;
 
     }
-    
-    
+
     /**
      * @param geometry
      */
-    private void writePolygon( Polygon geometry ) {
-        geometryString += "POLYGON(";
+    public StringBuilder writePolygon( Polygon geometry ) {
+        geometryString.append( "POLYGON");
+        geometryString.append( writePolygonWithoutPrefix( geometry ));
+        return geometryString;
+    }
+
+    /**
+     * @param geometry
+     */
+    private StringBuilder writePolygonWithoutPrefix( Polygon geometry ) {
+        StringBuilder s = new StringBuilder("(");
         Ring exteriorRing = geometry.getExteriorRing();
-        geometryString += "(";
+        s.append( "(");
         Points points = exteriorRing.getControlPoints();
         int counter = 0;
         for ( Point point : points ) {
 
             counter++;
             if ( counter < points.size() ) {
-                geometryString += writePointWithoutPrefix( point ) + ", ";
+                s.append( writePointWithoutPrefix( point ) + ", ");
             } else {
-                geometryString += writePointWithoutPrefix( point );
+                s.append( writePointWithoutPrefix( point ));
             }
 
         }
-        
-        geometryString += ")";
+
+        s.append( ")");
         List<Ring> interiorRings = geometry.getInteriorRings();
         for ( Ring r : interiorRings ) {
-            geometryString += ",(";
+            s.append( ",(");
             counter = 0;
             for ( Point point : points ) {
 
                 counter++;
                 if ( counter < points.size() ) {
-                    geometryString += writePointWithoutPrefix( point ) + ", ";
+                    s.append( writePointWithoutPrefix( point ) + ", ");
                 } else {
-                    geometryString += writePointWithoutPrefix( point );
+                    s.append( writePointWithoutPrefix( point ));
                 }
 
             }
-            geometryString += ")";
+            s.append( ")");
         }
-        geometryString += ")";
-    }
-
-    /**
-     * @param geometry
-     */
-    private String writePolygonWithoutPrefix( Polygon geometry ) {
-        String s = "";
-        Ring exteriorRing = geometry.getExteriorRing();
-        s += "(";
-        Points points = exteriorRing.getControlPoints();
-        int counter = 0;
-        for ( Point point : points ) {
-
-            counter++;
-            if ( counter < points.size() ) {
-                s += writePointWithoutPrefix( point ) + ", ";
-            } else {
-                s += writePointWithoutPrefix( point );
-            }
-
-        }
-        
-        s += ")";
-        List<Ring> interiorRings = geometry.getInteriorRings();
-        for ( Ring r : interiorRings ) {
-            s += ",(";
-            counter = 0;
-            for ( Point point : points ) {
-
-                counter++;
-                if ( counter < points.size() ) {
-                    s += writePointWithoutPrefix( point ) + ", ";
-                } else {
-                    s += writePointWithoutPrefix( point );
-                }
-
-            }
-            s += ")";
-        }
+        s.append( ")");
         return s;
     }
 
     /**
      * @param geometry
      */
-    private void writeCurve( Curve geometry ) {
+    public void writeCurve( Curve geometry ) {
         switch ( geometry.getCurveType() ) {
 
         case Curve:
@@ -418,7 +424,7 @@ public class WKTWriter {
             break;
 
         case CompositeCurve:
-            writeCurveGeometry( (CompositeCurve) geometry );
+            writeCompositeCurve( (CompositeCurve) geometry );
             break;
 
         case Ring:
@@ -432,50 +438,81 @@ public class WKTWriter {
     /**
      * @param geometry
      */
+    private void writeCompositeCurve( CompositeCurve geometry ) {
+        if ( flags.contains( WKTFlag.USE_COMPOSITES ) ) {
+            // TODO difference between GML vs. PostGIS vs. ...
+
+        } else {
+            writeCurveGeometry( geometry );
+        }
+
+    }
+
+    /**
+     * @param geometry
+     */
     private void writeCurveGeometry( Curve geometry ) {
-        CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
-        LinearizationCriterion crit = new NumPointsCriterion( 10 );
-        Curve c = cl.linearize( geometry, crit );
-        LineString s = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
-                                              c.getControlPoints() );
-        writeLineString( s );
 
-    }
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
 
-    /**
-     * @param geometry
-     */
-    private void writeLineString( LineString geometry ) {
-        geometryString += "LINESTRING(";
-        Points points = geometry.getControlPoints();
-        int counter = 0;
-        for ( Point p : points ) {
-            counter++;
-            if ( counter < points.size() ) {
-                geometryString += writePointWithoutPrefix( p ) + ", ";
-            } else {
-                geometryString += writePointWithoutPrefix( p );
-            }
+        } else {
+            CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
+            LinearizationCriterion crit = new NumPointsCriterion( 10 );
+            Curve c = cl.linearize( geometry, crit );
+
+            LineString s = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
+                                                  c.getControlPoints() );
+            writeLineString( s );
         }
-        geometryString += ")";
-
     }
 
     /**
      * @param geometry
      */
-    private String writeLineStringWithoutPrefix( LineString geometry ) {
+    private String writeCurveGeometryWithoutPrefix( Curve geometry ) {
+
         String s = "";
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+
+        } else {
+            CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
+            LinearizationCriterion crit = new NumPointsCriterion( 1 );
+            Curve c = cl.linearize( geometry, crit );
+
+            LineString ls = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
+                                                   c.getControlPoints() );
+            s += writeLineStringWithoutPrefix( ls );
+        }
+
+        return s;
+    }
+
+    /**
+     * @param geometry
+     */
+    public StringBuilder writeLineString( LineString geometry ) {
+        geometryString.append( "LINESTRING");
+        geometryString.append( writeLineStringWithoutPrefix( geometry ));
+        return geometryString;
+
+    }
+
+    /**
+     * @param geometry
+     */
+    private StringBuilder writeLineStringWithoutPrefix( LineString geometry ) {
+        StringBuilder s = new StringBuilder("(");
         Points points = geometry.getControlPoints();
         int counter = 0;
         for ( Point p : points ) {
             counter++;
             if ( counter < points.size() ) {
-                s += writePointWithoutPrefix( p ) + ", ";
+                s.append( writePointWithoutPrefix( p ) + ", ");
             } else {
-                s += writePointWithoutPrefix( p );
+                s.append(  writePointWithoutPrefix( p ));
             }
         }
+        s.append( ")");
         return s;
 
     }
@@ -483,7 +520,7 @@ public class WKTWriter {
     /**
      * @param geometry
      */
-    private void writeRing( Ring geometry ) {
+    public void writeRing( Ring geometry ) {
         switch ( geometry.getRingType() ) {
         case LinearRing:
 
@@ -502,20 +539,124 @@ public class WKTWriter {
     /**
      * @param geometry
      */
-    private void writeLinearRing( LinearRing geometry ) {
-        
-        LineString s = new DefaultLineString( geometry.getId(), geometry.getCoordinateSystem(),
-                                              geometry.getPrecision(), geometry.getControlPoints() );
-        writeLineString( s );
+    public void writeLinearRing( LinearRing geometry ) {
+        if ( flags.contains( WKTFlag.USE_LINEARRING ) ) {
+
+        } else {
+            LineString s = new DefaultLineString( geometry.getId(), geometry.getCoordinateSystem(),
+                                                  geometry.getPrecision(), geometry.getControlPoints() );
+            writeLineString( s );
+        }
     }
-    
 
     /**
      * @param geometry
      */
     private void writeMultiGeometry( MultiGeometry<? extends Geometry> geometry ) {
+        switch ( geometry.getMultiGeometryType() ) {
+        case MULTI_GEOMETRY:
+            writeMultiGeometryGeometry( geometry );
+            break;
+        case MULTI_POINT:
+            writeMultiPoint( (MultiPoint) geometry );
+            break;
+        case MULTI_CURVE:
+            writeMultiCurve( (MultiCurve) geometry );
+            break;
+        case MULTI_LINE_STRING:
+            writeMultiLineString( (MultiLineString) geometry );
+            break;
+        case MULTI_SURFACE:
+            break;
+        case MULTI_POLYGON:
+            writeMultiPolygon( (MultiPolygon) geometry );
+            break;
+        case MULTI_SOLID:
+            break;
+
+        }
+
+    }
+
+    /**
+     * @param geometry
+     */
+    public StringBuilder writeMultiCurve( MultiCurve geometry ) {
+        geometryString.append( "MULTICURVE(");
+
+        for ( int i = 0; i < geometry.size(); i++ ) {
+
+            geometryString.append( writeCurveGeometryWithoutPrefix( geometry.get( i ) ));
+            if ( i < geometry.size() - 1 ) {
+                geometryString.append( ",");
+            }
+
+        }
+
+        geometryString.append( ")");
+        
+        return geometryString;
+
+    }
+
+    /**
+     * @param geometry
+     */
+    private void writeMultiGeometryGeometry( MultiGeometry<? extends Geometry> geometry ) {
         // TODO Auto-generated method stub
 
+    }
+
+    /**
+     * @param geometry
+     */
+    private StringBuilder writeMultiPolygon( MultiPolygon geometry ) {
+        geometryString.append( "MULTIPOLYGON(");
+        
+        for ( int i = 0; i < geometry.size(); i++ ) {
+
+            geometryString.append( writePolygonWithoutPrefix( geometry.get( i ) ));
+            if ( i < geometry.size() - 1 ) {
+                geometryString.append( ",");
+            }
+        }
+
+        geometryString.append( ")");
+        return geometryString;
+    }
+
+    /**
+     * @param geometry
+     */
+    private StringBuilder writeMultiLineString( MultiLineString geometry ) {
+        geometryString.append(  "MULTILINESTRING(");
+        for ( int i = 0; i < geometry.size(); i++ ) {
+
+            geometryString.append( writeLineStringWithoutPrefix( geometry.get( i ) ));
+            if ( i < geometry.size() - 1 ) {
+                geometryString.append( ",");
+            }
+        }
+
+        geometryString.append( ")");
+        return geometryString;
+    }
+
+    /**
+     * @param geometry
+     */
+    private StringBuilder writeMultiPoint( MultiPoint geometry ) {
+        geometryString.append( "MULTIPOINT(");
+        for ( int i = 0; i < geometry.size(); i++ ) {
+
+            geometryString.append( writePointWithoutPrefix( geometry.get( i ) ));
+            if ( i < geometry.size() - 1 ) {
+                geometryString.append( ",");
+            }
+        }
+
+        geometryString.append( ")");
+        return geometryString;
     }
 
     /**
@@ -526,35 +667,46 @@ public class WKTWriter {
 
     }
 
+    private StringBuilder writeCircularString() {
+        geometryString.append( "CIRCULARSTRING(");
+        // TODO there should be 3 points in it
+
+        geometryString.append( ")");
+        return geometryString;
+
+    }
+
     /**
      * TODO also for 3D
      * 
      * @param envelope
      */
-    public void writeEnvelope( Envelope envelope ) {
+    public StringBuilder writeEnvelope( Envelope envelope ) {
         if ( flags.contains( WKTFlag.USE_ENVELOPE ) ) {
             // ENVELOPE(...)
         } else {
             Point pMax = envelope.getMax();
             Point pMin = envelope.getMin();
             if ( pMin == pMax ) {
-                this.writePoint( pMin );
+                geometryString.append( this.writePoint( pMin ));
             } else {
-                geometryString += "POLYGON((";
+                geometryString.append( "POLYGON((");
                 double pMinX = pMin.get0();
                 double pMinY = pMin.get1();
                 double pMaxX = pMax.get0();
                 double pMaxY = pMax.get1();
-                geometryString += pMinX + " " + pMinY + ", ";
-                geometryString += pMaxX + " " + pMinY + ", ";
-                geometryString += pMaxX + " " + pMaxY + ", ";
-                geometryString += pMinX + " " + pMaxY + ", ";
-                geometryString += pMinX + " " + pMinY;
+                geometryString.append( pMinX + " " + pMinY + ", ");
+                geometryString.append( pMaxX + " " + pMinY + ", ");
+                geometryString.append( pMaxX + " " + pMaxY + ", ");
+                geometryString.append( pMinX + " " + pMaxY + ", ");
+                geometryString.append( pMinX + " " + pMinY);
 
-                geometryString += "))";
+                geometryString.append( "))");
+                
 
             }
         }
+        return geometryString;
     }
 
     public static String write( Geometry geom ) {
@@ -565,6 +717,20 @@ public class WKTWriter {
     public static void write( Geometry geom, Writer writer )
                             throws IOException {
         jtsWriter.write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(), writer );
+    }
+
+    private void appendObjectProps (StringBuilder sb, Geometry geom) {
+        if (flags.contains( WKTFlag.USE_DKT )) {
+            sb.append ('[');
+            if (geom.getId() != null) {
+                sb.append ("id='");
+                sb.append (geom.getId());
+                sb.append ('\'');
+            }
+            StandardGMLObjectProps props = geom.getAttachedProperties();
+            // TODO description, name, metadata, ...
+            sb.append (']');
+        }
     }
 
 }
