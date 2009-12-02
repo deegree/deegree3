@@ -525,10 +525,10 @@ public class Java2DRenderer implements Renderer {
             return in;
         case Foot:
             // TODO properly convert the res to foot
-            return in / res;
+            return in / res * ( 0.28 / pixelSize );
         case Metre:
             // TODO properly convert the res to m
-            return in / res;
+            return in / res * ( 0.28 / pixelSize );
         case mm:
             return in / pixelSize;
         }
