@@ -88,7 +88,7 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
      * @param writer
      */
     public GML21GeometryEncoder( XMLStreamWriter writer ) {
-        new GML21GeometryEncoder( writer, new HashSet<String>() );
+        this( writer, new HashSet<String>() );
     }
 
     /**
