@@ -1,2 +1,4 @@
-MULTILINESTRING((2 0, 0 2, -2 0), (-2 0, 0 -2, 2 0))
-LINESTRING(2 0, 0 2, -2 0, -2 0, 0 -2, 2 0)
+CURVE()??
+COMPOUNDCURVE ( CIRCULARSTRING( 2 0, 0 2, -2, 0), LINESTRING (-2 0, 0 -2))
+MULTILINESTRING((2 0, ..., 0 2, ..., -2 0), (-2 0, 0 -2, 2 0))
+LINESTRING(2 0, ..., 0 2, ..., -2 0, -2 0, 0 -2, 2 0)
