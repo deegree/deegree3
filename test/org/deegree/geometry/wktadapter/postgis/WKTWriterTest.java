@@ -1,0 +1,122 @@
+//$HeadURL$
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+package org.deegree.geometry.wktadapter.postgis;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+
+import org.deegree.commons.configuration.JDBCConnections;
+import org.deegree.commons.configuration.PooledConnection;
+import org.deegree.commons.gml.GMLDocumentIdContext;
+import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.ConnectionManagerTest;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.WKTWriter;
+import org.deegree.geometry.WKTWriter.WKTFlag;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
+import org.deegree.geometry.gml.GML311GeometryDecoderTest;
+import org.junit.Test;
+
+import junit.framework.TestCase;
+import static org.junit.Assert.*;
+
+/**
+ * Tests the correct syntax of the sql statement that should be dispatched against the postgis database
+ * 
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author last edited by: $Author: thomas $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public class WKTWriterTest extends TestCase {
+
+    private final String BASE_DIR = "testdata/geometries/";
+
+    private static GeometryFactory geomFac = new GeometryFactory();
+
+    @Test
+    public void test_EXAMPLE1_Point()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        // point.gml
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        WKTWriter writer = new WKTWriter(flag);
+        Geometry geom = parseGeometry( "Point_coord.gml" );
+        writer.writeGeometry( geom );
+
+        ConnectionManagerTest con = new ConnectionManagerTest();
+        con.testConnectionAllocation();
+        Connection conn = ConnectionManager.getConnection( "conn1" );
+        
+        String s = "Select (GeomFromText('Point(2 2)'))";
+        ResultSet rs = conn.createStatement().executeQuery( s );
+        int countRows = 0;
+        while ( rs.next() ) {
+            countRows = rs.getInt( 1 );
+            System.out.println( rs.getInt( 1 ) );
+        }
+        
+        
+        
+        
+        
+        conn.close();
+
+    }
+
+    private Geometry parseGeometry( String fileName )
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       GML311GeometryDecoderTest.class.getResource( BASE_DIR
+                                                                                                                    + fileName ) );
+        xmlReader.nextTag();
+        return new GML311GeometryDecoder( geomFac, new GMLDocumentIdContext() ).parse( xmlReader, null );
+    }
+
+}
