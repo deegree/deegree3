@@ -38,7 +38,6 @@ package org.deegree.gml;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -55,7 +54,7 @@ import org.deegree.gml.geometry.GMLGeometryEncoder;
 /**
  * Stream-based writer for all kinds of GML objects supported by deegree.
  * <p>
- * This class is not thread-safe.
+ * Instances of this class are not thread-safe.
  * </p>
  * 
  * @see GMLObject
@@ -157,6 +156,15 @@ public class GMLStreamWriter {
         this.schemaLocation = schemaLocation;
     }
 
+    /**
+     * Controls the formatting of written coordinates in geometries.
+     * 
+     * @param formatter 
+     */
+    public void setCoordinateFormatter (Object formatter) {
+        //TODO
+    }
+    
     public void write( GMLObject object )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( object instanceof Feature ) {

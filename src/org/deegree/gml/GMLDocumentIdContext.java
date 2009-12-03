@@ -41,11 +41,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.feature.FeatureReference;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.deegree.gml.geometry.refs.GeometryReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,11 +121,26 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
 
     @Override
     public Feature getFeature( String uri, String baseURL ) {
+        Feature feature = null;
         if ( uri.startsWith( "#" ) ) {
-            return idToFeature.get( uri.substring( 1 ) );
+            feature = idToFeature.get( uri.substring( 1 ) );
+        } else {
+            try {
+                URL resolvedURL = null;
+                if ( baseURL != null ) {
+                    resolvedURL = new URL( new URL( baseURL ), uri );
+                } else {
+                    resolvedURL = new URL( uri );
+                }
+                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, resolvedURL );
+                feature = gmlReader.readFeature();
+                gmlReader.close();
+                LOG.debug( "Read GML feature" );
+            } catch ( Exception e ) {
+                throw new RuntimeException( "Unable to resolve external geometry reference: " + e.getMessage() );
+            }
         }
-        String msg = "Resolving of remote URIs is not implemented yet.";
-        throw new UnsupportedOperationException( msg );
+        return feature;
     }
 
     @Override

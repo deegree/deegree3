@@ -65,14 +65,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Generates GML application schemas from {@link ApplicationSchema} instances.
- * <p>
- * The following GML flavors are supported:
- * <ul>
- * <li>GML 2 (2.1.2)</li>
- * <li>GML 3 (3.1.1)</li>
- * <li>GML 3.2 (3.2.1)</li>
- * </ul>
- * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -83,11 +75,13 @@ public class ApplicationSchemaXSDEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );
 
-    private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
+    private static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
 
-    private static final String GML_311_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+    private static final String GML_30_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.0.1/base/gml.xsd";    
+    
+    private static final String GML_31_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
 
-    private static final String GML_321_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
+    private static final String GML_32_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
 
     private final GMLVersion version;
 
@@ -123,15 +117,23 @@ public class ApplicationSchemaXSDEncoder {
             abstractGMLFeatureElement = "gml:_Feature";
             featurePropertyType = "gml:FeatureAssociationType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
-                this.importURLs.put( gmlNsURI, GML_212_DEFAULT_INCLUDE );
+                this.importURLs.put( gmlNsURI, GML_2_DEFAULT_INCLUDE );
             }
             break;
+        case GML_30:
+            gmlNsURI = GMLNS;
+            abstractGMLFeatureElement = "gml:_Feature";
+            featurePropertyType = "gml:FeaturePropertyType";
+            if ( !this.importURLs.containsKey( gmlNsURI ) ) {
+                this.importURLs.put( gmlNsURI, GML_30_DEFAULT_INCLUDE );
+            }
+            break;            
         case GML_31:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
             featurePropertyType = "gml:FeaturePropertyType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
-                this.importURLs.put( gmlNsURI, GML_311_DEFAULT_INCLUDE );
+                this.importURLs.put( gmlNsURI, GML_31_DEFAULT_INCLUDE );
             }
             break;
         case GML_32:
@@ -139,7 +141,7 @@ public class ApplicationSchemaXSDEncoder {
             abstractGMLFeatureElement = "gml:AbstractFeature";
             featurePropertyType = "gml:FeaturePropertyType";
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
-                this.importURLs.put( gmlNsURI, GML_321_DEFAULT_INCLUDE );
+                this.importURLs.put( gmlNsURI, GML_32_DEFAULT_INCLUDE );
             }
             break;
         }

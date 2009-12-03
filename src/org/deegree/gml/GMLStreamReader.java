@@ -53,7 +53,7 @@ import org.deegree.gml.geometry.GMLGeometryDecoder;
 /**
  * Stream-based reader for all kinds of GML objects supported by deegree.
  * <p>
- * This class is not thread-safe.
+ * Instances of this class are not thread-safe.
  * </p>
  * 
  * @see GMLObject

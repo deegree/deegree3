@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,19 +32,19 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
 /**
- * Enum type for the GML versions that have to be differerentiated in deegree.
- *
+ * Enum type for the GML versions that have to be differerentiated in deegree's GML subsystem.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public enum GMLVersion {
-    /** GML 2 versions (one of the range from 2.0.0 up to 2.1.2) */
+    /** GML 2 versions (any in the range from 2.0.0 to 2.1.2) */
     GML_2,
     /** GML 3.0 versions (either 3.0.0 or 3.0.1) */
     GML_30,

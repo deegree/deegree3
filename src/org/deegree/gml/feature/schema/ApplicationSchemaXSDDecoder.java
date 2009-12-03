@@ -86,10 +86,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides access to the {@link FeatureType} hierarchy defined in a GML schema document.
  * <p>
- * Note that the generated {@link ApplicationSchema} contains only user-defined feature types, i.e. all types from the
- * GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This follows the
- * idea that working with {@link ApplicationSchema} objects should not involve GML (and GML-version) specific details
- * (e.g. GML feature types).
+ * Note that the generated {@link ApplicationSchema} only contains user-defined feature types, i.e. all feature base
+ * types from the GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This
+ * follows the idea that working with {@link ApplicationSchema} objects should not involve GML (and GML-version)
+ * specific details (such as the mentioned GML feature types).
  * </p>
  * 
  * @see ApplicationSchema
@@ -121,9 +121,9 @@ public class ApplicationSchemaXSDDecoder {
     // after all FeatureTypes have been created
     private List<FeaturePropertyType> featurePropertyTypes = new ArrayList<FeaturePropertyType>();
 
-    private final Map<String,String> nsToPrefix = new HashMap<String,String>();
-    
-    private static int prefixIndex = 0; 
+    private final Map<String, String> nsToPrefix = new HashMap<String, String>();
+
+    private static int prefixIndex = 0;
 
     /**
      * @param gmlVersion
@@ -140,12 +140,12 @@ public class ApplicationSchemaXSDDecoder {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        if (namespaceHints != null) {
-            for (Entry<String,String> prefixToNs : namespaceHints.entrySet()) {
+        if ( namespaceHints != null ) {
+            for ( Entry<String, String> prefixToNs : namespaceHints.entrySet() ) {
                 nsToPrefix.put( prefixToNs.getValue(), prefixToNs.getKey() );
             }
         }
-        
+
         analyzer = new XSModelGMLAnalyzer( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
 
@@ -156,7 +156,7 @@ public class ApplicationSchemaXSDDecoder {
             XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
             if ( substitutionElement != null ) {
                 QName substitutionElementName = createQName( substitutionElement.getNamespace(),
-                                                           substitutionElement.getName() );
+                                                             substitutionElement.getName() );
                 ftNameToSubstitutionGroupName.put( ftName, substitutionElementName );
             }
         }
@@ -822,11 +822,11 @@ public class ApplicationSchemaXSDDecoder {
     public Set<QName> getAllEncounteredTypes() {
         return encounteredTypes;
     }
-    
-    private QName createQName (String namespace, String localPart) {        
+
+    private QName createQName( String namespace, String localPart ) {
         String prefix = nsToPrefix.get( namespace );
-        if (prefix == null ) {
-            prefix = generatePrefix ();
+        if ( prefix == null ) {
+            prefix = generatePrefix();
             nsToPrefix.put( namespace, prefix );
         }
         return new QName( namespace, localPart, prefix );

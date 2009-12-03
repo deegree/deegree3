@@ -43,11 +43,11 @@ import org.deegree.commons.xml.schema.XSModelAnalyzer;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Provides convenient access to the <i>relevant</i> element declarations of a GML schema (can be both application or
- * core schema).
+ * Provides convenient access to the <i>object</i> element declarations of a GML schema (both application and GML core
+ * schema objects).
  * <p>
- * An element declaration is <i>relevant</i>, if it is in a GML object class. In the latest version of GML (3.2.1),
- * eight classes of GML objects exist:
+ * An element declaration is an <i>object</i> element declaration, if it is in one or more of GML's object substitution
+ * groups. In the latest version of GML (3.2.1), eight (?) classes of GML objects exist:
  * <ul>
  * <li>feature</li>
  * <li>geometry</li>
@@ -57,11 +57,9 @@ import org.deegree.gml.GMLVersion;
  * <li>time object</li>
  * <li>coverage</li>
  * <li>style</li>
+ * <li>object?</li>
+ * <li>gml?</li>
  * </ul>
- * </p>
- * <p>
- * Please refer to chapter 10 of the book "Geography Mark-Up Language - Foundations for the Geo-Web" by Ron Lake et al.
- * for details.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -75,7 +73,7 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     private static final String GML_32_NS = "http://www.opengis.net/gml/3.2";
 
-    private GMLVersion mode;
+    private GMLVersion version;
 
     private XSElementDeclaration abstractFeatureElementDecl;
 
@@ -97,11 +95,11 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     private XSElementDeclaration abstractSurfacePatchElementDecl;
 
-    public XSModelGMLAnalyzer( GMLVersion mode, String...schemaUrls ) throws ClassCastException, ClassNotFoundException,
-                            InstantiationException, IllegalAccessException {
+    public XSModelGMLAnalyzer( GMLVersion version, String... schemaUrls ) throws ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
         super( schemaUrls );
-        this.mode = mode;
-        switch ( mode ) {
+        this.version = version;
+        switch ( version ) {
         case GML_2: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
@@ -187,7 +185,7 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
     public List<XSElementDeclaration> getFeatureCollectionElementDeclarations( String namespace, boolean onlyConcrete ) {
         List<XSElementDeclaration> fcDecls = null;
 
-        switch ( mode ) {
+        switch ( version ) {
         case GML_2:
         case GML_31: {
             // TODO do this the right way
