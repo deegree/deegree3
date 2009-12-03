@@ -144,8 +144,8 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
     }
 
     @Override
-    public Object getObject( String uri, String baseURL ) {
-        Object o = getFeature( uri, baseURL );
+    public GMLObject getObject( String uri, String baseURL ) {
+        GMLObject o = getFeature( uri, baseURL );
         if ( o == null ) {
             o = getGeometry( uri, baseURL );
         }

@@ -39,12 +39,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLObject;
 
 /**
- * Cache for persistent objects ({@link Feature} / {@link Geometry} instances) stored in a {@link FeatureStore}.
+ * Cache for persistent {@link GMLObject} instances stored in a {@link FeatureStore}.
  * 
  * @see FeatureStore
  * 
@@ -55,7 +54,7 @@ import org.deegree.geometry.Geometry;
  */
 public class FeatureStoreCache {
 
-    private Map<String, Object> idToObject = Collections.synchronizedMap( new HashMap<String, Object>() );
+    private Map<String, GMLObject> idToObject = Collections.synchronizedMap( new HashMap<String, GMLObject>() );
 
     /**
      * Returns the object with the specified id (if it exists in the cache).
@@ -64,11 +63,11 @@ public class FeatureStoreCache {
      *            id of the object
      * @return the object with the specified id, or <code>null</code> if it is not present in the cache
      */
-    public Object get( String id ) {
+    public GMLObject get( String id ) {
         return idToObject.get( id );
     }
 
-    public void add (String id, Object obj) {
+    public void add (String id, GMLObject obj) {
         idToObject.put( id, obj );
     }
     

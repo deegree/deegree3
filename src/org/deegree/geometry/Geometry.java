@@ -41,6 +41,7 @@ import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.gml.GMLObject;
 
 /**
  * Base interface for all vector geometry types.
@@ -95,7 +96,7 @@ import org.deegree.geometry.primitive.Point;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Geometry {
+public interface Geometry extends GMLObject {
 
     /**
      * Convenience enum type for discriminating the different geometry variants.

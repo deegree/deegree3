@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,31 +32,23 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Geometry;
-
 /**
- * Provides the functionality to retrieve {@link GMLObject} instances by a URI (which may be local or
- * remote).
- * <p>
- * A local reference is always constructed as <code># + id</code>.
- * </p>
+ * Basic interface for GML objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface GMLObjectResolver {
+public interface GMLObject {
 
-    public Feature getFeature( String uri, String baseURL );
-
-    public Geometry getGeometry( String uri, String baseURL );
-    
-    // TODO methods for other GML object types (Topology, Coverage, CRS, ...)
-
-    public GMLObject getObject( String uri, String baseURL );
+    /**
+     * Returns the id of the object.
+     * 
+     * @return the id of the object, or <code>null</code> if it doesn't have an id
+     */
+    public String getId();
 }

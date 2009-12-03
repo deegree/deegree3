@@ -76,6 +76,7 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReferenceResolvingException;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureDecoder;
@@ -99,7 +100,7 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private final Map<QName, StoredFeatureTypeMetadata> ftNameToMd = new HashMap<QName, StoredFeatureTypeMetadata>();
 
-    private final Map<String, Object> idToObject = new HashMap<String, Object>();
+    private final Map<String, GMLObject> idToObject = new HashMap<String, GMLObject>();
 
     private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 
@@ -313,7 +314,7 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public Object getObjectById( String id ) {
+    public GMLObject getObjectById( String id ) {
         return idToObject.get( id );
     }
 

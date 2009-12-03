@@ -85,6 +85,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.gml.GMLObject;
 import org.slf4j.Logger;
 
 /**
@@ -509,7 +510,7 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public Object getObjectById( String id )
+    public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
         // TODO
         throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );

@@ -78,6 +78,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.gml.GMLObject;
 import org.postgis.PGgeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,10 +189,10 @@ public class PostGISFeatureStore implements FeatureStore {
     }
 
     @Override
-    public Object getObjectById( String id )
+    public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
 
-        Object geomOrFeature = cache.get( id );
+        GMLObject geomOrFeature = cache.get( id );
 
         if ( geomOrFeature == null ) {
             Connection conn = null;

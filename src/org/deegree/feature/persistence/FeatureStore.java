@@ -45,6 +45,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLObject;
 
 /**
  * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
@@ -178,7 +179,7 @@ public interface FeatureStore {
      * @throws FeatureStoreException
      *             if the query could not be performed
      */
-    public Object getObjectById( String id )
+    public GMLObject getObjectById( String id )
                             throws FeatureStoreException;
 
     /**

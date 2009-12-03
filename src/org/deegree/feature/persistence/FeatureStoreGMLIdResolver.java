@@ -37,6 +37,7 @@ package org.deegree.feature.persistence;
 
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLObjectResolver;
 import org.deegree.gml.GMLReferenceResolvingException;
 
@@ -73,7 +74,7 @@ public class FeatureStoreGMLIdResolver implements GMLObjectResolver {
     }
 
     @Override
-    public Object getObject( String uri, String baseURL ) {
+    public GMLObject getObject( String uri, String baseURL ) {
         if ( uri.startsWith( "#" ) ) {
             try {
                 return fs.getObjectById( uri.substring( 1 ) );

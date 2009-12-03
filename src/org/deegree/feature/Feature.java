@@ -43,6 +43,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
 
 /**
@@ -69,7 +70,7 @@ import org.deegree.gml.GMLVersion;
  * 
  * @version $Revision$, $Date$
  */
-public interface Feature extends MatchableObject {
+public interface Feature extends MatchableObject, GMLObject {
 
     /**
      * Returns the id of the feature.
