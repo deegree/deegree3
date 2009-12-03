@@ -84,6 +84,7 @@ import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Graphic;
+import org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.UOM;
 import org.slf4j.Logger;
@@ -218,7 +219,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    void applyStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset ) {
+    void applyStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset, PerpendicularOffsetType type ) {
         if ( stroke == null || isZero( stroke.width ) ) {
             graphics.setPaint( new Color( 0, 0, 0, 0 ) );
             return;
@@ -236,7 +237,7 @@ public class Java2DRenderer implements Renderer {
                 double poff = considerUOM( perpendicularOffset, uom );
                 Shape transed = object;
                 if ( !isZero( poff ) ) {
-                    transed = new OffsetStroke( poff, null ).createStrokedShape( transed );
+                    transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
                 }
                 Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ), true );
                 ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) );
@@ -246,7 +247,7 @@ public class Java2DRenderer implements Renderer {
                     graphics.fill( transed );
                 }
                 if ( stroke.stroke.mark.stroke != null ) {
-                    applyStroke( stroke.stroke.mark.stroke, uom, transed, 0 );
+                    applyStroke( stroke.stroke.mark.stroke, uom, transed, 0, null );
                     graphics.draw( transed );
                 }
                 return;
@@ -295,7 +296,7 @@ public class Java2DRenderer implements Renderer {
                                               dasharray, dashoffset );
             double poff = considerUOM( perpendicularOffset, uom );
             if ( !isZero( poff ) ) {
-                graphics.setStroke( new OffsetStroke( poff, bs ) );
+                graphics.setStroke( new OffsetStroke( poff, bs, type ) );
             } else {
                 graphics.setStroke( bs );
             }
@@ -310,13 +311,16 @@ public class Java2DRenderer implements Renderer {
                 return (T) transformer.transform( (Geometry) g );
             } catch ( IllegalArgumentException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.", g.getClass().getSimpleName() );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.",
+                          g.getClass().getSimpleName() );
             } catch ( TransformationException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.", g.getClass().getSimpleName() );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.",
+                          g.getClass().getSimpleName() );
             } catch ( UnknownCRSException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.", g.getClass().getSimpleName() );
+                LOG.warn( "Could not transform geometry of type '{}' before rendering, this may lead to problems.",
+                          g.getClass().getSimpleName() );
             }
         }
         return g;
@@ -427,7 +431,8 @@ public class Java2DRenderer implements Renderer {
             geom = transform( geom );
 
             Double line = fromCurve( (Curve) geom );
-            applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset );
+            applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
+                         styling.perpendicularOffsetType );
         }
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
@@ -474,7 +479,8 @@ public class Java2DRenderer implements Renderer {
 
                 applyFill( styling.fill, styling.uom );
                 graphics.fill( polygon );
-                applyStroke( styling.stroke, styling.uom, polygon, styling.perpendicularOffset );
+                applyStroke( styling.stroke, styling.uom, polygon, styling.perpendicularOffset,
+                             styling.perpendicularOffsetType );
             } else {
                 throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
             }

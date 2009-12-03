@@ -239,7 +239,7 @@ public class RenderHelper {
             renderer.graphics.fill( shape );
         }
         if ( mark.stroke != null ) {
-            renderer.applyStroke( mark.stroke, uom, shape, 0 );
+            renderer.applyStroke( mark.stroke, uom, shape, 0, null );
         }
     }
 

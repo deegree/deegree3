@@ -44,6 +44,7 @@ import static java.awt.geom.PathIterator.SEG_QUADTO;
 import static java.lang.Math.sqrt;
 import static org.deegree.commons.utils.GeometryUtils.prettyPrintShape;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
+import static org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Standard;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;
@@ -53,6 +54,7 @@ import java.awt.geom.PathIterator;
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType;
 import org.slf4j.Logger;
 
 /**
@@ -71,13 +73,21 @@ public class OffsetStroke implements Stroke {
 
     private final Stroke stroke;
 
+    private PerpendicularOffsetType type;
+
     /**
      * @param offset
      * @param stroke
+     * @param type
+     *            may be null, default is Standard
      */
-    public OffsetStroke( double offset, Stroke stroke ) {
+    public OffsetStroke( double offset, Stroke stroke, PerpendicularOffsetType type ) {
+        if ( type == null ) {
+            type = Standard;
+        }
         this.offset = offset;
         this.stroke = stroke;
+        this.type = type;
     }
 
     private static final double[] calcNormal( final double x1, final double y1, final double x2, final double y2,
@@ -183,10 +193,40 @@ public class OffsetStroke implements Stroke {
                 n1 = normals.poll();
                 n2 = normals.peek();
                 if ( n1 == n2 ) {
+                    continue;
+                }
+                switch ( type ) {
+                case Edged:
+                    if ( n2 == null ) {
+                        continue;
+                    }
+                    double[] n = new double[] { n1[0] + n2[0], n1[1] + n2[1] };
+                    double len = sqrt( n[0] * n[0] + n[1] * n[1] );
+                    n[0] /= len;
+                    n[1] /= len;
+                    n1 = calcNewInner( pair.second[0], pair.second[1], n1, n );
+                    path.lineTo( n1[0], n1[1] );
+                    n1 = calcNewInner( pair.second[0], pair.second[1], n, n2 );
+                    path.lineTo( n1[0], n1[1] );
+                    break;
+                case Round:
+                    double[] p1 = new double[] { pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset };
+                    path.lineTo( p1[0], p1[1] );
+                    if ( n2 == null ) {
+                        continue;
+                    }
+                    double[] p2 = new double[] { pair.second[0] + n2[0] * offset, pair.second[1] + n2[1] * offset };
+                    double[] midp = new double[] { p1[0] + n2[0] * offset, p1[1] + n2[1] * offset };
+                    path.quadTo( midp[0], midp[1], p2[0], p2[1] );
+                    break;
+                case Standard:
+                    n1 = calcNewInner( pair.second[0], pair.second[1], n1, n2 );
+                    path.lineTo( n1[0], n1[1] );
+                    break;
+                case Strict:
+                    LOG.warn( "Strict perpendicular offset type is not implemented yet." );
                     break;
                 }
-                n1 = calcNewInner( pair.second[0], pair.second[1], n1, n2 );
-                path.lineTo( n1[0], n1[1] );
                 break;
             case SEG_MOVETO:
                 n1 = normals.peek();
@@ -203,9 +243,32 @@ public class OffsetStroke implements Stroke {
         }
 
         if ( isZero( lastx - firstx ) && isZero( lasty - firsty ) ) {
-            double[] pt = calcNewInner( firstx, firsty, lastNormal, firstNormal );
-            path.lineTo( pt[0], pt[1] );
-            path.closePath();
+            switch ( type ) {
+            case Edged:
+                double[] n = new double[] { lastNormal[0] + firstNormal[0], lastNormal[1] + firstNormal[1] };
+                double len = sqrt( n[0] * n[0] + n[1] * n[1] );
+                n[0] /= len;
+                n[1] /= len;
+                double[] n1 = calcNewInner( firstx, firsty, lastNormal, n );
+                path.lineTo( n1[0], n1[1] );
+                n1 = calcNewInner( firstx, firsty, n, firstNormal );
+                path.lineTo( n1[0], n1[1] );
+                break;
+            case Round:
+                double[] p1 = new double[] { firstx + lastNormal[0] * offset, firsty + lastNormal[1] * offset };
+                path.lineTo( p1[0], p1[1] );
+                double[] p2 = new double[] { firstx + firstNormal[0] * offset, firsty + firstNormal[1] * offset };
+                double[] midp = new double[] { p1[0] + firstNormal[0] * offset, p1[1] + firstNormal[1] * offset };
+                path.quadTo( midp[0], midp[1], p2[0], p2[1] );
+                break;
+            case Standard:
+                double[] pt = calcNewInner( firstx, firsty, lastNormal, firstNormal );
+                path.lineTo( pt[0], pt[1] );
+                path.closePath();
+                break;
+            case Strict:
+                break;
+            }
         }
 
         if ( LOG.isTraceEnabled() ) {

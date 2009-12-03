@@ -123,7 +123,8 @@ public class Java2DTextRenderer implements TextRenderer {
         renderer.applyFill( styling.fill, styling.uom );
         java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
         if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
-            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke );
+            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
+                                       styling.linePlacement.perpendicularOffsetType );
         }
 
         renderer.graphics.setStroke( stroke );
