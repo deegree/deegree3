@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.sqltransform.postgres;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,8 +57,8 @@ import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
-import org.deegree.geometry.WKTWriter;
-import org.deegree.geometry.WKTWriter.WKTFlag;
+import org.deegree.geometry.WKTWriterNG;
+import org.deegree.geometry.WKTWriterNG.WKTFlag;
 
 /**
  * Transforms the spatial query into a PostGreSQL statement. It encapsules the required methods.
@@ -86,12 +90,18 @@ public class SpatialOperatorTransformingPostGres {
 
     private List<String> stringSpatialGeom;
 
-    WKTWriter wktWriter;
+    WKTWriterNG wktWriter;
+    
 
     public SpatialOperatorTransformingPostGres( SpatialOperator spaOp ) {
         this.spaOp = spaOp;
 
-        spatialOperation = doSpatialOperatorToPostGreSQL();
+        try {
+            spatialOperation = doSpatialOperatorToPostGreSQL();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 
@@ -120,12 +130,15 @@ public class SpatialOperatorTransformingPostGres {
      * Building the SQL statement for the requested spatial query
      * 
      * @return
+     * @throws IOException 
      */
-    private String doSpatialOperatorToPostGreSQL() {
+    private String doSpatialOperatorToPostGreSQL() throws IOException {
 
         org.deegree.filter.spatial.SpatialOperator.SubType typeSpatial = spaOp.getSubType();
 
-        String stringSpatial = "";
+        Writer writer = new StringWriter();
+        
+        Writer writerSpatial = new StringWriter();
 
         table = new HashSet<String>();
 
@@ -135,8 +148,8 @@ public class SpatialOperatorTransformingPostGres {
 
         stringSpatialGeometry = "";
 
-        String geometryString = "";
-        
+        StringBuilder geometryString = new StringBuilder();
+
         Set<WKTFlag> flag;
 
         switch ( typeSpatial ) {
@@ -145,34 +158,35 @@ public class SpatialOperatorTransformingPostGres {
 
             BBOX bboxOp = (BBOX) spaOp;
             Object[] paramsBBox = bboxOp.getParams();
-            stringSpatial = "";
+
             stringSpatialGeom = new LinkedList<String>();
             flag = new HashSet<WKTFlag>();
-            
-            wktWriter = new WKTWriter(flag);
+
+            wktWriter = new WKTWriterNG( flag, writerSpatial );
 
             for ( Object opParam : paramsBBox ) {
                 if ( opParam != bboxOp.getBoundingBox() ) {
-                    stringSpatial += propertyNameBuild( opParam );
-                    stringSpatial += " && ";
+                    propertyNameBuild( writerSpatial, opParam );
+                    writerSpatial.append( " && " );
                 } else {
-                    wktWriter.writeGeometry( bboxOp.getBoundingBox() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-
+                    writerSpatial.append( '\'' );
+                    wktWriter.writeGeometry( bboxOp.getBoundingBox(), writer );
+                    writerSpatial.append( '\'' );
                 }
 
             }
 
-            return stringSpatial;
+            return writerSpatial.toString();
 
         case BEYOND:
             Beyond beyondOp = (Beyond) spaOp;
             Object[] paramsBeyond = beyondOp.getParams();
-            stringSpatial += "DISTANCE(";
+            writerSpatial.append( "DISTANCE(" );
             stringSpatialGeom = new LinkedList<String>();
             flag = new HashSet<WKTFlag>();
-            wktWriter = new WKTWriter(flag);
+            flag.add( WKTFlag.USE_DKT );
             
+            wktWriter = new WKTWriterNG( flag, writerSpatial );
 
             counter = 0;
 
@@ -180,30 +194,36 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != beyondOp.getGeometry() ) {
                     counter++;
-                    stringSpatial += propertyNameBuild( opParam );
+                    propertyNameBuild( writerSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( beyondOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+                    wktWriter.writeGeometry( beyondOp.getGeometry(), writer ); 
+
+                    writerSpatial.append( '\'' );
+                    writerSpatial.append( writer.toString() );
+                    writerSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( writer.toString() );
+                    geometryString.append( '\'' );
 
                 }
                 if ( counter < paramsBeyond.length ) {
-                    stringSpatial += ",";
+                    writerSpatial.append( ',' );
                 } else {
-                    stringSpatial += ") <= " + beyondOp.getDistance().getValue().toString() + " AND ";
+                    writerSpatial.append( ") <= " + beyondOp.getDistance().getValue().toString() + " AND " );
                 }
             }
-            stringSpatial += operatorBuild( "DISJOINT", geometryString );
+            operatorBuild( "DISJOINT", geometryString, writerSpatial );
 
-            return stringSpatial;
-
+            return writerSpatial.toString();
+/*
         case CONTAINS:
 
             Contains containsOp = (Contains) spaOp;
             Object[] paramsContains = containsOp.getParams();
-            stringSpatial = "(";
+
             counter = 0;
             stringSpatialGeom = new LinkedList<String>();
 
@@ -211,24 +231,29 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != containsOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( containsOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( containsOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( containsOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
 
             }
-            stringSpatial += operatorBuild( "CONTAINS", geometryString );
 
-            return stringSpatial;
+            operatorBuild( "CONTAINS", geometryString, stringSpatial );
+            return stringSpatial.toString();
 
         case CROSSES:
             Crosses crossesOp = (Crosses) spaOp;
             Object[] paramsCrosses = crossesOp.getParams();
-            stringSpatial = "(";
+
             counter = 0;
             stringSpatialGeom = new LinkedList<String>();
 
@@ -236,25 +261,31 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != crossesOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( crossesOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( crossesOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( crossesOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
 
             }
-            stringSpatial += operatorBuild( "CROSSES", geometryString );
 
-            return stringSpatial;
+            operatorBuild( "CROSSES", geometryString, stringSpatial );
+
+            return stringSpatial.toString();
 
         case DISJOINT:
 
             Disjoint disjointOp = (Disjoint) spaOp;
             Object[] paramsDisjoint = disjointOp.getParams();
-            stringSpatial = "";
+
             counter = 0;
             stringSpatialGeom = new LinkedList<String>();
 
@@ -262,24 +293,29 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != disjointOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( disjointOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( disjointOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( disjointOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
 
             }
-            stringSpatial += operatorBuild( "DISJOINT", geometryString );
 
-            return stringSpatial;
+            operatorBuild( "DISJOINT", geometryString, stringSpatial );
+            return stringSpatial.toString();
 
         case DWITHIN:
             DWithin dWithinOp = (DWithin) spaOp;
             Object[] paramsDWithin = dWithinOp.getParams();
-            stringSpatial += "DISTANCE(";
+            stringSpatial.append( "DISTANCE(" );
             stringSpatialGeom = new LinkedList<String>();
 
             counter = 0;
@@ -288,29 +324,34 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != dWithinOp.getGeometry() ) {
                     counter++;
-                    stringSpatial += propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( dWithinOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( dWithinOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( dWithinOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
                 if ( counter < paramsDWithin.length ) {
-                    stringSpatial += ",";
+                    stringSpatial.append( ',' );
                 } else {
-                    stringSpatial += ") >= " + dWithinOp.getDistance().getValue().toString() + " AND ";
+                    stringSpatial.append( ") <= " + dWithinOp.getDistance().getValue().toString() + " AND " );
                 }
             }
-            stringSpatial += operatorBuild( "DWITHIN", geometryString );
 
-            return stringSpatial;
+            operatorBuild( "DWITHIN", geometryString, stringSpatial );
+            return stringSpatial.toString();
 
         case EQUALS:
 
             Equals equalsOp = (Equals) spaOp;
             Object[] paramsEquals = equalsOp.getParams();
-            stringSpatial = "(";
+
             counter = 0;
             stringSpatialGeom = new LinkedList<String>();
 
@@ -318,24 +359,29 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != equalsOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( equalsOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( equalsOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( equalsOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
 
             }
-            stringSpatial += operatorBuild( "EQUALS", geometryString );
 
-            return stringSpatial;
+            operatorBuild( "EQUALS", geometryString, stringSpatial );
+            return stringSpatial.toString();
 
         case INTERSECTS:
             Intersects intersectsOp = (Intersects) spaOp;
             Object[] paramsIntersects = intersectsOp.getParams();
-            stringSpatial = "(";
+
             counter = 0;
             stringSpatialGeom = new LinkedList<String>();
 
@@ -343,24 +389,29 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != intersectsOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( intersectsOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( intersectsOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( intersectsOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
 
             }
-            stringSpatial += operatorBuild( "INTERSECTS", geometryString );
 
-            return stringSpatial;
+            operatorBuild( "INTERSECTS", geometryString, stringSpatial );
+            return stringSpatial.toString();
 
         case OVERLAPS:
             Overlaps overlapsOp = (Overlaps) spaOp;
             Object[] paramsOverlaps = overlapsOp.getParams();
-            stringSpatial = "(";
+
             counter = 0;
             stringSpatialGeom = new LinkedList<String>();
 
@@ -368,24 +419,29 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != overlapsOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( overlapsOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( overlapsOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( overlapsOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
 
             }
-            stringSpatial += operatorBuild( "OVERLAPS", geometryString );
 
-            return stringSpatial;
+            operatorBuild( "OVERLAPS", geometryString, stringSpatial );
+            return stringSpatial.toString();
 
         case TOUCHES:
             Touches touchesOp = (Touches) spaOp;
             Object[] paramsTouches = touchesOp.getParams();
-            stringSpatial = "(";
+
             counter = 0;
             stringSpatialGeom = new LinkedList<String>();
 
@@ -393,24 +449,29 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != touchesOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( touchesOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( touchesOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( touchesOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
 
             }
-            stringSpatial += operatorBuild( "TOUCHES", geometryString );
 
-            return stringSpatial;
+            operatorBuild( "TOUCHES", geometryString, stringSpatial );
+            return stringSpatial.toString();
 
         case WITHIN:
             Within withinOp = (Within) spaOp;
             Object[] paramsWithin = withinOp.getParams();
-            stringSpatial = "(";
+
             counter = 0;
             stringSpatialGeom = new LinkedList<String>();
 
@@ -418,22 +479,27 @@ public class SpatialOperatorTransformingPostGres {
 
                 if ( opParam != withinOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( opParam );
+                    propertyNameBuild( stringSpatial, opParam );
 
                 } else {
                     counter++;
-                    wktWriter.writeGeometry( withinOp.getGeometry() );
-                    stringSpatial += "'" + wktWriter.getGeometryString() + "'";
-                    geometryString = "'" + wktWriter.getGeometryString() + "'";
+
+                    stringSpatial.append( '\'' );
+                    stringSpatial.append( wktWriter.writeGeometry( withinOp.getGeometry() ) );
+                    stringSpatial.append( '\'' );
+
+                    geometryString.append( '\'' );
+                    geometryString.append( wktWriter.writeGeometry( withinOp.getGeometry() ) );
+                    geometryString.append( '\'' );
                 }
 
             }
-            stringSpatial += operatorBuild( "WITHIN", geometryString );
 
-            return stringSpatial;
-
+            operatorBuild( "WITHIN", geometryString, stringSpatial );
+            return stringSpatial.toString();
+*/
         }
-        return stringSpatial;
+        return writerSpatial.toString();
 
     }
 
@@ -443,14 +509,16 @@ public class SpatialOperatorTransformingPostGres {
      * @param operator
      * @return
      */
-    private String operatorBuild( String operator, String stringSpatialGeom ) {
-        String stringSpatial = "";
-
-        stringSpatial += operator + "(" + stringSpatialPropertyName + ",";
+    private void operatorBuild( String operator, StringBuilder stringSpatialGeom, Writer writerSpatial ) {
+        try {
+            writerSpatial.append( operator + "(" + stringSpatialPropertyName + "," );
+            writerSpatial.append( stringSpatialGeom + ")" );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // TODO handling and counter if there are more stringSpatial
-        stringSpatial += stringSpatialGeom + ")";
-
-        return stringSpatial;
+        
     }
 
     /**
@@ -459,8 +527,8 @@ public class SpatialOperatorTransformingPostGres {
      * @param opParam
      * @return
      */
-    private String propertyNameBuild( Object opParam ) {
-        String stringSpatial = "";
+    private void propertyNameBuild( Writer writerSpatial, Object opParam ) {
+
         String exp = ( (PropertyName) opParam ).getPropertyName();
 
         stringSpatialPropertyName += "GeomFromText(AsText(";
@@ -475,8 +543,13 @@ public class SpatialOperatorTransformingPostGres {
         table.addAll( expressObject.getTable() );
         column.addAll( expressObject.getColumn() );
         stringSpatialPropertyName += "))";
-        stringSpatial += stringSpatialPropertyName;
-        return stringSpatial;
+        try {
+            writerSpatial.append( stringSpatialPropertyName );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
 }
