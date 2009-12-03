@@ -19,7 +19,16 @@
   </element>
   <complexType name="FeatureStoreType" abstract="true">
     <complexContent>
-      <extension base="ds:AbstractDataSourceType"/>
+      <extension base="ds:AbstractDataSourceType">
+        <sequence>
+          <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
+            <complexType>
+              <attribute name="prefix" type="string" use="required" />
+              <attribute name="namespaceURI" type="string" use="required" />
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
     </complexContent>
   </complexType>  
   

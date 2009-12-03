@@ -262,7 +262,7 @@ public class GMLFeatureDecoderTest {
                             GMLReferenceResolvingException {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = new URL( "file:/home/schneider/Desktop/waldbruecke_v1.0.0.gml" );

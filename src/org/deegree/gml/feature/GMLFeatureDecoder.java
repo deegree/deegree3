@@ -342,7 +342,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         // TODO handle multi-namespace schemas
         ApplicationSchema schema = null;
         try {
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( version, schemaUrls );
+            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( version, null, schemaUrls );
             schema = decoder.extractFeatureTypeSchema();
         } catch ( Exception e ) {
             e.printStackTrace();

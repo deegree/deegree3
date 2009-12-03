@@ -84,7 +84,7 @@ public class FeatureXPathTest {
                             throws Exception {
 
         String schemaURL = this.getClass().getResource( "../../gml/feature/testdata/schema/Philosopher.xsd" ).toString();
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext, GMLVersion.GML_31 );

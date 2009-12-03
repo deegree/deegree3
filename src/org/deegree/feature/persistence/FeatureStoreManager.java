@@ -53,6 +53,7 @@ import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
+import org.deegree.commons.datasource.configuration.FeatureStoreType.NamespaceHint;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType.GMLFeatureCollectionFileURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -249,6 +250,7 @@ public class FeatureStoreManager {
             }
             ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
                                                                                    GMLVersion.valueOf( gmlVersionType.name() ),
+                                                                                   getHintMap( jaxbConfig.getNamespaceHint() ),
                                                                                    schemaURLs );
             schema = decoder.extractFeatureTypeSchema();
         } catch ( Exception e ) {
@@ -322,6 +324,7 @@ public class FeatureStoreManager {
             }
             ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
                                                                                    GMLVersion.valueOf( gmlVersionType.name() ),
+                                                                                   getHintMap( jaxbConfig.getNamespaceHint() ),
                                                                                    schemaURLs );
             schema = decoder.extractFeatureTypeSchema();
         } catch ( Exception e ) {
@@ -334,6 +337,14 @@ public class FeatureStoreManager {
                                                           jaxbConfig.getDBSchemaQualifier() );
         registerAndInit( fs, id );
         return fs;
+    }
+
+    private static Map<String, String> getHintMap( List<NamespaceHint> hints ) {
+        Map<String, String> prefixToNs = new HashMap<String, String>();
+        for ( NamespaceHint namespaceHint : hints ) {
+            prefixToNs.put( namespaceHint.getPrefix(), namespaceHint.getNamespaceURI() );
+        }
+        return prefixToNs;
     }
 
     private static void registerAndInit( FeatureStore fs, String id )

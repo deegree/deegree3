@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -94,9 +95,9 @@ import org.slf4j.LoggerFactory;
  * @see ApplicationSchema
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
 public class ApplicationSchemaXSDDecoder {
 
@@ -120,19 +121,41 @@ public class ApplicationSchemaXSDDecoder {
     // after all FeatureTypes have been created
     private List<FeaturePropertyType> featurePropertyTypes = new ArrayList<FeaturePropertyType>();
 
-    public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, String... schemaUrls ) throws ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private final Map<String,String> nsToPrefix = new HashMap<String,String>();
+    
+    private static int prefixIndex = 0; 
 
+    /**
+     * @param gmlVersion
+     * @param namespaceHints
+     *            optional hints (key: prefix, value: namespaces) for generating 'nice' qualified feature type and
+     *            property type names, may be null
+     * @param schemaUrls
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        if (namespaceHints != null) {
+            for (Entry<String,String> prefixToNs : namespaceHints.entrySet()) {
+                nsToPrefix.put( prefixToNs.getValue(), prefixToNs.getKey() );
+            }
+        }
+        
         analyzer = new XSModelGMLAnalyzer( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
 
         // feature element declarations
         for ( XSElementDeclaration elementDecl : featureElementDecls ) {
-            QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+            QName ftName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
             ftNameToFtElement.put( ftName, elementDecl );
             XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
             if ( substitutionElement != null ) {
-                QName substitutionElementName = new QName( substitutionElement.getNamespace(),
+                QName substitutionElementName = createQName( substitutionElement.getNamespace(),
                                                            substitutionElement.getName() );
                 ftNameToSubstitutionGroupName.put( ftName, substitutionElementName );
             }
@@ -141,7 +164,7 @@ public class ApplicationSchemaXSDDecoder {
         // geometry element declarations
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, false );
         for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
-            QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+            QName ftName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
             geometryNameToGeometryElement.put( ftName, elementDecl );
         }
     }
@@ -180,7 +203,7 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
-        QName ftName = new QName( featureElementDecl.getNamespace(), featureElementDecl.getName() );
+        QName ftName = createQName( featureElementDecl.getNamespace(), featureElementDecl.getName() );
         LOG.debug( "Building feature type declaration: '" + ftName + "'" );
 
         if ( featureElementDecl.getTypeDefinition().getType() == XSTypeDefinition.SIMPLE_TYPE ) {
@@ -268,7 +291,7 @@ public class ApplicationSchemaXSDDecoder {
         }
         case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
             XSSimpleTypeDefinition simpleType = typeDef.getSimpleType();
-            QName simpleTypeName = new QName( simpleType.getNamespace(), simpleType.getName() );
+            QName simpleTypeName = createQName( simpleType.getNamespace(), simpleType.getName() );
             // contents = new SimpleContent( simpleTypeName );
             break;
         }
@@ -332,7 +355,7 @@ public class ApplicationSchemaXSDDecoder {
 
     private PropertyType<?> buildPropertyType( XSElementDeclaration elementDecl, int minOccurs, int maxOccurs ) {
         PropertyType<?> pt = null;
-        QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+        QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "*** Found property declaration: '" + elementDecl.getName() + "'." );
 
         // parse substitutable properties (e.g. genericProperty in CityGML)
@@ -373,7 +396,7 @@ public class ApplicationSchemaXSDDecoder {
                                             int minOccurs, int maxOccurs, List<PropertyType<?>> ptSubstitutions ) {
 
         PropertyType pt = null;
-        QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+        QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "- Property definition '" + ptName + "' uses a complex type for content definition." );
         pt = buildFeaturePropertyType( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
         if ( pt == null ) {
@@ -381,7 +404,7 @@ public class ApplicationSchemaXSDDecoder {
             if ( pt == null ) {
                 if ( typeDef.getName() != null ) {
                     // TODO improve detection of property types
-                    QName typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
+                    QName typeName = createQName( typeDef.getNamespace(), typeDef.getName() );
                     if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}CodeType" ) ) ) {
                         LOG.trace( "Identified a CodePropertyType." );
                         pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
@@ -439,7 +462,7 @@ public class ApplicationSchemaXSDDecoder {
                                                           XSComplexTypeDefinition typeDef, int minOccurs,
                                                           int maxOccurs, List<PropertyType<?>> ptSubstitutions ) {
 
-        QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+        QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.trace( "Checking if element declaration '" + ptName + "' defines a feature property type." );
 
         FeaturePropertyType pt = buildFeaturePropertyTypeXGml( elementDecl, typeDef, minOccurs, maxOccurs,
@@ -483,7 +506,7 @@ public class ApplicationSchemaXSDDecoder {
                         XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
                         int minOccurs2 = particle2.getMinOccurs();
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
-                        QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
+                        QName elementName = createQName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( ftNameToFtElement.get( elementName ) != null ) {
                             LOG.trace( "Identified a feature property." );
                             pt = null;
@@ -553,7 +576,7 @@ public class ApplicationSchemaXSDDecoder {
                                                                   nsContext ), null );
             if ( refElement != null ) {
                 LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
-                QName elementName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+                QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
                 FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
                                                                   elementDecl.getAbstract(), ptSubstitutions );
                 featurePropertyTypes.add( pt );
@@ -580,7 +603,7 @@ public class ApplicationSchemaXSDDecoder {
                                                                   nsContext ), null );
             if ( refElement != null ) {
                 LOG.trace( "Identified a feature property (adv style)." );
-                QName elementName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+                QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
                 FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
                                                                   elementDecl.getAbstract(), ptSubstitutions );
                 featurePropertyTypes.add( pt );
@@ -604,7 +627,7 @@ public class ApplicationSchemaXSDDecoder {
                                                             XSComplexTypeDefinition typeDef, int minOccurs,
                                                             int maxOccurs, List<PropertyType<?>> ptSubstitutions ) {
 
-        QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+        QName ptName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
             LOG.trace( "CONTENTTYPE_ELEMENT" );
@@ -635,7 +658,7 @@ public class ApplicationSchemaXSDDecoder {
                         XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
                         int minOccurs2 = particle2.getMinOccurs();
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
-                        QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
+                        QName elementName = createQName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( geometryNameToGeometryElement.get( elementName ) != null ) {
                             LOG.trace( "Identified a geometry property." );
                             GeometryType geometryType = getGeometryType( elementName );
@@ -689,7 +712,7 @@ public class ApplicationSchemaXSDDecoder {
 
         PrimitiveType pt = null;
         if ( typeDef.getName() != null ) {
-            encounteredTypes.add( new QName( typeDef.getNamespace(), typeDef.getName() ) );
+            encounteredTypes.add( createQName( typeDef.getNamespace(), typeDef.getName() ) );
         }
 
         switch ( typeDef.getBuiltInKind() ) {
@@ -798,5 +821,18 @@ public class ApplicationSchemaXSDDecoder {
      */
     public Set<QName> getAllEncounteredTypes() {
         return encounteredTypes;
+    }
+    
+    private QName createQName (String namespace, String localPart) {        
+        String prefix = nsToPrefix.get( namespace );
+        if (prefix == null ) {
+            prefix = generatePrefix ();
+            nsToPrefix.put( namespace, prefix );
+        }
+        return new QName( namespace, localPart, prefix );
+    }
+
+    private String generatePrefix() {
+        return "app" + prefixIndex++;
     }
 }

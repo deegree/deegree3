@@ -62,7 +62,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
         // TODO do more thorough testing
@@ -74,7 +74,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
         FeatureType[] fts = schema.getFeatureTypes();
         Assert.assertEquals( 54, fts.length );
@@ -90,7 +90,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf0.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 3, fts.length );
     }
@@ -101,7 +101,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf1.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
         for ( FeatureType ft : fts ) {
@@ -118,7 +118,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/cite-gmlsf2.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( int i = 0; i < fts.length; i++ ) {
             System.out.println( fts[i] );
@@ -133,7 +133,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/cite/all.xsd" ).toString();
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_2, schemaURL );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_2, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 19, fts.length );
     }
@@ -144,7 +144,7 @@ public class GMLApplicationSchemaXSDDecoderTest {
                             IllegalAccessException {
 
         String schemaURL = "file:/home/schneider/workspace/lkee_xplanung2/resources/schema/XPlanGML_2_0/XPlanGml.xsd";
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         FeatureType ft = adapter.extractFeatureTypeSchema().getFeatureType(
                                                                             new QName(
                                                                                        "http://www.xplanung.de/xplangml",

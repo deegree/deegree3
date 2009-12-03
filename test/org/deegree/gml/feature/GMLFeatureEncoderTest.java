@@ -84,7 +84,7 @@ public class GMLFeatureEncoderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, TransformationException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureEncoderTest.class.getResource( DIR + SOURCE_FILE );
