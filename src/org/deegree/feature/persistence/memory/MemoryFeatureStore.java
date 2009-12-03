@@ -76,8 +76,10 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureDecoder;
 import org.slf4j.Logger;
@@ -148,13 +150,11 @@ public class MemoryFeatureStore implements FeatureStore {
                             GMLReferenceResolvingException {
 
         this( schema );
-        GMLFeatureDecoder parser = new GMLFeatureDecoder( schema, GMLVersion.GML_31 );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
-        xmlReader.next();
-        parser.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
-        xmlReader.close();
-        GMLDocumentIdContext idContext = parser.getDocumentIdContext();
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        gmlReader.setApplicationSchema( schema );
+        gmlReader.readFeature();
+        gmlReader.close();
+        GMLDocumentIdContext idContext = gmlReader.getIdContext();
         idContext.resolveLocalRefs();
 
         // add features

@@ -59,7 +59,9 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GML311FeatureEncoder;
 import org.deegree.gml.feature.GMLFeatureDecoder;
@@ -122,10 +124,8 @@ public class FeatureCoder {
 
         BufferedInputStream bis = new BufferedInputStream( is );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( bis, "UTF-8" );
-        // skip START_DOCUMENT
-        xmlStream.nextTag();
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( xmlStream, null );
-        GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, featureStoreGMLIdResolver, GMLVersion.GML_31 );
-        return decoder.parseFeature( xmlReader, crs );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
+        gmlReader.setDefaultCRS( crs );
+        return gmlReader.readFeature();
     }
 }

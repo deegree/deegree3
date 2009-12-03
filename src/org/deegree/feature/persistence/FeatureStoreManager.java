@@ -65,6 +65,8 @@ import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureDecoder;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -264,15 +266,12 @@ public class FeatureStoreManager {
         for ( GMLFeatureCollectionFileURL datasetFile : jaxbConfig.getGMLFeatureCollectionFileURL() ) {
             if ( datasetFile != null ) {
                 try {
-                    GMLFeatureDecoder decoder = new GMLFeatureDecoder(
-                                                                       schema,
-                                                                       GMLVersion.valueOf( datasetFile.getGmlVersion().name() ) );
+                    GMLVersion version = GMLVersion.valueOf( datasetFile.getGmlVersion().name() );
                     URL docURL = resolver.resolve( datasetFile.getValue().trim() );
-                    XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( docURL );
-                    xmlStream.nextTag();
+                    GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( version, docURL );
                     LOG.debug( "Populating feature store with features from file '" + docURL + "'..." );
-                    FeatureCollection fc = (FeatureCollection) decoder.parseFeature( xmlStream, null );
-                    decoder.getDocumentIdContext().resolveLocalRefs();
+                    FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
+                    gmlStream.getIdContext().resolveLocalRefs();
 
                     FeatureStoreTransaction ta = fs.acquireTransaction();
                     List<String> fids = ta.performInsert( fc, IDGenMode.GENERATE_NEW );

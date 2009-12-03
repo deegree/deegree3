@@ -36,6 +36,7 @@
 package org.deegree.geometry.validation;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,8 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.deegree.gml.geometry.GML311GeometryDecoderTest;
 import org.junit.Test;
@@ -264,14 +267,9 @@ public class GeometryValidatorTest {
                              eventHandler.getEvents().get( 0 ) );
     }
 
-    private Geometry parseGeometry( String fileName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryDecoderTest.class.getResource( BASE_DIR
-                                                                                                                    + fileName ) );
-        xmlReader.nextTag();
-        return new GML311GeometryDecoder( geomFac, new GMLDocumentIdContext() ).parse( xmlReader, null );
+    private Geometry parseGeometry( String fileName ) throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+        URL docURL = GML311GeometryDecoderTest.class.getResource( BASE_DIR + fileName );
+        return GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL ).readGeometry();
     }
 }
 

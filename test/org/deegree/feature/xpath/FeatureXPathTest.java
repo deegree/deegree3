@@ -40,17 +40,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.GMLFeatureDecoder;
 import org.deegree.gml.feature.GMLFeatureDecoderTest;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.jaxen.JaxenException;
@@ -86,16 +82,12 @@ public class FeatureXPathTest {
         String schemaURL = this.getClass().getResource( "../../gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext, GMLVersion.GML_31 );
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
-        xmlReader.next();
-        fc = (FeatureCollection) gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ),
-                                                          null );
-        idContext.resolveLocalRefs();
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        gmlReader.setApplicationSchema( schema );
+        fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
 
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );

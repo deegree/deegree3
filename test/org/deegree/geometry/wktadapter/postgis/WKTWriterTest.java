@@ -38,6 +38,7 @@ package org.deegree.geometry.wktadapter.postgis;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,8 +49,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.configuration.JDBCConnections;
-import org.deegree.commons.configuration.PooledConnection;
+import junit.framework.TestCase;
+
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManagerTest;
 import org.deegree.commons.xml.XMLParsingException;
@@ -60,12 +61,12 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.WKTWriterNG;
 import org.deegree.geometry.WKTWriterNG.WKTFlag;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.deegree.gml.geometry.GML311GeometryDecoderTest;
 import org.junit.Test;
-
-import junit.framework.TestCase;
-import static org.junit.Assert.*;
 
 /**
  * Tests the correct syntax of the sql statement that should be dispatched against the postgis database
@@ -88,14 +89,14 @@ public class WKTWriterTest extends TestCase {
         // point.gml
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG(flag, writer);
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
         Geometry geom = parseGeometry( "Point_coord.gml" );
         WKTwriter.writeGeometry( geom, writer );
 
         ConnectionManagerTest con = new ConnectionManagerTest();
         con.testConnectionAllocation();
         Connection conn = ConnectionManager.getConnection( "conn1" );
-        
+
         String s = "Select (GeomFromText('Point(2 2)'))";
         ResultSet rs = conn.createStatement().executeQuery( s );
         int countRows = 0;
@@ -103,23 +104,15 @@ public class WKTWriterTest extends TestCase {
             countRows = rs.getInt( 1 );
             System.out.println( rs.getInt( 1 ) );
         }
-        
-        
-        
-        
-        
+
         conn.close();
 
     }
 
-    private Geometry parseGeometry( String fileName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryDecoderTest.class.getResource( BASE_DIR
-                                                                                                                    + fileName ) );
-        xmlReader.nextTag();
-        return new GML311GeometryDecoder( geomFac, new GMLDocumentIdContext() ).parse( xmlReader, null );
-    }
+    private Geometry parseGeometry( String fileName ) throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
 
+        URL gmlDocURL = GML311GeometryDecoderTest.class.getResource( BASE_DIR + fileName );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, gmlDocURL );
+        return gmlReader.readGeometry();
+    }
 }

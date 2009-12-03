@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.gml.feature.schema.ApplicationSchemaXSDEncoderTest.class,
                 org.deegree.gml.feature.schema.GMLApplicationSchemaXSDDecoderTest.class,
                 org.deegree.gml.feature.schema.XSModelGMLAnalyzerTest.class,
-                org.deegree.feature.persistence.GMLFeatureStoreTest.class,
+                org.deegree.feature.persistence.MemoryFeatureStoreTest.class,
                 org.deegree.feature.persistence.lock.DefaultLockManagerTest.class,
                 org.deegree.feature.persistence.postgis.JAXBAdapterTest.class,
                 org.deegree.feature.xpath.FeatureXPathTest.class, org.deegree.filter.Filter110XMLAdapterTest.class,

@@ -64,9 +64,11 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureDecoderTest;
-import org.deegree.gml.geometry.GML311GeometryEncoder;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,7 +81,7 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GMLFeatureStoreTest {
+public class MemoryFeatureStoreTest {
 
     private static final String BASE_DIR = "../../gml/feature/testdata/features/";
 
@@ -90,7 +92,7 @@ public class GMLFeatureStoreTest {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException, JAXBException, FeatureStoreException,
                             GMLReferenceResolvingException {
-        URL url = GMLFeatureStoreTest.class.getResource( "example.xml" );
+        URL url = MemoryFeatureStoreTest.class.getResource( "example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
 
@@ -179,7 +181,8 @@ public class GMLFeatureStoreTest {
         OutputStream out = new FileOutputStream( "/tmp/exported_ring.gml" );
         XMLStreamWriter writer = outputFactory.createXMLStreamWriter( out );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
-        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
-        exporter.exportRing( (Ring) o );
+
+        GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );        
+        gmlStream.write( (Geometry) o );
     }
 }

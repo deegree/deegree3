@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,32 +35,31 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Factory for creating {@link GMLStreamWriter} instances.
+ * 
+ * @see GMLObject
+ * @see GMLStreamWriter
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class GMLReader {
-
-    public GMLReader( GMLVersion version ) {
-
-    }
+public class GMLOutputFactory {
 
     /**
-     * Returns the object representation for the GML object element event that the cursor of the given
-     * <code>XMLStreamReader</code> points at.
+     * Creates a new {@link GMLStreamWriter} instance for generating GML of the specified version.
      * 
+     * @param version
+     *            GML version, must not be null
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event of the GML object element, afterwards points at
-     *            the next event after the <code>END_ELEMENT</code> event of the GML object element element
-     * @return deegree model representation for the given GML object element
-     * @throws XMLStreamException
+     *            XML stream used to write the output, must not be <code>null</code>
+     * @return initialized {@link GMLStreamWriter}
      */
-    public abstract GMLObject parse( XMLStreamReader xmlStream ) throws XMLStreamException;
+    public static GMLStreamWriter createGMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) {
+        return new GMLStreamWriter( version, xmlStream );
+    }
 }

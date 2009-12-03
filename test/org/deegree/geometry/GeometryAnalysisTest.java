@@ -55,6 +55,9 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML311GeometryEncoder;
 import org.junit.Before;
 import org.junit.Test;
@@ -122,21 +125,23 @@ public class GeometryAnalysisTest {
         Assert.assertTrue( l1.equals( result ) );
 
         result = l2.getIntersection( l1 );
-        Assert.assertTrue( result.equals( new DefaultPoint( null, new CRS("EPSG:4326"), null, new double [] {15.0,9.0} ) ) );
-        
+        Assert.assertTrue( result.equals( new DefaultPoint( null, new CRS( "EPSG:4326" ), null, new double[] { 15.0,
+                                                                                                              9.0 } ) ) );
+
         result = l3.getIntersection( l4 );
         Assert.assertNull( result );
     }
 
-    private void writeResult( Geometry result ) throws UnknownCRSException, TransformationException {
+    private void writeResult( Geometry result )
+                            throws UnknownCRSException, TransformationException {
         try {
             XMLStreamWriter writer = new FormattingXMLStreamWriter(
                                                                     XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                           new FileWriter(
                                                                                                                                           "/tmp/out.gml" ) ) );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-            GML311GeometryEncoder encoder = new GML311GeometryEncoder( writer, null );
-            encoder.export( result );
+            GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );
+            gmlStream.write( result );
             writer.close();
         } catch ( XMLStreamException e ) {
             // TODO Auto-generated catch block
