@@ -211,14 +211,9 @@ public class GMLFeatureDecoderTest {
                             throws FactoryConfigurationError, Exception {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset.xml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
-        xmlReader.nextTag();
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext, GMLVersion.GML_2 );
-        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
-        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveLocalRefs();
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
 
         XMLStreamWriter writer = new FormattingXMLStreamWriter(
                                                                 XMLOutputFactory.newInstance().createXMLStreamWriter(
@@ -249,14 +244,10 @@ public class GMLFeatureDecoderTest {
         ApplicationSchema schema = adapter.extractFeatureTypeSchema();
 
         URL docURL = new URL( "file:/home/schneider/Desktop/waldbruecke_v1.0.0.gml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
-        xmlReader.nextTag();
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext, GMLVersion.GML_31 );
-        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
-        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveLocalRefs();
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        gmlReader.setApplicationSchema( schema );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
 
         // work with the fc
         for ( Feature feature : fc ) {
@@ -274,53 +265,32 @@ public class GMLFeatureDecoderTest {
         // BP2070
         URL docURL = new URL(
                               "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/BP2070.gml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
-        xmlReader.nextTag();
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext, GMLVersion.GML_31 );
-        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
-        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveLocalRefs();
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
 
         // BP2135
         docURL = new URL( "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/BP2135.gml" );
-        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
-        xmlReader.nextTag();
-        idContext = new GMLDocumentIdContext();
-        gmlAdapter = new GMLFeatureDecoder( null, idContext, GMLVersion.GML_31 );
-        wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
-        fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveLocalRefs();
+        gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
 
         // PlanA
         docURL = new URL( "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/FPlan_2.0.gml" );
-        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
-        xmlReader.nextTag();
-        idContext = new GMLDocumentIdContext();
-        gmlAdapter = new GMLFeatureDecoder( null, idContext, GMLVersion.GML_31 );
-        wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
-        fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveLocalRefs();
+        gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
 
         // LA22
         docURL = new URL( "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/LA 22.gml" );
-        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
-        xmlReader.nextTag();
-        idContext = new GMLDocumentIdContext();
-        gmlAdapter = new GMLFeatureDecoder( null, idContext, GMLVersion.GML_31 );
-        wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
-        fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveLocalRefs();
+        gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
 
         // LA67
         docURL = new URL( "file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/LA67_2_0.gml" );
-        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
-        xmlReader.nextTag();
-        idContext = new GMLDocumentIdContext();
-        gmlAdapter = new GMLFeatureDecoder( null, idContext, GMLVersion.GML_31 );
-        wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
-        fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveLocalRefs();
+        gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
     }
 }

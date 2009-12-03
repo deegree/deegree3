@@ -51,8 +51,11 @@ import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GML311FeatureEncoder;
 import org.deegree.gml.feature.GMLFeatureDecoder;
@@ -88,13 +91,10 @@ public class GMLFeatureEncoderTest {
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureEncoderTest.class.getResource( DIR + SOURCE_FILE );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
-        xmlReader.next();
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext, GMLVersion.GML_31 );
-        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
-        idContext.resolveLocalRefs();
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        gmlReader.setApplicationSchema( schema );
+        Feature feature = gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );

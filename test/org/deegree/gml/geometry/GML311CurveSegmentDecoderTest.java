@@ -62,6 +62,7 @@ import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.junit.Before;
 import org.junit.Test;
@@ -364,7 +365,7 @@ public class GML311CurveSegmentDecoderTest {
 
     private GML311CurveSegmentDecoder getParser()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
         GeometryFactory geomFac = new GeometryFactory();
         return new GML311CurveSegmentDecoder( new GML311GeometryDecoder(), geomFac );
     }

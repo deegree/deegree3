@@ -58,6 +58,7 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.validation.GeometryValidationEventHandler;
 import org.deegree.geometry.validation.GeometryValidator;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public class GML311GeometryValidator extends XMLAdapter {
      */
     public GML311GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
-        geomParser = new GML311GeometryDecoder( new GeometryFactory(), new GMLDocumentIdContext() );
+        geomParser = new GML311GeometryDecoder( new GeometryFactory(), new GMLDocumentIdContext(GMLVersion.GML_31) );
         this.gmlErrorHandler = gmlErrorHandler;
     }
 

@@ -82,6 +82,7 @@ import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -805,7 +806,7 @@ public class GML311GeometryDecoderTest {
         XMLStreamReaderWrapper xmlReader = getParser( "XLinkMultiGeometry1.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext();
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
         MultiGeometry<Geometry> geom = new GML311GeometryDecoder( new GeometryFactory(), idContext ).parseMultiGeometry(
                                                                                                                          xmlReader,
                                                                                                                          null );

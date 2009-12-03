@@ -54,9 +54,11 @@ import org.slf4j.LoggerFactory;
  * Keeps track of {@link GMLObject}s in GML instance documents, their ids and local xlink references during the parsing
  * of GML documents.
  * <p>
- * Essential for resolving local xlink-references (to {@link Feature} or {@link Geometry} objects) at the end of the
- * parsing process of a GML instance document.
+ * Can be used for resolving local xlink-references at the end of the parsing process of a GML instance document or to
+ * access all encountered objects on any level of the document.
  * </p>
+ * 
+ * @see GMLStreamReader
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -67,13 +69,25 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLDocumentIdContext.class );
 
-    private Map<String, Feature> idToFeature = new HashMap<String, Feature>();
+    private final Map<String, Feature> idToFeature = new HashMap<String, Feature>();
 
-    private Map<String, Geometry> idToGeometry = new HashMap<String, Geometry>();
+    private final Map<String, Geometry> idToGeometry = new HashMap<String, Geometry>();
 
-    private List<FeatureReference> featureReferences = new ArrayList<FeatureReference>();
+    private final List<FeatureReference> featureReferences = new ArrayList<FeatureReference>();
 
-    private List<GeometryReference<?>> localGeometryReferences = new ArrayList<GeometryReference<?>>();
+    private final List<GeometryReference<?>> localGeometryReferences = new ArrayList<GeometryReference<?>>();
+
+    private final GMLVersion version;
+
+    /**
+     * Creates a new {@link GMLDocumentIdContext} instance for a GML document with the given version.
+     * 
+     * @param version
+     *            gml version, must not be <code>null</code>
+     */
+    public GMLDocumentIdContext( GMLVersion version ) {
+        this.version = version;
+    }
 
     public void addFeature( Feature feature ) {
         String id = feature.getId();
@@ -123,7 +137,6 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
         if ( uri.startsWith( "#" ) ) {
             geometry = idToGeometry.get( uri.substring( 1 ) );
         } else {
-            GML311GeometryDecoder decoder = new GML311GeometryDecoder();
             try {
                 URL resolvedURL = null;
                 if ( baseURL != null ) {
@@ -131,11 +144,10 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
                 } else {
                     resolvedURL = new URL( uri );
                 }
-                XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( resolvedURL );
-                xmlReader.nextTag();
-                geometry = decoder.parse( xmlReader, null );
+                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, resolvedURL );
+                geometry = gmlReader.readGeometry();
+                gmlReader.close();
                 LOG.debug( "Read GML geometry: '" + geometry.getClass() + "'" );
-                xmlReader.close();
             } catch ( Exception e ) {
                 throw new RuntimeException( "Unable to resolve external geometry reference: " + e.getMessage() );
             }

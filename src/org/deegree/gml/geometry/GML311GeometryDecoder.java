@@ -95,6 +95,7 @@ import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.refs.CurveReference;
 import org.deegree.gml.geometry.refs.GeometricPrimitiveReference;
 import org.deegree.gml.geometry.refs.GeometryReference;
@@ -244,7 +245,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder implements GMLGeome
      * 
      */
     public GML311GeometryDecoder() {
-        this( new GeometryFactory(), new GMLDocumentIdContext() );
+        this( new GeometryFactory(), new GMLDocumentIdContext(GMLVersion.GML_31) );
     }
 
     /**

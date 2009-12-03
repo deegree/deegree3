@@ -67,6 +67,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.refs.GeometryReference;
 import org.deegree.gml.geometry.refs.LineStringReference;
 import org.deegree.gml.geometry.refs.PointReference;
@@ -106,7 +107,7 @@ public class GML21GeometryDecoder implements GMLGeometryDecoder {
      * 
      */
     public GML21GeometryDecoder() {
-        this( new GeometryFactory(), new GMLDocumentIdContext() );
+        this( new GeometryFactory(), new GMLDocumentIdContext(GMLVersion.GML_2) );
     }
 
     /**

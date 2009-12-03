@@ -69,6 +69,8 @@ public class GMLStreamReader {
     private final XMLStreamReaderWrapper xmlStream;
 
     private final GMLVersion version;
+    
+    private final GMLDocumentIdContext idContext;
 
     private ApplicationSchema schema;
 
@@ -77,10 +79,6 @@ public class GMLStreamReader {
     private GMLGeometryDecoder geometryDecoder;
 
     private GMLFeatureDecoder featureDecoder;
-
-    private GMLDocumentIdContext idContext = new GMLDocumentIdContext();
-
-    private boolean resolve;
 
     /**
      * Creates a new {@link GMLStreamReader} instance.
@@ -93,6 +91,7 @@ public class GMLStreamReader {
     GMLStreamReader( GMLVersion version, XMLStreamReaderWrapper xmlStream ) {
         this.version = version;
         this.xmlStream = xmlStream;
+        this.idContext = new GMLDocumentIdContext( version );
     }
 
     /**
@@ -116,37 +115,52 @@ public class GMLStreamReader {
     }
 
     /**
-     * Sets whether local xlinks should be resolved after parsing.
+     * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
+     * stream points to.
      * 
-     * @param resolve
-     *            if true, xlinks will be resolved
-     */
-    public void setResolveLocalXLinks( boolean resolve ) {
-        this.resolve = resolve;
-    }
-
-    /**
-     * Returns the object representation for the GML object element event that the cursor of the given
-     * <code>XMLStreamReader</code> points at.
-     * 
-     * @return deegree model representation for the given GML object element
+     * @return deegree model representation for the current GML object element
      * @throws XMLStreamException
      */
     public GMLObject read()
                             throws XMLStreamException {
-        return null;
+        throw new UnsupportedOperationException( "Automatic determination of GML objects types is not implemented yet." );
     }
 
+    /**
+     * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
+     * stream points to.
+     * 
+     * @return deegree model representation for the current GML object element
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
     public Feature readFeature()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         return getFeatureDecoder().parseFeature( xmlStream, defaultCRS );
     }
 
+    /**
+     * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
+     * stream points to.
+     * 
+     * @return deegree model representation for the current GML object element
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
     public Geometry readGeometry()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         return getGeometryDecoder().parse( xmlStream, defaultCRS );
     }
 
+    /**
+     * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
+     * stream points to.
+     * 
+     * @return deegree model representation for the current GML object element
+     * @throws XMLStreamException
+     */
     public CRS readCRS()
                             throws XMLStreamException {
         throw new UnsupportedOperationException( "Reading of crs is not implemented yet." );
@@ -160,13 +174,14 @@ public class GMLStreamReader {
     public GMLDocumentIdContext getIdContext() {
         return idContext;
     }
-    
+
     /**
      * Closes the underlying XML stream.
      * 
      * @throws XMLStreamException
      */
-    public void close() throws XMLStreamException {
+    public void close()
+                            throws XMLStreamException {
         xmlStream.close();
     }
 

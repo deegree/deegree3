@@ -163,7 +163,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
      *            GML version, must not be <code>null</code>
      */
     public GMLFeatureDecoder( ApplicationSchema schema, GMLVersion version ) {
-        this( schema, new GMLDocumentIdContext(), version );
+        this( schema, new GMLDocumentIdContext( version ), version );
 
     }
 
@@ -174,7 +174,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
      *            GML version, must not be <code>null</code>
      */
     public GMLFeatureDecoder( ApplicationSchema schema, GMLObjectResolver specialResolver, GMLVersion version ) {
-        this( schema, new GMLDocumentIdContext(), version );
+        this( schema, new GMLDocumentIdContext( version ), version );
         this.specialResolver = specialResolver;
     }
 
