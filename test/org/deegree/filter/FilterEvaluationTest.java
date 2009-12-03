@@ -74,18 +74,18 @@ public class FilterEvaluationTest {
 
     private SimpleNamespaceContext nsContext;
 
-    private static final String BASE_DIR = "gml/testdata/features/";
+    private static final String BASE_DIR = "../gml/feature/testdata/features/";
 
     @Before
     public void setUp()
                             throws Exception {
-        String schemaURL = this.getClass().getResource( "../feature/gml/testdata/schema/Philosopher.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLDocumentIdContext idContext = new GMLDocumentIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext, GMLVersion.GML_31 );
 
-        URL docURL = this.getClass().getResource( "../feature/gml/testdata/features/Philosopher_FeatureCollection.xml" );
+        URL docURL = this.getClass().getResource( "../gml/feature/testdata/features/Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();

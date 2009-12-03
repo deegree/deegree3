@@ -47,11 +47,11 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
-import org.deegree.feature.gml.GMLFeatureDecoderTest;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureDecoder;
+import org.deegree.gml.feature.GMLFeatureDecoderTest;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
@@ -70,7 +70,7 @@ import org.junit.Test;
  */
 public class FeatureXPathTest {
 
-    private static final String BASE_DIR = "../gml/testdata/features/";
+    private static final String BASE_DIR = "../../gml/feature/testdata/features/";
 
     private FeatureCollection fc;
 
@@ -83,7 +83,7 @@ public class FeatureXPathTest {
     public void setUp()
                             throws Exception {
 
-        String schemaURL = this.getClass().getResource( "../gml/testdata/schema/Philosopher.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../../gml/feature/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLDocumentIdContext idContext = new GMLDocumentIdContext();

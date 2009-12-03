@@ -73,7 +73,7 @@ import org.junit.Test;
  */
 public class DefaultLockManagerTest {
 
-    private static final String BASE_DIR = "../../gml/testdata/features/";
+    private static final String BASE_DIR = "../../../gml/feature/testdata/features/";
 
     private LockManager lockManager;
 

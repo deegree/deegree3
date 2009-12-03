@@ -56,7 +56,6 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.gml.GMLFeatureDecoderTest;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
@@ -66,6 +65,7 @@ import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.feature.GMLFeatureDecoderTest;
 import org.deegree.gml.geometry.GML311GeometryEncoder;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Before;
@@ -81,7 +81,7 @@ import org.junit.Test;
  */
 public class GMLFeatureStoreTest {
 
-    private static final String BASE_DIR = "../gml/testdata/features/";
+    private static final String BASE_DIR = "../../gml/feature/testdata/features/";
 
     private MemoryFeatureStore store;
 

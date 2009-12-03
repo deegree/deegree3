@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.gml.schema;
+package org.deegree.gml.feature.schema;
 
 import java.util.HashSet;
 import java.util.List;
