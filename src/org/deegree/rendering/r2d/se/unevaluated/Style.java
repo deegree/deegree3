@@ -43,6 +43,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -237,6 +238,25 @@ public class Style {
      */
     public QName getFeatureType() {
         return featureType;
+    }
+
+    /**
+     * @return the base stylings for all symbolizers sorted by rules
+     */
+    public LinkedList<LinkedList<Styling>> getBases() {
+        LinkedList<LinkedList<Styling>> list = new LinkedList<LinkedList<Styling>>();
+        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
+            LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
+            rule.first.evaluate( base, null );
+            LinkedList<Styling> stylings = new LinkedList<Styling>();
+            for ( Symbolizer<?> s : base ) {
+                stylings.add( (Styling) s.getBase() );
+            }
+            if ( !stylings.isEmpty() ) {
+                list.add( stylings );
+            }
+        }
+        return list;
     }
 
     class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {

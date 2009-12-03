@@ -163,11 +163,9 @@ public class Symbolizer<T extends Copyable<T>> {
     }
 
     /**
-     * Convenience method for debugging
-     * 
-     * @return the base object
+     * @return the base object or the evaluated one, if already available
      */
     public T getBase() {
-        return base;
+        return evaluated == null ? base : evaluated;
     }
 }

@@ -1678,7 +1678,7 @@ public class SymbologyParser {
         @Override
         public void updateStep( LinkedList<Symbolizer<?>> base, MatchableObject f ) {
             try {
-                if ( filter == null || filter.evaluate( f ) || ( base.isEmpty() && filter == ELSEFILTER ) ) {
+                if ( filter == null || f == null || filter.evaluate( f ) || ( base.isEmpty() && filter == ELSEFILTER ) ) {
                     base.addAll( syms );
                 }
             } catch ( FilterEvaluationException e ) {

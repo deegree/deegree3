@@ -89,7 +89,8 @@ public class WMSConstants {
         /** Retrieve a map that consists of one or more layers. 1.0.0 */
         map,
         /** Retrieve a XSD application schema for given layers. deegree specific request. */
-        GetFeatureInfoSchema
+        GetFeatureInfoSchema, /***/
+        GetLegendGraphic
 
     }
 }
