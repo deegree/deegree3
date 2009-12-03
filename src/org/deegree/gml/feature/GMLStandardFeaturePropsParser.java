@@ -51,8 +51,8 @@ import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.geometry.Envelope;
-import org.deegree.gml.GMLStandardPropsParser;
 import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.props.GMLStandardPropsParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

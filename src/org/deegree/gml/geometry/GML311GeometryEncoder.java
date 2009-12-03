@@ -46,7 +46,6 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.crs.CRS;
@@ -109,6 +108,7 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.geometry.refs.GeometryReference;
+import org.deegree.gml.props.StandardGMLObjectProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

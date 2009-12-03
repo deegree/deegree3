@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.commons.types.gml;
+package org.deegree.gml.props;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.feature.types.property.PrimitiveType.STRING;

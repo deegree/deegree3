@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml;
+package org.deegree.gml.props;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -44,7 +44,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -84,7 +83,7 @@ public class GMLStandardPropsParser {
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GML&gt;), points at the at the
      *            first tag event (<code>START_ELEMENT/END_ELEMENT</code>) that does not belong to an element from the
      *            <code>StandardObjectProperties</code> group afterwards
-     * @return corresponding {@link StandardObjectProperties} object
+     * @return corresponding {@link StandardGMLObjectProps} object
      * @throws XMLStreamException
      * @throws XMLParsingException
      *             if a syntactical error occurs

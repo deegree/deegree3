@@ -41,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSurface;
@@ -77,6 +76,7 @@ import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
+import org.deegree.gml.props.StandardGMLObjectProps;
 
 /**
  * Writes {@link Geometry} objects as Well-Known Text (WKT).

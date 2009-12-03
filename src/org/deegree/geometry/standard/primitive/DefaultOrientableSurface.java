@@ -38,7 +38,6 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
@@ -51,6 +50,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.gml.props.StandardGMLObjectProps;
 
 /**
  * Default implementation of {@link OrientableSurface}.

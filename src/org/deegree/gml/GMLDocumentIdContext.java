@@ -51,8 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keeps track of GML objects (currently features and geometries) in GML instance documents, their ids and local xlink
- * references during the parsing of GML documents.
+ * Keeps track of {@link GMLObject}s in GML instance documents, their ids and local xlink references during the parsing
+ * of GML documents.
  * <p>
  * Essential for resolving local xlink-references (to {@link Feature} or {@link Geometry} objects) at the end of the
  * parsing process of a GML instance document.
