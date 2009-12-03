@@ -36,6 +36,8 @@
 package org.deegree.geometry.wktadapter.postgis;
 
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,8 +57,8 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.WKTWriter;
-import org.deegree.geometry.WKTWriter.WKTFlag;
+import org.deegree.geometry.WKTWriterNG;
+import org.deegree.geometry.WKTWriterNG.WKTFlag;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.deegree.gml.geometry.GML311GeometryDecoderTest;
@@ -85,9 +87,10 @@ public class WKTWriterTest extends TestCase {
                             UnknownCRSException, SQLException, JAXBException {
         // point.gml
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
-        WKTWriter writer = new WKTWriter(flag);
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG(flag, writer);
         Geometry geom = parseGeometry( "Point_coord.gml" );
-        writer.writeGeometry( geom );
+        WKTwriter.writeGeometry( geom, writer );
 
         ConnectionManagerTest con = new ConnectionManagerTest();
         con.testConnectionAllocation();
