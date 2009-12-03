@@ -104,7 +104,7 @@ public class OffsetStroke implements Stroke {
             return new double[] { x1, y1 };
         }
         final double len = sqrt( nx * nx + ny * ny );
-        return new double[] { ny / len, -nx / len };
+        return new double[] { -ny / len, nx / len };
     }
 
     private final double[] calcIntersection( final double px, final double py, final double[] n1, final double[] n2 ) {
@@ -176,6 +176,8 @@ public class OffsetStroke implements Stroke {
         if ( last == null ) {
             last = normals.peekLast();
         }
+
+        boolean firstMove = true;
 
         Path2D.Double path = new Path2D.Double();
         for ( Pair<Integer, double[]> pair : list ) {
@@ -251,7 +253,12 @@ public class OffsetStroke implements Stroke {
                     continue;
                 case Standard:
                     n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
-                    path.lineTo( n1[0], n1[1] );
+                    if ( firstMove ) {
+                        path.moveTo( n1[0], n1[1] );
+                        firstMove = false;
+                    } else {
+                        path.lineTo( n1[0], n1[1] );
+                    }
                     continue;
                 case Strict:
                     LOG.warn( "Strict perpendicular offset type is not implemented yet." );
