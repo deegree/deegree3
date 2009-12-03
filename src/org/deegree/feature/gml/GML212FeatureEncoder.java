@@ -55,7 +55,7 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
@@ -151,7 +151,7 @@ public class GML212FeatureEncoder implements GMLFeatureEncoder {
      * @throws TransformationException
      * @throws UnknownCRSException
      */
-    public void export( GenericFeatureCollection col, String schemaLocation )
+    public void export( FeatureCollection col, String schemaLocation )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         LOG.debug( "Exporting generic feature collection." );
         writer.setPrefix( "gml", GMLNS );
@@ -160,10 +160,14 @@ public class GML212FeatureEncoder implements GMLFeatureEncoder {
             writer.setPrefix( "xsi", XSINS );
             writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", schemaLocation );
         }
+
         writer.writeStartElement( GMLNS, "boundedBy" );
-        writer.writeStartElement( GMLNS, "null" );
-        writer.writeCharacters( "unavailable" );
-        writer.writeEndElement();
+        Envelope fcEnv = col.getEnvelope();
+        if ( fcEnv != null ) {
+            geometryExporter.exportEnvelope( col.getEnvelope() );
+        } else {
+            writer.writeEmptyElement( GMLNS, "null" );
+        }
         writer.writeEndElement();
         for ( Feature f : col ) {
             writer.writeStartElement( "http://www.opengis.net/gml", "featureMember" );

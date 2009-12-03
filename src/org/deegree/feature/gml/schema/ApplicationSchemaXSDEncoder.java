@@ -83,7 +83,7 @@ public class ApplicationSchemaXSDEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );
 
-    private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
+    private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2/feature.xsd";
 
     private static final String GML_311_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
 
