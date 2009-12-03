@@ -59,11 +59,14 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
-import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolvingException;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.GML212FeatureEncoder;
+import org.deegree.gml.feature.GML311FeatureEncoder;
+import org.deegree.gml.feature.GMLFeatureDecoder;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Test;
 
 /**

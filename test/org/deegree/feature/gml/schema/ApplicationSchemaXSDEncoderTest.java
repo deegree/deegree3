@@ -51,6 +51,8 @@ import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDEncoder;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 

@@ -43,6 +43,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Test;
 
 /**
