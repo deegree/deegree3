@@ -33,14 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.gml.schema;
+package org.deegree.gml.schema;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.schema.XSModelAnalyzer;
+import org.deegree.gml.GMLVersion;
 
 /**
  * Provides convenient access to the <i>relevant</i> element declarations of a GML schema (can be both application or

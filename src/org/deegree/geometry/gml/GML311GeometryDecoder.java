@@ -37,8 +37,8 @@ package org.deegree.geometry.gml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.gml.GMLStandardPropsParser.parse311;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.gml.GMLStandardPropsParser.parse311;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -49,7 +49,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -104,6 +103,7 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.gml.GMLDocumentIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

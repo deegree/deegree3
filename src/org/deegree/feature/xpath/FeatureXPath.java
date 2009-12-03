@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
+import org.deegree.gml.GMLVersion;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
 

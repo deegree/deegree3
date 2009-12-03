@@ -45,8 +45,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -54,6 +52,8 @@ import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLVersion;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;

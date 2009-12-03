@@ -51,7 +51,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -67,6 +66,7 @@ import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.gml.GMLReferenceResolvingException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Before;
 import org.junit.Test;

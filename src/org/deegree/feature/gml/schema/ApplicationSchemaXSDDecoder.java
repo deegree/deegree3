@@ -58,8 +58,6 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.commons.gml.GMLVersion;
-import org.deegree.commons.gml.schema.XSModelGMLAnalyzer;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -79,6 +77,8 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.schema.XSModelGMLAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

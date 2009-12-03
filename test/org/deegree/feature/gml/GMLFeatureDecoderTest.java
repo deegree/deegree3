@@ -50,9 +50,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
-import org.deegree.commons.gml.GMLReferenceResolvingException;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
@@ -64,6 +61,9 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.GMLVersion;
 import org.junit.Test;
 
 /**

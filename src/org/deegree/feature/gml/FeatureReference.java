@@ -40,15 +40,15 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLObjectResolver;
-import org.deegree.commons.gml.GMLReferenceResolvingException;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.GMLVersion;
 import org.jaxen.JaxenException;
 
 /**

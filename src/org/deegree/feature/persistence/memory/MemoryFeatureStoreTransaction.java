@@ -47,7 +47,6 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -65,6 +64,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

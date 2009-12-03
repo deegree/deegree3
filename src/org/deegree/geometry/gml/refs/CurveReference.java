@@ -38,7 +38,6 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
-import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
@@ -47,6 +46,7 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.gml.GMLObjectResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.

@@ -48,7 +48,6 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.commons.configuration.PooledConnection;
-import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.ConnectionManagerTest;
 import org.deegree.commons.xml.XMLParsingException;
@@ -60,6 +59,7 @@ import org.deegree.geometry.WKTWriter;
 import org.deegree.geometry.WKTWriter.WKTFlag;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.gml.GML311GeometryDecoderTest;
+import org.deegree.gml.GMLDocumentIdContext;
 import org.junit.Test;
 
 import junit.framework.TestCase;

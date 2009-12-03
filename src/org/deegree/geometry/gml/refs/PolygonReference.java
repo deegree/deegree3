@@ -38,10 +38,10 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
-import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.gml.GMLObjectResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.

@@ -45,8 +45,6 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
-import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRSRegistry;
@@ -82,6 +80,8 @@ import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLReferenceResolvingException;
 import org.junit.Assert;
 import org.junit.Test;
 

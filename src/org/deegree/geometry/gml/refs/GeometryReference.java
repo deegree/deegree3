@@ -36,7 +36,6 @@
 
 package org.deegree.geometry.gml.refs;
 
-import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
@@ -45,6 +44,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.gml.GMLObjectResolver;
 
 /**
  * Represents a reference to the GML representation of a geometry, which is usually expressed using an

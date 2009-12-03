@@ -36,8 +36,8 @@
 
 package org.deegree.geometry.gml.refs;
 
-import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.gml.GMLObjectResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.

@@ -1,9 +1,10 @@
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,33 +32,24 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.geometry.gml;
-
-import org.deegree.gml.GMLVersion;
+----------------------------------------------------------------------------*/
+package org.deegree.gml;
 
 /**
- * Factory class used to creating various GML adapters (decoders/encoders) for different GML versions.
- * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ * Enum type for the GML versions that have to be differerentiated in deegree.
+ *
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ *
+ * @version $Revision: $, $Date: $
  */
-public class GMLGeometryAdapters {
-
-    public static GMLGeometryDecoder createDecoder( GMLVersion version ) {
-        GMLGeometryDecoder decoder = null;
-        switch ( version ) {
-        case GML_2:
-            decoder = new GML21GeometryDecoder();
-        case GML_30:
-        case GML_31:
-        case GML_32:
-            decoder = new GML311GeometryDecoder();
-        }
-        return decoder;
-    }
+public enum GMLVersion {
+    /** GML 2 versions (one of the range from 2.0.0 up to 2.1.2) */
+    GML_2,
+    /** GML 3.0 versions (either 3.0.0 or 3.0.1) */
+    GML_30,
+    /** GML 3.1 versions (either 3.1.0 or 3.1.1) */
+    GML_31,
+    /** GML 3.2 versions (currently only 3.2.1) */
+    GML_32
 }

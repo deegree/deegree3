@@ -47,7 +47,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -71,6 +70,7 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.gml.GMLDocumentIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

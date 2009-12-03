@@ -38,11 +38,11 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
-import org.deegree.commons.gml.GMLObjectResolver;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.gml.GMLObjectResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.

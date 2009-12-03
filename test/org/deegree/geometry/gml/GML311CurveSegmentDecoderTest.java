@@ -42,7 +42,6 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -62,6 +61,7 @@ import org.deegree.geometry.primitive.segments.Geodesic;
 import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
+import org.deegree.gml.GMLDocumentIdContext;
 import org.junit.Before;
 import org.junit.Test;
 

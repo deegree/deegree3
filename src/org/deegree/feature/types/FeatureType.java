@@ -39,11 +39,11 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.gml.GMLVersion;
 
 /**
  * Provides the type information for an (application-defined) class of {@link Feature}s.

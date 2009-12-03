@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import org.deegree.commons.gml.GMLObjectResolver;
-import org.deegree.commons.gml.GMLReferenceResolvingException;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolvingException;
 
 /**
  * {@link GMLObjectResolver} that uses a {@link FeatureStore} for resolving local object references.

@@ -47,7 +47,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
@@ -69,6 +68,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML21GeometryEncoder;
 import org.deegree.geometry.gml.GMLGeometryEncoder;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

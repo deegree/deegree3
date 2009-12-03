@@ -50,9 +50,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
-import org.deegree.commons.gml.GMLReferenceResolvingException;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -79,6 +76,9 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 
 /**

@@ -45,7 +45,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -59,6 +58,7 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.validation.GeometryValidationEventHandler;
 import org.deegree.geometry.validation.GeometryValidator;
+import org.deegree.gml.GMLDocumentIdContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

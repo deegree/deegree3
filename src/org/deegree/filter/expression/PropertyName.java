@@ -37,10 +37,10 @@ package org.deegree.filter.expression;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.gml.GMLVersion;
 import org.jaxen.JaxenException;
 import org.jaxen.NamespaceContext;
 

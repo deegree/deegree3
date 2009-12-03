@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.gml;
+package org.deegree.gml;
 
 import java.net.URL;
 import java.util.ArrayList;

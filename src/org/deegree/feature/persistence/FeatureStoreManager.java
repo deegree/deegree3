@@ -54,7 +54,6 @@ import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType.GMLFeatureCollectionFileURL;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -67,6 +66,7 @@ import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

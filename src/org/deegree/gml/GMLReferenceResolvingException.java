@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,28 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.gml;
-
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Geometry;
+package org.deegree.gml;
 
 /**
- * Provides the functionality to retrieve GML objects (such as geometries or features) by a URI (which may be local or
- * remote).
- * <p>
- * A local reference is always constructed as <code># + id</code>.
- * </p>
+ * Indicates that a GML reference cannot be resolved.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface GMLObjectResolver {
+public class GMLReferenceResolvingException extends RuntimeException {
 
-    public Feature getFeature( String uri, String baseURL );
+    private static final long serialVersionUID = -7702695645031124014L;
 
-    public Geometry getGeometry( String uri, String baseURL );
+    /**
+     * Creates a new {@link GMLReferenceResolvingException} with the given detail message.
+     * 
+     * @param msg
+     *            detail message
+     */
+    public GMLReferenceResolvingException( String msg ) {
+        super( msg );
+    }
 
-    public Object getObject( String uri, String baseURL );
+    /**
+     * Creates a new {@link GMLReferenceResolvingException} with the given cause.
+     * 
+     * @param cause
+     *            causing exception
+     */
+    public GMLReferenceResolvingException( Throwable cause ) {
+        super( cause );
+    }
+
+    /**
+     * Creates a new {@link GMLReferenceResolvingException} with the given detail message and cause.
+     * 
+     * @param msg
+     *            detail message
+     * @param cause
+     *            causing exception
+     */
+    public GMLReferenceResolvingException( String msg, Throwable cause ) {
+        super( msg, cause );
+    }
 }

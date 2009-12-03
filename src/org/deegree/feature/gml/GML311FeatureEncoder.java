@@ -36,9 +36,9 @@
 
 package org.deegree.feature.gml;
 
-import static org.deegree.commons.gml.GMLVersion.GML_31;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.HashSet;
 import java.util.Set;

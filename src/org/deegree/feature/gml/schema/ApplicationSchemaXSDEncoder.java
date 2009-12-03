@@ -49,7 +49,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -60,6 +59,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +83,7 @@ public class ApplicationSchemaXSDEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );
 
-    private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2/feature.xsd";
+    private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
 
     private static final String GML_311_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
 

@@ -48,7 +48,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.gml.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
@@ -60,6 +59,7 @@ import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
+import org.deegree.gml.GMLVersion;
 
 /**
  * Version-agnostic representation of the standard properties that any GML feature allows for.

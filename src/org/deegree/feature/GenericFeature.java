@@ -40,13 +40,13 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.gml.StandardGMLFeatureProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -39,10 +39,10 @@ import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.gml.GMLVersion;
 import org.junit.Test;
 
 /**

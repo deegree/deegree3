@@ -44,7 +44,6 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -56,6 +55,7 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.gml.GMLDocumentIdContext;
 import org.junit.Test;
 
 /**

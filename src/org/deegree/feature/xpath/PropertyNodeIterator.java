@@ -39,8 +39,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Property;
+import org.deegree.gml.GMLVersion;
 
 /**
  * TODO add documentation here

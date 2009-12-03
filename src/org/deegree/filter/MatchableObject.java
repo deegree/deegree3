@@ -36,9 +36,9 @@
 
 package org.deegree.filter;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.Feature;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.gml.GMLVersion;
 import org.jaxen.JaxenException;
 
 /**

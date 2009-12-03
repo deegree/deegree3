@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,24 +32,29 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.commons.gml;
+ ----------------------------------------------------------------------------*/
+package org.deegree.gml;
+
+import org.deegree.feature.Feature;
+import org.deegree.geometry.Geometry;
 
 /**
- * Enum type for the GML versions that have to be differerentiated in deegree.
- *
+ * Provides the functionality to retrieve GML objects (such as geometries or features) by a URI (which may be local or
+ * remote).
+ * <p>
+ * A local reference is always constructed as <code># + id</code>.
+ * </p>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
  */
-public enum GMLVersion {
-    /** GML 2 versions (one of the range from 2.0.0 up to 2.1.2) */
-    GML_2,
-    /** GML 3.0 versions (either 3.0.0 or 3.0.1) */
-    GML_30,
-    /** GML 3.1 versions (either 3.1.0 or 3.1.1) */
-    GML_31,
-    /** GML 3.2 versions (currently only 3.2.1) */
-    GML_32
+public interface GMLObjectResolver {
+
+    public Feature getFeature( String uri, String baseURL );
+
+    public Geometry getGeometry( String uri, String baseURL );
+
+    public Object getObject( String uri, String baseURL );
 }

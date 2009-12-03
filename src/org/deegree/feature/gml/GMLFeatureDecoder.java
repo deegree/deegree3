@@ -53,9 +53,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
-import org.deegree.commons.gml.GMLObjectResolver;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.types.datetime.DateTime;
 import org.deegree.commons.types.datetime.Time;
@@ -89,9 +86,13 @@ import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GMLGeometryAdapters;
+import org.deegree.geometry.gml.GML21GeometryDecoder;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.gml.GMLGeometryDecoder;
 import org.deegree.geometry.gml.refs.GeometryReference;
+import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,7 +145,11 @@ public class GMLFeatureDecoder extends XMLAdapter {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
-        this.geomParser = GMLGeometryAdapters.createDecoder( version );
+        if ( version.equals( GMLVersion.GML_2 ) ) {
+            this.geomParser = new GML21GeometryDecoder( geomFac, idContext );
+        } else {
+            this.geomParser = new GML311GeometryDecoder( geomFac, idContext );
+        }
         this.version = version;
     }
 

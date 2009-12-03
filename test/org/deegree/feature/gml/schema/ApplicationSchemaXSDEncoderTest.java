@@ -46,11 +46,11 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
+import org.deegree.gml.GMLVersion;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 

@@ -43,13 +43,13 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.gml.FeatureReference;
 import org.deegree.feature.types.GenericCustomPropertyValue;
+import org.deegree.gml.GMLVersion;
 import org.jaxen.DefaultNavigator;
 import org.jaxen.JaxenConstants;
 import org.jaxen.XPath;

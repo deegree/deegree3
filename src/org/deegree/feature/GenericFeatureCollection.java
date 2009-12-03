@@ -45,12 +45,12 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

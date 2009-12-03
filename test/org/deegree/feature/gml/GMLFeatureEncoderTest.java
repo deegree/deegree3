@@ -45,8 +45,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.gml.GMLDocumentIdContext;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
@@ -55,6 +53,8 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.GMLVersion;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 

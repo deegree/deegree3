@@ -51,8 +51,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.gml.GMLObjectResolver;
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -63,6 +61,8 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.gml.GML311FeatureEncoder;
 import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -39,11 +39,11 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLVersion;
 
 /**
  * A feature is a structured object with named properties, an identifier and type information. Properties may have

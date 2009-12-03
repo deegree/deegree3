@@ -42,12 +42,12 @@ import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

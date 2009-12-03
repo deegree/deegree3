@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.gml;
+package org.deegree.gml;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
