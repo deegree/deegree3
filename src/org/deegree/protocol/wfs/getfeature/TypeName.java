@@ -39,9 +39,11 @@ package org.deegree.protocol.wfs.getfeature;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
  * A feature type name with an optional alias, as it may be used in WFS 1.1.0 or 2.0.0 queries.
@@ -67,7 +69,7 @@ public class TypeName {
      */
     public TypeName( QName ftName, String alias ) {
         if ( ftName == null ) {
-            throw new IllegalArgumentException();
+            throw new InvalidParameterValueException( "Type name cannot be null", "typeName" );
         }
         this.ftName = ftName;
         this.alias = alias;
@@ -106,10 +108,20 @@ public class TypeName {
     }
 
     private static QName resolveQName( OMElement context, String name ) {
-        if ( name.indexOf( ":" ) != -1 ) {
-            return context.resolveQName( name );
+        QName qName = null;
+        int colonIdx = name.indexOf( ":" ); 
+        if ( colonIdx != -1 ) {
+            qName = context.resolveQName( name );
+            if ( qName == null ) {
+                // AXIOM appears to return null for context.resolveQName( name ) for unbound prefices!?
+                String prefix = name.substring( 0,  colonIdx);
+                String localPart = name.substring( colonIdx + 1);
+                qName = new QName (XMLConstants.NULL_NS_URI, localPart, prefix);
+            }
+        } else {
+            qName = new QName( name );
         }
-        return new QName( name );
+        return qName;
     }
 
     /**
