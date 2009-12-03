@@ -42,7 +42,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.feature.gml.StandardGMLFeatureProps;
 import org.deegree.feature.xpath.AttributeNode;
 import org.deegree.feature.xpath.CustomElementNode;
 import org.deegree.feature.xpath.FeatureNode;
@@ -52,6 +51,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.StandardGMLFeatureProps;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 
