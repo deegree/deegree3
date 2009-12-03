@@ -169,8 +169,8 @@ public class StandardGMLObjectProps {
         }
     }
 
-    public Object getMetadata() {
-        return description;
+    public Object[] getMetadata() {
+        return metadata;
     }
 
     public StringOrRef getDescription() {
