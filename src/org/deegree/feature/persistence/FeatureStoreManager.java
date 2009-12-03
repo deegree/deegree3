@@ -58,8 +58,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.gml.GMLFeatureDecoder;
-import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
@@ -67,6 +65,8 @@ import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.GMLFeatureDecoder;
+import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

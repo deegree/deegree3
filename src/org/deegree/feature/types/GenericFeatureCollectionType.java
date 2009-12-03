@@ -46,10 +46,10 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
-import org.deegree.feature.gml.StandardGMLFeatureProps;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.StandardGMLFeatureProps;
 
 /**
  * TODO add documentation here

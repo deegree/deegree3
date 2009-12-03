@@ -60,7 +60,6 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.gml.generic.GenericCustomPropertyParser;
 import org.deegree.feature.types.GenericCustomPropertyValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -117,6 +116,7 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML21GeometryDecoder;
+import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

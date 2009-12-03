@@ -58,11 +58,11 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.gml.GML311FeatureEncoder;
-import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLObjectResolver;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.GML311FeatureEncoder;
+import org.deegree.gml.feature.GMLFeatureDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

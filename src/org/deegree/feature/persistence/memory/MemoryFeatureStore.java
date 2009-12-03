@@ -58,7 +58,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -79,6 +78,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolvingException;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.GMLFeatureDecoder;
 import org.slf4j.Logger;
 
 /**

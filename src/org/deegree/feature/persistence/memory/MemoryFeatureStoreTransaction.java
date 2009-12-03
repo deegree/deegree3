@@ -53,7 +53,6 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
-import org.deegree.feature.gml.FeatureReference;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -65,6 +64,7 @@ import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.feature.FeatureReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
