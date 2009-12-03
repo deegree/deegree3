@@ -36,7 +36,7 @@
 package org.deegree.commons.gml;
 
 /**
- * Enum type for discriminating the different GML versions.
+ * Enum type for the GML versions that have to be differerentiated in deegree.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -44,11 +44,12 @@ package org.deegree.commons.gml;
  * @version $Revision: $, $Date: $
  */
 public enum GMLVersion {
-
-    /** GML version 2 series (2.0.0 up to 2.1.2) */
+    /** GML 2 versions (one of the range from 2.0.0 up to 2.1.2) */
     GML_2,
-    /** GML version 3.0 and 3.1 series (3.0.0 up to 3.1.1) */
+    /** GML 3.0 versions (either 3.0.0 or 3.0.1) */
+    GML_30,
+    /** GML 3.1 versions (either 3.1.0 or 3.1.1) */
     GML_31,
-    /** GML version 3.2 series (3.2.1) */
-    GML_32       
+    /** GML 3.2 versions (currently only 3.2.1) */
+    GML_32
 }
