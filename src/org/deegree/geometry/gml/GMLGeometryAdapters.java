@@ -37,9 +37,9 @@ package org.deegree.geometry.gml;
 import org.deegree.commons.gml.GMLVersion;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Factory class used to creating various GML adapters (decoders/encoders) for different GML versions.
  * 
- * @author <a href="mailto:name@deegree.org">Your Name</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
  * @author last edited by: $Author$
  * 
