@@ -244,7 +244,7 @@ public class MemoryFeatureStore implements FeatureStore {
         // TODO remove this quirk
         if ( ft == null ) {
             for ( FeatureType schemaFt : schema.getFeatureTypes() ) {
-                if ( ftName.getLocalPart().equals( ftName.getLocalPart() ) ) {
+                if ( schemaFt.getName().getLocalPart().equals( ftName.getLocalPart() ) ) {
                     ft = schemaFt;
                     break;
                 }
