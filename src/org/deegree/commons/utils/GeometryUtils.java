@@ -157,7 +157,7 @@ public class GeometryUtils {
         while ( !iter.isDone() ) {
             switch ( iter.currentSegment( coords ) ) {
             case SEG_CLOSE:
-                sb.append( "]" );
+                sb.append( ", close]" );
                 closed = true;
                 break;
             case SEG_CUBICTO:

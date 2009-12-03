@@ -107,7 +107,7 @@ public class OffsetStroke implements Stroke {
         return new double[] { ny / len, -nx / len };
     }
 
-    private final double[] calcNewInner( final double px, final double py, final double[] n1, final double[] n2 ) {
+    private final double[] calcIntersection( final double px, final double py, final double[] n1, final double[] n2 ) {
         double nx = px + offset * n1[0];
         double ny = py + offset * n1[1];
         if ( n2 == null ) {
@@ -121,7 +121,7 @@ public class OffsetStroke implements Stroke {
         return new double[] { ox + lam * n2[1], oy - lam * n2[0] };
     }
 
-    public Shape createStrokedShape( Shape p ) {
+    public Shape createStrokedShape( final Shape p ) {
         LinkedList<Pair<Integer, double[]>> list = new LinkedList<Pair<Integer, double[]>>();
         LinkedList<double[]> normals = new LinkedList<double[]>();
 
@@ -138,21 +138,22 @@ public class OffsetStroke implements Stroke {
         // calc normals
         double lastx = 0, lasty = 0;
 
+        double[] last = null;
+
         for ( Pair<Integer, double[]> pair : list ) {
             switch ( pair.first ) {
             case SEG_CLOSE:
+                normals.add( last = calcNormal( lastx, lasty, firstx, firsty, last ) );
                 break;
             case SEG_CUBICTO:
-                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1], normals.peekLast() ) );
-                normals.add( calcNormal( pair.second[0], pair.second[1], pair.second[2], pair.second[3],
-                                         normals.peekLast() ) );
-                normals.add( calcNormal( pair.second[2], pair.second[3], pair.second[4], pair.second[5],
-                                         normals.peekLast() ) );
+                normals.add( last = calcNormal( lastx, lasty, pair.second[0], pair.second[1], last ) );
+                normals.add( last = calcNormal( pair.second[0], pair.second[1], pair.second[2], pair.second[3], last ) );
+                normals.add( last = calcNormal( pair.second[2], pair.second[3], pair.second[4], pair.second[5], last ) );
                 lastx = pair.second[4];
                 lasty = pair.second[5];
                 break;
             case SEG_LINETO:
-                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1], normals.peekLast() ) );
+                normals.add( last = calcNormal( lastx, lasty, pair.second[0], pair.second[1], last ) );
                 lastx = pair.second[0];
                 lasty = pair.second[1];
                 break;
@@ -161,9 +162,8 @@ public class OffsetStroke implements Stroke {
                 lasty = pair.second[1];
                 break;
             case SEG_QUADTO:
-                normals.add( calcNormal( lastx, lasty, pair.second[0], pair.second[1], normals.peekLast() ) );
-                normals.add( calcNormal( pair.second[0], pair.second[1], pair.second[2], pair.second[3],
-                                         normals.peekLast() ) );
+                normals.add( last = calcNormal( lastx, lasty, pair.second[0], pair.second[1], last ) );
+                normals.add( last = calcNormal( pair.second[0], pair.second[1], pair.second[2], pair.second[3], last ) );
                 lastx = pair.second[2];
                 lasty = pair.second[3];
                 break;
@@ -173,20 +173,50 @@ public class OffsetStroke implements Stroke {
         // calc new path
         // ATTENTION: at least for cubic to this does not work! VM crash...
         double[] firstNormal = normals.peek();
-        double[] lastNormal = normals.peekLast();
+        if ( last == null ) {
+            last = normals.peekLast();
+        }
+
         Path2D.Double path = new Path2D.Double();
         for ( Pair<Integer, double[]> pair : list ) {
             switch ( pair.first ) {
             case SEG_CLOSE:
-                path.closePath();
+                switch ( type ) {
+                case Edged:
+                    double[] n = new double[] { last[0] + firstNormal[0], last[1] + firstNormal[1] };
+                    double len = sqrt( n[0] * n[0] + n[1] * n[1] );
+                    n[0] /= len;
+                    n[1] /= len;
+                    double[] n1 = calcIntersection( firstx, firsty, last, n );
+                    path.lineTo( n1[0], n1[1] );
+                    n1 = calcIntersection( firstx, firsty, n, firstNormal );
+                    path.lineTo( n1[0], n1[1] );
+                    path.closePath();
+                    break;
+                case Round:
+                    double[] p1 = new double[] { firstx + last[0] * offset, firsty + last[1] * offset };
+                    path.lineTo( p1[0], p1[1] );
+                    double[] p2 = new double[] { firstx + firstNormal[0] * offset, firsty + firstNormal[1] * offset };
+                    double[] midp = new double[] { p1[0] + firstNormal[0] * offset, p1[1] + firstNormal[1] * offset };
+                    path.quadTo( midp[0], midp[1], p2[0], p2[1] );
+                    path.closePath();
+                    break;
+                case Standard:
+                    double[] pt = calcIntersection( firstx, firsty, last, firstNormal );
+                    path.lineTo( pt[0], pt[1] );
+                    path.closePath();
+                    break;
+                case Strict:
+                    break;
+                }
                 break;
             case SEG_CUBICTO:
                 double[] n1 = normals.poll();
                 double[] n2 = normals.poll();
                 double[] n3 = normals.poll();
-                n1 = calcNewInner( pair.second[0], pair.second[1], n1, n2 );
-                n2 = calcNewInner( pair.second[2], pair.second[3], n2, n3 );
-                n3 = calcNewInner( pair.second[4], pair.second[5], n3, normals.peek() );
+                n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
+                n2 = calcIntersection( pair.second[2], pair.second[3], n2, n3 );
+                n3 = calcIntersection( pair.second[4], pair.second[5], n3, normals.peek() );
                 path.curveTo( n1[0], n1[1], n2[0], n2[1], n3[0], n3[1] );
                 break;
             case SEG_LINETO:
@@ -204,11 +234,11 @@ public class OffsetStroke implements Stroke {
                     double len = sqrt( n[0] * n[0] + n[1] * n[1] );
                     n[0] /= len;
                     n[1] /= len;
-                    n1 = calcNewInner( pair.second[0], pair.second[1], n1, n );
+                    n1 = calcIntersection( pair.second[0], pair.second[1], n1, n );
                     path.lineTo( n1[0], n1[1] );
-                    n1 = calcNewInner( pair.second[0], pair.second[1], n, n2 );
+                    n1 = calcIntersection( pair.second[0], pair.second[1], n, n2 );
                     path.lineTo( n1[0], n1[1] );
-                    break;
+                    continue;
                 case Round:
                     double[] p1 = new double[] { pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset };
                     path.lineTo( p1[0], p1[1] );
@@ -218,16 +248,16 @@ public class OffsetStroke implements Stroke {
                     double[] p2 = new double[] { pair.second[0] + n2[0] * offset, pair.second[1] + n2[1] * offset };
                     double[] midp = new double[] { p1[0] + n2[0] * offset, p1[1] + n2[1] * offset };
                     path.quadTo( midp[0], midp[1], p2[0], p2[1] );
-                    break;
+                    continue;
                 case Standard:
-                    n1 = calcNewInner( pair.second[0], pair.second[1], n1, n2 );
+                    n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
                     path.lineTo( n1[0], n1[1] );
-                    break;
+                    continue;
                 case Strict:
                     LOG.warn( "Strict perpendicular offset type is not implemented yet." );
-                    break;
+                    continue;
                 }
-                break;
+                continue;
             case SEG_MOVETO:
                 n1 = normals.peek();
                 path.moveTo( pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset );
@@ -235,38 +265,9 @@ public class OffsetStroke implements Stroke {
             case SEG_QUADTO:
                 n1 = normals.poll();
                 n2 = normals.poll();
-                n1 = calcNewInner( pair.second[0], pair.second[1], n1, n2 );
-                n2 = calcNewInner( pair.second[2], pair.second[3], n2, normals.peek() );
+                n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
+                n2 = calcIntersection( pair.second[2], pair.second[3], n2, normals.peek() );
                 path.quadTo( n1[0], n1[1], n2[0], n2[1] );
-                break;
-            }
-        }
-
-        if ( isZero( lastx - firstx ) && isZero( lasty - firsty ) ) {
-            switch ( type ) {
-            case Edged:
-                double[] n = new double[] { lastNormal[0] + firstNormal[0], lastNormal[1] + firstNormal[1] };
-                double len = sqrt( n[0] * n[0] + n[1] * n[1] );
-                n[0] /= len;
-                n[1] /= len;
-                double[] n1 = calcNewInner( firstx, firsty, lastNormal, n );
-                path.lineTo( n1[0], n1[1] );
-                n1 = calcNewInner( firstx, firsty, n, firstNormal );
-                path.lineTo( n1[0], n1[1] );
-                break;
-            case Round:
-                double[] p1 = new double[] { firstx + lastNormal[0] * offset, firsty + lastNormal[1] * offset };
-                path.lineTo( p1[0], p1[1] );
-                double[] p2 = new double[] { firstx + firstNormal[0] * offset, firsty + firstNormal[1] * offset };
-                double[] midp = new double[] { p1[0] + firstNormal[0] * offset, p1[1] + firstNormal[1] * offset };
-                path.quadTo( midp[0], midp[1], p2[0], p2[1] );
-                break;
-            case Standard:
-                double[] pt = calcNewInner( firstx, firsty, lastNormal, firstNormal );
-                path.lineTo( pt[0], pt[1] );
-                path.closePath();
-                break;
-            case Strict:
                 break;
             }
         }

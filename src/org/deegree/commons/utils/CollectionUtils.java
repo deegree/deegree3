@@ -37,6 +37,7 @@
 package org.deegree.commons.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -52,6 +53,28 @@ import java.util.ListIterator;
  * @version $Revision$, $Date$
  */
 public class CollectionUtils {
+
+    /**
+     * Use like this: System.out.println(map(List<double[]> object, DOUBLE_PRINTER)) Unfortunately, a generic version
+     * for all primitive-arrays is not possible...
+     */
+    public static final Mapper<String, double[]> DOUBLE_PRINTER = new Mapper<String, double[]>() {
+        public String apply( double[] u ) {
+            return Arrays.toString( u );
+        }
+    };
+
+    /**
+     * @param <T>
+     * @return a mapper to output an object array
+     * */
+    public static <T> Mapper<String, T[]> getArrayPrinter() {
+        return new Mapper<String, T[]>() {
+            public String apply( T[] u ) {
+                return Arrays.toString( u );
+            }
+        };
+    }
 
     /**
      * @param <T>

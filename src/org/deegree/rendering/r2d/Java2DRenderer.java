@@ -61,6 +61,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -403,14 +404,23 @@ public class Java2DRenderer implements Renderer {
         Double line = new Double();
 
         Points points = curve.getControlPoints();
-        Point p = points.get( 0 );
-        line.moveTo( p.get0(), p.get1() );
-        for ( Point point : points ) {
-            if ( point == p ) {
-                continue;
+        Iterator<Point> iter = points.iterator();
+        Point p = iter.next();
+        double x = p.get0(), y = p.get1();
+        line.moveTo( x, y );
+        while ( iter.hasNext() ) {
+            p = iter.next();
+            if ( iter.hasNext() ) {
+                line.lineTo( p.get0(), p.get1() );
+            } else {
+                if ( isZero( x - p.get0() ) && isZero( y - p.get1() ) ) {
+                    line.closePath();
+                } else {
+                    line.lineTo( p.get0(), p.get1() );
+                }
             }
-            line.lineTo( point.get0(), point.get1() );
         }
+
         line.transform( worldToScreen );
 
         return line;
