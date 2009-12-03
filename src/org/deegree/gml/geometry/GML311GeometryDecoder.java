@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.gml;
+package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -63,14 +63,6 @@ import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
-import org.deegree.geometry.gml.refs.CurveReference;
-import org.deegree.geometry.gml.refs.GeometricPrimitiveReference;
-import org.deegree.geometry.gml.refs.GeometryReference;
-import org.deegree.geometry.gml.refs.LineStringReference;
-import org.deegree.geometry.gml.refs.PointReference;
-import org.deegree.geometry.gml.refs.PolygonReference;
-import org.deegree.geometry.gml.refs.SolidReference;
-import org.deegree.geometry.gml.refs.SurfaceReference;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
@@ -104,6 +96,14 @@ import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.geometry.refs.CurveReference;
+import org.deegree.gml.geometry.refs.GeometricPrimitiveReference;
+import org.deegree.gml.geometry.refs.GeometryReference;
+import org.deegree.gml.geometry.refs.LineStringReference;
+import org.deegree.gml.geometry.refs.PointReference;
+import org.deegree.gml.geometry.refs.PolygonReference;
+import org.deegree.gml.geometry.refs.SolidReference;
+import org.deegree.gml.geometry.refs.SurfaceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.gml;
+package org.deegree.gml.geometry;
 
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.ARC;
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.LINE_STRING_SEGMENT;
@@ -82,6 +82,7 @@ import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -98,7 +99,7 @@ public class GML311GeometryDecoderTest {
 
     private static GeometryFactory geomFac = new GeometryFactory();
 
-    private static final String BASE_DIR = "testdata/geometries/";
+    private static final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
 
     private static double DELTA = 0.00000001;
 

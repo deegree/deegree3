@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.gml;
+package org.deegree.gml.geometry;
 
 import java.io.IOException;
 
@@ -62,6 +62,7 @@ import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -355,7 +356,7 @@ public class GML311CurveSegmentDecoderTest {
     private XMLStreamReaderWrapper getReader( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311CurveSegmentDecoderTest.class.getResource( "testdata/segments/"
+                                                                       GML311CurveSegmentDecoderTest.class.getResource( "../../geometry/gml/testdata/segments/"
                                                                                                                        + fileName ) );
         xmlReader.nextTag();
         return xmlReader;

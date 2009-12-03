@@ -49,13 +49,13 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311GeometryDecoder;
-import org.deegree.geometry.gml.GML311GeometryDecoderTest;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML311GeometryDecoderTest;
 import org.junit.Test;
 
 /**
@@ -70,7 +70,7 @@ public class GeometryValidatorTest {
 
     private static GeometryFactory geomFac = new GeometryFactory();
 
-    private static final String BASE_DIR = "testdata/geometries/";
+    private static final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
 
     @Test
     public void validateCurve()

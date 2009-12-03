@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml;
+package org.deegree.gml.geometry;
 
 import java.io.IOException;
 import java.net.URL;
@@ -56,6 +56,10 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.geometry.GML311CurveSegmentDecoder;
+import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML311GeometryEncoder;
+import org.deegree.gml.geometry.GML311SurfacePatchDecoder;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
@@ -74,11 +78,11 @@ public class GMLGeometryEncoderTest {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLGeometryEncoderTest.class );
 
-    final static String DIR = "testdata/geometries/";
+    final static String DIR = "../../geometry/gml/testdata/geometries/";
 
-    final static String PATCH_DIR = "testdata/patches/";
+    final static String PATCH_DIR = "../../geometry/gml/testdata/patches/";
 
-    final static String SEGMENT_DIR = "testdata/segments/";
+    final static String SEGMENT_DIR = "../../geometry/gml/testdata/segments/";
 
     private static List<String> sources = new ArrayList<String>();
 

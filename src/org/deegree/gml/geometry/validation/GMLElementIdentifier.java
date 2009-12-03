@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,46 +32,50 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml.refs;
+package org.deegree.gml.geometry.validation;
 
-import org.deegree.geometry.primitive.GeometricPrimitive;
-import org.deegree.gml.GMLObjectResolver;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
 
 /**
- * The <code></code> class TODO add class documentation here.
- * 
- * @param <T>
- * 
+ * Identifies a GML element and it's position in a document for providing validation information.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
-public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements
-                                                                                                   GeometricPrimitive {
+public class GMLElementIdentifier {
+
+    private QName elementName;
+
+    private int lineNumber;
+
+    private int columnNumber;
+
     /**
-     * Creates a new {@link GeometricPrimitiveReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the geometry's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     * Creates a new {@link GMLElementIdentifier} for identifying the opening element that the given xml stream
+     * currently points at.
+     *
+     * @param xmlStream
+     *            must point at an open element event
      */
-    public GeometricPrimitiveReference( GMLObjectResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
+    public GMLElementIdentifier( XMLStreamReader xmlStream ) {
+        if ( xmlStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
+            String msg = "Cannot create GMLElementIdentifier. XMLStreamReader does not point at a START_ELEMENT event.";
+            throw new IllegalArgumentException( msg );
+        }
+        elementName = xmlStream.getName();
+        lineNumber  = xmlStream.getLocation().getLineNumber();
+        columnNumber  = xmlStream.getLocation().getColumnNumber();
     }
 
     @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
-
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return getReferencedGeometry().getPrimitiveType();
+    public String toString () {
+        String s = elementName + ", line: " + lineNumber + ", column: " + columnNumber;
+        return s;
     }
 }

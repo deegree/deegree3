@@ -44,9 +44,9 @@ import java.util.Map;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.gml.GML311GeometryDecoder;
-import org.deegree.geometry.gml.refs.GeometryReference;
 import org.deegree.gml.feature.FeatureReference;
+import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.refs.GeometryReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

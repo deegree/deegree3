@@ -57,9 +57,9 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.WKTWriter;
 import org.deegree.geometry.WKTWriter.WKTFlag;
-import org.deegree.geometry.gml.GML311GeometryDecoder;
-import org.deegree.geometry.gml.GML311GeometryDecoderTest;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML311GeometryDecoderTest;
 import org.junit.Test;
 
 import junit.framework.TestCase;

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.gml;
+package org.deegree.gml.geometry;
 
 import java.io.IOException;
 
@@ -47,14 +47,13 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311GeometryDecoder;
-import org.deegree.geometry.gml.GML311SurfacePatchDecoder;
 import org.deegree.geometry.primitive.patches.Cone;
 import org.deegree.geometry.primitive.patches.Cylinder;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.Triangle;
+import org.deegree.gml.geometry.GML311GeometryDecoder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -135,7 +134,7 @@ public class GML311SurfacePatchDecoderTest {
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311SurfacePatchDecoderTest.class.getResource( "testdata/patches/"
+                                                                       GML311SurfacePatchDecoderTest.class.getResource( "../../geometry/gml/testdata/patches/"
                                                                                                                        + fileName ) );
         xmlReader.nextTag();
         return xmlReader;

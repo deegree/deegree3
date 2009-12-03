@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.gml;
+package org.deegree.gml.geometry;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -44,7 +44,6 @@ import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
-import org.deegree.geometry.gml.refs.GeometryReference;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
@@ -54,6 +53,7 @@ import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
+import org.deegree.gml.geometry.refs.GeometryReference;
 
 /**
  * Interface that makes the usage of Geometry Encoders simpler, not depending on their version anymore. Any new version

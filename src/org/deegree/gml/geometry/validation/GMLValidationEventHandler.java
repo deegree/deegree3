@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml.validation;
+package org.deegree.gml.geometry.validation;
 
 import java.util.List;
 

@@ -115,8 +115,8 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.gml.GML21GeometryDecoder;
 import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
+import org.deegree.gml.geometry.GML21GeometryDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

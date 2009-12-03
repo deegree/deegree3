@@ -34,48 +34,56 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml.validation;
+package org.deegree.gml.geometry.refs;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
+import java.util.List;
+
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.gml.GMLObjectResolver;
 
 /**
- * Identifies a GML element and it's position in a document for providing validation information.
+ * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  *
  * @version $Revision: $, $Date: $
  */
-public class GMLElementIdentifier {
-
-    private QName elementName;
-
-    private int lineNumber;
-
-    private int columnNumber;
+public class PolygonReference extends SurfaceReference<Polygon> implements Polygon {
 
     /**
-     * Creates a new {@link GMLElementIdentifier} for identifying the opening element that the given xml stream
-     * currently points at.
-     *
-     * @param xmlStream
-     *            must point at an open element event
+     * Creates a new {@link PolygonReference} instance.
+     * 
+     * @param resolver
+     *            used for resolving the reference, must not be <code>null</code>
+     * @param uri
+     *            the geometry's uri, must not be <code>null</code>
+     * @param baseURL
+     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public GMLElementIdentifier( XMLStreamReader xmlStream ) {
-        if ( xmlStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
-            String msg = "Cannot create GMLElementIdentifier. XMLStreamReader does not point at a START_ELEMENT event.";
-            throw new IllegalArgumentException( msg );
-        }
-        elementName = xmlStream.getName();
-        lineNumber  = xmlStream.getLocation().getLineNumber();
-        columnNumber  = xmlStream.getLocation().getColumnNumber();
+    public PolygonReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+        super( resolver, uri, baseURL );
     }
 
     @Override
-    public String toString () {
-        String s = elementName + ", line: " + lineNumber + ", column: " + columnNumber;
-        return s;
+    public SurfaceType getSurfaceType() {
+        return SurfaceType.Polygon;
+    }
+
+    @Override
+    public Ring getExteriorRing() {
+        return getReferencedGeometry().getExteriorRing();
+    }
+
+    @Override
+    public List<Ring> getInteriorRings() {
+        return getReferencedGeometry().getInteriorRings();
+    }
+    
+    @Override
+    public List<PolygonPatch> getPatches() {
+        return getReferencedGeometry().getPatches();
     }
 }

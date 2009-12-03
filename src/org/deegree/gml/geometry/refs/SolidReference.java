@@ -34,34 +34,28 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml.refs;
+package org.deegree.gml.geometry.refs;
 
 import java.util.List;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
-import org.deegree.commons.utils.Pair;
-import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.Curve;
-import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.Solid;
+import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.GMLObjectResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
- * @param <T>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class CurveReference<T extends Curve> extends GeometricPrimitiveReference<T> implements Curve {
+public class SolidReference<T extends Solid> extends GeometryReference<T> implements Solid {
 
     /**
-     * Creates a new {@link CurveReference} instance.
+     * Creates a new {@link SolidReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
@@ -70,57 +64,33 @@ public class CurveReference<T extends Curve> extends GeometricPrimitiveReference
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public CurveReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public SolidReference( GMLObjectResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
-    @Override
-    public LineString getAsLineString() {
-        return getReferencedGeometry().getAsLineString();
+    public Measure getArea( Unit requestedBaseUnit ) {
+        return getReferencedGeometry().getArea( requestedBaseUnit );
     }
 
-    @Override
-    public Pair<Point, Point> getBoundary() {
-        return getReferencedGeometry().getBoundary();
-    }
-
-    @Override
-    public Points getControlPoints() {
-        return getReferencedGeometry().getControlPoints();
-    }
-
-    @Override
-    public List<CurveSegment> getCurveSegments() {
-        return getReferencedGeometry().getCurveSegments();
-    }
-
-    @Override
-    public CurveType getCurveType() {
-        return getReferencedGeometry().getCurveType();
-    }
-
-    @Override
-    public Point getEndPoint() {
-        return getReferencedGeometry().getEndPoint();
-    }
-
-    @Override
-    public Measure getLength( Unit requestedUnit ) {
-        return getReferencedGeometry().getLength( requestedUnit );
-    }
-
-    @Override
     public PrimitiveType getPrimitiveType() {
-        return getReferencedGeometry().getPrimitiveType();
+        return PrimitiveType.Solid;
+    }
+
+    public SolidType getSolidType() {
+        return getReferencedGeometry().getSolidType();
+    }
+
+    public Measure getVolume( Unit requestedBaseUnit ) {
+        return getReferencedGeometry().getVolume( requestedBaseUnit );
     }
 
     @Override
-    public Point getStartPoint() {
-        return getReferencedGeometry().getStartPoint();
+    public Surface getExteriorSurface() {
+        return getReferencedGeometry().getExteriorSurface();
     }
 
     @Override
-    public boolean isClosed() {
-        return getReferencedGeometry().isClosed();
+    public List<Surface> getInteriorSurfaces() {
+        return getReferencedGeometry().getInteriorSurfaces();
     }
 }

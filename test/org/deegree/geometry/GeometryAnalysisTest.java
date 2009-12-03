@@ -51,11 +51,11 @@ import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.gml.geometry.GML311GeometryEncoder;
 import org.junit.Before;
 import org.junit.Test;
 

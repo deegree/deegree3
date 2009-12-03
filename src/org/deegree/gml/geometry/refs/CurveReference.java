@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,25 +32,36 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml.refs;
+package org.deegree.gml.geometry.refs;
 
+import java.util.List;
+
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
+import org.deegree.commons.utils.Pair;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.gml.GMLObjectResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
+ * @param <T>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class LineStringReference extends CurveReference<LineString> implements LineString {
+public class CurveReference<T extends Curve> extends GeometricPrimitiveReference<T> implements Curve {
 
     /**
-     * Creates a new {@link LineStringReference} instance.
+     * Creates a new {@link CurveReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
@@ -59,11 +70,57 @@ public class LineStringReference extends CurveReference<LineString> implements L
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public LineStringReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public CurveReference( GMLObjectResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
+    @Override
+    public LineString getAsLineString() {
+        return getReferencedGeometry().getAsLineString();
+    }
+
+    @Override
+    public Pair<Point, Point> getBoundary() {
+        return getReferencedGeometry().getBoundary();
+    }
+
+    @Override
+    public Points getControlPoints() {
+        return getReferencedGeometry().getControlPoints();
+    }
+
+    @Override
+    public List<CurveSegment> getCurveSegments() {
+        return getReferencedGeometry().getCurveSegments();
+    }
+
+    @Override
     public CurveType getCurveType() {
-        return CurveType.LineString;
+        return getReferencedGeometry().getCurveType();
+    }
+
+    @Override
+    public Point getEndPoint() {
+        return getReferencedGeometry().getEndPoint();
+    }
+
+    @Override
+    public Measure getLength( Unit requestedUnit ) {
+        return getReferencedGeometry().getLength( requestedUnit );
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return getReferencedGeometry().getPrimitiveType();
+    }
+
+    @Override
+    public Point getStartPoint() {
+        return getReferencedGeometry().getStartPoint();
+    }
+
+    @Override
+    public boolean isClosed() {
+        return getReferencedGeometry().isClosed();
     }
 }

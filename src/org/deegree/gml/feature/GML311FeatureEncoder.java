@@ -72,8 +72,8 @@ import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.deegree.gml.feature.generic.GenericCustomPropertyExporter;
+import org.deegree.gml.geometry.GML311GeometryEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

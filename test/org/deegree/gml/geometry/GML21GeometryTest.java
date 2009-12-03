@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.gml;
+package org.deegree.gml.geometry;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -60,6 +60,8 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
+import org.deegree.gml.geometry.GML21GeometryDecoder;
+import org.deegree.gml.geometry.GML21GeometryEncoder;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
@@ -76,7 +78,7 @@ import org.junit.Assert;
  */
 public class GML21GeometryTest extends TestCase {
 
-    private static final String BASE_DIR = "testdata/gml21/";
+    private static final String BASE_DIR = "../../geometry/gml/testdata/gml21/";
 
     private static final String GML21NS = "http://www.opengis.net/gml";
 

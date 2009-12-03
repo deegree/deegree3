@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,29 +32,34 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml.refs;
+package org.deegree.gml.geometry.refs;
 
 import java.util.List;
 
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.gml.GMLObjectResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
+ * @param <T>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class PolygonReference extends SurfaceReference<Polygon> implements Polygon {
+public class SurfaceReference<T extends Surface> extends GeometricPrimitiveReference<T> implements Surface {
 
     /**
-     * Creates a new {@link PolygonReference} instance.
+     * Creates a new {@link SurfaceReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
@@ -63,27 +68,42 @@ public class PolygonReference extends SurfaceReference<Polygon> implements Polyg
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public PolygonReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public SurfaceReference( GMLObjectResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
     @Override
+    public Measure getArea( Unit requestedBaseUnit ) {
+        return getReferencedGeometry().getArea( requestedBaseUnit );
+    }
+
+    @Override
     public SurfaceType getSurfaceType() {
-        return SurfaceType.Polygon;
+        return getReferencedGeometry().getSurfaceType();
     }
 
     @Override
-    public Ring getExteriorRing() {
-        return getReferencedGeometry().getExteriorRing();
+    public Point getCentroid() {
+        return getReferencedGeometry().getCentroid();
     }
 
     @Override
-    public List<Ring> getInteriorRings() {
-        return getReferencedGeometry().getInteriorRings();
+    public Points getExteriorRingCoordinates() {
+        return getReferencedGeometry().getExteriorRingCoordinates();
     }
-    
+
     @Override
-    public List<PolygonPatch> getPatches() {
+    public List<Points> getInteriorRingsCoordinates() {
+        return getReferencedGeometry().getInteriorRingsCoordinates();
+    }
+
+    @Override
+    public List<? extends SurfacePatch> getPatches() {
         return getReferencedGeometry().getPatches();
+    }
+
+    @Override
+    public Measure getPerimeter( Unit requestedUnit ) {
+        return getReferencedGeometry().getPerimeter( requestedUnit );
     }
 }

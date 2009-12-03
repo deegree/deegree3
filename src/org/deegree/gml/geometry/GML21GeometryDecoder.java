@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.gml;
+package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -55,10 +55,6 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.refs.GeometryReference;
-import org.deegree.geometry.gml.refs.LineStringReference;
-import org.deegree.geometry.gml.refs.PointReference;
-import org.deegree.geometry.gml.refs.PolygonReference;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -71,6 +67,10 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.gml.GMLDocumentIdContext;
+import org.deegree.gml.geometry.refs.GeometryReference;
+import org.deegree.gml.geometry.refs.LineStringReference;
+import org.deegree.gml.geometry.refs.PointReference;
+import org.deegree.gml.geometry.refs.PolygonReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

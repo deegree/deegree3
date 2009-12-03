@@ -34,23 +34,25 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml.refs;
+package org.deegree.gml.geometry.refs;
 
-import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.gml.GMLObjectResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
+ * 
+ * @param <T>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class PointReference extends GeometricPrimitiveReference<Point> implements Point {
-
+public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements
+                                                                                                   GeometricPrimitive {
     /**
-     * Creates a new {@link PointReference} instance.
+     * Creates a new {@link GeometricPrimitiveReference} instance.
      * 
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
@@ -59,37 +61,17 @@ public class PointReference extends GeometricPrimitiveReference<Point> implement
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public PointReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public GeometricPrimitiveReference( GMLObjectResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 
     @Override
-    public double get( int dimension ) {
-        return getReferencedGeometry().get( dimension );
-    }
-
-    @Override
-    public double[] getAsArray() {
-        return getReferencedGeometry().getAsArray();
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
     }
 
     @Override
     public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Point;
-    }
-
-    @Override
-    public double get0() {
-        return getReferencedGeometry().get0();
-    }
-
-    @Override
-    public double get1() {
-        return getReferencedGeometry().get1();
-    }
-
-    @Override
-    public double get2() {
-        return getReferencedGeometry().get2();
+        return getReferencedGeometry().getPrimitiveType();
     }
 }
