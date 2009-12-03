@@ -1,9 +1,10 @@
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,32 +33,34 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.geometry;
+package org.deegree.gml;
 
-import org.deegree.gml.GMLVersion;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 /**
- * Factory class used to creating various GML adapters (decoders/encoders) for different GML versions.
+ * The <code></code> class TODO add class documentation here.
  * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
-public class GMLGeometryAdapters {
+public abstract class GMLReader {
 
-    public static GMLGeometryDecoder createDecoder( GMLVersion version ) {
-        GMLGeometryDecoder decoder = null;
-        switch ( version ) {
-        case GML_2:
-            decoder = new GML21GeometryDecoder();
-        case GML_30:
-        case GML_31:
-        case GML_32:
-            decoder = new GML311GeometryDecoder();
-        }
-        return decoder;
+    public GMLReader( GMLVersion version ) {
+
     }
+
+    /**
+     * Returns the object representation for the GML object element event that the cursor of the given
+     * <code>XMLStreamReader</code> points at.
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event of the GML object element, afterwards points at
+     *            the next event after the <code>END_ELEMENT</code> event of the GML object element element
+     * @return deegree model representation for the given GML object element
+     * @throws XMLStreamException
+     */
+    public abstract GMLObject parse( XMLStreamReader xmlStream ) throws XMLStreamException;
 }

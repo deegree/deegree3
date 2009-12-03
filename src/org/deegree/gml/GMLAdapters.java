@@ -35,39 +35,38 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Geometry;
+import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.gml.feature.GMLFeatureDecoder;
+import org.deegree.gml.geometry.GML21GeometryDecoder;
+import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GMLGeometryDecoder;
 
 /**
- * Basic interface for GML objects.
- * <p>
- * In the latest version of GML (3.2.1), eight classes of GML objects exist:
- * <ul>
- * <li>feature</li>
- * <li>geometry</li>
- * <li>value</li>
- * <li>topology</li>
- * <li>crs</li>
- * <li>time object</li>
- * <li>coverage</li>
- * <li>style</li>
- * </ul>
- * </p>
- * 
- * @see Feature
- * @see Geometry
+ * Factory class used to creating various GML adapters (decoders/encoders) for different GML versions.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface GMLObject {
+public class GMLAdapters {
 
-    /**
-     * Returns the id of the object.
-     * 
-     * @return the id of the object, or <code>null</code> if it doesn't have an id
-     */
-    public String getId();
+    public static GMLGeometryDecoder createGeometryDecoder( GMLVersion version ) {
+        GMLGeometryDecoder decoder = null;
+        switch ( version ) {
+        case GML_2:
+            decoder = new GML21GeometryDecoder();
+        case GML_30:
+        case GML_31:
+        case GML_32:
+            decoder = new GML311GeometryDecoder();
+        }
+        return decoder;
+    }
+
+    public static GMLFeatureDecoder createFeatureDecoder( GMLVersion version, ApplicationSchema schema ) {
+        return new GMLFeatureDecoder( schema, version );
+    }    
+    
 }

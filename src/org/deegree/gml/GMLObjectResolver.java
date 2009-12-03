@@ -39,8 +39,7 @@ import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 
 /**
- * Provides the functionality to retrieve {@link GMLObject} instances by a URI (which may be local or
- * remote).
+ * Provides the functionality to retrieve {@link GMLObject} instances by a URI (which may be local or remote).
  * <p>
  * A local reference is always constructed as <code># + id</code>.
  * </p>
@@ -52,11 +51,38 @@ import org.deegree.geometry.Geometry;
  */
 public interface GMLObjectResolver {
 
+    /**
+     * Returns the {@link GMLObject} that is referenced by the given URI.
+     * 
+     * @param uri
+     *            URI that identifies the object, must not be <code>null</code>
+     * @param baseURL
+     *            optional baseURL for resolving URIs that are relative URLs
+     * @return the referenced object or <code>null</code> if no such object exists
+     */
+    public GMLObject getObject( String uri, String baseURL );
+
+    /**
+     * Returns the {@link Feature} that is referenced by the given URI.
+     * 
+     * @param uri
+     *            URI that identifies the feature, must not be <code>null</code>
+     * @param baseURL
+     *            optional baseURL for resolving URIs that are relative URLs
+     * @return the referenced feature or <code>null</code> if no such feature exists
+     */
     public Feature getFeature( String uri, String baseURL );
 
+    /**
+     * Returns the {@link Geometry} that is referenced by the given URI.
+     * 
+     * @param uri
+     *            URI that identifies the geometry, must not be <code>null</code>
+     * @param baseURL
+     *            optional baseURL for resolving URIs that are relative URLs
+     * @return the referenced geometry or <code>null</code> if no such geometry exists
+     */
     public Geometry getGeometry( String uri, String baseURL );
-    
-    // TODO methods for other GML object types (Topology, Coverage, CRS, ...)
 
-    public GMLObject getObject( String uri, String baseURL );
+    // TODO methods for other GML object types (Topology, Coverage, CRS, ...)
 }
