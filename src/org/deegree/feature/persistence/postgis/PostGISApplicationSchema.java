@@ -44,6 +44,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.postgis.jaxbconfig.DBColumn;
 import org.deegree.feature.persistence.postgis.jaxbconfig.FeatureJoinTable;
 import org.deegree.feature.persistence.postgis.jaxbconfig.FeaturePropertyMappingType;
@@ -74,7 +75,7 @@ import org.deegree.feature.types.property.PropertyType;
  */
 public class PostGISApplicationSchema {
 
-    private final ApplicationSchema appSchema;    
+    private final ApplicationSchema appSchema;
 
     private final GlobalMappingHints globalHints;
 
@@ -180,7 +181,8 @@ public class PostGISApplicationSchema {
         writer.println( ");" );
         writer.println( "COMMENT ON TABLE feature_types IS 'All concrete feature types and their tables';" );
         writer.println();
-        writer.println( "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "', 'feature_types','wgs84bbox','4326','GEOMETRY',2);" );
+        writer.println( "SELECT ADDGEOMETRYCOLUMN('" + dbSchema
+                        + "', 'feature_types','wgs84bbox','4326','GEOMETRY',2);" );
         writer.println( "ALTER TABLE feature_types ADD CONSTRAINT feature_types_check_bbox CHECK (isvalid(wgs84bbox));" );
         writer.println( "/* (no spatial index needed, as envelope is only used for keeping track of feature type extents) */" );
 
@@ -223,6 +225,7 @@ public class PostGISApplicationSchema {
     private void writeCreateFeatureType( FeatureType ft, PrintWriter writer, String dbSchema ) {
 
         List<String> additionalCreates = new ArrayList<String>();
+        List<Pair<String, String>> comments = new ArrayList<Pair<String, String>>();
         FeatureTypeMapping ftMapping = getFtMapping( ft.getName() );
         String tableName = ftMapping.getFeatureTypeHints().getDBTable().toLowerCase();
         int i = 1;
@@ -231,15 +234,18 @@ public class PostGISApplicationSchema {
         writer.println();
         writer.println( "CREATE TABLE " + tableName + " (" );
         writer.print( "    id integer PRIMARY KEY REFERENCES GML_OBJECTS" );
+        comments.add( new Pair<String, String>( "id", "Internal id" ) );
         for ( PropertyType<?> pt : ft.getPropertyDeclarations() ) {
             PropertyMappingType propMapping = ftMapping.getPropertyHints( pt.getName() );
             if ( propMapping instanceof SimplePropertyMappingType ) {
                 SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) propMapping;
                 if ( simplePropMapping.getDBColumn() != null ) {
                     DBColumn dbColumn = simplePropMapping.getDBColumn();
+                    comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase(),
+                                                            "Property " + pt.getName().getLocalPart() + " (simple)") );
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + " " + dbColumn.getSqlType() );
-                    if (pt.getMinOccurs() > 0) {
-                        writer.print( " NOT NULL");
+                    if ( pt.getMinOccurs() > 0 ) {
+                        writer.print( " NOT NULL" );
                     }
                 } else {
                     additionalCreates.add( createPropertyTable( tableName, simplePropMapping.getPropertyTable() ) );
@@ -252,6 +258,10 @@ public class PostGISApplicationSchema {
                 GeometryPropertyMappingType geometryPropMapping = (GeometryPropertyMappingType) propMapping;
                 if ( geometryPropMapping.getGeometryDBColumn() != null ) {
                     GeometryDBColumn dbColumn = geometryPropMapping.getGeometryDBColumn();
+                    comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase(),
+                                                            "Property " + pt.getName().getLocalPart() + " (geometry)") );
+                    comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase() + "_ID",
+                                            "Property " + pt.getName().getLocalPart() + " (geometry id)") );
                     writer.print( ",\n    " + dbColumn.getName() + "_ID integer REFERENCES gml_objects" );
                     String create = "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "','" + tableName + "','"
                                     + dbColumn.getName().toLowerCase() + "','" + dbColumn.getSrid() + "','"
@@ -261,6 +271,8 @@ public class PostGISApplicationSchema {
                     create += "CREATE INDEX " + tableName + "_sidx" + i + " ON " + tableName + " USING GIST ( "
                               + dbColumn.getName().toLowerCase() + " GIST_GEOMETRY_OPS );\n";
                     additionalCreates.add( create );
+                    comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase() + "_xlink",
+                                            "Property " + pt.getName().getLocalPart() + " (geometry URI)") );                    
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + "_xlink text" );
                     i++;
                 } else {
@@ -281,11 +293,25 @@ public class PostGISApplicationSchema {
 
                 if ( featurePropMapping.getDBColumn() != null ) {
                     DBColumn dbColumn = featurePropMapping.getDBColumn();
+                    String valueFeatureTypeName = targetFt == null ? "Any feature" : targetFt.getName().getLocalPart();
+                    if ( !isTargetTypeUnique ) {
+                        valueFeatureTypeName += " (abstract)";
+                    }
+                    comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase(),
+                                                            "Property " + pt.getName().getLocalPart()
+                                                                                    + " (feature), value feature type: "
+                                                                                    + valueFeatureTypeName ) );
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + " integer REFERENCES gml_objects" );
                     if ( !isTargetTypeUnique ) {
                         writer.print( ",\n    " + dbColumn.getName().toLowerCase()
                                       + "_ft smallint REFERENCES feature_types" );
+                        comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase() + "_ft",
+                                                "Property " + pt.getName().getLocalPart()
+                                                                        + " (feature type id)" ) );                
                     }
+
+                    comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase() + "_xlink",
+                                            "Property " + pt.getName().getLocalPart() + " (feature URI)") );                    
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + "_xlink text" );
                 } else {
                     additionalCreates.add( createPropertyTable( tableName, featurePropMapping.getFeatureJoinTable(),
@@ -299,11 +325,15 @@ public class PostGISApplicationSchema {
                 MeasurePropertyMappingType measurePropMapping = (MeasurePropertyMappingType) propMapping;
                 if ( measurePropMapping.getDBColumn() != null ) {
                     DBColumn dbColumn = measurePropMapping.getDBColumn();
+                    comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase(),
+                                            "Property " + pt.getName().getLocalPart() + "(measure, text)" ) );                       
                     writer.print( ",\n    " + dbColumn.getName().toLowerCase() + " double precision" );
-                    if (pt.getMinOccurs() > 0) {
-                        writer.print( " NOT NULL");
+                    if ( pt.getMinOccurs() > 0 ) {
+                        writer.print( " NOT NULL" );
                     }
-                    writer.print( ",\n    " + dbColumn.getName().toLowerCase() + "_uom text" );
+                    comments.add( new Pair<String, String>( dbColumn.getName().toLowerCase(),
+                                            "Property " + pt.getName().getLocalPart() + "_uom (measure, uom attribute)" ) );                    
+                    writer.print( ",\n    " + dbColumn.getName().toLowerCase() + "_uom text" );                    
                 } else {
                     additionalCreates.add( createMeasurePropertyTable( tableName, measurePropMapping.getPropertyTable() ) );
                     String comment = "COMMENT ON TABLE " + measurePropMapping.getPropertyTable().getTable() + " IS '"
@@ -322,6 +352,9 @@ public class PostGISApplicationSchema {
         for ( String create : additionalCreates ) {
             writer.println();
             writer.print( create );
+        }
+        for ( Pair<String, String> comment : comments ) {
+            writer.println( "COMMENT ON COLUMN " + tableName + "." + comment.first + " IS '" + comment.second + "';" );
         }
         writer.println();
         writer.println( "/* --- END Feature type '" + ft.getName() + "' --- */" );
@@ -349,10 +382,8 @@ public class PostGISApplicationSchema {
         s += ");\n";
         s += "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "','" + tableName + "','geometry','" + propTable.getSrid()
              + "','" + propTable.getSqlType() + "'," + propTable.getDimension() + ");\n";
-        s += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName
-             + "_geo_check CHECK (isvalid(geometry));\n";
-        s += "CREATE INDEX " + tableName + "_sidx ON " + tableName
-             + " USING GIST ( geometry GIST_GEOMETRY_OPS );\n";
+        s += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + "_geo_check CHECK (isvalid(geometry));\n";
+        s += "CREATE INDEX " + tableName + "_sidx ON " + tableName + " USING GIST ( geometry GIST_GEOMETRY_OPS );\n";
         return s;
     }
 
