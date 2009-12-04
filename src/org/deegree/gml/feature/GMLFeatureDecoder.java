@@ -137,14 +137,14 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * @param schema
      *            application schema that defines the feature types, must not be <code>null</code>
      * @param idContext
-     *            id context to be used for registering gml:ids (features and geometries and resolving local xlinks and
+     *            id context to be used for registering gml:ids (features and geometries) and resolving local xlinks, can be <code>null</code>
      * @param version
      *            GML version, must not be <code>null</code>
      */
     public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLVersion version ) {
         this.schema = schema;
-        this.geomFac = new GeometryFactory();
-        this.idContext = idContext;
+        this.geomFac = new GeometryFactory();        
+        this.idContext = idContext != null ? idContext : new GMLDocumentIdContext( version );
         if ( version.equals( GMLVersion.GML_2 ) ) {
             this.geomParser = new GML2GeometryDecoder( geomFac, idContext );
         } else {
