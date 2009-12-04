@@ -832,8 +832,10 @@ public class Filter100XMLDecoder {
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
-                xmlStream.nextTag();
-                Measure distance = new Measure( distanceUnits, null );
+                String distanceValue = xmlStream.getElementText();
+                // In Filter 1.0.0 (with distinction to 1.1.0) the <Distance> element IS supposed to contain text, e.g.
+                // a value. The unit of measure is in the "units" attribute. This differs with Filter 1.1.0.
+                Measure distance = new Measure( distanceValue, distanceUnits );
                 spatialOperator = new Beyond( param1, param2, distance );
                 break;
             }
@@ -868,9 +870,11 @@ public class Filter100XMLDecoder {
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
-                Measure distance = new Measure( distanceUnits, null );
+                String distanceValue = xmlStream.getElementText();
+                // In Filter 1.0.0 (with distinction to 1.1.0) the <Distance> element IS supposed to contain text, e.g.
+                // a value. The unit of measure is in the "units" attribute. This differs with Filter 1.1.0.
+                Measure distance = new Measure( distanceValue, distanceUnits );
                 spatialOperator = new DWithin( param1, param2, distance );
-                xmlStream.nextTag();
                 break;
             }
             case EQUALS: {
