@@ -37,7 +37,6 @@ package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -61,6 +60,7 @@ import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.Triangle;
+import org.deegree.gml.GMLVersion;
 
 /**
  * Handles the parsing of <code>gml:_SurfacePatch</code> elements, i.e concrete element declarations that are in the
@@ -91,7 +91,7 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
      * @param geomFac
      */
     GML3SurfacePatchDecoder( GML3GeometryDecoder geometryParser, GeometryFactory geomFac ) {
-        super( geomFac );
+        super( geometryParser.version, geomFac );
         this.geometryParser = geometryParser;
     }
 
@@ -128,7 +128,7 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
 
         SurfacePatch patch = null;
 
-        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+        if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_SurfacePatch element: " + xmlStream.getName()
                          + "' is not a GML geometry element. Not in the gml namespace.";
             throw new XMLParsingException( xmlStream, msg );
@@ -178,7 +178,7 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
         validateAttribute( xmlStream, "verticalCurveType", "linear" );
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "row" );
+        xmlStream.require( START_ELEMENT, gmlNs, "row" );
 
         List<Points> grid = new ArrayList<Points>();
         while ( xmlStream.getLocalName().equals( "row" ) ) {
@@ -200,19 +200,19 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
                 }
             }
             grid.add( geomFac.createPoints( currentRow ) );
-            xmlStream.require( END_ELEMENT, GMLNS, "row" );
+            xmlStream.require( END_ELEMENT, gmlNs, "row" );
             xmlStream.nextTag();
         }
 
-        xmlStream.require( START_ELEMENT, GMLNS, "rows" );
+        xmlStream.require( START_ELEMENT, gmlNs, "rows" );
         xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
-        xmlStream.require( END_ELEMENT, GMLNS, "rows" );
+        xmlStream.require( END_ELEMENT, gmlNs, "rows" );
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "columns" );
+        xmlStream.require( START_ELEMENT, gmlNs, "columns" );
         xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
-        xmlStream.require( END_ELEMENT, GMLNS, "columns" );
+        xmlStream.require( END_ELEMENT, gmlNs, "columns" );
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "Cone" );
+        xmlStream.require( END_ELEMENT, gmlNs, "Cone" );
 
         return geomFac.createCone( grid );
     }
@@ -240,7 +240,7 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
         validateAttribute( xmlStream, "verticalCurveType", "linear" );
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "row" );
+        xmlStream.require( START_ELEMENT, gmlNs, "row" );
 
         List<Points> grid = new ArrayList<Points>();
         while ( xmlStream.getLocalName().equals( "row" ) ) {
@@ -262,19 +262,19 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
                 }
             }
             grid.add( geomFac.createPoints( currentRow ) );
-            xmlStream.require( END_ELEMENT, GMLNS, "row" );
+            xmlStream.require( END_ELEMENT, gmlNs, "row" );
             xmlStream.nextTag();
         }
 
-        xmlStream.require( START_ELEMENT, GMLNS, "rows" );
+        xmlStream.require( START_ELEMENT, gmlNs, "rows" );
         xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
-        xmlStream.require( END_ELEMENT, GMLNS, "rows" );
+        xmlStream.require( END_ELEMENT, gmlNs, "rows" );
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "columns" );
+        xmlStream.require( START_ELEMENT, gmlNs, "columns" );
         xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
-        xmlStream.require( END_ELEMENT, GMLNS, "columns" );
+        xmlStream.require( END_ELEMENT, gmlNs, "columns" );
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "Cylinder" );
+        xmlStream.require( END_ELEMENT, gmlNs, "Cylinder" );
 
         return geomFac.createCylinder( grid );
     }
@@ -302,7 +302,7 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
         validateAttribute( xmlStream, "verticalCurveType", "circularArc3Points" );
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "row" );
+        xmlStream.require( START_ELEMENT, gmlNs, "row" );
 
         List<Points> grid = new ArrayList<Points>();
         while ( xmlStream.getLocalName().equals( "row" ) ) {
@@ -324,19 +324,19 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
                 }
             }
             grid.add( geomFac.createPoints( currentRow ) );
-            xmlStream.require( END_ELEMENT, GMLNS, "row" );
+            xmlStream.require( END_ELEMENT, gmlNs, "row" );
             xmlStream.nextTag();
         }
 
-        xmlStream.require( START_ELEMENT, GMLNS, "rows" );
+        xmlStream.require( START_ELEMENT, gmlNs, "rows" );
         xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
-        xmlStream.require( END_ELEMENT, GMLNS, "rows" );
+        xmlStream.require( END_ELEMENT, gmlNs, "rows" );
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "columns" );
+        xmlStream.require( START_ELEMENT, gmlNs, "columns" );
         xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
-        xmlStream.require( END_ELEMENT, GMLNS, "columns" );
+        xmlStream.require( END_ELEMENT, gmlNs, "columns" );
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "Sphere" );
+        xmlStream.require( END_ELEMENT, gmlNs, "Sphere" );
 
         return geomFac.createSphere( grid );
     }
@@ -375,7 +375,7 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
                 }
                 exteriorRing = geometryParser.parseAbstractRing( xmlStream, defaultCRS );
                 xmlStream.nextTag();
-                xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
+                xmlStream.require( END_ELEMENT, gmlNs, "exterior" );
                 xmlStream.nextTag();
             }
         }
@@ -389,14 +389,14 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
                 }
                 interiorRings.add( geometryParser.parseAbstractRing( xmlStream, defaultCRS ) );
                 xmlStream.nextTag();
-                xmlStream.require( END_ELEMENT, GMLNS, "interior" );
+                xmlStream.require( END_ELEMENT, gmlNs, "interior" );
             } else {
                 String msg = "Error in 'gml:Polygon' element. Expected a 'gml:interior' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
             xmlStream.nextTag();
         }
-        xmlStream.require( END_ELEMENT, GMLNS, "PolygonPatch" );
+        xmlStream.require( END_ELEMENT, gmlNs, "PolygonPatch" );
         return geomFac.createPolygonPatch( exteriorRing, interiorRings );
     }
 
@@ -423,7 +423,7 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
         validateAttribute( xmlStream, "interpolation", "planar" );
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "exterior" );
+        xmlStream.require( START_ELEMENT, gmlNs, "exterior" );
         if ( xmlStream.nextTag() != START_ELEMENT ) {
             String msg = "Error in 'gml:Rectangle' element. Expected a 'gml:LinearRing' element.";
             throw new XMLParsingException( xmlStream, msg );
@@ -437,9 +437,9 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
         }
 
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
+        xmlStream.require( END_ELEMENT, gmlNs, "exterior" );
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "Rectangle" );
+        xmlStream.require( END_ELEMENT, gmlNs, "Rectangle" );
 
         return geomFac.createRectangle( exteriorRing );
     }
@@ -468,7 +468,7 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
         validateAttribute( xmlStream, "interpolation", "planar" );
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "exterior" );
+        xmlStream.require( START_ELEMENT, gmlNs, "exterior" );
         if ( xmlStream.nextTag() != START_ELEMENT ) {
             String msg = "Error in 'gml:Triangle' element. Expected a 'gml:LinearRing' element.";
             throw new XMLParsingException( xmlStream, msg );
@@ -482,9 +482,9 @@ class GML3SurfacePatchDecoder extends GML3BaseDecoder {
         }
 
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
+        xmlStream.require( END_ELEMENT, gmlNs, "exterior" );
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "Triangle" );
+        xmlStream.require( END_ELEMENT, gmlNs, "Triangle" );
 
         return geomFac.createTriangle( exteriorRing );
     }

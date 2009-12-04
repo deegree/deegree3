@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+
+import org.deegree.commons.xml.CommonNamespaces;
+
 /**
  * Enum type for the GML versions that have to be differerentiated in deegree's GML subsystem.
  * 
@@ -45,11 +50,26 @@ package org.deegree.gml;
  */
 public enum GMLVersion {
     /** GML 2 versions (any in the range from 2.0.0 to 2.1.2) */
-    GML_2,
+    GML_2( GMLNS ),
     /** GML 3.0 versions (either 3.0.0 or 3.0.1) */
-    GML_30,
+    GML_30( GMLNS ),
     /** GML 3.1 versions (either 3.1.0 or 3.1.1) */
-    GML_31,
+    GML_31( GMLNS ),
     /** GML 3.2 versions (currently only 3.2.1) */
-    GML_32
+    GML_32( GML3_2_NS );
+
+    private String ns;
+
+    private GMLVersion( String ns ) {
+        this.ns = ns;
+    }
+
+    /**
+     * Returns the namespace for elements from this GML version.
+     * 
+     * @return the namespace, never <code>null</code>
+     */
+    public String getNamespace() {
+        return ns;
+    }
 }

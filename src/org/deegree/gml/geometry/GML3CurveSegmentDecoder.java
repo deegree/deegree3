@@ -37,7 +37,6 @@ package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -74,6 +73,7 @@ import org.deegree.geometry.primitive.segments.Knot;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +116,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
      * @param geomFac
      */
     GML3CurveSegmentDecoder( GML3GeometryDecoder geometryParser, GeometryFactory geomFac ) {
-        super( geomFac );
+        super( geometryParser.version, geomFac );
         this.geometryParser = geometryParser;
     }
 
@@ -164,7 +164,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
 
         CurveSegment segment = null;
 
-        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+        if ( !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_CurveSegment element: " + xmlStream.getName()
                          + "' is not a GML geometry element. Not in the gml namespace.";
             throw new XMLParsingException( xmlStream, msg );
@@ -239,7 +239,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                          + points.size() + ".";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "Arc" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Arc" );
         return geomFac.createArc( points.get( 0 ), points.get( 1 ), points.get( 2 ) );
     }
 
@@ -271,16 +271,16 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        double bulge = xmlStream.getElementTextAsDouble( GMLNS, "bulge" );
+        double bulge = xmlStream.getElementTextAsDouble( gmlNs, "bulge" );
         xmlStream.nextTag();
 
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "normal" );
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "normal" );
         CRS normalCRS = determineActiveCRS( xmlStream, defaultCRS );
         double[] coords = parseDoubleList( xmlStream );
         Point normal = geomFac.createPoint( null, coords, normalCRS );
         xmlStream.nextTag();
 
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "ArcByBulge" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "ArcByBulge" );
         return geomFac.createArcByBulge( points.get( 0 ), points.get( 1 ), bulge, normal );
     }
 
@@ -313,7 +313,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                          + points.size() + ".";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "radius" );
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "radius" );
         Length radius = parseLengthType( xmlStream );
         xmlStream.nextTag();
 
@@ -333,7 +333,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                 xmlStream.nextTag();
             }
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "ArcByCenterPoint" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "ArcByCenterPoint" );
         return geomFac.createArcByCenterPoint( points.get( 0 ), radius, startAngle, endAngle );
     }
 
@@ -364,7 +364,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
             String msg = "Error in 'gml:ArcString' element. Invalid number of points (=" + points.size() + ").";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "ArcString" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "ArcString" );
         return geomFac.createArcString( points );
     }
 
@@ -401,7 +401,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
         // (GML 3.1.1 spec, section 10.2.1.9)
         double[] bulges = new double[points.size() - 1];
         for ( int i = 0; i < bulges.length; i++ ) {
-            bulges[i] = xmlStream.getElementTextAsDouble( GMLNS, "bulge" );
+            bulges[i] = xmlStream.getElementTextAsDouble( gmlNs, "bulge" );
             xmlStream.nextTag();
         }
 
@@ -409,14 +409,14 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
         // point sequence length. (GML 3.1.1 spec, section 10.2.1.9)
         List<Point> normals = new ArrayList<Point>( points.size() - 1 );
         for ( int i = 0; i < bulges.length; i++ ) {
-            xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "normal" );
+            xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "normal" );
             CRS normalCRS = determineActiveCRS( xmlStream, defaultCRS );
             double[] coords = parseDoubleList( xmlStream );
             normals.add( geomFac.createPoint( null, coords, normalCRS ) );
             xmlStream.nextTag();
         }
 
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "ArcStringByBulge" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "ArcStringByBulge" );
         return geomFac.createArcStringByBulge( points, bulges, geomFac.createPoints( normals ) );
     }
 
@@ -446,7 +446,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
 
         // TODO are the any more semantic constraints to be considered?
 
-        int degree = xmlStream.getElementTextAsPositiveInteger( GMLNS, "degree" );
+        int degree = xmlStream.getElementTextAsPositiveInteger( gmlNs, "degree" );
 
         List<Knot> knots = new LinkedList<Knot>();
         while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
@@ -454,24 +454,24 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                 break;
             }
             xmlStream.nextTag();
-            xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "Knot" );
+            xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "Knot" );
             xmlStream.nextTag();
-            double value = xmlStream.getElementTextAsDouble( GMLNS, "value" );
+            double value = xmlStream.getElementTextAsDouble( gmlNs, "value" );
             xmlStream.nextTag();
-            int multiplicity = xmlStream.getElementTextAsPositiveInteger( GMLNS, "multiplicity" );
+            int multiplicity = xmlStream.getElementTextAsPositiveInteger( gmlNs, "multiplicity" );
             xmlStream.nextTag();
-            double weight = xmlStream.getElementTextAsDouble( GMLNS, "weight" );
+            double weight = xmlStream.getElementTextAsDouble( gmlNs, "weight" );
             xmlStream.nextTag();
-            xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "Knot" );
+            xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Knot" );
             xmlStream.nextTag();
-            xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "knot" );
+            xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "knot" );
             knots.add( new Knot( value, multiplicity, weight ) );
         }
         if ( knots.size() != 2 ) {
             String msg = "Error in 'gml:Bezier' element. Must specify exactly two knots.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "Bezier" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Bezier" );
         return geomFac.createBezier( points, degree, knots.get( 0 ), knots.get( 1 ) );
     }
 
@@ -514,7 +514,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
 
         // TODO are the any more semantic constraints to be considered?
 
-        int degree = xmlStream.getElementTextAsPositiveInteger( GMLNS, "degree" );
+        int degree = xmlStream.getElementTextAsPositiveInteger( gmlNs, "degree" );
 
         List<Knot> knots = new LinkedList<Knot>();
         while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
@@ -522,24 +522,24 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                 break;
             }
             xmlStream.nextTag();
-            xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "Knot" );
+            xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "Knot" );
             xmlStream.nextTag();
-            double value = xmlStream.getElementTextAsDouble( GMLNS, "value" );
+            double value = xmlStream.getElementTextAsDouble( gmlNs, "value" );
             xmlStream.nextTag();
-            int multiplicity = xmlStream.getElementTextAsPositiveInteger( GMLNS, "multiplicity" );
+            int multiplicity = xmlStream.getElementTextAsPositiveInteger( gmlNs, "multiplicity" );
             xmlStream.nextTag();
-            double weight = xmlStream.getElementTextAsDouble( GMLNS, "weight" );
+            double weight = xmlStream.getElementTextAsDouble( gmlNs, "weight" );
             xmlStream.nextTag();
-            xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "Knot" );
+            xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Knot" );
             xmlStream.nextTag();
-            xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "knot" );
+            xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "knot" );
             knots.add( new Knot( value, multiplicity, weight ) );
         }
         if ( knots.size() < 2 ) {
             String msg = "Error in 'gml:BSpline' element. Must specify at least two knots.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "BSpline" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "BSpline" );
         return geomFac.createBSpline( points, degree, knots, isPolynomial );
     }
 
@@ -571,7 +571,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                          + points.size() + ".";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "Circle" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Circle" );
         return geomFac.createCircle( points.get( 0 ), points.get( 1 ), points.get( 2 ) );
     }
 
@@ -604,7 +604,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                          + points.size() + ".";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "radius" );
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "radius" );
         Length radius = parseLengthType( xmlStream );
         xmlStream.nextTag();
 
@@ -634,7 +634,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
             startAngle = endAngle;
         }
 
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "CircleByCenterPoint" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "CircleByCenterPoint" );
         return geomFac.createCircleByCenterPoint( points.get( 0 ), radius, startAngle );
     }
 
@@ -659,20 +659,20 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "refLocation" );
+        xmlStream.require( START_ELEMENT, gmlNs, "refLocation" );
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "AffinePlacement" );
+        xmlStream.require( START_ELEMENT, gmlNs, "AffinePlacement" );
         AffinePlacement referenceLocation = parseAffinePlacement( xmlStream, defaultCRS );
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "refLocation" );
+        xmlStream.require( END_ELEMENT, gmlNs, "refLocation" );
         xmlStream.nextTag();
-        double scaleFactor = xmlStream.getElementTextAsDouble( GMLNS, "scaleFactor" );
+        double scaleFactor = xmlStream.getElementTextAsDouble( gmlNs, "scaleFactor" );
         xmlStream.nextTag();
-        double startParameter = xmlStream.getElementTextAsDouble( GMLNS, "startParameter" );
+        double startParameter = xmlStream.getElementTextAsDouble( gmlNs, "startParameter" );
         xmlStream.nextTag();
-        double endParameter = xmlStream.getElementTextAsDouble( GMLNS, "endParameter" );
+        double endParameter = xmlStream.getElementTextAsDouble( gmlNs, "endParameter" );
         xmlStream.nextTag();
-        xmlStream.require( END_ELEMENT, GMLNS, "Clothoid" );
+        xmlStream.require( END_ELEMENT, gmlNs, "Clothoid" );
         return geomFac.createClothoid( referenceLocation, scaleFactor, startParameter, endParameter );
     }
 
@@ -694,12 +694,12 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "location" );
+        xmlStream.require( START_ELEMENT, gmlNs, "location" );
         Point location = parseDirectPositionType( xmlStream, defaultCRS );
         xmlStream.nextTag();
 
         List<Point> refDirections = new LinkedList<Point>();
-        xmlStream.require( START_ELEMENT, GMLNS, "refDirection" );
+        xmlStream.require( START_ELEMENT, gmlNs, "refDirection" );
         int refDirectionOutDimension = -1;
         while ( xmlStream.getEventType() == START_ELEMENT ) {
             String localName = xmlStream.getName().getLocalPart();
@@ -722,21 +722,21 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
             }
         }
 
-        int inDimension = xmlStream.getElementTextAsPositiveInteger( GMLNS, "inDimension" );
+        int inDimension = xmlStream.getElementTextAsPositiveInteger( gmlNs, "inDimension" );
         if ( refDirections.size() != inDimension ) {
             String msg = "The number of target directions ('gml:refDirection') and the in dimension value do not match.";
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.nextTag();
 
-        int outDimension = xmlStream.getElementTextAsPositiveInteger( GMLNS, "outDimension" );
+        int outDimension = xmlStream.getElementTextAsPositiveInteger( gmlNs, "outDimension" );
         if ( refDirectionOutDimension != outDimension ) {
             String msg = "The dimension of target directions ('gml:refDirection') and the out dimension value do not match.";
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.nextTag();
 
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "AffinePlacement" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "AffinePlacement" );
         return new AffinePlacement( location, geomFac.createPoints( refDirections ), inDimension, outDimension );
     }
 
@@ -767,13 +767,13 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "vectorAtStart" );
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "vectorAtStart" );
         Point vectorAtStart = parseDirectPositionType( xmlStream, defaultCRS );
         xmlStream.nextTag();
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "vectorAtEnd" );
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "vectorAtEnd" );
         Point vectorAtEnd = parseDirectPositionType( xmlStream, defaultCRS );
         xmlStream.nextTag();
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "CubicSpline" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "CubicSpline" );
         return geomFac.createCubicSpline( points, vectorAtStart, vectorAtEnd );
     }
 
@@ -825,7 +825,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
             String msg = "Error in 'gml:Geodesic' element. Must consist of exactly two points.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "Geodesic" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Geodesic" );
         return geomFac.createGeodesic( points.get( 0 ), points.get( 1 ) );
     }
 
@@ -878,7 +878,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
             String msg = "Error in 'gml:GeodesicString' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "GeodesicString" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "GeodesicString" );
         return geomFac.createGeodesicString( geomFac.createPoints( points ) );
     }
 
@@ -911,7 +911,7 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
             String msg = "Error in 'gml:LineStringSegment' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "LineStringSegment" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "LineStringSegment" );
         return geomFac.createLineStringSegment( points );
     }
 
@@ -935,21 +935,21 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "offsetBase" );
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "offsetBase" );
         xmlStream.nextTag();
         Curve baseCurve = geometryParser.parseAbstractCurve( xmlStream, defaultCRS );
         xmlStream.nextTag();
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "offsetBase" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "offsetBase" );
         xmlStream.nextTag();
-        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "distance" );
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "distance" );
         Length distance = parseLengthType( xmlStream );
         Point direction = null;
         if ( xmlStream.nextTag() == START_ELEMENT ) {
-            xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "refDirection" );
+            xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "refDirection" );
             direction = parseDirectPositionType( xmlStream, defaultCRS );
             xmlStream.nextTag();
         }
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "OffsetCurve" );
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "OffsetCurve" );
         return geomFac.createOffsetCurve( baseCurve, direction, distance );
     }
 

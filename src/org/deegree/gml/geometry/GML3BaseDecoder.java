@@ -34,8 +34,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -55,6 +53,7 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,16 +69,25 @@ class GML3BaseDecoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML3BaseDecoder.class );
 
-    private static final QName GML_X = new QName( GMLNS, "X" );
+    protected final GMLVersion version;
 
-    private static final QName GML_Y = new QName( GMLNS, "Y" );
+    protected final String gmlNs;
 
-    private static final QName GML_Z = new QName( GMLNS, "Z" );
+    private final QName GML_X;
+
+    private final QName GML_Y;
+
+    private final QName GML_Z;
 
     protected final GeometryFactory geomFac;
 
-    protected GML3BaseDecoder( GeometryFactory geomFac ) {
+    protected GML3BaseDecoder( GMLVersion version, GeometryFactory geomFac ) {
+        this.version = version;
+        this.gmlNs = version.getNamespace();
         this.geomFac = geomFac;
+        GML_X = new QName( gmlNs, "X" );
+        GML_Y = new QName( gmlNs, "Y" );
+        GML_Z = new QName( gmlNs, "Z" );
     }
 
     protected Point parseDirectPositionType( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
