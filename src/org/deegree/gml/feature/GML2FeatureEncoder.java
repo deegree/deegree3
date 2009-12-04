@@ -133,7 +133,7 @@ public class GML2FeatureEncoder implements GMLFeatureEncoder {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         QName featureName = feature.getName();
         LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
-        writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
+        writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getPrefix(), featureName.getLocalPart() );
         if ( feature.getId() != null ) {
             writer.writeAttribute( "fid", feature.getId() );
         }
@@ -185,17 +185,17 @@ public class GML2FeatureEncoder implements GMLFeatureEncoder {
         if ( propertyType instanceof FeaturePropertyType ) {
             Feature fValue = (Feature) value;
             if ( fValue.getId() != null && exportedIds.contains( fValue.getId() ) ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getPrefix(), propName.getLocalPart() );
                 writer.writeAttribute( XLNNS, "href", "#" + fValue.getId() );
             } else {
                 exportedIds.add( fValue.getId() );
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getPrefix(), propName.getLocalPart() );
                 export( fValue );
                 writer.writeEndElement();
             }
         } else if ( propertyType instanceof SimplePropertyType<?> ) {
             if ( value != null ) {
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getPrefix(), propName.getLocalPart() );
                 writer.writeCharacters( value.toString() );
                 writer.writeEndElement();
             }
@@ -203,17 +203,17 @@ public class GML2FeatureEncoder implements GMLFeatureEncoder {
         } else if ( propertyType instanceof GeometryPropertyType ) {
             Geometry gValue = (Geometry) value;
             if ( gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getPrefix(), propName.getLocalPart() );
                 writer.writeAttribute( XLNNS, "href", "#" + gValue.getId() );
             } else {
                 exportedIds.add( gValue.getId() );
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getPrefix(), propName.getLocalPart() );
                 geometryExporter.export( (Geometry) value );
                 writer.writeEndElement();
             }
 
         } else if ( propertyType instanceof CodePropertyType ) {
-            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getPrefix(), propName.getLocalPart() );
             CodeType codeType = (CodeType) value;
             if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 )
                 writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
@@ -231,14 +231,14 @@ public class GML2FeatureEncoder implements GMLFeatureEncoder {
 
         } else if ( propertyType instanceof LengthPropertyType ) {
             Length length = (Length) value;
-            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getPrefix(), propName.getLocalPart() );
             writer.writeAttribute( "uom", length.getUomUri() );
             writer.writeCharacters( String.valueOf( length.getValue() ) );
             writer.writeEndElement();
 
         } else if ( propertyType instanceof MeasurePropertyType ) {
             Measure measure = (Measure) value;
-            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getPrefix(), propName.getLocalPart() );
             writer.writeAttribute( "uom", measure.getUomUri() );
             writer.writeCharacters( String.valueOf( measure.getValue() ) );
             writer.writeEndElement();
@@ -247,28 +247,32 @@ public class GML2FeatureEncoder implements GMLFeatureEncoder {
 
     /**
      * @param namespaceURI
+     * @param prefix
      * @param localname
      * @throws XMLStreamException
      */
-    void writeStartElementWithNS( String namespaceURI, String localname )
+    void writeStartElementWithNS( String namespaceURI, String prefix, String localname )
                             throws XMLStreamException {
-        if ( namespaceURI == null || namespaceURI.length() == 0 )
+        if ( namespaceURI == null || namespaceURI.length() == 0 ) {
             writer.writeStartElement( localname );
-        else
-            writer.writeStartElement( namespaceURI, localname );
+        } else {
+            writer.writeStartElement( prefix, localname, namespaceURI );
+        }
     }
 
     /**
      * @param namespaceURI
+     * @param prefix
      * @param localname
      * @throws XMLStreamException
      */
-    void writeEmptyElementWithNS( String namespaceURI, String localname )
+    void writeEmptyElementWithNS( String namespaceURI, String prefix, String localname )
                             throws XMLStreamException {
-        if ( namespaceURI == null || namespaceURI.length() == 0 )
+        if ( namespaceURI == null || namespaceURI.length() == 0 ) {
             writer.writeEmptyElement( localname );
-        else
-            writer.writeEmptyElement( namespaceURI, localname );
+        } else {
+            writer.writeEmptyElement( namespaceURI, prefix, localname );
+        }
     }
 
     @Override
