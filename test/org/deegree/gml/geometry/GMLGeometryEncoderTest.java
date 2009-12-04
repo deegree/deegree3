@@ -57,10 +57,10 @@ import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolvingException;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML311CurveSegmentDecoder;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
-import org.deegree.gml.geometry.GML311GeometryEncoder;
-import org.deegree.gml.geometry.GML311SurfacePatchDecoder;
+import org.deegree.gml.geometry.GML3CurveSegmentDecoder;
+import org.deegree.gml.geometry.GML3GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryEncoder;
+import org.deegree.gml.geometry.GML3SurfacePatchDecoder;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
@@ -172,7 +172,7 @@ public class GMLGeometryEncoderTest {
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String source : sources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
-            GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
+            GML3GeometryDecoder parser = new GML3GeometryDecoder( new GeometryFactory(), idContext );
             URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -190,7 +190,7 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+            GML3GeometryEncoder exporter = new GML3GeometryEncoder( writer, null );
             exporter.export( geom );
             writer.flush();
 
@@ -213,8 +213,8 @@ public class GMLGeometryEncoderTest {
         for ( String patchSource : patchSources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
             GeometryFactory geomFactory = new GeometryFactory();
-            GML311GeometryDecoder geometryParser = new GML311GeometryDecoder( geomFactory, idContext );
-            GML311SurfacePatchDecoder parser = new GML311SurfacePatchDecoder( geometryParser, geomFactory );
+            GML3GeometryDecoder geometryParser = new GML3GeometryDecoder( geomFactory, idContext );
+            GML3SurfacePatchDecoder parser = new GML3SurfacePatchDecoder( geometryParser, geomFactory );
             URL docURL = GMLGeometryEncoderTest.class.getResource( PATCH_DIR + patchSource );
             if ( docURL == null )
                 System.out.println( GMLGeometryEncoderTest.class.getResource( PATCH_DIR + patchSource ) );
@@ -233,7 +233,7 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+            GML3GeometryEncoder exporter = new GML3GeometryEncoder( writer, null );
             exporter.exportSurfacePatch( surfPatch );
             writer.flush();
 
@@ -256,8 +256,8 @@ public class GMLGeometryEncoderTest {
         for ( String segmentSource : segmentSources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
             GeometryFactory geomFactory = new GeometryFactory();
-            GML311GeometryDecoder geometryParser = new GML311GeometryDecoder( geomFactory, idContext );
-            GML311CurveSegmentDecoder parser = new GML311CurveSegmentDecoder( geometryParser, geomFactory );
+            GML3GeometryDecoder geometryParser = new GML3GeometryDecoder( geomFactory, idContext );
+            GML3CurveSegmentDecoder parser = new GML3CurveSegmentDecoder( geometryParser, geomFactory );
             URL docURL = GMLGeometryEncoderTest.class.getResource( SEGMENT_DIR + segmentSource );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -274,7 +274,7 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+            GML3GeometryEncoder exporter = new GML3GeometryEncoder( writer, null );
             exporter.exportCurveSegment( curveSegment );
             writer.flush();
 
@@ -296,7 +296,7 @@ public class GMLGeometryEncoderTest {
                             UnknownCRSException, TransformationException {
         for ( String envelopeSource : envelopeSources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
-            GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
+            GML3GeometryDecoder parser = new GML3GeometryDecoder( new GeometryFactory(), idContext );
             URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + envelopeSource );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -313,7 +313,7 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+            GML3GeometryEncoder exporter = new GML3GeometryEncoder( writer, null );
             exporter.export( geom );
             writer.flush();
 
@@ -338,7 +338,7 @@ public class GMLGeometryEncoderTest {
 
         String source = "XLinkMultiGeometry1.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
-        GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
+        GML3GeometryDecoder parser = new GML3GeometryDecoder( new GeometryFactory(), idContext );
         URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();
@@ -357,7 +357,7 @@ public class GMLGeometryEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+        GML3GeometryEncoder exporter = new GML3GeometryEncoder( writer, null );
         exporter.export( geom );
         writer.flush();
 
@@ -370,7 +370,7 @@ public class GMLGeometryEncoderTest {
                             UnknownCRSException, TransformationException, GMLReferenceResolvingException {
         String source = "XLinkMultiGeometry2.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
-        GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
+        GML3GeometryDecoder parser = new GML3GeometryDecoder( new GeometryFactory(), idContext );
         URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();
@@ -389,7 +389,7 @@ public class GMLGeometryEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+        GML3GeometryEncoder exporter = new GML3GeometryEncoder( writer, null );
         exporter.export( geom );
         writer.flush();
 
@@ -403,7 +403,7 @@ public class GMLGeometryEncoderTest {
                             UnknownCRSException, TransformationException, GMLReferenceResolvingException {
         String source = "XLinkMultiLineString.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
-        GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
+        GML3GeometryDecoder parser = new GML3GeometryDecoder( new GeometryFactory(), idContext );
         URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();
@@ -422,7 +422,7 @@ public class GMLGeometryEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer, null );
+        GML3GeometryEncoder exporter = new GML3GeometryEncoder( writer, null );
         exporter.export( geom );
         writer.flush();
 

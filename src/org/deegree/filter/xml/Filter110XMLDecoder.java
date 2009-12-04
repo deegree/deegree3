@@ -121,7 +121,7 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -834,7 +834,7 @@ public class Filter110XMLDecoder {
 
         // TODO remove this after GML parser is adapted
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-        GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+        GML3GeometryDecoder geomParser = new GML3GeometryDecoder();
 
         try {
             switch ( type ) {

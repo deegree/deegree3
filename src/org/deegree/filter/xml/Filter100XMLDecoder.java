@@ -116,7 +116,7 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
-import org.deegree.gml.geometry.GML21GeometryDecoder;
+import org.deegree.gml.geometry.GML2GeometryDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +128,7 @@ import org.slf4j.LoggerFactory;
  * <li>TODO add here more differences</li>
  * </ul>
  * 
- * All the v1.0.0 elements are parse with {@link GML21GeometryDecoder}.
+ * All the v1.0.0 elements are parse with {@link GML2GeometryDecoder}.
  * 
  * It was decided not to extend Filter110XMLDecoder as both filters should have static parse methods that make accessing
  * easier (than creating a superfluous instance beforehand)
@@ -810,7 +810,7 @@ public class Filter100XMLDecoder {
 
         // TODO remove this after GML parser is adapted
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-        GML21GeometryDecoder geomParser = new GML21GeometryDecoder();
+        GML2GeometryDecoder geomParser = new GML2GeometryDecoder();
 
         // always first parameter: 'ogc:PropertyName'
         PropertyName param1 = parsePropertyName( xmlStream );

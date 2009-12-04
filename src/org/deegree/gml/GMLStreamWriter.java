@@ -44,11 +44,11 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.feature.GML212FeatureEncoder;
-import org.deegree.gml.feature.GML311FeatureEncoder;
+import org.deegree.gml.feature.GML2FeatureEncoder;
+import org.deegree.gml.feature.GML3FeatureEncoder;
 import org.deegree.gml.feature.GMLFeatureEncoder;
-import org.deegree.gml.geometry.GML21GeometryEncoder;
-import org.deegree.gml.geometry.GML311GeometryEncoder;
+import org.deegree.gml.geometry.GML2GeometryEncoder;
+import org.deegree.gml.geometry.GML3GeometryEncoder;
 import org.deegree.gml.geometry.GMLGeometryEncoder;
 
 /**
@@ -206,18 +206,18 @@ public class GMLStreamWriter {
             switch ( version ) {
             case GML_2: {
                 // TODO
-                featureEncoder = new GML212FeatureEncoder( xmlStream, crs );
+                featureEncoder = new GML2FeatureEncoder( xmlStream, crs );
                 break;
             }
             case GML_30:
                 // TODO
-                featureEncoder = new GML311FeatureEncoder( xmlStream, crs, localXLinkTemplate, requestedFeatureProps,
+                featureEncoder = new GML3FeatureEncoder( xmlStream, crs, localXLinkTemplate, requestedFeatureProps,
                                                            inlineXLinklevels, traverseXLinkExpiry, false, true );
                 break;
             case GML_31:
             case GML_32: {
                 // TODO
-                featureEncoder = new GML311FeatureEncoder( xmlStream, crs, localXLinkTemplate, requestedFeatureProps,
+                featureEncoder = new GML3FeatureEncoder( xmlStream, crs, localXLinkTemplate, requestedFeatureProps,
                                                            inlineXLinklevels, traverseXLinkExpiry, false, false );
                 break;
             }
@@ -231,14 +231,14 @@ public class GMLStreamWriter {
             switch ( version ) {
             case GML_2: {
                 // TODO
-                geometryEncoder = new GML21GeometryEncoder( xmlStream  );
+                geometryEncoder = new GML2GeometryEncoder( xmlStream  );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
                 // TODO
-                geometryEncoder = new GML311GeometryEncoder( xmlStream, crs );
+                geometryEncoder = new GML3GeometryEncoder( xmlStream, crs );
                 break;
             }
             }

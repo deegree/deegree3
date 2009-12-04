@@ -51,7 +51,7 @@ import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.geometry.Envelope;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryDecoder;
 import org.deegree.gml.props.GMLStandardPropsParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class GMLStandardFeaturePropsParser extends GMLStandardPropsParser {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLStandardFeaturePropsParser.class );
 
-    private static final GML311GeometryDecoder decoder = new GML311GeometryDecoder();
+    private static final GML3GeometryDecoder decoder = new GML3GeometryDecoder();
 
     /**
      * Returns the object representation for the <code>StandardObjectProperties</code> element group of the given

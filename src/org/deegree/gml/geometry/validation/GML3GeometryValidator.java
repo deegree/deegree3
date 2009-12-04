@@ -59,7 +59,7 @@ import org.deegree.geometry.validation.GeometryValidationEventHandler;
 import org.deegree.geometry.validation.GeometryValidator;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,11 +76,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GML311GeometryValidator extends XMLAdapter {
+public class GML3GeometryValidator extends XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML311GeometryValidator.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryValidator.class );
 
-    private GML311GeometryDecoder geomParser;
+    private GML3GeometryDecoder geomParser;
 
     private XMLStreamReaderWrapper xmlStream;
 
@@ -90,9 +90,9 @@ public class GML311GeometryValidator extends XMLAdapter {
      * @param xmlStream
      * @param gmlErrorHandler
      */
-    public GML311GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
+    public GML3GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
-        geomParser = new GML311GeometryDecoder( new GeometryFactory(), new GMLDocumentIdContext(GMLVersion.GML_31) );
+        geomParser = new GML3GeometryDecoder( new GeometryFactory(), new GMLDocumentIdContext(GMLVersion.GML_31) );
         this.gmlErrorHandler = gmlErrorHandler;
     }
 

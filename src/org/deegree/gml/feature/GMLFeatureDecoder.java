@@ -89,8 +89,8 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.gml.feature.schema.DefaultGMLTypes;
-import org.deegree.gml.geometry.GML21GeometryDecoder;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML2GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryDecoder;
 import org.deegree.gml.geometry.GMLGeometryDecoder;
 import org.deegree.gml.geometry.refs.GeometryReference;
 import org.slf4j.Logger;
@@ -146,9 +146,9 @@ public class GMLFeatureDecoder extends XMLAdapter {
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
         if ( version.equals( GMLVersion.GML_2 ) ) {
-            this.geomParser = new GML21GeometryDecoder( geomFac, idContext );
+            this.geomParser = new GML2GeometryDecoder( geomFac, idContext );
         } else {
-            this.geomParser = new GML311GeometryDecoder( geomFac, idContext );
+            this.geomParser = new GML3GeometryDecoder( geomFac, idContext );
         }
         this.version = version;
     }

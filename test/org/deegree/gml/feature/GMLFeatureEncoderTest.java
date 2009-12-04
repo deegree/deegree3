@@ -57,7 +57,7 @@ import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.GML311FeatureEncoder;
+import org.deegree.gml.feature.GML3FeatureEncoder;
 import org.deegree.gml.feature.GMLFeatureDecoder;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.junit.XMLMemoryStreamWriter;
@@ -107,7 +107,7 @@ public class GMLFeatureEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML311FeatureEncoder exporter = new GML311FeatureEncoder( writer, null );
+        GML3FeatureEncoder exporter = new GML3FeatureEncoder( writer, null );
         exporter.export( feature );
         writer.flush();
         writer.close();

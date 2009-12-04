@@ -76,7 +76,7 @@ import org.deegree.gml.geometry.refs.GeometryReference;
  * @version $Revision$, $Date$
  * 
  */
-public class GML21GeometryEncoder implements GMLGeometryEncoder {
+public class GML2GeometryEncoder implements GMLGeometryEncoder {
 
     private static final String GML21NS = "http://www.opengis.net/gml";
 
@@ -87,7 +87,7 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
     /**
      * @param writer
      */
-    public GML21GeometryEncoder( XMLStreamWriter writer ) {
+    public GML2GeometryEncoder( XMLStreamWriter writer ) {
         this( writer, new HashSet<String>() );
     }
 
@@ -96,7 +96,7 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
      * @param exportedIds
      *            must not be null
      */
-    public GML21GeometryEncoder( XMLStreamWriter writer, Set<String> exportedIds ) {
+    public GML2GeometryEncoder( XMLStreamWriter writer, Set<String> exportedIds ) {
         this.writer = writer;
         this.exportedIds = exportedIds;
     }
@@ -119,14 +119,14 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
             exportLineString( (LineString) geometry );
         } else if ( geometry instanceof Envelope ) {
             exportEnvelope( (Envelope) geometry );
+        } else if ( geometry instanceof MultiGeometry<?> ) {
+            exportMultiGeometry( (MultiGeometry<?>) geometry );
         } else if ( geometry instanceof MultiPoint ) {
             exportMultiPoint( (MultiPoint) geometry );
         } else if ( geometry instanceof MultiLineString ) {
             exportMultiLineString( (MultiLineString) geometry );
         } else if ( geometry instanceof MultiPolygon ) {
             exportMultiPolygon( (MultiPolygon) geometry );
-        } else if ( geometry instanceof MultiGeometry<?> ) {
-            exportMultiGeometry( (MultiGeometry<?>) geometry );
         }
     }
 

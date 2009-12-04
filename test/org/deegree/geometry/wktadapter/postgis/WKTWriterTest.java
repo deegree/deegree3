@@ -64,8 +64,8 @@ import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
-import org.deegree.gml.geometry.GML311GeometryDecoderTest;
+import org.deegree.gml.geometry.GML3GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryDecoderTest;
 import org.junit.Test;
 
 /**
@@ -111,7 +111,7 @@ public class WKTWriterTest extends TestCase {
 
     private Geometry parseGeometry( String fileName ) throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
 
-        URL gmlDocURL = GML311GeometryDecoderTest.class.getResource( BASE_DIR + fileName );
+        URL gmlDocURL = GML3GeometryDecoderTest.class.getResource( BASE_DIR + fileName );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, gmlDocURL );
         return gmlReader.readGeometry();
     }

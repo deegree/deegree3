@@ -82,15 +82,15 @@ import org.deegree.geometry.primitive.patches.Triangle;
  * 
  * @version $Revision:$, $Date:$
  */
-class GML311SurfacePatchDecoder extends GML311BaseDecoder {
+class GML3SurfacePatchDecoder extends GML3BaseDecoder {
 
-    private GML311GeometryDecoder geometryParser;
+    private GML3GeometryDecoder geometryParser;
 
     /**
      * @param geometryParser
      * @param geomFac
      */
-    GML311SurfacePatchDecoder( GML311GeometryDecoder geometryParser, GeometryFactory geomFac ) {
+    GML3SurfacePatchDecoder( GML3GeometryDecoder geometryParser, GeometryFactory geomFac ) {
         super( geomFac );
         this.geometryParser = geometryParser;
     }

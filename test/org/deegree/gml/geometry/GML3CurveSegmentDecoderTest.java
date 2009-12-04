@@ -63,7 +63,7 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryDecoder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,7 +76,7 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class GML311CurveSegmentDecoderTest {
+public class GML3CurveSegmentDecoderTest {
 
     private GeometryFactory geomFac;
 
@@ -357,16 +357,16 @@ public class GML311CurveSegmentDecoderTest {
     private XMLStreamReaderWrapper getReader( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311CurveSegmentDecoderTest.class.getResource( "../../geometry/gml/testdata/segments/"
+                                                                       GML3CurveSegmentDecoderTest.class.getResource( "../../geometry/gml/testdata/segments/"
                                                                                                                        + fileName ) );
         xmlReader.nextTag();
         return xmlReader;
     }
 
-    private GML311CurveSegmentDecoder getParser()
+    private GML3CurveSegmentDecoder getParser()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
         GeometryFactory geomFac = new GeometryFactory();
-        return new GML311CurveSegmentDecoder( new GML311GeometryDecoder(), geomFac );
+        return new GML3CurveSegmentDecoder( new GML3GeometryDecoder(), geomFac );
     }
 }

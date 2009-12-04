@@ -177,7 +177,7 @@ public class GMLFeatureDecoderTest {
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer, null );
+        GML3FeatureEncoder encoder = new GML3FeatureEncoder( writer, null );
         encoder.export( fc );
         writer.close();
     }
@@ -227,7 +227,7 @@ public class GMLFeatureDecoderTest {
         writer.setPrefix( "ccf", "http://www.opengis.net/cite/complex" );
         writer.setPrefix( "uri", "http://www.opengis.net/cite/data" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML212FeatureEncoder encoder = new GML212FeatureEncoder( writer, null );
+        GML2FeatureEncoder encoder = new GML2FeatureEncoder( writer, null );
         encoder.export( fc );
         writer.close();
     }

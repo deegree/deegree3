@@ -66,9 +66,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-class GML311BaseDecoder {
+class GML3BaseDecoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML311BaseDecoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML3BaseDecoder.class );
 
     private static final QName GML_X = new QName( GMLNS, "X" );
 
@@ -78,7 +78,7 @@ class GML311BaseDecoder {
 
     protected final GeometryFactory geomFac;
 
-    protected GML311BaseDecoder( GeometryFactory geomFac ) {
+    protected GML3BaseDecoder( GeometryFactory geomFac ) {
         this.geomFac = geomFac;
     }
 

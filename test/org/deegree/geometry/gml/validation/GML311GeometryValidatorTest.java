@@ -47,14 +47,14 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.gml.geometry.GML311GeometryDecoderTest;
-import org.deegree.gml.geometry.validation.GML311GeometryValidator;
+import org.deegree.gml.geometry.GML3GeometryDecoderTest;
+import org.deegree.gml.geometry.validation.GML3GeometryValidator;
 import org.deegree.gml.geometry.validation.GMLElementIdentifier;
 import org.deegree.gml.geometry.validation.GMLValidationEventHandler;
 import org.junit.Test;
 
 /**
- * Tests that check the expected generation of validation events in the {@link GML311GeometryValidator}.
+ * Tests that check the expected generation of validation events in the {@link GML3GeometryValidator}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -72,7 +72,7 @@ public class GML311GeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "Curve.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML311GeometryValidator validator = new GML311GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
@@ -83,7 +83,7 @@ public class GML311GeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Curve_discontinuity.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML311GeometryValidator validator = new GML311GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
@@ -93,7 +93,7 @@ public class GML311GeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Ring_not_closed.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML311GeometryValidator validator = new GML311GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
@@ -102,7 +102,7 @@ public class GML311GeometryValidatorTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Polygon_exterior_clockwise.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML311GeometryValidator validator = new GML311GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
@@ -111,14 +111,14 @@ public class GML311GeometryValidatorTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Polygon_noexterior.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML311GeometryValidator validator = new GML311GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryDecoderTest.class.getResource( BASE_DIR
+                                                                       GML3GeometryDecoderTest.class.getResource( BASE_DIR
                                                                                                                    + fileName ) );
         return xmlReader;
     }

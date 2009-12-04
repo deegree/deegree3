@@ -67,7 +67,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML21GeometryEncoder;
+import org.deegree.gml.geometry.GML2GeometryEncoder;
 import org.deegree.gml.geometry.GMLGeometryEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,9 +83,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class GML212FeatureEncoder implements GMLFeatureEncoder {
+public class GML2FeatureEncoder implements GMLFeatureEncoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML212FeatureEncoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML2FeatureEncoder.class );
 
     private Set<String> exportedIds = new HashSet<String>();
 
@@ -99,9 +99,9 @@ public class GML212FeatureEncoder implements GMLFeatureEncoder {
      *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
      *            used)
      */
-    public GML212FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
+    public GML2FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML21GeometryEncoder( writer, exportedIds );
+        geometryExporter = new GML2GeometryEncoder( writer, exportedIds );
     }
 
     // public void export( FeatureCollection featureCol ) throws XMLStreamException {

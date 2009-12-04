@@ -46,8 +46,8 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.feature.GMLFeatureDecoder;
-import org.deegree.gml.geometry.GML21GeometryDecoder;
-import org.deegree.gml.geometry.GML311GeometryDecoder;
+import org.deegree.gml.geometry.GML2GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryDecoder;
 import org.deegree.gml.geometry.GMLGeometryDecoder;
 
 /**
@@ -69,12 +69,14 @@ public class GMLStreamReader {
     private final XMLStreamReaderWrapper xmlStream;
 
     private final GMLVersion version;
-    
+
     private final GMLDocumentIdContext idContext;
 
     private ApplicationSchema schema;
 
     private CRS defaultCRS;
+
+    private GeometryFactory geomFac;
 
     private GMLGeometryDecoder geometryDecoder;
 
@@ -95,23 +97,46 @@ public class GMLStreamReader {
     }
 
     /**
-     * Sets the application schema that is assumed when features or feature collections are parsed.
+     * Controls the application schema that is assumed when features or feature collections are parsed.
      * 
      * @param schema
-     *            application schema
+     *            application schema, can be <code>null</code> (use xsi:schemaLocation attribute to build the
+     *            application schema)
      */
     public void setApplicationSchema( ApplicationSchema schema ) {
         this.schema = schema;
     }
 
     /**
-     * Sets the default CRS that is assumed when GML objects (especially geometries) without SRS information are parsed.
+     * Controls the default CRS that is assumed when GML objects (especially geometries) without SRS information are
+     * parsed.
      * 
      * @param defaultCRS
-     *            default CRS
+     *            default CRS, can be <code>null</code>
      */
     public void setDefaultCRS( CRS defaultCRS ) {
         this.defaultCRS = defaultCRS;
+    }
+
+    /**
+     * Controls the {@link GeometryFactory} instance to be used for creating geometries.
+     * 
+     * @param geomFac
+     *            geometry factory, can be <code>null</code> (use a default factory)
+     */
+    public void setGeometryFactory( GeometryFactory geomFac ) {
+        switch ( version ) {
+        case GML_2: {
+            geometryDecoder = new GML2GeometryDecoder( geomFac, idContext );
+            break;
+        }
+        case GML_30:
+        case GML_31:
+        case GML_32: {
+            geometryDecoder = new GML3GeometryDecoder( geomFac, idContext );
+            break;
+        }
+        }
     }
 
     /**
@@ -188,6 +213,9 @@ public class GMLStreamReader {
     private GMLFeatureDecoder getFeatureDecoder() {
         if ( featureDecoder == null ) {
             featureDecoder = new GMLFeatureDecoder( schema, idContext, version );
+            if ( geometryDecoder != null ) {
+                featureDecoder.setGeometryDecoder( geometryDecoder );
+            }
         }
         return featureDecoder;
     }
@@ -196,13 +224,13 @@ public class GMLStreamReader {
         if ( geometryDecoder == null ) {
             switch ( version ) {
             case GML_2: {
-                geometryDecoder = new GML21GeometryDecoder( new GeometryFactory(), idContext );
+                geometryDecoder = new GML2GeometryDecoder( new GeometryFactory(), idContext );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
-                geometryDecoder = new GML311GeometryDecoder( new GeometryFactory(), idContext );
+                geometryDecoder = new GML3GeometryDecoder( new GeometryFactory(), idContext );
                 break;
             }
             }

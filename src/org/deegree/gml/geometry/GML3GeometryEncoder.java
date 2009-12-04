@@ -124,9 +124,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GML311GeometryEncoder implements GMLGeometryEncoder {
+public class GML3GeometryEncoder implements GMLGeometryEncoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML311GeometryEncoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryEncoder.class );
 
     private final XMLStreamWriter writer;
 
@@ -144,7 +144,7 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
     private boolean version30;
 
     /**
-     * Creates a new {@link GML311GeometryEncoder} instance.
+     * Creates a new {@link GML3GeometryEncoder} instance.
      * 
      * @param writer
      *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
@@ -152,12 +152,12 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
      *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
      *            used)
      */
-    public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCRS ) {
+    public GML3GeometryEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this( writer, outputCRS, false, new HashSet<String>(), false );
     }
 
     /**
-     * Creates a new {@link GML311GeometryEncoder} instance.
+     * Creates a new {@link GML3GeometryEncoder} instance.
      * 
      * @param writer
      *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
@@ -171,7 +171,7 @@ public class GML311GeometryEncoder implements GMLGeometryEncoder {
      * @param version30
      *            whether it is a GML version 3.0 geometry or not.
      */
-    public GML311GeometryEncoder( XMLStreamWriter writer, CRS outputCrs, boolean exportSf, Set<String> exportedIds,
+    public GML3GeometryEncoder( XMLStreamWriter writer, CRS outputCrs, boolean exportSf, Set<String> exportedIds,
                                   boolean version30 ) {
         this.writer = writer;
         this.outputCRS = outputCrs;
