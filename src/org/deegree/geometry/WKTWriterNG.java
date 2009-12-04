@@ -37,13 +37,10 @@ package org.deegree.geometry;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.gml.props.StandardGMLObjectProps;
 import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.uom.Length;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSurface;
@@ -95,6 +92,7 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
+import org.deegree.gml.props.StandardGMLObjectProps;
 
 /**
  * Writes {@link Geometry} objects as Well-Known Text (WKT).
@@ -112,6 +110,8 @@ public class WKTWriterNG {
     private Set<WKTFlag> flags;
     
     private Writer writer;
+
+    private CurveLinearizer linearizer;
 
     /**
      * 
@@ -148,6 +148,10 @@ public class WKTWriterNG {
         this.flags = flags;
     }
 
+    public void setLinearizer (CurveLinearizer linearizer) {
+        this.linearizer = linearizer;
+    }
+       
     /*
      * public void createSFS11Writer() {
      * 
@@ -412,17 +416,17 @@ public class WKTWriterNG {
     private void writePolygonWithoutPrefix( Polygon geometry, Writer writer ) throws IOException {
         
         Ring exteriorRing = geometry.getExteriorRing();
-        writer.append( '(' );
+        writer.append( "((" );
         Points points = exteriorRing.getControlPoints();
         int counter = 0;
         for ( Point point : points ) {
 
             counter++;
             if ( counter < points.size() ) {
-                //writePointWithoutPrefix( point, s );
+                writePointWithoutPrefix( point, writer );
                 writer.append( ',' );
             } else {
-                //writePointWithoutPrefix( point, s ) ;
+                writePointWithoutPrefix( point, writer ) ;
             }
 
         }
@@ -430,19 +434,21 @@ public class WKTWriterNG {
         writer.append( ')' );
         List<Ring> interiorRings = geometry.getInteriorRings();
         for ( Ring r : interiorRings ) {
+            
             writer.append( ",(" );
             counter = 0;
-            for ( Point point : points ) {
+            for ( Point point : r.getControlPoints() ) {
 
                 counter++;
-                if ( counter < points.size() ) {
-                    //writePointWithoutPrefix( point, s );
+                if ( counter < r.getControlPoints().size() ) {
+                    writePointWithoutPrefix( point, writer );
                     writer.append( ',' );
                 } else {
-                    //writePointWithoutPrefix( point, s ) ;
+                    writePointWithoutPrefix( point, writer ) ;
                 }
             }
             writer.append( ')' );
+            
         }
         writer.append( ')' );
         
@@ -518,17 +524,13 @@ public class WKTWriterNG {
      */
     private void writeCurveGeometry( Curve geometry, Writer writer ) throws IOException {
 
-        
-
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             writer.append( "CURVE " );
-            //appendObjectProps( s, geometry );
+            appendObjectProps( writer, geometry );
             writer.append( '(' );
             writeCurveSegments( geometry, writer );
             writer.append( ')' );
-        } else {
-
-            if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+        } else if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
                 
                 //s.append( "COMPOUNDCURVE(" );
                 throw new UnsupportedOperationException( "Handling curves within 'SQL-MM Part 3' is not implemented yet." );
@@ -545,7 +547,7 @@ public class WKTWriterNG {
                                                        c.getControlPoints() );
                 writeLineString( ls, writer );
             }
-        }
+        
 
     }
 
@@ -580,7 +582,7 @@ public class WKTWriterNG {
         List<CurveSegment> g = geometry.getCurveSegments();
         int counter = 0;
         for ( CurveSegment c : g ) {
-
+            
             switch ( c.getSegmentType() ) {
             case ARC:
                 counter++;
@@ -647,6 +649,7 @@ public class WKTWriterNG {
             if ( counter != g.size() ) {
                 writer.append( ',' );
             }
+            
         }
 
     }
@@ -708,9 +711,20 @@ public class WKTWriterNG {
     /**
      * @param c
      * @param s
+     * @throws IOException 
      */
-    private void writeCircle( Circle c,Writer writer) {
-        // TODO Auto-generated method stub
+    private void writeCircle( Circle c, Writer writer) throws IOException {
+        writer.append( "CIRCLE " );
+        //if(flags.contains( WKTFlag.USE_DKT )){
+          //  appendObjectProps( writer, (Geometry) createArc );
+        //}
+        writer.append( '(' );
+        writePointWithoutPrefix( c.getPoint1(), writer );
+        writer.append( ',' );
+        writePointWithoutPrefix( c.getPoint2(), writer );
+        writer.append( ',' );
+        writePointWithoutPrefix( c.getPoint3(), writer );
+        writer.append( ')' );
         
     }
 
@@ -744,9 +758,23 @@ public class WKTWriterNG {
     /**
      * @param arcString
      * @param s
+     * @throws IOException 
      */
-    private void writeArcString( ArcString arcString, Writer writer ) {
-        // TODO Auto-generated method stub
+    private void writeArcString( ArcString arcString, Writer writer ) throws IOException {
+        writer.append( "ARCSTRING " );
+        //if(flags.contains( WKTFlag.USE_DKT )){
+        //  appendObjectProps( writer, (Geometry) arcString );
+        //}
+        writer.append( '(' );
+        int counter = 0;
+        for(Point p : arcString.getControlPoints()){
+            counter++;
+            writePointWithoutPrefix( p, writer );
+            if(counter != arcString.getControlPoints().size()){
+                writer.append( ',' );
+            }
+        }
+        writer.append( ')' );
         
     }
 
@@ -771,18 +799,44 @@ public class WKTWriterNG {
     /**
      * @param createLineStringSegment
      * @param s
+     * @throws IOException 
      */
-    private void writeLineStringSegment( LineStringSegment createLineStringSegment, Writer writer ) {
-        // TODO Auto-generated method stub
+    private void writeLineStringSegment( LineStringSegment createLineStringSegment, Writer writer ) throws IOException {
+        writer.append( "LINESTRINGSEGMENT " );
+        //if(flags.contains( WKTFlag.USE_DKT )){
+        //  appendObjectProps( writer, (Geometry) createLineStringSegment );
+        //}
+        writer.append( '(' );
+        int counter = 0;
+        for(Point p : createLineStringSegment.getControlPoints()){
+            counter++;
+            writePointWithoutPrefix( p, writer );
+            if(counter != createLineStringSegment.getControlPoints().size()){
+                writer.append( ',' );
+            }
+        }
+        writer.append( ')' );
 
     }
 
     /**
      * @param createArc
      * @param s
+     * @throws IOException 
      */
-    private void writeArc( Arc createArc, Writer writer ) {
-        // TODO Auto-generated method stub
+    private void writeArc( Arc createArc, Writer writer ) throws IOException {
+        writer.append( "ARC " );
+        //if(flags.contains( WKTFlag.USE_DKT )){
+          //  appendObjectProps( writer, (Geometry) createArc );
+        //}
+        writer.append( '(' );
+        writePointWithoutPrefix( createArc.getPoint1(), writer );
+        writer.append( ',' );
+        writePointWithoutPrefix( createArc.getPoint2(), writer );
+        writer.append( ',' );
+        writePointWithoutPrefix( createArc.getPoint3(), writer );
+        writer.append( ')' );
+        
 
     }
 
@@ -794,7 +848,7 @@ public class WKTWriterNG {
         
         writer.append( "LINESTRING " );
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
-            //appendObjectProps( s, geometry );
+            appendObjectProps( writer, geometry );
         }
         writeLineStringWithoutPrefix( geometry, writer );
        
@@ -812,10 +866,10 @@ public class WKTWriterNG {
         for ( Point p : points ) {
             counter++;
             if ( counter < points.size() ) {
-               // writePointWithoutPrefix( p, s );
+                writePointWithoutPrefix( p, writer );
                 writer.append( ',' );
             } else {
-                //writePointWithoutPrefix( p, s ) ;
+                writePointWithoutPrefix( p, writer ) ;
             }
         }
         writer.append( ')' );
@@ -850,12 +904,15 @@ public class WKTWriterNG {
      */
     public void writeLinearRing( LinearRing geometry, Writer writer ) throws IOException {
         
-        if ( flags.contains( WKTFlag.USE_LINEARRING ) ) {
-
+        if ( flags.contains( WKTFlag.USE_DKT ) ) {
             writer.append( "LINEARRING " );
-            if ( flags.contains( WKTFlag.USE_DKT ) ) {
-                //appendObjectProps( s, geometry );
-            }
+            appendObjectProps( writer, geometry );
+            LineString ls = new DefaultLineString( geometry.getId(), geometry.getCoordinateSystem(),
+                                                   geometry.getPrecision(), geometry.getControlPoints() );
+            writeLineStringWithoutPrefix( ls, writer ) ;
+            
+        }else if ( flags.contains( WKTFlag.USE_LINEARRING ) ) {
+            writer.append( "LINEARRING " );
 
             LineString ls = new DefaultLineString( geometry.getId(), geometry.getCoordinateSystem(),
                                                    geometry.getPrecision(), geometry.getControlPoints() );
@@ -1024,19 +1081,36 @@ public class WKTWriterNG {
      */
     public void writeEnvelope( Envelope envelope, Writer writer ) throws IOException {
         
-        if ( flags.contains( WKTFlag.USE_ENVELOPE ) ) {
-            // ENVELOPE(...)
+        Point pMax = envelope.getMax();
+        Point pMin = envelope.getMin();
+        
+        double pMinX = pMin.get0();
+        double pMinY = pMin.get1();
+        double pMaxX = pMax.get0();
+        double pMaxY = pMax.get1();
+        
+        
+        if(flags.contains( WKTFlag.USE_DKT )){
+            writer.append( "ENVELOPE " );
+            appendObjectProps( writer, envelope );
+            writer.append( '(' );
+            writer.append( Double.toString(pMinX) + ' ' + Double.toString(pMinY) + ',' );
+            writer.append( Double.toString(pMaxX) + ' ' + Double.toString(pMaxY) );
+            writer.append( ')' );
+            
+        }else if ( flags.contains( WKTFlag.USE_ENVELOPE ) ) {
+            writer.append( "ENVELOPE " );
+            writer.append( '(' );
+            writer.append( Double.toString(pMinX) + ' ' + Double.toString(pMinY) + ',' );
+            writer.append( Double.toString(pMaxX) + ' ' + Double.toString(pMaxY) );
+            writer.append( ')' );
         } else {
-            Point pMax = envelope.getMax();
-            Point pMin = envelope.getMin();
+            
             if ( pMin == pMax ) {
                 writePoint( pMin, writer ) ;
             } else {
                 writer.append( "POLYGON((" );
-                double pMinX = pMin.get0();
-                double pMinY = pMin.get1();
-                double pMaxX = pMax.get0();
-                double pMaxY = pMax.get1();
+                
                 writer.append( Double.toString(pMinX) + ' ' + Double.toString(pMinY) + ',' );
                 writer.append( Double.toString(pMaxX) + ' ' + Double.toString(pMinY) + ',' );
                 writer.append( Double.toString(pMaxX) + ' ' + Double.toString(pMaxY) + ',' );
@@ -1073,12 +1147,15 @@ public class WKTWriterNG {
     private void appendObjectProps( Writer writer, Geometry geom ) throws IOException {
 
         writer.append( '[' );
-        if ( geom.getId() != null ) {
+        //
             writer.append( "id='" );
-            writer.append( geom.getId() );
+            if ( geom.getId() != null ) {
+                writer.append( geom.getId() );
+            }else
+                writer.append( "" );
             writer.append( '\'' );
             writer.append( ',' );
-        }
+        //
         StandardGMLObjectProps props = geom.getAttachedProperties(); 
         if ( props != null ) {
             int counter = 0;
