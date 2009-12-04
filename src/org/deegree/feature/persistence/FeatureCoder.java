@@ -125,6 +125,7 @@ public class FeatureCoder {
         BufferedInputStream bis = new BufferedInputStream( is );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( bis, "UTF-8" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
+        gmlReader.setApplicationSchema( schema );
         gmlReader.setDefaultCRS( crs );
         return gmlReader.readFeature();
     }
