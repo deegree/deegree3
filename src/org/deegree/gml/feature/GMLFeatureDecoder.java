@@ -148,7 +148,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         if ( version.equals( GMLVersion.GML_2 ) ) {
             this.geomParser = new GML2GeometryDecoder( geomFac, idContext );
         } else {
-            this.geomParser = new GML3GeometryDecoder( geomFac, idContext );
+            this.geomParser = new GML3GeometryDecoder( version, geomFac, idContext );
         }
         this.version = version;
     }

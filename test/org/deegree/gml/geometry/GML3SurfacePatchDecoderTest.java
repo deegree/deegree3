@@ -53,6 +53,7 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.Triangle;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML3GeometryDecoder;
 import org.junit.Before;
 import org.junit.Test;
@@ -142,6 +143,6 @@ public class GML3SurfacePatchDecoderTest {
 
     private GML3SurfacePatchDecoder getPatchParser() {
         GeometryFactory geomFac = new GeometryFactory();
-        return new GML3SurfacePatchDecoder( new GML3GeometryDecoder(), geomFac );
+        return new GML3SurfacePatchDecoder( new GML3GeometryDecoder(GMLVersion.GML_31, null, null), geomFac );
     }
 }

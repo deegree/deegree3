@@ -47,6 +47,7 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML3GeometryDecoderTest;
 import org.deegree.gml.geometry.validation.GML3GeometryValidator;
 import org.deegree.gml.geometry.validation.GMLElementIdentifier;
@@ -61,7 +62,7 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class GML311GeometryValidatorTest {
+public class GMLGeometryValidatorTest {
 
     private static final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
 
@@ -72,7 +73,7 @@ public class GML311GeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "Curve.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
@@ -83,7 +84,7 @@ public class GML311GeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Curve_discontinuity.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
@@ -93,7 +94,7 @@ public class GML311GeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Ring_not_closed.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
@@ -102,7 +103,7 @@ public class GML311GeometryValidatorTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Polygon_exterior_clockwise.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
         validator.validateGeometries();
     }
 
@@ -111,7 +112,7 @@ public class GML311GeometryValidatorTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Polygon_noexterior.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
         validator.validateGeometries();
     }
 

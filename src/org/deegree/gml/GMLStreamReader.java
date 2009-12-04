@@ -133,7 +133,7 @@ public class GMLStreamReader {
         case GML_30:
         case GML_31:
         case GML_32: {
-            geometryDecoder = new GML3GeometryDecoder( geomFac, idContext );
+            geometryDecoder = new GML3GeometryDecoder( version, geomFac, idContext );
             break;
         }
         }
@@ -230,7 +230,7 @@ public class GMLStreamReader {
             case GML_30:
             case GML_31:
             case GML_32: {
-                geometryDecoder = new GML3GeometryDecoder( new GeometryFactory(), idContext );
+                geometryDecoder = new GML3GeometryDecoder( version, new GeometryFactory(), idContext );
                 break;
             }
             }

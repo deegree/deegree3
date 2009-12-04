@@ -109,7 +109,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parser for geometry and geometry-related constructs from the GML 3.1.1 specification.
+ * Parser for geometry and geometry-related constructs from the GML 3 specification series (3.0 / 3.1 / 3.2).
+ * 
+ * TODO: GML 3.0 / 3.2
+ * 
  * <p>
  * Supports the following geometry elements:
  * <p>
@@ -157,6 +160,8 @@ import org.slf4j.LoggerFactory;
 public class GML3GeometryDecoder extends GML3BaseDecoder implements GMLGeometryDecoder {
 
     private static Logger LOG = LoggerFactory.getLogger( GML3GeometryDecoder.class );
+
+    private final GMLVersion version;
 
     private static String FID = "gid";
 
@@ -242,21 +247,25 @@ public class GML3GeometryDecoder extends GML3BaseDecoder implements GMLGeometryD
     }
 
     /**
+     * Creates a new {@link GML3GeometryDecoder} instance.
      * 
-     */
-    public GML3GeometryDecoder() {
-        this( new GeometryFactory(), new GMLDocumentIdContext(GMLVersion.GML_31) );
-    }
-
-    /**
+     * @param version
+     *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
      * @param geomFac
+     *            geometry factory to be used for creating geometry objects, can be <code>null</code>
      * @param idContext
+     *            id context for keeping track of objects and references, can be <code>null</code>
      */
-    public GML3GeometryDecoder( GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
-        super( geomFac );
-        this.idContext = idContext;
-        curveSegmentParser = new GML3CurveSegmentDecoder( this, geomFac );
-        surfacePatchParser = new GML3SurfacePatchDecoder( this, geomFac );
+    public GML3GeometryDecoder( GMLVersion version, GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
+        super( geomFac != null ? geomFac : new GeometryFactory() );
+        this.version = version;
+        if ( idContext != null ) {
+            this.idContext = idContext;
+        } else {
+            this.idContext = new GMLDocumentIdContext( version );
+        }
+        curveSegmentParser = new GML3CurveSegmentDecoder( this, this.geomFac );
+        surfacePatchParser = new GML3SurfacePatchDecoder( this, this.geomFac );
     }
 
     /**

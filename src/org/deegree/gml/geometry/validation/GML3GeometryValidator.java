@@ -87,12 +87,17 @@ public class GML3GeometryValidator extends XMLAdapter {
     private GMLValidationEventHandler gmlErrorHandler;
 
     /**
+     * 
+     * @param version
+     *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
      * @param xmlStream
      * @param gmlErrorHandler
      */
-    public GML3GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
+    public GML3GeometryValidator( GMLVersion version, XMLStreamReaderWrapper xmlStream,
+                                  GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
-        geomParser = new GML3GeometryDecoder( new GeometryFactory(), new GMLDocumentIdContext(GMLVersion.GML_31) );
+        geomParser = new GML3GeometryDecoder( version, new GeometryFactory(),
+                                              new GMLDocumentIdContext( GMLVersion.GML_31 ) );
         this.gmlErrorHandler = gmlErrorHandler;
     }
 
@@ -145,17 +150,20 @@ public class GML3GeometryValidator extends XMLAdapter {
 
         @Override
         public boolean curveDiscontinuity( Curve curve, int segmentIdx, List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.curveDiscontinuity( curve, segmentIdx, affectedGeometryParticles, getAffectedElements() );
+            return gmlErrorHandler.curveDiscontinuity( curve, segmentIdx, affectedGeometryParticles,
+                                                       getAffectedElements() );
         }
 
         @Override
         public boolean curvePointDuplication( Curve curve, Point point, List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.curvePointDuplication( curve, point, affectedGeometryParticles, getAffectedElements() );
+            return gmlErrorHandler.curvePointDuplication( curve, point, affectedGeometryParticles,
+                                                          getAffectedElements() );
         }
 
         @Override
         public boolean curveSelfIntersection( Curve curve, Point location, List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.curveSelfIntersection( curve, location, affectedGeometryParticles, getAffectedElements() );
+            return gmlErrorHandler.curveSelfIntersection( curve, location, affectedGeometryParticles,
+                                                          getAffectedElements() );
         }
 
         @Override
@@ -172,42 +180,42 @@ public class GML3GeometryValidator extends XMLAdapter {
         public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx,
                                                        List<Object> affectedGeometryParticles ) {
             return gmlErrorHandler.interiorRingIntersectsExterior( patch, ringIdx, affectedGeometryParticles,
-                                                            getAffectedElements() );
+                                                                   getAffectedElements() );
         }
 
         @Override
         public boolean interiorRingOutsideExterior( PolygonPatch patch, int ringIdx,
                                                     List<Object> affectedGeometryParticles ) {
             return gmlErrorHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles,
-                                                         getAffectedElements() );
+                                                                getAffectedElements() );
         }
 
         @Override
         public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx,
                                                     List<Object> affectedGeometryParticles ) {
             return gmlErrorHandler.interiorRingTouchesExterior( patch, ringIdx, affectedGeometryParticles,
-                                                         getAffectedElements() );
+                                                                getAffectedElements() );
         }
 
         @Override
         public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx,
                                                List<Object> affectedGeometryParticles ) {
             return gmlErrorHandler.interiorRingsIntersect( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
-                                                    getAffectedElements() );
+                                                           getAffectedElements() );
         }
 
         @Override
         public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx,
                                            List<Object> affectedGeometryParticles ) {
             return gmlErrorHandler.interiorRingsTouch( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
-                                                getAffectedElements() );
+                                                       getAffectedElements() );
         }
 
         @Override
         public boolean interiorRingsWithin( PolygonPatch patch, int ring1Idx, int ring2Idx,
                                             List<Object> affectedGeometryParticles ) {
             return gmlErrorHandler.interiorRingsWithin( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
-                                                 getAffectedElements() );
+                                                        getAffectedElements() );
         }
 
         @Override
@@ -217,7 +225,8 @@ public class GML3GeometryValidator extends XMLAdapter {
 
         @Override
         public boolean ringSelfIntersection( Ring ring, Point location, List<Object> affectedGeometryParticles ) {
-            return gmlErrorHandler.ringSelfIntersection( ring, location, affectedGeometryParticles, getAffectedElements() );
+            return gmlErrorHandler.ringSelfIntersection( ring, location, affectedGeometryParticles,
+                                                         getAffectedElements() );
         }
 
         private List<GMLElementIdentifier> getAffectedElements() {

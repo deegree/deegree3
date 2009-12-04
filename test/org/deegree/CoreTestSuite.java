@@ -102,7 +102,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.gml.geometry.GML3GeometryDecoderTest.class,
                 org.deegree.gml.geometry.GML3SurfacePatchDecoderTest.class,
                 org.deegree.gml.geometry.GMLGeometryEncoderTest.class,
-                org.deegree.geometry.gml.validation.GML311GeometryValidatorTest.class,
+                org.deegree.geometry.gml.validation.GMLGeometryValidatorTest.class,
                 org.deegree.geometry.linearization.CurveLinearizerTest.class,
                 org.deegree.geometry.validation.GeometryValidatorTest.class,
                 org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParserTest.class,

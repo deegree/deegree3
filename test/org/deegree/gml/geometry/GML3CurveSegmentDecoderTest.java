@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
 import java.io.IOException;
@@ -70,10 +70,10 @@ import org.junit.Test;
 /**
  * Tests that check the correct parsing of GML 3.1.1 curve segments, i.e. of elements that are substitutable for
  * <code>gml:_CurveSegment</code>.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GML3CurveSegmentDecoderTest {
@@ -116,7 +116,8 @@ public class GML3CurveSegmentDecoderTest {
         Assert.assertEquals( 1, arc.getBulges().length );
         Assert.assertEquals( 2.0, arc.getBulge() );
         Assert.assertEquals( 1, arc.getNormals().size() );
-//        Assert.assertEquals( 1, arc.getNormal().getCoordinateDimension() ); TODO Since every point we're working with has 2 or 3 coords, find a way around this gml:vectortype
+        // Assert.assertEquals( 1, arc.getNormal().getCoordinateDimension() ); TODO Since every point we're working with
+        // has 2 or 3 coords, find a way around this gml:vectortype
         Assert.assertEquals( -1.0, arc.getNormal().get0() );
     }
 
@@ -129,8 +130,8 @@ public class GML3CurveSegmentDecoderTest {
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().get0() );
         Assert.assertEquals( 11.0, arc.getMidPoint().get1() );
-        Assert.assertEquals( 1.0, arc.getRadius(null).getValueAsDouble() );
-        Assert.assertEquals( "whatever#metres", arc.getRadius(null).getUomUri() );
+        Assert.assertEquals( 1.0, arc.getRadius( null ).getValueAsDouble() );
+        Assert.assertEquals( "whatever#metres", arc.getRadius( null ).getUomUri() );
         Assert.assertEquals( 180.0, arc.getStartAngle().getValueAsDouble() );
         Assert.assertEquals( "whatever#degrees", arc.getStartAngle().getUomUri() );
         Assert.assertEquals( 360.0, arc.getEndAngle().getValueAsDouble() );
@@ -251,8 +252,8 @@ public class GML3CurveSegmentDecoderTest {
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().get0() );
         Assert.assertEquals( 11.0, arc.getMidPoint().get1() );
-        Assert.assertEquals( 1.0, arc.getRadius(null).getValueAsDouble() );
-        Assert.assertEquals( "whatever#metres", arc.getRadius(null).getUomUri() );
+        Assert.assertEquals( 1.0, arc.getRadius( null ).getValueAsDouble() );
+        Assert.assertEquals( "whatever#metres", arc.getRadius( null ).getUomUri() );
         Assert.assertEquals( 0.0, arc.getStartAngle().getValueAsDouble() );
         Assert.assertEquals( "whatever#degrees", arc.getStartAngle().getUomUri() );
         Assert.assertEquals( 0.0, arc.getEndAngle().getValueAsDouble() );
@@ -349,7 +350,7 @@ public class GML3CurveSegmentDecoderTest {
                             UnknownCRSException {
         OffsetCurve segment = (OffsetCurve) getParser().parseCurveSegment( getReader( "OffsetCurve.gml" ),
                                                                            new CRS( "EPSG:4326" ) );
-        Assert.assertEquals( 1.0, segment.getDistance(null).getValueAsDouble() );
+        Assert.assertEquals( 1.0, segment.getDistance( null ).getValueAsDouble() );
         Assert.assertEquals( 0.0, segment.getDirection().get0() );
         Assert.assertEquals( 1.0, segment.getDirection().get1() );
     }
@@ -358,15 +359,14 @@ public class GML3CurveSegmentDecoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        GML3CurveSegmentDecoderTest.class.getResource( "../../geometry/gml/testdata/segments/"
-                                                                                                                       + fileName ) );
+                                                                                                                      + fileName ) );
         xmlReader.nextTag();
         return xmlReader;
     }
 
     private GML3CurveSegmentDecoder getParser()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext(GMLVersion.GML_31);
-        GeometryFactory geomFac = new GeometryFactory();
-        return new GML3CurveSegmentDecoder( new GML3GeometryDecoder(), geomFac );
+        GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
+        return new GML3CurveSegmentDecoder( new GML3GeometryDecoder( GMLVersion.GML_31, null, null ), geomFac );
     }
 }

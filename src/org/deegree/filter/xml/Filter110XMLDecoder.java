@@ -120,6 +120,7 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
 import org.deegree.gml.geometry.GML3GeometryDecoder;
 import org.slf4j.Logger;
@@ -832,9 +833,8 @@ public class Filter110XMLDecoder {
 
         xmlStream.nextTag();
 
-        // TODO remove this after GML parser is adapted
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-        GML3GeometryDecoder geomParser = new GML3GeometryDecoder();
+        GML3GeometryDecoder geomParser = new GML3GeometryDecoder( GMLVersion.GML_31, null, null );
 
         try {
             switch ( type ) {
