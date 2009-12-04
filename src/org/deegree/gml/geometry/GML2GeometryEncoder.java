@@ -119,15 +119,16 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
             exportLineString( (LineString) geometry );
         } else if ( geometry instanceof Envelope ) {
             exportEnvelope( (Envelope) geometry );
-        } else if ( geometry instanceof MultiGeometry<?> ) {
-            exportMultiGeometry( (MultiGeometry<?>) geometry );
         } else if ( geometry instanceof MultiPoint ) {
             exportMultiPoint( (MultiPoint) geometry );
         } else if ( geometry instanceof MultiLineString ) {
             exportMultiLineString( (MultiLineString) geometry );
         } else if ( geometry instanceof MultiPolygon ) {
             exportMultiPolygon( (MultiPolygon) geometry );
+        } else if ( geometry instanceof MultiGeometry<?> ) {
+            exportMultiGeometry( (MultiGeometry<?>) geometry );
         }
+
     }
 
     /**
@@ -180,48 +181,42 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
     public void exportPolygon( Polygon polygon )
                             throws XMLStreamException {
 
-        if ( exportedIds.contains( polygon.getId() ) ) {
-            writer.writeEmptyElement( "gml", "Polygon", GML21NS );
-            writer.writeAttribute( XLNNS, "href", "#" + polygon.getId() );
-        } else {
+        writer.writeStartElement( "gml", "Polygon", GML21NS );
 
-            writer.writeStartElement( "gml", "Polygon", GML21NS );
-
-            if ( polygon.getId() != null ) {
-                exportedIds.add( polygon.getId() );
-                writer.writeAttribute( "gid", polygon.getId() );
-            }
-            if ( polygon.getCoordinateSystem().getName() != null ) {
-                writer.writeAttribute( "srsName", polygon.getCoordinateSystem().getName() );
-            }
-
-            LinearRing outerRing = (LinearRing) polygon.getExteriorRing();
-            if ( exportedIds.contains( outerRing.getId() ) ) {
-                writer.writeEmptyElement( "gml", "outerBoundaryIs", GML21NS );
-                writer.writeAttribute( "xlink", XLNNS, "href", "#" + outerRing.getId() );
-
-            } else {
-                writer.writeStartElement( "gml", "outerBoundaryIs", GML21NS );
-                exportLinearRing( outerRing );
-                writer.writeEndElement(); // </gml:outerBoundaryIs>
-            }
-
-            List<Ring> rings = polygon.getInteriorRings();
-            if ( rings != null ) {
-
-                for ( Ring ring : rings ) {
-                    writer.writeStartElement( "gml", "innerBoundaryIs", GML21NS );
-                    if ( exportedIds.contains( ring.getId() ) ) {
-                        writer.writeAttribute( "xlink", XLNNS, "href", "#" + ring.getId() );
-
-                    } else {
-                        exportLinearRing( (LinearRing) ring ); // in GML 2.1 the interior rings are linear rings
-                    }
-                    writer.writeEndElement(); // </gml:innerBoundaryIs>
-                }
-            }
-            writer.writeEndElement(); // </gml:Polygon>
+        if ( polygon.getId() != null ) {
+            exportedIds.add( polygon.getId() );
+            writer.writeAttribute( "gid", polygon.getId() );
         }
+        if ( polygon.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", polygon.getCoordinateSystem().getName() );
+        }
+
+        LinearRing outerRing = (LinearRing) polygon.getExteriorRing();
+        if ( exportedIds.contains( outerRing.getId() ) ) {
+            writer.writeEmptyElement( "gml", "outerBoundaryIs", GML21NS );
+            writer.writeAttribute( "xlink", XLNNS, "href", "#" + outerRing.getId() );
+
+        } else {
+            writer.writeStartElement( "gml", "outerBoundaryIs", GML21NS );
+            exportLinearRing( outerRing );
+            writer.writeEndElement(); // </gml:outerBoundaryIs>
+        }
+
+        List<Ring> rings = polygon.getInteriorRings();
+        if ( rings != null ) {
+
+            for ( Ring ring : rings ) {
+                writer.writeStartElement( "gml", "innerBoundaryIs", GML21NS );
+                if ( exportedIds.contains( ring.getId() ) ) {
+                    writer.writeAttribute( "xlink", XLNNS, "href", "#" + ring.getId() );
+
+                } else {
+                    exportLinearRing( (LinearRing) ring ); // in GML 2.1 the interior rings are linear rings
+                }
+                writer.writeEndElement(); // </gml:innerBoundaryIs>
+            }
+        }
+        writer.writeEndElement(); // </gml:Polygon>
     }
 
     /**
