@@ -36,46 +36,46 @@
 package org.deegree.gml;
 
 /**
- * Indicates that a GML reference cannot be resolved.
+ * Indicates that a reference to a GML object cannot be resolved.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GMLReferenceResolvingException extends RuntimeException {
+public class ReferenceResolvingException extends RuntimeException {
 
     private static final long serialVersionUID = -7702695645031124014L;
 
     /**
-     * Creates a new {@link GMLReferenceResolvingException} with the given detail message.
+     * Creates a new {@link ReferenceResolvingException} with the given detail message.
      * 
      * @param msg
      *            detail message
      */
-    public GMLReferenceResolvingException( String msg ) {
+    public ReferenceResolvingException( String msg ) {
         super( msg );
     }
 
     /**
-     * Creates a new {@link GMLReferenceResolvingException} with the given cause.
+     * Creates a new {@link ReferenceResolvingException} with the given cause.
      * 
      * @param cause
      *            causing exception
      */
-    public GMLReferenceResolvingException( Throwable cause ) {
+    public ReferenceResolvingException( Throwable cause ) {
         super( cause );
     }
 
     /**
-     * Creates a new {@link GMLReferenceResolvingException} with the given detail message and cause.
+     * Creates a new {@link ReferenceResolvingException} with the given detail message and cause.
      * 
      * @param msg
      *            detail message
      * @param cause
      *            causing exception
      */
-    public GMLReferenceResolvingException( String msg, Throwable cause ) {
+    public ReferenceResolvingException( String msg, Throwable cause ) {
         super( msg, cause );
     }
 }

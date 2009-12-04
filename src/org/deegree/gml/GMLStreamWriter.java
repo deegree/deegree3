@@ -167,6 +167,15 @@ public class GMLStreamWriter {
         // TODO
     }
 
+    /**
+     * Writes a GML representation of the given {@link GMLObject} to the stream.
+     * 
+     * @param object
+     *            object to be written, must not be <code>null</code>
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
     public void write( GMLObject object )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( object instanceof Feature ) {
@@ -178,16 +187,41 @@ public class GMLStreamWriter {
         }
     }
 
+    /**
+     * Writes a GML representation of the given {@link Feature} to the stream.
+     * 
+     * @param feature
+     *            object to be written, must not be <code>null</code>
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */    
     public void write( Feature feature )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         getFeatureEncoder().export( feature );
     }
 
+    /**
+     * Writes a GML representation of the given {@link Geometry} to the stream.
+     * 
+     * @param geometry
+     *            object to be written, must not be <code>null</code>
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */    
     public void write( Geometry geometry )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         getGeometryEncoder().export( geometry );
     }
 
+    /**
+     * Writes a GML representation of the given {@link CRS} to the stream.
+     * 
+     * @param crs
+     *            object to be written, must not be <code>null</code>
+     * @throws XMLStreamException
+     */    
     public void write( CRS crs )
                             throws XMLStreamException {
         throw new UnsupportedOperationException( "Writing of crs is not implemented yet." );

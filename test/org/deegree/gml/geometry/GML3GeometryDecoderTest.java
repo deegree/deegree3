@@ -81,7 +81,7 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLVersion;
 import org.junit.Assert;
 import org.junit.Test;
@@ -801,7 +801,7 @@ public class GML3GeometryDecoderTest {
 
     @Test
     public void parseXLinkMultiGeometry1()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException, GMLReferenceResolvingException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException, ReferenceResolvingException {
         XMLStreamReaderWrapper xmlReader = getParser( "XLinkMultiGeometry1.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );

@@ -188,11 +188,11 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
     /**
      * Resolves all local references.
      * 
-     * @throws GMLReferenceResolvingException
+     * @throws ReferenceResolvingException
      *             if a local reference cannot be resolved
      */
     public void resolveLocalRefs()
-                            throws GMLReferenceResolvingException {
+                            throws ReferenceResolvingException {
 
         for ( FeatureReference ref : featureReferences ) {
             if ( ref.isLocal() ) {
@@ -201,7 +201,7 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
                 if ( ref.getReferencedFeature() == null ) {
                     String msg = "Cannot resolve reference to feature with id '" + fid
                                  + "'. There is no feature with this id in the document.";
-                    throw new GMLReferenceResolvingException( msg );
+                    throw new ReferenceResolvingException( msg );
                 }
             }
         }
@@ -213,7 +213,7 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
                 if ( ref.getReferencedGeometry() == null ) {
                     String msg = "Cannot resolve reference to feature with id '" + gid
                                  + "'. There is no feature with this id in the document.";
-                    throw new GMLReferenceResolvingException( msg );
+                    throw new ReferenceResolvingException( msg );
                 }
             }
         }

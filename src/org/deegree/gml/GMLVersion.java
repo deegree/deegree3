@@ -38,8 +38,6 @@ package org.deegree.gml;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
-import org.deegree.commons.xml.CommonNamespaces;
-
 /**
  * Enum type for the GML versions that have to be differerentiated in deegree's GML subsystem.
  * 

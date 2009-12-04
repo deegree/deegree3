@@ -45,7 +45,7 @@ import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.XSModelGMLAnalyzer;
+import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.junit.Test;
 
 /**
@@ -63,7 +63,7 @@ public class XSModelGMLAnalyzerTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer(
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer(
                                                               GMLVersion.GML_31,
                                                               this.getClass().getResource(
                                                                                            "../testdata/schema/Philosopher.xsd" ).toString() );
@@ -91,7 +91,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_GeometricAggregate", analyzer );
         for ( String string : substitutionts ) {
             System.out.println( string );
@@ -105,7 +105,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_GeometricPrimitive", analyzer );
         for ( String string : substitutionts ) {
             System.out.println( string );
@@ -119,7 +119,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_ImplicitGeometry", analyzer );
         for ( String string : substitutionts ) {
             System.out.println( string );
@@ -133,7 +133,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_Curve", analyzer );
         for ( String string : substitutionts ) {
             System.out.println( string );
@@ -147,7 +147,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_Curve", analyzer );
         Assert.assertEquals( 4, substitutionts.size() );
         Assert.assertTrue( substitutionts.contains( "CompositeCurve" ) );
@@ -162,7 +162,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_Ring", analyzer );
         Assert.assertEquals( 2, substitutionts.size() );
         Assert.assertTrue( substitutionts.contains( "LinearRing" ) );
@@ -175,7 +175,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutions = getConcreteSubstitutions( "_Surface", analyzer );
         Assert.assertEquals( 7, substitutions.size() );
         Assert.assertTrue( substitutions.contains( "CompositeSurface" ) );
@@ -193,7 +193,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutions = getConcreteSubstitutions( "_Solid", analyzer );
         Assert.assertEquals( 2, substitutions.size() );
         Assert.assertTrue( substitutions.contains( "CompositeSolid" ) );
@@ -206,7 +206,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         "_CurveSegment" ),
                                                                              "http://www.opengis.net/gml", true, true );
@@ -221,7 +221,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_31, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         "_SurfacePatch" ),
                                                                              "http://www.opengis.net/gml", true, true );
@@ -236,7 +236,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_32, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_32, schemaURL );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
                                                                              new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
@@ -254,7 +254,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_32, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_32, schemaURL );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
                                                                              new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
@@ -272,7 +272,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( GMLVersion.GML_32, schemaURL );
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_32, schemaURL );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
                                                                              new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
@@ -285,7 +285,7 @@ public class XSModelGMLAnalyzerTest {
         System.out.println( elementDecls.size() );
     }
 
-    private Set<String> getConcreteSubstitutions( String localName, XSModelGMLAnalyzer analyzer ) {
+    private Set<String> getConcreteSubstitutions( String localName, GMLSchemaAnalyzer analyzer ) {
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         localName ),
                                                                              "http://www.opengis.net/gml", true, true );

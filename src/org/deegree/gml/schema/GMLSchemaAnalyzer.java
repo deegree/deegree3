@@ -67,7 +67,7 @@ import org.deegree.gml.GMLVersion;
  * 
  * @version $Revision:$, $Date:$
  */
-public class XSModelGMLAnalyzer extends XSModelAnalyzer {
+public class GMLSchemaAnalyzer extends XSModelAnalyzer {
 
     private static final String GML_PRE_32_NS = "http://www.opengis.net/gml";
 
@@ -95,7 +95,7 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     private XSElementDeclaration abstractSurfacePatchElementDecl;
 
-    public XSModelGMLAnalyzer( GMLVersion version, String... schemaUrls ) throws ClassCastException,
+    public GMLSchemaAnalyzer( GMLVersion version, String... schemaUrls ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         super( schemaUrls );
         this.version = version;

@@ -46,7 +46,7 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.gml.schema.XSModelGMLAnalyzer;
+import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMConfiguration;
@@ -60,7 +60,7 @@ import org.w3c.dom.DOMErrorHandler;
  * This functionality is used to extract higher-level structures defined using XML schema, such as GML feature types.
  * </p>
  * 
- * @see XSModelGMLAnalyzer
+ * @see GMLSchemaAnalyzer
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

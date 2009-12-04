@@ -47,7 +47,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLObjectResolver;
-import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLVersion;
 import org.jaxen.JaxenException;
 
@@ -108,16 +108,16 @@ public class FeatureReference implements Feature {
      * Returns the referenced {@link Feature} instance (may trigger resolving and fetching it).
      * 
      * @return the referenced {@link Feature} instance
-     * @throws GMLReferenceResolvingException
+     * @throws ReferenceResolvingException
      *             if the reference cannot be resolved
      */
     public Feature getReferencedFeature()
-                            throws GMLReferenceResolvingException {
+                            throws ReferenceResolvingException {
         if ( this.feature == null ) {
             feature = resolver.getFeature( uri, baseURL );
             if ( feature == null ) {
                 String msg = "Unable to resolve feature reference '" + uri + "'.";
-                throw new GMLReferenceResolvingException( msg );
+                throw new ReferenceResolvingException( msg );
             }
         }
         return feature;

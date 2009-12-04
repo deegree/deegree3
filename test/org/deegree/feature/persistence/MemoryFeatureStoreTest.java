@@ -65,7 +65,7 @@ import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureDecoderTest;
@@ -91,7 +91,7 @@ public class MemoryFeatureStoreTest {
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException, JAXBException, FeatureStoreException,
-                            GMLReferenceResolvingException {
+                            ReferenceResolvingException {
         URL url = MemoryFeatureStoreTest.class.getResource( "example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();

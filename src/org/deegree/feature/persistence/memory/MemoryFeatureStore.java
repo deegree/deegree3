@@ -78,7 +78,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureDecoder;
@@ -143,11 +143,11 @@ public class MemoryFeatureStore implements FeatureStore {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws FeatureStoreException
-     * @throws GMLReferenceResolvingException
+     * @throws ReferenceResolvingException
      */
     public MemoryFeatureStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
                             UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException,
-                            GMLReferenceResolvingException {
+                            ReferenceResolvingException {
 
         this( schema );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );

@@ -58,7 +58,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLVersion;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
@@ -330,13 +330,13 @@ public class GMLGeometryEncoderTest {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws TransformationException
-     * @throws GMLReferenceResolvingException
+     * @throws ReferenceResolvingException
      */
     @Test
     public void testValidatingExportedXLinkMultiGeometry1()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException, TransformationException,
-                            GMLReferenceResolvingException {
+                            ReferenceResolvingException {
 
         String source = "XLinkMultiGeometry1.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
@@ -370,7 +370,7 @@ public class GMLGeometryEncoderTest {
     @Test
     public void testValidatingExportedXLinkMultiGeometry2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException, TransformationException, GMLReferenceResolvingException {
+                            UnknownCRSException, TransformationException, ReferenceResolvingException {
         String source = "XLinkMultiGeometry2.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
         GML3GeometryDecoder parser = new GML3GeometryDecoder( GMLVersion.GML_31, new GeometryFactory(), idContext );
@@ -403,7 +403,7 @@ public class GMLGeometryEncoderTest {
     @Test
     public void testValidatingExportedXLinkMultiLineString()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException, TransformationException, GMLReferenceResolvingException {
+                            UnknownCRSException, TransformationException, ReferenceResolvingException {
         String source = "XLinkMultiLineString.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
         GML3GeometryDecoder parser = new GML3GeometryDecoder( GMLVersion.GML_31, new GeometryFactory(), idContext );

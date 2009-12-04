@@ -39,7 +39,7 @@ import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLObjectResolver;
-import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.ReferenceResolvingException;
 
 /**
  * {@link GMLObjectResolver} that uses a {@link FeatureStore} for resolving local object references.
@@ -79,9 +79,9 @@ public class FeatureStoreGMLIdResolver implements GMLObjectResolver {
             try {
                 return fs.getObjectById( uri.substring( 1 ) );
             } catch ( FeatureStoreException e ) {
-                throw new GMLReferenceResolvingException( e.getMessage(), e );
+                throw new ReferenceResolvingException( e.getMessage(), e );
             }
         }
-        throw new GMLReferenceResolvingException( "Resolving of remote references is not implemented yet." );
+        throw new ReferenceResolvingException( "Resolving of remote references is not implemented yet." );
     }
 }

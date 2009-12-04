@@ -62,7 +62,7 @@ import org.deegree.feature.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLReferenceResolvingException;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -83,7 +83,7 @@ public class GMLFeatureDecoderTest {
     @Test
     public void testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException, GMLReferenceResolvingException {
+                            UnknownCRSException, ReferenceResolvingException {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -99,7 +99,7 @@ public class GMLFeatureDecoderTest {
     @Test(expected = XMLParsingException.class)
     public void testParsingPhilosopherFeatureCollectionNoSchema()
                             throws XMLStreamException, FactoryConfigurationError, IOException,
-                            GMLReferenceResolvingException, XMLParsingException, UnknownCRSException {
+                            ReferenceResolvingException, XMLParsingException, UnknownCRSException {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection_no_schema.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -117,7 +117,7 @@ public class GMLFeatureDecoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            GMLReferenceResolvingException {
+                            ReferenceResolvingException {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf0.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
@@ -187,7 +187,7 @@ public class GMLFeatureDecoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            GMLReferenceResolvingException {
+                            ReferenceResolvingException {
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf2.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
@@ -237,7 +237,7 @@ public class GMLFeatureDecoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
-                            GMLReferenceResolvingException {
+                            ReferenceResolvingException {
 
         String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
@@ -260,7 +260,7 @@ public class GMLFeatureDecoderTest {
     public void testParsingXPlan20()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException, JAXBException, GMLReferenceResolvingException {
+                            XMLParsingException, UnknownCRSException, JAXBException, ReferenceResolvingException {
 
         // BP2070
         URL docURL = new URL(
