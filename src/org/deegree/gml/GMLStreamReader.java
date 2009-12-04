@@ -72,6 +72,8 @@ public class GMLStreamReader {
 
     private final GMLDocumentIdContext idContext;
 
+    private GMLObjectResolver resolver;    
+    
     private ApplicationSchema schema;
 
     private CRS defaultCRS;
@@ -137,6 +139,10 @@ public class GMLStreamReader {
             break;
         }
         }
+    }
+
+    public void setResolver( GMLObjectResolver resolver ) {
+        this.resolver = resolver;
     }
 
     /**
@@ -212,7 +218,7 @@ public class GMLStreamReader {
 
     private GMLFeatureDecoder getFeatureDecoder() {
         if ( featureDecoder == null ) {
-            featureDecoder = new GMLFeatureDecoder( schema, idContext, version );
+            featureDecoder = new GMLFeatureDecoder( schema, idContext, resolver, version );
             if ( geometryDecoder != null ) {
                 featureDecoder.setGeometryDecoder( geometryDecoder );
             }

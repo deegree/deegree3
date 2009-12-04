@@ -166,6 +166,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 props.add( new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy ) );
             }
             break;
+        case GML_30:
         case GML_31:
             if ( metadata != null ) {
                 for ( Object metadataItem : metadata ) {
@@ -211,6 +212,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 prop = new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy );
             }
             break;
+        case GML_30:            
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
                 prop = new GenericProperty<Object>( PT_META_DATA_PROPERTY_GML31, metadata[0] );
@@ -251,6 +253,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 value = boundedBy;
             }
             break;
+        case GML_30:            
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
                 value = metadata[0];
@@ -291,6 +294,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 props = new Property<?>[] { new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy ) };
             }
             break;
+        case GML_30:            
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
                 props = new Property<?>[metadata.length];
@@ -337,6 +341,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 values = new Object[] { boundedBy };
             }
             break;
+        case GML_30:            
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
                 values = metadata;
@@ -369,7 +374,8 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         switch ( version ) {
         case GML_2:
             pts = GML2PropNameToPropType.values();
-            break;
+            break;         
+        case GML_30:
         case GML_31:
             pts = GML31PropNameToPropType.values();
             break;
@@ -396,6 +402,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         case GML_2:
             pt = GML2PropNameToPropType.get( propName );
             break;
+        case GML_30:            
         case GML_31:
             pt = GML31PropNameToPropType.get( propName );
             break;
@@ -430,6 +437,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
             }
             break;
         }
+        case GML_30:        
         case GML_31: {
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) ) {
                 if ( metadata == null || metadata.length == 0 ) {
@@ -504,6 +512,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
             }
             break;
         }
+        case GML_30:        
         case GML_31: {
             for ( Property<?> property : props ) {
                 QName propName = property.getName();

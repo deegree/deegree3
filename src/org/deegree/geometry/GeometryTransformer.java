@@ -47,6 +47,8 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.transformations.Transformation;
 import org.deegree.geometry.i18n.Messages;
+import org.deegree.geometry.linearization.CurveLinearizer;
+import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
@@ -79,6 +81,11 @@ public class GeometryTransformer extends Transformer {
 
     private static final GeometryFactory geomFactory = new GeometryFactory();
 
+    private static final CurveLinearizer linearizer = new CurveLinearizer( geomFactory );
+    
+    // TODO make this configurable
+    private static final NumPointsCriterion crit = new NumPointsCriterion( 100 );
+    
     /**
      * Creates a new GeometryTransformer object.
      * 
@@ -283,8 +290,8 @@ public class GeometryTransformer extends Transformer {
         int i = 0;
         for ( CurveSegment segment : geo.getCurveSegments() ) {
             if ( !( segment instanceof LineStringSegment ) ) {
-                // TODO handle non-linear curve segments
-                throw new IllegalArgumentException();
+                // TODO is linearization here really a good idea?
+                segment = linearizer.linearize( segment, crit );
             }
             Points pos = ( (LineStringSegment) segment ).getControlPoints();
             pos = transform( pos, trans );

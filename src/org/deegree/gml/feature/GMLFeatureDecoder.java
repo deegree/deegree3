@@ -159,23 +159,23 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * 
      * @param schema
      *            application schema that defines the feature types, must not be <code>null</code>
+     * @param idContext
+     *            id context to be used for registering gml:ids (features and geometries and resolving local xlinks and
+     * @param resolver 
      * @param version
      *            GML version, must not be <code>null</code>
      */
-    public GMLFeatureDecoder( ApplicationSchema schema, GMLVersion version ) {
-        this( schema, new GMLDocumentIdContext( version ), version );
-
-    }
-
-    /**
-     * @param schema
-     * @param specialResolver
-     * @param version
-     *            GML version, must not be <code>null</code>
-     */
-    public GMLFeatureDecoder( ApplicationSchema schema, GMLObjectResolver specialResolver, GMLVersion version ) {
-        this( schema, new GMLDocumentIdContext( version ), version );
-        this.specialResolver = specialResolver;
+    public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLObjectResolver resolver, GMLVersion version ) {
+        this.schema = schema;
+        this.geomFac = new GeometryFactory();
+        this.idContext = idContext;
+        this.specialResolver = resolver;
+        if ( version.equals( GMLVersion.GML_2 ) ) {
+            this.geomParser = new GML2GeometryDecoder( geomFac, idContext );
+        } else {
+            this.geomParser = new GML3GeometryDecoder( version, geomFac, idContext );
+        }
+        this.version = version;
     }
 
     public void setGeometryDecoder( GMLGeometryDecoder decoder ) {
@@ -236,7 +236,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
         QName featureName = xmlStream.getName();
         FeatureType ft = lookupFeatureType( xmlStream, featureName );
-
+        
         LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
 
         // parse properties

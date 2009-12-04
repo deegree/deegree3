@@ -117,12 +117,13 @@ public class FeatureCoder {
     }
 
     public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs,
-                                  GMLObjectResolver featureStoreGMLIdResolver )
+                                  GMLObjectResolver idResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         BufferedInputStream bis = new BufferedInputStream( is );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( bis, "UTF-8" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
+        gmlReader.setResolver (idResolver);
         gmlReader.setApplicationSchema( schema );
         gmlReader.setDefaultCRS( crs );
         return gmlReader.readFeature();

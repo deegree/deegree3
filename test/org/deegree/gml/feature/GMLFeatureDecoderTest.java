@@ -60,11 +60,10 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Test;
 
@@ -89,7 +88,7 @@ public class GMLFeatureDecoderTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureDecoder decoder = new GMLFeatureDecoder( null, GMLVersion.GML_31 );
+        GMLFeatureDecoder decoder = new GMLFeatureDecoder( null, null, GMLVersion.GML_31 );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) decoder.parseFeature( wrapper, null );
         decoder.getDocumentIdContext().resolveLocalRefs();
@@ -105,7 +104,7 @@ public class GMLFeatureDecoderTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, GMLVersion.GML_31 );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, null, GMLVersion.GML_31);
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         gmlAdapter.getDocumentIdContext().resolveLocalRefs();
