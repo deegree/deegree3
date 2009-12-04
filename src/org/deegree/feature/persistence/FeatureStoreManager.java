@@ -269,6 +269,7 @@ public class FeatureStoreManager {
                     GMLVersion version = GMLVersion.valueOf( datasetFile.getGmlVersion().name() );
                     URL docURL = resolver.resolve( datasetFile.getValue().trim() );
                     GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( version, docURL );
+                    gmlStream.setApplicationSchema( schema );
                     LOG.debug( "Populating feature store with features from file '" + docURL + "'..." );
                     FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
                     gmlStream.getIdContext().resolveLocalRefs();
