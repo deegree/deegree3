@@ -221,7 +221,13 @@ public class GML212FeatureEncoder implements GMLFeatureEncoder {
             writer.writeEndElement();
 
         } else if ( propertyType instanceof EnvelopePropertyType ) {
-            geometryExporter.exportEnvelope( (Envelope) value );
+            writer.writeStartElement( "gml", "boundedBy", GMLNS );
+            if ( value != null ) {
+                geometryExporter.exportEnvelope( (Envelope) value );
+            } else {
+                writer.writeEmptyElement( GMLNS, "Null" );
+            }
+            writer.writeEndElement();
 
         } else if ( propertyType instanceof LengthPropertyType ) {
             Length length = (Length) value;
