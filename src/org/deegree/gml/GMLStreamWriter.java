@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import java.util.HashSet;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -159,12 +161,12 @@ public class GMLStreamWriter {
     /**
      * Controls the formatting of written coordinates in geometries.
      * 
-     * @param formatter 
+     * @param formatter
      */
-    public void setCoordinateFormatter (Object formatter) {
-        //TODO
+    public void setCoordinateFormatter( Object formatter ) {
+        // TODO
     }
-    
+
     public void write( GMLObject object )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( object instanceof Feature ) {
@@ -210,15 +212,12 @@ public class GMLStreamWriter {
                 break;
             }
             case GML_30:
-                // TODO
-                featureEncoder = new GML3FeatureEncoder( xmlStream, crs, localXLinkTemplate, requestedFeatureProps,
-                                                           inlineXLinklevels, traverseXLinkExpiry, false, true );
-                break;
             case GML_31:
             case GML_32: {
                 // TODO
-                featureEncoder = new GML3FeatureEncoder( xmlStream, crs, localXLinkTemplate, requestedFeatureProps,
-                                                           inlineXLinklevels, traverseXLinkExpiry, false, false );
+                featureEncoder = new GML3FeatureEncoder( version, xmlStream, crs, localXLinkTemplate,
+                                                         requestedFeatureProps, inlineXLinklevels, traverseXLinkExpiry,
+                                                         false );
                 break;
             }
             }
@@ -231,14 +230,14 @@ public class GMLStreamWriter {
             switch ( version ) {
             case GML_2: {
                 // TODO
-                geometryEncoder = new GML2GeometryEncoder( xmlStream  );
+                geometryEncoder = new GML2GeometryEncoder( xmlStream );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
                 // TODO
-                geometryEncoder = new GML3GeometryEncoder( xmlStream, crs );
+                geometryEncoder = new GML3GeometryEncoder( version, xmlStream, crs, false, new HashSet<String>() );
                 break;
             }
             }

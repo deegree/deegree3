@@ -38,8 +38,8 @@ package org.deegree.gml.geometry;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.gml.GMLVersion.GML_30;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -107,13 +107,14 @@ import org.deegree.geometry.primitive.segments.Knot;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.refs.GeometryReference;
 import org.deegree.gml.props.StandardGMLObjectProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generates GML 3.1.1 representations from {@link Geometry} objects.
+ * Generates GML 3 (3.0 / 3.1 / 3.2) representations from {@link Geometry} objects.
  * <p>
  * This class is not thread-safe.
  * </p>
@@ -128,6 +129,8 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryEncoder.class );
 
+    private final GMLVersion version;
+    
     private final XMLStreamWriter writer;
 
     private final Set<String> exportedIds;
@@ -141,24 +144,11 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
 
     private final boolean exportSf;
 
-    private boolean version30;
-
     /**
      * Creates a new {@link GML3GeometryEncoder} instance.
      * 
-     * @param writer
-     *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
-     * @param outputCRS
-     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
-     *            used)
-     */
-    public GML3GeometryEncoder( XMLStreamWriter writer, CRS outputCRS ) {
-        this( writer, outputCRS, false, new HashSet<String>(), false );
-    }
-
-    /**
-     * Creates a new {@link GML3GeometryEncoder} instance.
-     * 
+     * @param version
+     *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
      * @param writer
      *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
      * @param outputCrs
@@ -168,11 +158,10 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
      *            if true, the generated GML must to conform to the GML-SF profile (only simple geometries are used and
      *            they are exported without id attributes)
      * @param exportedIds
-     * @param version30
-     *            whether it is a GML version 3.0 geometry or not.
      */
-    public GML3GeometryEncoder( XMLStreamWriter writer, CRS outputCrs, boolean exportSf, Set<String> exportedIds,
-                                  boolean version30 ) {
+    public GML3GeometryEncoder( GMLVersion version, XMLStreamWriter writer, CRS outputCrs, boolean exportSf,
+                                Set<String> exportedIds ) {
+        this.version = version;
         this.writer = writer;
         this.outputCRS = outputCrs;
         // TODO
@@ -188,7 +177,6 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
             }
         }
         this.exportedIds = exportedIds;
-        this.version30 = version30;
     }
 
     /**
@@ -834,7 +822,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "Envelope", envelope );
 
-        if ( version30 ) {
+        if ( version == GML_30 ) {
             writer.writeStartElement( "gml", "pos", GMLNS );
         } else {
             writer.writeStartElement( "gml", "lowerCorner", GMLNS );
@@ -846,7 +834,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
         }
         writer.writeEndElement();
 
-        if ( version30 ) {
+        if ( version == GML_30 ) {
             writer.writeStartElement( "gml", "pos", GMLNS );
         } else {
             writer.writeStartElement( "gml", "upperCorner", GMLNS );
@@ -1445,7 +1433,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
             }
         }
         if ( !hasID ) { // if not then use the <posList> element to export the points
-            if ( !version30 ) {
+            if ( version != GML_30 ) {
                 writer.writeStartElement( "gml", "posList", GMLNS );
 
                 // TODO CITE

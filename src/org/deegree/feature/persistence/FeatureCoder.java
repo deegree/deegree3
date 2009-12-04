@@ -53,7 +53,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -64,7 +63,6 @@ import org.deegree.gml.GMLObjectResolver;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GML3FeatureEncoder;
-import org.deegree.gml.feature.GMLFeatureDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,8 +94,8 @@ public class FeatureCoder {
         xmlWriter.setPrefix( "gml", CommonNamespaces.GMLNS );
         xmlWriter.setPrefix( "xlink", CommonNamespaces.XLNNS );
         xmlWriter.setPrefix( "xplan", feature.getName().getNamespaceURI() );
-        GML3FeatureEncoder encoder = new GML3FeatureEncoder( xmlWriter, new CRS( "EPSG:31466" ), "#{}", null, 0,
-                                                                 -1, false, false );
+        GML3FeatureEncoder encoder = new GML3FeatureEncoder( GMLVersion.GML_31, xmlWriter, new CRS( "EPSG:31466" ),
+                                                             "#{}", null, 0, -1, false );
         long begin = System.currentTimeMillis();
         encoder.export( feature );
         xmlWriter.close();
