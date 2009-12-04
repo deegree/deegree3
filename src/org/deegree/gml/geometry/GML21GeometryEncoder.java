@@ -119,14 +119,14 @@ public class GML21GeometryEncoder implements GMLGeometryEncoder {
             exportLineString( (LineString) geometry );
         } else if ( geometry instanceof Envelope ) {
             exportEnvelope( (Envelope) geometry );
-        } else if ( geometry instanceof MultiGeometry<?> ) {
-            exportMultiGeometry( (MultiGeometry<?>) geometry );
         } else if ( geometry instanceof MultiPoint ) {
             exportMultiPoint( (MultiPoint) geometry );
         } else if ( geometry instanceof MultiLineString ) {
             exportMultiLineString( (MultiLineString) geometry );
         } else if ( geometry instanceof MultiPolygon ) {
             exportMultiPolygon( (MultiPolygon) geometry );
+        } else if ( geometry instanceof MultiGeometry<?> ) {
+            exportMultiGeometry( (MultiGeometry<?>) geometry );
         }
     }
 
