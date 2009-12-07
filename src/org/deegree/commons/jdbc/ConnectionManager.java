@@ -36,6 +36,7 @@
 
 package org.deegree.commons.jdbc;
 
+import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,6 +52,7 @@ import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.i18n.Messages;
+import org.deegree.commons.utils.TempFileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,9 +75,8 @@ public class ConnectionManager {
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
     static {
-        // TODO make this configurable
-        String tmpDir = System.getProperty( "java.io.tmpdir" );
-        LOG.debug( "Using " + tmpDir + " for derby lock database." );
+        String lockDb = new File (TempFileManager.getBaseDir(), "lockdb").getAbsolutePath();
+        LOG.info( "Using '" + lockDb + "' for derby lock database." );
 
         try {
             Class.forName( "org.apache.derby.jdbc.EmbeddedDriver" ).newInstance();
@@ -83,7 +84,7 @@ public class ConnectionManager {
             LOG.error( "Error loading derby JDBC driver: " + e.getMessage(), e );
         }
 
-        addConnection( "LOCK_DB", DatabaseType.UNDEFINED, "jdbc:derby:" + tmpDir + "/lockdb;create=true", null, null,
+        addConnection( "LOCK_DB", DatabaseType.UNDEFINED, "jdbc:derby:" + lockDb + ";create=true", null, null,
                        0, 10 );
     }
 
