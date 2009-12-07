@@ -78,7 +78,6 @@ public class TempFileManager {
             if ( contextId.startsWith( "/" ) && contextId.length() > 1 ) {
                 contextId = contextId.substring( 1 );
             }
-            LOG.info( "Using '" + baseDir + "' for storing temporary files." );
             String safeName = URLEncoder.encode( contextId, "UTF-8" );
             String tmpDir = System.getProperty( "java.io.tmpdir" );
             baseDir = new File( tmpDir, "deegree-" + safeName );
@@ -91,6 +90,7 @@ public class TempFileManager {
         } catch ( UnsupportedEncodingException e ) {
             LOG.error( "Internal error: Cannot encode '" + contextId + "' for creating unique tempdir." );
         }
+        LOG.info( "Using '" + baseDir + "' for storing temporary files." );        
     }
 
     /**
