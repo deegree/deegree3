@@ -212,7 +212,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 prop = new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy );
             }
             break;
-        case GML_30:            
+        case GML_30:
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
                 prop = new GenericProperty<Object>( PT_META_DATA_PROPERTY_GML31, metadata[0] );
@@ -253,7 +253,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 value = boundedBy;
             }
             break;
-        case GML_30:            
+        case GML_30:
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
                 value = metadata[0];
@@ -294,7 +294,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 props = new Property<?>[] { new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy ) };
             }
             break;
-        case GML_30:            
+        case GML_30:
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
                 props = new Property<?>[metadata.length];
@@ -341,7 +341,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 values = new Object[] { boundedBy };
             }
             break;
-        case GML_30:            
+        case GML_30:
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
                 values = metadata;
@@ -374,7 +374,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         switch ( version ) {
         case GML_2:
             pts = GML2PropNameToPropType.values();
-            break;         
+            break;
         case GML_30:
         case GML_31:
             pts = GML31PropNameToPropType.values();
@@ -402,7 +402,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         case GML_2:
             pt = GML2PropNameToPropType.get( propName );
             break;
-        case GML_30:            
+        case GML_30:
         case GML_31:
             pt = GML31PropNameToPropType.get( propName );
             break;
@@ -437,7 +437,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
             }
             break;
         }
-        case GML_30:        
+        case GML_30:
         case GML_31: {
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) ) {
                 if ( metadata == null || metadata.length == 0 ) {
@@ -491,7 +491,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         StringOrRef description = null;
         List<CodeType> names = new LinkedList<CodeType>();
         Envelope boundedBy = null;
-        int lastIndex = 0;
+        int firstCustomPropIndex = 0;
 
         switch ( version ) {
         case GML_2: {
@@ -500,33 +500,38 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                 if ( CommonNamespaces.GMLNS.equals( propName.getNamespaceURI() ) ) {
                     if ( PT_DESCRIPTION_GML2.getName().equals( propName ) ) {
                         description = new StringOrRef( (String) property.getValue(), null );
+                        firstCustomPropIndex++;
                     } else if ( PT_NAME_GML2.getName().equals( propName ) ) {
                         names.add( new CodeType( (String) property.getValue() ) );
+                        firstCustomPropIndex++;
                     } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
                         boundedBy = (Envelope) property.getValue();
+                        firstCustomPropIndex++;
                     }
-                    lastIndex++;
                 } else {
                     break;
                 }
             }
             break;
         }
-        case GML_30:        
+        case GML_30:
         case GML_31: {
             for ( Property<?> property : props ) {
                 QName propName = property.getName();
                 if ( CommonNamespaces.GMLNS.equals( propName.getNamespaceURI() ) ) {
                     if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) ) {
                         metadata.add( property.getValue() );
+                        firstCustomPropIndex++;
                     } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) ) {
                         description = (StringOrRef) property.getValue();
+                        firstCustomPropIndex++;
                     } else if ( PT_NAME_GML31.getName().equals( propName ) ) {
                         names.add( (CodeType) property.getValue() );
+                        firstCustomPropIndex++;
                     } else if ( PT_BOUNDED_BY_GML31.equals( propName ) ) {
                         boundedBy = (Envelope) property.getValue();
+                        firstCustomPropIndex++;
                     }
-                    lastIndex++;
                 } else {
                     break;
                 }
@@ -542,7 +547,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
                                                                         description,
                                                                         names.toArray( new CodeType[names.size()] ),
                                                                         boundedBy );
-        List<Property<?>> nonGMLProps = props.subList( lastIndex, props.size() );
+        List<Property<?>> nonGMLProps = props.subList( firstCustomPropIndex, props.size() );
         return new Pair<StandardGMLFeatureProps, List<Property<?>>>( gmlProps, nonGMLProps );
     }
 

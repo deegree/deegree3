@@ -77,8 +77,8 @@ public class ApplicationSchemaXSDEncoder {
 
     private static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
 
-    private static final String GML_30_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.0.1/base/gml.xsd";    
-    
+    private static final String GML_30_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.0.1/base/gml.xsd";
+
     private static final String GML_31_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
 
     private static final String GML_32_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
@@ -127,7 +127,7 @@ public class ApplicationSchemaXSDEncoder {
             if ( !this.importURLs.containsKey( gmlNsURI ) ) {
                 this.importURLs.put( gmlNsURI, GML_30_DEFAULT_INCLUDE );
             }
-            break;            
+            break;
         case GML_31:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
@@ -263,6 +263,8 @@ public class ApplicationSchemaXSDEncoder {
         // TODO handle derived feature types
         writer.writeAttribute( "base", "gml:AbstractFeatureType" );
         writer.writeStartElement( XSNS, "sequence" );
+
+        // TODO check for GML 2 properties (gml:pointProperty, ...) and export as "app:gml2PointProperty" for GML 3
 
         // export property definitions (only for non-GML ones)
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {

@@ -270,6 +270,8 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
             }
         }
 
+        // TODO check for GML 2 properties (gml:pointProperty, ...) and export as "app:gml2PointProperty"
+
         Object value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
             exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, inlineLevels );
