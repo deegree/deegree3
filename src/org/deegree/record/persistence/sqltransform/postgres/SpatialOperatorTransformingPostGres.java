@@ -170,7 +170,7 @@ public class SpatialOperatorTransformingPostGres {
                     writerSpatial.append( " && " );
                 } else {
                     writerSpatial.append( '\'' );
-                    wktWriter.writeGeometry( bboxOp.getBoundingBox(), writer );
+                    wktWriter.writeGeometry( bboxOp.getBoundingBox(), writerSpatial );
                     writerSpatial.append( '\'' );
                 }
 
