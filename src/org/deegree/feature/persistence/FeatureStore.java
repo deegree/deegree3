@@ -39,8 +39,9 @@ package org.deegree.feature.persistence;
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.query.FeatureResultSet;
+import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
@@ -112,7 +113,7 @@ public interface FeatureStore {
     public Envelope getEnvelope( QName ftName );
 
     /**
-     * Performs the given query and returns the matching features as a {@link FeatureCollection}.
+     * Performs the given query and returns the matching features as a {@link FeatureResultSet}.
      * 
      * @param query
      *            query to be performed, must not be <code>null</code>
@@ -122,11 +123,11 @@ public interface FeatureStore {
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    public FeatureCollection query( Query query )
+    public FeatureResultSet query( Query query )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**
-     * Performs the given queries and returns the matching features as a {@link FeatureCollection}.
+     * Performs the given queries and returns the matching features as a {@link FeatureResultSet}.
      * 
      * @param queries
      *            queries to be performed, must not be <code>null</code> and contain at least one entry
@@ -136,7 +137,7 @@ public interface FeatureStore {
      * @throws FilterEvaluationException
      *             if the filter contained in the query could not be evaluated
      */
-    public FeatureCollection query( Query[] queries )
+    public FeatureResultSet query( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException;
 
     /**

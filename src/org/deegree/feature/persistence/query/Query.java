@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence;
+package org.deegree.feature.persistence.query;
 
-import static org.deegree.feature.persistence.Query.QueryHint.HINT_LOOSE_BBOX;
-import static org.deegree.feature.persistence.Query.QueryHint.HINT_NO_GEOMETRIES;
+import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
+import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +44,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.crs.CRS;
+import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.sort.SortProperty;

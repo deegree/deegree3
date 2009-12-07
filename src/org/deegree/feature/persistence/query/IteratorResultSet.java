@@ -33,36 +33,49 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature;
+package org.deegree.feature.persistence.query;
 
-import java.io.IOException;
+import java.util.Iterator;
+
+import org.deegree.commons.utils.CloseableIterator;
+import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 
 /**
- * Allows stream access to {@link Feature} objects provide by a source.
- * <p>
- * The concrete source is implementation dependent, important use cases are GML files containing features or a SQL
- * results sets that are used to generate {@link Feature} instances.
- * </p>
+ * {@link FeatureResultSet} backed by a {@link CloseableIterator}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureInputStream extends Iterable<Feature> {
+public class IteratorResultSet implements FeatureResultSet {
+
+    private CloseableIterator<Feature> featureIter;
 
     /**
-     * Reads the next {@link Feature} instance from the stream.
+     * Creates a new {@link IteratorResultSet} that is backed by the given {@link FeatureCollection}.
      * 
-     * @return the next {@link Feature} or <code>null</code> if the end of the stream has been reached
+     * @param featureIter
+     * 
      */
-    public Feature readFeature();
+    public IteratorResultSet( CloseableIterator<Feature> featureIter ) {
+        this.featureIter = featureIter;
+    }
 
-    /**
-     * Closes the input stream.
-     * 
-     * @throws IOException
-     */
-    public void close()
-                            throws IOException;
+    @Override
+    public void close() {
+        featureIter.close();
+    }
+
+    @Override
+    public FeatureCollection toCollection() {
+        return new GenericFeatureCollection( null, featureIter.getAsListAndClose() );
+    }
+
+    @Override
+    public Iterator<Feature> iterator() {
+        return featureIter;
+    }
 }

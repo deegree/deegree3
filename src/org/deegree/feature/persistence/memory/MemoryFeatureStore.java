@@ -59,10 +59,12 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.Query;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.query.CachedFeatureResultSet;
+import org.deegree.feature.persistence.query.FeatureResultSet;
+import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -75,9 +77,9 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObject;
-import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ReferenceResolvingException;
 import org.slf4j.Logger;
 
 /**
@@ -225,7 +227,7 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection query( Query query )
+    public FeatureResultSet query( Query query )
                             throws FilterEvaluationException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
@@ -264,21 +266,21 @@ public class MemoryFeatureStore implements FeatureStore {
             fc = Features.sortFc( fc, sortCrit );
         }
 
-        return fc;
+        return new CachedFeatureResultSet( fc );
     }
 
     @Override
-    public FeatureCollection query( Query[] queries )
+    public FeatureResultSet query( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public int queryHits( org.deegree.feature.persistence.Query query )
+    public int queryHits( org.deegree.feature.persistence.query.Query query )
                             throws FilterEvaluationException {
         // TODO maybe implement this more efficiently
-        return query( query ).size();
+        return query( query ).toCollection().size();
     }
 
     @Override

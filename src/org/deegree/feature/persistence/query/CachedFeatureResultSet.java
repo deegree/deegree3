@@ -33,36 +33,46 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature;
+package org.deegree.feature.persistence.query;
 
-import java.io.IOException;
+import java.util.Iterator;
+
+import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 
 /**
- * Allows stream access to {@link Feature} objects provide by a source.
- * <p>
- * The concrete source is implementation dependent, important use cases are GML files containing features or a SQL
- * results sets that are used to generate {@link Feature} instances.
- * </p>
+ * {@link FeatureResultSet} backed by a {@link FeatureCollection}
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureInputStream extends Iterable<Feature> {
+public class CachedFeatureResultSet implements FeatureResultSet {
+
+    private FeatureCollection fc;
 
     /**
-     * Reads the next {@link Feature} instance from the stream.
+     * Creates a new {@link CachedFeatureResultSet} that is backed by the given {@link FeatureCollection}.
      * 
-     * @return the next {@link Feature} or <code>null</code> if the end of the stream has been reached
+     * @param fc
+     *            FeatureCollection to back the result set
      */
-    public Feature readFeature();
+    public CachedFeatureResultSet( FeatureCollection fc ) {
+        this.fc = fc;
+    }
 
-    /**
-     * Closes the input stream.
-     * 
-     * @throws IOException
-     */
-    public void close()
-                            throws IOException;
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public FeatureCollection toCollection() {
+        return fc;
+    }
+
+    @Override
+    public Iterator<Feature> iterator() {
+        return fc.iterator();
+    }
 }

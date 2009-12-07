@@ -53,7 +53,7 @@ import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.Query;
+import org.deegree.feature.persistence.query.Query;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
@@ -291,7 +291,7 @@ class DefaultLock implements Lock {
             ResultSet rs = null;
             try {
                 // TODO don't actually fetch the feature collection, but only the fids of the features
-                FeatureCollection fc = manager.getStore().query( query );
+                FeatureCollection fc = manager.getStore().query( query ).toCollection();
 
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 conn.setAutoCommit( false );

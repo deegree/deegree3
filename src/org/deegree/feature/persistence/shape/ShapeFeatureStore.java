@@ -70,10 +70,12 @@ import org.deegree.feature.Property;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.Query;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
-import org.deegree.feature.persistence.Query.QueryHint;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.query.CachedFeatureResultSet;
+import org.deegree.feature.persistence.query.FeatureResultSet;
+import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -329,7 +331,7 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection query( Query query )
+    public FeatureResultSet query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
@@ -340,7 +342,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
         if ( featureType != null && !featureType.equals( ft.getName() ) ) {
             // or null?
-            return new GenericFeatureCollection();
+            return new CachedFeatureResultSet( new GenericFeatureCollection() );
         }
 
         // TODO what about bbox information in the filter?
@@ -420,26 +422,26 @@ public class ShapeFeatureStore implements FeatureStore {
 
         LOG.debug( "After custom filtering {} features match.", feats.size() );
 
-        return new GenericFeatureCollection( null, feats );
+        return new CachedFeatureResultSet( new GenericFeatureCollection( null, feats ) );
     }
 
     @Override
-    public FeatureCollection query( Query[] queries )
+    public FeatureResultSet query( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
         // dumb implementation
         if ( queries.length == 0 ) {
-            return new GenericFeatureCollection();
+            return new CachedFeatureResultSet( new GenericFeatureCollection() );
         }
 
-        FeatureCollection col = query( queries[0] );
+        FeatureCollection col = query( queries[0] ).toCollection();
         for ( Query q : queries ) {
             if ( queries[0] == q ) {
                 continue;
             }
-            col.addAll( query( q ) );
+            col.addAll( query( q ).toCollection() );
         }
 
-        return col;
+        return new CachedFeatureResultSet( col );
     }
 
     @Override

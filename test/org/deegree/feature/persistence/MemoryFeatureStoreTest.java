@@ -57,6 +57,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
+import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.filter.Filter;
@@ -65,9 +66,9 @@ import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.feature.GMLFeatureDecoderTest;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Before;
@@ -107,7 +108,7 @@ public class MemoryFeatureStoreTest {
                                                               QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
                                                               null ) };
         Query query = new Query( typeNames, null, null, null, null );
-        FeatureCollection fc = store.query( query );
+        FeatureCollection fc = store.query( query ).toCollection();
         Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 7, fc.size() );
     }
@@ -118,7 +119,7 @@ public class MemoryFeatureStoreTest {
         TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Place" ),
                                                               null ) };
         Query query = new Query( typeNames, null, null, null, null );
-        FeatureCollection fc = store.query( query );
+        FeatureCollection fc = store.query( query ).toCollection();
         Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 7, fc.size() );
     }
@@ -129,7 +130,7 @@ public class MemoryFeatureStoreTest {
         TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
                                                               null ) };
         Query query = new Query( typeNames, null, null, null, null );
-        FeatureCollection fc = store.query( query );
+        FeatureCollection fc = store.query( query ).toCollection();
         Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 4, fc.size() );
     }
@@ -139,7 +140,7 @@ public class MemoryFeatureStoreTest {
                             throws FilterEvaluationException {
         TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Book" ), null ) };
         Query query = new Query( typeNames, null, null, null, null );
-        FeatureCollection fc = store.query( query );
+        FeatureCollection fc = store.query( query ).toCollection();
         Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 1, fc.size() );
     }
@@ -152,7 +153,7 @@ public class MemoryFeatureStoreTest {
                                                               null ) };
         Filter filter = new IdFilter( "PHILOSOPHER_1", "PHILOSOPHER_2" );
         Query query = new Query( typeNames, filter, null, null, null );
-        FeatureCollection fc = store.query( query );
+        FeatureCollection fc = store.query( query ).toCollection();
         Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
         Assert.assertEquals( 2, fc.size() );
     }

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,36 +33,37 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature;
+package org.deegree.feature.persistence.query;
 
-import java.io.IOException;
+import java.sql.ResultSet;
+
+import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 
 /**
- * Allows stream access to {@link Feature} objects provide by a source.
- * <p>
- * The concrete source is implementation dependent, important use cases are GML files containing features or a SQL
- * results sets that are used to generate {@link Feature} instances.
- * </p>
+ * Provides access to the results of a {@link Query} operation.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface FeatureInputStream extends Iterable<Feature> {
+public interface FeatureResultSet extends Iterable<Feature> {
 
     /**
-     * Reads the next {@link Feature} instance from the stream.
-     * 
-     * @return the next {@link Feature} or <code>null</code> if the end of the stream has been reached
+     * Must be invoked after using to close underlying resources, e.g. SQL {@link ResultSet}s.
      */
-    public Feature readFeature();
+    public void close();
 
     /**
-     * Closes the input stream.
+     * Returns all members of the {@link FeatureResultSet} as a {@link FeatureCollection}.
+     * <p>
+     * NOTE: This method should not be called for very large result sets, as it introduces the overhead of keeping all
+     * created feature instances in memory. The returned collection will contain all {@link Feature}s instances from the
+     * current position in the iteration sequence.
+     * </p>
      * 
-     * @throws IOException
+     * @return members as feature collection, never <code>null</code>
      */
-    public void close()
-                            throws IOException;
+    public FeatureCollection toCollection();
 }

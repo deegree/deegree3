@@ -56,7 +56,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.Query;
+import org.deegree.feature.persistence.query.Query;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
@@ -164,9 +164,9 @@ public class DefaultLockManager implements LockManager {
                 LOG.debug( "Table 'LOCK_FAILED_FIDS' already exists." );
             }
             rs.close();
-        } catch ( SQLException e ) {         
+        } catch ( SQLException e ) {
             String msg = Messages.getMessage( "LOCK_DB_CREATE_ERROR", e.getMessage() );
-            LOG.error( msg, e );              
+            LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         } finally {
             close( rs, stmt, conn, LOG );
@@ -232,7 +232,7 @@ public class DefaultLockManager implements LockManager {
                         TypeName[] typeNames = new TypeName[] { filterLock.getTypeName() };
                         query = new Query( typeNames, filterLock.getFilter(), null, null, null );
                     }
-                    FeatureCollection fc = store.query( query );
+                    FeatureCollection fc = store.query( query ).toCollection();
 
                     // create entries in LOCKED_FIDS/LOCK_FAILED_FIDS tables
                     checkStmt = conn.prepareStatement( "SELECT LOCK_ID FROM LOCKED_FIDS WHERE FID=?" );
