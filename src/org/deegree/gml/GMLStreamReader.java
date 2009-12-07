@@ -42,6 +42,8 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -72,8 +74,8 @@ public class GMLStreamReader {
 
     private final GMLDocumentIdContext idContext;
 
-    private GMLObjectResolver resolver;    
-    
+    private GMLObjectResolver resolver;
+
     private ApplicationSchema schema;
 
     private CRS defaultCRS;
@@ -158,10 +160,10 @@ public class GMLStreamReader {
     }
 
     /**
-     * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
+     * Returns the deegree model representation for the GML feature element event that the cursor of the underlying xml
      * stream points to.
      * 
-     * @return deegree model representation for the current GML object element
+     * @return deegree model representation for the current GML feature element
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws UnknownCRSException
@@ -172,10 +174,46 @@ public class GMLStreamReader {
     }
 
     /**
-     * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
+     * Returns the deegree model representation for the GML feature collection element event that the cursor of the
+     * underlying xml stream points to.
+     * <p>
+     * Please note that {@link #readStreamFeatureCollection()} should be preferred (especially for large feature
+     * collections), because it does not need to built and store all features in memory at once.
+     * </p> 
+     * 
+     * @return deegree model representation for the current GML feature collection element
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
+    public FeatureCollection readFeatureCollection()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        return (FeatureCollection) getFeatureDecoder().parseFeature( xmlStream, defaultCRS );
+    }
+
+    /**
+     * Returns the deegree model representation for the GML feature collection element event that the cursor of the
+     * underlying xml stream points to.
+     * <p>
+     * This method does not automatically consume all events from the underlying XML stream. Instead, it allows the
+     * caller to control the consumption by iterating over the features in the returned collection.
+     * </p>
+     * 
+     * @return deegree model representation for the current GML feature collection element
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
+    public StreamFeatureCollection readStreamFeatureCollection()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        return null;
+    }
+
+    /**
+     * Returns the deegree model representation for the GML geometry element event that the cursor of the underlying xml
      * stream points to.
      * 
-     * @return deegree model representation for the current GML object element
+     * @return deegree model representation for the current GML geometry element
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws UnknownCRSException
@@ -186,10 +224,10 @@ public class GMLStreamReader {
     }
 
     /**
-     * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
+     * Returns the deegree model representation for the GML crs element event that the cursor of the underlying xml
      * stream points to.
      * 
-     * @return deegree model representation for the current GML object element
+     * @return deegree model representation for the current GML crs element
      * @throws XMLStreamException
      */
     public CRS readCRS()
