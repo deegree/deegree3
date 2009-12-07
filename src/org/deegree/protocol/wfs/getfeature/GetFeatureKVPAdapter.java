@@ -163,6 +163,9 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             maxFeatures = Integer.parseInt( maxFeatureStr );
         }
 
+        // ??? not in 1.0.0 spec, but CITE 1.0.0 test (wfs:test1.0.0-basic-getfeature-get-3) suggests this parameter
+        String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
+
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
         PropertyName[][] propertyNames = getPropertyNames( propertyStr, null );
@@ -261,7 +264,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                                                   null, null, null, filter );
                 }
             }
-            return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
+            return new GetFeature( VERSION_100, null, null, outputFormat, maxFeatures, null, null, queries );
         }
         return null;
     }
