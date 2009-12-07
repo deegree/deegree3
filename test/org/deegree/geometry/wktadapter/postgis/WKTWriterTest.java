@@ -58,8 +58,19 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.WKTWriter;
 import org.deegree.geometry.WKTWriterNG;
+import org.deegree.geometry.Geometry.GeometryType;
 import org.deegree.geometry.WKTWriterNG.WKTFlag;
+import org.deegree.geometry.linearization.CurveLinearizer;
+import org.deegree.geometry.linearization.LinearizationCriterion;
+import org.deegree.geometry.linearization.NumPointsCriterion;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.standard.primitive.DefaultCurve;
+import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
@@ -78,37 +89,314 @@ import org.junit.Test;
  */
 public class WKTWriterTest extends TestCase {
 
-    private final String BASE_DIR = "testdata/geometries/";
-
-    private static GeometryFactory geomFac = new GeometryFactory();
-
+    private final String BASE_DIR = "../../geometry/gml/testdata/geometries/";
+    
+    
+    //############################## USING DKT-FLAGS
     @Test
-    public void test_EXAMPLE1_Point()
+    public void test_PointDKT()
                             throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
                             UnknownCRSException, SQLException, JAXBException {
-        // point.gml
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        flag.add( WKTFlag.USE_DKT );
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "Point_coord.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("POINT [id='P1',metadataproperty=(),description='',name=()](7.12 50.72)", writer.toString());
+        
+    }
+    
+    @Test
+    public void test_LineStringDKT()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        flag.add( WKTFlag.USE_DKT );
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "LineString_coord.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("LINESTRING [id='L1',metadataproperty=(),description='',name=()](7.12 50.72,9.98 53.55,13.42 52.52)", writer.toString());
+            
+    }
+    
+    @Test
+    public void test_LinearRingDKT()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        flag.add( WKTFlag.USE_DKT );
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "LinearRing.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print("LinearRing in DKT "+writer.toString() + "\n");
+        
+            assertEquals("LINEARRING [id='',metadataproperty=(),description='',name=()](2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)", writer.toString());
+            
+    }
+    
+    @Test
+    public void test_PolygonDKT()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        flag.add( WKTFlag.USE_DKT );
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "Polygon.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("POLYGON [id='',metadataproperty=(),description='',name=()]((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))", writer.toString());
+            
+    }
+    
+    /*@Test
+    public void test_CurveDKT()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        flag.add( WKTFlag.USE_DKT );
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "Curve.gml" );
+        
+        Curve c = (Curve)geom;
+        
+        Curve curve = new DefaultCurve(c.getId(), c.getCoordinateSystem(), c.getPrecision(), c.getCurveSegments());
+        
+        //TODO
+        
+        Points points = c.getControlPoints();
+        double[] pointsArray = points.getAsArray();
+        int len = pointsArray.length;
+        String s = "";
+        int counter = 0;
+        int counterLen = 1;
+        for(double p : pointsArray){
+            counter++;
+            counterLen++;
+            s += p;
+            if(points.getDimension()==2 && counter != 2){
+                s += " ";
+            }
+            if(points.getDimension()==2 && counter == 2){
+                if(counterLen < len){
+                s += ",";
+                counter = 0;
+                }
+            }
+            if(points.getDimension()==3 && counter == 3){
+                s += ",";
+                counter = 0;
+            }
+            
+            
+        }
+        
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");        
+        
+            assertEquals("CURVE [id='C1',metadataproperty=(),description='',name=()](" + s + ")", writer.toString());
+        
+    }*/
+    
+    /*@Test
+    public void test_EnvelopeDKT()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        flag.add( WKTFlag.USE_DKT );
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "Envelope.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("ENVELOPE [id='',metadataproperty=(),description='',name=()](11 22,44 88)", writer.toString());
+        
+    }*/
+    
+  //############################## USING OTHER FLAGS
+    @Test
+    public void test_LinearRing_FLAGLinearRing()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        flag.add( WKTFlag.USE_LINEARRING );
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "LinearRing.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print("LinearRing as Flagged-LinearRing "+writer.toString() + "\n");
+        
+            assertEquals("LINEARRING (2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)", writer.toString());
+            
+    }
+    
+    /*@Test
+    public void test_Envelope_FLAGEnvelope()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        flag.add( WKTFlag.USE_ENVELOPE );
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "Envelope.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("ENVELOPE (11 22,44 88)", writer.toString());
+        
+    }*/
+    
+    //############################## USING NO FLAGS
+    @Test
+    public void test_Point()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
         WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
         Geometry geom = parseGeometry( "Point_coord.gml" );
         WKTwriter.writeGeometry( geom, writer );
-
-        ConnectionManagerTest con = new ConnectionManagerTest();
-        con.testConnectionAllocation();
-        Connection conn = ConnectionManager.getConnection( "conn1" );
-
-        String s = "Select (GeomFromText('Point(2 2)'))";
-        ResultSet rs = conn.createStatement().executeQuery( s );
-        int countRows = 0;
-        while ( rs.next() ) {
-            countRows = rs.getInt( 1 );
-            System.out.println( rs.getInt( 1 ) );
-        }
-
-        conn.close();
-
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("POINT (7.12 50.72)", writer.toString());
+            
     }
-
+    
+    @Test
+    public void test_LineString()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "LineString_coord.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("LINESTRING (7.12 50.72,9.98 53.55,13.42 52.52)", writer.toString());
+            
+    }
+    
+    @Test
+    public void test_LinearRing()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "LinearRing.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("LINESTRING (2.0 0.0,0.0 2.0,-2.0 0.0,-4.0 2.0,-6.0 0.0,0.0 10.0,2.0 0.0)", writer.toString());
+            
+    }
+    
+    @Test
+    public void test_Polygon()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "Polygon.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("POLYGON ((0.0 0.0,10.0 0.0,10.0 10.0,0.0 10.0,0.0 0.0),(1.0 9.0,1.0 9.5,2.0 9.5,2.0 9.0,1.0 9.0),(9.0 1.0,9.0 2.0,9.5 2.0,9.5 1.0,9.0 1.0))", writer.toString());
+            
+    }
+    
+    @Test
+    public void test_Curve()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "Curve.gml" );
+        
+        
+        CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
+        //maybe a global setting??
+        LinearizationCriterion crit = new NumPointsCriterion( 10 );
+        Curve c = cl.linearize( (Curve) geom, crit );
+        
+        Points points = c.getControlPoints();
+        double[] pointsArray = points.getAsArray();
+        int len = pointsArray.length;
+        String s = "";
+        int counter = 0;
+        int counterLen = 1;
+        for(double p : pointsArray){
+            counter++;
+            counterLen++;
+            s += p;
+            if(points.getDimension()==2 && counter != 2){
+                s += " ";
+            }
+            if(points.getDimension()==2 && counter == 2){
+                if(counterLen < len){
+                s += ",";
+                counter = 0;
+                }
+            }
+            if(points.getDimension()==3 && counter == 3){
+                s += ",";
+                counter = 0;
+            }
+            
+            
+        }
+        
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");        
+        
+            assertEquals("LINESTRING (" + s + ")", writer.toString());
+        
+    }
+    
+    /*@Test
+    public void test_Envelope()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException, SQLException, JAXBException {
+        
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        Writer writer = new StringWriter();
+        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer );
+        Geometry geom = parseGeometry( "Envelope.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        System.out.print(writer.toString() + "\n");
+        
+            assertEquals("POLYGON((11 22, 11 44, 44 88, 44 22, 11 22))", writer.toString());
+        
+    }*/
+    
+    
+    //############################## PARSING THE GEOMETRY-FILE
     private Geometry parseGeometry( String fileName ) throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
 
         URL gmlDocURL = GML3GeometryDecoderTest.class.getResource( BASE_DIR + fileName );
