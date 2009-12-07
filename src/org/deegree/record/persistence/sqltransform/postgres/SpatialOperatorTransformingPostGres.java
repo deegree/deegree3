@@ -161,7 +161,7 @@ public class SpatialOperatorTransformingPostGres {
 
             stringSpatialGeom = new LinkedList<String>();
             flag = new HashSet<WKTFlag>();
-
+            flag.add( WKTFlag.USE_DKT );
             wktWriter = new WKTWriterNG( flag, writerSpatial );
 
             for ( Object opParam : paramsBBox ) {

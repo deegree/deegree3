@@ -53,6 +53,8 @@ import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
+import org.deegree.geometry.multi.MultiSolid;
+import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
@@ -108,7 +110,7 @@ public class WKTWriterNG {
     private static final com.vividsolutions.jts.io.WKTWriter jtsWriter = new com.vividsolutions.jts.io.WKTWriter();
 
     private Set<WKTFlag> flags;
-    
+
     private Writer writer;
 
     private CurveLinearizer linearizer;
@@ -148,26 +150,33 @@ public class WKTWriterNG {
         this.flags = flags;
     }
 
-    public void setLinearizer (CurveLinearizer linearizer) {
+    /**
+     * 
+     * 
+     * @param linearizer
+     * 
+     */
+    public void setLinearizer( CurveLinearizer linearizer ) {
         this.linearizer = linearizer;
     }
-       
-    /*
-     * public void createSFS11Writer() {
-     * 
-     * new WKTWriter(); }
-     * 
-     * public void createSFS12Writer( Set<WKTFlag> falgs ) { this.flags = falgs;
-     * 
-     * new WKTWriter(); }
-     */
+
     public WKTWriterNG( Set<WKTFlag> flags, Writer writer ) {
         this.flags = flags;
         this.writer = writer;
     }
 
-    public void writeGeometry( Geometry geometry, Writer writer ) throws IOException {
-        
+    /**
+     * 
+     * 
+     * @param geometry
+     *            that has to be written
+     * @param writer
+     *            that is used
+     * @throws IOException
+     */
+    public void writeGeometry( Geometry geometry, Writer writer )
+                            throws IOException {
+
         switch ( geometry.getGeometryType() ) {
         case COMPOSITE_GEOMETRY:
             writeCompositeGeometry( (CompositeGeometry<GeometricPrimitive>) geometry, writer );
@@ -182,15 +191,18 @@ public class WKTWriterNG {
             writeGeometricPrimitive( (GeometricPrimitive) geometry, writer );
             break;
         }
-        
+
     }
 
     /**
+     * Writes a geometric primitive
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeGeometricPrimitive( GeometricPrimitive geometry, Writer writer ) throws IOException {
-        
+    public void writeGeometricPrimitive( GeometricPrimitive geometry, Writer writer )
+                            throws IOException {
 
         switch ( geometry.getPrimitiveType() ) {
         case Point:
@@ -203,80 +215,88 @@ public class WKTWriterNG {
             writeSurface( (Surface) geometry, writer );
             break;
         case Solid:
-            throw new UnsupportedOperationException( "Handling solids is not implemented yet." );
-            // writeSolid( (Solid) geometry );
+            writeSolid( (Solid) geometry, writer );
+            break;
 
         }
-        
 
     }
 
     /**
+     * Writes the POINT
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    public void writePoint( Point geometry, Writer writer ) throws IOException {
-        
+    public void writePoint( Point geometry, Writer writer )
+                            throws IOException {
+
         writer.append( "POINT " );
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
         }
-        writer.append( "(" );
+        writer.append( '(' );
         writePointWithoutPrefix( geometry, writer );
-        writer.append( ")" );
+        writer.append( ')' );
 
-        
     }
 
     /**
+     * Writes the POINT without the 'POINT()'-specific envelope. <br/>
+     * It writes just the POINT-coordinates.
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writePointWithoutPrefix( Point geometry, Writer writer ) throws IOException {
+    private void writePointWithoutPrefix( Point geometry, Writer writer )
+                            throws IOException {
 
-         
         if ( flags.contains( WKTFlag.USE_3D ) ) {
-            writer.append( Double.toString( geometry.get0()) );
+            writer.append( Double.toString( geometry.get0() ) );
             writer.append( ' ' );
-            writer.append( Double.toString( geometry.get1() ));
+            writer.append( Double.toString( geometry.get1() ) );
             writer.append( ' ' );
-            writer.append( Double.toString( geometry.get2() ));
+            writer.append( Double.toString( geometry.get2() ) );
 
         } else {
 
-            writer.append( Double.toString( geometry.get0() ));
+            writer.append( Double.toString( geometry.get0() ) );
             writer.append( ' ' );
-            writer.append( Double.toString( geometry.get1() ));
+            writer.append( Double.toString( geometry.get1() ) );
 
         }
 
-        
     }
 
     /**
+     * 
      * @param geometry
+     * @param writer
      */
-    // TODO
-    private void writeSolid( Solid geometry, Writer writer ) {
-        
+    public void writeSolid( Solid geometry, Writer writer ) {
+
         switch ( geometry.getSolidType() ) {
 
         case Solid:
-            break;
+            throw new UnsupportedOperationException( "Handling solids is not implemented yet." );
         case CompositeSolid:
-            break;
+            throw new UnsupportedOperationException( "Handling compositeSolids is not implemented yet." );
 
         }
-        
 
     }
 
     /**
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeSurface( Surface geometry, Writer writer ) throws IOException {
-        
+    public void writeSurface( Surface geometry, Writer writer )
+                            throws IOException {
+
         switch ( geometry.getSurfaceType() ) {
 
         case Surface:
@@ -303,120 +323,148 @@ public class WKTWriterNG {
 
         }
 
-        
-
     }
 
     /**
      * @param geometry
      */
-    private void writeTin( Tin geometry, Writer writer ) {
-        
-        // TODO an implementation
-        
+    public void writeTin( Tin geometry, Writer writer ) {
+
+        throw new UnsupportedOperationException( "Handling tins is not implemented yet." );
 
     }
 
     /**
+     * 
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeSurfaceGeometry( Surface geometry, Writer writer ) throws IOException {
-        
+    public void writeSurfaceGeometry( Surface geometry, Writer writer )
+                            throws IOException {
+
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
-            writer.append( "" );
+            writer.append( "SURFACE " );
             appendObjectProps( writer, geometry );
-        }
-        
-        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
-
+            writer.append( '(' );
+            writeSurfacePatch( geometry, writer );
+        } else if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+            throw new UnsupportedOperationException( "Handling SQL MM Part 3 is not implemented yet." );
         } else {
-            writer.append( "MULTIPOLYGON(" );
+            writer.append( "MULTIPOLYGON (" );
             SurfaceLinearizer cl = new SurfaceLinearizer( new GeometryFactory() );
             LinearizationCriterion crit = new NumPointsCriterion( 10 );
             Surface surface = cl.linearize( geometry, crit );
 
-            int counter = 0;
-            List<? extends SurfacePatch> l = surface.getPatches();
-            for ( SurfacePatch p : l ) {
-                Polygon poly;
-                switch ( p.getSurfacePatchType() ) {
-                case GRIDDED_SURFACE_PATCH:
-                    GriddedSurfacePatch gsp = ( (GriddedSurfacePatch) p );
-                    switch ( gsp.getGriddedSurfaceType() ) {
-                    case GRIDDED_SURFACE_PATCH:
-                        // TODO
-                        break;
-                    case CONE:
-                        // TODO
-                        break;
-                    case CYLINDER:
-                        // TODO
-                        break;
-                    case SPHERE:
-                        // TODO
-                        break;
-                    }
-                    break;
-                case POLYGON_PATCH:
-                    counter++;
-                    PolygonPatch polyPatch = (PolygonPatch) p;
+            writeSurfacePatch( surface, writer );
 
-                    poly = new DefaultPolygon( surface.getId(), surface.getCoordinateSystem(), surface.getPrecision(),
-                                               polyPatch.getExteriorRing(), polyPatch.getInteriorRings() );
-                    writePolygonWithoutPrefix( poly, writer ) ;
-
-                    break;
-                case RECTANGLE:
-                    counter++;
-                    Rectangle rectangle = ( (Rectangle) p );
-                    poly = new DefaultPolygon( surface.getId(), surface.getCoordinateSystem(), surface.getPrecision(),
-                                               rectangle.getExteriorRing(), rectangle.getInteriorRings() );
-                    writePolygonWithoutPrefix( poly, writer );
-                    break;
-                case TRIANGLE:
-                    counter++;
-                    Triangle triangle = ( (Triangle) p );
-                    poly = new DefaultPolygon( surface.getId(), surface.getCoordinateSystem(), surface.getPrecision(),
-                                               triangle.getExteriorRing(), triangle.getInteriorRings() );
-                    writePolygonWithoutPrefix( poly, writer ) ;
-                    break;
-                }
-                if ( counter < l.size() ) {
-                    writer.append( ',' );
-                }
-
-            }
         }
 
         writer.append( ')' );
 
-        
+        // System.out.println(writer.toString());
 
     }
 
     /**
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    public void writePolygon( Polygon geometry, Writer writer ) throws IOException {
-        
+    public void writeSurfacePatch( Surface geometry, Writer writer )
+                            throws IOException {
+
+        int counter = 0;
+        List<? extends SurfacePatch> l = geometry.getPatches();
+        for ( SurfacePatch p : l ) {
+            Polygon poly;
+            switch ( p.getSurfacePatchType() ) {
+            case GRIDDED_SURFACE_PATCH:
+                GriddedSurfacePatch gsp = ( (GriddedSurfacePatch) p );
+                switch ( gsp.getGriddedSurfaceType() ) {
+                case GRIDDED_SURFACE_PATCH:
+                    throw new UnsupportedOperationException( "Handling griddedSurfacePatch is not implemented yet." );
+                case CONE:
+                    throw new UnsupportedOperationException( "Handling cone is not implemented yet." );
+                case CYLINDER:
+                    throw new UnsupportedOperationException( "Handling cylinder is not implemented yet." );
+                case SPHERE:
+                    throw new UnsupportedOperationException( "Handling sphere is not implemented yet." );
+                }
+                break;
+            case POLYGON_PATCH:
+                counter++;
+                PolygonPatch polyPatch = (PolygonPatch) p;
+
+                poly = new DefaultPolygon( geometry.getId(), geometry.getCoordinateSystem(), geometry.getPrecision(),
+                                           polyPatch.getExteriorRing(), polyPatch.getInteriorRings() );
+                writer.append( '(' );
+                writePolygonWithoutPrefix( poly, writer );
+                writer.append( ')' );
+
+                break;
+            case RECTANGLE:
+                counter++;
+                Rectangle rectangle = ( (Rectangle) p );
+                poly = new DefaultPolygon( geometry.getId(), geometry.getCoordinateSystem(), geometry.getPrecision(),
+                                           rectangle.getExteriorRing(), rectangle.getInteriorRings() );
+                writer.append( '(' );
+                writePolygonWithoutPrefix( poly, writer );
+                writer.append( ')' );
+                break;
+            case TRIANGLE:
+                counter++;
+                Triangle triangle = ( (Triangle) p );
+                poly = new DefaultPolygon( geometry.getId(), geometry.getCoordinateSystem(), geometry.getPrecision(),
+                                           triangle.getExteriorRing(), triangle.getInteriorRings() );
+                writer.append( '(' );
+                writePolygonWithoutPrefix( poly, writer );
+                writer.append( ')' );
+                break;
+            }
+            if ( counter < l.size() ) {
+                writer.append( ',' );
+            }
+
+        }
+
+    }
+
+    /**
+     * Writes the POLYGON
+     * 
+     * @param geometry
+     * @param writer
+     * @throws IOException
+     */
+    public void writePolygon( Polygon geometry, Writer writer )
+                            throws IOException {
+
         writer.append( "POLYGON " );
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
         }
+        writer.append( '(' );
         writePolygonWithoutPrefix( geometry, writer );
-        
+        writer.append( ')' );
+
     }
 
     /**
+     * Writes the POLYGON without the 'POLYGON()'-specific envelope. <br/>
+     * It writes just the POLYGON-coordinates.
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writePolygonWithoutPrefix( Polygon geometry, Writer writer ) throws IOException {
-        
+    private void writePolygonWithoutPrefix( Polygon geometry, Writer writer )
+                            throws IOException {
+
         Ring exteriorRing = geometry.getExteriorRing();
-        writer.append( "((" );
+        writer.append( '(' );
         Points points = exteriorRing.getControlPoints();
         int counter = 0;
         for ( Point point : points ) {
@@ -426,7 +474,7 @@ public class WKTWriterNG {
                 writePointWithoutPrefix( point, writer );
                 writer.append( ',' );
             } else {
-                writePointWithoutPrefix( point, writer ) ;
+                writePointWithoutPrefix( point, writer );
             }
 
         }
@@ -434,7 +482,7 @@ public class WKTWriterNG {
         writer.append( ')' );
         List<Ring> interiorRings = geometry.getInteriorRings();
         for ( Ring r : interiorRings ) {
-            
+
             writer.append( ",(" );
             counter = 0;
             for ( Point point : r.getControlPoints() ) {
@@ -444,26 +492,29 @@ public class WKTWriterNG {
                     writePointWithoutPrefix( point, writer );
                     writer.append( ',' );
                 } else {
-                    writePointWithoutPrefix( point, writer ) ;
+                    writePointWithoutPrefix( point, writer );
                 }
             }
             writer.append( ')' );
-            
+
         }
-        writer.append( ')' );
-        
+
     }
 
     /**
+     * Writes a CURVE
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    public void writeCurve( Curve geometry, Writer writer ) throws IOException {
-        
+    public void writeCurve( Curve geometry, Writer writer )
+                            throws IOException {
+
         switch ( geometry.getCurveType() ) {
 
         case Curve:
-            writeCurveGeometry( geometry, writer  );
+            writeCurveGeometry( geometry, writer );
             break;
 
         case LineString:
@@ -487,42 +538,51 @@ public class WKTWriterNG {
     }
 
     /**
+     * Writes a COMPOSITE-/COMPOUND CURVE
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeCompositeCurve( CompositeCurve geometry, Writer writer ) throws IOException {
-        
-        writer.append( "COMPOSITECURVE " );
-        //TODO or COMPOUNDCURVE??
+    public void writeCompositeCurve( CompositeCurve geometry, Writer writer )
+                            throws IOException {
+
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
-            //appendObjectProps( s, geometry );
-        }
-        writer.append( '(' );
-        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
-            // TODO difference between GML vs. PostGIS vs. ...
+            writer.append( "COMPOSITECURVE " );
+            appendObjectProps( writer, geometry );
+            writer.append( '(' );
+
+            // TODO implementation here; no values commited
+        } else if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+            writer.append( "COMPOUNDCURVE " );
+            writer.append( '(' );
+            // TODO implementation here; no values commited
 
         } else {
-            
+
             List<Curve> l = geometry.subList( 0, geometry.size() );
             int counter = 0;
-            for(Curve c : l){
+            for ( Curve c : l ) {
                 counter++;
                 writeCurve( c, writer );
-                if(counter != l.size()){
+                if ( counter != l.size() ) {
                     writer.append( ',' );
                 }
             }
         }
         writer.append( ')' );
-        
 
     }
 
     /**
+     * Writes a CURVE
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeCurveGeometry( Curve geometry, Writer writer ) throws IOException {
+    public void writeCurveGeometry( Curve geometry, Writer writer )
+                            throws IOException {
 
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             writer.append( "CURVE " );
@@ -531,58 +591,64 @@ public class WKTWriterNG {
             writeCurveSegments( geometry, writer );
             writer.append( ')' );
         } else if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
-                
-                //s.append( "COMPOUNDCURVE(" );
-                throw new UnsupportedOperationException( "Handling curves within 'SQL-MM Part 3' is not implemented yet." );
-                
-                
-                
 
-            } else {
-                CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
-                LinearizationCriterion crit = new NumPointsCriterion( 10 );
-                Curve c = cl.linearize( geometry, crit );
+            // s.append( "COMPOUNDCURVE(" );
+            throw new UnsupportedOperationException( "Handling curves within 'SQL-MM Part 3' is not implemented yet." );
 
-                LineString ls = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
-                                                       c.getControlPoints() );
-                writeLineString( ls, writer );
-            }
-        
+        } else {
+            CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
+            LinearizationCriterion crit = new NumPointsCriterion( 10 );
+            Curve c = cl.linearize( geometry, crit );
+
+            LineString ls = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
+                                                   c.getControlPoints() );
+            writeLineString( ls, writer );
+        }
+
+        System.out.println( writer.toString() );
 
     }
 
     /**
+     * Writes the CURVE without the 'CURVE()'-specific envelope. <br/>
+     * It writes just the CURVE-coordinates.
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeCurveGeometryWithoutPrefix( Curve geometry, Writer writer ) throws IOException {
-    
-        
+    private void writeCurveGeometryWithoutPrefix( Curve geometry, Writer writer )
+                            throws IOException {
+
         if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
-    
+            throw new UnsupportedOperationException( "Handling curves within 'SQL-MM Part 3' is not implemented yet." );
         } else {
             CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
             LinearizationCriterion crit = new NumPointsCriterion( 1 );
             Curve c = cl.linearize( geometry, crit );
-    
+
             LineString ls = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
                                                    c.getControlPoints() );
-            writeLineStringWithoutPrefix( ls, writer ) ;
+            writer.append( '(' );
+            writeLineStringWithoutPrefix( ls, writer );
+            writer.append( ')' );
         }
-    
-        
+
     }
 
     /**
+     * Writes the curvesegments.
+     * 
      * @param geometry
      * @param writer
-     * @throws IOException 
+     * @throws IOException
      */
-    private void writeCurveSegments( Curve geometry, Writer writer ) throws IOException {
+    private void writeCurveSegments( Curve geometry, Writer writer )
+                            throws IOException {
         List<CurveSegment> g = geometry.getCurveSegments();
         int counter = 0;
         for ( CurveSegment c : g ) {
-            
+
             switch ( c.getSegmentType() ) {
             case ARC:
                 counter++;
@@ -590,51 +656,51 @@ public class WKTWriterNG {
                 break;
             case ARC_BY_BULGE:
                 counter++;
-                writeArcByBulge(( (ArcByBulge) c ), writer);
+                writeArcByBulge( ( (ArcByBulge) c ), writer );
                 break;
             case ARC_BY_CENTER_POINT:
                 counter++;
-                writeArcByCenterPoint(( (ArcByCenterPoint) c ), writer);
+                writeArcByCenterPoint( ( (ArcByCenterPoint) c ), writer );
                 break;
             case ARC_STRING:
                 counter++;
-                writeArcString(( (ArcString) c ), writer);
+                writeArcString( ( (ArcString) c ), writer );
                 break;
             case ARC_STRING_BY_BULGE:
                 counter++;
-                writeArcStringByBulge((ArcStringByBulge)c, writer);
+                writeArcStringByBulge( (ArcStringByBulge) c, writer );
                 break;
             case BEZIER:
                 counter++;
-                writeBezier((Bezier)c, writer);
+                writeBezier( (Bezier) c, writer );
                 break;
             case BSPLINE:
                 counter++;
-                writeBSpline((BSpline)c, writer);
+                writeBSpline( (BSpline) c, writer );
                 break;
             case CIRCLE:
                 counter++;
-                writeCircle((Circle)c, writer);
+                writeCircle( (Circle) c, writer );
                 break;
             case CIRCLE_BY_CENTER_POINT:
                 counter++;
-                writeCircleByCenterPoint((CircleByCenterPoint)c, writer);
+                writeCircleByCenterPoint( (CircleByCenterPoint) c, writer );
                 break;
             case CLOTHOID:
                 counter++;
-                writeClothoid((Clothoid)c, writer);
+                writeClothoid( (Clothoid) c, writer );
                 break;
             case CUBIC_SPLINE:
                 counter++;
-                writeCubicSpline((CubicSpline)c, writer);
+                writeCubicSpline( (CubicSpline) c, writer );
                 break;
             case GEODESIC:
                 counter++;
-                writeGeodesic((Geodesic)c, writer);
+                writeGeodesic( (Geodesic) c, writer );
                 break;
             case GEODESIC_STRING:
                 counter++;
-                writeGeodesicString((GeodesicString)c, writer);
+                writeGeodesicString( (GeodesicString) c, writer );
                 break;
             case LINE_STRING_SEGMENT:
                 counter++;
@@ -642,176 +708,193 @@ public class WKTWriterNG {
                 break;
             case OFFSET_CURVE:
                 counter++;
-                writeOffsetCurve((OffsetCurve)c, writer);
+                writeOffsetCurve( (OffsetCurve) c, writer );
                 break;
 
             }
             if ( counter != g.size() ) {
                 writer.append( ',' );
             }
-            
+
         }
 
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeOffsetCurve( OffsetCurve c, Writer writer) {
-        // TODO Auto-generated method stub
-        
+    private void writeOffsetCurve( OffsetCurve curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling offsetCurve is not implemented yet." );
+
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeGeodesicString( GeodesicString c, Writer writer ) {
-        // TODO Auto-generated method stub
-        
+    private void writeGeodesicString( GeodesicString curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling geodesicString is not implemented yet." );
+
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeGeodesic( Geodesic c, Writer writer ) {
-        // TODO Auto-generated method stub
-        
+    private void writeGeodesic( Geodesic curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling geodesic is not implemented yet." );
+
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeCubicSpline( CubicSpline c, Writer writer ) {
-        // TODO Auto-generated method stub
-        
+    private void writeCubicSpline( CubicSpline curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling cubicSpline is not implemented yet." );
+
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeClothoid( Clothoid c, Writer writer) {
-        // TODO Auto-generated method stub
-        
+    private void writeClothoid( Clothoid curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling clothoid is not implemented yet." );
+
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeCircleByCenterPoint( CircleByCenterPoint c,Writer writer ) {
-        // TODO Auto-generated method stub
-        
+    private void writeCircleByCenterPoint( CircleByCenterPoint curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling circleByCenterPoint is not implemented yet." );
+
     }
 
     /**
-     * @param c
-     * @param s
-     * @throws IOException 
+     * 
+     * @param curve
+     * @param writer
+     * @throws IOException
      */
-    private void writeCircle( Circle c, Writer writer) throws IOException {
+    private void writeCircle( Circle curve, Writer writer )
+                            throws IOException {
         writer.append( "CIRCLE " );
-        //if(flags.contains( WKTFlag.USE_DKT )){
-          //  appendObjectProps( writer, (Geometry) createArc );
-        //}
+        // if(flags.contains( WKTFlag.USE_DKT )){
+        // appendObjectProps( writer, (Geometry) createArc );
+        // }
         writer.append( '(' );
-        writePointWithoutPrefix( c.getPoint1(), writer );
+        writePointWithoutPrefix( curve.getPoint1(), writer );
         writer.append( ',' );
-        writePointWithoutPrefix( c.getPoint2(), writer );
+        writePointWithoutPrefix( curve.getPoint2(), writer );
         writer.append( ',' );
-        writePointWithoutPrefix( c.getPoint3(), writer );
+        writePointWithoutPrefix( curve.getPoint3(), writer );
         writer.append( ')' );
-        
+
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeBSpline( BSpline c, Writer writer ) {
-        // TODO Auto-generated method stub
-        
+    private void writeBSpline( BSpline curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling bSpline is not implemented yet." );
+
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeBezier( Bezier c,Writer writer) {
-        // TODO Auto-generated method stub
-        
+    private void writeBezier( Bezier curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling bezier is not implemented yet." );
+
     }
 
     /**
-     * @param c
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeArcStringByBulge( ArcStringByBulge c, Writer writer ) {
-        // TODO Auto-generated method stub
-        
+    private void writeArcStringByBulge( ArcStringByBulge curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling arcStringByBulge is not implemented yet." );
+
     }
 
     /**
-     * @param arcString
-     * @param s
-     * @throws IOException 
+     * 
+     * @param curve
+     * @param writer
+     * @throws IOException
      */
-    private void writeArcString( ArcString arcString, Writer writer ) throws IOException {
+    private void writeArcString( ArcString curve, Writer writer )
+                            throws IOException {
         writer.append( "ARCSTRING " );
-        //if(flags.contains( WKTFlag.USE_DKT )){
-        //  appendObjectProps( writer, (Geometry) arcString );
-        //}
+        // if(flags.contains( WKTFlag.USE_DKT )){
+        // appendObjectProps( writer, (Geometry) arcString );
+        // }
         writer.append( '(' );
         int counter = 0;
-        for(Point p : arcString.getControlPoints()){
+        for ( Point p : curve.getControlPoints() ) {
             counter++;
             writePointWithoutPrefix( p, writer );
-            if(counter != arcString.getControlPoints().size()){
+            if ( counter != curve.getControlPoints().size() ) {
                 writer.append( ',' );
             }
         }
         writer.append( ')' );
-        
+
     }
 
     /**
-     * @param arcByCenterPoint
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeArcByCenterPoint( ArcByCenterPoint arcByCenterPoint, Writer writer ) {
-        // TODO Auto-generated method stub
-        
+    private void writeArcByCenterPoint( ArcByCenterPoint curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling arcByCenterPoint is not implemented yet." );
+
     }
 
     /**
-     * @param arcByBulge
-     * @param s
+     * 
+     * @param curve
+     * @param writer
      */
-    private void writeArcByBulge( ArcByBulge arcByBulge, Writer writer ) {
-        // TODO Auto-generated method stub
-        
+    private void writeArcByBulge( ArcByBulge curve, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling arcByBulge is not implemented yet." );
+
     }
 
     /**
-     * @param createLineStringSegment
-     * @param s
-     * @throws IOException 
+     * 
+     * @param curve
+     * @param writer
+     * @throws IOException
      */
-    private void writeLineStringSegment( LineStringSegment createLineStringSegment, Writer writer ) throws IOException {
+    private void writeLineStringSegment( LineStringSegment curve, Writer writer )
+                            throws IOException {
         writer.append( "LINESTRINGSEGMENT " );
-        //if(flags.contains( WKTFlag.USE_DKT )){
-        //  appendObjectProps( writer, (Geometry) createLineStringSegment );
-        //}
+        // if(flags.contains( WKTFlag.USE_DKT )){
+        // appendObjectProps( writer, (Geometry) createLineStringSegment );
+        // }
         writer.append( '(' );
         int counter = 0;
-        for(Point p : createLineStringSegment.getControlPoints()){
+        for ( Point p : curve.getControlPoints() ) {
             counter++;
             writePointWithoutPrefix( p, writer );
-            if(counter != createLineStringSegment.getControlPoints().size()){
+            if ( counter != curve.getControlPoints().size() ) {
                 writer.append( ',' );
             }
         }
@@ -820,47 +903,57 @@ public class WKTWriterNG {
     }
 
     /**
-     * @param createArc
-     * @param s
-     * @throws IOException 
+     * 
+     * @param curve
+     * @param writer
+     * @throws IOException
      */
-    private void writeArc( Arc createArc, Writer writer ) throws IOException {
+    private void writeArc( Arc curve, Writer writer )
+                            throws IOException {
         writer.append( "ARC " );
-        //if(flags.contains( WKTFlag.USE_DKT )){
-          //  appendObjectProps( writer, (Geometry) createArc );
-        //}
+        // if(flags.contains( WKTFlag.USE_DKT )){
+        // appendObjectProps( writer, (Geometry) createArc );
+        // }
         writer.append( '(' );
-        writePointWithoutPrefix( createArc.getPoint1(), writer );
+        writePointWithoutPrefix( curve.getPoint1(), writer );
         writer.append( ',' );
-        writePointWithoutPrefix( createArc.getPoint2(), writer );
+        writePointWithoutPrefix( curve.getPoint2(), writer );
         writer.append( ',' );
-        writePointWithoutPrefix( createArc.getPoint3(), writer );
+        writePointWithoutPrefix( curve.getPoint3(), writer );
         writer.append( ')' );
-        
 
     }
 
     /**
+     * Writes a LineString. 
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    public void writeLineString( LineString geometry, Writer writer ) throws IOException {
-        
+    public void writeLineString( LineString geometry, Writer writer )
+                            throws IOException {
+
         writer.append( "LINESTRING " );
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
         }
+        writer.append( '(' );
         writeLineStringWithoutPrefix( geometry, writer );
-       
-
+        writer.append( ')' );
     }
 
     /**
+     * Writes the LINESTRING without the 'LINESTRING()'-specific envelope. <br/>
+     * It writes just the LINESTRING-coordinates.
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeLineStringWithoutPrefix( LineString geometry, Writer writer ) throws IOException {
-        writer.append( '(' );
+    private void writeLineStringWithoutPrefix( LineString geometry, Writer writer )
+                            throws IOException {
+        
         Points points = geometry.getControlPoints();
         int counter = 0;
         for ( Point p : points ) {
@@ -869,20 +962,23 @@ public class WKTWriterNG {
                 writePointWithoutPrefix( p, writer );
                 writer.append( ',' );
             } else {
-                writePointWithoutPrefix( p, writer ) ;
+                writePointWithoutPrefix( p, writer );
             }
         }
-        writer.append( ')' );
         
 
     }
 
     /**
+     * Writes a ring.
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    public void  writeRing( Ring geometry, Writer writer ) throws IOException {
-        
+    public void writeRing( Ring geometry, Writer writer )
+                            throws IOException {
+
         switch ( geometry.getRingType() ) {
         case LinearRing:
 
@@ -899,25 +995,32 @@ public class WKTWriterNG {
     }
 
     /**
+     * Writes a linearRing.
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    public void writeLinearRing( LinearRing geometry, Writer writer ) throws IOException {
-        
+    public void writeLinearRing( LinearRing geometry, Writer writer )
+                            throws IOException {
+
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             writer.append( "LINEARRING " );
             appendObjectProps( writer, geometry );
             LineString ls = new DefaultLineString( geometry.getId(), geometry.getCoordinateSystem(),
                                                    geometry.getPrecision(), geometry.getControlPoints() );
-            writeLineStringWithoutPrefix( ls, writer ) ;
-            
-        }else if ( flags.contains( WKTFlag.USE_LINEARRING ) ) {
+            writer.append( '(' );
+            writeLineStringWithoutPrefix( ls, writer );
+            writer.append( ')' );
+
+        } else if ( flags.contains( WKTFlag.USE_LINEARRING ) ) {
             writer.append( "LINEARRING " );
 
             LineString ls = new DefaultLineString( geometry.getId(), geometry.getCoordinateSystem(),
                                                    geometry.getPrecision(), geometry.getControlPoints() );
-            writeLineStringWithoutPrefix( ls, writer ) ;
-
+            writer.append( '(' );
+            writeLineStringWithoutPrefix( ls, writer );
+            writer.append( ')' );
         } else {
             LineString ls = new DefaultLineString( geometry.getId(), geometry.getCoordinateSystem(),
                                                    geometry.getPrecision(), geometry.getControlPoints() );
@@ -926,11 +1029,15 @@ public class WKTWriterNG {
     }
 
     /**
+     * Writes a multiGeometry. 
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeMultiGeometry( MultiGeometry<? extends Geometry> geometry, Writer writer ) throws IOException {
-        StringBuilder s = null;
+    public void writeMultiGeometry( MultiGeometry<? extends Geometry> geometry, Writer writer )
+                            throws IOException {
+
         switch ( geometry.getMultiGeometryType() ) {
         case MULTI_GEOMETRY:
             writeMultiGeometryGeometry( geometry, writer );
@@ -945,30 +1052,60 @@ public class WKTWriterNG {
             writeMultiLineString( (MultiLineString) geometry, writer );
             break;
         case MULTI_SURFACE:
+            writeMultiSurface( (MultiSurface) geometry, writer );
             break;
         case MULTI_POLYGON:
             writeMultiPolygon( (MultiPolygon) geometry, writer );
             break;
         case MULTI_SOLID:
+            writeMultiSolid( (MultiSolid) geometry, writer );
             break;
 
         }
 
-        
+    }
+
+    /**
+     * Writes a multiSolid. 
+     * 
+     * @param geometry
+     * @param writer
+     */
+    public void writeMultiSolid( MultiSolid geometry, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling multiSolids is not implemented yet." );
 
     }
 
     /**
+     * Writes a multiSurface. 
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
      */
-    public void writeMultiCurve( MultiCurve geometry, Writer writer ) throws IOException {
-        
+    public void writeMultiSurface( MultiSurface geometry, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling multiSurfaces is not implemented yet." );
+
+    }
+
+    /**
+     * Writes a multiCurve. 
+     * 
+     * @param geometry
+     * @param writer
+     * @throws IOException
+     */
+    public void writeMultiCurve( MultiCurve geometry, Writer writer )
+                            throws IOException {
+
         writer.append( "MULTICURVE " );
+        if ( flags.contains( WKTFlag.USE_DKT ) ) {
+            appendObjectProps( writer, geometry );
+        }
+        writer.append( '(' );
 
         for ( int i = 0; i < geometry.size(); i++ ) {
 
-            writeCurveGeometryWithoutPrefix( geometry.get( i ), writer ) ;
+            writeCurveGeometryWithoutPrefix( geometry.get( i ), writer );
             if ( i < geometry.size() - 1 ) {
                 writer.append( ',' );
 
@@ -981,57 +1118,81 @@ public class WKTWriterNG {
     }
 
     /**
+     * Writes the multiGeometry. 
+     * 
      * @param geometry
+     * @param writer
      */
-    private void writeMultiGeometryGeometry( MultiGeometry<? extends Geometry> geometry, Writer writer ) {
-        //TODO
+    public void writeMultiGeometryGeometry( MultiGeometry<? extends Geometry> geometry, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling multiGeometries is not implemented yet." );
     }
 
     /**
+     * Writes the multiPolygon. 
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeMultiPolygon( MultiPolygon geometry, Writer writer ) throws IOException {
-        
-        writer.append( "MULTIPOLYGON(" );
+    public void writeMultiPolygon( MultiPolygon geometry, Writer writer )
+                            throws IOException {
+
+        writer.append( "MULTIPOLYGON " );
+        if ( flags.contains( WKTFlag.USE_DKT ) ) {
+            appendObjectProps( writer, geometry );
+        }
+        writer.append( '(' );
 
         for ( int i = 0; i < geometry.size(); i++ ) {
 
-            writePolygonWithoutPrefix( geometry.get( i ), writer  );
+            writePolygonWithoutPrefix( geometry.get( i ), writer );
             if ( i < geometry.size() - 1 ) {
                 writer.append( ',' );
             }
         }
 
         writer.append( ')' );
-        
+
     }
 
     /**
+     * Writes the multiLineString. 
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeMultiLineString( MultiLineString geometry, Writer writer ) throws IOException {
-        
-        writer.append( "MULTILINESTRING(" );
-        for ( int i = 0; i < geometry.size(); i++ ) {
+    public void writeMultiLineString( MultiLineString geometry, Writer writer )
+                            throws IOException {
 
-            writeLineStringWithoutPrefix( geometry.get( i ), writer ) ;
+        writer.append( "MULTILINESTRING " );
+        if ( flags.contains( WKTFlag.USE_DKT ) ) {
+            appendObjectProps( writer, geometry );
+        }
+        writer.append( '(' );
+        for ( int i = 0; i < geometry.size(); i++ ) {
+            writer.append( '(' );
+            writeLineStringWithoutPrefix( geometry.get( i ), writer );
             if ( i < geometry.size() - 1 ) {
                 writer.append( ',' );
 
             }
+            writer.append( ')' );
         }
 
         writer.append( ')' );
-        
+
     }
 
     /**
+     * Writes the multiPoint. 
+     * 
      * @param geometry
-     * @throws IOException 
+     * @param writer
+     * @throws IOException
      */
-    private void writeMultiPoint( MultiPoint geometry, Writer writer ) throws IOException {
+    public void writeMultiPoint( MultiPoint geometry, Writer writer )
+                            throws IOException {
         writer.append( "MULTIPOINT " );
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
@@ -1046,14 +1207,17 @@ public class WKTWriterNG {
         }
 
         writer.append( ')' );
-        
+
     }
 
     /**
+     * Writes the compositeGeometry. 
+     * 
      * @param geometry
+     * @param writer
      */
-    private void writeCompositeGeometry( CompositeGeometry<GeometricPrimitive> geometry, Writer writer ) {
-        //TODO
+    public void writeCompositeGeometry( CompositeGeometry<GeometricPrimitive> geometry, Writer writer ) {
+        throw new UnsupportedOperationException( "Handling compositeGeometries is not implemented yet." );
 
     }
 
@@ -1062,11 +1226,12 @@ public class WKTWriterNG {
      * @param writer
      * @throws IOException
      */
-    private void writeCircularString(Writer writer) throws IOException {
-        
+    public void writeCircularString( Writer writer )
+                            throws IOException {
+
         if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
             writer.append( "CIRCULARSTRING(" );
-            // TODO there should be 3 points in it
+            // TODO there should be 3 points in it...same as arc in deegree-model??
 
             writer.append( ')' );
         }
@@ -1077,58 +1242,71 @@ public class WKTWriterNG {
      * TODO also for 3D
      * 
      * @param envelope
-     * @throws IOException 
+     * @throws IOException
      */
-    public void writeEnvelope( Envelope envelope, Writer writer ) throws IOException {
-        
+    public void writeEnvelope( Envelope envelope, Writer writer )
+                            throws IOException {
+
         Point pMax = envelope.getMax();
         Point pMin = envelope.getMin();
-        
+
         double pMinX = pMin.get0();
         double pMinY = pMin.get1();
         double pMaxX = pMax.get0();
         double pMaxY = pMax.get1();
-        
-        
-        if(flags.contains( WKTFlag.USE_DKT )){
+
+        if ( flags.contains( WKTFlag.USE_DKT ) ) {
             writer.append( "ENVELOPE " );
             appendObjectProps( writer, envelope );
             writer.append( '(' );
-            writer.append( Double.toString(pMinX) + ' ' + Double.toString(pMinY) + ',' );
-            writer.append( Double.toString(pMaxX) + ' ' + Double.toString(pMaxY) );
+            writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMinY ) + ',' );
+            writer.append( Double.toString( pMaxX ) + ' ' + Double.toString( pMaxY ) );
             writer.append( ')' );
-            
-        }else if ( flags.contains( WKTFlag.USE_ENVELOPE ) ) {
+
+        } else if ( flags.contains( WKTFlag.USE_ENVELOPE ) ) {
             writer.append( "ENVELOPE " );
             writer.append( '(' );
-            writer.append( Double.toString(pMinX) + ' ' + Double.toString(pMinY) + ',' );
-            writer.append( Double.toString(pMaxX) + ' ' + Double.toString(pMaxY) );
+            writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMinY ) + ',' );
+            writer.append( Double.toString( pMaxX ) + ' ' + Double.toString( pMaxY ) );
             writer.append( ')' );
         } else {
-            
+
             if ( pMin == pMax ) {
-                writePoint( pMin, writer ) ;
+                writePoint( pMin, writer );
             } else {
-                writer.append( "POLYGON((" );
-                
-                writer.append( Double.toString(pMinX) + ' ' + Double.toString(pMinY) + ',' );
-                writer.append( Double.toString(pMaxX) + ' ' + Double.toString(pMinY) + ',' );
-                writer.append( Double.toString(pMaxX) + ' ' + Double.toString(pMaxY) + ',' );
-                writer.append( Double.toString(pMinX) + ' ' + Double.toString(pMaxY) + ',' );
-                writer.append( Double.toString(pMinX) + ' ' + Double.toString(pMinY) );
+                writer.append( "POLYGON ((" );
+
+                writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMinY ) + ',' );
+                writer.append( Double.toString( pMaxX ) + ' ' + Double.toString( pMinY ) + ',' );
+                writer.append( Double.toString( pMaxX ) + ' ' + Double.toString( pMaxY ) + ',' );
+                writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMaxY ) + ',' );
+                writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMinY ) );
 
                 writer.append( "))" );
 
             }
         }
-        
+
     }
 
+    /**
+     * 
+     * @param geom
+     * @return
+     */
+    @Deprecated
     public static String write( Geometry geom ) {
 
         return jtsWriter.write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
     }
 
+    /**
+     * 
+     * @param geom
+     * @param writer
+     * @throws IOException
+     */
+    @Deprecated
     public static void write( Geometry geom, Writer writer )
                             throws IOException {
         jtsWriter.write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(), writer );
@@ -1137,33 +1315,35 @@ public class WKTWriterNG {
     /**
      * Does the work to write the standardproperties for the geometryobjects
      * <p>
-     * This specification comes from the GML and is not necessary for databases but maybe necessary for the export
+     * This specification comes from the GML and is not necessary for databases but maybe necessary for an export
      * within deegree
      * 
      * @param sb
      * @param geom
-     * @throws IOException 
+     * @throws IOException
      */
-    private void appendObjectProps( Writer writer, Geometry geom ) throws IOException {
+    private void appendObjectProps( Writer writer, Geometry geom )
+                            throws IOException {
 
         writer.append( '[' );
         //
-            writer.append( "id='" );
-            if ( geom.getId() != null ) {
-                writer.append( geom.getId() );
-            }else
-                writer.append( "" );
-            writer.append( '\'' );
-            writer.append( ',' );
-        //
-        StandardGMLObjectProps props = geom.getAttachedProperties(); 
+        writer.append( "id='" );
+        if ( geom.getId() != null ) {
+            writer.append( geom.getId() );
+        } else
+            writer.append( "" );
+        writer.append( '\'' );
+        
+        StandardGMLObjectProps props = geom.getAttachedProperties();
         if ( props != null ) {
             int counter = 0;
+            writer.append( ',' );
 
             // metadataproperties
-            // TODO switch to metadataproperties[]
             writer.append( "metadataproperty=(" );
             for ( Object c : props.getMetadata() ) {
+                
+                
                 counter++;
                 writer.append( '\'' );
                 writer.append( c.toString() );
@@ -1178,8 +1358,8 @@ public class WKTWriterNG {
 
             // description
             writer.append( "description='" );
-            if(props.getDescription() != null){
-            writer.append( props.getDescription().toString() );
+            if ( props.getDescription() != null ) {
+                writer.append( props.getDescription().toString() );
             }
             writer.append( '\'' );
             writer.append( ',' );
