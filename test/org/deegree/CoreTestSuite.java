@@ -105,6 +105,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.geometry.gml.validation.GMLGeometryValidatorTest.class,
                 org.deegree.geometry.linearization.CurveLinearizerTest.class,
                 org.deegree.geometry.validation.GeometryValidatorTest.class,
+                org.deegree.geometry.wktadapter.WKTWriterTest.class,
                 org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParserTest.class,
                 org.deegree.protocol.sos.ParseDescribeSensorRequestTest.class,
                 org.deegree.protocol.sos.ParseGetCapabilitiesRequest.class,
