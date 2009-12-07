@@ -101,6 +101,7 @@ public class GML2FeatureEncoder implements GMLFeatureEncoder {
      */
     public GML2FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
+        // TODO outputCRS is not used here!!
         geometryExporter = new GML2GeometryEncoder( writer, exportedIds );
     }
 
