@@ -1643,7 +1643,7 @@ public class SymbologyParser {
                     }
                 }
 
-                FilterContinuation contn = new FilterContinuation( filter, syms );
+                FilterContinuation contn = new FilterContinuation( filter, syms, ruleCommon );
                 DoublePair scales = new DoublePair( minScale, maxScale );
                 result.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scales ) );
             }
@@ -1679,9 +1679,13 @@ public class SymbologyParser {
 
         private LinkedList<Symbolizer<?>> syms;
 
-        FilterContinuation( Filter filter, LinkedList<Symbolizer<?>> syms ) {
+        /** Contains description and so on. */
+        public Common common;
+
+        FilterContinuation( Filter filter, LinkedList<Symbolizer<?>> syms, Common common ) {
             this.filter = filter;
             this.syms = syms;
+            this.common = common;
         }
 
         @Override
@@ -1697,8 +1701,23 @@ public class SymbologyParser {
 
     }
 
-    static class Common {
-        String name, title, abstract_;
+    /**
+     * <code>Common</code>
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static class Common {
+        /***/
+        public String name;
+
+        /***/
+        public String title;
+
+        /***/
+        public String abstract_;
 
         Expression geometry;
     }

@@ -291,6 +291,24 @@ public class Style {
         return list;
     }
 
+    /**
+     * @return "", if no title was set
+     */
+    public LinkedList<String> getRuleTitles() {
+        LinkedList<String> list = new LinkedList<String>();
+
+        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
+            if ( rule.first instanceof FilterContinuation ) {
+                FilterContinuation cont = (FilterContinuation) rule.first;
+                list.add( cont.common.title );
+            } else {
+                list.add( "" );
+            }
+        }
+
+        return list;
+    }
+
     class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
         U value;
 
