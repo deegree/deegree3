@@ -43,7 +43,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -55,6 +54,9 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.function.geometry.IsCurve;
+import org.deegree.filter.function.geometry.IsPoint;
+import org.deegree.filter.function.geometry.IsSurface;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiLineString;
@@ -62,8 +64,11 @@ import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser.FilterContinuation;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
@@ -256,6 +261,33 @@ public class Style {
                 list.add( stylings );
             }
         }
+        return list;
+    }
+
+    /**
+     * @return Polygon.class, if the IsSurface function is used, Point.class for IsPoint and LineString.class for
+     *         IsCurve
+     */
+    public LinkedList<Class<?>> getRuleTypes() {
+        LinkedList<Class<?>> list = new LinkedList<Class<?>>();
+
+        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
+            if ( rule.first instanceof FilterContinuation ) {
+                FilterContinuation cont = (FilterContinuation) rule.first;
+                if ( cont.filter instanceof IsSurface ) {
+                    list.add( Polygon.class );
+                } else if ( cont.filter instanceof IsCurve ) {
+                    list.add( LineString.class );
+                } else if ( cont.filter instanceof IsPoint ) {
+                    list.add( Point.class );
+                } else {
+                    list.add( Polygon.class );
+                }
+            } else {
+                list.add( Polygon.class );
+            }
+        }
+
         return list;
     }
 

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -75,6 +76,26 @@ public class CollectionUtils {
             }
         };
     }
+
+    /**
+     * @param <T>
+     * @param c
+     * @return a list of booleans, true if u instanceof c
+     */
+    public static <T> Mapper<Boolean, T> getInstanceofMapper( final Class<?> c ) {
+        return new Mapper<Boolean, T>() {
+            public Boolean apply( T u ) {
+                return c.isInstance( u );
+            }
+        };
+    }
+
+    /***/
+    public static final Reducer<Boolean> AND = new Reducer<Boolean>() {
+        public Boolean reduce( Boolean t1, Boolean t2 ) {
+            return t1 && t2;
+        }
+    };
 
     /**
      * @param <T>
@@ -148,6 +169,47 @@ public class CollectionUtils {
         }
 
         return list;
+    }
+
+    /**
+     * @param <T>
+     * @param identity
+     * @param col
+     * @param reducer
+     * @return the folded value
+     */
+    public static <T> T reduce( T identity, Collection<T> col, Reducer<T> reducer ) {
+        if ( col.isEmpty() ) {
+            return identity;
+        }
+
+        Iterator<T> i = col.iterator();
+
+        T acc = i.next();
+
+        while ( i.hasNext() ) {
+            acc = reducer.reduce( acc, i.next() );
+        }
+
+        return acc;
+    }
+
+    /**
+     * <code>Reducer</code>
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     * @param <T>
+     */
+    public static interface Reducer<T> {
+        /**
+         * @param t1
+         * @param t2
+         * @return the folded value
+         */
+        public T reduce( T t1, T t2 );
     }
 
     /**

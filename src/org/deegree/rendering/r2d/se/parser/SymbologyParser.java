@@ -1665,8 +1665,17 @@ public class SymbologyParser {
         }
     }
 
-    static class FilterContinuation extends Continuation<LinkedList<Symbolizer<?>>> {
-        private Filter filter;
+    /**
+     * <code>FilterContinuation</code>
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static class FilterContinuation extends Continuation<LinkedList<Symbolizer<?>>> {
+        /***/
+        public Filter filter;
 
         private LinkedList<Symbolizer<?>> syms;
 
