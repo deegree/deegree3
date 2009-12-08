@@ -280,7 +280,8 @@ public class RenderHelper {
 
             AffineTransform t = new AffineTransform();
             Rectangle2D rect = root.getBounds();
-            t.scale( 1 / rect.getWidth(), 1 / rect.getHeight() );
+            double max = max( rect.getWidth(), rect.getHeight() );
+            t.scale( 1 / max, 1 / max );
             t.translate( -rect.getX(), -rect.getY() );
 
             root.setTransform( t );
