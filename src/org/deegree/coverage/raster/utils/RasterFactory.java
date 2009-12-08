@@ -77,10 +77,12 @@ import org.deegree.coverage.raster.data.nio.LineInterleavedRasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterIOProvider;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
+import org.deegree.coverage.raster.io.grid.CacheRasterReader;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,9 +308,21 @@ public class RasterFactory {
     public static AbstractRaster createRasterFromImage( RenderedImage image, Envelope envelope,
                                                         RasterGeoReference.OriginLocation originLocation,
                                                         RasterIOOptions options ) {
-        ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image, options );
         RasterGeoReference ref = RasterGeoReference.create( originLocation, envelope, image.getWidth(),
                                                             image.getHeight() );
+        RasterIOOptions opts = options;
+        if ( opts == null ) {
+            opts = new RasterIOOptions( ref );
+        } else {
+            RasterGeoReference defRef = options.getRasterGeoReference();
+            if ( defRef != null ) {
+                ref = defRef;
+            } else {
+                options.setRasterGeoReference( ref );
+            }
+        }
+        ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image, opts );
+
         return new SimpleRaster( rasterDataFromImage, envelope, ref );
 
     }
@@ -531,40 +545,6 @@ public class RasterFactory {
     }
 
     /**
-     * Creates a new Raster data object from the given world envelope, a raster reference and the data info object
-     * (holding information about type, size etc...). If any of the parameters are <code>null</code> null will be
-     * returned.
-     * 
-     * @param rdi
-     * @param worldEnvelope
-     *            describing the raster data.
-     * @param rasterGeoReference
-     *            the raster geo reference defining the resolution of the raster.
-     * @return a raster data object according to the given parameters.
-     */
-    public static SimpleRaster createEmptyRaster( RasterDataInfo rdi, Envelope worldEnvelope,
-                                                  RasterGeoReference rasterGeoReference ) {
-        SimpleRaster result = null;
-        if ( rdi != null && rasterGeoReference != null && worldEnvelope != null ) {
-            ByteBufferRasterData data = null;
-            RasterRect rasterRect = rasterGeoReference.convertEnvelopeToRasterCRS( worldEnvelope );
-            switch ( rdi.interleaveType ) {
-            case BAND:
-                data = new BandInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, rdi );
-                break;
-            case LINE:
-                data = new LineInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, rdi );
-                break;
-            case PIXEL:
-                data = new PixelInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, rdi );
-                break;
-            }
-            result = new SimpleRaster( data, worldEnvelope, rasterGeoReference );
-        }
-        return result;
-    }
-
-    /**
      * Creates a buffered image from the given raster data. The options can be used to modify the outcome of the
      * buffered image.
      * 
@@ -607,54 +587,89 @@ public class RasterFactory {
             // rb: are we sure it is always pixel interleaved?
             RasterDataInfo rdi = new RasterDataInfo( noData, bandTypes, type, InterleaveType.PIXEL );
 
-            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, rdi );
-            ByteBuffer byteBuffer = result.getByteBuffer();
-            switch ( type ) {
-            case BYTE:
+            ByteBuffer byteBuffer = ByteBuffer.allocate( rdi.bands * width * height * rdi.dataSize );
+            if ( type == DataType.BYTE && imgDataType == DataBuffer.TYPE_INT || imgDataType == DataBuffer.TYPE_SHORT
+                 || imgDataType == DataBuffer.TYPE_USHORT ) {
+                // hack for the INT_ARGB etc. etc.
+                // the bytes are _packed_ in an int/short/ushort *sigh*
+                Object pixels = raster.getDataElements( x, y, width, height, null );
 
-                if ( imgDataType == DataBuffer.TYPE_INT || imgDataType == DataBuffer.TYPE_SHORT
-                     || imgDataType == DataBuffer.TYPE_USHORT ) {
-                    // hack for the INT_ARGB etc. etc.
-                    // the bytes are _packed_ in an int/short/ushort *sigh*
-                    Object pixels = raster.getDataElements( x, y, width, height, null );
+                ColorModel cm = img.getColorModel();
 
-                    ColorModel cm = img.getColorModel();
-
-                    if ( imgDataType == DataBuffer.TYPE_INT ) {
-                        copyIntValues( (int[]) pixels, cm, byteBuffer, rdi );
-                    } else {
-                        copyShortValues( (short[]) pixels, cm, byteBuffer, rdi );
-                    }
-                } else if ( imgDataType == DataBuffer.TYPE_BYTE ) {
-                    byteBuffer.put( (byte[]) raster.getDataElements( x, y, width, height, null ) );
+                if ( imgDataType == DataBuffer.TYPE_INT ) {
+                    copyIntValues( (int[]) pixels, cm, byteBuffer, rdi );
                 } else {
-                    throw new UnsupportedOperationException(
-                                                             "The image databuffer type could not be converted to the coverage raster api type." );
+                    copyShortValues( (short[]) pixels, cm, byteBuffer, rdi );
                 }
-                break;
-            case DOUBLE:
-                DoubleBuffer dbuf = byteBuffer.asDoubleBuffer();
-                dbuf.put( (double[]) raster.getDataElements( x, y, width, height, null ) );
-                break;
-            case INT:
-                IntBuffer ibuf = byteBuffer.asIntBuffer();
-                ibuf.put( (int[]) raster.getDataElements( x, y, width, height, null ) );
-                break;
-            case FLOAT:
-                FloatBuffer fbuf = byteBuffer.asFloatBuffer();
-                fbuf.put( (float[]) raster.getDataElements( x, y, width, height, null ) );
-                break;
-            case SHORT:
-            case USHORT:
-                ShortBuffer sbuf = byteBuffer.asShortBuffer();
-                sbuf.put( (short[]) raster.getDataElements( x, y, width, height, null ) );
-                break;
-            default:
-                throw new UnsupportedOperationException( "DataType not supported (" + type + ")" );
+
+            } else if ( type == DataType.BYTE && ( imgDataType != DataBuffer.TYPE_BYTE ) ) {
+                throw new UnsupportedOperationException(
+                                                         "The image databuffer type could not be converted to the coverage raster api type." );
+            } else {
+                rasterToByteBuffer( raster, 0, 0, width, height, type, byteBuffer );
             }
+
+            RasterGeoReference geoRef = options == null ? null : options.getRasterGeoReference();
+            if ( geoRef == null ) {
+                // create a default geoRef
+                geoRef = new RasterGeoReference( OriginLocation.OUTER, 1, -1, 0, 0 );
+            }
+            CacheRasterReader reader = new CacheRasterReader( byteBuffer, width, height, null, rdi, geoRef );
+            byteBuffer = null;
+            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, reader, rdi );
+
         }
 
         return result;
+    }
+
+    /**
+     * Create a byte buffer from the given raster, the Bytebuffer will be filled row order, that is, pixel(0,0);(0,1)
+     * 
+     * @param imageRaster
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param type
+     * @param byteBuffer
+     * @return
+     */
+    public static ByteBuffer rasterToByteBuffer( Raster imageRaster, int x, int y, int width, int height,
+                                                 DataType type, ByteBuffer byteBuffer ) {
+        if ( byteBuffer == null ) {
+            int cap = imageRaster.getHeight() * imageRaster.getWidth() * imageRaster.getNumBands() * type.getSize();
+            // what's the size of a sample
+            byteBuffer = ByteBuffer.allocate( cap );
+        }
+
+        // rb: check the bounds?
+        byteBuffer.rewind();
+        switch ( type ) {
+        case BYTE:
+            byteBuffer.put( (byte[]) imageRaster.getDataElements( x, y, width, height, null ) );
+            break;
+        case DOUBLE:
+            DoubleBuffer dbuf = byteBuffer.asDoubleBuffer();
+            dbuf.put( (double[]) imageRaster.getDataElements( x, y, width, height, null ) );
+            break;
+        case INT:
+            IntBuffer ibuf = byteBuffer.asIntBuffer();
+            ibuf.put( (int[]) imageRaster.getDataElements( x, y, width, height, null ) );
+            break;
+        case FLOAT:
+            FloatBuffer fbuf = byteBuffer.asFloatBuffer();
+            fbuf.put( (float[]) imageRaster.getDataElements( x, y, width, height, null ) );
+            break;
+        case SHORT:
+        case USHORT:
+            ShortBuffer sbuf = byteBuffer.asShortBuffer();
+            sbuf.put( (short[]) imageRaster.getDataElements( x, y, width, height, null ) );
+            break;
+        default:
+            throw new UnsupportedOperationException( "DataType not supported (" + type + ")" );
+        }
+        return byteBuffer;
     }
 
     /**
@@ -664,6 +679,7 @@ public class RasterFactory {
      * @param rdi
      */
     private static void copyIntValues( int[] pixels, ColorModel cm, ByteBuffer byteBuffer, RasterDataInfo rdi ) {
+        byteBuffer.clear();
         byte[] res = new byte[rdi.bands()];
         for ( int i = 0; i < pixels.length; ++i ) {
             int pixel = pixels[i];
@@ -674,6 +690,10 @@ public class RasterFactory {
                 res[3] = (byte) cm.getAlpha( i );
             }
             byteBuffer.put( res );
+            // System.out.println( "pixel(" + pixels.length + "): " + i + "| color: " + ( res[0] & 0xff ) + ","
+            // + ( res[1] & 0xff ) + "," + ( res[2] & 0xff ) );
+            // System.out.println( "pos(" + byteBuffer.position() + "): " + i + "| color: " + ( res[0] & 0xff ) + ","
+            // + ( res[1] & 0xff ) + "," + ( res[2] & 0xff ) );
         }
     }
 
@@ -755,5 +775,66 @@ public class RasterFactory {
      */
     public static ByteBufferRasterData rasterDataFromImage( BufferedImage img ) {
         return rasterDataFromImage( img, null );
+    }
+
+    /**
+     * Creates a new Raster data object from the given world envelope, a raster reference and the data info object
+     * (holding information about type, size etc...). If any of the parameters are <code>null</code> null will be
+     * returned.
+     * 
+     * @param rdi
+     * @param worldEnvelope
+     *            describing the raster data.
+     * @param rasterGeoReference
+     *            the raster geo reference defining the resolution of the raster.
+     * @return a raster data object according to the given parameters.
+     */
+    public static SimpleRaster createEmptyRaster( RasterDataInfo rdi, Envelope worldEnvelope,
+                                                  RasterGeoReference rasterGeoReference ) {
+        return createEmptyRaster( rdi, worldEnvelope, rasterGeoReference, null );
+    }
+
+    /**
+     * Creates a new Raster data object from the given world envelope, a raster reference and the data info object
+     * (holding information about type, size etc...). If any of the parameters are <code>null</code> null will be
+     * returned.
+     * 
+     * @param rdi
+     * @param worldEnvelope
+     *            describing the raster data.
+     * @param rasterGeoReference
+     *            the raster geo reference defining the resolution of the raster.
+     * @param reader
+     *            to lazely instantiate the data from, may be <code>null</code>, if the raster should not be backed by
+     *            any data.
+     * @return a raster data object according to the given parameters.
+     */
+    public static SimpleRaster createEmptyRaster( RasterDataInfo rdi, Envelope worldEnvelope,
+                                                  RasterGeoReference rasterGeoReference, RasterReader reader ) {
+        SimpleRaster result = null;
+        if ( rdi != null && rasterGeoReference != null && worldEnvelope != null ) {
+            ByteBufferRasterData data = null;
+            RasterRect rasterRect = null;
+            if ( reader == null ) {
+                rasterRect = rasterGeoReference.convertEnvelopeToRasterCRS( worldEnvelope );
+            } else {
+                rasterRect = new RasterRect( 0, 0, reader.getWidth(), reader.getHeight() ); //
+            }
+            // rasterGeoReference.convertEnvelopeToRasterCRS(
+            // worldEnvelope );
+            switch ( rdi.interleaveType ) {
+            case BAND:
+                data = new BandInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
+                break;
+            case LINE:
+                data = new LineInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
+                break;
+            case PIXEL:
+                data = new PixelInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
+                break;
+            }
+            result = new SimpleRaster( data, worldEnvelope, rasterGeoReference );
+        }
+        return result;
     }
 }
