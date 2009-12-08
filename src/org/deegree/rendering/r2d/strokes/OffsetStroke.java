@@ -190,14 +190,14 @@ public class OffsetStroke implements Stroke {
                     n[0] /= len;
                     n[1] /= len;
                     double[] n1 = calcIntersection( firstx, firsty, last, n );
-                    path.lineTo( n1[0], n1[1] );
+                    maybeLineTo( path, n1[0], n1[1] );
                     n1 = calcIntersection( firstx, firsty, n, firstNormal );
-                    path.lineTo( n1[0], n1[1] );
+                    maybeLineTo( path, n1[0], n1[1] );
                     path.closePath();
                     break;
                 case Round:
                     double[] p1 = new double[] { firstx + last[0] * offset, firsty + last[1] * offset };
-                    path.lineTo( p1[0], p1[1] );
+                    maybeLineTo( path, p1[0], p1[1] );
                     double[] p2 = new double[] { firstx + firstNormal[0] * offset, firsty + firstNormal[1] * offset };
                     double[] midp = new double[] { p1[0] + firstNormal[0] * offset, p1[1] + firstNormal[1] * offset };
                     path.quadTo( midp[0], midp[1], p2[0], p2[1] );
@@ -205,7 +205,7 @@ public class OffsetStroke implements Stroke {
                     break;
                 case Standard:
                     double[] pt = calcIntersection( firstx, firsty, last, firstNormal );
-                    path.lineTo( pt[0], pt[1] );
+                    maybeLineTo( path, pt[0], pt[1] );
                     path.closePath();
                     break;
                 case Strict:
@@ -237,13 +237,13 @@ public class OffsetStroke implements Stroke {
                     n[0] /= len;
                     n[1] /= len;
                     n1 = calcIntersection( pair.second[0], pair.second[1], n1, n );
-                    path.lineTo( n1[0], n1[1] );
+                    maybeLineTo( path, n1[0], n1[1] );
                     n1 = calcIntersection( pair.second[0], pair.second[1], n, n2 );
-                    path.lineTo( n1[0], n1[1] );
+                    maybeLineTo( path, n1[0], n1[1] );
                     continue;
                 case Round:
                     double[] p1 = new double[] { pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset };
-                    path.lineTo( p1[0], p1[1] );
+                    maybeLineTo( path, p1[0], p1[1] );
                     if ( n2 == null ) {
                         continue;
                     }
@@ -257,7 +257,7 @@ public class OffsetStroke implements Stroke {
                         path.moveTo( n1[0], n1[1] );
                         firstMove = false;
                     } else {
-                        path.lineTo( n1[0], n1[1] );
+                        maybeLineTo( path, n1[0], n1[1] );
                     }
                     continue;
                 case Strict:
@@ -285,6 +285,14 @@ public class OffsetStroke implements Stroke {
         }
 
         return stroke == null ? path : stroke.createStrokedShape( path );
+    }
+
+    private static void maybeLineTo( Path2D path, double x, double y ) {
+        if ( Double.isNaN( x ) || Double.isNaN( y ) ) {
+            LOG.debug( "NaN detected!" );
+            return;
+        }
+        path.lineTo( x, y );
     }
 
 }
