@@ -93,7 +93,7 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
 
             Iterator<Feature> iter = rs.iterator();
 
-            boolean nextRead = false;
+            boolean nextRead = true;
 
             Feature next = null;
 
@@ -102,6 +102,7 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
                 if ( !nextRead ) {
                     return next != null;
                 }
+                next = null;
                 while ( iter.hasNext() ) {
                     next = iter.next();
                     try {
@@ -113,7 +114,7 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
                         throw new RuntimeException( e.getMessage(), e );
                     }
                 }
-                return !nextRead;
+                return next != null;
             }
 
             @Override
@@ -121,6 +122,7 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
+                nextRead = true;
                 return next;
             }
 
