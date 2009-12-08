@@ -41,6 +41,7 @@ import static java.lang.reflect.Modifier.STATIC;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
@@ -77,7 +78,8 @@ public class JavaUtils {
                         continue;
                     }
                     f.setAccessible( true );
-                    if ( t.isPrimitive() || t.isEnum() || f.get( o ) instanceof Collection<?> ) {
+                    if ( t.isPrimitive() || t.isEnum() || f.get( o ) instanceof Collection<?>
+                         || f.get( o ) instanceof Font ) {
                         sb.append( f.getName() ).append( ": " ).append( f.get( o ) ).append( ", " );
                     } else if ( f.get( o ) instanceof Color ) {
                         sb.append( f.getName() ).append( ": #" ).append( toHexString( ( (Color) f.get( o ) ).getRGB() ) );

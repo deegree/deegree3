@@ -36,6 +36,8 @@
 
 package org.deegree.rendering.r2d.styling.components;
 
+import static org.deegree.commons.utils.JavaUtils.generateToString;
+
 import java.awt.image.BufferedImage;
 
 import org.deegree.rendering.r2d.styling.Copyable;
@@ -112,6 +114,11 @@ public class Graphic implements Copyable<Graphic> {
         other.image = image;
         other.mark = mark.copy();
         return other;
+    }
+
+    @Override
+    public String toString() {
+        return generateToString( this );
     }
 
 }

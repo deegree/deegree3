@@ -36,6 +36,7 @@
 
 package org.deegree.rendering.r2d.styling;
 
+import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
 import org.deegree.rendering.r2d.styling.components.Graphic;
@@ -70,7 +71,7 @@ public class PointStyling implements Copyable<PointStyling>, Styling {
 
     @Override
     public String toString() {
-        return "PointStyling [" + graphic + "]";
+        return generateToString( this );
     }
 
 }

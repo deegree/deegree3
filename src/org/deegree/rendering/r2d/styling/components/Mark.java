@@ -95,6 +95,10 @@ public class Mark implements Copyable<Mark> {
         copy.wellKnown = wellKnown;
         copy.fill = fill.copy();
         copy.stroke = stroke.copy();
+        copy.markIndex = markIndex;
+        // these two should be safe to just copy the references:
+        copy.shape = shape;
+        copy.font = font;
         return copy;
     }
 
