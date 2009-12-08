@@ -48,6 +48,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.configuration.GMLVersionType;
+import org.deegree.commons.datasource.configuration.DirectSQLDataSourceType;
 import org.deegree.commons.datasource.configuration.FeatureStoreReferenceType;
 import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
@@ -151,11 +152,25 @@ public class FeatureStoreManager {
             fs = create( (MemoryFeatureStoreType) jaxbConfig, baseURL );
         } else if ( jaxbConfig instanceof PostGISFeatureStoreType ) {
             fs = create( (PostGISFeatureStoreType) jaxbConfig, baseURL );
+        } else if ( jaxbConfig instanceof DirectSQLDataSourceType ) {
+            fs = create( (DirectSQLDataSourceType) jaxbConfig );
         } else {
             String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", jaxbConfig.getClass() );
             throw new FeatureStoreException( msg );
         }
         return fs;
+    }
+
+    /**
+     * @param jaxbConfig
+     * @return a corresponding feature store, initialized
+     */
+    public static synchronized FeatureStore create( DirectSQLDataSourceType jaxbConfig ) {
+        String connId = jaxbConfig.getConnectionPoolId();
+        String srs = jaxbConfig.getCoordinateSystem();
+        String stmt = jaxbConfig.getSQLStatement();
+        // work in progress
+        return null;
     }
 
     /**

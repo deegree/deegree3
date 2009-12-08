@@ -60,6 +60,23 @@
       </extension>
     </complexContent>
   </complexType>
+
+  <element name="DirectSQLDataSource" substitutionGroup="ds:FeatureStore" type="ds:DirectSQLDataSourceType">
+    <annotation>
+      <documentation>FeatureStore that is backed by a SQL statement/connection.</documentation>
+    </annotation>
+  </element>  
+  <complexType name="DirectSQLDataSourceType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <sequence>
+          <element name="ConnectionPoolId" type="string" />
+          <element name="SQLStatement" type="string" />
+          <element name="CoordinateSystem" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
   
   <element name="MemoryFeatureStore" substitutionGroup="ds:FeatureStore" type="ds:MemoryFeatureStoreType">
     <annotation>

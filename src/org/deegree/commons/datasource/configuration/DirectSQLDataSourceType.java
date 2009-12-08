@@ -15,16 +15,17 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ShapefileDataSourceType complex type.
+ * <p>Java class for DirectSQLDataSourceType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ShapefileDataSourceType">
+ * &lt;complexType name="DirectSQLDataSourceType">
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.deegree.org/datasource}FeatureStoreType">
  *       &lt;sequence>
- *         &lt;element name="File" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="ConnectionPoolId" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="SQLStatement" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="CoordinateSystem" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/extension>
@@ -35,41 +36,68 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ShapefileDataSourceType", propOrder = {
-    "file",
+@XmlType(name = "DirectSQLDataSourceType", propOrder = {
+    "connectionPoolId",
+    "sqlStatement",
     "coordinateSystem"
 })
-public class ShapefileDataSourceType
+public class DirectSQLDataSourceType
     extends FeatureStoreType
 {
 
-    @XmlElement(name = "File", required = true)
-    protected String file;
+    @XmlElement(name = "ConnectionPoolId", required = true)
+    protected String connectionPoolId;
+    @XmlElement(name = "SQLStatement", required = true)
+    protected String sqlStatement;
     @XmlElement(name = "CoordinateSystem", required = true)
     protected String coordinateSystem;
 
     /**
-     * Gets the value of the file property.
+     * Gets the value of the connectionPoolId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFile() {
-        return file;
+    public String getConnectionPoolId() {
+        return connectionPoolId;
     }
 
     /**
-     * Sets the value of the file property.
+     * Sets the value of the connectionPoolId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFile(String value) {
-        this.file = value;
+    public void setConnectionPoolId(String value) {
+        this.connectionPoolId = value;
+    }
+
+    /**
+     * Gets the value of the sqlStatement property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSQLStatement() {
+        return sqlStatement;
+    }
+
+    /**
+     * Sets the value of the sqlStatement property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSQLStatement(String value) {
+        this.sqlStatement = value;
     }
 
     /**
