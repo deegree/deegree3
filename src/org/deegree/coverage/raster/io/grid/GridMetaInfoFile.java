@@ -46,6 +46,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
+import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -71,15 +73,24 @@ public class GridMetaInfoFile {
 
     private final RasterGeoReference geoReference;
 
-    private final int rows;
-
-    private final int columns;
-
     private final int tileRasterWidth;
 
     private final int tileRasterHeight;
 
+    private final int rows;
+
+    private final int columns;
+
     private final int bands;
+
+    private final DataType dataType;
+
+    /**
+     * @return the dataType
+     */
+    public final DataType getDataType() {
+        return dataType;
+    }
 
     /**
      * @param geoReference
@@ -88,15 +99,45 @@ public class GridMetaInfoFile {
      * @param tileRasterWidth
      * @param tileRasterHeight
      * @param bands
+     * @param dataType
      */
     public GridMetaInfoFile( RasterGeoReference geoReference, int rows, int columns, int tileRasterWidth,
-                             int tileRasterHeight, int bands ) {
+                             int tileRasterHeight, int bands, DataType dataType ) {
         this.geoReference = geoReference;
-        this.rows = rows;
-        this.columns = columns;
         this.tileRasterWidth = tileRasterWidth;
         this.tileRasterHeight = tileRasterHeight;
+        this.columns = columns;
+        this.rows = rows;
         this.bands = bands;
+        this.dataType = dataType;
+    }
+
+    /**
+     * @return the number of tiles in the height (rows) of the grid file.
+     */
+    public final int rows() {
+        return rows;
+    }
+
+    /**
+     * @return the number of tiles in the width (columns) of the grid file.
+     */
+    public final int columns() {
+        return columns;
+    }
+
+    /**
+     * @param geoReference
+     * @param rows
+     * @param columns
+     * @param tileRasterWidth
+     * @param tileRasterHeight
+     * @param dataInfo
+     */
+    public GridMetaInfoFile( RasterGeoReference geoReference, int rows, int columns, int tileRasterWidth,
+                             int tileRasterHeight, RasterDataInfo dataInfo ) {
+        this( geoReference, rows, columns, tileRasterWidth, tileRasterHeight, dataInfo.bands, dataInfo.dataType );
+
     }
 
     /**
@@ -120,15 +161,29 @@ public class GridMetaInfoFile {
         int columns = Integer.parseInt( br.readLine() );
         int tileSamplesX = Integer.parseInt( br.readLine() );
         int tileSamplesY = Integer.parseInt( br.readLine() );
+        String nl = br.readLine();
         // try to read 'new' file info
         int bands = 3;
-        try {
-            bands = Integer.parseInt( br.readLine() );
-        } catch ( NumberFormatException e ) {
-            // old file.
+        DataType type = DataType.BYTE;
+        if ( nl != null ) {
+            try {
+                bands = Integer.parseInt( nl );
+            } catch ( NumberFormatException e ) {
+                // old file.
+            }
+            // datatype
+            nl = br.readLine();
+            if ( nl != null ) {
+                try {
+                    type = DataType.fromDataBufferType( Integer.parseInt( nl ) );
+                } catch ( NumberFormatException e ) {
+                    // old file.
+                }
+            }
         }
+
         br.close();
-        return new GridMetaInfoFile( worldFile, rows, columns, tileSamplesX, tileSamplesY, bands );
+        return new GridMetaInfoFile( worldFile, rows, columns, tileSamplesX, tileSamplesY, bands, type );
     }
 
     /**
@@ -161,6 +216,7 @@ public class GridMetaInfoFile {
         writer.println( metaInfo.tileRasterWidth );
         writer.println( metaInfo.tileRasterHeight );
         writer.println( metaInfo.bands );
+        writer.println( DataType.toDataBufferType( metaInfo.dataType ) );
 
         writer.close();
     }
@@ -189,20 +245,6 @@ public class GridMetaInfoFile {
      */
     public final RasterGeoReference getGeoReference() {
         return geoReference;
-    }
-
-    /**
-     * @return the rows
-     */
-    public final int getRows() {
-        return rows;
-    }
-
-    /**
-     * @return the columns
-     */
-    public final int getColumns() {
-        return columns;
     }
 
     /**

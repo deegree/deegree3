@@ -40,6 +40,7 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.io.RasterReader;
 
 /**
  * This class implements a band-interleaved, ByteBuffer-based RasterData.
@@ -52,7 +53,8 @@ import org.deegree.coverage.raster.geom.RasterRect;
 public class BandInterleavedRasterData extends ByteBufferRasterData {
 
     /**
-     * Creates a new BandInterleavedRasterData with given size, number of bands and data type
+     * Creates a new BandInterleavedRasterData with given size, number of bands and data type backed with no data
+     * reader.
      * 
      * @param sampleDomain
      *            the raster rectangle defining the sample domain of this raster data.
@@ -65,7 +67,7 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
      */
     public BandInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight,
                                       RasterDataInfo dataInfo ) {
-        this( new DataView( sampleDomain, dataInfo ), rasterWidth, rasterHeight, dataInfo, true );
+        this( sampleDomain, rasterWidth, rasterHeight, null, dataInfo );
     }
 
     /**
@@ -77,17 +79,39 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
      *            width of the underlying raster data.
      * @param rasterHeight
      *            height of the underlying raster data.
+     * @param reader
+     *            to be used for reading the data, may be <code>null<code>
+     * @param dataInfo
+     *            containing information about the underlying raster data.
+     */
+    public BandInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, RasterReader reader,
+                                      RasterDataInfo dataInfo ) {
+        this( new DataView( sampleDomain, dataInfo ), rasterWidth, rasterHeight, reader, dataInfo, true );
+    }
+
+    /**
+     * Creates a new BandInterleavedRasterData with given size, number of bands and data type
+     * 
+     * @param sampleDomain
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param rasterWidth
+     *            width of the underlying raster data.
+     * @param rasterHeight
+     *            height of the underlying raster data.
+     * @param reader
+     *            to be used for reading the data, may be <code>null<code>
      * @param type
      *            DataType of raster samples
      */
-    private BandInterleavedRasterData( DataView view, int rasterWidth, int rasterHeight, RasterDataInfo dataInfo,
-                                       boolean init ) {
-        super( view, rasterWidth, rasterHeight, dataInfo, init );
+    private BandInterleavedRasterData( DataView view, int rasterWidth, int rasterHeight, RasterReader reader,
+                                       RasterDataInfo dataInfo, boolean init ) {
+        super( view, rasterWidth, rasterHeight, reader, dataInfo, init );
     }
 
     @Override
     public BandInterleavedRasterData createCompatibleRasterData( DataView view ) {
-        return new BandInterleavedRasterData( view, rasterWidth, rasterHeight, dataInfo, false );
+        return new BandInterleavedRasterData( view, getOriginalWidth(), getOriginalHeight(), dataAccess.getReader(),
+                                              dataInfo, false );
     }
 
     @Override
@@ -95,22 +119,23 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
         // a new raster will be created, the old information should be discarded.
         RasterDataInfo newRasterInfo = createRasterDataInfo( bands );
         return new BandInterleavedRasterData( new DataView( sampleDomain, newRasterInfo ), sampleDomain.width,
-                                              sampleDomain.height, newRasterInfo, true );
+                                              sampleDomain.height, dataAccess.getReader(), newRasterInfo, true );
     }
 
     @Override
     protected ByteBufferRasterData createCompatibleEmptyRasterData() {
-        return new BandInterleavedRasterData( view, rasterWidth, rasterHeight, this.dataInfo, false );
+        return new BandInterleavedRasterData( view, getOriginalWidth(), getOriginalHeight(), dataAccess.getReader(),
+                                              this.dataInfo, false );
     }
 
     @Override
     public final int getBandStride() {
-        return rasterWidth * getPixelStride() * rasterHeight;
+        return getOriginalWidth() * getPixelStride() * getOriginalHeight();
     }
 
     @Override
     public final int getLineStride() {
-        return rasterWidth * getPixelStride();
+        return getOriginalWidth() * getPixelStride();
     }
 
     @Override

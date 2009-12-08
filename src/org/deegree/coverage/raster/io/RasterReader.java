@@ -38,9 +38,13 @@ package org.deegree.coverage.raster.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Set;
 
 import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.data.container.BufferResult;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
  * This interface is for abstraction of the raster loading handling.
@@ -89,4 +93,34 @@ public interface RasterReader {
      */
     public Set<String> getSupportedFormats();
 
+    /**
+     * @return
+     */
+    public boolean shouldCreateCacheFile();
+
+    public File file();
+
+    /**
+     * @return
+     */
+    public int getWidth();
+
+    /**
+     * @return
+     */
+    public int getHeight();
+
+    /**
+     * @return
+     */
+    public RasterGeoReference getGeoReference();
+
+    /**
+     * @param rect
+     * @param result
+     * @return
+     * @throws IOException
+     */
+    public BufferResult read( RasterRect rect, ByteBuffer buffer )
+                            throws IOException;
 }

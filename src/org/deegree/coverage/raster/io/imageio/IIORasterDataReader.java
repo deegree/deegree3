@@ -35,22 +35,39 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io.imageio;
 
+import static java.lang.Math.min;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
+import javax.media.jai.ImageLayout;
+import javax.media.jai.JAI;
+import javax.media.jai.ParameterBlockJAI;
+import javax.media.jai.RenderedOp;
 
+import org.deegree.coverage.raster.data.container.BufferResult;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.data.info.InterleaveType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterDataReader;
 import org.deegree.coverage.raster.io.RasterIOOptions;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +107,8 @@ public class IIORasterDataReader implements RasterDataReader {
 
     private boolean metadataReadFailed = false;
 
+    private boolean rdiReadFailed = false;
+
     private boolean heightReadFailed = false;
 
     private boolean widthReadFailed = false;
@@ -97,6 +116,8 @@ public class IIORasterDataReader implements RasterDataReader {
     private boolean imageReadFailed = false;
 
     private RasterIOOptions options;
+
+    private RasterDataInfo rdi;
 
     /**
      * Create a IIORasterDataReader for given file
@@ -230,6 +251,42 @@ public class IIORasterDataReader implements RasterDataReader {
     }
 
     /**
+     * @return the raster data info object describing the data to be read.
+     */
+    public RasterDataInfo getRasterDataInfo() {
+        if ( rdi == null && !rdiReadFailed && findReaderForIO() ) {
+            try {
+                Iterator<ImageTypeSpecifier> imageTypes = reader.getImageTypes( 0 );
+                while ( imageTypes.hasNext() && rdi == null ) {
+                    ImageTypeSpecifier its = imageTypes.next();
+                    if ( its != null ) {
+                        BufferedImage bi = its.createBufferedImage( 2, 2 );
+                        BandType[] bands = BandType.fromBufferedImageType( bi.getType(), its.getNumBands() );
+                        DataType type = DataType.fromDataBufferType( its.getSampleModel().getDataType() );
+                        if ( type != DataType.FLOAT && type != DataType.DOUBLE && type != DataType.BYTE
+                             && bands.length > 1 ) {
+                            type = DataType.BYTE;
+                            boolean alphaLast = ( bands.length == 4 ) && ( bands[3] == BandType.ALPHA );
+                            bands[0] = BandType.RED;
+                            bands[1] = BandType.GREEN;
+                            bands[2] = BandType.BLUE;
+                            if ( bands.length == 4 && !alphaLast ) {
+                                bands[3] = BandType.ALPHA;
+                            }
+                        }
+                        rdi = new RasterDataInfo( bands, type, InterleaveType.PIXEL );
+                    }
+                }
+
+            } catch ( IOException e ) {
+                LOG.debug( "couldn't create a raster data info object:" + e.getMessage(), e );
+                rdiReadFailed = true;
+            }
+        }
+        return rdi;
+    }
+
+    /**
      * Removes the internal references to the loaded raster to allow garbage collection of the raster.
      */
     public void close() {
@@ -277,5 +334,113 @@ public class IIORasterDataReader implements RasterDataReader {
             }
         }
         return ( this.reader != null && !retrievalOfReadersFailed );
+    }
+
+    /**
+     * needed by the raster reader,
+     * 
+     * @return will return the file if any.
+     */
+    protected File file() {
+        return ( file != null ) ? file : null;
+    }
+
+    /**
+     * 
+     * @return true if the imageio thinks the file can be accessed easily
+     */
+    boolean shouldCreateCacheFile() {
+        boolean result = true;
+        try {
+            result = !reader.isRandomAccessEasy( 0 );
+        } catch ( IOException e ) {
+            LOG.debug(
+                       "Could not get easy access information from the imagereader, using configured value for using cache: "
+                                               + result, e );
+        }
+        return result;
+    }
+
+    /**
+     * @param rect
+     * @param resultBuffer
+     * @return the buffer result containing the result buffer (instantiated if the given one was null) and the rect it
+     *         is valid for.
+     */
+    public BufferResult read( RasterRect rect, ByteBuffer resultBuffer ) {
+        if ( resultBuffer == null ) {
+            resultBuffer = ByteBuffer.allocate( getRasterDataInfo().bands * getRasterDataInfo().dataSize * rect.width
+                                                * rect.height );
+        }
+        BufferResult result = null;
+        ImageReadParam rp = new ImageReadParam();
+        Rectangle dataRect = new Rectangle( 0, 0, getWidth(), getHeight() );
+        Rectangle intersection = dataRect.intersection( new Rectangle( rect.x, rect.y, rect.width, rect.height ) );
+        rp.setSourceRegion( intersection );
+        try {
+            BufferedImage img = reader.read( 0, rp );
+            Raster raster = img.getRaster();
+
+            // DataBuffer buffer = raster.getDataBuffer();
+            int imgDataType = raster.getSampleModel().getDataType();
+            DataType type = DataType.fromDataBufferType( imgDataType );
+            RasterFactory.rasterToByteBuffer( raster, 0, 0, img.getWidth(), img.getHeight(), type, resultBuffer );
+            result = new BufferResult( new RasterRect( 0, 0, img.getWidth(), img.getHeight() ), resultBuffer );
+        } catch ( IOException e ) {
+            LOG.debug( "Could not read the given rect: " + rect + " because: " + e.getLocalizedMessage(), e );
+        }
+        return result;
+    }
+
+    /**
+     * Below are some methods to get started with tiling on image io
+     */
+
+    @SuppressWarnings("unused")
+    private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis ) {
+        ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
+        pbj.setParameter( "Input", iis );
+
+        RenderedOp result = JAI.create( "ImageRead", pbj, null );
+
+        int width = result.getWidth();
+        int height = result.getHeight();
+        int numberOfTiles = calcApproxTiles( width, height );
+        int tileSize = calcBestTileSize( width, height, numberOfTiles );
+
+        ImageLayout layout = new ImageLayout();
+        layout.setTileWidth( tileSize );
+        layout.setTileHeight( tileSize );
+        result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
+        // return result;
+    }
+
+    /**
+     * @param width2
+     * @param height2
+     * @param numberOfTiles
+     * @return
+     */
+    private int calcBestTileSize( int imageWidth, int imageHeight, int numberOfTiles ) {
+        double smallest = min( imageWidth, imageHeight );
+        double size = smallest / numberOfTiles;
+        return (int) Math.round( size );
+    }
+
+    private int calcApproxTiles( int imageWidth, int imageHeight ) {
+        int TILE_SIZE = 500;
+        int largest = Math.max( imageWidth, imageHeight );
+        // smaller then
+        if ( largest < ( 0.5 * TILE_SIZE ) + TILE_SIZE ) {
+            return 1;
+        }
+        if ( largest < 2 * TILE_SIZE ) {
+            return 2;
+        }
+        int result = 3;
+        while ( largest > ( result * TILE_SIZE ) ) {
+            result++;
+        }
+        return result;
     }
 }

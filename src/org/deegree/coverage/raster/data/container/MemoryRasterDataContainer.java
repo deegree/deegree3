@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.container;
 
 import org.deegree.coverage.raster.data.RasterData;
@@ -41,12 +41,12 @@ import org.deegree.coverage.raster.io.RasterDataReader;
 
 /**
  * This class implements a RasterDataContainer that keeps RasterData in memory.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class MemoryRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 
@@ -61,7 +61,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
 
     /**
      * Reads RasterData from RasterReader and wraps it in a RasterDataContainer. RasterData stays in memory.
-     *
+     * 
      * @param reader
      *            RasterReader for RasterData
      */
@@ -71,7 +71,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
 
     /**
      * Wraps RasterData in a RasterDataContainer. RasterData stays in memory.
-     *
+     * 
      * @param raster
      *            RasterData to wrap
      */
@@ -81,7 +81,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.RasterDataContainer#getColumns()
      */
     public int getColumns() {
@@ -90,7 +90,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.RasterDataContainer#getRows()
      */
     public int getRows() {
@@ -99,7 +99,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.RasterDataContainer#getRasterData()
      */
     public RasterData getRasterData() {
@@ -112,7 +112,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
     }
 
     public void setRasterDataReader( RasterDataReader reader ) {
-        this.raster = reader.read();
+        // this.raster = reader.read();
     }
 
     public RasterDataContainer getRasterDataContainer( LoadingPolicy type ) {

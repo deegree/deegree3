@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data;
 
+import java.io.File;
+
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.InterleaveType;
@@ -44,6 +46,7 @@ import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.data.nio.LineInterleavedRasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.io.RasterReader;
 
 /**
  * This class creates RasterData objects with a given interleaving type.
@@ -56,6 +59,8 @@ import org.deegree.coverage.raster.geom.RasterRect;
  * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
  */
 public class RasterDataFactory {
+
+    private final static File CACHE_DIR = new File( "/tmp/" );
 
     /**
      * Creates a pixel-interleaved RasterData object with given size and data type
@@ -89,22 +94,56 @@ public class RasterDataFactory {
      */
     public static ByteBufferRasterData createRasterData( int width, int height, BandType[] bands, DataType dataType,
                                                          InterleaveType interleaveType ) {
+        return createRasterData( width, height, bands, dataType, interleaveType, null );
+    }
+
+    /**
+     * Creates a RasterData object object with given size, number of bands, data type and interleaving
+     * 
+     * @param width
+     *            width of the raster
+     * @param height
+     *            height of the raster
+     * @param bands
+     *            number and type of the bands
+     * @param dataType
+     *            data type for samples
+     * @param interleaveType
+     *            interleaving type for the raster
+     * @param reader
+     *            to get the data from, maybe <code>null</code>
+     * @return new RasterData
+     */
+    public static ByteBufferRasterData createRasterData( int width, int height, BandType[] bands, DataType dataType,
+                                                         InterleaveType interleaveType, RasterReader reader ) {
 
         ByteBufferRasterData result;
         RasterDataInfo dataInfo = new RasterDataInfo( null, bands, dataType, interleaveType );
         switch ( interleaveType ) {
         case PIXEL:
-            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, dataInfo );
+            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, reader,
+                                                     dataInfo );
             break;
         case LINE:
-            result = new LineInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, dataInfo );
+            result = new LineInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, reader,
+                                                    dataInfo );
             break;
         case BAND:
-            result = new BandInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, dataInfo );
+            result = new BandInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, reader,
+                                                    dataInfo );
             break;
         default:
             throw new UnsupportedOperationException( "Interleaving type " + interleaveType + " not supported!" );
         }
         return result;
+    }
+
+    /**
+     * @return the cache dir
+     * 
+     */
+    public static File getCacheLocation() {
+        return CACHE_DIR;
+
     }
 }

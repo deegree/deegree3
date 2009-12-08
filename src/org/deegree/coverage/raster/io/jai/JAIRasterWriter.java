@@ -73,8 +73,8 @@ public class JAIRasterWriter implements RasterWriter {
             JAIRasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(),
                                                       file.getAbsolutePath() );
         }
-        RasterGeoReference rasterEnv = raster.getRasterReference();
-        WorldFileAccess.writeWorldFile( rasterEnv, file );
+        RasterGeoReference rasterReference = raster.getRasterReference();
+        WorldFileAccess.writeWorldFile( rasterReference, file );
     }
 
     @Override

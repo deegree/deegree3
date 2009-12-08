@@ -45,6 +45,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,8 +57,10 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
+import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
@@ -149,6 +152,14 @@ public class XYZReader implements RasterReader {
 
     private static Logger log = LoggerFactory.getLogger( XYZReader.class );
 
+    private File file;
+
+    private RasterGeoReference geoReference;
+
+    private int height;
+
+    private int width;
+
     /**
      * Creates a SimpleRaster from a text file.
      * 
@@ -166,7 +177,7 @@ public class XYZReader implements RasterReader {
     private SimpleRaster readASCIIGrid( BufferedReader reader, RasterIOOptions options )
                             throws IOException {
 
-        RasterGeoReference geoReference = options.getRasterGeoReference();
+        geoReference = options.getRasterGeoReference();
 
         List<GridPoint> gridPoints = new LinkedList<GridPoint>();
 
@@ -237,6 +248,8 @@ public class XYZReader implements RasterReader {
         Envelope rasterEnvelope = factory.createEnvelope( gridExtension.minx, gridExtension.miny, gridExtension.maxx,
                                                           gridExtension.maxy, options.getCRS() );
         int[] size = geoReference.getSize( rasterEnvelope );
+        width = size[0];
+        height = size[1];
         RasterData data = RasterDataFactory.createRasterData( size[0], size[1], DataType.FLOAT );
         data.setNullPixel( options.getNoDataValue() );
 
@@ -263,6 +276,7 @@ public class XYZReader implements RasterReader {
     @Override
     public AbstractRaster load( File filename, RasterIOOptions options )
                             throws IOException {
+        this.file = filename;
         BufferedReader reader = new BufferedReader( new FileReader( filename ) );
         if ( options.readWorldFile() ) {
             try {
@@ -280,6 +294,38 @@ public class XYZReader implements RasterReader {
                             throws IOException {
         BufferedReader reader = new BufferedReader( new InputStreamReader( stream ) );
         return readASCIIGrid( reader, options );
+    }
+
+    @Override
+    public File file() {
+        return file;
+    }
+
+    @Override
+    public RasterGeoReference getGeoReference() {
+        return geoReference;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public BufferResult read( RasterRect rect, ByteBuffer buffer )
+                            throws IOException {
+        // yes, do this
+        return null;
+    }
+
+    @Override
+    public boolean shouldCreateCacheFile() {
+        return true;
     }
 
 }

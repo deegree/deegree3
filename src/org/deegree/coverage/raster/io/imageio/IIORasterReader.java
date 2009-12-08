@@ -38,20 +38,22 @@ package org.deegree.coverage.raster.io.imageio;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.container.RasterDataContainer;
-import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
+import org.deegree.coverage.raster.data.container.BufferResult;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
@@ -68,8 +70,6 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class IIORasterReader implements RasterReader {
-
-    private File file;
 
     private static final Set<String> SUPPORTED_TYPES;
 
@@ -103,16 +103,22 @@ public class IIORasterReader implements RasterReader {
         // }
     }
 
+    private IIORasterDataReader reader;
+
+    private int width;
+
+    private int height;
+
+    private RasterGeoReference rasterReference;
+
     public boolean canLoad( File filename ) {
-        // TODO Auto-generated method stub
         return true;
     }
 
     public AbstractRaster load( File file, RasterIOOptions options )
                             throws IOException {
         LOG.debug( "reading " + file + " with ImageIO" );
-        this.file = file;
-        IIORasterDataReader reader = new IIORasterDataReader( file, options );
+        reader = new IIORasterDataReader( file, options );
         AbstractRaster r = loadFromReader( reader, options );
         return r;
     }
@@ -120,16 +126,13 @@ public class IIORasterReader implements RasterReader {
     @Override
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
-        IIORasterDataReader reader = new IIORasterDataReader( stream, options );
+        reader = new IIORasterDataReader( stream, options );
         return loadFromReader( reader, options );
     }
 
     private AbstractRaster loadFromReader( IIORasterDataReader reader, RasterIOOptions options ) {
-
-        int width = reader.getWidth();
-        int height = reader.getHeight();
-
-        RasterGeoReference rasterReference;
+        width = reader.getWidth();
+        height = reader.getHeight();
 
         OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();
         MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc );
@@ -144,8 +147,8 @@ public class IIORasterReader implements RasterReader {
                 rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
                 if ( options.readWorldFile() ) {
                     try {
-                        if ( file != null ) {
-                            rasterReference = WorldFileAccess.readWorldFile( file, options );
+                        if ( reader.file() != null ) {
+                            rasterReference = WorldFileAccess.readWorldFile( reader.file(), options );
                         }
                     } catch ( IOException e ) {
                         //
@@ -160,9 +163,13 @@ public class IIORasterReader implements RasterReader {
         Envelope envelope = rasterReference.getEnvelope( width, height, readCRS );
 
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
-        RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy() );
+        // RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy()
+        // );
+        RasterDataInfo rdi = reader.getRasterDataInfo();
 
-        return new SimpleRaster( source, envelope, rasterReference );
+        return RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this );
+        //
+        // return new SimpleRaster( data, envelope, rasterReference );
     }
 
     @Override
@@ -170,4 +177,38 @@ public class IIORasterReader implements RasterReader {
         return SUPPORTED_TYPES;
     }
 
+    @Override
+    public File file() {
+        return reader == null ? null : reader.file();
+    }
+
+    @Override
+    public boolean shouldCreateCacheFile() {
+        return reader == null ? true : reader.shouldCreateCacheFile();
+    }
+
+    @Override
+    public RasterGeoReference getGeoReference() {
+        return rasterReference;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public BufferResult read( RasterRect rect, ByteBuffer buffer )
+                            throws IOException {
+        return reader == null ? null : reader.read( rect, buffer );
+    }
+
+    public RasterDataInfo getRasterDataInfo() {
+        return reader == null ? null : reader.getRasterDataInfo();
+    }
 }

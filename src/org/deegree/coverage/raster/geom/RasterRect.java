@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,15 +32,15 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.geom;
 
 /**
  * Simple data structure for a raster rectangle. Stores upper-left pixel coordinate and width and height.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:rbezema $
- *
+ * 
  * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
  */
 public class RasterRect {
@@ -66,7 +66,7 @@ public class RasterRect {
 
     /**
      * Creates a new RasterRect
-     *
+     * 
      * @param x
      *            upper-left pixel
      * @param y
@@ -95,4 +95,27 @@ public class RasterRect {
         return "{x=" + x + ",y=" + y + ", width=" + width + ", height=" + height + "}";
     }
 
+    /**
+     * @param fRect
+     * @return
+     */
+    public static final RasterRect intersection( RasterRect first, RasterRect second ) {
+        int fmaxX = first.x + first.width;
+        int smaxX = second.x + second.width;
+        int fmaxY = first.y + first.height;
+        int smaxY = second.y + second.height;
+        if ( second.x >= fmaxX || smaxX <= first.x || second.y >= fmaxY || smaxY <= first.y ) {
+            /* right outside || left outside || bottom outside || top outside */
+            return null;
+        }
+
+        int x = Math.max( first.x, second.x );
+        int y = Math.max( first.y, second.y );
+        int width = Math.min( smaxX, fmaxX ) - x;
+        int height = Math.min( smaxY, fmaxY ) - y;
+
+        // y values
+
+        return new RasterRect( x, y, width, height );
+    }
 }

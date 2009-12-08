@@ -38,13 +38,16 @@ package org.deegree.coverage.raster.io.jai;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Set;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
@@ -54,6 +57,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A JAI based raster reader, rb: should be refactored to use the 'new' tiling raster api.
+ * 
  * @version $Revision$
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
@@ -66,11 +71,19 @@ public class JAIRasterReader implements RasterReader {
 
     private File file = null;
 
+    private RasterGeoReference rasterReference;
+
+    private int width;
+
+    private int height;
+
+    private JAIRasterDataReader reader;
+
     @Override
     public AbstractRaster load( File file, RasterIOOptions options ) {
         LOG.debug( "reading " + file + " with JAI" );
-        JAIRasterDataReader reader = new JAIRasterDataReader( file, options );
-        this.file = file;
+        reader = new JAIRasterDataReader( file, options );
+
         return loadFromReader( reader, options );
     }
 
@@ -78,18 +91,18 @@ public class JAIRasterReader implements RasterReader {
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
         LOG.debug( "reading from stream with JAI" );
-        JAIRasterDataReader reader = new JAIRasterDataReader( stream, options );
+        reader = new JAIRasterDataReader( stream, options );
         return loadFromReader( reader, options );
     }
 
     private AbstractRaster loadFromReader( JAIRasterDataReader reader, RasterIOOptions options ) {
-        int width = reader.getWidth();
-        int height = reader.getHeight();
+        width = reader.getWidth();
+        height = reader.getHeight();
 
         reader.close();
         OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();
         // create a 1:1 mapping
-        RasterGeoReference rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
+        rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
 
         if ( options.hasRasterGeoReference() ) {
             rasterReference = options.getRasterGeoReference();
@@ -119,5 +132,36 @@ public class JAIRasterReader implements RasterReader {
     @Override
     public Set<String> getSupportedFormats() {
         return JAIRasterIOProvider.SUPPORTED_TYPES;
+    }
+
+    @Override
+    public File file() {
+        return reader == null ? null : reader.file();
+    }
+
+    @Override
+    public RasterGeoReference getGeoReference() {
+        return rasterReference;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public BufferResult read( RasterRect rect, ByteBuffer buffer )
+                            throws IOException {
+        throw new UnsupportedOperationException( "Not yet implemented for the JAI readers" );
+    }
+
+    @Override
+    public boolean shouldCreateCacheFile() {
+        return true;
     }
 }

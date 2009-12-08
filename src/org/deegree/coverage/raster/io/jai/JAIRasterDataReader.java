@@ -58,6 +58,9 @@ import com.sun.media.jai.codec.SeekableStream;
  * 
  * It is based on Java Advanced Imaging and it returns RasterData objects.
  * 
+ * rb: This class needs heavy refactoring, maybe enable tiling for supporting files, than streams would not work any
+ * more, but using the renderOp would.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:otonnhofer $
  * 
@@ -202,6 +205,14 @@ public class JAIRasterDataReader implements RasterDataReader {
             // else use build in "fileload"
             return JAI.create( "stream", stream );
         }
+    }
+
+    /**
+     * 
+     * @return the file containing the data.
+     */
+    public File file() {
+        return file;
     }
 
 }

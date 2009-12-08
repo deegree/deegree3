@@ -39,14 +39,16 @@ package org.deegree.coverage.raster.container;
 import static org.deegree.coverage.raster.io.grid.GridMetaInfoFile.METAINFO_FILE_NAME;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.io.RasterIOOptions;
+import org.deegree.coverage.raster.io.grid.GridFileReader;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.coverage.raster.io.grid.GridReader;
+import org.deegree.coverage.raster.io.grid.SplittedBlobReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +72,9 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
     public static final String BLOB_FILE_EXT = ".bin";
 
     // how much tiles are in a blob (except for the last blob)
-    private int tilesPerBlob;
+    // private int tilesPerBlob;
 
-    private GridReader[] blobReaders;
+    private GridReader blobReader;
 
     /**
      * @param metaInfoFile
@@ -93,33 +95,55 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
     public GriddedBlobTileContainer( GridMetaInfoFile metaInfoFile, File blobDir ) throws IOException {
         this( metaInfoFile );
 
-        List<File> blobFiles = new ArrayList<File>();
-        long totalSize = 0;
-        int blobNo = 0;
+        File[] files = blobDir.listFiles( new FileFilter() {
 
-        // find all blob files.
-        while ( true ) {
-            File blobFile = new File( blobDir, BLOB_FILE_NAME + blobNo + BLOB_FILE_EXT );
-            if ( !blobFile.exists() ) {
-                break;
+            @Override
+            public boolean accept( File pathname ) {
+                if ( !pathname.isDirectory() ) {
+                    String ext = FileUtils.getFileExtension( pathname );
+                    String file = FileUtils.getFilename( pathname );
+                    return ( file.startsWith( BLOB_FILE_NAME ) && BLOB_FILE_EXT.equalsIgnoreCase( "." + ext ) );
+                }
+
+                return false;
             }
-            blobFiles.add( blobFile );
-            blobNo++;
-            totalSize += blobFile.length();
-        }
-        LOG.debug( "Concatenated grid size (of all blob files): " + totalSize );
+        } );
+        if ( files != null ) {
+            if ( files.length > 1 ) {
+                this.blobReader = new SplittedBlobReader( blobDir, BLOB_FILE_NAME, BLOB_FILE_EXT, metaInfoFile );
+            } else {
+                this.blobReader = new GridFileReader( metaInfoFile, files[0] );
+            }
 
-        blobReaders = new GridReader[blobFiles.size()];
-        for ( int i = 0; i < blobReaders.length; ++i ) {
-            blobReaders[i] = new GridReader( metaInfoFile, blobFiles.get( i ) );
         }
-        tilesPerBlob = blobReaders[0].getNumberOfTiles();
-        long expectedBlobSize = metaInfoFile.getRows() * metaInfoFile.getColumns() * blobReaders[0].getBytesPerTile();
-        if ( expectedBlobSize != totalSize ) {
-            String msg = "Size of grid (all blob file) (=" + totalSize + ") does not match the expected size (="
-                         + expectedBlobSize + ").";
-            throw new IllegalArgumentException( msg );
-        }
+
+        // List<File> blobFiles = new ArrayList<File>();
+        // long totalSize = 0;
+        // int blobNo = 0;
+        //
+        // // find all blob files.
+        // while ( true ) {
+        // File blobFile = new File( blobDir, BLOB_FILE_NAME + blobNo + BLOB_FILE_EXT );
+        // if ( !blobFile.exists() ) {
+        // break;
+        // }
+        // blobFiles.add( blobFile );
+        // blobNo++;
+        // totalSize += blobFile.length();
+        // }
+        // LOG.debug( "Concatenated grid size (of all blob files): " + totalSize );
+        //
+        // blobReaders = new GridReader[blobFiles.size()];
+        // for ( int i = 0; i < blobReaders.length; ++i ) {
+        // blobReaders[i] = new GridFileReader( metaInfoFile, blobFiles.get( i ) );
+        // }
+        // tilesPerBlob = blobReaders[0].getNumberOfTiles();
+        // long expectedBlobSize = metaInfoFile.rows() * metaInfoFile.columns() * blobReaders[0].getBytesPerTile();
+        // if ( expectedBlobSize != totalSize ) {
+        // String msg = "Size of grid (all blob file) (=" + totalSize + ") does not match the expected size (="
+        // + expectedBlobSize + ").";
+        // throw new IllegalArgumentException( msg );
+        // }
 
     }
 
@@ -141,10 +165,10 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         long totalSize = blobFile.length();
         LOG.debug( "Real blob size: " + totalSize );
 
-        blobReaders = new GridReader[1];
-        blobReaders[0] = new GridReader( metaInfoFile, blobFile );
-        tilesPerBlob = blobReaders[0].getNumberOfTiles();
-        long expectedBlobSize = metaInfoFile.getRows() * metaInfoFile.getColumns() * blobReaders[0].getBytesPerTile();
+        // blobReaders = new GridFileReader[1];
+        blobReader = new GridFileReader( metaInfoFile, blobFile );
+        // tilesPerBlob = blobReader.getNumberOfTiles();
+        long expectedBlobSize = metaInfoFile.rows() * metaInfoFile.columns() * blobReader.getBytesPerTile();
         if ( expectedBlobSize != totalSize ) {
             String msg = "Size of gridfile (=" + totalSize + ") does not match the expected size (=" + expectedBlobSize
                          + ").";
@@ -177,11 +201,11 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 
     @Override
     public AbstractRaster getTile( int rowId, int columnId ) {
-        int tileId = getTileId( columnId, rowId );
-        int blobNo = tileId / tilesPerBlob;
+        // int tileId = getTileId( columnId, rowId );
+        // int blobNo = tileId / tilesPerBlob;
         AbstractRaster result = null;
         try {
-            result = blobReaders[blobNo].getTile( rowId, columnId );
+            result = blobReader.getTile( columnId, rowId );
         } catch ( IOException e ) {
             LOG.error( "Error reading tile data from blob: " + e.getMessage(), e );
         }

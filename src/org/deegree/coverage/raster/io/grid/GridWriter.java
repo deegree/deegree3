@@ -154,7 +154,7 @@ public class GridWriter implements RasterWriter {
         this.rows = targetRows;
         this.geoRef = geoRef.createRelocatedReference( OriginLocation.OUTER );
         tileWidth = this.envelope.getSpan0() / columns;
-        tileHeight = this.envelope.getSpan1() / columns;
+        tileHeight = this.envelope.getSpan1() / rows;
         double[] origin = geoRef.getOrigin();
 
         int[] rasterCoordinate = geoRef.getRasterCoordinate( origin[0] + tileWidth, origin[1] - tileHeight );
@@ -165,7 +165,7 @@ public class GridWriter implements RasterWriter {
         this.dataInfo = dataInfo;
         this.tileData = RasterDataFactory.createRasterData( tileRasterWidth, tileRasterHeight, dataInfo.bandInfo,
                                                             dataInfo.dataType, dataInfo.interleaveType );
-        this.bytesPerTile = this.tileRasterWidth * this.tileRasterHeight * dataInfo.bands;
+        this.bytesPerTile = this.tileRasterWidth * this.tileRasterHeight * dataInfo.bands * dataInfo.dataSize;
         this.tilesInFile = columns * rows;
     }
 
@@ -269,11 +269,15 @@ public class GridWriter implements RasterWriter {
                 write( raster, column, row );
             }
         }
+        writeMetadataFile( options );
+    }
 
+    public void writeMetadataFile( RasterIOOptions options )
+                            throws IOException {
         File metaInfo = GridMetaInfoFile.fileNameFromOptions( gridFile.getParent(), options );
         GridMetaInfoFile.writeToFile( metaInfo, new GridMetaInfoFile( this.geoRef, this.rows, this.columns,
                                                                       this.tileRasterWidth, this.tileRasterHeight,
-                                                                      this.dataInfo.bands ), options );
+                                                                      this.dataInfo ), options );
     }
 
     private final synchronized FileChannel getReadChannel()
@@ -300,7 +304,7 @@ public class GridWriter implements RasterWriter {
      */
     private void write( AbstractRaster raster, int column, int row )
                             throws IOException {
-        Envelope tileEnvelope = getTileEnvelope( row, column );
+        Envelope tileEnvelope = getTileEnvelope( column, row );
         RasterGeoReference tileRasterReference = RasterGeoReference.create( OriginLocation.OUTER, tileEnvelope,
                                                                             tileRasterWidth, tileRasterHeight );
         SimpleRaster subRaster = raster.getSubRaster( tileEnvelope ).getAsSimpleRaster();
@@ -362,7 +366,7 @@ public class GridWriter implements RasterWriter {
      *            row , must be in the range [0 ... #rows - 1]
      * @return the tile's envelope
      */
-    protected Envelope getTileEnvelope( int row, int column ) {
+    protected Envelope getTileEnvelope( int column, int row ) {
         double xOffset = column * tileWidth;
         double yOffset = ( rows - row - 1 ) * tileHeight;
 
@@ -416,4 +420,48 @@ public class GridWriter implements RasterWriter {
         return idx;
     }
 
+    /**
+     * @param newBytes
+     * @throws IOException
+     */
+    public void writeEntireFile( ByteBuffer newBytes )
+                            throws IOException {
+        if ( newBytes.capacity() != ( dataInfo.bands * dataInfo.dataSize * columns * rows ) ) {
+            throw new IllegalArgumentException( "byte buffer is to small, required bytes:"
+                                                + ( dataInfo.bands * dataInfo.dataSize * columns * rows )
+                                                + ", provided bytes: " + newBytes.capacity() );
+        }
+        synchronized ( tileData ) {
+            FileChannel fileChannel = getWriteChannel();
+            FileLock lock = fileChannel.lock();
+            fileChannel.position( 0 );
+            newBytes.rewind();
+            fileChannel.write( newBytes );
+            lock.release();
+            tileData.notifyAll();
+        }
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @param tileBuffer
+     * @throws IOException
+     */
+    public void writeTile( int column, int row, ByteBuffer tileBuffer )
+                            throws IOException {
+        if ( tileBuffer == null || tileBuffer.capacity() != this.bytesPerTile ) {
+            throw new IllegalArgumentException( "Wrong number of bytes." );
+        }
+        synchronized ( tileData ) {
+            int position = calcFilePosition( column, row );
+            FileChannel fileChannel = getWriteChannel();
+            FileLock lock = fileChannel.lock( position, position + bytesPerTile, false );
+            fileChannel.position( position );
+            tileBuffer.rewind();
+            fileChannel.write( tileBuffer );
+            lock.release();
+            tileData.notifyAll();
+        }
+    }
 }

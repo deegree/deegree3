@@ -41,27 +41,21 @@ package org.deegree.coverage.raster.io.grid;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.HashSet;
 import java.util.Set;
 
-import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.TiledRaster;
-import org.deegree.coverage.raster.container.GriddedTileContainer;
-import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.data.RasterDataFactory;
+import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
@@ -77,15 +71,13 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * 
  */
-public class GridReader implements RasterReader {
+public abstract class GridReader implements RasterReader {
 
     private static final Logger LOG = getLogger( GridReader.class );
 
     private final static GeometryFactory geomFac = new GeometryFactory();
 
-    private FileChannel fileAccess;
-
-    private GridMetaInfoFile infoFile;
+    protected GridMetaInfoFile infoFile;
 
     private Envelope envelope;
 
@@ -97,126 +89,44 @@ public class GridReader implements RasterReader {
 
     private int tilesPerBlob;
 
-    private File gridFile;
+    private RasterRect rasterRect;
+
+    /** The size of one sample */
+    protected int sampleSize;
 
     /**
-     * An empty constructor used in the {@link GridRasterIOProvider}, to a location in time where no information is
-     * known yet.
-     */
-    GridReader() {
-        // empty constructor, no values are known yet (GridRasterIOProvider).
-    }
-
-    /**
-     * Creates a new {@link GriddedTileContainer} instances.
+     * Instantiates this grid reader with the given information.
      * 
      * @param infoFile
-     *            containing the relevant information.
-     * @param gridFile
-     *            to be used.
-     * 
      */
-    public GridReader( GridMetaInfoFile infoFile, File gridFile ) {
-        instantiate( infoFile, gridFile );
-    }
-
-    private synchronized void instantiate( GridMetaInfoFile infoFile, File gridFile ) {
+    protected synchronized void instantiate( GridMetaInfoFile infoFile ) {
         this.infoFile = infoFile;
         this.envelope = infoFile.getEnvelope( OriginLocation.OUTER );
+        this.rasterRect = new RasterRect( 0, 0, infoFile.columns() * infoFile.getTileRasterWidth(),
+                                          infoFile.rows() * infoFile.getTileRasterHeight() );
         // this.envelopeWidth = envelope.getMax().get0() - envelope.getMin().get0();
         // this.envelopeHeight = envelope.getMax().get1() - envelope.getMin().get1();
         // this.envelopeWidth = envelope.getSpan0();
         // this.envelopeHeight = envelope.getSpan1();
-        // this.rows = infoFile.getRows();
-        // this.columns = infoFile.getColumns();
+        // this.rows = infoFile.rows();
+        // this.columns = infoFile.columns();
         // this.tileSamplesX = infoFile.getTileSamplesX();
         // this.tileSamplesY = infoFile.getTileSamplesY();
-        this.tileWidth = envelope.getSpan0() / infoFile.getColumns();
-        this.tileHeight = envelope.getSpan1() / infoFile.getRows();
+        this.tileWidth = envelope.getSpan0() / infoFile.columns();
+        this.tileHeight = envelope.getSpan1() / infoFile.rows();
         this.bytesPerTile = infoFile.getTileRasterWidth() * infoFile.getTileRasterHeight() * infoFile.getBands();
-        this.gridFile = gridFile;
-        this.tilesPerBlob = (int) ( gridFile.length() / bytesPerTile );
-        LOG.debug( "Tiles in grid blob (" + gridFile + "): " + tilesPerBlob );
-    }
-
-    @Override
-    public boolean canLoad( File filename ) {
-        return filename != null
-               && GridRasterIOProvider.FORMATS.contains( FileUtils.getFileExtension( filename ).toLowerCase() );
-    }
-
-    @Override
-    public Set<String> getSupportedFormats() {
-        return new HashSet<String>( GridRasterIOProvider.FORMATS );
-    }
-
-    @Override
-    public AbstractRaster load( File gridFile, RasterIOOptions options )
-                            throws IOException {
-        if ( gridFile == null ) {
-            throw new IOException( "No grid file given." );
-        }
-        if ( infoFile == null
-             || ( this.gridFile != null && !this.gridFile.getAbsoluteFile().equals( gridFile.getAbsoluteFile() ) ) ) {
-            instantiate( gridFile, options );
-        }
-
-        int expectedTilesPerBlob = (int) ( gridFile.length() / bytesPerTile );
-        if ( tilesPerBlob != expectedTilesPerBlob ) {
-            LOG.error( "the number of tiles in the blob are wrong." );
-            this.tilesPerBlob = expectedTilesPerBlob;
-        }
-        // Load the entire grid into memory
-        MemoryTileContainer mtc = new MemoryTileContainer();
-        for ( int rowId = 0; rowId < infoFile.getRows(); ++rowId ) {
-            for ( int columnId = 0; columnId < infoFile.getColumns(); ++columnId ) {
-                AbstractRaster rasterTile = getTile( rowId, columnId );
-                mtc.addTile( rasterTile );
-            }
-        }
-
-        return new TiledRaster( mtc );
+        this.tilesPerBlob = infoFile.columns() * infoFile.rows();
+        this.sampleSize = ( infoFile.getDataType().getSize() * infoFile.getBands() );
     }
 
     /**
-     * @param options
-     * @throws IOException
-     * @throws NumberFormatException
+     * Get intersection of the requested rectangle with the rectangle of the grid file.
+     * 
+     * @param original
+     * @return the intersection with the grids raster rectangle and the given.
      */
-    private synchronized void instantiate( File gridFile, RasterIOOptions options )
-                            throws NumberFormatException, IOException {
-        if ( this.infoFile == null ) {
-            File metaInfo = GridMetaInfoFile.fileNameFromOptions( gridFile.getParent(), options );
-            this.instantiate( GridMetaInfoFile.readFromFile( metaInfo, options ), gridFile );
-        }
-    }
-
-    private int getColumnIdx( double x ) {
-        double dx = x - envelope.getMin().get0();
-        int columnIdx = (int) Math.floor( ( infoFile.getColumns() * dx ) / envelope.getSpan0() );
-        if ( columnIdx < 0 ) {
-            // signal outside
-            return -1;
-        }
-        if ( columnIdx > infoFile.getColumns() - 1 ) {
-            // signal outside
-            return infoFile.getColumns();
-        }
-        return columnIdx;
-    }
-
-    private int getRowIdx( double y ) {
-        double dy = y - envelope.getMin().get1();
-        int rowIdx = (int) Math.floor( ( ( infoFile.getRows() * ( envelope.getSpan1() - dy ) ) / envelope.getSpan1() ) );
-        if ( rowIdx < 0 ) {
-            // signal outside
-            return -1;
-        }
-        if ( rowIdx > infoFile.getRows() - 1 ) {
-            // signal outside
-            return infoFile.getRows();
-        }
-        return rowIdx;
+    protected RasterRect snapToGrid( RasterRect original ) {
+        return RasterRect.intersection( rasterRect, original );
     }
 
     /**
@@ -229,7 +139,7 @@ public class GridReader implements RasterReader {
      * @return the tile's id
      */
     protected int getTileId( int columnId, int rowId ) {
-        int idx = rowId * infoFile.getColumns() + columnId;
+        int idx = rowId * infoFile.columns() + columnId;
         return idx;
     }
 
@@ -242,9 +152,9 @@ public class GridReader implements RasterReader {
      *            row id, must be in the range [0 ... #rows - 1]
      * @return the tile's envelope
      */
-    protected Envelope getTileEnvelope( int rowId, int columnId ) {
+    protected Envelope getTileEnvelope( int columnId, int rowId ) {
         double xOffset = columnId * tileWidth;
-        double yOffset = ( infoFile.getRows() - rowId - 1 ) * tileHeight;
+        double yOffset = ( infoFile.rows() - rowId - 1 ) * tileHeight;
 
         double minX = envelope.getMin().get0() + xOffset;
         double minY = envelope.getMin().get1() + yOffset;
@@ -254,87 +164,69 @@ public class GridReader implements RasterReader {
         return geomFac.createEnvelope( minX, minY, maxX, maxY, envelope.getCoordinateSystem() );
     }
 
-    private final synchronized FileChannel getFileChannel()
-                            throws FileNotFoundException {
-        if ( this.fileAccess == null ) {
-            this.fileAccess = new FileInputStream( gridFile ).getChannel();
-        }
-        return fileAccess;
-    }
-
     /**
      * Read a raster from the grid file at location (row,column).
      * 
-     * @param rowId
      * @param columnId
+     * 
+     * @param rowId
+     * 
      * @return the read raster or null if it could not be read.
-     * @throws FileNotFoundException
+     * @throws IOException
      */
-    public AbstractRaster getTile( int rowId, int columnId )
-                            throws FileNotFoundException {
-        FileChannel channel = getFileChannel();
+    public AbstractRaster getTile( int columnId, int rowId )
+                            throws IOException {
 
-        int tileId = getTileId( columnId, rowId );
-        long begin = System.currentTimeMillis();
-        Envelope tileEnvelope = getTileEnvelope( rowId, columnId );
+        Envelope tileEnvelope = getTileEnvelope( columnId, rowId );
 
         RasterGeoReference tileRasterReference = RasterGeoReference.create( OriginLocation.OUTER, tileEnvelope,
                                                                             infoFile.getTileRasterWidth(),
                                                                             infoFile.getTileRasterHeight() );
 
+        RasterRect tileRect = getGeoReference().createRelocatedReference( OriginLocation.OUTER ).convertEnvelopeToRasterCRS(
+                                                                                                                             tileEnvelope );
+        RasterRect tRect = getGeoReference().convertEnvelopeToRasterCRS( tileEnvelope );
+        TileOffsetReader tReader = new TileOffsetReader( this, tileRect, tileRasterReference );
         ByteBufferRasterData tileData = RasterDataFactory.createRasterData( infoFile.getTileRasterWidth(),
                                                                             infoFile.getTileRasterHeight(),
                                                                             new BandType[] { BandType.RED,
                                                                                             BandType.GREEN,
                                                                                             BandType.BLUE },
-                                                                            DataType.BYTE, InterleaveType.PIXEL );
-        ByteBuffer buffer = tileData.getByteBuffer();
-        buffer.rewind();
-
-        int tileInBlob = tileId % tilesPerBlob;
+                                                                            DataType.BYTE, InterleaveType.PIXEL,
+                                                                            tReader );
         // set information of the read file in the raster data.
-        tileData.info = tileInBlob + "_" + rowId + "," + columnId + ".png";
+        // tileData.info = rowId + "," + columnId + ".png";
+        // ByteBuffer buffer = tileData.getByteBuffer();
+        // buffer.rewind();
 
-        // transfer the data from the blob
-        try {
-            LOG.debug( "Tile id: " + tileId + " -> pos in blob: " + tileInBlob );
-
-            channel.position( tileInBlob * bytesPerTile );
-            channel.read( buffer );
-            buffer.rewind();
-
-        } catch ( IOException e ) {
-            LOG.error( "Error reading tile data from blob: " + e.getMessage(), e );
-        }
-
-        long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Loading of tile (" + infoFile.getTileRasterWidth() + "x" + infoFile.getTileRasterWidth() + ") in "
-                   + elapsed + " ms." );
-
+        // read( columnId, rowId, buffer );
+        // buffer.rewind();
         SimpleRaster tile = new SimpleRaster( tileData, tileEnvelope, tileRasterReference );
-        // try {
-        // RasterFactory.saveRasterToFile( tile, new File( "/tmp/" + tileInBlob + "_" + rowId + "," + columnId
-        // + ".png" ) );
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-
         return tile;
     }
+
+    /**
+     * Reads the data from the grid.
+     * 
+     * @param columnId
+     * @param rowId
+     * @param buffer
+     * @throws IOException
+     */
+    protected abstract void read( int columnId, int rowId, ByteBuffer buffer )
+                            throws IOException;
 
     @Override
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "Reading from streams is currently not supported." );
     }
 
     /**
      * @return the number of tiles in this blob.
      */
     public int getNumberOfTiles() {
-        return this.tilesPerBlob;
+        return this.getTilesPerBlob();
     }
 
     /**
@@ -344,4 +236,218 @@ public class GridReader implements RasterReader {
         return this.bytesPerTile;
     }
 
+    @Override
+    public RasterGeoReference getGeoReference() {
+        return infoFile.getGeoReference();
+    }
+
+    @Override
+    public int getHeight() {
+        return infoFile.rows();
+    }
+
+    @Override
+    public int getWidth() {
+        return infoFile.columns();
+    }
+
+    /**
+     * Returns the min column, row and max column row of the given rect. The rectangle will be cut off to fit the data.
+     * If the rect does not intersect the data, <code>null</code> will be returned.
+     * 
+     * @param rect
+     * @return {min column, min row, max column, max row} or <code>null</code> if the given rect does not intersect the
+     *         data.
+     */
+    protected int[] getIntersectingTiles( RasterRect rect ) {
+        RasterRect fRect = snapToGrid( rect );
+        if ( fRect != null ) {
+            int minCol = getColNumber( fRect.x );
+            int minRow = getRowNumber( fRect.y );
+            int maxCol = getColNumber( fRect.x + fRect.width );
+            int maxRow = getRowNumber( fRect.y + fRect.height );
+            if ( ( maxCol != -1 ) && ( maxRow != -1 ) && ( minCol != infoFile.columns() )
+                 && ( minRow != infoFile.rows() ) ) {
+                return new int[] { minCol, minRow, maxCol, maxRow };
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param rasterCoord
+     *            normally the y.
+     * @return the row number of tile which holds the given raster coordinate.
+     */
+    private int getRowNumber( float rasterCoord ) {
+        int row = (int) Math.floor( rasterCoord / infoFile.getTileRasterHeight() );
+        if ( row < 0 ) {
+            row = -1;
+        }
+        if ( row >= infoFile.columns() ) {
+            row = infoFile.columns();
+        }
+        return row;
+    }
+
+    /**
+     * @param rasterCoord
+     *            in raster coordinates normally x.
+     * @return the column number of tile which holds the given raster coordinate.
+     */
+    private int getColNumber( float rasterCoord ) {
+        int column = (int) Math.floor( rasterCoord / infoFile.getTileRasterWidth() );
+        if ( column < 0 ) {
+            column = -1;
+        }
+        if ( column >= infoFile.columns() ) {
+            column = infoFile.columns();
+        }
+        return column;
+    }
+
+    @Override
+    public boolean shouldCreateCacheFile() {
+        return false;
+    }
+
+    /**
+     * @param row
+     * @param column
+     * @param buffer
+     * @return
+     * @throws IOException
+     */
+    public ByteBuffer getTileData( int column, int row, ByteBuffer buffer )
+                            throws IOException {
+        if ( buffer == null ) {
+            buffer = ByteBuffer.allocate( sampleSize * infoFile.getTileRasterHeight() * infoFile.getTileRasterWidth() );
+        }
+        read( column, row, buffer );
+
+        return buffer;
+    }
+
+    /**
+     * @return
+     */
+    public int getTileRows() {
+        return infoFile.rows();
+    }
+
+    /**
+     * @return
+     */
+    public int getTileColumns() {
+        return infoFile.columns();
+    }
+
+    /**
+     * @return the tilesPerBlob
+     */
+    public int getTilesPerBlob() {
+        return tilesPerBlob;
+    }
+
+    /**
+     * 
+     * A simple wrapper class needed to mark the offset for a given tile in the total grid.
+     * 
+     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+     * @author last edited by: $Author$
+     * @version $Revision$, $Date$
+     * 
+     */
+    private class TileOffsetReader implements RasterReader {
+
+        private final GridReader originalReader;
+
+        private final RasterRect tileRectInGrid;
+
+        private final RasterGeoReference geoRef;
+
+        /**
+         * 
+         */
+        public TileOffsetReader( GridReader original, RasterRect tileRectInGrid, RasterGeoReference geoRef ) {
+            this.originalReader = original;
+            this.tileRectInGrid = tileRectInGrid;
+            this.geoRef = geoRef;
+        }
+
+        @Override
+        public boolean canLoad( File filename ) {
+            return originalReader.canLoad( filename );
+        }
+
+        @Override
+        public File file() {
+            return originalReader.file();
+        }
+
+        @Override
+        public RasterGeoReference getGeoReference() {
+            return geoRef;
+        }
+
+        @Override
+        public int getHeight() {
+            return tileRectInGrid.height;
+        }
+
+        @Override
+        public Set<String> getSupportedFormats() {
+            return originalReader.getSupportedFormats();
+        }
+
+        @Override
+        public int getWidth() {
+            return tileRectInGrid.width;
+        }
+
+        @Override
+        public AbstractRaster load( File filename, RasterIOOptions options )
+                                throws IOException {
+            return originalReader.load( filename, options );
+        }
+
+        @Override
+        public AbstractRaster load( InputStream stream, RasterIOOptions options )
+                                throws IOException {
+            return originalReader.load( stream, options );
+        }
+
+        @Override
+        public BufferResult read( RasterRect rect, ByteBuffer buffer )
+                                throws IOException {
+            RasterRect tmpRect = new RasterRect( rect.x + tileRectInGrid.x, rect.y + tileRectInGrid.y, rect.width,
+                                                 rect.height );
+            BufferResult bufferResult = originalReader.read( tmpRect, buffer );
+            bufferResult.getResult().clear();
+            // PixelInterleavedRasterData rd = new PixelInterleavedRasterData( bufferResult.getRect(),
+            // bufferResult.getRect().width,
+            // bufferResult.getRect().height,
+            // new RasterDataInfo( BandType.RGB,
+            // DataType.BYTE,
+            // InterleaveType.PIXEL ) );
+            // rd.setByteBuffer( bufferResult.getResult() );
+            // BufferedImage image = RasterFactory.rasterDataToImage( rd );
+            // ImageIO.write( image, "png", new File( "/tmp/" + tmpRect.toString() + ".png" ) );
+            // bufferResult.getRect().x -= tileRectInGrid.x;
+            // bufferResult.getRect().y -= tileRectInGrid.y;
+            return bufferResult;
+        }
+
+        @Override
+        public boolean shouldCreateCacheFile() {
+            return originalReader.shouldCreateCacheFile();
+        }
+    }
+
+    /**
+     * @param tilesPerBlob
+     */
+    public void setTilesPerBlob( int tilesPerBlob ) {
+        this.tilesPerBlob = tilesPerBlob;
+    }
 }

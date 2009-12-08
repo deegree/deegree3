@@ -36,57 +36,49 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.coverage.raster.io.grid;
+package org.deegree.coverage.raster.data.container;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.nio.ByteBuffer;
 
-import org.deegree.coverage.raster.io.RasterIOProvider;
-import org.deegree.coverage.raster.io.RasterReader;
-import org.deegree.coverage.raster.io.RasterWriter;
+import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
- * The <code>XYZRasterIOProvider</code> class defines the access to xyz files
+ * The <code>BufferResult</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
  * 
  */
-public class GridRasterIOProvider implements RasterIOProvider {
+public class BufferResult {
+
+    private final ByteBuffer result;
+
+    private final RasterRect rect;
 
     /**
-     * Supported formats
+     * Create a buffer result.
+     * 
+     * @param resultRect
+     * @param result
      */
-    final static Set<String> FORMATS = new HashSet<String>();
-    static {
-        FORMATS.add( "grid" );
-        FORMATS.add( "bin" );
+    public BufferResult( RasterRect resultRect, ByteBuffer result ) {
+        this.result = result;
+        this.rect = resultRect;
     }
 
-    @Override
-    public RasterReader getRasterReader( String type ) {
-        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
-            return new GridFileReader();
-        }
-        return null;
+    /**
+     * @return the result
+     */
+    public final ByteBuffer getResult() {
+        return result;
     }
 
-    @Override
-    public Set<String> getRasterReaderFormats() {
-        return new HashSet<String>( FORMATS );
+    /**
+     * @return the rect
+     */
+    public final RasterRect getRect() {
+        return rect;
     }
 
-    @Override
-    public RasterWriter getRasterWriter( String type ) {
-        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
-            return new GridWriter();
-        }
-        return null;
-    }
-
-    @Override
-    public Set<String> getRasterWriterFormats() {
-        return new HashSet<String>( FORMATS );
-    }
 }

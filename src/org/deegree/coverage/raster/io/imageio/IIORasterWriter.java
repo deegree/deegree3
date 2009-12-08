@@ -89,8 +89,8 @@ public class IIORasterWriter implements RasterWriter {
         LOG.debug( "Writing raster with width: {} height: {}", raster.getColumns(), raster.getRows() );
         IIORasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(), file, format );
 
-        RasterGeoReference rasterEnv = raster.getRasterReference();
-        WorldFileAccess.writeWorldFile( rasterEnv, file );
+        RasterGeoReference rasterReference = raster.getRasterReference();
+        WorldFileAccess.writeWorldFile( rasterReference, file );
     }
 
     @Override
