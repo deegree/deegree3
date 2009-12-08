@@ -126,7 +126,6 @@ public class RasterRangeSetTest {
     private synchronized SimpleRaster getRaster() {
         BufferedImage image = createBufferedImage();
         AbstractRaster raster = RasterFactory.createRasterFromImage( image, env, OriginLocation.OUTER );
-
         SimpleRaster createdRaster = raster.getAsSimpleRaster();
         RasterData rasterData = createdRaster.getRasterData();
         rasterData.setNullPixel( new byte[] { (byte) 1, (byte) 2, (byte) 3 } );
@@ -163,9 +162,9 @@ public class RasterRangeSetTest {
         nullValues[0] = nullPixel[0] & 0xFF;
         nullValues[1] = nullPixel[1] & 0xFF;// green should be 0.
         nullValues[2] = nullPixel[2] & 0xFF;
-        // if ( LOG.isDebugEnabled() ) {
-        RasterFactory.saveRasterToFile( subset, File.createTempFile( "red_blue_green", ".png" ) );
-        // }
+        if ( LOG.isDebugEnabled() ) {
+            RasterFactory.saveRasterToFile( subset, File.createTempFile( "red_blue_green", ".png" ) );
+        }
         testDefaults( raster );
         BufferedImage newImage = RasterFactory.imageFromRaster( subset );
         testBandValues( newImage, -1, -1, new int[0], new int[0], new int[0], nullValues );

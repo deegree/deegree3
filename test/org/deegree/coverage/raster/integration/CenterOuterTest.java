@@ -168,9 +168,12 @@ public abstract class CenterOuterTest implements CompareValues {
             actualVal[0] = result[0] & 0xFF;
             actualVal[1] = result[1] & 0xFF;
             actualVal[2] = result[2] & 0xFF;
-            Assert.assertEquals( refVal[0], actualVal[0] );
-            Assert.assertEquals( refVal[1], actualVal[1] );
-            Assert.assertEquals( refVal[2], actualVal[2] );
+            Assert.assertEquals( "Wrong color for pixel (" + ( x - 1 ) + "," + y + ") band 0: ", refVal[0],
+                                 actualVal[0] );
+            Assert.assertEquals( "Wrong color for pixel (" + ( x - 1 ) + "," + y + ") band 1: ", refVal[1],
+                                 actualVal[1] );
+            Assert.assertEquals( "Wrong color for pixel (" + ( x - 1 ) + "," + y + ") band 2: ", refVal[2],
+                                 actualVal[2] );
             if ( ( i + 1 ) % width == 0 ) {
                 y++;
                 x = 0;

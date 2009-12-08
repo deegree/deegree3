@@ -38,6 +38,7 @@
 
 package org.deegree.coverage.raster;
 
+import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.gc;
 
@@ -47,8 +48,10 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
@@ -62,6 +65,7 @@ import javax.media.jai.RenderedOp;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.InterleaveType;
@@ -81,6 +85,8 @@ import org.junit.Test;
 public class RasterFactory {
 
     private final static float[] TEST_HEIGHTS = new float[] { -10.912f, -5.8f, 0.001f, 5.5f, 10.1f, 15.3f };
+
+    private static final int TILE_SIZE = 500;
 
     /**
      * Test the creation of a float buffered image.
@@ -127,20 +133,34 @@ public class RasterFactory {
      * @throws IOException
      * @throws InterruptedException
      */
+    // @Test
     public synchronized void testTiledImage()
                             throws IOException, InterruptedException {
 
         long t = System.currentTimeMillis();
 
+        RenderedOp jpg = getJAIImage( "test_tiled_image.jpg" );
         RenderedOp tiff = getJAIImage( "test_tiled_image_lzw.tif" );
         RenderedOp tiffNone = getJAIImage( "test_tiled_image.tif" );
 
+        System.out.println( "jpg:  " + jpg.getWidth() + ", " + jpg.getHeight() );
+        System.out.println( "tiff:  " + tiff.getWidth() + ", " + tiff.getHeight() );
+        System.out.println( "tiffNone:  " + tiffNone.getWidth() + ", " + tiffNone.getHeight() );
+
+        // synchronized ( tiff ) {
+        // tiff.wait( 10000 );
+        // tiff.notifyAll();
+        // }
+
         long ret = currentTimeMillis();
-        saveSubset( tiff, "jai_tif_1", 0, 0, 250, 260 );
-        System.out.println( "subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
+        saveSubset( jpg, "jpg", 0, 0, 250, 260 );
+        System.out.println( "jpg subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
+        // jpg.dispose();
+        //
         ret = currentTimeMillis();
-        saveSubset( tiff, "jai_tif_2", 4998, 4900, 10500, 13080 );
-        System.out.println( "subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+        saveSubset( jpg, "jpg", 2098, 2000, 1050, 1008 );
+        System.out.println( "jpg subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+        jpg.dispose();
 
         gc();
         gc();
@@ -148,12 +168,37 @@ public class RasterFactory {
         gc();
         gc();
         gc();
+        synchronized ( tiff ) {
+            System.out.println( "done getting jpg." );
+            // tiff.wait( 50000 );
+            tiff.notifyAll();
+        }
+
+        ret = currentTimeMillis();
+        saveSubset( tiff, "jai_tif_1", 0, 0, 250, 260 );
+        System.out.println( "compressed tiff subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
+
+        ret = currentTimeMillis();
+        saveSubset( tiff, "jai_tif_2", 4998, 4900, 10500, 13080 );
+        System.out.println( "compressed tiff subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+
+        gc();
+        gc();
+        gc();
+        gc();
+        gc();
+        gc();
+        synchronized ( tiff ) {
+            System.out.println( "done getting compressed." );
+            tiff.wait( 5000 );
+            tiff.notifyAll();
+        }
         ret = currentTimeMillis();
         saveSubset( tiffNone, "jai_tif_none_1", 0, 0, 250, 260 );
-        System.out.println( "subset none 1: " + ( currentTimeMillis() - ret ) + "millis" );
+        System.out.println( "tiff subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
         ret = currentTimeMillis();
         saveSubset( tiffNone, "jai_tif_none_2", 4998, 4900, 10500, 13080 );
-        System.out.println( "subset none 2: " + ( currentTimeMillis() - ret ) + "millis" );
+        System.out.println( "tiff subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
 
         System.out.println( "jai total: " + ( currentTimeMillis() - t ) + "millis" );
         t = System.currentTimeMillis();
@@ -166,13 +211,74 @@ public class RasterFactory {
                                                                                                                                x,
                                                                                                                                y );
         image.copyExtendedData( jpgRaster, BorderExtender.createInstance( BorderExtender.BORDER_ZERO ) );
+        // BufferedImage img = new BufferedImage( image.getColorModel(), jpgRaster.getWritableParent(), false, null );
+        // ImageIO.write( img, "png", File.createTempFile( name, ".png" ) );
         System.out.println( "wrote subset: " + name );
     }
 
     private RenderedOp getJAIImage( String file )
                             throws IOException {
-        File f = new File( file );
+
+        // jpg: 15000, 15000
+        // tiff: 20000, 20000
+        // tiffNone: 20000, 20000
+        // getting subset: jpg
+        // wrote subset: jpg
+        // jpg subset 1: 13005millis
+        // getting subset: jpg
+        // wrote subset: jpg
+        // jpg subset 2: 13248millis
+        // done getting jpg.
+        // getting subset: jai_tif_1
+        // wrote subset: jai_tif_1
+        // compressed tiff subset 1: 249millis
+        // getting subset: jai_tif_2
+        // wrote subset: jai_tif_2
+        // compressed tiff subset 2: 6115millis
+        // done getting compressed.
+        // getting subset: jai_tif_none_1
+        // wrote subset: jai_tif_none_1
+        // tiff subset 1: 94millis
+        // getting subset: jai_tif_none_2
+        // wrote subset: jai_tif_none_2
+        // tiff subset 2: 4532millis
+        // jai total: 44543millis
+
+        File f = new File( RasterFactory.class.getResource( file ).getFile() );
         ImageInputStream iis = ImageIO.createImageInputStream( f );
+
+        Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName( FileUtils.getFileExtension( f ) );
+        ImageReader reader = null;
+        if ( iter.hasNext() ) {
+            // use the first.
+            reader = iter.next();
+            reader.setInput( iis );
+        }
+
+        RenderingHints hints = null;
+        // if ( reader.isImageTiled( 0 ) ) {
+        int width = reader.getWidth( 0 );
+        int height = reader.getHeight( 0 );
+        int numberOfTiles = calcApproxTiles( width, height );
+        int tileSize = calcBestTileSize( width, height, numberOfTiles );
+
+        ImageLayout layout = new ImageLayout();
+        layout.setTileWidth( TILE_SIZE );
+        layout.setTileHeight( TILE_SIZE );
+        hints = new RenderingHints( JAI.KEY_IMAGE_LAYOUT, layout );
+        // }
+        reader.dispose();
+        iis.close();
+        ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
+        iis = ImageIO.createImageInputStream( f );
+        pbj.setParameter( "Input", iis );
+
+        RenderedOp result = JAI.create( "ImageRead", pbj, hints );
+
+        return result;
+    }
+
+    private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis ) {
         ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
         pbj.setParameter( "Input", iis );
 
@@ -180,23 +286,40 @@ public class RasterFactory {
 
         int width = result.getWidth();
         int height = result.getHeight();
-        int tileWidth = width;
-        int tileHeight = height;
-        double scaleWidth = width / 500.d;
-        double scaleHeight = height / 500.d;
-        if ( scaleWidth > 1 ) {
-            tileWidth = (int) Math.floor( width / scaleWidth );
-        }
+        int numberOfTiles = calcApproxTiles( width, height );
+        int tileSize = calcBestTileSize( width, height, numberOfTiles );
 
-        if ( scaleWidth > 1 ) {
-            tileHeight = (int) Math.floor( height / scaleHeight );
-        }
         ImageLayout layout = new ImageLayout();
-        layout.setTileWidth( tileWidth );
-        layout.setTileHeight( tileHeight );
-
+        layout.setTileWidth( tileSize );
+        layout.setTileHeight( tileSize );
         result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
+    }
 
+    /**
+     * @param width2
+     * @param height2
+     * @param numberOfTiles
+     * @return
+     */
+    private int calcBestTileSize( int imageWidth, int imageHeight, int numberOfTiles ) {
+        double smallest = min( imageWidth, imageHeight );
+        double size = smallest / numberOfTiles;
+        return (int) Math.round( size );
+    }
+
+    public static int calcApproxTiles( int imageWidth, int imageHeight ) {
+        int largest = Math.max( imageWidth, imageHeight );
+        // smaller then
+        if ( largest < ( 0.5 * TILE_SIZE ) + TILE_SIZE ) {
+            return 1;
+        }
+        if ( largest < 2 * TILE_SIZE ) {
+            return 2;
+        }
+        int result = 3;
+        while ( largest > ( result * TILE_SIZE ) ) {
+            result++;
+        }
         return result;
     }
 
