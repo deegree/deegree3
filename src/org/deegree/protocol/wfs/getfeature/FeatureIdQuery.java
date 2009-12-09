@@ -63,8 +63,7 @@ public class FeatureIdQuery extends Query {
      * @param handle
      *            client-generated query identifier, may be null
      * @param typeNames
-     *            requested feature types (with optional aliases), must not be null and must always contain at least one
-     *            entry
+     *            requested feature types (with optional aliases), must not be <code>null</code>, but can be empty
      * @param featureVersion
      *            version of the feature instances to be retrieved, may be null
      * @param srsName
