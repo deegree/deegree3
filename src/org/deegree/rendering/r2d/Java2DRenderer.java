@@ -198,7 +198,7 @@ public class Java2DRenderer implements Renderer {
             img = new BufferedImage( size, size, TYPE_INT_ARGB );
             Graphics2D g = img.createGraphics();
             Java2DRenderer renderer = new Java2DRenderer( g );
-            renderMark( graphic.mark, graphic.size < 0 ? 6 : size, uom, renderer, 0, 0 );
+            renderMark( graphic.mark, graphic.size < 0 ? 6 : size, uom, renderer, 0, 0, graphic.rotation );
             g.dispose();
         } else {
             img = graphic.image;
@@ -232,7 +232,8 @@ public class Java2DRenderer implements Renderer {
         }
         if ( stroke.stroke != null ) {
             if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
-                Shape shape = getShapeFromSvg( stroke.stroke.imageURL, considerUOM( stroke.stroke.size, uom ) );
+                Shape shape = getShapeFromSvg( stroke.stroke.imageURL, considerUOM( stroke.stroke.size, uom ),
+                                               stroke.stroke.rotation );
                 graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) ) );
             } else if ( stroke.stroke.mark != null ) {
                 double poff = considerUOM( perpendicularOffset, uom );
@@ -240,7 +241,8 @@ public class Java2DRenderer implements Renderer {
                 if ( !isZero( poff ) ) {
                     transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
                 }
-                Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ), true );
+                Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ), true,
+                                                stroke.stroke.rotation );
                 ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) );
                 transed = s.createStrokedShape( transed );
                 if ( stroke.stroke.mark.fill != null ) {
@@ -337,7 +339,8 @@ public class Java2DRenderer implements Renderer {
         Graphic g = styling.graphic;
 
         if ( g.image == null ) {
-            renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this, x, y );
+            renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this, x, y,
+                        g.rotation );
             return;
         }
 

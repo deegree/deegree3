@@ -36,10 +36,12 @@
 
 package org.deegree.rendering.r2d;
 
+import static java.awt.geom.AffineTransform.getRotateInstance;
 import static java.awt.geom.AffineTransform.getScaleInstance;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
 import static java.lang.Math.PI;
 import static java.lang.Math.max;
+import static java.lang.Math.toRadians;
 import static org.apache.batik.bridge.BridgeContext.DYNAMIC;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -152,9 +154,10 @@ public class RenderHelper {
      * @param mark
      * @param size
      * @param center
+     * @param rotation
      * @return a shape representing the mark
      */
-    public static Shape getShapeFromMark( Mark mark, double size, boolean center ) {
+    public static Shape getShapeFromMark( Mark mark, double size, boolean center, double rotation ) {
         if ( mark.shape != null ) {
             Rectangle2D box = mark.shape.getBounds2D();
             double cur = max( box.getWidth(), box.getHeight() );
@@ -166,6 +169,7 @@ public class RenderHelper {
             } else {
                 trans.translate( -box.getMinX(), -box.getMinY() );
             }
+            trans.rotate( toRadians( rotation ) );
             return trans.createTransformedShape( mark.shape );
         }
 
@@ -208,8 +212,7 @@ public class RenderHelper {
                 break;
             }
         }
-
-        return shape;
+        return getRotateInstance( toRadians( rotation ) ).createTransformedShape( shape );
     }
 
     /**
@@ -219,8 +222,10 @@ public class RenderHelper {
      * @param renderer
      * @param x
      * @param y
+     * @param rotation
      */
-    public static void renderMark( Mark mark, int size, UOM uom, Java2DRenderer renderer, double x, double y ) {
+    public static void renderMark( Mark mark, int size, UOM uom, Java2DRenderer renderer, double x, double y,
+                                   double rotation ) {
         if ( size == 0 ) {
             LOG.debug( "Not rendering a symbol because the size is zero." );
             return;
@@ -230,7 +235,7 @@ public class RenderHelper {
             return;
         }
 
-        Shape shape = getShapeFromMark( mark, size - 1, false );
+        Shape shape = getShapeFromMark( mark, size - 1, false, rotation );
         Rectangle2D box = shape.getBounds2D();
         shape = getTranslateInstance( x - box.getWidth() / 2, y - box.getHeight() / 2 ).createTransformedShape( shape );
 
@@ -246,13 +251,16 @@ public class RenderHelper {
     /**
      * @param url
      * @param size
+     * @param rotation
      * @return a shape object from the given svg
      */
-    public static Shape getShapeFromSvg( String url, double size ) {
+    public static Shape getShapeFromSvg( String url, double size, double rotation ) {
         try {
             Shape shape = getShapeFromSvg( new URL( url ).openStream(), url );
             if ( shape != null ) {
-                return getScaleInstance( size, size ).createTransformedShape( shape );
+                AffineTransform at = getScaleInstance( size, size );
+                at.rotate( toRadians( rotation ) );
+                return at.createTransformedShape( shape );
             }
         } catch ( IOException e ) {
             LOG.warn( "The svg image at '{}' could not be read: {}", url, e.getLocalizedMessage() );
