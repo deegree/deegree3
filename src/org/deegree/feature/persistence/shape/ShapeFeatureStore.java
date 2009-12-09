@@ -49,7 +49,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
@@ -63,7 +65,6 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.exceptions.WKTParsingException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
@@ -73,6 +74,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
+import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.Query.QueryHint;
@@ -426,36 +428,50 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureResultSet query( Query[] queries )
+    public FeatureResultSet query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // dumb implementation
-        if ( queries.length == 0 ) {
-            return new CachedFeatureResultSet( new GenericFeatureCollection() );
-        }
+        Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
+            int i = 0;
 
-        FeatureCollection col = query( queries[0] ).toCollection();
-        for ( Query q : queries ) {
-            if ( queries[0] == q ) {
-                continue;
+            @Override
+            public boolean hasNext() {
+                return i < queries.length;
             }
-            col.addAll( query( q ).toCollection() );
-        }
 
-        return new CachedFeatureResultSet( col );
+            @Override
+            public FeatureResultSet next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
+                }
+                FeatureResultSet rs;
+                try {
+                    rs = query( queries[i++] );
+                } catch ( Exception e ) {
+                    throw new RuntimeException( e.getMessage(), e );
+                }
+                return rs;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return new CombinedResultSet( rsIter );
     }
 
     @Override
     public int queryHits( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO
-        throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
+        return query( query ).toCollection().size();
     }
 
     @Override
-    public int queryHits( Query[] queries )
+    public int queryHits( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO
-        throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
+        return query( queries ).toCollection().size();       
     }
 
     /**

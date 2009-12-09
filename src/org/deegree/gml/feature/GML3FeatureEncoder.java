@@ -235,8 +235,7 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
             if ( namespaceURI == null || namespaceURI.length() == 0 ) {
                 writer.writeStartElement( localName );
             } else {
-                writer.setPrefix( prefix, namespaceURI );
-                writer.writeStartElement( namespaceURI, localName );
+                writer.writeStartElement( prefix, localName, namespaceURI );
             }
 
             // writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );

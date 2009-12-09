@@ -42,7 +42,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -63,6 +65,7 @@ import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
+import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
@@ -270,10 +273,36 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public FeatureResultSet query( Query[] queries )
+    public FeatureResultSet query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return null;
+        Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < queries.length;
+            }
+
+            @Override
+            public FeatureResultSet next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
+                }
+                FeatureResultSet rs;
+                try {
+                    rs = query( queries[i++] );
+                } catch ( Exception e ) {
+                    throw new RuntimeException( e.getMessage(), e );
+                }
+                return rs;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return new CombinedResultSet( rsIter );
     }
 
     @Override
@@ -286,8 +315,8 @@ public class MemoryFeatureStore implements FeatureStore {
     @Override
     public int queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return 0;
+        // TODO maybe implement this more efficiently
+        return query( queries ).toCollection().size();
     }
 
     private PropertyName findGeoProp( FeatureType ft )

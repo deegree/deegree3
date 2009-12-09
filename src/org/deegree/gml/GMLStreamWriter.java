@@ -40,14 +40,12 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.util.HashSet;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -95,9 +93,11 @@ public class GMLStreamWriter {
 
     private GMLFeatureEncoder featureEncoder;
 
-    private PropertyName[] requestedFeatureProps;
+    private PropertyName[] featureProps;
 
     private int traverseXLinkExpiry;
+
+    private boolean autoNs;
 
     /**
      * Creates a new {@link GMLStreamWriter} instance.
@@ -150,6 +150,16 @@ public class GMLStreamWriter {
     }
 
     /**
+     * Sets the feature properties to be included for exported {@link Feature} instances.
+     * 
+     * @param featureProps
+     *            feature properties to be included, or <code>null</code> (include all feature props)
+     */
+    public void setFeatureProperties( PropertyName[] featureProps ) {
+        this.featureProps = featureProps;
+    }
+
+    /**
      * Controls the output CRS for written geometries.
      * 
      * @param crs
@@ -174,9 +184,29 @@ public class GMLStreamWriter {
      * Controls the formatting of written coordinates in geometries.
      * 
      * @param formatter
-     */
+     */    
     public void setCoordinateFormatter( Object formatter ) {
         // TODO
+    }
+    
+    public void setAutoNamespaceBinding( boolean autoNs) {
+        this.autoNs = autoNs;
+    }
+
+
+    /**
+     * Returns whether the specified gml object has already been exported.
+     * 
+     * @param gmlId
+     *            id of the object, must not be <code>null</code>
+     * @return true, if the object has been exported, false otherwise
+     */
+    public boolean isObjectExported( String gmlId ) {
+        // TODO do this properly
+        if ( featureEncoder != null ) {
+            return featureEncoder.isExported( gmlId );
+        }
+        return false;
     }
 
     /**
@@ -261,9 +291,8 @@ public class GMLStreamWriter {
             case GML_31:
             case GML_32: {
                 // TODO
-                featureEncoder = new GML3FeatureEncoder( version, xmlStream, crs, localXLinkTemplate,
-                                                         requestedFeatureProps, inlineXLinklevels, traverseXLinkExpiry,
-                                                         false );
+                featureEncoder = new GML3FeatureEncoder( version, xmlStream, crs, localXLinkTemplate, featureProps,
+                                                         inlineXLinklevels, traverseXLinkExpiry, false );                
                 break;
             }
             }
