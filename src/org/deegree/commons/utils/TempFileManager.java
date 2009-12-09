@@ -38,6 +38,7 @@ package org.deegree.commons.utils;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,15 +91,14 @@ public class TempFileManager {
         } catch ( UnsupportedEncodingException e ) {
             LOG.error( "Internal error: Cannot encode '" + contextId + "' for creating unique tempdir." );
         }
-        LOG.info( "Using '" + baseDir + "' for storing temporary files." );        
+        LOG.info( "Using '" + baseDir + "' for storing temporary files." );
     }
 
     /**
      * Initializes the {@link TempFileManager} to use a random String for creating unique temporary file names.
      */
     public static synchronized void init() {
-        // TODO check if directory already exists
-        String contextId = Long.toHexString( (long) ( Math.random() * Long.MAX_VALUE ) );
+        String contextId = UUID.randomUUID().toString();
         init( contextId );
     }
 
