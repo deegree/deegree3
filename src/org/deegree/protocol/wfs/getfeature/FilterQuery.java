@@ -58,6 +58,7 @@ public class FilterQuery extends Query {
 
     private final Filter filter;
 
+    // TODO has to be PropertyName[][] for KVP filter queries that use multiple typenames
     private final PropertyName[] propertyNames;
 
     private final Function[] functions;
