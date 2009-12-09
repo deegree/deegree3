@@ -35,11 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+
 import java.util.HashSet;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -98,10 +106,14 @@ public class GMLStreamWriter {
      *            GML version of the output, must not be <code>null</code>
      * @param xmlStream
      *            XML stream used to write the output, must not be <code>null</code>
+     * @throws XMLStreamException
      */
-    GMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) {
+    GMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) throws XMLStreamException {
         this.version = version;
         this.xmlStream = xmlStream;
+        xmlStream.setPrefix( "ogc", OGCNS );
+        xmlStream.setPrefix( "gml", version != GML_32 ? GMLNS : GML3_2_NS );
+        xmlStream.setPrefix( "xlink", XLNNS );
     }
 
     /**
@@ -195,7 +207,7 @@ public class GMLStreamWriter {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws TransformationException
-     */    
+     */
     public void write( Feature feature )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         getFeatureEncoder().export( feature );
@@ -209,7 +221,7 @@ public class GMLStreamWriter {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws TransformationException
-     */    
+     */
     public void write( Geometry geometry )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         getGeometryEncoder().export( geometry );
@@ -221,7 +233,7 @@ public class GMLStreamWriter {
      * @param crs
      *            object to be written, must not be <code>null</code>
      * @throws XMLStreamException
-     */    
+     */
     public void write( CRS crs )
                             throws XMLStreamException {
         throw new UnsupportedOperationException( "Writing of crs is not implemented yet." );

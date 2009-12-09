@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 /**
@@ -58,8 +59,9 @@ public class GMLOutputFactory {
      * @param xmlStream
      *            XML stream used to write the output, must not be <code>null</code>
      * @return initialized {@link GMLStreamWriter}
+     * @throws XMLStreamException 
      */
-    public static GMLStreamWriter createGMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) {
+    public static GMLStreamWriter createGMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) throws XMLStreamException {
         return new GMLStreamWriter( version, xmlStream );
     }
 }
