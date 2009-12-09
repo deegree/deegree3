@@ -231,11 +231,11 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
 
             String namespaceURI = featureName.getNamespaceURI();
             String localName = featureName.getLocalPart();
+            String prefix = featureName.getPrefix() == null ? "app" : featureName.getPrefix();
             if ( namespaceURI == null || namespaceURI.length() == 0 ) {
                 writer.writeStartElement( localName );
             } else {
-                // TODO find a clever strategy for binding of the namespaces
-                writer.setPrefix( "app", namespaceURI );
+                writer.setPrefix( prefix, namespaceURI );
                 writer.writeStartElement( namespaceURI, localName );
             }
 
