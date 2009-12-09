@@ -271,7 +271,7 @@ public class Style {
     public LinkedList<Class<?>> getRuleTypes() {
         LinkedList<Class<?>> list = new LinkedList<Class<?>>();
 
-        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
+        for ( Pair<?, ?> rule : rules ) {
             if ( rule.first instanceof FilterContinuation ) {
                 FilterContinuation cont = (FilterContinuation) rule.first;
                 if ( cont.filter instanceof IsSurface ) {
@@ -297,7 +297,7 @@ public class Style {
     public LinkedList<String> getRuleTitles() {
         LinkedList<String> list = new LinkedList<String>();
 
-        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
+        for ( Pair<?, ?> rule : rules ) {
             if ( rule.first instanceof FilterContinuation ) {
                 FilterContinuation cont = (FilterContinuation) rule.first;
                 list.add( cont.common.title );
