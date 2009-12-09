@@ -42,9 +42,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -73,6 +75,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.IdFilter;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
@@ -234,33 +237,38 @@ public class MemoryFeatureStore implements FeatureStore {
                             throws FilterEvaluationException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-            String msg = "Only queries with exactly one or zero type name(s) are supported.";
+            String msg = "Join queries (multiple feature type names) are currently not supported.";
             throw new UnsupportedOperationException( msg );
         }
 
-        // TODO what if no type name is specified (use id to determine ft?)
-        QName ftName = query.getTypeNames().length > 0 ? query.getTypeNames()[0].getFeatureTypeName()
-                                                      : schema.getFeatureTypes()[0].getName();
-        FeatureType ft = schema.getFeatureType( ftName );
+        FeatureCollection fc = null;
+        if ( query.getTypeNames().length == 1 ) {
+            QName ftName = query.getTypeNames()[0].getFeatureTypeName();
+            FeatureType ft = schema.getFeatureType( ftName );
+            if ( ft == null ) {
+                String msg = "Feature type '" + ftName + "' is not served by this datastore.";
+                throw new UnsupportedOperationException( msg );
+            }
 
-        // TODO remove this quirk
-        if ( ft == null ) {
-            for ( FeatureType schemaFt : schema.getFeatureTypes() ) {
-                if ( schemaFt.getName().getLocalPart().equals( ftName.getLocalPart() ) ) {
-                    ft = schemaFt;
-                    break;
+            // determine / filter features
+            fc = ftToFeatures.get( ft );
+            if ( query.getFilter() != null ) {
+                fc = fc.getMembers( query.getFilter() );
+            }
+        } else {
+            // must be an id filter based query
+            if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
+                String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
+                throw new FilterEvaluationException( msg );
+            }
+            Set<Feature> features = new HashSet<Feature>();
+            for ( String id : ( (IdFilter) query.getFilter() ).getMatchingIds() ) {
+                GMLObject object = getObjectById( id );
+                if ( object != null && object instanceof Feature ) {
+                    features.add( (Feature) object );
                 }
             }
-        }
-        if ( ft == null ) {
-            String msg = "Feature type '" + ftName + "' is not served by this datastore.";
-            throw new UnsupportedOperationException( msg );
-        }
-
-        // determine / filter features
-        FeatureCollection fc = ftToFeatures.get( ft );
-        if ( query.getFilter() != null ) {
-            fc = fc.getMembers( query.getFilter() );
+            fc = new GenericFeatureCollection( null, features );
         }
 
         // sort features
@@ -292,6 +300,7 @@ public class MemoryFeatureStore implements FeatureStore {
                 try {
                     rs = query( queries[i++] );
                 } catch ( Exception e ) {
+                    e.printStackTrace();
                     throw new RuntimeException( e.getMessage(), e );
                 }
                 return rs;

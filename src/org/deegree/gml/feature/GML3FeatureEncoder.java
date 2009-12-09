@@ -243,6 +243,10 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
                 writer.writeAttribute( "gml", GMLNS, "id", feature.getId() );
             }
             for ( Property<?> prop : feature.getProperties( GML_31 ) ) {
+//                // hack to work around CITE 1.1.0 problems (BTW, export Envelopes?)
+//                if (prop.getType() instanceof EnvelopePropertyType) {
+//                    continue;
+//                }
                 export( prop, inlineLevels );
             }
             writer.writeEndElement();
