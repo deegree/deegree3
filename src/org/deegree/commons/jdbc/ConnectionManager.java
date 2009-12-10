@@ -74,19 +74,19 @@ public class ConnectionManager {
 
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
-    static {
-        String lockDb = new File (TempFileManager.getBaseDir(), "lockdb").getAbsolutePath();
-        LOG.info( "Using '" + lockDb + "' for derby lock database." );
-
-        try {
-            Class.forName( "org.apache.derby.jdbc.EmbeddedDriver" ).newInstance();
-        } catch ( Exception e ) {
-            LOG.error( "Error loading derby JDBC driver: " + e.getMessage(), e );
-        }
-
-        addConnection( "LOCK_DB", DatabaseType.UNDEFINED, "jdbc:derby:" + lockDb + ";create=true", null, null,
-                       0, 10 );
-    }
+//    static {
+//        String lockDb = new File (TempFileManager.getBaseDir(), "lockdb").getAbsolutePath();
+//        LOG.info( "Using '" + lockDb + "' for derby lock database." );
+//
+//        try {
+//            Class.forName( "org.apache.derby.jdbc.EmbeddedDriver" ).newInstance();
+//        } catch ( Exception e ) {
+//            LOG.error( "Error loading derby JDBC driver: " + e.getMessage(), e );
+//        }
+//
+//        addConnection( "LOCK_DB", DatabaseType.UNDEFINED, "jdbc:derby:" + lockDb + ";create=true", null, null,
+//                       0, 10 );
+//    }
 
     /**
      * 

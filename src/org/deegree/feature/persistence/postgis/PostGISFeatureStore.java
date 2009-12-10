@@ -60,7 +60,6 @@ import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
-import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
@@ -68,6 +67,7 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -115,7 +115,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private Thread transactionHolder;
 
-    private LockManager lockManager;
+    // private LockManager lockManager;
 
     private FeatureStoreCache cache = new FeatureStoreCache();
 
@@ -184,7 +184,7 @@ public class PostGISFeatureStore implements FeatureStore {
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        return lockManager;
+        return null;
     }
 
     @Override
@@ -234,7 +234,7 @@ public class PostGISFeatureStore implements FeatureStore {
     public void init()
                             throws FeatureStoreException {
         LOG.debug( "init" );
-        lockManager = new DefaultLockManager( this, "LOCK_DB" );
+        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
 
         Connection conn = null;
         Statement stmt = null;
@@ -325,22 +325,32 @@ public class PostGISFeatureStore implements FeatureStore {
     public FeatureResultSet query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
 
-        Filter filter = query.getFilter();
+        if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+            String msg = "Join queries between multiple feature types are currently not supported.";
+            throw new UnsupportedOperationException( msg );
+        }
+
         FeatureResultSet rs = null;
-        if ( filter != null && filter instanceof OperatorFilter ) {
-            if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-                String msg = "Queries that target more than one feature type (joins) are not supported yet.";
+        Filter filter = query.getFilter();
+        if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
+            QName ftName = query.getTypeNames()[0].getFeatureTypeName();
+            FeatureType ft = schema.getFeatureType( ftName );
+            if ( ft == null ) {
+                String msg = "Feature type '" + ftName + "' is not served by this feature store.";
                 throw new FeatureStoreException( msg );
             }
-            rs = queryByOperatorFilter( query.getTypeNames()[0].getFeatureTypeName(), (OperatorFilter) filter );
-
-            // filter features
-            rs = new FilteredFeatureResultSet( rs, filter );
-
-        } else if ( filter != null ) {
-            rs = queryByIdFilter( (IdFilter) filter );
+            rs = queryByOperatorFilter( ftName, (OperatorFilter) filter,
+                                        (Envelope) query.getHint( QueryHint.HINT_LOOSE_BBOX ) );
+            if ( filter != null ) {
+                rs = new FilteredFeatureResultSet( rs, filter );
+            }
         } else {
-            rs = queryByOperatorFilter( query.getTypeNames()[0].getFeatureTypeName(), null );
+            // must be an id filter based query
+            if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
+                String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
+                throw new FilterEvaluationException( msg );
+            }
+            rs = queryByIdFilter( (IdFilter) filter );
         }
 
         // sort features
@@ -401,7 +411,7 @@ public class PostGISFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureResultSet queryByOperatorFilter( QName ftName, OperatorFilter filter )
+    private FeatureResultSet queryByOperatorFilter( QName ftName, OperatorFilter filter, Envelope looseBBox )
                             throws FeatureStoreException {
 
         FeatureResultSet result = null;
@@ -471,7 +481,7 @@ public class PostGISFeatureStore implements FeatureStore {
     public int queryHits( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO
-        return query( queries ).toCollection().size();       
+        return query( queries ).toCollection().size();
     }
 
     private PropertyName findGeoProp( FeatureType ft )

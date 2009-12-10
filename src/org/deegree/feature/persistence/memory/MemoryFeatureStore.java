@@ -114,7 +114,7 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private Thread transactionHolder;
 
-    final DefaultLockManager lockManager;
+    DefaultLockManager lockManager;
 
     /**
      * Creates a new {@link MemoryFeatureStore} for the given {@link ApplicationSchema}.
@@ -133,7 +133,8 @@ public class MemoryFeatureStore implements FeatureStore {
             StoredFeatureTypeMetadata md = new StoredFeatureTypeMetadata( ft, this, title, desc, nativeCRS );
             ftNameToMd.put( ft.getName(), md );
         }
-        lockManager = new DefaultLockManager( this, "LOCK_DB" );
+        // TODO
+        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
     }
 
     /**
@@ -234,10 +235,10 @@ public class MemoryFeatureStore implements FeatureStore {
 
     @Override
     public FeatureResultSet query( Query query )
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, FeatureStoreException {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-            String msg = "Join queries (multiple feature type names) are currently not supported.";
+            String msg = "Join queries between multiple feature types are currently not supported.";
             throw new UnsupportedOperationException( msg );
         }
 
@@ -246,8 +247,8 @@ public class MemoryFeatureStore implements FeatureStore {
             QName ftName = query.getTypeNames()[0].getFeatureTypeName();
             FeatureType ft = schema.getFeatureType( ftName );
             if ( ft == null ) {
-                String msg = "Feature type '" + ftName + "' is not served by this datastore.";
-                throw new UnsupportedOperationException( msg );
+                String msg = "Feature type '" + ftName + "' is not served by this feature store.";
+                throw new FeatureStoreException( msg );
             }
 
             // determine / filter features
@@ -316,7 +317,7 @@ public class MemoryFeatureStore implements FeatureStore {
 
     @Override
     public int queryHits( org.deegree.feature.persistence.query.Query query )
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, FeatureStoreException {
         // TODO maybe implement this more efficiently
         return query( query ).toCollection().size();
     }
