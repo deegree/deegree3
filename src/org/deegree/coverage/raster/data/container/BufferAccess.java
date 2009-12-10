@@ -205,7 +205,7 @@ public class BufferAccess {
             boolean noData = false;
             if ( reader != null ) {
                 try {
-                    BufferResult dataResult = reader.read( view, data );
+                    BufferResult dataResult = reader.read( maxViewData, data );
                     data = dataResult.getResult();
                     data.rewind();
                     RasterRect rect = dataResult.getRect();
