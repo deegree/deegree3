@@ -54,8 +54,8 @@
     <complexContent>
       <extension base="ds:FeatureStoreType">
         <sequence>
+          <element name="StorageSRS" type="string" />        
           <element name="File" type="string" />
-          <element name="CoordinateSystem" type="string" />
         </sequence>
       </extension>
     </complexContent>
@@ -70,9 +70,9 @@
     <complexContent>
       <extension base="ds:FeatureStoreType">
         <sequence>
+          <element name="StorageSRS" type="string" />        
           <element name="ConnectionPoolId" type="string" />
           <element name="SQLStatement" type="string" />
-          <element name="CoordinateSystem" type="string" />
         </sequence>
       </extension>
     </complexContent>
@@ -119,6 +119,7 @@
     <complexContent>
       <extension base="ds:FeatureStoreType">
         <sequence>
+          <element name="StorageSRS" type="string" />        
           <element name="JDBCConnId" type="string" />
           <element name="DBSchemaQualifier" type="string" minOccurs="0"/>
           <element name="GMLSchemaFileURL" maxOccurs="unbounded">

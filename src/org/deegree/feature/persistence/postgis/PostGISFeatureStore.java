@@ -82,8 +82,11 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.gml.GMLObject;
 import org.postgis.PGgeometry;
+import org.postgis.Point;
+import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,15 +110,21 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private final Map<QName, Short> ftNameToFtId = new HashMap<QName, Short>();
 
+    final Map<QName, Envelope> ftNameToBBox = new HashMap<QName, Envelope>();
+
+    private Envelope defaultEnvelope;
+
     private final String jdbcConnId;
 
     private final String dbSchema;
+
+    private final CRS storageSRS;
 
     private PostGISFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
 
-    // private LockManager lockManager;
+    private LockManager lockManager;
 
     private FeatureStoreCache cache = new FeatureStoreCache();
 
@@ -128,11 +137,15 @@ public class PostGISFeatureStore implements FeatureStore {
      *            id of the deegree DB connection pool, must not be <code>null</code>
      * @param dbSchema
      *            name of the database schema, can be <code>null</code> (-> public schema)
+     * @param storageSRS
+     *            srs used for stored geometries, must not be <code>null</code>
      */
-    public PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema ) {
+    public PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema, CRS storageSRS ) {
         this.schema = schema;
         this.jdbcConnId = jdbcConnId;
         this.dbSchema = dbSchema;
+        this.storageSRS = storageSRS;
+        defaultEnvelope = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
     }
 
     @Override
@@ -177,14 +190,29 @@ public class PostGISFeatureStore implements FeatureStore {
 
     @Override
     public Envelope getEnvelope( QName ftName ) {
-        // TODO use information from database
-        return new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
+        Envelope env = ftNameToBBox.get( ftName );
+        if ( env == null ) {
+            env = defaultEnvelope;
+        }
+        return env;
+    }
+
+    /**
+     * Sets the envelope for the given feature type.
+     * 
+     * @param ft
+     *            feature type, must not be <code>null</code>
+     * @param ftEnv
+     *            envelope, must not be <code>null</code> and use EPSG:4326
+     */
+    void setEnvelope( FeatureType ft, Envelope ftEnv ) {
+        ftNameToBBox.put( ft.getName(), ftEnv );
     }
 
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        return null;
+        return lockManager;
     }
 
     @Override
@@ -264,11 +292,32 @@ public class PostGISFeatureStore implements FeatureStore {
                 }
                 String title = ftName.toString() + " served by PostGISFeatureStore";
                 String desc = ftName.toString() + " served by PostGISFeatureStore";
-                // TODO make this configurable
-                CRS nativeCRS = new CRS( "EPSG:25833" );
-                StoredFeatureTypeMetadata ftMd = new StoredFeatureTypeMetadata( ft, this, title, desc, nativeCRS );
+                StoredFeatureTypeMetadata ftMd = new StoredFeatureTypeMetadata( ft, this, title, desc, storageSRS );
                 ftNameToMd.put( ftName, ftMd );
                 ftNameToFtId.put( ftName, ftId );
+
+                if ( pgGeom != null ) {
+                    double[] min = new double[] { Double.MAX_VALUE, Double.MAX_VALUE, };
+                    double[] max = new double[] { Double.MIN_VALUE, Double.MIN_VALUE, };
+                    Polygon polygon = (Polygon) pgGeom.getGeometry();
+                    for ( int i = 0; i < polygon.numPoints(); i++ ) {
+                        Point point = polygon.getPoint( 0 );
+                        if ( min[0] > point.x ) {
+                            min[0] = point.x;
+                        }
+                        if ( min[1] > point.y ) {
+                            min[1] = point.y;
+                        }
+                        if ( max[0] < point.x ) {
+                            max[0] = point.x;
+                        }
+                        if ( max[1] < point.y ) {
+                            max[1] = point.y;
+                        }
+                    }
+                    Envelope env = new GeometryFactory().createEnvelope( min, max, CRS.EPSG_4326 );
+                    ftNameToBBox.put( ftName, env );
+                }
             }
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );

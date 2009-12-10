@@ -167,7 +167,7 @@ public class FeatureStoreManager {
      */
     public static synchronized FeatureStore create( DirectSQLDataSourceType jaxbConfig ) {
         String connId = jaxbConfig.getConnectionPoolId();
-        String srs = jaxbConfig.getCoordinateSystem();
+        String srs = jaxbConfig.getStorageSRS();
         String stmt = jaxbConfig.getSQLStatement();
         // work in progress
         return null;
@@ -215,7 +215,7 @@ public class FeatureStoreManager {
         String id = jaxbConfig.getDataSourceName();
         XMLAdapter resolver = new XMLAdapter();
         resolver.setSystemId( baseURL );
-        CRS crs = new CRS( jaxbConfig.getCoordinateSystem().trim() );
+        CRS crs = new CRS( jaxbConfig.getStorageSRS().trim() );
 
         String shapeFileName = null;
         try {
@@ -346,8 +346,9 @@ public class FeatureStoreManager {
             throw new FeatureStoreException( msg, e );
         }
 
+        CRS storageSRS = new CRS( jaxbConfig.getStorageSRS() );
         PostGISFeatureStore fs = new PostGISFeatureStore( schema, jaxbConfig.getJDBCConnId(),
-                                                          jaxbConfig.getDBSchemaQualifier() );
+                                                          jaxbConfig.getDBSchemaQualifier(), storageSRS );
         registerAndInit( fs, id );
         return fs;
     }

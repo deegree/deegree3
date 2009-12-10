@@ -90,7 +90,7 @@ public interface FeatureStore {
     /**
      * Returns the application schema that this {@link FeatureStore} serves.
      * 
-     * @return the served application schema
+     * @return the served application schema, never <code>null</code>
      */
     public ApplicationSchema getSchema();
 
@@ -98,8 +98,8 @@ public interface FeatureStore {
      * Returns metadata on the specified feature type.
      * 
      * @param ftName
-     *            name of the feature type, cannot be null and must be served by this store
-     * @return metadata for the feature type, never <code>null</code>
+     *            name of the feature type, must not be <code>null</code> and must be served by this store
+     * @return metadata for the feature type, or <code>null</code> if the feature type is not known
      */
     public StoredFeatureTypeMetadata getMetadata( QName ftName );
 
@@ -107,8 +107,8 @@ public interface FeatureStore {
      * Returns the envelope for all stored features of the given type.
      * 
      * @param ftName
-     *            name of the feature type, cannot be null and must be served by this store
-     * @return the envelope (using the native CRS), never null
+     *            name of the feature type, must not be <code>null</code> and must be served by this store
+     * @return the envelope (using the native CRS), or <code>null</code> if the feature type is not known
      */
     public Envelope getEnvelope( QName ftName );
 
@@ -117,7 +117,7 @@ public interface FeatureStore {
      * 
      * @param query
      *            query to be performed, must not be <code>null</code>
-     * @return matching features
+     * @return matching features, never <code>null</code>
      * @throws FeatureStoreException
      *             if the query could not be performed
      * @throws FilterEvaluationException
@@ -131,7 +131,7 @@ public interface FeatureStore {
      * 
      * @param queries
      *            queries to be performed, must not be <code>null</code> and contain at least one entry
-     * @return matching features
+     * @return matching features, never <code>null</code>
      * @throws FeatureStoreException
      *             if the query could not be performed
      * @throws FilterEvaluationException
@@ -175,8 +175,8 @@ public interface FeatureStore {
      * 
      * @param id
      *            identifier of the object to be retrieved
-     * @return the stored object (either a {@link Feature} or a {@link Geometry}) or null if no object with the given id
-     *         is known
+     * @return the stored object (either a {@link Feature} or a {@link Geometry}) or <code>null</code> if no object with
+     *         the given id is known
      * @throws FeatureStoreException
      *             if the query could not be performed
      */
@@ -186,7 +186,8 @@ public interface FeatureStore {
     /**
      * Acquires transactional access to the feature store.
      * 
-     * @return transaction object that allows to perform transactions operations on the datastore, never null
+     * @return transaction object that allows to perform transactions operations on the datastore, never
+     *         <code>null</code>
      * @throws FeatureStoreException
      *             if the transactional access could not be acquired or is not implemented for this {@link FeatureStore}
      */
@@ -196,7 +197,7 @@ public interface FeatureStore {
     /**
      * Returns the associated {@link LockManager}.
      * 
-     * @return the associated {@link LockManager} instance, never null
+     * @return the associated {@link LockManager} instance, never <code>null</code>
      * @throws FeatureStoreException
      *             if the {@link FeatureStore} does not implement locking
      */

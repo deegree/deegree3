@@ -43,11 +43,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.crs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
@@ -61,6 +63,7 @@ import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.feature.FeatureReference;
 import org.postgis.LinearRing;
 import org.postgis.PGgeometry;
@@ -87,6 +90,16 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final Connection conn;
 
+    private static GeometryTransformer bboxTransformer;
+
+    static {
+        try {
+            bboxTransformer = new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Creates a new {@link PostGISFeatureStoreTransaction} instance.
      * 
@@ -108,9 +121,11 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
         LOG.debug( "Committing transaction." );
         try {
+            persistEnvelopes();
             conn.commit();
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
+            LOG.debug( e.getMessage(), e.getNextException() );
             throw new FeatureStoreException( "Unable to commit SQL transaction: " + e.getMessage() );
         } finally {
             store.releaseTransaction( this );
@@ -276,11 +291,27 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new SQLException( msg, e );
         }
         stmt.setBytes( 4, bos.toByteArray() );
-        stmt.setObject( 5, toPGPolygon( feature.getEnvelope() ) );
+        stmt.setObject( 5, toPGPolygon( feature.getEnvelope(), -1 ) );
         stmt.addBatch();
+
+        Envelope env = feature.getEnvelope();
+        if ( env != null ) {
+            try {
+                env = (Envelope) bboxTransformer.transform( env );
+                Envelope ftEnv = store.getEnvelope( feature.getName() );
+                if ( ftEnv != null ) {
+                    ftEnv = ftEnv.merge( env );
+                } else {
+                    ftEnv = env;
+                }
+                store.setEnvelope( feature.getType(), ftEnv );
+            } catch ( Exception e ) {
+                throw new SQLException( e.getMessage(), e );
+            }
+        }
     }
 
-    private PGgeometry toPGPolygon( Envelope envelope ) {
+    private PGgeometry toPGPolygon( Envelope envelope, int srid ) {
         PGgeometry pgGeometry = null;
         if ( envelope != null ) {
             if ( !envelope.getMin().equals( envelope.getMax() ) ) {
@@ -293,12 +324,12 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 LinearRing outer = new LinearRing( points );
                 Polygon polygon = new Polygon( new LinearRing[] { outer } );
                 // TODO
-                polygon.setSrid( -1 );
+                polygon.setSrid( srid );
                 pgGeometry = new PGgeometry( polygon );
             } else {
                 Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1() );
                 // TODO
-                point.setSrid( -1 );
+                point.setSrid( srid );
                 pgGeometry = new PGgeometry( point );
             }
         }
@@ -351,6 +382,25 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
     }
 
+    private void persistEnvelopes()
+                            throws SQLException {
+
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement( "UPDATE " + store.qualifyTableName( "feature_types" )
+                                          + " SET wgs84bbox=? WHERE id=?" );
+            for ( Map.Entry<QName, Envelope> ftBbox : store.ftNameToBBox.entrySet() ) {
+                stmt.setObject( 1, toPGPolygon( ftBbox.getValue(), 4326 ) );
+                stmt.setShort( 2, store.getFtId( ftBbox.getKey() ) );
+                stmt.executeUpdate();
+            }
+        } finally {
+            if ( stmt != null ) {
+                stmt.close();
+            }
+        }
+    }
+
     @Override
     public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException {
@@ -371,4 +421,5 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             store.releaseTransaction( this );
         }
     }
+
 }

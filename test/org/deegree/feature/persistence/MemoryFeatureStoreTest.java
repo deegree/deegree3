@@ -103,7 +103,7 @@ public class MemoryFeatureStoreTest {
 
     @Test
     public void testQueryAllPhilosophers()
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, FeatureStoreException {
         TypeName[] typeNames = new TypeName[] { new TypeName(
                                                               QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
                                                               null ) };
@@ -115,7 +115,7 @@ public class MemoryFeatureStoreTest {
 
     @Test
     public void testQueryAllPlaces()
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, FeatureStoreException {
         TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Place" ),
                                                               null ) };
         Query query = new Query( typeNames, null, null, null, null );
@@ -126,7 +126,7 @@ public class MemoryFeatureStoreTest {
 
     @Test
     public void testQueryAllCountries()
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, FeatureStoreException {
         TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
                                                               null ) };
         Query query = new Query( typeNames, null, null, null, null );
@@ -137,7 +137,7 @@ public class MemoryFeatureStoreTest {
 
     // @Test
     public void testQueryAllBooks()
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, FeatureStoreException {
         TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Book" ), null ) };
         Query query = new Query( typeNames, null, null, null, null );
         FeatureCollection fc = store.query( query ).toCollection();
@@ -147,7 +147,7 @@ public class MemoryFeatureStoreTest {
 
     @Test
     public void testQueryPhilosopherById()
-                            throws FilterEvaluationException {
+                            throws FilterEvaluationException, FeatureStoreException {
         TypeName[] typeNames = new TypeName[] { new TypeName(
                                                               QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
                                                               null ) };
@@ -183,7 +183,7 @@ public class MemoryFeatureStoreTest {
         XMLStreamWriter writer = outputFactory.createXMLStreamWriter( out );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
 
-        GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );        
+        GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );
         gmlStream.write( (Geometry) o );
     }
 }
