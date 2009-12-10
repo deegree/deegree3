@@ -72,11 +72,8 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
-import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -327,27 +324,6 @@ public class MemoryFeatureStore implements FeatureStore {
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO maybe implement this more efficiently
         return query( queries ).toCollection().size();
-    }
-
-    private PropertyName findGeoProp( FeatureType ft )
-                            throws FilterEvaluationException {
-
-        PropertyName propName = null;
-
-        // TODO what about geometry properties on subfeature levels
-        for ( PropertyType<?> pt : ft.getPropertyDeclarations() ) {
-            if ( pt instanceof GeometryPropertyType ) {
-                propName = new PropertyName( pt.getName() );
-                break;
-            }
-        }
-
-        if ( propName == null ) {
-            String msg = "Cannot perform BBox query: requested feature type ('" + ft.getName()
-                         + "') does not have a geometry property.";
-            throw new FilterEvaluationException( msg );
-        }
-        return propName;
     }
 
     @Override

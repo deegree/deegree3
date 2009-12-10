@@ -97,6 +97,7 @@ public class GMLInputFactory {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
+        // skip START_DOCUMENT event
         xmlStream.nextTag();
         return new GMLStreamReader( version, new XMLStreamReaderWrapper( xmlStream, url.toString() ) );
     }

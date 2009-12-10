@@ -80,8 +80,6 @@ import org.slf4j.LoggerFactory;
  */
 class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreTransaction.class );
-
     private MemoryFeatureStore store;
 
     /**

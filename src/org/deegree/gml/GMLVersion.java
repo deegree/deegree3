@@ -53,7 +53,7 @@ public enum GMLVersion {
     GML_30( GMLNS ),
     /** GML 3.1 versions (either 3.1.0 or 3.1.1) */
     GML_31( GMLNS ),
-    /** GML 3.2 versions (currently only 3.2.1) */
+    /** GML 3.2 versions (3.2.1) */
     GML_32( GML3_2_NS );
 
     private String ns;
