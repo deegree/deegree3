@@ -211,4 +211,9 @@ public class IIORasterReader implements RasterReader {
     public RasterDataInfo getRasterDataInfo() {
         return reader == null ? null : reader.getRasterDataInfo();
     }
+
+    @Override
+    public boolean canReadTiles() {
+        return reader == null ? false : reader.getReadTiles();
+    }
 }

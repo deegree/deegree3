@@ -124,8 +124,9 @@ public class GridFileReader extends GridReader {
      */
     private synchronized void instantiate( File gridFile, RasterIOOptions options )
                             throws NumberFormatException, IOException {
-        if ( infoFile == null ) {
-            File metaInfo = GridMetaInfoFile.fileNameFromOptions( gridFile.getParent(), options );
+        if ( infoFile == null && gridFile != null ) {
+            File metaInfo = GridMetaInfoFile.fileNameFromOptions( gridFile.getParent(),
+                                                                  FileUtils.getFilename( gridFile ), options );
             this.instantiate( GridMetaInfoFile.readFromFile( metaInfo, options ), gridFile );
         }
     }

@@ -53,6 +53,7 @@ import java.nio.channels.FileLock;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterDataFactory;
@@ -141,14 +142,16 @@ public class GridWriter implements RasterWriter {
      *            write to the given file.
      * @param dataInfo
      *            information about the data written to the grid file.
+     * @throws IOException
      */
     public GridWriter( int targetColumns, int targetRows, Envelope rasterEnvelope, RasterGeoReference geoRef,
-                       File gridFile, RasterDataInfo dataInfo ) {
+                       File gridFile, RasterDataInfo dataInfo ) throws IOException {
         instantiate( targetColumns, targetRows, rasterEnvelope, geoRef, gridFile, dataInfo );
     }
 
     private synchronized void instantiate( int targetColumns, int targetRows, Envelope rasterEnvelope,
-                                           RasterGeoReference geoRef, File gridFile, RasterDataInfo dataInfo ) {
+                                           RasterGeoReference geoRef, File gridFile, RasterDataInfo dataInfo )
+                            throws IOException {
         this.envelope = rasterEnvelope;
         this.columns = targetColumns;
         this.rows = targetRows;
@@ -162,9 +165,13 @@ public class GridWriter implements RasterWriter {
         this.tileRasterHeight = rasterCoordinate[1];
 
         this.gridFile = gridFile;
+        if ( this.gridFile != null && !this.gridFile.exists() ) {
+            this.gridFile.createNewFile();
+        }
         this.dataInfo = dataInfo;
+        // this tile data does not need to be cached.
         this.tileData = RasterDataFactory.createRasterData( tileRasterWidth, tileRasterHeight, dataInfo.bandInfo,
-                                                            dataInfo.dataType, dataInfo.interleaveType );
+                                                            dataInfo.dataType, dataInfo.interleaveType, false );
         this.bytesPerTile = this.tileRasterWidth * this.tileRasterHeight * dataInfo.bands * dataInfo.dataSize;
         this.tilesInFile = columns * rows;
     }
@@ -172,8 +179,10 @@ public class GridWriter implements RasterWriter {
     /**
      * @param gridFile
      * @param options
+     * @throws IOException
      */
-    private void instantiate( AbstractRaster raster, File gridFile, RasterIOOptions options ) {
+    private void instantiate( AbstractRaster raster, File gridFile, RasterIOOptions options )
+                            throws IOException {
         Envelope env = raster.getEnvelope();
         RasterGeoReference geoRef = raster.getRasterReference();
         int targetColumns = 0;
@@ -272,9 +281,21 @@ public class GridWriter implements RasterWriter {
         writeMetadataFile( options );
     }
 
+    /**
+     * Writes the metadata file for this grid file.
+     * 
+     * @param options
+     * @throws IOException
+     */
     public void writeMetadataFile( RasterIOOptions options )
                             throws IOException {
-        File metaInfo = GridMetaInfoFile.fileNameFromOptions( gridFile.getParent(), options );
+        File metaInfo = null;
+        if ( gridFile != null ) {
+            metaInfo = GridMetaInfoFile.fileNameFromOptions( gridFile.getParent(), FileUtils.getFilename( gridFile ),
+                                                             options );
+        } else {
+            throw new IOException( "No gridfile specified, could not write the info file" );
+        }
         GridMetaInfoFile.writeToFile( metaInfo, new GridMetaInfoFile( this.geoRef, this.rows, this.columns,
                                                                       this.tileRasterWidth, this.tileRasterHeight,
                                                                       this.dataInfo ), options );

@@ -38,6 +38,7 @@
 
 package org.deegree.coverage.raster.io.grid;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -46,7 +47,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
+import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
@@ -68,8 +71,10 @@ public class GridMetaInfoFile {
     /** defined rasterio options name of the index file. **/
     public static final String METAINFO_FILE = "grid_meta_file";
 
+    private static final String METAINFO_FILE_EXT = "info";
+
     /** standard name of the index file. **/
-    public static final String METAINFO_FILE_NAME = "gridded_raster.info";
+    public static final String METAINFO_FILE_NAME = "gridded_raster." + METAINFO_FILE_EXT;
 
     private final RasterGeoReference geoReference;
 
@@ -81,16 +86,7 @@ public class GridMetaInfoFile {
 
     private final int columns;
 
-    private final int bands;
-
-    private final DataType dataType;
-
-    /**
-     * @return the dataType
-     */
-    public final DataType getDataType() {
-        return dataType;
-    }
+    private final RasterDataInfo dataInfo;
 
     /**
      * @param geoReference
@@ -103,27 +99,9 @@ public class GridMetaInfoFile {
      */
     public GridMetaInfoFile( RasterGeoReference geoReference, int rows, int columns, int tileRasterWidth,
                              int tileRasterHeight, int bands, DataType dataType ) {
-        this.geoReference = geoReference;
-        this.tileRasterWidth = tileRasterWidth;
-        this.tileRasterHeight = tileRasterHeight;
-        this.columns = columns;
-        this.rows = rows;
-        this.bands = bands;
-        this.dataType = dataType;
-    }
-
-    /**
-     * @return the number of tiles in the height (rows) of the grid file.
-     */
-    public final int rows() {
-        return rows;
-    }
-
-    /**
-     * @return the number of tiles in the width (columns) of the grid file.
-     */
-    public final int columns() {
-        return columns;
+        this( geoReference, rows, columns, tileRasterWidth, tileRasterHeight,
+              new RasterDataInfo( BandType.fromBufferedImageType( BufferedImage.TYPE_CUSTOM, bands ), dataType,
+                                  InterleaveType.PIXEL ) );
     }
 
     /**
@@ -136,8 +114,12 @@ public class GridMetaInfoFile {
      */
     public GridMetaInfoFile( RasterGeoReference geoReference, int rows, int columns, int tileRasterWidth,
                              int tileRasterHeight, RasterDataInfo dataInfo ) {
-        this( geoReference, rows, columns, tileRasterWidth, tileRasterHeight, dataInfo.bands, dataInfo.dataType );
-
+        this.geoReference = geoReference;
+        this.tileRasterWidth = tileRasterWidth;
+        this.tileRasterHeight = tileRasterHeight;
+        this.columns = columns;
+        this.rows = rows;
+        this.dataInfo = dataInfo;
     }
 
     /**
@@ -154,14 +136,35 @@ public class GridMetaInfoFile {
     public static GridMetaInfoFile readFromFile( File infoFile, RasterIOOptions options )
                             throws NumberFormatException, IOException {
         BufferedReader br = new BufferedReader( new FileReader( infoFile ) );
-        RasterGeoReference worldFile = WorldFileAccess.readWorldFile( br, options );
+        GridMetaInfoFile gmi = read( br, options );
+        br.close();
+        return gmi;
+    }
+
+    /**
+     * Read the grid info file which is basically a world file with supplement information.
+     * 
+     * @param readerOnInfoFile
+     *            to read the data from.
+     * @param options
+     *            containing information about the crs, origin location etc.
+     * @return an new {@link GridMetaInfoFile} read from the given file.
+     * @throws NumberFormatException
+     * @throws IOException
+     */
+    public static GridMetaInfoFile read( BufferedReader readerOnInfoFile, RasterIOOptions options )
+                            throws NumberFormatException, IOException {
+        if ( readerOnInfoFile == null ) {
+            throw new IOException( "Given reader may not be null" );
+        }
+        RasterGeoReference worldFile = WorldFileAccess.readWorldFile( readerOnInfoFile, options );
 
         // read grid info
-        int rows = Integer.parseInt( br.readLine() );
-        int columns = Integer.parseInt( br.readLine() );
-        int tileSamplesX = Integer.parseInt( br.readLine() );
-        int tileSamplesY = Integer.parseInt( br.readLine() );
-        String nl = br.readLine();
+        int rows = Integer.parseInt( readerOnInfoFile.readLine() );
+        int columns = Integer.parseInt( readerOnInfoFile.readLine() );
+        int tileSamplesX = Integer.parseInt( readerOnInfoFile.readLine() );
+        int tileSamplesY = Integer.parseInt( readerOnInfoFile.readLine() );
+        String nl = readerOnInfoFile.readLine();
         // try to read 'new' file info
         int bands = 3;
         DataType type = DataType.BYTE;
@@ -172,7 +175,7 @@ public class GridMetaInfoFile {
                 // old file.
             }
             // datatype
-            nl = br.readLine();
+            nl = readerOnInfoFile.readLine();
             if ( nl != null ) {
                 try {
                     type = DataType.fromDataBufferType( Integer.parseInt( nl ) );
@@ -181,8 +184,6 @@ public class GridMetaInfoFile {
                 }
             }
         }
-
-        br.close();
         return new GridMetaInfoFile( worldFile, rows, columns, tileSamplesX, tileSamplesY, bands, type );
     }
 
@@ -202,6 +203,28 @@ public class GridMetaInfoFile {
                             throws IOException {
 
         PrintWriter writer = new PrintWriter( new FileWriter( filename ) );
+        write( writer, metaInfo, options );
+        writer.close();
+    }
+
+    /**
+     * Write the grid info file which is basically a world file with supplement information.
+     * 
+     * @param writer
+     *            to write to.
+     * @param metaInfo
+     *            to write.
+     * @param options
+     *            containing information about the crs, origin location etc.
+     * @throws NumberFormatException
+     * @throws IOException
+     */
+    public static void write( PrintWriter writer, GridMetaInfoFile metaInfo, RasterIOOptions options )
+                            throws IOException {
+
+        if ( writer == null ) {
+            throw new IOException( "The writer is null." );
+        }
         // begins with standard world file entries
         writer.println( metaInfo.getGeoReference().getResolutionX() );
         writer.println( metaInfo.getGeoReference().getRotationY() );
@@ -215,10 +238,8 @@ public class GridMetaInfoFile {
         writer.println( metaInfo.columns );
         writer.println( metaInfo.tileRasterWidth );
         writer.println( metaInfo.tileRasterHeight );
-        writer.println( metaInfo.bands );
-        writer.println( DataType.toDataBufferType( metaInfo.dataType ) );
-
-        writer.close();
+        writer.println( metaInfo.dataInfo.bands );
+        writer.println( DataType.toDataBufferType( metaInfo.dataInfo.dataType ) );
     }
 
     /**
@@ -227,15 +248,20 @@ public class GridMetaInfoFile {
      * @param defaultDir
      *            to use if the options do not contain a file, a file named gridded_raster.info
      *            {@link GridMetaInfoFile#METAINFO_FILE_NAME} will be created.
+     * @param filename
+     *            if no name could be read from the options, use the given filename.
      * @param options
      *            to get the file for the given grid meta info.
      * @return a file defined by the given options or the default filename in the given directory.
      */
-    public static File fileNameFromOptions( String defaultDir, RasterIOOptions options ) {
+    public static File fileNameFromOptions( String defaultDir, String filename, RasterIOOptions options ) {
 
-        String metaFile = options == null ? null : options.get( METAINFO_FILE );
+        String metaFile = options == null ? filename : options.get( METAINFO_FILE );
         if ( metaFile == null ) {
             metaFile = defaultDir + File.separator + METAINFO_FILE_NAME;
+        }
+        if ( !metaFile.endsWith( METAINFO_FILE_EXT ) ) {
+            metaFile += METAINFO_FILE_EXT;
         }
         return new File( metaFile );
     }
@@ -262,6 +288,20 @@ public class GridMetaInfoFile {
     }
 
     /**
+     * @return the number of tiles in the height (rows) of the grid file.
+     */
+    public final int rows() {
+        return rows;
+    }
+
+    /**
+     * @return the number of tiles in the width (columns) of the grid file.
+     */
+    public final int columns() {
+        return columns;
+    }
+
+    /**
      * @param location
      *            of the origin for which the resulting envelope should be calculated.
      * @return an envelope based on the number of columns/rows in the grid file and the number of tile samples.
@@ -272,9 +312,11 @@ public class GridMetaInfoFile {
     }
 
     /**
-     * @return the number of bands of the file.
+     * 
+     * @return the data info
      */
-    public int getBands() {
-        return bands;
+    public final RasterDataInfo getDataInfo() {
+        return dataInfo;
     }
+
 }

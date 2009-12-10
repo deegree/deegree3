@@ -67,6 +67,7 @@ import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.InterleaveType;
@@ -82,7 +83,6 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterIOProvider;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
-import org.deegree.coverage.raster.io.grid.CacheRasterReader;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -614,9 +614,11 @@ public class RasterFactory {
                 // create a default geoRef
                 geoRef = new RasterGeoReference( OriginLocation.OUTER, 1, -1, 0, 0 );
             }
-            CacheRasterReader reader = new CacheRasterReader( byteBuffer, width, height, null, rdi, geoRef );
+            result = RasterDataFactory.createRasterData( width, height, rdi, geoRef, byteBuffer, true, null );
+            // CacheRasterReader reader = new CacheRasterReader( byteBuffer, width, height, null, rdi, geoRef );
             byteBuffer = null;
-            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, reader, rdi );
+            // result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, reader,
+            // rdi );
 
         }
 
@@ -644,7 +646,7 @@ public class RasterFactory {
         }
 
         // rb: check the bounds?
-        byteBuffer.rewind();
+        byteBuffer.clear();
         switch ( type ) {
         case BYTE:
             byteBuffer.put( (byte[]) imageRaster.getDataElements( x, y, width, height, null ) );

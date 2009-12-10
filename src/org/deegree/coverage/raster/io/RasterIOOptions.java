@@ -345,4 +345,37 @@ public class RasterIOOptions {
         return result;
     }
 
+    /**
+     * Copies the the values from the given options.
+     * 
+     * @param otherOptions
+     */
+    public void copyOf( RasterIOOptions otherOptions ) {
+
+        if ( otherOptions != null ) {
+            if ( getLoadingPolicy() != otherOptions.getLoadingPolicy() ) {
+                add( DATA_LOADING_POLICY, otherOptions.getLoadingPolicy().name() );
+            }
+
+            if ( readWorldFile() != otherOptions.readWorldFile() ) {
+                add( READ_WLD_FILE, otherOptions.readWorldFile() + "" );
+            }
+
+            if ( get( OPT_FORMAT ) == null ) {
+                otherOptions.get( OPT_FORMAT );
+            }
+            if ( getRasterGeoReference() == null ) {
+                setRasterGeoReference( otherOptions.getRasterGeoReference() );
+            }
+            setNoData( otherOptions.getNoDataValue() );
+            if ( getRasterOriginLocation() != OriginLocation.CENTER ) {
+                add( RasterIOOptions.GEO_ORIGIN_LOCATION, otherOptions.getRasterOriginLocation().name() );
+            }
+            if ( getCRS() == null ) {
+                add( RasterIOOptions.CRS, otherOptions.getCRS().getName() );
+            }
+        }
+
+    }
+
 }

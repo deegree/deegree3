@@ -45,11 +45,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StreamTokenizer;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
@@ -59,6 +59,8 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
+import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -67,7 +69,6 @@ import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a simple reader for text raster files.
@@ -85,6 +86,16 @@ public class XYZReader implements RasterReader {
     private static final Logger LOG = getLogger( XYZReader.class );
 
     private final static GeometryFactory factory = new GeometryFactory();
+
+    private File file;
+
+    private RasterGeoReference geoReference;
+
+    private int height;
+
+    private int width;
+
+    private RasterDataInfo rasterDataInfo;
 
     // saves a point in the raster grid (eg. each line becomes a GridPoint)
     private class GridPoint {
@@ -117,6 +128,15 @@ public class XYZReader implements RasterReader {
 
     // saves the extension of the raster grid
     static class GridExtension {
+
+        private float prevX = Float.NaN;
+
+        private float prevY = Float.NaN;
+
+        public float resX = Float.NaN;
+
+        public float resY = Float.NaN;
+
         /**
          * the min x value
          */
@@ -130,12 +150,12 @@ public class XYZReader implements RasterReader {
         /**
          * the max x value
          */
-        public float maxx = Float.MIN_VALUE;
+        public float maxx = Float.NEGATIVE_INFINITY;
 
         /**
          * the max y value
          */
-        public float maxy = Float.MIN_VALUE;
+        public float maxy = Float.NEGATIVE_INFINITY;
 
         /**
          * Extend the current extension to contain point <code>p</code>.
@@ -147,18 +167,27 @@ public class XYZReader implements RasterReader {
             miny = min( miny, p.y );
             maxx = max( maxx, p.x );
             maxy = max( maxy, p.y );
+
+            if ( Float.isNaN( resX ) ) {
+                if ( Float.isNaN( prevX ) ) {
+                    prevX = minx;
+                } else {
+                    if ( Math.abs( prevX - p.x ) > 1E-11 ) {
+                        resX = Math.abs( prevX - p.x );
+                    }
+                }
+            }
+            if ( Float.isNaN( resY ) ) {
+                if ( Float.isNaN( prevY ) ) {
+                    prevY = miny;
+                } else {
+                    if ( Math.abs( prevY - p.y ) > 1E-11 ) {
+                        resY = -Math.abs( prevY - p.y );
+                    }
+                }
+            }
         }
     }
-
-    private static Logger log = LoggerFactory.getLogger( XYZReader.class );
-
-    private File file;
-
-    private RasterGeoReference geoReference;
-
-    private int height;
-
-    private int width;
 
     /**
      * Creates a SimpleRaster from a text file.
@@ -181,68 +210,45 @@ public class XYZReader implements RasterReader {
 
         List<GridPoint> gridPoints = new LinkedList<GridPoint>();
 
-        String line = null;
         GridExtension gridExtension = new GridExtension();
 
-        float prevX = 0;
-
-        int i = 0;
-        double resolution = 1;
-
         float[] xyzValues = new float[3];
-        String separator = options.get( XYZRasterIOProvider.XYZ_SEPARATOR );
-        if ( separator == null ) {
-            // the regex for the given trim.
-            separator = "\\s";
-        }
-        while ( ( line = reader.readLine() ) != null ) {
-            try {
-                // StringTokenizer tokenizer = new StringTokenizer( line );
-                String[] xyz = line.split( separator );
-
-                xyzValues[0] = Float.valueOf( xyz[0] );
-                xyzValues[1] = Float.valueOf( xyz[1] );
-                xyzValues[2] = Float.valueOf( xyz[2] );
-
-                // float[] values = new float[] { Float.valueOf( x ), Float.valueOf( y ), Float.valueOf( z ), };
-
+        StreamTokenizer st = new StreamTokenizer( reader );
+        st.commentChar( '#' );
+        st.parseNumbers();
+        st.nextToken();
+        st.eolIsSignificant( true );
+        int type = st.ttype;
+        while ( type != StreamTokenizer.TT_EOF ) {
+            int numbersRead = readValues( st, xyzValues );
+            if ( numbersRead == 3 ) {
+                // all is well
                 GridPoint gridPoint = new GridPoint( xyzValues );
-                // if ( !valuesProvided ) {
-                // int ix = xVals.get( x ) == null ? 0 : xVals.get( x );
-                // xVals.put( x, ++ix );
-                // int iy = yVals.get( y ) == null ? 0 : yVals.get( y );
-                // yVals.put( y, ++iy );
-                if ( i == 0 ) {
-                    prevX = gridPoint.x;
-                    ++i;
-                } else {
-                    if ( i != -1 && prevX != gridPoint.x ) {
-                        resolution = Math.abs( prevX - gridPoint.x );
-                        i = -1;
-                    }
-
-                }
                 gridPoints.add( gridPoint );
                 gridExtension.extend( gridPoint );
-            } catch ( NoSuchElementException e ) {
-                if ( log.isWarnEnabled() ) {
-                    log.warn( "Line " + ( i + 1 ) + " does not contain 3 values" );
-                }
-            } catch ( NumberFormatException e ) {
-                if ( log.isWarnEnabled() ) {
-                    log.warn( "Line " + ( i + 1 ) + " is invalid" );
-                }
+
+            } else {
+                LOG.warn( "Line {} only contains {} values.", st.lineno(), numbersRead );
             }
+            type = st.ttype;
+            // st.next token till end of line.
+            while ( type != StreamTokenizer.TT_EOL && type != StreamTokenizer.TT_EOF ) {
+                type = st.nextToken();
+            }
+            if ( type != StreamTokenizer.TT_EOF ) {
+                type = st.nextToken();
+            }
+
         }
 
-        if ( log.isDebugEnabled() ) {
-            log.debug( String.format( "%f %f %f %f", gridExtension.maxx, gridExtension.maxy, gridExtension.minx,
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( String.format( "%f %f %f %f", gridExtension.maxx, gridExtension.maxy, gridExtension.minx,
                                       gridExtension.miny ) );
         }
 
         if ( geoReference == null ) {
-            geoReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, resolution, -resolution,
-                                                   gridExtension.minx, gridExtension.maxy );
+            geoReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, gridExtension.resX,
+                                                   gridExtension.resY, gridExtension.minx, gridExtension.maxy );
         }
 
         Envelope rasterEnvelope = factory.createEnvelope( gridExtension.minx, gridExtension.miny, gridExtension.maxx,
@@ -250,17 +256,50 @@ public class XYZReader implements RasterReader {
         int[] size = geoReference.getSize( rasterEnvelope );
         width = size[0];
         height = size[1];
-        RasterData data = RasterDataFactory.createRasterData( size[0], size[1], DataType.FLOAT );
+        // the first data should not be added to the cache, it is only temporary
+        RasterData data = RasterDataFactory.createRasterData( size[0], size[1], DataType.FLOAT, false );
         data.setNullPixel( options.getNoDataValue() );
 
         for ( GridPoint p : gridPoints ) {
             int[] pos = geoReference.getRasterCoordinate( p.x, p.y );
             data.setFloatSample( pos[0], pos[1], 0, p.value );
         }
+        this.rasterDataInfo = data.getDataInfo();
+        ByteBuffer byteBuffer = ( (ByteBufferRasterData) data ).getByteBuffer();
+        data = RasterDataFactory.createRasterData( width, height, data.getDataInfo(), geoReference, byteBuffer, true,
+                                                   FileUtils.getFilename( this.file ) );
 
         SimpleRaster simpleRaster = new SimpleRaster( data, rasterEnvelope, geoReference );
 
         return simpleRaster;
+    }
+
+    /**
+     * @param st
+     * @param xyzValues
+     * @return
+     * @throws IOException
+     */
+    private int readValues( StreamTokenizer st, float[] xyzValues )
+                            throws IOException {
+        int type = st.ttype;
+        int numbers = 0;
+        if ( type == StreamTokenizer.TT_NUMBER ) {
+            numbers++;
+            xyzValues[0] = (float) st.nval;
+            type = st.nextToken();
+            if ( type == StreamTokenizer.TT_NUMBER ) {
+                numbers++;
+                xyzValues[1] = (float) st.nval;
+                type = st.nextToken();
+                if ( type == StreamTokenizer.TT_NUMBER ) {
+                    numbers++;
+                    xyzValues[2] = (float) st.nval;
+                    st.nextToken();
+                }
+            }
+        }
+        return numbers;
     }
 
     @Override
@@ -326,6 +365,16 @@ public class XYZReader implements RasterReader {
     @Override
     public boolean shouldCreateCacheFile() {
         return true;
+    }
+
+    @Override
+    public RasterDataInfo getRasterDataInfo() {
+        return rasterDataInfo;
+    }
+
+    @Override
+    public boolean canReadTiles() {
+        return false;
     }
 
 }

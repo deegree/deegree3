@@ -368,24 +368,27 @@ public class IIORasterDataReader implements RasterDataReader {
      *         is valid for.
      */
     public BufferResult read( RasterRect rect, ByteBuffer resultBuffer ) {
-        if ( resultBuffer == null ) {
-            resultBuffer = ByteBuffer.allocate( getRasterDataInfo().bands * getRasterDataInfo().dataSize * rect.width
-                                                * rect.height );
-        }
         BufferResult result = null;
         ImageReadParam rp = new ImageReadParam();
         Rectangle dataRect = new Rectangle( 0, 0, getWidth(), getHeight() );
         Rectangle intersection = dataRect.intersection( new Rectangle( rect.x, rect.y, rect.width, rect.height ) );
         rp.setSourceRegion( intersection );
         try {
-            BufferedImage img = reader.read( 0, rp );
+            BufferedImage img = null;
+            synchronized ( reader ) {
+                img = reader.read( 0, rp );
+            }
             Raster raster = img.getRaster();
+            if ( resultBuffer == null ) {
+                resultBuffer = ByteBuffer.allocate( getRasterDataInfo().bands * getRasterDataInfo().dataSize
+                                                    * intersection.width * intersection.height );
+            }
 
             // DataBuffer buffer = raster.getDataBuffer();
             int imgDataType = raster.getSampleModel().getDataType();
             DataType type = DataType.fromDataBufferType( imgDataType );
             RasterFactory.rasterToByteBuffer( raster, 0, 0, img.getWidth(), img.getHeight(), type, resultBuffer );
-            result = new BufferResult( new RasterRect( 0, 0, img.getWidth(), img.getHeight() ), resultBuffer );
+            result = new BufferResult( new RasterRect( intersection ), resultBuffer );
         } catch ( IOException e ) {
             LOG.debug( "Could not read the given rect: " + rect + " because: " + e.getLocalizedMessage(), e );
         }
@@ -440,6 +443,19 @@ public class IIORasterDataReader implements RasterDataReader {
         int result = 3;
         while ( largest > ( result * TILE_SIZE ) ) {
             result++;
+        }
+        return result;
+    }
+
+    /**
+     * @return true if random access is easy for the image io reader.
+     */
+    public boolean getReadTiles() {
+        boolean result = false;
+        try {
+            result = reader != null ? reader.isRandomAccessEasy( 0 ) : false;
+        } catch ( IOException e ) {
+            // just do nothing.
         }
         return result;
     }

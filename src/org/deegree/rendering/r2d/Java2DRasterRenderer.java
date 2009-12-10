@@ -222,7 +222,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         if ( channels.getMode() == ChannelSelectionMode.RGB && data.getBands() > 1 ) {
             bandTypes = new BandType[] { BandType.RED, BandType.GREEN, BandType.BLUE };
             newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, DataType.BYTE,
-                                                          data.getDataInfo().interleaveType );
+                                                          data.getDataInfo().interleaveType, false );
 
             rasutil.precomputeContrastEnhancements( redIndex, channels.channelContrastEnhancements.get( "red" ) );
             newData = setEnhancedChannelData( newData, rasutil, redIndex, 0,
@@ -238,7 +238,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         if ( channels.getMode() == ChannelSelectionMode.GRAY ) {
             bandTypes = new BandType[] { BandType.BAND_0 };
             newData = RasterDataFactory.createRasterData( cols, rows, bandTypes, DataType.BYTE,
-                                                          data.getDataInfo().interleaveType );
+                                                          data.getDataInfo().interleaveType, false );
 
             newData = setEnhancedChannelData( newData, rasutil, grayIndex, 0,
                                               channels.channelContrastEnhancements.get( "gray" ) );
@@ -304,7 +304,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         long start = System.nanoTime();
         int cols = raster.getColumns(), rows = raster.getRows();
         RasterDataUtility data = new RasterDataUtility( raster, style.channelSelection );
-        RasterData shadeData = RasterDataFactory.createRasterData( cols - 2, rows - 2, DataType.BYTE );
+        RasterData shadeData = RasterDataFactory.createRasterData( cols - 2, rows - 2, DataType.BYTE, false );
         SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), raster.getRasterReference() );
 
         final double Zenith_rad = Math.toRadians( 90 - style.shaded.Alt );

@@ -46,6 +46,7 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
@@ -163,5 +164,15 @@ public class JAIRasterReader implements RasterReader {
     @Override
     public boolean shouldCreateCacheFile() {
         return true;
+    }
+
+    @Override
+    public boolean canReadTiles() {
+        return false;
+    }
+
+    @Override
+    public RasterDataInfo getRasterDataInfo() {
+        return null;
     }
 }

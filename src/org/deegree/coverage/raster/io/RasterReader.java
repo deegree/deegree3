@@ -43,6 +43,7 @@ import java.util.Set;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.container.BufferResult;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 
@@ -123,4 +124,17 @@ public interface RasterReader {
      */
     public BufferResult read( RasterRect rect, ByteBuffer buffer )
                             throws IOException;
+
+    /**
+     * @return the raster data info
+     */
+    public RasterDataInfo getRasterDataInfo();
+
+    /**
+     * should return true if the given reader can easily read tiles,without consuming much more memory than needed.
+     * 
+     * @return true if the reader can easily read tiles.
+     */
+    public boolean canReadTiles();
+
 }

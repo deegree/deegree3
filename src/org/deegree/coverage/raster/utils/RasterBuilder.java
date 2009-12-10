@@ -52,6 +52,7 @@ import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 
@@ -69,26 +70,6 @@ public class RasterBuilder {
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterBuilder.class );
 
     /**
-     * Create a {@link MultiResolutionRaster} with the origin or the world coordinates on the center of the upper left
-     * pixel of each raster.
-     * 
-     * @param resolutionDirectory
-     *            locating the different resolutions
-     * @param extension
-     *            to scan the directories for
-     * @param recursive
-     *            if the sub directories of the resolution directories should be scanned as well
-     * @param crs
-     *            in which the files are supposed to be defined
-     * @return a {@link MultiResolutionRaster} filled with {@link TiledRaster}s or <code>null</code> if the
-     *         resolutionDirectory is not a directory.
-     */
-    public static MultiResolutionRaster buildMultiResolutionRaster( File resolutionDirectory, String extension,
-                                                                    boolean recursive, CRS crs ) {
-        return buildMultiResolutionRaster( resolutionDirectory, extension, recursive, crs, OriginLocation.CENTER );
-    }
-
-    /**
      * Create a {@link MultiResolutionRaster} with the origin or the world coordinate of each raster file, defined by
      * the given {@link OriginLocation}
      * 
@@ -98,19 +79,17 @@ public class RasterBuilder {
      *            to scan the directories for
      * @param recursive
      *            if the sub directories of the resolution directories should be scanned as well
-     * @param crs
-     *            in which the files are supposed to be defined
-     * @param location
-     *            of the world coordinates of the raster files.
+     * @param options
+     *            containing information on the loading of the raster data.
      * @return a {@link MultiResolutionRaster} filled with {@link TiledRaster}s or <code>null</code> if the
      *         resolutionDirectory is not a directory.
      */
     public static MultiResolutionRaster buildMultiResolutionRaster( File resolutionDirectory, String extension,
-                                                                    boolean recursive, CRS crs, OriginLocation location ) {
+                                                                    boolean recursive, RasterIOOptions options ) {
         if ( !resolutionDirectory.isDirectory() ) {
             return null;
         }
-        return buildMultiResolutionRaster( findResolutionDirs( resolutionDirectory ), extension, recursive, crs );
+        return buildMultiResolutionRaster( findResolutionDirs( resolutionDirectory ), extension, recursive, options );
     }
 
     /**
@@ -142,16 +121,16 @@ public class RasterBuilder {
      *            to scan the directories for
      * @param recursive
      *            if the sub directories of the resolution directories should be scanned as well
-     * @param crs
-     *            in which the files are supposed to be defined
+     * @param options
+     *            containing values for the loading of the raster data.
      * @return a {@link MultiResolutionRaster} filled with {@link TiledRaster}s
      */
     public static MultiResolutionRaster buildMultiResolutionRaster( List<File> resolutionDirectories, String extension,
-                                                                    boolean recursive, CRS crs ) {
+                                                                    boolean recursive, RasterIOOptions options ) {
         MultiResolutionRaster mrr = new MultiResolutionRaster();
         for ( File resDir : resolutionDirectories ) {
             if ( resDir != null && resDir.isDirectory() ) {
-                AbstractRaster rasterLevel = RasterBuilder.buildTiledRaster( resDir, extension, recursive, crs );
+                AbstractRaster rasterLevel = RasterBuilder.buildTiledRaster( resDir, extension, recursive, options );
                 if ( rasterLevel != null ) {
                     mrr.addRaster( rasterLevel );
                 }
@@ -191,21 +170,26 @@ public class RasterBuilder {
      * 
      * @param directory
      * @param extension
-     *            case sensitive extension of the files to to scan for, e.g jpg != JPG
+     *            case insensitive extension of the files to to scan for
      * @param recursive
      *            if true sub directories will be scanned as well.
-     * @param crs
-     *            in which the files are supposed to be defined
+     * @param options
+     *            containing information on the data
+     * 
      * @return a new {@link TiledRaster} or <code>null</code> if no raster files were found at the given location, with
      *         the given extension.
      */
-    public static AbstractRaster buildTiledRaster( File directory, String extension, boolean recursive, CRS crs ) {
+    public static AbstractRaster buildTiledRaster( File directory, String extension, boolean recursive,
+                                                   RasterIOOptions options ) {
         LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
         List<File> coverageFiles = FileUtils.findFilesForExtensions( directory, recursive, extension );
         TiledRaster raster = null;
         if ( !coverageFiles.isEmpty() ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Found following files: \n{}", coverageFiles.toString() );
+            }
             List<AbstractRaster> rasters = new ArrayList<AbstractRaster>( coverageFiles.size() );
-            QTreeInfo inf = buildTiledRaster( crs, coverageFiles, rasters );
+            QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, options );
             Envelope domain = inf.envelope;
             RasterGeoReference rasterDomain = inf.rasterGeoReference;
             // IndexedMemoryTileContainer container = new IndexedMemoryTileContainer( domain, rasterDomain,
@@ -214,6 +198,9 @@ public class RasterBuilder {
             raster = new TiledRaster( container );
             raster.setCoordinateSystem( domain.getCoordinateSystem() );
             // container.addRasterTiles( rasters );
+        } else {
+            LOG.warn( "No raster files with extension: {}, found in directory {}", extension,
+                      directory.getAbsolutePath() );
         }
         return raster;
     }
@@ -224,11 +211,15 @@ public class RasterBuilder {
      *            to read
      * @param result
      *            will hold the resulting coverages.
+     * @param options
      * @return the total envelope of the given coverages
      */
-    private final static QTreeInfo buildTiledRaster( CRS crs, List<File> coverageFiles, List<AbstractRaster> result ) {
+    private final static QTreeInfo buildTiledRaster( List<File> coverageFiles, List<AbstractRaster> result,
+                                                     RasterIOOptions options ) {
         Envelope resultEnvelope = null;
         RasterGeoReference rasterReference = null;
+
+        CRS crs = options == null ? null : options.getCRS();
         if ( crs == null ) {
             LOG.warn( "Configured crs is null, maybe the rasterfiles define one." );
         }
@@ -236,7 +227,10 @@ public class RasterBuilder {
         Envelope rasterEnvelope = null;
         for ( File filename : coverageFiles ) {
             try {
-                AbstractRaster raster = RasterFactory.loadRasterFromFile( filename );
+                LOG.info( "Creating raster from file: {}", filename );
+                RasterIOOptions newOpts = RasterIOOptions.forFile( filename );
+                newOpts.copyOf( options );
+                AbstractRaster raster = RasterFactory.loadRasterFromFile( filename, newOpts );
                 CRS rasterCRS = raster.getCoordinateSystem();
                 if ( defaultCRS == null ) {
                     defaultCRS = rasterCRS;
