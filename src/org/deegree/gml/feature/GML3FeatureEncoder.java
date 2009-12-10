@@ -243,10 +243,10 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
                 writer.writeAttribute( "gml", GMLNS, "id", feature.getId() );
             }
             for ( Property<?> prop : feature.getProperties( GML_31 ) ) {
-//                // hack to work around CITE 1.1.0 problems (BTW, export Envelopes?)
-//                if (prop.getType() instanceof EnvelopePropertyType) {
-//                    continue;
-//                }
+                // // hack to work around CITE 1.1.0 problems (BTW, export Envelopes?)
+                // if (prop.getType() instanceof EnvelopePropertyType) {
+                // continue;
+                // }
                 export( prop, inlineLevels );
             }
             writer.writeEndElement();
@@ -319,7 +319,7 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
             StringOrRef stringOrRef = (StringOrRef) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             if ( stringOrRef.getRef() != null ) {
-                writer.writeAttribute( XLNNS, "xlink", stringOrRef.getRef() );
+                writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
             }
             if ( stringOrRef.getString() != null ) {
                 writer.writeCharacters( stringOrRef.getString() );
