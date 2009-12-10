@@ -44,6 +44,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -103,8 +104,8 @@ public class FileUtils {
      * to load it from the package of the given configuration class. Consider following example:
      * <p>
      * The org.deegree.geometry.GeometryFactory wants to load the File geometry_config.xml located in
-     * org.deegree.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br /> .
-     * This method will first try to read geometry_config.xml (<b>without</b> the 'configuration' directory from the
+     * org.deegree.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br />
+     * . This method will first try to read geometry_config.xml (<b>without</b> the 'configuration' directory from the
      * given fileName) from the root directory '/' (e.g. WEB-INF/classes in a serlvet environment)<br />
      * If this was unsuccessful this method will try to load the file from the given packageName with the relative
      * fileName appended to it.
@@ -310,12 +311,35 @@ public class FileUtils {
     }
 
     private static FilenameFilter buildFilenameFilter( String patternList ) {
-        final String[] patterns = patternList.split( "," );
+
+        String[] pats = null;
+        if ( patternList == null || "".equals( patternList.trim() ) || "*.*".equals( patternList.trim() )
+             || ".*".equals( patternList.trim() ) ) {
+            pats = new String[] { "*" };
+        } else {
+            pats = patternList.split( "," );
+            for ( int i = 0; i < pats.length; ++i ) {
+                String ext = pats[i];
+                if ( ext != null ) {
+                    int index = ext.lastIndexOf( "." );
+                    if ( index != -1 ) {
+                        if ( index != ext.length() ) {
+                            ext = ext.substring( index );
+                        }
+                    }
+                    pats[i] = ext.toLowerCase();
+                }
+            }
+        }
+        final String[] patterns = Arrays.copyOf( pats, pats.length );
+
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept( File dir, String name ) {
-                for ( String pattern : patterns ) {
-                    if ( "*".equals( pattern ) || name.endsWith( pattern ) ) {
-                        return true;
+                if ( name != null ) {
+                    for ( String pattern : patterns ) {
+                        if ( "*".equals( pattern ) || name.toLowerCase().endsWith( pattern ) ) {
+                            return true;
+                        }
                     }
                 }
                 return false;
