@@ -234,7 +234,8 @@ public class Java2DRenderer implements Renderer {
             if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
                 Shape shape = getShapeFromSvg( stroke.stroke.imageURL, considerUOM( stroke.stroke.size, uom ),
                                                stroke.stroke.rotation );
-                graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) ) );
+                graphics.setStroke( new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ),
+                                                     stroke.positionPercentage ) );
             } else if ( stroke.stroke.mark != null ) {
                 double poff = considerUOM( perpendicularOffset, uom );
                 Shape transed = object;
@@ -243,7 +244,8 @@ public class Java2DRenderer implements Renderer {
                 }
                 Shape shape = getShapeFromMark( stroke.stroke.mark, considerUOM( stroke.stroke.size, uom ), true,
                                                 stroke.stroke.rotation );
-                ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ) );
+                ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ),
+                                                 stroke.positionPercentage );
                 transed = s.createStrokedShape( transed );
                 if ( stroke.stroke.mark.fill != null ) {
                     applyFill( stroke.stroke.mark.fill, uom );

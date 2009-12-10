@@ -50,6 +50,8 @@
 
 package org.deegree.rendering.r2d.strokes;
 
+import static java.lang.Math.sqrt;
+
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
@@ -76,23 +78,29 @@ public class ShapeStroke implements Stroke {
 
     private AffineTransform t = new AffineTransform();
 
+    private double positionPercentage;
+
     private static final float FLATNESS = 1;
 
     /**
      * @param shapes
      * @param advance
+     * @param positionPercentage
      */
-    public ShapeStroke( Shape shapes, double advance ) {
-        this( new Shape[] { shapes }, advance );
+    public ShapeStroke( Shape shapes, double advance, double positionPercentage ) {
+        this( new Shape[] { shapes }, advance, positionPercentage );
     }
 
     /**
      * @param shapes
      * @param advance
+     * @param positionPercentage
      */
-    public ShapeStroke( Shape shapes[], double advance ) {
+    public ShapeStroke( Shape shapes[], double advance, double positionPercentage ) {
         this.advance = advance;
         this.shapes = new Shape[shapes.length];
+        this.positionPercentage = positionPercentage;
+        this.repeat = positionPercentage < 0;
 
         for ( int i = 0; i < this.shapes.length; i++ ) {
             Rectangle2D bounds = shapes[i].getBounds2D();
@@ -104,12 +112,47 @@ public class ShapeStroke implements Stroke {
     public Shape createStrokedShape( Shape shape ) {
         GeneralPath result = new GeneralPath();
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
+
+        // a little sub optimal to actually go through twice
+        double totalLength = 0;
+        double lx = 0, ly = 0;
+
+        if ( positionPercentage >= 0 ) {
+            while ( !it.isDone() ) {
+                float[] ps = new float[6];
+                int type = it.currentSegment( ps );
+                switch ( type ) {
+                case PathIterator.SEG_MOVETO:
+                    lx = ps[0];
+                    ly = ps[1];
+                    break;
+
+                case PathIterator.SEG_CLOSE:
+                    break;
+
+                case PathIterator.SEG_LINETO:
+                    totalLength += sqrt( ( lx - ps[0] ) * ( lx - ps[0] ) + ( ly - ps[1] ) * ( ly - ps[1] ) );
+                    lx = ps[0];
+                    ly = ps[1];
+                    break;
+                }
+                it.next();
+            }
+
+            it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
+        }
+
         float points[] = new float[6];
         float moveX = 0, moveY = 0;
         float lastX = 0, lastY = 0;
         float thisX = 0, thisY = 0;
         int type = 0;
         float next = 0;
+        float minLength = 0;
+        if ( positionPercentage >= 0 ) {
+            minLength = (float) ( totalLength * ( positionPercentage / 100 ) );
+            next = minLength;
+        }
         int currentShape = 0;
         int length = shapes.length;
 
@@ -120,7 +163,7 @@ public class ShapeStroke implements Stroke {
                 moveX = lastX = points[0];
                 moveY = lastY = points[1];
                 result.moveTo( moveX, moveY );
-                next = 0;
+                next = minLength;
                 break;
 
             case PathIterator.SEG_CLOSE:
