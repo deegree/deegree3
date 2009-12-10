@@ -97,6 +97,9 @@ public class Stroke implements Copyable<Stroke> {
      */
     public double strokeInitialGap;
 
+    /** Default is -1 == not to use it. */
+    public double positionPercentage = -1;
+
     /**
      * Default is null.
      */
@@ -144,6 +147,7 @@ public class Stroke implements Copyable<Stroke> {
         copy.strokeGap = strokeGap;
         copy.strokeInitialGap = strokeInitialGap;
         copy.fill = fill == null ? null : fill.copy();
+        copy.positionPercentage = positionPercentage;
         return copy;
     }
 

@@ -376,6 +376,16 @@ public class SymbologyParser {
                         in.require( END_ELEMENT, null, "Gap" );
                     }
 
+                    if ( in.getLocalName().equals( "PositionPercentage" ) ) {
+                        contn = updateOrContinue( in, "PositionPercentage", base, new Updater<Stroke>() {
+                            @Override
+                            public void update( Stroke obj, String val ) {
+                                obj.positionPercentage = Double.parseDouble( val );
+                            }
+                        }, contn );
+                        in.require( END_ELEMENT, null, "PositionPercentage" );
+                    }
+
                 }
             }
         }
