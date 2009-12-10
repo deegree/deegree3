@@ -49,6 +49,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.coverage.raster.data.ByteBufferPool;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.slf4j.Logger;
@@ -169,7 +170,7 @@ public class SplittedBlobReader extends GridFileReader {
             }
             int size = fRect.width * fRect.height * sampleSize;
             if ( resultBuffer == null ) {
-                resultBuffer = ByteBuffer.allocate( size );
+                resultBuffer = ByteBufferPool.allocate( size, false );
             }
 
             RasterRect tmpRect = new RasterRect( 0, 0, fRect.width, fRect.height );

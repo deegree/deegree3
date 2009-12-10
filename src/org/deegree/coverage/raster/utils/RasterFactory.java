@@ -66,6 +66,7 @@ import javax.media.jai.DataBufferFloat;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.ByteBufferPool;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.info.BandType;
@@ -587,7 +588,7 @@ public class RasterFactory {
             // rb: are we sure it is always pixel interleaved?
             RasterDataInfo rdi = new RasterDataInfo( noData, bandTypes, type, InterleaveType.PIXEL );
 
-            ByteBuffer byteBuffer = ByteBuffer.allocate( rdi.bands * width * height * rdi.dataSize );
+            ByteBuffer byteBuffer = ByteBufferPool.allocate( rdi.bands * width * height * rdi.dataSize, false );
             if ( type == DataType.BYTE && imgDataType == DataBuffer.TYPE_INT || imgDataType == DataBuffer.TYPE_SHORT
                  || imgDataType == DataBuffer.TYPE_USHORT ) {
                 // hack for the INT_ARGB etc. etc.
@@ -642,7 +643,7 @@ public class RasterFactory {
         if ( byteBuffer == null ) {
             int cap = imageRaster.getHeight() * imageRaster.getWidth() * imageRaster.getNumBands() * type.getSize();
             // what's the size of a sample
-            byteBuffer = ByteBuffer.allocate( cap );
+            byteBuffer = ByteBufferPool.allocate( cap, false );
         }
 
         // rb: check the bounds?

@@ -53,6 +53,7 @@ import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
+import org.deegree.coverage.raster.data.ByteBufferPool;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -191,7 +192,7 @@ public class GridFileReader extends GridReader {
             }
             int size = fRect.width * fRect.height * sampleSize;
             if ( resultBuffer == null ) {
-                resultBuffer = ByteBuffer.allocate( size );
+                resultBuffer = ByteBufferPool.allocate( size, false );
             }
             FileChannel channel = getFileChannel();
             RasterRect tmpRect = new RasterRect( 0, 0, fRect.width, fRect.height );

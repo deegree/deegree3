@@ -160,7 +160,8 @@ public class GridWriter implements RasterWriter {
         tileHeight = this.envelope.getSpan1() / rows;
         double[] origin = geoRef.getOrigin();
 
-        int[] rasterCoordinate = geoRef.getRasterCoordinate( origin[0] + tileWidth, origin[1] - tileHeight );
+        int[] rasterCoordinate = geoRef.getRasterCoordinate( origin[0] + Math.ceil( tileWidth ),
+                                                             origin[1] - Math.ceil( tileHeight ) );
         this.tileRasterWidth = rasterCoordinate[0];
         this.tileRasterHeight = rasterCoordinate[1];
 

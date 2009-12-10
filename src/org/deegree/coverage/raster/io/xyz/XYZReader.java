@@ -55,6 +55,7 @@ import java.util.Set;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.RasterCache;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.container.BufferResult;
@@ -264,6 +265,11 @@ public class XYZReader implements RasterReader {
             int[] pos = geoReference.getRasterCoordinate( p.x, p.y );
             data.setFloatSample( pos[0], pos[1], 0, p.value );
         }
+        // clear up the gridpoints
+        gridPoints.clear();
+        gridPoints = null;
+        System.gc();
+
         this.rasterDataInfo = data.getDataInfo();
         ByteBuffer byteBuffer = ( (ByteBufferRasterData) data ).getByteBuffer();
         data = RasterDataFactory.createRasterData( width, height, data.getDataInfo(), geoReference, byteBuffer, true,
@@ -316,16 +322,30 @@ public class XYZReader implements RasterReader {
     public AbstractRaster load( File filename, RasterIOOptions options )
                             throws IOException {
         this.file = filename;
-        BufferedReader reader = new BufferedReader( new FileReader( filename ) );
-        if ( options.readWorldFile() ) {
-            try {
-                RasterGeoReference geoRef = WorldFileAccess.readWorldFile( filename, options );
-                options.setRasterGeoReference( geoRef );
-            } catch ( IOException e ) {
-                LOG.debug( "Could not read xyz world file: " + e.getLocalizedMessage(), e );
+        // try to read from cache.
+        RasterCache cache = RasterCache.getInstance( null );
+        File cacheFile = cache.createCacheFile( FileUtils.getFilename( this.file ) );
+        SimpleRaster result = null;
+        if ( cacheFile.exists() ) {
+            if ( cacheFile.lastModified() > this.file.lastModified() ) {
+                // the cachefiles are not backed with the xyz files.
+                result = cache.createFromCache( null, FileUtils.getFilename( this.file ) );
             }
         }
-        return readASCIIGrid( reader, options );
+        if ( result == null ) {
+            // no cache file found or now instantiation of cache file possible.
+            BufferedReader reader = new BufferedReader( new FileReader( filename ) );
+            if ( options.readWorldFile() ) {
+                try {
+                    RasterGeoReference geoRef = WorldFileAccess.readWorldFile( filename, options );
+                    options.setRasterGeoReference( geoRef );
+                } catch ( IOException e ) {
+                    LOG.debug( "Could not read xyz world file: " + e.getLocalizedMessage(), e );
+                }
+            }
+            result = readASCIIGrid( reader, options );
+        }
+        return result;
     }
 
     @Override

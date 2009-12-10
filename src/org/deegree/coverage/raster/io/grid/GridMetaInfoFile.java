@@ -261,9 +261,9 @@ public class GridMetaInfoFile {
             metaFile = defaultDir + File.separator + METAINFO_FILE_NAME;
         }
         if ( !metaFile.endsWith( METAINFO_FILE_EXT ) ) {
-            metaFile += METAINFO_FILE_EXT;
+            metaFile += "." + METAINFO_FILE_EXT;
         }
-        return new File( metaFile );
+        return new File( defaultDir, metaFile );
     }
 
     /**

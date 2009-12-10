@@ -58,6 +58,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RenderedOp;
 
+import org.deegree.coverage.raster.data.ByteBufferPool;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
@@ -380,8 +381,8 @@ public class IIORasterDataReader implements RasterDataReader {
             }
             Raster raster = img.getRaster();
             if ( resultBuffer == null ) {
-                resultBuffer = ByteBuffer.allocate( getRasterDataInfo().bands * getRasterDataInfo().dataSize
-                                                    * intersection.width * intersection.height );
+                resultBuffer = ByteBufferPool.allocate( getRasterDataInfo().bands * getRasterDataInfo().dataSize
+                                                        * intersection.width * intersection.height, false );
             }
 
             // DataBuffer buffer = raster.getDataBuffer();

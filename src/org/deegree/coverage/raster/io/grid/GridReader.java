@@ -46,6 +46,7 @@ import java.util.Set;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.ByteBufferPool;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
@@ -74,6 +75,13 @@ public abstract class GridReader implements RasterReader {
     protected GridMetaInfoFile infoFile;
 
     private Envelope envelope;
+
+    /**
+     * @return the envelope
+     */
+    public final Envelope getEnvelope() {
+        return envelope;
+    }
 
     private double tileHeight;
 
@@ -311,11 +319,21 @@ public abstract class GridReader implements RasterReader {
     public ByteBuffer getTileData( int column, int row, ByteBuffer buffer )
                             throws IOException {
         if ( buffer == null ) {
-            buffer = ByteBuffer.allocate( sampleSize * infoFile.getTileRasterHeight() * infoFile.getTileRasterWidth() );
+            buffer = allocateTileBuffer();
         }
         read( column, row, buffer );
 
         return buffer;
+    }
+
+    /**
+     * Allocate a buffer which can hold a tile.
+     * 
+     * @return a ByteBuffer which can hold a tile.
+     */
+    protected ByteBuffer allocateTileBuffer() {
+        return ByteBufferPool.allocate( sampleSize * infoFile.getTileRasterHeight() * infoFile.getTileRasterWidth(),
+                                        false );
     }
 
     /**
