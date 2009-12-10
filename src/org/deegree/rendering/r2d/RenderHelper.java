@@ -299,7 +299,9 @@ public class RenderHelper {
             // should not include root's shape in the path as it doesn't always work properly
             GeneralPath shape = new GeneralPath();
             while ( ( node = walker.nextGraphicsNode() ) != null ) {
-                node.setTransform( t );
+                AffineTransform t2 = (AffineTransform) t.clone();
+                t2.concatenate( node.getTransform() );
+                node.setTransform( t2 );
                 shape.append( node.getOutline(), false );
             }
 
