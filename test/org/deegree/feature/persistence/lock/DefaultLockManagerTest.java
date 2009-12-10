@@ -90,7 +90,7 @@ public class DefaultLockManagerTest {
         lockManager = store.getLockManager();
     }
 
-    @Test
+//    @Test
     public void testLockAllAndRelease()
                             throws FeatureStoreException {
 
