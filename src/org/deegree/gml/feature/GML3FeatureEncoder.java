@@ -317,14 +317,25 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
             writer.writeEndElement();
         } else if ( propertyType instanceof StringOrRefPropertyType ) {
             StringOrRef stringOrRef = (StringOrRef) value;
-            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            if ( stringOrRef.getRef() != null ) {
-                writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
+
+            if ( stringOrRef.getString() == null || stringOrRef.getString().length() == 0 ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                if ( stringOrRef.getRef() != null ) {
+                    writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
+                }
+
+            } else {
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+
+                if ( stringOrRef.getRef() != null ) {
+                    writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
+                }
+                if ( stringOrRef.getString() != null ) {
+                    writer.writeCharacters( stringOrRef.getString() );
+                }
+                writer.writeEndElement();
             }
-            if ( stringOrRef.getString() != null ) {
-                writer.writeCharacters( stringOrRef.getString() );
-            }
-            writer.writeEndElement();
+
         } else if ( propertyType instanceof CustomPropertyType ) {
             GenericCustomPropertyExporter.export( (GenericCustomPropertyValue) value, writer );
         }
