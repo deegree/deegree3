@@ -43,6 +43,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.deegree.coverage.raster.data.ByteBufferPool;
 import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
@@ -201,14 +202,14 @@ public class BufferAccess {
      */
     public void prepareBuffer() {
         if ( data == null ) {
-            data = ByteBuffer.allocate( requiredBufferSize() );
+            data = ByteBufferPool.allocate( requiredBufferSize(), false );
             boolean noData = false;
             if ( reader != null ) {
                 try {
                     BufferResult dataResult = reader.read( maxViewData, data );
                     data = dataResult.getResult();
                     data.rewind();
-                    RasterRect rect = dataResult.getRect();
+                    // RasterRect rect = dataResult.getRect();
                     // lineStride = pixelStride * rect.width;
                 } catch ( IOException e ) {
                     LOG.debug( "No data available: " + e.getLocalizedMessage(), e );
@@ -227,7 +228,7 @@ public class BufferAccess {
      */
     public void fillWithNoData() {
         if ( data == null ) {
-            data = ByteBuffer.allocate( requiredBufferSize() );
+            data = ByteBufferPool.allocate( requiredBufferSize(), false );
         }
         if ( !data.isReadOnly() ) {
             int pos = 0;

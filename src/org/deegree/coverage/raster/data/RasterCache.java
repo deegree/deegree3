@@ -49,6 +49,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.grid.CacheRasterReader;
 import org.slf4j.Logger;
@@ -89,6 +91,8 @@ public class RasterCache {
         long mm = Runtime.getRuntime().maxMemory();
         if ( mm == Long.MAX_VALUE ) {
             mm = Math.round( Runtime.getRuntime().totalMemory() * 0.5 );
+        } else {
+            mm *= 0.5;
         }
         maxCacheMem = mm;
     }
@@ -216,7 +220,8 @@ public class RasterCache {
      * @return the amount of currently used cache memory, which is only an approximation.
      */
     public static long freeMemory( long requiredMemory ) {
-
+        LOG.info( "Currently used cache memory:{} MB, totalCacheMemory:{} MB", currentlyUsedMemory / ( 1024d * 1024 ),
+                  maxCacheMem / ( 1024d * 1024 ) );
         if ( currentlyUsedMemory + requiredMemory > maxCacheMem ) {
             Iterator<CacheRasterReader> it = cache.descendingIterator();
             while ( it != null && it.hasNext() ) {
@@ -268,17 +273,58 @@ public class RasterCache {
      */
     public final File createCacheFile( String id ) {
         String fileName = id;
+        boolean createNew = false;
         if ( fileName == null ) {
             fileName = UUID.randomUUID().toString();
         }
         File f = new File( this.cacheDir, fileName + FILE_EXTENSION );
         int index = 0;
-        while ( f.exists() ) {
-            f = new File( this.cacheDir, id + "_" + index + FILE_EXTENSION );
+        while ( createNew && f.exists() ) {
+            f = new File( this.cacheDir, id + "_" + ( index++ ) + FILE_EXTENSION );
         }
         if ( id == null ) {
             f.deleteOnExit();
         }
         return f;
+    }
+
+    /**
+     * Writes all current caches to their cache files, but leaves the in memory files alone.
+     */
+    public static void flush() {
+        synchronized ( cache ) {
+            Iterator<CacheRasterReader> it = cache.descendingIterator();
+            while ( it != null && it.hasNext() ) {
+                CacheRasterReader next = it.next();
+                if ( next != null ) {
+                    next.flush();
+                }
+            }
+        }
+
+    }
+
+    /**
+     * @param reader
+     * @param filename
+     * @return
+     */
+    public SimpleRaster createFromCache( RasterReader reader, String filename ) {
+        SimpleRaster result = null;
+        if ( filename != null ) {
+            File cacheFile = new File( this.cacheDir, filename + FILE_EXTENSION );
+            if ( cacheFile.exists() ) {
+                CacheRasterReader data = CacheRasterReader.createFromCache( reader, cacheFile, this );
+                if ( data != null ) {
+                    ByteBufferRasterData rasterData = RasterDataFactory.createRasterData( data.getWidth(),
+                                                                                          data.getHeight(),
+                                                                                          data.getRasterDataInfo(),
+                                                                                          data, true );
+
+                    result = new SimpleRaster( rasterData, data.getEnvelope(), data.getGeoReference() );
+                }
+            }
+        }
+        return result;
     }
 }
