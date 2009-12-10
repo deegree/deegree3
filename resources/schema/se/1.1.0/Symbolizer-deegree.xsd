@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/se"
-  xmlns="http://www.deegree.org/se" xmlns:se="http://www.opengis.net/se" elementFormDefault="qualified">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/se" xmlns="http://www.deegree.org/se"
+  xmlns:se="http://www.opengis.net/se" elementFormDefault="qualified">
 
   <xsd:import namespace="http://www.opengis.net/se" schemaLocation="http://schemas.opengis.net/se/1.1.0/Symbolizer.xsd" />
 
@@ -71,6 +71,25 @@
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="GraphicStroke" type="GraphicStrokeType" substitutionGroup="se:GraphicStroke">
+    <xsd:annotation>
+      <xsd:documentation>
+        Added is the possibility to specify start/end/percentage signatures to lines.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="GraphicStrokeType">
+    <xsd:complexContent>
+      <xsd:extension base="se:GraphicStrokeType">
+        <xsd:sequence>
+          <xsd:element ref="se:Graphic" />
+          <xsd:element name="PositionPercentage" type="xsd:string" />
+        </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
