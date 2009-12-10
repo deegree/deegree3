@@ -43,8 +43,15 @@ import static java.awt.BasicStroke.JOIN_BEVEL;
 import static java.awt.BasicStroke.JOIN_MITER;
 import static java.awt.BasicStroke.JOIN_ROUND;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
+import static java.lang.Math.acos;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.crs.CRS.EPSG_4326;
+import static org.deegree.crs.components.Unit.METRE;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromMark;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromSvg;
 import static org.deegree.rendering.r2d.RenderHelper.renderMark;
@@ -136,8 +143,35 @@ public class Java2DRenderer implements Renderer {
 
         if ( bbox != null ) {
             double scalex = width / bbox.getSpan0();
-            res = bbox.getSpan0() / width; // use x for resolution
             double scaley = height / bbox.getSpan1();
+            try {
+                if ( bbox.getCoordinateSystem().getWrappedCRS().getUnits()[0].equals( METRE ) ) {
+                    res = bbox.getSpan0() / width; // use x for resolution
+                } else {
+                    // heuristics more or less copied from d2, TODO is use the proper UTM conversion
+                    Envelope box = (Envelope) new GeometryTransformer( EPSG_4326.getWrappedCRS() ).transform( bbox );
+                    double minx = box.getMin().get0(), miny = box.getMin().get1();
+                    double maxx = minx + box.getSpan0();
+                    double r = 6378.137;
+                    double rad = PI / 180d;
+                    double cose = sin( rad * minx ) * sin( rad * maxx ) + cos( rad * minx ) * cos( rad * maxx );
+                    double dist = r * acos( cose ) * cos( rad * miny );
+                    res = abs( dist * 1000 / width );
+                    System.out.println( res );
+                }
+            } catch ( UnknownCRSException e ) {
+                LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
+                LOG.debug( "Stack trace:", e );
+                res = bbox.getSpan0() / width; // use x for resolution
+            } catch ( IllegalArgumentException e ) {
+                LOG.warn( "Could not transform bbox, assuming it's in meter..." );
+                LOG.debug( "Stack trace:", e );
+                res = bbox.getSpan0() / width; // use x for resolution
+            } catch ( TransformationException e ) {
+                LOG.warn( "Could not transform bbox, assuming it's in meter..." );
+                LOG.debug( "Stack trace:", e );
+                res = bbox.getSpan0() / width; // use x for resolution
+            }
 
             // we have to flip horizontally, so invert y scale and add the screen height
             worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
@@ -551,7 +585,6 @@ public class Java2DRenderer implements Renderer {
             // TODO properly convert the res to foot
             return in / res * ( 0.28 / pixelSize );
         case Metre:
-            // TODO properly convert the res to m
             return in / res * ( 0.28 / pixelSize );
         case mm:
             return in / pixelSize;
