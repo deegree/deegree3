@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.geom;
 
+import java.awt.Rectangle;
+
 /**
  * Simple data structure for a raster rectangle. Stores upper-left pixel coordinate and width and height.
  * 
@@ -90,14 +92,37 @@ public class RasterRect {
         this( 0, 0, 0, 0 );
     }
 
+    /**
+     * @param rect
+     *            to copy data of.
+     */
+    public RasterRect( Rectangle rect ) {
+        this.x = rect.x;
+        this.y = rect.y;
+        this.width = rect.width;
+        this.height = rect.height;
+    }
+
     @Override
     public String toString() {
         return "{x=" + x + ",y=" + y + ", width=" + width + ", height=" + height + "}";
     }
 
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof RasterRect ) {
+            final RasterRect that = (RasterRect) other;
+            return x == that.x && y == that.y && width == that.width && height == that.height;
+        }
+        return false;
+    }
+
     /**
-     * @param fRect
-     * @return
+     * Create an intersection of the given RasterRects, if the given rasterects do not intersect, null will be returned.
+     * 
+     * @param first
+     * @param second
+     * @return the intersection or <code>null</code> if the given rectangles do not intersect.
      */
     public static final RasterRect intersection( RasterRect first, RasterRect second ) {
         int fmaxX = first.x + first.width;
