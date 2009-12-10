@@ -65,6 +65,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.feature.FeatureReference;
+import org.postgis.LineString;
 import org.postgis.LinearRing;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
@@ -259,7 +260,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             for ( Feature feature : features ) {
                 insertFeature( stmt, feature );
             }
-            stmt.executeBatch();
+            // stmt.executeBatch();
             stmt.close();
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
@@ -292,7 +293,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
         stmt.setBytes( 4, bos.toByteArray() );
         stmt.setObject( 5, toPGPolygon( feature.getEnvelope(), -1 ) );
-        stmt.addBatch();
+        // stmt.addBatch();
+        stmt.execute();
 
         Envelope env = feature.getEnvelope();
         if ( env != null ) {
@@ -314,11 +316,21 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private PGgeometry toPGPolygon( Envelope envelope, int srid ) {
         PGgeometry pgGeometry = null;
         if ( envelope != null ) {
-            if ( !envelope.getMin().equals( envelope.getMax() ) ) {
-                double minX = envelope.getMin().get0();
-                double minY = envelope.getMin().get1();
-                double maxX = envelope.getMax().get0();
-                double maxY = envelope.getMax().get1();
+            double minX = envelope.getMin().get0();
+            double minY = envelope.getMin().get1();
+            double maxX = envelope.getMax().get0();
+            double maxY = envelope.getMax().get1();
+            if ( envelope.getMin().equals( envelope.getMax() ) ) {
+                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1() );
+                // TODO
+                point.setSrid( srid );
+                pgGeometry = new PGgeometry( point );
+            } else if ( minX == maxX || minY == maxY ) {
+                LineString line = new LineString( new Point[] { new Point( minX, minY ), new Point( maxX, maxY ) } );
+                // TODO
+                line.setSrid( srid );
+                pgGeometry = new PGgeometry( line );
+            } else {
                 Point[] points = new Point[] { new Point( minX, minY ), new Point( maxX, minY ),
                                               new Point( maxX, maxY ), new Point( minX, maxY ), new Point( minX, minY ) };
                 LinearRing outer = new LinearRing( points );
@@ -326,11 +338,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 // TODO
                 polygon.setSrid( srid );
                 pgGeometry = new PGgeometry( polygon );
-            } else {
-                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1() );
-                // TODO
-                point.setSrid( srid );
-                pgGeometry = new PGgeometry( point );
             }
         }
         return pgGeometry;

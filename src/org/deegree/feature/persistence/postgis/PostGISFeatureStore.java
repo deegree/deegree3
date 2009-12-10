@@ -82,8 +82,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.gml.GMLObject;
+import org.postgis.LineString;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
 import org.postgis.Polygon;
@@ -299,21 +299,37 @@ public class PostGISFeatureStore implements FeatureStore {
                 if ( pgGeom != null ) {
                     double[] min = new double[] { Double.MAX_VALUE, Double.MAX_VALUE, };
                     double[] max = new double[] { Double.MIN_VALUE, Double.MIN_VALUE, };
-                    Polygon polygon = (Polygon) pgGeom.getGeometry();
-                    for ( int i = 0; i < polygon.numPoints(); i++ ) {
-                        Point point = polygon.getPoint( 0 );
-                        if ( min[0] > point.x ) {
-                            min[0] = point.x;
+                    if ( pgGeom.getGeoType() == org.postgis.Geometry.POINT ) {
+                        Point point = (Point) pgGeom.getGeometry();
+                        min[0] = point.x;
+                        min[1] = point.y;
+                        max[0] = point.x;
+                        max[1] = point.y;
+                    } else if ( pgGeom.getGeoType() == org.postgis.Geometry.LINESTRING ) {
+                        LineString line = (LineString) pgGeom.getGeometry();
+                        min[0] = line.getFirstPoint().x;
+                        min[1] = line.getFirstPoint().y;
+                        max[0] = line.getLastPoint().x;
+                        max[1] = line.getLastPoint().y;
+                    } else if ( pgGeom.getGeoType() == org.postgis.Geometry.POLYGON ) {
+                        Polygon polygon = (Polygon) pgGeom.getGeometry();
+                        for ( int i = 0; i < polygon.numPoints(); i++ ) {
+                            Point point = polygon.getPoint( 0 );
+                            if ( min[0] > point.x ) {
+                                min[0] = point.x;
+                            }
+                            if ( min[1] > point.y ) {
+                                min[1] = point.y;
+                            }
+                            if ( max[0] < point.x ) {
+                                max[0] = point.x;
+                            }
+                            if ( max[1] < point.y ) {
+                                max[1] = point.y;
+                            }
                         }
-                        if ( min[1] > point.y ) {
-                            min[1] = point.y;
-                        }
-                        if ( max[0] < point.x ) {
-                            max[0] = point.x;
-                        }
-                        if ( max[1] < point.y ) {
-                            max[1] = point.y;
-                        }
+                    } else {
+                        throw new RuntimeException();
                     }
                     Envelope env = new GeometryFactory().createEnvelope( min, max, CRS.EPSG_4326 );
                     ftNameToBBox.put( ftName, env );
