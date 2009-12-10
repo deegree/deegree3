@@ -55,6 +55,7 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -130,7 +131,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
     private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryEncoder.class );
 
     private final GMLVersion version;
-    
+
     private final XMLStreamWriter writer;
 
     private final Set<String> exportedIds;
@@ -138,6 +139,8 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
     private final CRS outputCRS;
 
     private CoordinateTransformer transformer;
+
+    private GeometryTransformer geoTransformer;
 
     // this object is used for every coordinate conversion, hence this class is not Thread-safe
     private double[] transformedOrdinates;
@@ -171,6 +174,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
                 CoordinateSystem crs = outputCrs.getWrappedCRS();
                 transformer = new CoordinateTransformer( crs );
                 transformedOrdinates = new double[crs.getDimension()];
+                geoTransformer = new GeometryTransformer( crs );
             } catch ( Exception e ) {
                 LOG.debug( "Could not create transformer for CRS '" + outputCrs + "': " + e.getMessage()
                            + ". Encoding will fail if a transformation is actually necessary." );
@@ -820,14 +824,17 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
     @Override
     public void exportEnvelope( Envelope envelope )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        startGeometry( "Envelope", envelope );
+
+        Envelope env = getTransformedEnvelope( envelope );
+
+        startGeometry( "Envelope", env );
 
         if ( version == GML_30 ) {
             writer.writeStartElement( "gml", "pos", GMLNS );
         } else {
             writer.writeStartElement( "gml", "lowerCorner", GMLNS );
         }
-        double[] ordinates = getTransformedCoordinate( envelope.getCoordinateSystem(), envelope.getMin().getAsArray() );
+        double[] ordinates = env.getMin().getAsArray();
         writer.writeCharacters( String.valueOf( ordinates[0] ) );
         for ( int i = 1; i < ordinates.length; i++ ) {
             writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
@@ -839,7 +846,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
         } else {
             writer.writeStartElement( "gml", "upperCorner", GMLNS );
         }
-        ordinates = getTransformedCoordinate( envelope.getCoordinateSystem(), envelope.getMax().getAsArray() );
+        ordinates = env.getMax().getAsArray();
         writer.writeCharacters( String.valueOf( ordinates[0] ) );
         for ( int i = 1; i < ordinates.length; i++ ) {
             writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
@@ -1528,5 +1535,17 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
             return out;
         }
         return inputCoordinate;
+    }
+
+    private Envelope getTransformedEnvelope( Envelope env )
+                            throws TransformationException, UnknownCRSException {
+        CRS inputCRS = env.getCoordinateSystem();
+        if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
+            if ( transformer == null ) {
+                throw new UnknownCRSException( outputCRS.getName() );
+            }
+            return (Envelope) geoTransformer.transform( env );
+        }
+        return env;
     }
 }
