@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.XSModelAnalyzer;
 import org.deegree.gml.GMLVersion;
 
@@ -69,9 +70,9 @@ import org.deegree.gml.GMLVersion;
  */
 public class GMLSchemaAnalyzer extends XSModelAnalyzer {
 
-    private static final String GML_PRE_32_NS = "http://www.opengis.net/gml";
+    private static final String GML_PRE_32_NS = CommonNamespaces.GMLNS;
 
-    private static final String GML_32_NS = "http://www.opengis.net/gml/3.2";
+    private static final String GML_32_NS = CommonNamespaces.GML3_2_NS;
 
     private GMLVersion version;
 
@@ -95,6 +96,16 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
 
     private XSElementDeclaration abstractSurfacePatchElementDecl;
 
+    /**
+     * Creates a new {@link GMLSchemaAnalyzer} instance for the given GML version and using the specified schemas.
+     * 
+     * @param version
+     * @param schemaUrls
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public GMLSchemaAnalyzer( GMLVersion version, String... schemaUrls ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         super( schemaUrls );
@@ -105,6 +116,7 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
             break;
         }
+        case GML_30:
         case GML_31: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
@@ -187,6 +199,7 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
 
         switch ( version ) {
         case GML_2:
+        case GML_30:
         case GML_31: {
             // TODO do this the right way
             fcDecls = new ArrayList<XSElementDeclaration>();

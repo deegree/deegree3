@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.xml.schema;
 
@@ -40,7 +40,7 @@ import org.apache.xerces.util.SymbolTable;
 import org.apache.xerces.util.XMLGrammarPoolImpl;
 
 /**
- * Xerces <code>XMLGrammarPool</code> implementation that wraps a <code>SymbolTable</code>.
+ * Xerces <code>XMLGrammarPool</code> implementation that wraps a Xerces <code>SymbolTable</code>.
  * 
  * TODO can Grammars be parsed individually?
  * 
@@ -49,15 +49,26 @@ import org.apache.xerces.util.XMLGrammarPoolImpl;
  * 
  * @version $Revision: $, $Date: $
  */
-class GrammarPool extends XMLGrammarPoolImpl{
+class GrammarPool extends XMLGrammarPoolImpl {
 
     private SymbolTable sym;
 
-    GrammarPool(SymbolTable sym) {
+    /**
+     * Creates a new {@link GrammarPool} instance based on the given Xerces <code>SymbolTable</code>.
+     * 
+     * @param sym
+     *            Xerces <code>SymbolTable</code>, never <code>null</code>
+     */
+    GrammarPool( SymbolTable sym ) {
         this.sym = sym;
     }
-    
-    SymbolTable getSymbolTable () {
+
+    /**
+     * Returns the wrapped <code>SymbolTable</code>.
+     * 
+     * @return Xerces <code>SymbolTable</code>, never <code>null</code>
+     */
+    SymbolTable getSymbolTable() {
         return sym;
     }
 }

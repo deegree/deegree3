@@ -37,11 +37,11 @@
 package org.deegree.commons.xml.schema;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Arrays;
 
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.parsers.XMLGrammarPreparser;
@@ -54,7 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages pre-populated {@link GrammarPool} instances to minimize fetching and parsing of XML schema documents. 
+ * Manages pre-populated <code>GrammarPool</code> instances to minimize fetching and parsing of XML schema documents
+ * over the internet.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -100,8 +101,7 @@ class GrammarPoolManager {
      * @throws IOException
      * @throws XNIException
      */
-    @SuppressWarnings("unchecked")
-    synchronized static GrammarPool getGrammarPool( String...schemaUris )
+    synchronized static GrammarPool getGrammarPool( String... schemaUris )
                             throws XNIException, IOException {
 
         String id = "";
@@ -154,7 +154,7 @@ class GrammarPoolManager {
             preparser.preparseGrammar( XMLGrammarDescription.XML_SCHEMA, new XMLInputSource( null, schemaUri, null ) );
         }
 
-        // no further adds to the pool
+        // prevent any more adds to the pool
         grammarPool.lockPool();
         return grammarPool;
     }

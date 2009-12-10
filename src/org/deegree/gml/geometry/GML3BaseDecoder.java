@@ -47,6 +47,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.uom.Angle;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -71,15 +72,19 @@ class GML3BaseDecoder {
 
     protected final GMLVersion version;
 
+    /**
+     * Namespace for the parsed GML elements, either {@link CommonNamespaces#GMLNS} or
+     * {@link CommonNamespaces#GML3_2_NS}.
+     */
     protected final String gmlNs;
 
+    protected final GeometryFactory geomFac;    
+    
     private final QName GML_X;
 
     private final QName GML_Y;
 
     private final QName GML_Z;
-
-    protected final GeometryFactory geomFac;
 
     protected GML3BaseDecoder( GMLVersion version, GeometryFactory geomFac ) {
         this.version = version;

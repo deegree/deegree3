@@ -73,7 +73,6 @@ import org.deegree.geometry.primitive.segments.Knot;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
-import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,6 +148,9 @@ class GML3CurveSegmentDecoder extends GML3BaseDecoder {
      * <li><code>OffsetCurve</code></li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_CurveSegment&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_CurveSegment&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:_CurveSegment" has no <code>srsName</code>
      *            attribute

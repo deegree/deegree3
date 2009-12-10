@@ -54,10 +54,10 @@ import org.w3c.dom.DOMError;
 import org.w3c.dom.DOMErrorHandler;
 
 /**
- * Provides convenient methods to retrieve "relevant" element and type declarations of an XML schema infoset (which is
- * represented as a Xerces {@link XSModel}).
+ * Provides convenient methods to retrieve "relevant" element and type declarations of an XML schema infoset.
  * <p>
- * This functionality is used to extract higher-level structures defined using XML schema, such as GML feature types.
+ * This functionality is very handy for extracting higher-level structures defined using XML schema, such as GML feature
+ * types.
  * </p>
  * 
  * @see GMLSchemaAnalyzer
@@ -71,24 +71,24 @@ public class XSModelAnalyzer {
 
     private static final Logger LOG = LoggerFactory.getLogger( XSModelAnalyzer.class );
 
-    /** Encapsulates the full information of the XML schema infoset. */
+    /** The XML schema infoset. */
     protected final XSModel xmlSchema;
 
     /**
-     * Creates a new <code>XSModelAnalyzer</code> for a given XML schema infoset.
+     * Creates a new <code>XSModelAnalyzer</code> for the given (Xerces) XML schema infoset.
      * 
      * @param xmlSchema
-     *            schema infoset
+     *            schema infoset, must not be <code>null</code>
      */
     public XSModelAnalyzer( XSModel xmlSchema ) {
         this.xmlSchema = xmlSchema;
     }
 
     /**
-     * Creates a new <code>XSModelAnalyzer</code> that reads the schema documents from the given URLs.
+     * Creates a new {@link XSModelAnalyzer} instance that reads the schema documents from the given URLs.
      * 
      * @param schemaUrls
-     *            locations of the schema documents
+     *            locations of the schema documents, must not be <code>null</code> and contain at least one entry
      * @throws ClassCastException
      * @throws ClassNotFoundException
      * @throws InstantiationException
@@ -112,9 +112,9 @@ public class XSModelAnalyzer {
      * Returns the declarations of all elements that are substitutable for a given element declaration.
      * 
      * @param elementDecl
-     *            element declaration
+     *            element declaration, must not be <code>null</code>
      * @param namespace
-     *            only element declarations in this namespace are returned, set to null for all namespaces
+     *            only element declarations in this namespace are returned, set to <code>null</code> for all namespaces
      * @param transitive
      *            if true, also substitutions for substitutions (and so one) are included
      * @param onlyConcrete
@@ -145,9 +145,9 @@ public class XSModelAnalyzer {
      * Returns the declarations of all elements that are substitutable for a given element name.
      * 
      * @param elementName
-     *            qualified name of the element
+     *            qualified name of the element, must not be <code>null</code>
      * @param namespace
-     *            only element declarations in this namespace are returned, set to null for all namespaces
+     *            only element declarations in this namespace are returned, set to <code>null</code> for all namespaces
      * @param transitive
      *            if true, also substitutions for substitutions (and so one) are included
      * @param onlyConcrete
@@ -165,10 +165,22 @@ public class XSModelAnalyzer {
         return getSubstitutions( elementDecl, namespace, transitive, onlyConcrete );
     }
 
+    /**
+     * Creates a Xerces {@link XSModel} from the schemas at the given URLs, using the {@link RedirectingEntityResolver},
+     * so OGC schemas URLs are redirected to a local copy.
+     * 
+     * @param schemaUrls
+     *            locations of the schema documents, must not be <code>null</code> and contain at least one entry
+     * @return the XML schema infoset, never <code>null</code>
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public static XSModel loadModel( String... schemaUrls )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
-       
+
         XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
         DOMConfiguration config = schemaLoader.getConfig();
 

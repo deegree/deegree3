@@ -110,7 +110,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Parser for geometry and geometry-related constructs from the GML 3 specification series (3.0 / 3.1 / 3.2).
  * 
- * TODO: GML 3.0 / 3.2
+ * TODO: check correctness for GML 3.0 / 3.2
  * 
  * <p>
  * Supports the following geometry elements:
@@ -195,7 +195,6 @@ public class GML3GeometryDecoder extends GML3BaseDecoder implements GMLGeometryD
     private static final Set<String> complexElements = new HashSet<String>();
 
     static {
-
         // substitutions for "gml:_Curve"
         curveElements.add( "CompositeCurve" );
         curveElements.add( "Curve" );
