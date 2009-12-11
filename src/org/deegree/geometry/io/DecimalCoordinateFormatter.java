@@ -61,7 +61,7 @@ public class DecimalCoordinateFormatter implements CoordinateFormatter {
         if ( decimalPlaces > 0 ) {
             pattern.append( "." );
             for ( int i = 0; i < decimalPlaces; i++ ) {
-                pattern.append( "#" );
+                pattern.append( "0" );
             }
         }
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
