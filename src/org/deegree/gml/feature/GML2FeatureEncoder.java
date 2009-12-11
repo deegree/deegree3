@@ -66,6 +66,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.GML2GeometryEncoder;
 import org.deegree.gml.geometry.GMLGeometryEncoder;
@@ -98,11 +99,14 @@ public class GML2FeatureEncoder implements GMLFeatureEncoder {
      * @param outputCRS
      *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
      *            used)
+     * @param formatter
+     *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
+     *            <code>null</code> (use 5 decimal places)
      */
-    public GML2FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
+    public GML2FeatureEncoder( XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter ) {
         this.writer = writer;
         // TODO outputCRS is not used here!!
-        geometryExporter = new GML2GeometryEncoder( writer, exportedIds );
+        geometryExporter = new GML2GeometryEncoder( writer, formatter, exportedIds );
     }
 
     // public void export( FeatureCollection featureCol ) throws XMLStreamException {

@@ -189,7 +189,8 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, false, new HashSet<String>() );
+            GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, null, false,
+                                                                    new HashSet<String>() );
             exporter.export( geom );
             writer.flush();
 
@@ -232,7 +233,8 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, false, new HashSet<String>() );
+            GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, null, false,
+                                                                    new HashSet<String>() );
             ;
             exporter.exportSurfacePatch( surfPatch );
             writer.flush();
@@ -274,7 +276,8 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, false, new HashSet<String>() );
+            GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, null, false,
+                                                                    new HashSet<String>() );
             ;
             exporter.exportCurveSegment( curveSegment );
             writer.flush();
@@ -314,8 +317,8 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-            GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, false, new HashSet<String>() );
-            ;
+            GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, null, false,
+                                                                    new HashSet<String>() );
             exporter.export( geom );
             writer.flush();
 
@@ -359,7 +362,8 @@ public class GMLGeometryEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, false, new HashSet<String>() );
+        GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, null, false,
+                                                                new HashSet<String>() );
         ;
         exporter.export( geom );
         writer.flush();
@@ -392,7 +396,8 @@ public class GMLGeometryEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, false, new HashSet<String>() );
+        GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, null, false,
+                                                                new HashSet<String>() );
         exporter.export( geom );
         writer.flush();
 
@@ -425,7 +430,8 @@ public class GMLGeometryEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, false, new HashSet<String>() );
+        GML3GeometryEncoder exporter = new GML3GeometryEncoder( GML_31, writer, null, null, false,
+                                                                new HashSet<String>() );
         ;
         exporter.export( geom );
         writer.flush();

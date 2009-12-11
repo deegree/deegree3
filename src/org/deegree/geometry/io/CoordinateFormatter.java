@@ -33,42 +33,25 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
-
-import com.vividsolutions.jts.io.InputStreamInStream;
-import com.vividsolutions.jts.io.ParseException;
+package org.deegree.geometry.io;
 
 /**
- * Reads {@link Geometry} objects encoded as Well-Known Binary (WKB).
- * 
- * TODO re-implement without delegating to JTS
- * TODO add support for non-SFS geometries (e.g. non-linear curves)
+ * Determines the string representation of exported coordinates, e.g the number of decimal places or the decimal
+ * separator.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class WKBReader {
+public interface CoordinateFormatter {
 
-    // TODO remove the need for this object
-    private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
-
-    public static Geometry read( byte[] wkb )
-                            throws ParseException {
-        // com.vividsolutions.jts.io.WKBReader() is not thread safe
-        return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( wkb ) );
-    }
-
-    public static Geometry read( InputStream is )
-                            throws IOException, ParseException {
-        // com.vividsolutions.jts.io.WKBReader() is not thread safe        
-        return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( new InputStreamInStream( is ) ) );
-    }
+    /**
+     * Returns the formatted string representation of the given ordinate.
+     * 
+     * @param ordinate
+     *            ordinate to be formatted
+     * @return the formatted string, never <code>null</code>
+     */
+    public String format( double ordinate );
 }

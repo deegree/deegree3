@@ -52,6 +52,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.feature.GML2FeatureEncoder;
 import org.deegree.gml.feature.GML3FeatureEncoder;
 import org.deegree.gml.feature.GMLFeatureEncoder;
@@ -86,6 +87,8 @@ public class GMLStreamWriter {
     private String localXLinkTemplate;
 
     private CRS crs;
+
+    private CoordinateFormatter formatter;
 
     private String schemaLocation;
 
@@ -170,6 +173,16 @@ public class GMLStreamWriter {
     }
 
     /**
+     * Controls the format (e.g. number of decimal places) for written coordinates.
+     * 
+     * @param formatter
+     *            formatter to use, may be <code>null</code> (use 5 decimal places)
+     */
+    public void setCoordinateFormatter( CoordinateFormatter formatter ) {
+        this.formatter = formatter;
+    }
+
+    /**
      * Controls the value of the <code>xsi:schemaLocation</code> attribute in the root element.
      * 
      * @param schemaLocation
@@ -184,15 +197,14 @@ public class GMLStreamWriter {
      * Controls the formatting of written coordinates in geometries.
      * 
      * @param formatter
-     */    
+     */
     public void setCoordinateFormatter( Object formatter ) {
         // TODO
     }
-    
-    public void setAutoNamespaceBinding( boolean autoNs) {
+
+    public void setAutoNamespaceBinding( boolean autoNs ) {
         this.autoNs = autoNs;
     }
-
 
     /**
      * Returns whether the specified gml object has already been exported.
@@ -284,15 +296,15 @@ public class GMLStreamWriter {
             switch ( version ) {
             case GML_2: {
                 // TODO
-                featureEncoder = new GML2FeatureEncoder( xmlStream, crs );
+                featureEncoder = new GML2FeatureEncoder( xmlStream, crs, formatter );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
                 // TODO
-                featureEncoder = new GML3FeatureEncoder( version, xmlStream, crs, localXLinkTemplate, featureProps,
-                                                         inlineXLinklevels, traverseXLinkExpiry, false );                
+                featureEncoder = new GML3FeatureEncoder( version, xmlStream, crs, formatter, localXLinkTemplate,
+                                                         featureProps, inlineXLinklevels, traverseXLinkExpiry, false );
                 break;
             }
             }
@@ -312,7 +324,8 @@ public class GMLStreamWriter {
             case GML_31:
             case GML_32: {
                 // TODO
-                geometryEncoder = new GML3GeometryEncoder( version, xmlStream, crs, false, new HashSet<String>() );
+                geometryEncoder = new GML3GeometryEncoder( version, xmlStream, crs, formatter, false,
+                                                           new HashSet<String>() );
                 break;
             }
             }

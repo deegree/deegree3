@@ -33,17 +33,20 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry;
+package org.deegree.geometry.io;
 
-import java.io.Reader;
+import java.io.IOException;
+import java.io.InputStream;
 
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 
+import com.vividsolutions.jts.io.InputStreamInStream;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Reads {@link Geometry} objects encoded as Well-Known Text (WKT).
+ * Reads {@link Geometry} objects encoded as Well-Known Binary (WKB).
  * 
  * TODO re-implement without delegating to JTS
  * TODO add support for non-SFS geometries (e.g. non-linear curves)
@@ -53,20 +56,20 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision$, $Date$
  */
-public class WKTReader {
-
-    private static final com.vividsolutions.jts.io.WKTReader jtsReader = new com.vividsolutions.jts.io.WKTReader();
+public class WKBReader {
 
     // TODO remove the need for this object
     private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
 
-    public static Geometry read( Reader reader )
+    public static Geometry read( byte[] wkb )
                             throws ParseException {
-        return defaultGeom.createFromJTS( jtsReader.read( reader ) );
+        // com.vividsolutions.jts.io.WKBReader() is not thread safe
+        return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( wkb ) );
     }
 
-    public static Geometry read( String wkt )
-                            throws ParseException {
-        return defaultGeom.createFromJTS( jtsReader.read( wkt ) );
+    public static Geometry read( InputStream is )
+                            throws IOException, ParseException {
+        // com.vividsolutions.jts.io.WKBReader() is not thread safe        
+        return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( new InputStreamInStream( is ) ) );
     }
 }

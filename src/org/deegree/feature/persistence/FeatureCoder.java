@@ -38,12 +38,14 @@ package org.deegree.feature.persistence;
 
 import static java.lang.Boolean.TRUE;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.xml.XMLConstants;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -51,7 +53,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
@@ -60,14 +61,17 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.GML3FeatureEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Provides methods for storing / retrieving single {@link Feature} instances in binary form.
+ * 
+ * TODO implement efficient binary format (instead of GML)
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -80,52 +84,69 @@ public class FeatureCoder {
 
     private static final XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
 
+    private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+
     static {
         xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, TRUE );
     }
 
-    public static void encode( Feature feature, OutputStream os, Logger log )
+    /**
+     * @param feature
+     * @param os
+     * @param crs
+     * @throws FeatureStoreException
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     * @throws IOException
+     */
+    public static void encode( Feature feature, OutputStream os, CRS crs )
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError,
                             UnknownCRSException, TransformationException, IOException {
 
-        xmlOutputFactory.setProperty( IS_REPAIRING_NAMESPACES, TRUE );
-        XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter( os, "UTF-8" );
-        // TODO
-        xmlWriter.setPrefix( "gml", CommonNamespaces.GMLNS );
-        xmlWriter.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        xmlWriter.setPrefix( "xplan", feature.getName().getNamespaceURI() );
-        GML3FeatureEncoder encoder = new GML3FeatureEncoder( GMLVersion.GML_31, xmlWriter, new CRS( "EPSG:31466" ),
-                                                             "#{}", null, 0, -1, false );
         long begin = System.currentTimeMillis();
-        encoder.export( feature );
-        xmlWriter.close();
+        // GZIPOutputStream gos = new GZIPOutputStream( os );
+        XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter( os, "UTF-8" );
+        xmlWriter.setPrefix( XMLConstants.DEFAULT_NS_PREFIX, feature.getName().getNamespaceURI() );
+        GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, xmlWriter );
+        gmlWriter.setOutputCRS( crs );
+        gmlWriter.setLocalXLinkTemplate( "#{}" );
+        gmlWriter.setXLinkExpansion( 0 );
+        xmlWriter.setPrefix( "", feature.getName().getNamespaceURI() );
+        gmlWriter.write( feature );
+        gmlWriter.close();
+        // gos.close();
         long elapsed = System.currentTimeMillis() - begin;
-        log.debug( "Encoding to XML: " + elapsed );
-
-        // if (log.isDebugEnabled()) {
-        // File tmpFile = File.createTempFile( "encoded_feature", ".xml" );
-        // LOG.debug ("Writing encoded feature to '" + tmpFile + "'.");
-        // xmlWriter = new FormattingXMLStreamWriter( xmlOutputFactory.createXMLStreamWriter( new FileWriter( tmpFile )
-        // ) );
-        // xmlWriter.setPrefix( "gml", CommonNamespaces.GMLNS );
-        // xmlWriter.setPrefix( "xlink", CommonNamespaces.XLNNS );
-        // xmlWriter.setPrefix( "xplan", feature.getName().getNamespaceURI() );
-        // encoder = new GML311FeatureEncoder( xmlWriter, new CRS( "EPSG:31466" ), "#{}", null, 1, -1, false );
-        // encoder.export( feature );
-        // xmlWriter.close();
-        // }
+        LOG.debug( "Encoding feature: " + elapsed + " [ms]" );
     }
 
-    public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs,
-                                  GMLObjectResolver idResolver )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+    /**
+     * @param is
+     * @param schema
+     * @param crs
+     * @param idResolver
+     * @return
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
+    public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs, GMLObjectResolver idResolver )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
+                            FactoryConfigurationError, IOException {
 
+        long begin = System.currentTimeMillis();
         BufferedInputStream bis = new BufferedInputStream( is );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( bis, "UTF-8" );
+        XMLStreamReader xmlStream = xmlInputFactory.createXMLStreamReader( bis, "UTF-8" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
-        gmlReader.setResolver (idResolver);
+        gmlReader.setResolver( idResolver );
         gmlReader.setApplicationSchema( schema );
         gmlReader.setDefaultCRS( crs );
-        return gmlReader.readFeature();
+        Feature feature = gmlReader.readFeature();
+        long elapsed = System.currentTimeMillis() - begin;
+        LOG.debug( "Decoding feature: " + elapsed + " [ms]" );
+        return feature;
     }
 }

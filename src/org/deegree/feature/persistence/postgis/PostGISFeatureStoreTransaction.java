@@ -65,11 +65,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.feature.FeatureReference;
-import org.postgis.LineString;
-import org.postgis.LinearRing;
-import org.postgis.PGgeometry;
-import org.postgis.Point;
-import org.postgis.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,11 +86,11 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private final Connection conn;
 
-    private static GeometryTransformer bboxTransformer;
+    private static GeometryTransformer ftBBoxTransformer;
 
     static {
         try {
-            bboxTransformer = new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() );
+            ftBBoxTransformer = new GeometryTransformer( CRS.EPSG_4326.getWrappedCRS() );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
@@ -279,27 +274,39 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private void insertFeature( PreparedStatement stmt, Feature feature )
                             throws SQLException {
 
+        CRS storageCRS = store.getMetadata( feature.getName() ).getDefaultCRS();
+
         stmt.setString( 1, feature.getId() );
         stmt.setString( 2, "TODO: gml_description" );
         stmt.setShort( 3, store.getFtId( feature.getName() ) );
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            FeatureCoder.encode( feature, bos, LOG );
+            FeatureCoder.encode( feature, bos, storageCRS );
         } catch ( Exception e ) {
             String msg = "Error encoding feature for BLOB: " + e.getMessage();
             LOG.error( msg, e.getMessage() );
             throw new SQLException( msg, e );
         }
         stmt.setBytes( 4, bos.toByteArray() );
-        stmt.setObject( 5, toPGPolygon( feature.getEnvelope(), -1 ) );
+        System.out.println( "Wrote feature blob (" + bos.toByteArray().length + " bytes)" );
+        Envelope bbox = feature.getEnvelope();
+        if ( bbox != null ) {
+            try {
+                GeometryTransformer bboxTransformer = new GeometryTransformer( storageCRS.getWrappedCRS() );
+                bbox = (Envelope) bboxTransformer.transform( bbox );
+            } catch ( Exception e ) {
+                throw new SQLException( e.getMessage(), e );
+            }
+        }
+        stmt.setObject( 5, store.toPGPolygon( bbox, -1 ) );
         // stmt.addBatch();
         stmt.execute();
 
         Envelope env = feature.getEnvelope();
         if ( env != null ) {
             try {
-                env = (Envelope) bboxTransformer.transform( env );
+                env = (Envelope) ftBBoxTransformer.transform( env );
                 Envelope ftEnv = store.getEnvelope( feature.getName() );
                 if ( ftEnv != null ) {
                     ftEnv = ftEnv.merge( env );
@@ -311,36 +318,6 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 throw new SQLException( e.getMessage(), e );
             }
         }
-    }
-
-    private PGgeometry toPGPolygon( Envelope envelope, int srid ) {
-        PGgeometry pgGeometry = null;
-        if ( envelope != null ) {
-            double minX = envelope.getMin().get0();
-            double minY = envelope.getMin().get1();
-            double maxX = envelope.getMax().get0();
-            double maxY = envelope.getMax().get1();
-            if ( envelope.getMin().equals( envelope.getMax() ) ) {
-                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1() );
-                // TODO
-                point.setSrid( srid );
-                pgGeometry = new PGgeometry( point );
-            } else if ( minX == maxX || minY == maxY ) {
-                LineString line = new LineString( new Point[] { new Point( minX, minY ), new Point( maxX, maxY ) } );
-                // TODO
-                line.setSrid( srid );
-                pgGeometry = new PGgeometry( line );
-            } else {
-                Point[] points = new Point[] { new Point( minX, minY ), new Point( maxX, minY ),
-                                              new Point( maxX, maxY ), new Point( minX, maxY ), new Point( minX, minY ) };
-                LinearRing outer = new LinearRing( points );
-                Polygon polygon = new Polygon( new LinearRing[] { outer } );
-                // TODO
-                polygon.setSrid( srid );
-                pgGeometry = new PGgeometry( polygon );
-            }
-        }
-        return pgGeometry;
     }
 
     private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features,
@@ -397,7 +374,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             stmt = conn.prepareStatement( "UPDATE " + store.qualifyTableName( "feature_types" )
                                           + " SET wgs84bbox=? WHERE id=?" );
             for ( Map.Entry<QName, Envelope> ftBbox : store.ftNameToBBox.entrySet() ) {
-                stmt.setObject( 1, toPGPolygon( ftBbox.getValue(), 4326 ) );
+                stmt.setObject( 1, store.toPGPolygon( ftBbox.getValue(), 4326 ) );
                 stmt.setShort( 2, store.getFtId( ftBbox.getKey() ) );
                 stmt.executeUpdate();
             }

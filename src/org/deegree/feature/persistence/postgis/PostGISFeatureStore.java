@@ -84,6 +84,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.GMLObject;
 import org.postgis.LineString;
+import org.postgis.LinearRing;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
 import org.postgis.Polygon;
@@ -126,7 +127,8 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private LockManager lockManager;
 
-    private FeatureStoreCache cache = new FeatureStoreCache();
+    // TODO make this configurable
+    private FeatureStoreCache cache = new FeatureStoreCache( 10000 );
 
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
@@ -240,7 +242,7 @@ public class PostGISFeatureStore implements FeatureStore {
                     LOG.debug( "Recreating object '" + id + "' from bytea." );
                     geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
                                                          new FeatureStoreGMLIdResolver( this ) );
-                    cache.add( id, geomOrFeature );
+                    cache.add( geomOrFeature );
                 }
             } catch ( Exception e ) {
                 String msg = "Error performing query: " + e.getMessage();
@@ -481,16 +483,16 @@ public class PostGISFeatureStore implements FeatureStore {
 
         FeatureResultSet result = null;
 
-        short ftId = ftNameToFtId.get( ftName );
-
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                    + " WHERE ft_type=" + ftId );
+            stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
+                                          + " WHERE ft_type=? AND gml_bounded_by && ?" );
+            stmt.setShort( 1, ftNameToFtId.get( ftName ) );
+            stmt.setObject( 2, toPGPolygon( looseBBox, -1 ) );
+            rs = stmt.executeQuery();
             result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
                                                                           new FeatureStoreGMLIdResolver( this ) ) );
         } catch ( Exception e ) {
@@ -622,6 +624,36 @@ public class PostGISFeatureStore implements FeatureStore {
         return ftNameToFtId.get( ftName );
     }
 
+    PGgeometry toPGPolygon( Envelope envelope, int srid ) {
+        PGgeometry pgGeometry = null;
+        if ( envelope != null ) {
+            double minX = envelope.getMin().get0();
+            double minY = envelope.getMin().get1();
+            double maxX = envelope.getMax().get0();
+            double maxY = envelope.getMax().get1();
+            if ( envelope.getMin().equals( envelope.getMax() ) ) {
+                Point point = new Point( envelope.getMin().get0(), envelope.getMin().get1() );
+                // TODO
+                point.setSrid( srid );
+                pgGeometry = new PGgeometry( point );
+            } else if ( minX == maxX || minY == maxY ) {
+                LineString line = new LineString( new Point[] { new Point( minX, minY ), new Point( maxX, maxY ) } );
+                // TODO
+                line.setSrid( srid );
+                pgGeometry = new PGgeometry( line );
+            } else {
+                Point[] points = new Point[] { new Point( minX, minY ), new Point( maxX, minY ),
+                                              new Point( maxX, maxY ), new Point( minX, maxY ), new Point( minX, minY ) };
+                LinearRing outer = new LinearRing( points );
+                Polygon polygon = new Polygon( new LinearRing[] { outer } );
+                // TODO
+                polygon.setSrid( srid );
+                pgGeometry = new PGgeometry( polygon );
+            }
+        }
+        return pgGeometry;
+    }
+
     private class FeatureResultSetIterator extends ResultSetIterator<Feature> {
 
         private final FeatureStoreGMLIdResolver resolver;
@@ -632,6 +664,7 @@ public class PostGISFeatureStore implements FeatureStore {
             this.resolver = resolver;
         }
 
+        @SuppressWarnings("synthetic-access")
         @Override
         protected Feature createElement( ResultSet rs )
                                 throws SQLException {
@@ -642,7 +675,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 if ( feature == null ) {
                     LOG.debug( "Cache miss. Recreating object '" + gml_id + "' from blob." );
                     feature = FeatureCoder.decode( rs.getBinaryStream( 2 ), schema, new CRS( "EPSG:31466" ), resolver );
-                    cache.add( gml_id, feature );
+                    cache.add( feature );
                 } else {
                     LOG.debug( "Cache hit." );
                 }

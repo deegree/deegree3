@@ -60,6 +60,8 @@ import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
+import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -138,6 +140,8 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
 
     private final CRS outputCRS;
 
+    private final CoordinateFormatter formatter;
+
     private CoordinateTransformer transformer;
 
     private GeometryTransformer geoTransformer;
@@ -157,13 +161,16 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
      * @param outputCrs
      *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
      *            used)
+     * @param formatter
+     *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
+     *            <code>null</code> (use 5 decimal places)
      * @param exportSf
      *            if true, the generated GML must to conform to the GML-SF profile (only simple geometries are used and
      *            they are exported without id attributes)
      * @param exportedIds
      */
-    public GML3GeometryEncoder( GMLVersion version, XMLStreamWriter writer, CRS outputCrs, boolean exportSf,
-                                Set<String> exportedIds ) {
+    public GML3GeometryEncoder( GMLVersion version, XMLStreamWriter writer, CRS outputCrs,
+                                CoordinateFormatter formatter, boolean exportSf, Set<String> exportedIds ) {
         this.version = version;
         this.writer = writer;
         this.outputCRS = outputCrs;
@@ -179,6 +186,11 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
                 LOG.debug( "Could not create transformer for CRS '" + outputCrs + "': " + e.getMessage()
                            + ". Encoding will fail if a transformation is actually necessary." );
             }
+        }
+        if ( formatter == null ) {
+            this.formatter = new DecimalCoordinateFormatter( 5 );
+        } else {
+            this.formatter = formatter;
         }
         this.exportedIds = exportedIds;
     }
@@ -388,9 +400,9 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
 
         writer.writeStartElement( GMLNS, "pos" );
         double[] ordinates = getTransformedCoordinate( point.getCoordinateSystem(), point.getAsArray() );
-        writer.writeCharacters( String.valueOf( ordinates[0] ) );
+        writer.writeCharacters( formatter.format( ordinates[0] ) );
         for ( int i = 1; i < ordinates.length; i++ ) {
-            writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
+            writer.writeCharacters( " " + formatter.format( ordinates[i] ) );
         }
         writer.writeEndElement();
     }
@@ -835,9 +847,9 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
             writer.writeStartElement( "gml", "lowerCorner", GMLNS );
         }
         double[] ordinates = env.getMin().getAsArray();
-        writer.writeCharacters( String.valueOf( ordinates[0] ) );
+        writer.writeCharacters( formatter.format( ordinates[0] ) );
         for ( int i = 1; i < ordinates.length; i++ ) {
-            writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
+            writer.writeCharacters( " " + formatter.format( ordinates[i] ) );
         }
         writer.writeEndElement();
 
@@ -847,9 +859,9 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
             writer.writeStartElement( "gml", "upperCorner", GMLNS );
         }
         ordinates = env.getMax().getAsArray();
-        writer.writeCharacters( String.valueOf( ordinates[0] ) );
+        writer.writeCharacters( formatter.format( ordinates[0] ) );
         for ( int i = 1; i < ordinates.length; i++ ) {
-            writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
+            writer.writeCharacters( " " + formatter.format( ordinates[i] ) );
         }
         writer.writeEndElement();
         writer.writeEndElement();
@@ -1450,9 +1462,9 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
                     double[] ordinates = getTransformedCoordinate( p.getCoordinateSystem(), p.getAsArray() );
                     for ( int i = 0; i < ordinates.length; i++ ) {
                         if ( !first ) {
-                            writer.writeCharacters( " " + String.valueOf( ordinates[i] ) );
+                            writer.writeCharacters( " " + formatter.format( ordinates[i] ) );
                         } else {
-                            writer.writeCharacters( String.valueOf( ordinates[i] ) );
+                            writer.writeCharacters( formatter.format( ordinates[i] ) );
                             first = false;
                         }
                     }

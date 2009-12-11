@@ -49,6 +49,8 @@ import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
+import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
@@ -80,25 +82,35 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
 
     private static final String GML21NS = "http://www.opengis.net/gml";
 
-    private XMLStreamWriter writer;
+    private final XMLStreamWriter writer;
 
-    private Set<String> exportedIds;
+    private final Set<String> exportedIds;
+
+    private final CoordinateFormatter formatter;
 
     /**
      * @param writer
      */
     public GML2GeometryEncoder( XMLStreamWriter writer ) {
-        this( writer, new HashSet<String>() );
+        this( writer, null, new HashSet<String>() );
     }
 
     /**
      * @param writer
+     * @param formatter
+     *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
+     *            <code>null</code> (use 5 decimal places)
      * @param exportedIds
      *            must not be null
      */
-    public GML2GeometryEncoder( XMLStreamWriter writer, Set<String> exportedIds ) {
+    public GML2GeometryEncoder( XMLStreamWriter writer, CoordinateFormatter formatter, Set<String> exportedIds ) {
         this.writer = writer;
         this.exportedIds = exportedIds;
+        if ( formatter == null ) {
+            this.formatter = new DecimalCoordinateFormatter( 5 );
+        } else {
+            this.formatter = formatter;
+        }
     }
 
     /**
@@ -155,19 +167,18 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
     private void exportCoord( Point point )
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "coord", GML21NS );
-
         writer.writeStartElement( "gml", "X", GML21NS );
-        writer.writeCharacters( String.valueOf( point.get0() ) );
+        writer.writeCharacters( formatter.format( point.get0() ) );
         writer.writeEndElement();
         if ( point.getCoordinateDimension() > 1 ) {
 
             writer.writeStartElement( "gml", "Y", GML21NS );
-            writer.writeCharacters( String.valueOf( point.get1() ) );
+            writer.writeCharacters( formatter.format( point.get1() ) );
             writer.writeEndElement();
             if ( point.getCoordinateDimension() > 2 ) {
 
                 writer.writeStartElement( "gml", "Z", GML21NS );
-                writer.writeCharacters( String.valueOf( point.get2() ) );
+                writer.writeCharacters( formatter.format( point.get2() ) );
                 writer.writeEndElement();
             }
         }
@@ -309,7 +320,6 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
             if ( exportedIds.contains( geom.getId() ) ) {
                 writer.writeEmptyElement( "gml", "geometryMember", GML21NS );
                 writer.writeAttribute( "xlink", XLNNS, "href", "#" + geom.getId() );
-
             } else {
                 writer.writeStartElement( "gml", "geometryMember", GML21NS );
                 export( geom );
@@ -467,5 +477,4 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
         throw new UnsupportedOperationException(
                                                  "Cannot export TriangulatedSurface in GML2.1 as this geometry is not supported in this version of GML." );
     }
-
 }

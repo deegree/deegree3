@@ -36,7 +36,7 @@
 package org.deegree.feature.persistence.cache;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.deegree.feature.persistence.FeatureStore;
@@ -54,7 +54,15 @@ import org.deegree.gml.GMLObject;
  */
 public class FeatureStoreCache {
 
-    private Map<String, GMLObject> idToObject = Collections.synchronizedMap( new HashMap<String, GMLObject>() );
+    private final Map<String, GMLObject> idToObject;
+
+    /**
+     * @param maxEntries
+     */
+    @SuppressWarnings("synthetic-access")
+    public FeatureStoreCache( int maxEntries ) {
+        idToObject = Collections.synchronizedMap( new CacheMap( maxEntries ) );
+    }
 
     /**
      * Returns the object with the specified id (if it exists in the cache).
@@ -67,15 +75,21 @@ public class FeatureStoreCache {
         return idToObject.get( id );
     }
 
-    public void add (String id, GMLObject obj) {
-        idToObject.put( id, obj );
+    /**
+     * Adds the given object to the cache.
+     * 
+     * @param obj
+     *            object, must not be <code>null</code>
+     */
+    public void add( GMLObject obj ) {
+        idToObject.put( obj.getId(), obj );
     }
-    
+
     /**
      * Removes the object with the specified id from the cache (if it exists).
      * 
      * @param id
-     *            id of the object
+     *            id of the object, must not be <code>null</code>
      */
     public void remove( String id ) {
         idToObject.remove( id );
@@ -86,5 +100,21 @@ public class FeatureStoreCache {
      */
     public void clear() {
         idToObject.clear();
+    }
+
+    private class CacheMap extends LinkedHashMap<String, GMLObject> {
+
+        private static final long serialVersionUID = 6368164113834314158L;
+
+        private final int maxEntries;
+
+        private CacheMap( int maxEntries ) {
+            this.maxEntries = maxEntries;
+        }
+
+        @Override
+        protected boolean removeEldestEntry( Map.Entry<String, GMLObject> eldest ) {
+            return size() > maxEntries;
+        }
     }
 }

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry;
+package org.deegree.geometry.io;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -41,6 +41,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.types.ows.CodeType;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSurface;

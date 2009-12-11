@@ -138,7 +138,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         // writer.setPrefix( "app", "http://www.deegree.org" );
         // writer.setPrefix( "app", "http://www.deegree.org/app" );
@@ -184,7 +184,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
 
@@ -216,7 +216,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
 
@@ -277,7 +277,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -322,7 +322,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -379,7 +379,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -431,7 +431,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -472,7 +472,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -541,7 +541,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, new HashSet<String>() );
+        GML2GeometryEncoder exporter = new GML2GeometryEncoder( writer, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );

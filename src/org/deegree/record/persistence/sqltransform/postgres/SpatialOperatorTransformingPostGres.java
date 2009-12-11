@@ -57,8 +57,8 @@ import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
-import org.deegree.geometry.WKTWriterNG;
-import org.deegree.geometry.WKTWriterNG.WKTFlag;
+import org.deegree.geometry.io.WKTWriterNG;
+import org.deegree.geometry.io.WKTWriterNG.WKTFlag;
 
 /**
  * Transforms the spatial query into a PostGreSQL statement. It encapsules the required methods.

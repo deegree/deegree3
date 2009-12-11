@@ -72,6 +72,7 @@ import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.generic.GenericCustomPropertyExporter;
 import org.deegree.gml.geometry.GML3GeometryEncoder;
@@ -124,7 +125,7 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
      */
     public GML3FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML3GeometryEncoder( version, writer, outputCRS, false, exportedIds );
+        geometryExporter = new GML3GeometryEncoder( version, writer, outputCRS, null, false, exportedIds );
     }
 
     /**
@@ -134,6 +135,9 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
      * @param outputCRS
      *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
      *            used)
+     * @param formatter
+     *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
+     *            <code>null</code> (use 5 decimal places)
      * @param referenceTemplate
      *            URI template used to create references to local objects, e.g.
      *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
@@ -144,9 +148,9 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
      * @param traverseXlinkExpiry
      * @param exportSfGeometries
      */
-    public GML3FeatureEncoder( GMLVersion version, XMLStreamWriter writer, CRS outputCRS, String referenceTemplate,
-                               PropertyName[] requestedProps, int traverseXlinkDepth, int traverseXlinkExpiry,
-                               boolean exportSfGeometries ) {
+    public GML3FeatureEncoder( GMLVersion version, XMLStreamWriter writer, CRS outputCRS,
+                               CoordinateFormatter formatter, String referenceTemplate, PropertyName[] requestedProps,
+                               int traverseXlinkDepth, int traverseXlinkExpiry, boolean exportSfGeometries ) {
         this.version = version;
         this.writer = writer;
         this.referenceTemplate = referenceTemplate;
@@ -157,7 +161,8 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
-        geometryExporter = new GML3GeometryEncoder( version, writer, outputCRS, exportSfGeometries, exportedIds );
+        geometryExporter = new GML3GeometryEncoder( version, writer, outputCRS, formatter, exportSfGeometries,
+                                                    exportedIds );
         // TODO
         this.exportSf = false;
     }
