@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.sqltransform.postgres;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,11 +62,9 @@ import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.logical.LogicalOperator.SubType;
 import org.deegree.filter.spatial.SpatialOperator;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 
 /**
- * Here the Filterexpression is syntactically splitted into its components. To handle the expression a specific
+ * Here the filterexpression is syntactically splitted into its components. To handle the expression a specific
  * knowledge about the database, which is underlying, is needed. This class transforms a filterexpression into a
  * PostGres datastore readable format.
  * 
@@ -74,13 +75,7 @@ import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
  */
 public class TransformatorPostGres {
 
-    private String expression;
-
-    private ResultType resultType;
-
-    private int maxRecords;
-
-    private SetOfReturnableElements setOfReturnableElements;
+    private Writer writer = new StringWriter();
 
     private Set<String> table = new HashSet<String>();
 
@@ -90,45 +85,25 @@ public class TransformatorPostGres {
 
     private ExpressionFilterObject expressObject;
 
-    public TransformatorPostGres( Filter constraint, ResultType resultType,
-                                  SetOfReturnableElements setOfReturnableElements, int maxRecords ) {
-        this.resultType = resultType;
-        this.setOfReturnableElements = setOfReturnableElements;
-        this.maxRecords = maxRecords;
+    public TransformatorPostGres( Filter constraint ) {
 
         if ( constraint != null ) {
-            filterExpressionToConstraintString( constraint );
+            try {
+                filterExpressionToConstraintString( constraint );
+            } catch ( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         } else {
 
         }
     }
 
     /**
-     * @return the expression
+     * @return the stringWriter
      */
-    public String getExpression() {
-        return expression;
-    }
-
-    /**
-     * @return the resultType
-     */
-    public ResultType getResultType() {
-        return resultType;
-    }
-
-    /**
-     * @return the maxRecords
-     */
-    public int getMaxRecords() {
-        return maxRecords;
-    }
-
-    /**
-     * @return the setOfReturnableElements
-     */
-    public SetOfReturnableElements getSetOfReturnableElements() {
-        return setOfReturnableElements;
+    public Writer getStringWriter() {
+        return writer;
     }
 
     /**
@@ -150,8 +125,10 @@ public class TransformatorPostGres {
      * 
      * @param filter
      * @return
+     * @throws IOException
      */
-    private void filterExpressionToConstraintString( Filter filter ) {
+    private void filterExpressionToConstraintString( Filter filter )
+                            throws IOException {
 
         Type type = filter.getType();
 
@@ -162,7 +139,8 @@ public class TransformatorPostGres {
             OperatorFilter opFilter = (OperatorFilter) filter;
 
             org.deegree.filter.Operator.Type typeOperator = opFilter.getOperator().getType();
-            expression = operatorFilterHandling( opFilter, typeOperator );
+
+            operatorFilterHandling( opFilter, typeOperator, writer );
 
         case ID_FILTER:
             // TODO
@@ -189,22 +167,26 @@ public class TransformatorPostGres {
      * 
      * @param opFilter
      * @param typeOperator
+     * @throws IOException
      */
-    private String operatorFilterHandling( OperatorFilter opFilter, org.deegree.filter.Operator.Type typeOperator ) {
+    private void operatorFilterHandling( OperatorFilter opFilter, org.deegree.filter.Operator.Type typeOperator,
+                                         Writer writer )
+                            throws IOException {
 
         switch ( typeOperator ) {
 
         case SPATIAL:
             SpatialOperator spaOp = (SpatialOperator) opFilter.getOperator();
-            SpatialOperatorTransformingPostGres spa = new SpatialOperatorTransformingPostGres( spaOp );
+            SpatialOperatorTransformingPostGIS spa = new SpatialOperatorTransformingPostGIS( spaOp, writer );
             table.addAll( spa.getTable() );
             column.addAll( spa.getColumn() );
-            return spa.getSpatialOperation();
+            // return spa.getSpatialOperation();
+            break;
 
         case LOGICAL:
             LogicalOperator logOp = (LogicalOperator) opFilter.getOperator();
             SubType typeLogical = logOp.getSubType();
-            String stringLogical = "";
+            // String stringLogical = "";
             int count;
 
             switch ( typeLogical ) {
@@ -213,70 +195,78 @@ public class TransformatorPostGres {
 
                 And andOp = (And) logOp;
                 Operator[] paramsAnd = andOp.getParams();
-                stringLogical = "";
+                // stringLogical = "";
                 count = 0;
                 for ( Operator opParam : paramsAnd ) {
                     if ( count != paramsAnd.length - 1 ) {
                         OperatorFilter opera = new OperatorFilter( opParam );
-                        stringLogical += "(";
-                        stringLogical += operatorFilterHandling( opera, opParam.getType() );
-                        stringLogical += ")";
-                        stringLogical += " AND ";
+                        // stringLogical += "(";
+                        // stringLogical += operatorFilterHandling( opera, opParam.getType() );
+                        // stringLogical += ")";
+                        // stringLogical += " AND ";
+                        writer.append( '(' );
+                        operatorFilterHandling( opera, opParam.getType(), writer );
+                        writer.append( ')' );
+                        writer.append( " AND " );
+
                         count++;
                     } else {
                         OperatorFilter opera = new OperatorFilter( opParam );
-                        stringLogical += "(";
-                        stringLogical += operatorFilterHandling( opera, opParam.getType() );
-                        stringLogical += ")";
+                        // stringLogical += "(";
+                        // stringLogical += operatorFilterHandling( opera, opParam.getType() );
+                        // stringLogical += ")";
+                        writer.append( '(' );
+                        operatorFilterHandling( opera, opParam.getType(), writer );
+                        writer.append( ')' );
                     }
                 }
 
-                return stringLogical;
+                break;
 
             case OR:
                 Or orOp = (Or) logOp;
                 Operator[] paramsOr = orOp.getParams();
-                stringLogical = "";
+                // stringLogical = "";
                 count = 0;
                 for ( Operator opParam : paramsOr ) {
                     if ( count != paramsOr.length - 1 ) {
                         OperatorFilter opera = new OperatorFilter( opParam );
-                        stringLogical += "(";
-                        stringLogical += operatorFilterHandling( opera, opParam.getType() );
-                        stringLogical += ")";
-                        stringLogical += " OR ";
+                        writer.append( '(' );
+                        operatorFilterHandling( opera, opParam.getType(), writer );
+                        writer.append( ')' );
+                        writer.append( " OR " );
                         count++;
                     } else {
                         OperatorFilter opera = new OperatorFilter( opParam );
-                        stringLogical += "(";
-                        stringLogical += operatorFilterHandling( opera, opParam.getType() );
-                        stringLogical += ")";
+                        writer.append( '(' );
+                        operatorFilterHandling( opera, opParam.getType(), writer );
+                        writer.append( ')' );
                     }
                 }
 
-                return stringLogical;
+                break;
 
             case NOT:
                 Not notOp = (Not) logOp;
                 Operator[] paramsNot = notOp.getParams();
-                stringLogical = "";
+                // stringLogical = "";
                 for ( Operator opParam : paramsNot ) {
                     OperatorFilter opera = new OperatorFilter( opParam );
-                    stringLogical += " NOT ";
-                    stringLogical += "(";
-                    stringLogical += operatorFilterHandling( opera, opParam.getType() );
-                    stringLogical += ")";
+                    writer.append( " NOT " );
+                    writer.append( '(' );
+                    operatorFilterHandling( opera, opParam.getType(), writer );
+                    writer.append( ')' );
 
                 }
 
-                return stringLogical;
+                break;
 
             }
 
             break;
 
         case COMPARISON:
-            String stringComparison = "";
+            // String stringComparison = "";
 
             ComparisonOperator compOp = (ComparisonOperator) opFilter.getOperator();
             org.deegree.filter.comparison.ComparisonOperator.SubType typeComparison = compOp.getSubType();
@@ -285,62 +275,61 @@ public class TransformatorPostGres {
 
             case PROPERTY_IS_EQUAL_TO:
                 PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) compOp;
-                stringComparison += expressionArrayHandling( propertyIsEqualTo.getParameter1(), " = ",
-                                                             propertyIsEqualTo.getParameter2() );
-                return stringComparison;
+                writer.append( expressionArrayHandling( propertyIsEqualTo.getParameter1(), " = ",
+                                                        propertyIsEqualTo.getParameter2() ) );
 
+                break;
             case PROPERTY_IS_NOT_EQUAL_TO:
                 PropertyIsNotEqualTo propertyIsNotEqualTo = (PropertyIsNotEqualTo) compOp;
-                stringComparison += expressionArrayHandling( propertyIsNotEqualTo.getParameter1(), " != ",
-                                                             propertyIsNotEqualTo.getParameter2() );
-                return stringComparison;
+                writer.append( expressionArrayHandling( propertyIsNotEqualTo.getParameter1(), " != ",
+                                                        propertyIsNotEqualTo.getParameter2() ) );
 
+                break;
             case PROPERTY_IS_LESS_THAN:
                 PropertyIsLessThan propertyIsLessThan = (PropertyIsLessThan) compOp;
-                stringComparison += expressionArrayHandling( propertyIsLessThan.getParameter1(), " < ",
-                                                             propertyIsLessThan.getParameter2() );
-                return stringComparison;
+                writer.append( expressionArrayHandling( propertyIsLessThan.getParameter1(), " < ",
+                                                        propertyIsLessThan.getParameter2() ) );
 
+                break;
             case PROPERTY_IS_GREATER_THAN:
                 PropertyIsGreaterThan propertyIsGreaterThan = (PropertyIsGreaterThan) compOp;
-                stringComparison += expressionArrayHandling( propertyIsGreaterThan.getParameter1(), " > ",
-                                                             propertyIsGreaterThan.getParameter2() );
-                return stringComparison;
+                writer.append( expressionArrayHandling( propertyIsGreaterThan.getParameter1(), " > ",
+                                                        propertyIsGreaterThan.getParameter2() ) );
 
+                break;
             case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
                 PropertyIsLessThanOrEqualTo propertyIsLessThanOrEqualTo = (PropertyIsLessThanOrEqualTo) compOp;
-                stringComparison += expressionArrayHandling( propertyIsLessThanOrEqualTo.getParameter1(), " <= ",
-                                                             propertyIsLessThanOrEqualTo.getParameter2() );
-                return stringComparison;
+                writer.append( expressionArrayHandling( propertyIsLessThanOrEqualTo.getParameter1(), " <= ",
+                                                        propertyIsLessThanOrEqualTo.getParameter2() ) );
 
+                break;
             case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
                 PropertyIsGreaterThanOrEqualTo propertyIsGreaterThanOrEqualTo = (PropertyIsGreaterThanOrEqualTo) compOp;
-                stringComparison += expressionArrayHandling( propertyIsGreaterThanOrEqualTo.getParameter1(), " >= ",
-                                                             propertyIsGreaterThanOrEqualTo.getParameter2() );
-                return stringComparison;
+                writer.append( expressionArrayHandling( propertyIsGreaterThanOrEqualTo.getParameter1(), " >= ",
+                                                        propertyIsGreaterThanOrEqualTo.getParameter2() ) );
 
+                break;
             case PROPERTY_IS_LIKE:
                 PropertyIsLike propertyIsLike = (PropertyIsLike) compOp;
                 // TODO wildcard and so on...
-                stringComparison += propIsLikeHandling( propertyIsLike.getParams() );
-                return stringComparison;
+                writer.append( propIsLikeHandling( propertyIsLike.getParams() ) );
 
+                break;
             case PROPERTY_IS_NULL:
                 PropertyIsNull propertyIsNull = (PropertyIsNull) compOp;
-                stringComparison += propIsNull( propertyIsNull.getParams() );
-                return stringComparison;
+                writer.append( propIsNull( propertyIsNull.getParams() ) );
 
+                break;
             case PROPERTY_IS_BETWEEN:
                 PropertyIsBetween propertyIsBetween = (PropertyIsBetween) compOp;
-                stringComparison += propIsBetweenHandling( propertyIsBetween.getLowerBoundary(),
-                                                           propertyIsBetween.getUpperBoundary() );
-                return stringComparison;
+                writer.append( propIsBetweenHandling( propertyIsBetween.getLowerBoundary(),
+                                                      propertyIsBetween.getUpperBoundary() ) );
 
+                break;
             }
 
             break;
         }
-        return "";
 
     }
 
