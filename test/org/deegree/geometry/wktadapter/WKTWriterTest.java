@@ -57,8 +57,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
-import org.deegree.geometry.io.WKTWriterNG;
-import org.deegree.geometry.io.WKTWriterNG.WKTFlag;
+import org.deegree.geometry.io.WKTWriter;
+import org.deegree.geometry.io.WKTWriter.WKTFlag;
 import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
@@ -106,7 +106,7 @@ public class WKTWriterTest extends TestCase {
         flag.add( WKTFlag.USE_DKT );
         Writer writer = new StringWriter();
         
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "LinearRing.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -127,7 +127,7 @@ public class WKTWriterTest extends TestCase {
         flag.add( WKTFlag.USE_DKT );
         Writer writer = new StringWriter();
         decimalFormatter = new DecimalCoordinateFormatter( 2 );
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "Point_coord.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -145,7 +145,7 @@ public class WKTWriterTest extends TestCase {
         flag.add( WKTFlag.USE_DKT );
         Writer writer = new StringWriter();
         decimalFormatter = new DecimalCoordinateFormatter( 2 );
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "LineString_coord.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -167,7 +167,7 @@ public class WKTWriterTest extends TestCase {
         flag.add( WKTFlag.USE_DKT );
         Writer writer = new StringWriter();
         
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "Polygon.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -187,7 +187,7 @@ public class WKTWriterTest extends TestCase {
         flag.add( WKTFlag.USE_DKT );
         Writer writer = new StringWriter();
         
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "Surface.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -209,7 +209,7 @@ public class WKTWriterTest extends TestCase {
         flag.add( WKTFlag.USE_DKT );
         Writer writer = new StringWriter();
         
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "Curve.gml" );
         Curve c = (Curve) geom;
         List<CurveSegment> segments = c.getCurveSegments();
@@ -257,7 +257,7 @@ public class WKTWriterTest extends TestCase {
         flag.add( WKTFlag.USE_DKT );
         Writer writer = new StringWriter();
         decimalFormatter = new DecimalCoordinateFormatter( 2 );
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "StandardProps.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -277,7 +277,7 @@ public class WKTWriterTest extends TestCase {
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_DKT );
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseEnvelope( "Envelope.gml" );
 
         WKTwriter.writeGeometry( geom, writer );
@@ -296,7 +296,7 @@ public class WKTWriterTest extends TestCase {
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_LINEARRING );
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "LinearRing.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( "LinearRing as Flagged-LinearRing " + writer.toString() + "\n" );
@@ -313,7 +313,7 @@ public class WKTWriterTest extends TestCase {
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         flag.add( WKTFlag.USE_ENVELOPE );
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseEnvelope( "Envelope.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -331,7 +331,7 @@ public class WKTWriterTest extends TestCase {
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
         decimalFormatter = new DecimalCoordinateFormatter( 2 );
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "Point_coord.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -348,7 +348,7 @@ public class WKTWriterTest extends TestCase {
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
         decimalFormatter = new DecimalCoordinateFormatter( 2 );
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "LineString_coord.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -364,7 +364,7 @@ public class WKTWriterTest extends TestCase {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "LinearRing.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( "LINEARRING as LINESTRING: " + writer.toString() + "\n" );
@@ -380,7 +380,7 @@ public class WKTWriterTest extends TestCase {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "Polygon.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -399,7 +399,7 @@ public class WKTWriterTest extends TestCase {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "Curve.gml" );
         WKTwriter.setLinearizedControlPoints( 10 );
 
@@ -448,7 +448,7 @@ public class WKTWriterTest extends TestCase {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseGeometry( "Surface.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );
@@ -468,7 +468,7 @@ public class WKTWriterTest extends TestCase {
 
         Set<WKTFlag> flag = new HashSet<WKTFlag>();
         Writer writer = new StringWriter();
-        WKTWriterNG WKTwriter = new WKTWriterNG( flag, writer, decimalFormatter );
+        WKTWriter WKTwriter = new WKTWriter( flag, writer, decimalFormatter );
         Geometry geom = parseEnvelope( "Envelope.gml" );
         WKTwriter.writeGeometry( geom, writer );
         System.out.print( writer.toString() + "\n" );

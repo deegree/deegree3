@@ -55,8 +55,8 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
-import org.deegree.geometry.io.WKTWriterNG;
-import org.deegree.geometry.io.WKTWriterNG.WKTFlag;
+import org.deegree.geometry.io.WKTWriter;
+import org.deegree.geometry.io.WKTWriter.WKTFlag;
 
 /**
  * Transforms the spatial query into a PostGIS SQL statement. It encapsules the required methods.
@@ -88,7 +88,7 @@ public class SpatialOperatorTransformingPostGIS {
 
     private Set<WKTFlag> flag = new HashSet<WKTFlag>();
 
-    private WKTWriterNG wktWriter;
+    private WKTWriter wktWriter;
 
     /**
      * Writes the geometry that has been parsed
@@ -142,7 +142,7 @@ public class SpatialOperatorTransformingPostGIS {
             BBOX bboxOp = (BBOX) spaOp;
             Object[] paramsBBox = bboxOp.getParams();
             // flag.add( WKTFlag.USE_DKT );
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
 
             for ( Object opParam : paramsBBox ) {
                 if ( opParam != bboxOp.getBoundingBox() ) {
@@ -163,7 +163,7 @@ public class SpatialOperatorTransformingPostGIS {
             Object[] paramsBeyond = beyondOp.getParams();
             writerSpatial.append( "DISTANCE(" );
             // flag.add( WKTFlag.USE_DKT );
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
 
             counter = 0;
             for ( Object opParam : paramsBeyond ) {
@@ -195,7 +195,7 @@ public class SpatialOperatorTransformingPostGIS {
 
             Contains containsOp = (Contains) spaOp;
             Object[] paramsContains = containsOp.getParams();
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
             for ( Object opParam : paramsContains ) {
 
                 if ( opParam != containsOp.getGeometry() ) {
@@ -220,7 +220,7 @@ public class SpatialOperatorTransformingPostGIS {
             Crosses crossesOp = (Crosses) spaOp;
             Object[] paramsCrosses = crossesOp.getParams();
 
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
             for ( Object opParam : paramsCrosses ) {
 
                 if ( opParam != crossesOp.getGeometry() ) {
@@ -246,7 +246,7 @@ public class SpatialOperatorTransformingPostGIS {
             Disjoint disjointOp = (Disjoint) spaOp;
             Object[] paramsDisjoint = disjointOp.getParams();
 
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
             for ( Object opParam : paramsDisjoint ) {
 
                 if ( opParam != disjointOp.getGeometry() ) {
@@ -272,7 +272,7 @@ public class SpatialOperatorTransformingPostGIS {
             Object[] paramsDWithin = dWithinOp.getParams();
             writerSpatial.append( "DISTANCE(" );
             flag.add( WKTFlag.USE_DKT );
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
 
             counter = 0;
             for ( Object opParam : paramsDWithin ) {
@@ -307,7 +307,7 @@ public class SpatialOperatorTransformingPostGIS {
             Equals equalsOp = (Equals) spaOp;
             Object[] paramsEquals = equalsOp.getParams();
 
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
             for ( Object opParam : paramsEquals ) {
 
                 if ( opParam != equalsOp.getGeometry() ) {
@@ -332,7 +332,7 @@ public class SpatialOperatorTransformingPostGIS {
             Intersects intersectsOp = (Intersects) spaOp;
             Object[] paramsIntersects = intersectsOp.getParams();
 
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
             for ( Object opParam : paramsIntersects ) {
 
                 if ( opParam != intersectsOp.getGeometry() ) {
@@ -357,7 +357,7 @@ public class SpatialOperatorTransformingPostGIS {
             Overlaps overlapsOp = (Overlaps) spaOp;
             Object[] paramsOverlaps = overlapsOp.getParams();
 
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
             for ( Object opParam : paramsOverlaps ) {
 
                 if ( opParam != overlapsOp.getGeometry() ) {
@@ -382,7 +382,7 @@ public class SpatialOperatorTransformingPostGIS {
             Touches touchesOp = (Touches) spaOp;
             Object[] paramsTouches = touchesOp.getParams();
 
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
             for ( Object opParam : paramsTouches ) {
 
                 if ( opParam != touchesOp.getGeometry() ) {
@@ -407,7 +407,7 @@ public class SpatialOperatorTransformingPostGIS {
             Within withinOp = (Within) spaOp;
             Object[] paramsWithin = withinOp.getParams();
 
-            wktWriter = new WKTWriterNG( flag, writerSpatial, decimalFormatter );
+            wktWriter = new WKTWriter( flag, writerSpatial, decimalFormatter );
             for ( Object opParam : paramsWithin ) {
 
                 if ( opParam != withinOp.getGeometry() ) {

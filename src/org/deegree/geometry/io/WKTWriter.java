@@ -108,7 +108,7 @@ import org.deegree.gml.props.StandardGMLObjectProps;
  * 
  * @version $Revision$, $Date$
  */
-public class WKTWriterNG {
+public class WKTWriter {
 
     private static final com.vividsolutions.jts.io.WKTWriter jtsWriter = new com.vividsolutions.jts.io.WKTWriter();
 
@@ -149,7 +149,7 @@ public class WKTWriterNG {
 
     }
 
-    public WKTWriterNG( Set<WKTFlag> flags, Writer writer, CoordinateFormatter formatter ) {
+    public WKTWriter( Set<WKTFlag> flags, Writer writer, CoordinateFormatter formatter ) {
         this.flags = flags;
         this.writer = writer;
         if ( formatter == null ) {
