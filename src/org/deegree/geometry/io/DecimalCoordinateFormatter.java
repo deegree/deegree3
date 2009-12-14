@@ -57,7 +57,7 @@ public class DecimalCoordinateFormatter implements CoordinateFormatter {
      *            number of decimal places
      */
     public DecimalCoordinateFormatter( int decimalPlaces ) {
-        StringBuffer pattern = new StringBuffer( "###" );
+        StringBuffer pattern = new StringBuffer( "0" );
         if ( decimalPlaces > 0 ) {
             pattern.append( "." );
             for ( int i = 0; i < decimalPlaces; i++ ) {
