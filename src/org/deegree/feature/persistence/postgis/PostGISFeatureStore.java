@@ -300,7 +300,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
                 if ( pgGeom != null ) {
                     double[] min = new double[] { 180.0, 90.0 };
-                    double[] max = new double[] {-180.0, -90.0 };
+                    double[] max = new double[] { -180.0, -90.0 };
                     if ( pgGeom.getGeoType() == org.postgis.Geometry.POINT ) {
                         Point point = (Point) pgGeom.getGeometry();
                         min[0] = point.x;
@@ -333,9 +333,9 @@ public class PostGISFeatureStore implements FeatureStore {
                     } else {
                         throw new RuntimeException();
                     }
-                    if ("BP_GebaeudeFlaeche".equals( ftName.getLocalPart() )) {
-                        System.out.println (ftName + ":"  + min [0] + ", " + min[1]);
-                        System.out.println (ftName + ":"  + max [0] + ", " + max[1]);
+                    if ( "BP_GebaeudeFlaeche".equals( ftName.getLocalPart() ) ) {
+                        System.out.println( ftName + ":" + min[0] + ", " + min[1] );
+                        System.out.println( ftName + ":" + max[0] + ", " + max[1] );
                     }
                     Envelope env = new GeometryFactory().createEnvelope( min, max, CRS.EPSG_4326 );
                     ftNameToBBox.put( ftName, env );
@@ -508,9 +508,71 @@ public class PostGISFeatureStore implements FeatureStore {
         return result;
     }
 
+    private FeatureResultSet queryMultipleFts( Query[] queries, Envelope looseBBox )
+                            throws FeatureStoreException {
+
+        FeatureResultSet result = null;
+
+        short[] ftId = new short [queries.length];
+        for ( int i = 0; i < ftId.length; i++ ) {
+            Query query = queries[i];
+            if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+                String msg = "Join queries between multiple feature types are currently not supported.";
+                throw new UnsupportedOperationException( msg );
+            }            
+            ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = ConnectionManager.getConnection( jdbcConnId );
+            StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
+                                                 + " WHERE  gml_bounded_by && ? AND ft_type IN(?" );
+            for ( int i = 1; i < ftId.length; i++ ) {
+                sql.append( ",?" );
+            }
+            sql.append( ") ORDER BY ft_type" );
+            stmt = conn.prepareStatement( sql.toString() );
+            stmt.setObject( 1, toPGPolygon( looseBBox, -1 ) );
+            for ( int i = 0; i < ftId.length; i++ ) {
+                stmt.setShort( i + 2, ftId[i] );
+            }
+            rs = stmt.executeQuery();
+            result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
+                                                                          new FeatureStoreGMLIdResolver( this ) ) );
+        } catch ( Exception e ) {
+            closeSafely( conn, stmt, rs );
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.debug( msg, e );
+            throw new FeatureStoreException( msg, e );
+        }
+        return result;
+    }
+
     @Override
     public FeatureResultSet query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
+
+        // check for most common case: multiple featuretypes, same bbox (WMS), no filter
+        boolean wmsStyleQuery = false;
+        Envelope env = (Envelope) queries[0].getHint( QueryHint.HINT_LOOSE_BBOX );
+        if ( queries[0].getFilter() == null && queries[0].getSortProperties() == null ) {
+            wmsStyleQuery = true;
+            for ( int i = 1; i < queries.length; i++ ) {
+                Envelope queryBBox = (Envelope) queries[i].getHint( QueryHint.HINT_LOOSE_BBOX );
+                if ( queryBBox != env && queries[i].getFilter() != null && queries[i].getSortProperties() != null ) {
+                    wmsStyleQuery = false;
+                    break;
+                }
+            }
+        }
+
+        if ( wmsStyleQuery ) {
+            return queryMultipleFts( queries, env );
+        }
+
         Iterator<FeatureResultSet> rsIter = new Iterator<FeatureResultSet>() {
             int i = 0;
 
