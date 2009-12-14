@@ -333,10 +333,6 @@ public class PostGISFeatureStore implements FeatureStore {
                     } else {
                         throw new RuntimeException();
                     }
-                    if ( "BP_GebaeudeFlaeche".equals( ftName.getLocalPart() ) ) {
-                        System.out.println( ftName + ":" + min[0] + ", " + min[1] );
-                        System.out.println( ftName + ":" + max[0] + ", " + max[1] );
-                    }
                     Envelope env = new GeometryFactory().createEnvelope( min, max, CRS.EPSG_4326 );
                     ftNameToBBox.put( ftName, env );
                 }
@@ -529,16 +525,17 @@ public class PostGISFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
             StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                                 + " WHERE  gml_bounded_by && ? AND ft_type IN(?" );
+                                                 /*+ " WHERE gml_bounded_by && ? AND*/+" ft_type IN(?" );
             for ( int i = 1; i < ftId.length; i++ ) {
                 sql.append( ",?" );
             }
             sql.append( ") ORDER BY ft_type" );
             stmt = conn.prepareStatement( sql.toString() );
-            stmt.setObject( 1, toPGPolygon( looseBBox, -1 ) );
+            //            stmt.setObject( 1, null );
             for ( int i = 0; i < ftId.length; i++ ) {
-                stmt.setShort( i + 2, ftId[i] );
+                stmt.setShort( i + 1, ftId[i] );
             }
+            
             rs = stmt.executeQuery();
             result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
                                                                           new FeatureStoreGMLIdResolver( this ) ) );
