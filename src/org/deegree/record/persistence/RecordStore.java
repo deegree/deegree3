@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
+import java.io.Writer;
 import java.sql.SQLException;
 
 import javax.xml.namespace.QName;
@@ -100,7 +101,7 @@ public interface RecordStore {
      * @throws XMLStreamException
      */
     public void getRecords( XMLStreamWriter writer, QName typeName, JDBCConnections connection,
-                            TransformatorPostGres filterTransformator )
+                            GenericDatabaseDS genericDatabaseDS )
                             throws SQLException, XMLStreamException;
 
     /**

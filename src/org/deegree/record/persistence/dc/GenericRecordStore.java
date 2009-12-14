@@ -42,7 +42,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,7 +60,7 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGres;
+import org.deegree.record.persistence.GenericDatabaseDS;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 
@@ -79,8 +78,14 @@ public class GenericRecordStore implements RecordStore {
 
     private String connectionId;
 
+    /**
+     * datasets
+     */
     private final String mainDatabaseTable = "datasets";
 
+    /**
+     * fk_datasets
+     */
     private final String commonForeignkey = "fk_datasets";
 
     private Set<String> tableSet;
@@ -159,8 +164,7 @@ public class GenericRecordStore implements RecordStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public void getRecords( XMLStreamWriter writer, QName typeName, JDBCConnections con,
-                            TransformatorPostGres constraint )
+    public void getRecords( XMLStreamWriter writer, QName typeName, JDBCConnections con, GenericDatabaseDS constraint )
                             throws SQLException, XMLStreamException {
 
         tableSet = constraint.getTable();
@@ -174,7 +178,8 @@ public class GenericRecordStore implements RecordStore {
         case hits:
 
             doHitsOnGetRecord( writer, typeName, constraint, con,
-                               formatTypeInGenericRecordStore.get( constraint.getSetOfReturnableElements().name() ), "hits" );
+                               formatTypeInGenericRecordStore.get( constraint.getSetOfReturnableElements().name() ),
+                               "hits" );
             break;
         case validate:
 
@@ -194,7 +199,7 @@ public class GenericRecordStore implements RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, TransformatorPostGres constraint,
+    private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, GenericDatabaseDS constraint,
                                     JDBCConnections con, String formatType, String resultType )
                             throws SQLException, XMLStreamException {
 
@@ -267,7 +272,7 @@ public class GenericRecordStore implements RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, TransformatorPostGres constraint,
+    private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, GenericDatabaseDS constraint,
                                        JDBCConnections con )
                             throws SQLException, XMLStreamException {
 
@@ -280,9 +285,9 @@ public class GenericRecordStore implements RecordStore {
 
                 String selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ), constraint );
                 ResultSet rsBrief = conn.createStatement().executeQuery( selectBrief );
-                
 
-                doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "brief" ), "results" );
+                doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "brief" ),
+                                   "results" );
 
                 while ( rsBrief.next() ) {
 
@@ -296,11 +301,12 @@ public class GenericRecordStore implements RecordStore {
                 break;
             case summary:
 
-                String selectSummary = generateSELECTStatement( formatTypeInGenericRecordStore.get( "summary" ), constraint );
+                String selectSummary = generateSELECTStatement( formatTypeInGenericRecordStore.get( "summary" ),
+                                                                constraint );
                 ResultSet rsSummary = conn.createStatement().executeQuery( selectSummary );
-                
 
-                doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "summary" ), "results" );
+                doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "summary" ),
+                                   "results" );
 
                 while ( rsSummary.next() ) {
                     String result = rsSummary.getString( 1 );
@@ -315,9 +321,9 @@ public class GenericRecordStore implements RecordStore {
 
                 String selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint );
                 ResultSet rsFull = conn.createStatement().executeQuery( selectFull );
-                
 
-                doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "full" ), "results" );
+                doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "full" ),
+                                   "results" );
 
                 while ( rsFull.next() ) {
                     String result = rsFull.getString( 1 );
@@ -361,9 +367,9 @@ public class GenericRecordStore implements RecordStore {
      * @param constraint
      * @return
      */
-    private String generateSELECTStatement( String formatType, TransformatorPostGres constraint ) {
+    private String generateSELECTStatement( String formatType, GenericDatabaseDS constraint ) {
         String s = "";
-        if ( constraint.getExpression() != null ) {
+        if ( constraint.getExpressionWriter() != null ) {
             s += "SELECT " + formatType + ".data " + "FROM " + mainDatabaseTable + ", " + formatType;
 
             if ( tableSet.size() == 0 ) {
@@ -380,7 +386,7 @@ public class GenericRecordStore implements RecordStore {
                 s += " AND " + concatTableWHERE( tableSet );
             }
 
-            s += "AND (" + constraint.getExpression() + ") LIMIT " + constraint.getMaxRecords();
+            s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
         } else {
             s += "SELECT " + formatType + ".data " + "FROM " + mainDatabaseTable + ", " + formatType;
 
@@ -394,7 +400,7 @@ public class GenericRecordStore implements RecordStore {
                  + constraint.getMaxRecords();
 
         }
-        System.out.println(s);
+        System.out.println( s );
         return s;
     }
 
@@ -406,9 +412,9 @@ public class GenericRecordStore implements RecordStore {
      * @param constraint
      * @return
      */
-    private String generateCOUNTStatement( String formatType, TransformatorPostGres constraint ) {
+    private String generateCOUNTStatement( String formatType, GenericDatabaseDS constraint ) {
         String s = "";
-        if ( constraint.getExpression() != null ) {
+        if ( constraint.getExpressionWriter() != null ) {
             s += "SELECT COUNT(" + formatType + ".data) " + "FROM " + mainDatabaseTable + ", " + formatType;
 
             if ( tableSet.size() == 0 ) {
@@ -425,7 +431,7 @@ public class GenericRecordStore implements RecordStore {
                 s += " AND " + concatTableWHERE( tableSet );
             }
 
-            s += "AND (" + constraint.getExpression() + ") LIMIT " + constraint.getMaxRecords();
+            s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
         } else {
             s += "SELECT COUNT(" + formatType + ".data) " + "FROM " + mainDatabaseTable + ", " + formatType;
 
@@ -439,7 +445,7 @@ public class GenericRecordStore implements RecordStore {
                  + constraint.getMaxRecords();
 
         }
-        System.out.println(s);
+        System.out.println( s );
         return s;
     }
 
