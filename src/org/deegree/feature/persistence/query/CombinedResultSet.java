@@ -55,10 +55,12 @@ import org.deegree.feature.GenericFeatureCollection;
  */
 public class CombinedResultSet implements FeatureResultSet {
 
-    private Iterator<FeatureResultSet> resultSetIter;
+    Iterator<FeatureResultSet> resultSetIter;
 
-    private FeatureResultSet currentResultSet;
+    FeatureResultSet currentResultSet;
 
+    boolean lastClosed = false;
+    
     /**
      * Creates a new {@link CombinedResultSet} that is backed by the given {@link FeatureResultSet}.
      * 
@@ -70,8 +72,8 @@ public class CombinedResultSet implements FeatureResultSet {
     }
 
     @Override
-    public void close() {
-        if ( currentResultSet != null ) {
+    public void close() {        
+        if ( currentResultSet != null && !lastClosed) {
             currentResultSet.close();
         }
     }
@@ -108,11 +110,13 @@ public class CombinedResultSet implements FeatureResultSet {
                     featureIter = currentResultSet.iterator();
                 }
 
-                while ( !featureIter.hasNext() ) {
+                while ( !featureIter.hasNext() ) {                  
                     if ( resultSetIter.hasNext() ) {
+                        currentResultSet.close();                        
                         currentResultSet = resultSetIter.next();
                         featureIter = currentResultSet.iterator();
                     } else {
+                        lastClosed = true;
                         break;
                     }
                 }
