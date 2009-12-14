@@ -71,6 +71,13 @@ abstract class AbstractFeature implements Feature {
     public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
                             throws JaxenException {
 
+        // simple property with just a simple element step?
+        QName simplePropName = propName.getAsQName();
+        if (simplePropName != null) {
+            return getPropertyValues( simplePropName, version );
+        }
+
+        // no. activate the full xpath machinery
         XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
         xpath.setNamespaceContext( propName.getNsContext() );
         List<?> selectedNodes = xpath.selectNodes( new FeatureNode( null, this ) );
@@ -92,7 +99,7 @@ abstract class AbstractFeature implements Feature {
         }
         return resultValues;
     }
-
+   
     @Override
     public Envelope getEnvelope() {
         if ( standardProps == null ) {

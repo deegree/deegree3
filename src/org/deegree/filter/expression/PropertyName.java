@@ -58,6 +58,10 @@ public class PropertyName implements Expression {
 
     private NamespaceContext nsContext;
 
+    private QName simpleProp;
+
+    private Boolean isSimple;
+
     /**
      * Creates a new {@link PropertyName} instance from an XPath-expression and the namespace bindings.
      * 
@@ -104,6 +108,37 @@ public class PropertyName implements Expression {
      */
     public NamespaceContext getNsContext() {
         return nsContext;
+    }
+
+    /**
+     * Returns whether the property name is simple, i.e. if it only contains of a single element step.
+     * 
+     * @return <code>true</code>, if the property is simple, <code>false</code> otherwise
+     */
+    public boolean isSimple() {
+        if ( isSimple == null ) {
+            // TODO check against XPath spec.
+            isSimple = !xPath.contains( "@" ) && !xPath.contains( "/" ) && !xPath.contains( "[" )
+                       && !xPath.contains( "::" ) && !xPath.contains( "(" ) && !xPath.contains( "=" );
+        }
+        return isSimple;
+    }
+
+    /**
+     * If the property name is simple, the element name is returned.
+     * 
+     * @see #isSimple()
+     * @return the qualified name value, or <code>null</code> if the property name is not simple
+     */
+    public QName getAsQName() {
+        if ( simpleProp == null && isSimple() ) {
+            int colonIdx = xPath.indexOf( ":" );
+            String prefix = xPath.substring( 0, colonIdx );
+            String localPart = xPath.substring( colonIdx + 1 );
+            String namespace = nsContext.translateNamespacePrefixToUri( prefix );
+            simpleProp = new QName( namespace, localPart );
+        }
+        return simpleProp;
     }
 
     @Override
