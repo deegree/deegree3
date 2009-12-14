@@ -289,7 +289,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new SQLException( msg, e );
         }
         stmt.setBytes( 4, bos.toByteArray() );
-        System.out.println( "Wrote feature blob (" + bos.toByteArray().length + " bytes)" );
+//        System.out.println( "Wrote feature blob (" + bos.toByteArray().length + " bytes)" );
         Envelope bbox = feature.getEnvelope();
         if ( bbox != null ) {
             try {
@@ -307,7 +307,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         if ( env != null ) {
             try {
                 env = (Envelope) ftBBoxTransformer.transform( env );
-                Envelope ftEnv = store.getEnvelope( feature.getName() );
+                Envelope ftEnv = store.ftNameToBBox.get( feature.getName() );
                 if ( ftEnv != null ) {
                     ftEnv = ftEnv.merge( env );
                 } else {

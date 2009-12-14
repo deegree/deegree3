@@ -240,7 +240,7 @@ public class PostGISFeatureStore implements FeatureStore {
                                         + " WHERE gml_id='" + id + "'" );
                 if ( rs.next() ) {
                     LOG.debug( "Recreating object '" + id + "' from bytea." );
-                    geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, new CRS( "EPSG:31466" ),
+                    geomOrFeature = FeatureCoder.decode( rs.getBinaryStream( 1 ), schema, storageSRS,
                                                          new FeatureStoreGMLIdResolver( this ) );
                     cache.add( geomOrFeature );
                 }
@@ -299,8 +299,8 @@ public class PostGISFeatureStore implements FeatureStore {
                 ftNameToFtId.put( ftName, ftId );
 
                 if ( pgGeom != null ) {
-                    double[] min = new double[] { Double.MAX_VALUE, Double.MAX_VALUE, };
-                    double[] max = new double[] { Double.MIN_VALUE, Double.MIN_VALUE, };
+                    double[] min = new double[] { 180.0, 90.0 };
+                    double[] max = new double[] {-180.0, -90.0 };
                     if ( pgGeom.getGeoType() == org.postgis.Geometry.POINT ) {
                         Point point = (Point) pgGeom.getGeometry();
                         min[0] = point.x;
@@ -316,7 +316,7 @@ public class PostGISFeatureStore implements FeatureStore {
                     } else if ( pgGeom.getGeoType() == org.postgis.Geometry.POLYGON ) {
                         Polygon polygon = (Polygon) pgGeom.getGeometry();
                         for ( int i = 0; i < polygon.numPoints(); i++ ) {
-                            Point point = polygon.getPoint( 0 );
+                            Point point = polygon.getPoint( i );
                             if ( min[0] > point.x ) {
                                 min[0] = point.x;
                             }
@@ -332,6 +332,10 @@ public class PostGISFeatureStore implements FeatureStore {
                         }
                     } else {
                         throw new RuntimeException();
+                    }
+                    if ("BP_GebaeudeFlaeche".equals( ftName.getLocalPart() )) {
+                        System.out.println (ftName + ":"  + min [0] + ", " + min[1]);
+                        System.out.println (ftName + ":"  + max [0] + ", " + max[1]);
                     }
                     Envelope env = new GeometryFactory().createEnvelope( min, max, CRS.EPSG_4326 );
                     ftNameToBBox.put( ftName, env );
