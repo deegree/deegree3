@@ -525,16 +525,22 @@ public class PostGISFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
             StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                                 /*+ " WHERE gml_bounded_by && ? AND*/+" ft_type IN(?" );
+                                                 /*+ " WHERE gml_bounded_by && ? AND*/+" WHERE ft_type IN(?" );
             for ( int i = 1; i < ftId.length; i++ ) {
                 sql.append( ",?" );
             }
-            sql.append( ") ORDER BY ft_type" );
+            sql.append( ") ORDER BY position('['||ft_type||']' IN ?)");
             stmt = conn.prepareStatement( sql.toString() );
             //            stmt.setObject( 1, null );
+            StringBuffer orderString = new StringBuffer();
             for ( int i = 0; i < ftId.length; i++ ) {
                 stmt.setShort( i + 1, ftId[i] );
+                orderString.append ("[");
+                orderString.append("" + ftId[i] );
+                orderString.append ("]");
             }
+            stmt.setString (ftId.length + 1, orderString.toString());
+            LOG.debug( "Query {}", stmt);
             
             rs = stmt.executeQuery();
             result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
