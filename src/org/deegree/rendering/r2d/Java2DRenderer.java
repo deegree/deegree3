@@ -145,7 +145,8 @@ public class Java2DRenderer implements Renderer {
             double scalex = width / bbox.getSpan0();
             double scaley = height / bbox.getSpan1();
             try {
-                if ( bbox.getCoordinateSystem().getWrappedCRS().getUnits()[0].equals( METRE ) ) {
+                if ( bbox.getCoordinateSystem() == null
+                     || bbox.getCoordinateSystem().getWrappedCRS().getUnits()[0].equals( METRE ) ) {
                     res = bbox.getSpan0() / width; // use x for resolution
                 } else {
                     // heuristics more or less copied from d2, TODO is use the proper UTM conversion
