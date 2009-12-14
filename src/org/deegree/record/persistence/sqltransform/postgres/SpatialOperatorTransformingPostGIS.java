@@ -59,7 +59,7 @@ import org.deegree.geometry.io.WKTWriterNG;
 import org.deegree.geometry.io.WKTWriterNG.WKTFlag;
 
 /**
- * Transforms the spatial query into a PostGis SQL statement. It encapsules the required methods.
+ * Transforms the spatial query into a PostGIS SQL statement. It encapsules the required methods.
  * <p>
  * TODO Codeoptimization
  * 
@@ -68,7 +68,7 @@ import org.deegree.geometry.io.WKTWriterNG.WKTFlag;
  * 
  * @version $Revision: $, $Date: $
  */
-public class SpatialOperatorTransformingPostGres {
+public class SpatialOperatorTransformingPostGIS {
 
     private ExpressionFilterHandling expressionFilterHandling = new ExpressionFilterHandling();
 
@@ -79,8 +79,6 @@ public class SpatialOperatorTransformingPostGres {
     private Set<String> table = new HashSet<String>();
 
     private Set<String> column = new HashSet<String>();
-
-    private String spatialOperation;
 
     private SpatialOperator spaOp;
 
@@ -97,16 +95,13 @@ public class SpatialOperatorTransformingPostGres {
      */
     private Writer writerGeometry = new StringWriter();
 
-    /**
-     * Writes the spatial statement
-     */
-    private Writer writerSpatial = new StringWriter();
-
-    public SpatialOperatorTransformingPostGres( SpatialOperator spaOp ) {
+    
+    public SpatialOperatorTransformingPostGIS( SpatialOperator spaOp, Writer writer ) {
         this.spaOp = spaOp;
 
         try {
-            spatialOperation = doSpatialOperatorToPostGreSQL();
+            
+            doSpatialOperatorToPostGreSQL(writer);
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -114,13 +109,7 @@ public class SpatialOperatorTransformingPostGres {
 
     }
 
-    /**
-     * @return the spatialOperation
-     */
-    public String getSpatialOperation() {
-        return spatialOperation;
-    }
-
+    
     /**
      * @return the table
      */
@@ -141,7 +130,7 @@ public class SpatialOperatorTransformingPostGres {
      * @return
      * @throws IOException
      */
-    private String doSpatialOperatorToPostGreSQL()
+    private void doSpatialOperatorToPostGreSQL(Writer writerSpatial)
                             throws IOException {
 
         org.deegree.filter.spatial.SpatialOperator.SubType typeSpatial = spaOp.getSubType();
@@ -166,8 +155,8 @@ public class SpatialOperatorTransformingPostGres {
                 }
 
             }
-
-            return writerSpatial.toString();
+            break;
+            //return writerSpatial.toString();
 
         case BEYOND:
             Beyond beyondOp = (Beyond) spaOp;
@@ -199,8 +188,8 @@ public class SpatialOperatorTransformingPostGres {
                 }
             }
             operatorBuild( "DISJOINT", writerGeometry, writerSpatial );
-
-            return writerSpatial.toString();
+            break;
+            //return writerSpatial.toString();
 
         case CONTAINS:
 
@@ -224,7 +213,8 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "CONTAINS", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         case CROSSES:
             Crosses crossesOp = (Crosses) spaOp;
@@ -248,7 +238,8 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "CROSSES", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         case DISJOINT:
 
@@ -273,7 +264,8 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "DISJOINT", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         case DWITHIN:
             DWithin dWithinOp = (DWithin) spaOp;
@@ -307,7 +299,8 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "DWITHIN", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         case EQUALS:
 
@@ -332,7 +325,8 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "EQUALS", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         case INTERSECTS:
             Intersects intersectsOp = (Intersects) spaOp;
@@ -356,7 +350,8 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "INTERSECTS", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         case OVERLAPS:
             Overlaps overlapsOp = (Overlaps) spaOp;
@@ -380,7 +375,8 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "OVERLAPS", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         case TOUCHES:
             Touches touchesOp = (Touches) spaOp;
@@ -404,7 +400,8 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "TOUCHES", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         case WITHIN:
             Within withinOp = (Within) spaOp;
@@ -428,10 +425,11 @@ public class SpatialOperatorTransformingPostGres {
 
             operatorBuild( "WITHIN", writerGeometry, writerSpatial );
             System.out.println( writerSpatial.toString() );
-            return writerSpatial.toString();
+            //return writerSpatial.toString();
+            break;
 
         }
-        return writerSpatial.toString();
+        //return writerSpatial.toString();
 
     }
 
