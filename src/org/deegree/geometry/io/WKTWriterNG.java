@@ -118,6 +118,10 @@ public class WKTWriterNG {
 
     private CurveLinearizer linearizer;
 
+    private CoordinateFormatter formatter;
+
+    private int linearizedControlPoints = 5;
+
     /**
      * 
      * The flag is used to specify which geometric operations the database is capable of
@@ -145,6 +149,16 @@ public class WKTWriterNG {
 
     }
 
+    public WKTWriterNG( Set<WKTFlag> flags, Writer writer, CoordinateFormatter formatter ) {
+        this.flags = flags;
+        this.writer = writer;
+        if ( formatter == null ) {
+            this.formatter = new DecimalCoordinateFormatter( 5 );
+        } else {
+            this.formatter = formatter;
+        }
+    }
+
     /**
      * @param flags
      *            the flags to set
@@ -163,9 +177,22 @@ public class WKTWriterNG {
         this.linearizer = linearizer;
     }
 
-    public WKTWriterNG( Set<WKTFlag> flags, Writer writer ) {
-        this.flags = flags;
-        this.writer = writer;
+    /**
+     * @param formatter
+     *            the formatter to set
+     */
+    public void setFormatter( CoordinateFormatter formatter ) {
+        this.formatter = formatter;
+    }
+
+    /**
+     * Controlpoints that can be set for the linearization prozess.
+     * 
+     * @param linearizedControlPoints
+     *            the linearizedControlPoints to set
+     */
+    public void setLinearizedControlPoints( int linearizedControlPoints ) {
+        this.linearizedControlPoints = linearizedControlPoints;
     }
 
     /**
@@ -257,18 +284,17 @@ public class WKTWriterNG {
                             throws IOException {
 
         if ( flags.contains( WKTFlag.USE_3D ) ) {
-            writer.append( Double.toString( geometry.get0() ) );
+            writer.append( formatter.format( geometry.get0() ) );
             writer.append( ' ' );
-            writer.append( Double.toString( geometry.get1() ) );
+            writer.append( formatter.format( geometry.get1() ) );
             writer.append( ' ' );
-            writer.append( Double.toString( geometry.get2() ) );
+            writer.append( formatter.format( geometry.get2() ) );
 
         } else {
-
-            writer.append( Double.toString( geometry.get0() ) );
+            writer.append( formatter.format( geometry.get0() ) );
             writer.append( ' ' );
-            writer.append( Double.toString( geometry.get1() ) );
-
+            writer.append( formatter.format( geometry.get1() ) );
+            
         }
 
     }
@@ -357,7 +383,7 @@ public class WKTWriterNG {
         } else {
             writer.append( "MULTIPOLYGON (" );
             SurfaceLinearizer cl = new SurfaceLinearizer( new GeometryFactory() );
-            LinearizationCriterion crit = new NumPointsCriterion( 10 );
+            LinearizationCriterion crit = new NumPointsCriterion( linearizedControlPoints );
             Surface surface = cl.linearize( geometry, crit );
 
             writeSurfacePatch( surface, writer );
@@ -365,8 +391,6 @@ public class WKTWriterNG {
         }
 
         writer.append( ')' );
-
-        // System.out.println(writer.toString());
 
     }
 
@@ -600,7 +624,7 @@ public class WKTWriterNG {
 
         } else {
             CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
-            LinearizationCriterion crit = new NumPointsCriterion( 10 );
+            LinearizationCriterion crit = new NumPointsCriterion( linearizedControlPoints );
             Curve c = cl.linearize( geometry, crit );
 
             LineString ls = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
@@ -627,7 +651,7 @@ public class WKTWriterNG {
             throw new UnsupportedOperationException( "Handling curves within 'SQL-MM Part 3' is not implemented yet." );
         } else {
             CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
-            LinearizationCriterion crit = new NumPointsCriterion( 1 );
+            LinearizationCriterion crit = new NumPointsCriterion( linearizedControlPoints );
             Curve c = cl.linearize( geometry, crit );
 
             LineString ls = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
@@ -928,7 +952,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes a LineString. 
+     * Writes a LineString.
      * 
      * @param geometry
      * @param writer
@@ -956,7 +980,7 @@ public class WKTWriterNG {
      */
     private void writeLineStringWithoutPrefix( LineString geometry, Writer writer )
                             throws IOException {
-        
+
         Points points = geometry.getControlPoints();
         int counter = 0;
         for ( Point p : points ) {
@@ -968,7 +992,6 @@ public class WKTWriterNG {
                 writePointWithoutPrefix( p, writer );
             }
         }
-        
 
     }
 
@@ -1032,7 +1055,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes a multiGeometry. 
+     * Writes a multiGeometry.
      * 
      * @param geometry
      * @param writer
@@ -1069,7 +1092,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes a multiSolid. 
+     * Writes a multiSolid.
      * 
      * @param geometry
      * @param writer
@@ -1080,7 +1103,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes a multiSurface. 
+     * Writes a multiSurface.
      * 
      * @param geometry
      * @param writer
@@ -1091,7 +1114,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes a multiCurve. 
+     * Writes a multiCurve.
      * 
      * @param geometry
      * @param writer
@@ -1121,7 +1144,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes the multiGeometry. 
+     * Writes the multiGeometry.
      * 
      * @param geometry
      * @param writer
@@ -1131,7 +1154,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes the multiPolygon. 
+     * Writes the multiPolygon.
      * 
      * @param geometry
      * @param writer
@@ -1159,7 +1182,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes the multiLineString. 
+     * Writes the multiLineString.
      * 
      * @param geometry
      * @param writer
@@ -1188,7 +1211,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes the multiPoint. 
+     * Writes the multiPoint.
      * 
      * @param geometry
      * @param writer
@@ -1214,7 +1237,7 @@ public class WKTWriterNG {
     }
 
     /**
-     * Writes the compositeGeometry. 
+     * Writes the compositeGeometry.
      * 
      * @param geometry
      * @param writer
@@ -1262,15 +1285,15 @@ public class WKTWriterNG {
             writer.append( "ENVELOPE " );
             appendObjectProps( writer, envelope );
             writer.append( '(' );
-            writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMinY ) + ',' );
-            writer.append( Double.toString( pMaxX ) + ' ' + Double.toString( pMaxY ) );
+            writer.append( formatter.format( pMinX ) + ' ' + formatter.format( pMinY ) + ',' );
+            writer.append( formatter.format( pMaxX ) + ' ' + formatter.format( pMaxY ) );
             writer.append( ')' );
 
         } else if ( flags.contains( WKTFlag.USE_ENVELOPE ) ) {
             writer.append( "ENVELOPE " );
             writer.append( '(' );
-            writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMinY ) + ',' );
-            writer.append( Double.toString( pMaxX ) + ' ' + Double.toString( pMaxY ) );
+            writer.append( formatter.format( pMinX ) + ' ' + formatter.format( pMinY ) + ',' );
+            writer.append( formatter.format( pMaxX ) + ' ' + formatter.format( pMaxY ) );
             writer.append( ')' );
         } else {
 
@@ -1279,11 +1302,11 @@ public class WKTWriterNG {
             } else {
                 writer.append( "POLYGON ((" );
 
-                writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMinY ) + ',' );
-                writer.append( Double.toString( pMaxX ) + ' ' + Double.toString( pMinY ) + ',' );
-                writer.append( Double.toString( pMaxX ) + ' ' + Double.toString( pMaxY ) + ',' );
-                writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMaxY ) + ',' );
-                writer.append( Double.toString( pMinX ) + ' ' + Double.toString( pMinY ) );
+                writer.append( formatter.format( pMinX ) + ' ' + formatter.format( pMinY ) + ',' );
+                writer.append( formatter.format( pMaxX ) + ' ' + formatter.format( pMinY ) + ',' );
+                writer.append( formatter.format( pMaxX ) + ' ' + formatter.format( pMaxY ) + ',' );
+                writer.append( formatter.format( pMinX ) + ' ' + formatter.format( pMaxY ) + ',' );
+                writer.append( formatter.format( pMinX ) + ' ' + formatter.format( pMinY ) );
 
                 writer.append( "))" );
 
@@ -1318,8 +1341,8 @@ public class WKTWriterNG {
     /**
      * Does the work to write the standardproperties for the geometryobjects
      * <p>
-     * This specification comes from the GML and is not necessary for databases but maybe necessary for an export
-     * within deegree
+     * This specification comes from the GML and is not necessary for databases but maybe necessary for an export within
+     * deegree
      * 
      * @param sb
      * @param geom
@@ -1336,7 +1359,7 @@ public class WKTWriterNG {
         } else
             writer.append( "" );
         writer.append( '\'' );
-        
+
         StandardGMLObjectProps props = geom.getAttachedProperties();
         if ( props != null ) {
             int counter = 0;
@@ -1345,8 +1368,7 @@ public class WKTWriterNG {
             // metadataproperties
             writer.append( "metadataproperty=(" );
             for ( Object c : props.getMetadata() ) {
-                
-                
+
                 counter++;
                 writer.append( '\'' );
                 writer.append( c.toString() );
