@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +67,7 @@ import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingT
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -173,7 +176,7 @@ public class JAXBApplicationSchemaAdapter {
                                                                             new GeometryPropertyType( propName,
                                                                                                       minOccurs,
                                                                                                       maxOccurs, null,
-                                                                                                      dim, false, null ),
+                                                                                                      dim, false, null, BOTH ),
                                                                             jaxbPropertyDecl.getGeometryPropertyMapping() );
     }
 
@@ -186,7 +189,7 @@ public class JAXBApplicationSchemaAdapter {
         return new Pair<FeaturePropertyType, FeaturePropertyMappingType>( new FeaturePropertyType( propName, minOccurs,
                                                                                                    maxOccurs,
                                                                                                    valueFtName, false,
-                                                                                                   null ),
+                                                                                                   null, BOTH ),
                                                                           jaxbPropertyDecl.getFeaturePropertyMapping() );
     }
 

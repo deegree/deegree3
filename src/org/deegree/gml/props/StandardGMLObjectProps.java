@@ -38,6 +38,7 @@ package org.deegree.gml.props;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.feature.types.property.PrimitiveType.STRING;
+import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
 import javax.xml.namespace.QName;
 
@@ -47,7 +48,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
@@ -139,7 +139,7 @@ public class StandardGMLObjectProps {
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
         PT_BOUNDED_BY_GML2 = new GeometryPropertyType( new QName( GMLNS, "boundedBy" ), 0, 1,
                                                        GeometryPropertyType.GeometryType.GEOMETRY,
-                                                       GeometryPropertyType.CoordinateDimension.DIM_2, false, null );
+                                                       GeometryPropertyType.CoordinateDimension.DIM_2, false, null, INLINE );
 
         // TODO correct this (should be a MetaDataPropertyType)
         PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null,

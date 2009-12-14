@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/core/trunk/src/org/deegree/gml/feature/schema/ApplicationSchemaXSDDecoder.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,6 +36,8 @@
 package org.deegree.gml.feature.schema;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -76,6 +78,7 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.gml.GMLVersion;
@@ -95,9 +98,9 @@ import org.slf4j.LoggerFactory;
  * @see ApplicationSchema
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 21259 $, $Date: 2009-12-04 14:06:58 +0100 (Fr, 04 Dez 2009) $
  */
 public class ApplicationSchemaXSDDecoder {
 
@@ -434,7 +437,7 @@ public class ApplicationSchemaXSDDecoder {
                         pt = new GeometryPropertyType( ptName, minOccurs, maxOccurs,
                                                        GeometryPropertyType.GeometryType.GEOMETRY,
                                                        GeometryPropertyType.CoordinateDimension.DIM_2,
-                                                       elementDecl.getAbstract(), ptSubstitutions );
+                                                       elementDecl.getAbstract(), ptSubstitutions, INLINE );
                     } else {
                         pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeName, elementDecl.getAbstract(),
                                                      ptSubstitutions );
@@ -512,10 +515,10 @@ public class ApplicationSchemaXSDDecoder {
                             pt = null;
                             if ( GMLNS.equals( elementName.getNamespaceURI() ) ) {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
-                                                              elementDecl2.getAbstract(), ptSubstitutions );
+                                                              elementDecl2.getAbstract(), ptSubstitutions, ValueRepresentation.BOTH );
                             } else {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName,
-                                                              elementDecl2.getAbstract(), ptSubstitutions );
+                                                              elementDecl2.getAbstract(), ptSubstitutions, ValueRepresentation.BOTH );
                             }
                             featurePropertyTypes.add( pt );
                             return pt;
@@ -578,7 +581,7 @@ public class ApplicationSchemaXSDDecoder {
                 LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
                 QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
                 FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                                  elementDecl.getAbstract(), ptSubstitutions );
+                                                                  elementDecl.getAbstract(), ptSubstitutions, ValueRepresentation.BOTH );
                 featurePropertyTypes.add( pt );
                 return pt;
             }
@@ -605,7 +608,7 @@ public class ApplicationSchemaXSDDecoder {
                 LOG.trace( "Identified a feature property (adv style)." );
                 QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
                 FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                                  elementDecl.getAbstract(), ptSubstitutions );
+                                                                  elementDecl.getAbstract(), ptSubstitutions, ValueRepresentation.BOTH );
                 featurePropertyTypes.add( pt );
                 return pt;
             }
@@ -664,7 +667,7 @@ public class ApplicationSchemaXSDDecoder {
                             GeometryType geometryType = getGeometryType( elementName );
                             return new GeometryPropertyType( ptName, minOccurs, maxOccurs, geometryType,
                                                              CoordinateDimension.DIM_2_OR_3,
-                                                             elementDecl2.getAbstract(), ptSubstitutions );
+                                                             elementDecl2.getAbstract(), ptSubstitutions, BOTH );
                         }
                     }
                     case XSConstants.WILDCARD: {

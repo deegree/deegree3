@@ -36,6 +36,7 @@
 package org.deegree.feature;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -114,7 +115,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         }
 
         if ( featureMemberDecl == null ) {
-            featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null );
+            featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null, BOTH );
         }
     }
 
@@ -128,7 +129,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     public GenericFeatureCollection( String fid, Collection<Feature> memberFeatures ) {
         this.fid = fid;
         this.memberFeatures = new ArrayList<Feature>( memberFeatures );
-        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null );
+        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null, BOTH );
         this.ft = new GenericFeatureCollectionType( new QName( GMLNS, "FeatureCollection" ),
                                                     Collections.singletonList( featureMemberDecl ), false );
     }
@@ -137,7 +138,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * Creates a new empty {@link GenericFeatureCollection} instance without type information.
      */
     public GenericFeatureCollection() {
-        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null );
+        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null, false, null, BOTH );
         this.ft = new GenericFeatureCollectionType( new QName( GMLNS, "FeatureCollection" ),
                                                     Collections.singletonList( featureMemberDecl ), false );
     }

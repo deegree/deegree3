@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.shape;
 
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -225,7 +226,7 @@ public class ShapeFeatureStore implements FeatureStore {
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", name );
             GeometryPropertyType geomProp = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY,
-                                                                      DIM_2_OR_3, false, null );
+                                                                      DIM_2_OR_3, false, null, BOTH );
             ft = new GenericFeatureType( new QName( new File( name ).getName() ),
                                          Collections.<PropertyType> singletonList( geomProp ), false );
         }

@@ -68,12 +68,15 @@ public class GeometryPropertyType extends AbstractPropertyType<Geometry> {
 
     private CoordinateDimension dim;
 
+    private final ValueRepresentation representation;
+
     public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, GeometryType geomType,
                                  CoordinateDimension dim, boolean isAbstract,
-                                 List<PropertyType<?>> substitutions ) {
+                                 List<PropertyType<?>> substitutions, ValueRepresentation representation  ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.geomType = geomType;
         this.dim = dim;
+        this.representation = representation;
     }
 
     public GeometryType getGeometryType() {
@@ -84,6 +87,15 @@ public class GeometryPropertyType extends AbstractPropertyType<Geometry> {
         return dim;
     }
 
+    /**
+     * Returns the allowed representation form of the value object.
+     * 
+     * @return the allowed representation form, never <code>null</code>
+     */
+    public ValueRepresentation getAllowedRepresentation() {
+        return representation;
+    }    
+    
     @Override
     public String toString() {
         String s = "- geometry property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs

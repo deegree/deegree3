@@ -36,6 +36,7 @@
 package org.deegree.gml.feature.schema;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.ValueRepresentation;
 
 public class DefaultGMLTypes {
 
@@ -54,7 +56,7 @@ public class DefaultGMLTypes {
     static {
         QName name = new QName (GMLNS, "FeatureCollection");
         List<PropertyType> props = new ArrayList<PropertyType>();
-        props.add( new FeaturePropertyType (new QName (GMLNS, "featureMember"), 0, -1, null, false, null) );
+        props.add( new FeaturePropertyType (new QName (GMLNS, "featureMember"), 0, -1, null, false, null, BOTH) );
         GML311_FEATURECOLLECTION = new GenericFeatureCollectionType (name, props, false);
     }
 

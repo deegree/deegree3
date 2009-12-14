@@ -36,6 +36,8 @@
 
 package org.deegree.feature.types;
 
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -155,7 +157,7 @@ public class JAXBAdapter {
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         // TODO
         CoordinateDimension dim = CoordinateDimension.DIM_2_OR_3;
-        return new GeometryPropertyType( propName, minOccurs, maxOccurs, null, dim, false, null );
+        return new GeometryPropertyType( propName, minOccurs, maxOccurs, null, dim, false, null, BOTH );
     }
 
     private FeaturePropertyType convertFeaturePropertyDecl( FeaturePropertyDecl jaxbPropertyDecl ) {
@@ -166,7 +168,7 @@ public class JAXBAdapter {
         if ( "".equals( valueFtName.getPrefix() ) ) {
             valueFtName = new QName( jaxbSchema.getTargetNamespace(), valueFtName.getLocalPart() );
         }
-        return new FeaturePropertyType( propName, minOccurs, maxOccurs, valueFtName, false, null );
+        return new FeaturePropertyType( propName, minOccurs, maxOccurs, valueFtName, false, null, BOTH );
     }
 
     private QName getPropertyName( AbstractPropertyDecl jaxbPropertyDecl ) {

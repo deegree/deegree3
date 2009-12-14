@@ -491,7 +491,7 @@ public class PostGISFeatureStore implements FeatureStore {
             stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
                                           + " WHERE ft_type=? AND gml_bounded_by && ?" );
             stmt.setShort( 1, ftNameToFtId.get( ftName ) );
-            stmt.setObject( 2, toPGPolygon( looseBBox, -1 ) );
+            stmt.setObject( 2, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
             rs = stmt.executeQuery();
             result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
                                                                           new FeatureStoreGMLIdResolver( this ) ) );
@@ -509,13 +509,13 @@ public class PostGISFeatureStore implements FeatureStore {
 
         FeatureResultSet result = null;
 
-        short[] ftId = new short [queries.length];
+        short[] ftId = new short[queries.length];
         for ( int i = 0; i < ftId.length; i++ ) {
             Query query = queries[i];
             if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
                 String msg = "Join queries between multiple feature types are currently not supported.";
                 throw new UnsupportedOperationException( msg );
-            }            
+            }
             ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
         }
 
@@ -525,23 +525,23 @@ public class PostGISFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
             StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                                 /*+ " WHERE gml_bounded_by && ? AND*/+" WHERE ft_type IN(?" );
+                                                 + " WHERE gml_bounded_by && ? AND ft_type IN(?" );
             for ( int i = 1; i < ftId.length; i++ ) {
                 sql.append( ",?" );
             }
-            sql.append( ") ORDER BY position('['||ft_type||']' IN ?)");
+            sql.append( ") ORDER BY position('['||ft_type||']' IN ?)" );
             stmt = conn.prepareStatement( sql.toString() );
-            //            stmt.setObject( 1, null );
+            stmt.setObject( 1, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
             StringBuffer orderString = new StringBuffer();
             for ( int i = 0; i < ftId.length; i++ ) {
-                stmt.setShort( i + 1, ftId[i] );
-                orderString.append ("[");
-                orderString.append("" + ftId[i] );
-                orderString.append ("]");
+                stmt.setShort( i + 2, ftId[i] );
+                orderString.append( "[" );
+                orderString.append( "" + ftId[i] );
+                orderString.append( "]" );
             }
-            stmt.setString (ftId.length + 1, orderString.toString());
-            LOG.debug( "Query {}", stmt);
-            
+            stmt.setString( ftId.length + 2, orderString.toString() );
+            LOG.debug( "Query {}", stmt );
+
             rs = stmt.executeQuery();
             result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
                                                                           new FeatureStoreGMLIdResolver( this ) ) );

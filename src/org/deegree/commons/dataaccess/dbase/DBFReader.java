@@ -42,6 +42,7 @@ import static java.util.Calendar.MILLISECOND;
 import static org.deegree.commons.utils.EncodingGuesser.guess;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -221,7 +222,7 @@ public class DBFReader {
             }
         }
 
-        types.add( new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY, DIM_2_OR_3, false, null ) ); // TODO
+        types.add( new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY, DIM_2_OR_3, false, null, BOTH ) ); // TODO
         // properly
         // determine the
         // dimension from SHP type

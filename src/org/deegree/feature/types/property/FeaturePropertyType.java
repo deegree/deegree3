@@ -57,10 +57,13 @@ public class FeaturePropertyType extends AbstractPropertyType<Feature> {
 
     private FeatureType valueFt;
 
+    private final ValueRepresentation representation;
+
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, QName valueFtName, boolean isAbstract,
-                                List<PropertyType<?>> substitutions ) {
+                                List<PropertyType<?>> substitutions, ValueRepresentation representation ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.valueFtName = valueFtName;
+        this.representation = representation;
     }
 
     /**
@@ -90,6 +93,15 @@ public class FeaturePropertyType extends AbstractPropertyType<Feature> {
             throw new IllegalArgumentException( msg );
         }
         this.valueFt = valueFt;
+    }
+
+    /**
+     * Returns the allowed representation form of the value object.
+     * 
+     * @return the allowed representation form, never <code>null</code>
+     */
+    public ValueRepresentation getAllowedRepresentation() {
+        return representation;
     }
 
     @Override
