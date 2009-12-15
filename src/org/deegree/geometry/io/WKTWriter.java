@@ -294,7 +294,7 @@ public class WKTWriter {
             writer.append( formatter.format( geometry.get0() ) );
             writer.append( ' ' );
             writer.append( formatter.format( geometry.get1() ) );
-            
+
         }
 
     }
@@ -309,6 +309,7 @@ public class WKTWriter {
         switch ( geometry.getSolidType() ) {
 
         case Solid:
+            // TODO
             throw new UnsupportedOperationException( "Handling solids is not implemented yet." );
         case CompositeSolid:
             throw new UnsupportedOperationException( "Handling compositeSolids is not implemented yet." );
