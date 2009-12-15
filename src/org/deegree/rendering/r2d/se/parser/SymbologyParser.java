@@ -114,6 +114,8 @@ import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.UOM;
 import org.deegree.rendering.r2d.styling.components.Font.Style;
 import org.deegree.rendering.r2d.styling.components.Mark.SimpleMark;
+import org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Substraction;
+import org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Type;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineCap;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineJoin;
 import org.slf4j.Logger;
@@ -1441,17 +1443,28 @@ public class SymbologyParser {
     }
 
     private static PerpendicularOffsetType getPerpendicularOffsetType( XMLStreamReader in ) {
+        PerpendicularOffsetType tp = new PerpendicularOffsetType();
         String type = in.getAttributeValue( null, "type" );
         if ( type != null ) {
             try {
-                return PerpendicularOffsetType.valueOf( type );
+                tp.type = Type.valueOf( type );
             } catch ( IllegalArgumentException e ) {
                 LOG.debug( "Stack trace:", e );
-                LOG.warn( "The value '{}' is not a valid type for perpendicular offsets. Valid types are: {}",
-                          Arrays.toString( PerpendicularOffsetType.values() ) );
+                LOG.warn( "The value '{}' is not a valid type for perpendicular offsets. Valid types are: {}", type,
+                          Arrays.toString( Type.values() ) );
             }
         }
-        return null;
+        String substraction = in.getAttributeValue( null, "substraction" );
+        if ( substraction != null ) {
+            try {
+                tp.substraction = Substraction.valueOf( substraction );
+            } catch ( IllegalArgumentException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "The value '{}' is not a valid substraction type for perpendicular offsets."
+                          + " Valid types are: {}", substraction, Arrays.toString( Substraction.values() ) );
+            }
+        }
+        return tp;
     }
 
     private static Pair<LinePlacement, Continuation<LinePlacement>> parseLinePlacement( XMLStreamReader in )

@@ -67,15 +67,14 @@
               <xsd:enumeration value="Standard" />
               <xsd:enumeration value="Round" />
               <xsd:enumeration value="Edged" />
-              <xsd:enumeration value="Strict" />
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:attribute>
-        <xsd:attribute name="substract">
+        <xsd:attribute name="substraction">
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
-              <xsd:enumeration value="Original" />
-              <xsd:enumeration value="Inverse" />
+              <xsd:enumeration value="None" />
+              <xsd:enumeration value="NegativeOffset" />
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:attribute>

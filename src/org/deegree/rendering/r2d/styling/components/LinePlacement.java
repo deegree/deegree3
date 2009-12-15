@@ -37,7 +37,6 @@
 package org.deegree.rendering.r2d.styling.components;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Standard;
 
 import org.deegree.rendering.r2d.styling.Copyable;
 
@@ -57,7 +56,7 @@ public class LinePlacement implements Copyable<LinePlacement> {
     public double perpendicularOffset;
 
     /** Default is Standard. */
-    public PerpendicularOffsetType perpendicularOffsetType = Standard;
+    public PerpendicularOffsetType perpendicularOffsetType = new PerpendicularOffsetType();
 
     /**
      * Default is false.
@@ -87,7 +86,7 @@ public class LinePlacement implements Copyable<LinePlacement> {
     public LinePlacement copy() {
         LinePlacement copy = new LinePlacement();
         copy.perpendicularOffset = perpendicularOffset;
-        copy.perpendicularOffsetType = perpendicularOffsetType;
+        copy.perpendicularOffsetType = perpendicularOffsetType.copy();
         copy.repeat = repeat;
         copy.initialGap = initialGap;
         copy.gap = gap;

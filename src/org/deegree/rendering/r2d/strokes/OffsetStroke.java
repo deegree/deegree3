@@ -42,13 +42,12 @@ import static java.awt.geom.PathIterator.SEG_LINETO;
 import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.awt.geom.PathIterator.SEG_QUADTO;
 import static java.lang.Math.sqrt;
-import static org.deegree.commons.utils.GeometryUtils.prettyPrintShape;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Standard;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.util.LinkedList;
@@ -59,6 +58,9 @@ import org.slf4j.Logger;
 
 /**
  * <code>OffsetStroke</code>
+ * 
+ * Idea: it would be good to combine the offset line and the line width line. In that case the offset and line width
+ * could be adjusted dynamically when angles are too small.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -83,7 +85,7 @@ public class OffsetStroke implements Stroke {
      */
     public OffsetStroke( double offset, Stroke stroke, PerpendicularOffsetType type ) {
         if ( type == null ) {
-            type = Standard;
+            type = new PerpendicularOffsetType();
         }
         this.offset = offset;
         this.stroke = stroke;
@@ -183,7 +185,7 @@ public class OffsetStroke implements Stroke {
         for ( Pair<Integer, double[]> pair : list ) {
             switch ( pair.first ) {
             case SEG_CLOSE:
-                switch ( type ) {
+                switch ( type.type ) {
                 case Edged:
                     double[] n = new double[] { last[0] + firstNormal[0], last[1] + firstNormal[1] };
                     double len = sqrt( n[0] * n[0] + n[1] * n[1] );
@@ -208,8 +210,6 @@ public class OffsetStroke implements Stroke {
                     maybeLineTo( path, pt[0], pt[1] );
                     path.closePath();
                     break;
-                case Strict:
-                    break;
                 }
                 break;
             case SEG_CUBICTO:
@@ -227,7 +227,7 @@ public class OffsetStroke implements Stroke {
                 if ( n1 == n2 ) {
                     continue;
                 }
-                switch ( type ) {
+                switch ( type.type ) {
                 case Edged:
                     if ( n2 == null ) {
                         continue;
@@ -260,9 +260,6 @@ public class OffsetStroke implements Stroke {
                         maybeLineTo( path, n1[0], n1[1] );
                     }
                     continue;
-                case Strict:
-                    LOG.warn( "Strict perpendicular offset type is not implemented yet." );
-                    continue;
                 }
                 continue;
             case SEG_MOVETO:
@@ -279,12 +276,21 @@ public class OffsetStroke implements Stroke {
             }
         }
 
-        if ( LOG.isTraceEnabled() ) {
-            LOG.trace( "Original shape: " + prettyPrintShape( p ) );
-            LOG.trace( "Offset shape: " + prettyPrintShape( path ) );
+        Shape res = stroke == null ? path : stroke.createStrokedShape( path );
+
+        switch ( type.substraction ) {
+        case None:
+            break;
+        case NegativeOffset:
+            Shape substractMe = new OffsetStroke( -offset, null, null ).createStrokedShape( p );
+            substractMe = stroke == null ? substractMe : stroke.createStrokedShape( substractMe );
+            Area a = new Area( res );
+            a.subtract( new Area( substractMe ) );
+            res = a;
+            break;
         }
 
-        return stroke == null ? path : stroke.createStrokedShape( path );
+        return res;
     }
 
     private static void maybeLineTo( Path2D path, double x, double y ) {

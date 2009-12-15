@@ -37,7 +37,6 @@
 package org.deegree.rendering.r2d.styling;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Standard;
 import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
 import org.deegree.rendering.r2d.styling.components.Fill;
@@ -86,7 +85,7 @@ public class PolygonStyling implements Copyable<PolygonStyling>, Styling {
     public double perpendicularOffset;
 
     /** Default is Standard. */
-    public PerpendicularOffsetType perpendicularOffsetType = Standard;
+    public PerpendicularOffsetType perpendicularOffsetType = new PerpendicularOffsetType();
 
     public PolygonStyling copy() {
         PolygonStyling copy = new PolygonStyling();
@@ -95,7 +94,7 @@ public class PolygonStyling implements Copyable<PolygonStyling>, Styling {
         copy.displacementX = displacementX;
         copy.displacementY = displacementY;
         copy.perpendicularOffset = perpendicularOffset;
-        copy.perpendicularOffsetType = perpendicularOffsetType;
+        copy.perpendicularOffsetType = perpendicularOffsetType.copy();
         copy.uom = uom;
         return copy;
     }

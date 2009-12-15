@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.styling.components;
 
+import static org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Substraction.None;
+import static org.deegree.rendering.r2d.styling.components.PerpendicularOffsetType.Type.Standard;
+
+import org.deegree.rendering.r2d.styling.Copyable;
+
 /**
  * <code>PerpendicularOffsetType</code>
  * 
@@ -43,12 +48,48 @@ package org.deegree.rendering.r2d.styling.components;
  * 
  * @version $Revision$, $Date$
  */
-public enum PerpendicularOffsetType {
+public class PerpendicularOffsetType implements Copyable<PerpendicularOffsetType> {
 
-    /***/
-    Standard, /***/
-    Round, /***/
-    Edged, /***/
-    Strict
+    /** Default is Standard. */
+    public Type type = Standard;
+
+    /** Default is None. */
+    public Substraction substraction = None;
+
+    /**
+     * <code>Type</code>
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public enum Type {
+        /***/
+        Standard, /***/
+        Round, /***/
+        Edged
+    }
+
+    /**
+     * <code>Substraction</code>
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public enum Substraction {
+        /***/
+        None, /***/
+        NegativeOffset
+    }
+
+    public PerpendicularOffsetType copy() {
+        PerpendicularOffsetType copy = new PerpendicularOffsetType();
+        copy.type = type;
+        copy.substraction = substraction;
+        return copy;
+    }
 
 }
