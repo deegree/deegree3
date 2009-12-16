@@ -148,6 +148,26 @@ public class ApplicationSchema {
     }
 
     /**
+     * Returns all feature types that are defined in this application schema, limited by the options.
+     * 
+     * @param includeCollections
+     * @param includeAbstracts
+     * 
+     * @return all feature types, never <code>null</code>
+     */
+    public ArrayList<FeatureType> getFeatureTypes( boolean includeCollections, boolean includeAbstracts ) {
+        ArrayList<FeatureType> fts = new ArrayList<FeatureType>( ftNameToFt.values().size() );
+
+        for ( FeatureType ft : ftNameToFt.values() ) {
+            if ( ( includeAbstracts || !ft.isAbstract() )
+                 && ( includeCollections || !( ft instanceof FeatureCollectionType ) ) ) {
+                fts.add( ft );
+            }
+        }
+        return fts;
+    }
+
+    /**
      * Returns all root feature types that are defined in this application schema.
      * 
      * @return all root feature types, never <code>null</code>
