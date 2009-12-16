@@ -253,7 +253,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
 
         // parse properties
-        Iterator<PropertyType> declIter = ft.getPropertyDeclarations( version ).iterator();
+        Iterator<PropertyType<?>> declIter = ft.getPropertyDeclarations( version ).iterator();
 
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;

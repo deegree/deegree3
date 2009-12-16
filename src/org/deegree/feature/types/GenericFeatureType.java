@@ -98,8 +98,8 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
-    public List<PropertyType> getPropertyDeclarations() {
-        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() );
+    public List<PropertyType<?>> getPropertyDeclarations() {
+        List<PropertyType<?>> propDecls = new ArrayList<PropertyType<?>>( propNameToDecl.size() );
         for ( QName propName : propNameToDecl.keySet() ) {
             propDecls.add( propNameToDecl.get( propName ) );
         }
@@ -107,29 +107,29 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
-    public List<PropertyType> getPropertyDeclarations( GMLVersion version ) {
+    public List<PropertyType<?>> getPropertyDeclarations( GMLVersion version ) {
         Collection<PropertyType<?>> stdProps = StandardGMLFeatureProps.getPropertyTypes( version );
-        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() + stdProps.size() );
+        List<PropertyType<?>> propDecls = new ArrayList<PropertyType<?>>( propNameToDecl.size() + stdProps.size() );
         propDecls.addAll( stdProps );
         for ( QName propName : propNameToDecl.keySet() ) {
             propDecls.add( propNameToDecl.get( propName ) );
         }
         return propDecls;
     }
-    
+
     @Override
     public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
         GeometryPropertyType geoPt = null;
         for ( QName propName : propNameToDecl.keySet() ) {
             PropertyType pt = propNameToDecl.get( propName );
-            if (pt instanceof GeometryPropertyType) {
+            if ( pt instanceof GeometryPropertyType ) {
                 geoPt = (GeometryPropertyType) pt;
                 break;
             }
         }
         return geoPt;
-    }    
-   
+    }
+
     @Override
     public Feature newFeature( String fid, List<Property<?>> props, GMLVersion version ) {
         return new GenericFeature( this, fid, props, version );

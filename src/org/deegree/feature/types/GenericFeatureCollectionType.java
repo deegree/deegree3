@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
 import java.util.ArrayList;
@@ -53,10 +53,10 @@ import org.deegree.gml.feature.StandardGMLFeatureProps;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericFeatureCollectionType implements FeatureCollectionType {
@@ -70,7 +70,7 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
 
     private ApplicationSchema schema;
 
-    public GenericFeatureCollectionType (QName name, List<PropertyType> propDecls, boolean isAbstract) {
+    public GenericFeatureCollectionType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
         this.name = name;
         for ( PropertyType propDecl : propDecls ) {
             propNameToDecl.put( propDecl.getName(), propDecl );
@@ -87,7 +87,7 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     public PropertyType getPropertyDeclaration( QName propName ) {
         return propNameToDecl.get( propName );
     }
-    
+
     @Override
     public PropertyType getPropertyDeclaration( QName propName, GMLVersion version ) {
         PropertyType pt = StandardGMLFeatureProps.getPropertyType( propName, version );
@@ -98,33 +98,33 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     }
 
     @Override
-    public List<PropertyType> getPropertyDeclarations() {
-        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() );
+    public List<PropertyType<?>> getPropertyDeclarations() {
+        List<PropertyType<?>> propDecls = new ArrayList<PropertyType<?>>( propNameToDecl.size() );
         for ( QName propName : propNameToDecl.keySet() ) {
             propDecls.add( propNameToDecl.get( propName ) );
         }
         return propDecls;
     }
-    
+
     @Override
-    public List<PropertyType> getPropertyDeclarations( GMLVersion version ) {
+    public List<PropertyType<?>> getPropertyDeclarations( GMLVersion version ) {
         Collection<PropertyType<?>> stdProps = StandardGMLFeatureProps.getPropertyTypes( version );
-        List<PropertyType> propDecls = new ArrayList<PropertyType>( propNameToDecl.size() + stdProps.size() );
+        List<PropertyType<?>> propDecls = new ArrayList<PropertyType<?>>( propNameToDecl.size() + stdProps.size() );
         propDecls.addAll( stdProps );
         for ( QName propName : propNameToDecl.keySet() ) {
             propDecls.add( propNameToDecl.get( propName ) );
         }
         return propDecls;
-    }    
+    }
 
     @Override
     public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
         return null;
-    }    
-    
+    }
+
     @Override
-    public Feature newFeature( String fid, List<Property<?>> props, GMLVersion version) {
-        return new GenericFeatureCollection(this, fid, props, version);
+    public Feature newFeature( String fid, List<Property<?>> props, GMLVersion version ) {
+        return new GenericFeatureCollection( this, fid, props, version );
     }
 
     @Override
@@ -139,11 +139,11 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
 
     @Override
     public void setSchema( ApplicationSchema schema ) {
-       this.schema = schema;
-    } 
+        this.schema = schema;
+    }
 
     @Override
-    public String toString () {
+    public String toString() {
         String s = "- Feature collection type '" + name + "', abstract: " + isAbstract;
         for ( QName ptName : propNameToDecl.keySet() ) {
             PropertyType pt = propNameToDecl.get( ptName );

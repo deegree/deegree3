@@ -72,7 +72,7 @@ public interface FeatureType {
      *            name of the property
      * @return the declaration of the property, or <code>null</code> if no such property is defined
      */
-    public PropertyType getPropertyDeclaration( QName propName );
+    public PropertyType<?> getPropertyDeclaration( QName propName );
 
     /**
      * Returns the declaration of the property with the given name.
@@ -83,14 +83,14 @@ public interface FeatureType {
      *            GML version that determines the standard GML properties, must not be <code>null</code>
      * @return the declaration of the property, or <code>null</code> if no such property is defined
      */
-    public PropertyType getPropertyDeclaration( QName propName, GMLVersion version );
+    public PropertyType<?> getPropertyDeclaration( QName propName, GMLVersion version );
 
     /**
      * Returns all property declarations of the feature type, excluding those that any GML feature allows for.
      * 
      * @return property declarations (in order)
      */
-    public List<PropertyType> getPropertyDeclarations();
+    public List<PropertyType<?>> getPropertyDeclarations();
 
     /**
      * Returns all property declarations of the feature type, including those that any GML feature allows for.
@@ -99,7 +99,7 @@ public interface FeatureType {
      *            GML version that determines the standard GML properties, must not be <code>null</code>
      * @return property declarations (in order)
      */
-    public List<PropertyType> getPropertyDeclarations( GMLVersion version );
+    public List<PropertyType<?>> getPropertyDeclarations( GMLVersion version );
 
     /**
      * Returns the first geometry property declaration of the feature type.
