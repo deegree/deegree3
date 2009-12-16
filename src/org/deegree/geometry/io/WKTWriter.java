@@ -97,7 +97,7 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 
 /**
  * Writes {@link Geometry} objects as Well-Known Text (WKT).
@@ -1361,7 +1361,7 @@ public class WKTWriter {
             writer.append( "" );
         writer.append( '\'' );
 
-        StandardGMLObjectProps props = geom.getGMLProperties();
+        StandardGMLProps props = geom.getGMLProperties();
         if ( props != null ) {
             int counter = 0;
             writer.append( ',' );

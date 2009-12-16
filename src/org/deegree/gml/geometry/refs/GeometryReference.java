@@ -45,7 +45,7 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLObjectResolver;
 import org.deegree.gml.GMLReference;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 
 /**
  * Represents a reference to the GML representation of a geometry, which is usually expressed using an
@@ -185,12 +185,12 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
     }
 
     @Override
-    public StandardGMLObjectProps getGMLProperties() {
+    public StandardGMLProps getGMLProperties() {
         return getReferencedObject().getGMLProperties();
     }
 
     @Override
-    public void setGMLProperties( StandardGMLObjectProps standardProps ) {
+    public void setGMLProperties( StandardGMLProps standardProps ) {
         getReferencedObject().setGMLProperties( standardProps );
     }
 

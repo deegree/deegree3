@@ -52,7 +52,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StandardGMLFeatureProps;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 
@@ -70,7 +70,7 @@ abstract class AbstractFeature implements Feature {
     protected StandardGMLFeatureProps standardProps;
     
     @Override
-    public StandardGMLObjectProps getGMLProperties() {
+    public StandardGMLProps getGMLProperties() {
         return standardProps;
     }    
     

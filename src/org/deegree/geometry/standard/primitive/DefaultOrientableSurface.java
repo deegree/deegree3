@@ -50,7 +50,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 
 /**
  * Default implementation of {@link OrientableSurface}.
@@ -70,7 +70,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
 
     private boolean isReversed;
 
-    private StandardGMLObjectProps standardProps;
+    private StandardGMLProps standardProps;
 
     /**
      * Creates a new <code>DefaultOrientableSurface</code> instance from the given parameters.

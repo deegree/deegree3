@@ -41,7 +41,7 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLObject;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 
 /**
  * Base interface for all vector geometry types.
@@ -85,7 +85,7 @@ import org.deegree.gml.props.StandardGMLObjectProps;
  * <h4>Notes on the representation of GML geometries</h4>
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
- * They are modelled using the {@link StandardGMLObjectProps} class. This design decision has been driven by the goal to
+ * They are modelled using the {@link StandardGMLProps} class. This design decision has been driven by the goal to
  * make the implementation less GML (and GML-version) specific and to allow for example to export a {@link Geometry}
  * instance as either GML 2, GML 3.1 or GML 3.2 (different namespaces and types for the standard properties).
  * </p>
@@ -174,7 +174,7 @@ public interface Geometry extends GMLObject {
      * @param props
      *            properties to be attached
      */
-    public void setGMLProperties( StandardGMLObjectProps props );
+    public void setGMLProperties( StandardGMLProps props );
 
     /**
      * Returns the coordinate dimension, i.e. the dimension of the space that the geometry is embedded in.

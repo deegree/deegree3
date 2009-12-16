@@ -59,19 +59,19 @@ import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 
 /**
  * Version-agnostic representation of the standard properties that any GML {@link Feature} allows for.
  * 
- * @see StandardGMLObjectProps
+ * @see StandardGMLProps
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class StandardGMLFeatureProps extends StandardGMLObjectProps {
+public class StandardGMLFeatureProps extends StandardGMLProps {
 
     /** GML 2 standard property type 'gml:boundedBy' */
     public static final PropertyType<Envelope> PT_BOUNDED_BY_GML2;

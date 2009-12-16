@@ -39,7 +39,7 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.dictionary.Definition;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 
 /**
  * Basic interface for GML objects.
@@ -76,5 +76,5 @@ public interface GMLObject {
      * 
      * @return the standard GML properties, may be <code><null</code>
      */
-    public StandardGMLObjectProps getGMLProperties();    
+    public StandardGMLProps getGMLProperties();    
 }

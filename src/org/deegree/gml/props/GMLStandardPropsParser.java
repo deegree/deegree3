@@ -44,15 +44,16 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Parser for the {@link StandardGMLObjectProps} that can occur at the beginning of every GML object.
+ * Parser for the {@link StandardGMLProps} that can occur at the beginning of every GML object.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -86,12 +87,12 @@ public class GMLStandardPropsParser {
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GML&gt;), points at the at the
      *            first tag event (<code>START_ELEMENT/END_ELEMENT</code>) that does not belong to an element from the
      *            <code>StandardObjectProperties</code> group afterwards
-     * @return corresponding {@link StandardGMLObjectProps} object, never <code>null</code>
+     * @return corresponding {@link StandardGMLProps} object, never <code>null</code>
      * @throws XMLStreamException
      */
-    public StandardGMLObjectProps parse( XMLStreamReaderWrapper xmlStream )
+    public StandardGMLProps parse( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        StandardGMLObjectProps props = null;
+        StandardGMLProps props = null;
         switch ( version ) {
         case GML_2:
             props = parse2( xmlStream );
@@ -107,7 +108,7 @@ public class GMLStandardPropsParser {
         return props;
     }
 
-    private StandardGMLObjectProps parse2( XMLStreamReaderWrapper xmlStream )
+    private StandardGMLProps parse2( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -133,10 +134,10 @@ public class GMLStandardPropsParser {
             xmlStream.nextTag();
         }
 
-        return new StandardGMLObjectProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
+        return new StandardGMLProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
     }
 
-    private StandardGMLObjectProps parse31( XMLStreamReaderWrapper xmlStream )
+    private StandardGMLProps parse31( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -162,10 +163,10 @@ public class GMLStandardPropsParser {
             xmlStream.nextTag();
         }
 
-        return new StandardGMLObjectProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
+        return new StandardGMLProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
     }
 
-    private StandardGMLObjectProps parse32( XMLStreamReaderWrapper xmlStream )
+    private StandardGMLProps parse32( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -198,18 +199,18 @@ public class GMLStandardPropsParser {
             xmlStream.nextTag();
         }
 
-        return new StandardGMLObjectProps( metadata, description, identifier,
+        return new StandardGMLProps( metadata, description, identifier,
                                            names.toArray( new CodeType[names.size()] ) );
     }
 
-    private Object parseMetadataProperty( XMLStreamReaderWrapper xmlStream )
+    private Object parseMetadataProperty( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        xmlStream.skipElement();
+        StAXParsingHelper.skipElement(xmlStream);
         // TODO
         return null;
     }
 
-    private StringOrRef parseDescription( XMLStreamReaderWrapper xmlStream )
+    private StringOrRef parseDescription( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
@@ -217,7 +218,7 @@ public class GMLStandardPropsParser {
         return new StringOrRef( string, ref );
     }
 
-    private CodeType parseIdentifier( XMLStreamReaderWrapper xmlStream )
+    private CodeType parseIdentifier( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
@@ -228,7 +229,7 @@ public class GMLStandardPropsParser {
         return new CodeType( code, codeSpace );
     }
 
-    private CodeType parseName( XMLStreamReaderWrapper xmlStream )
+    private CodeType parseName( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );

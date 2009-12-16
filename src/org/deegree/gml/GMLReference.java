@@ -36,7 +36,7 @@
 
 package org.deegree.gml;
 
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 
 /**
  * Represents a reference to a {@link GMLObject}, which is usually expressed using an <code>xlink:href</code> attribute
@@ -120,7 +120,7 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
     }
 
     @Override
-    public StandardGMLObjectProps getGMLProperties() {
+    public StandardGMLProps getGMLProperties() {
         return getReferencedObject().getGMLProperties();
     }
 }

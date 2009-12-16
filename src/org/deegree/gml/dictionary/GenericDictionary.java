@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
 import java.util.Collection;
@@ -40,144 +40,122 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.deegree.gml.props.StandardGMLProps;
+
+/**
+ * Default implementation of {@link Dictionary}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class GenericDictionary extends GenericDefinition implements Dictionary {
 
-    @Override
+    private List<Definition> members;
+
+    public GenericDictionary( String id, StandardGMLProps gmlProps, List<Definition> members) {
+        super( id, gmlProps );
+        this.members = members;
+    }
+
     public boolean add( Definition e ) {
-        // TODO Auto-generated method stub
-        return false;
+        return members.add( e );
     }
 
-    @Override
     public void add( int index, Definition element ) {
-        // TODO Auto-generated method stub
-        
+        members.add( index, element );
     }
 
-    @Override
     public boolean addAll( Collection<? extends Definition> c ) {
-        // TODO Auto-generated method stub
-        return false;
+        return members.addAll( c );
     }
 
-    @Override
     public boolean addAll( int index, Collection<? extends Definition> c ) {
-        // TODO Auto-generated method stub
-        return false;
+        return members.addAll( index, c );
     }
 
-    @Override
     public void clear() {
-        // TODO Auto-generated method stub
-        
+        members.clear();
     }
 
-    @Override
     public boolean contains( Object o ) {
-        // TODO Auto-generated method stub
-        return false;
+        return members.contains( o );
     }
 
-    @Override
     public boolean containsAll( Collection<?> c ) {
-        // TODO Auto-generated method stub
-        return false;
+        return members.containsAll( c );
     }
 
-    @Override
+    public boolean equals( Object o ) {
+        return members.equals( o );
+    }
+
     public Definition get( int index ) {
-        // TODO Auto-generated method stub
-        return null;
+        return members.get( index );
     }
 
-    @Override
+    public int hashCode() {
+        return members.hashCode();
+    }
+
     public int indexOf( Object o ) {
-        // TODO Auto-generated method stub
-        return 0;
+        return members.indexOf( o );
     }
 
-    @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        return false;
+        return members.isEmpty();
     }
 
-    @Override
     public Iterator<Definition> iterator() {
-        // TODO Auto-generated method stub
-        return null;
+        return members.iterator();
     }
 
-    @Override
     public int lastIndexOf( Object o ) {
-        // TODO Auto-generated method stub
-        return 0;
+        return members.lastIndexOf( o );
     }
 
-    @Override
     public ListIterator<Definition> listIterator() {
-        // TODO Auto-generated method stub
-        return null;
+        return members.listIterator();
     }
 
-    @Override
     public ListIterator<Definition> listIterator( int index ) {
-        // TODO Auto-generated method stub
-        return null;
+        return members.listIterator( index );
     }
 
-    @Override
-    public boolean remove( Object o ) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     public Definition remove( int index ) {
-        // TODO Auto-generated method stub
-        return null;
+        return members.remove( index );
     }
 
-    @Override
+    public boolean remove( Object o ) {
+        return members.remove( o );
+    }
+
     public boolean removeAll( Collection<?> c ) {
-        // TODO Auto-generated method stub
-        return false;
+        return members.removeAll( c );
     }
 
-    @Override
     public boolean retainAll( Collection<?> c ) {
-        // TODO Auto-generated method stub
-        return false;
+        return members.retainAll( c );
     }
 
-    @Override
     public Definition set( int index, Definition element ) {
-        // TODO Auto-generated method stub
-        return null;
+        return members.set( index, element );
     }
 
-    @Override
     public int size() {
-        // TODO Auto-generated method stub
-        return 0;
+        return members.size();
     }
 
-    @Override
     public List<Definition> subList( int fromIndex, int toIndex ) {
-        // TODO Auto-generated method stub
-        return null;
+        return members.subList( fromIndex, toIndex );
     }
 
-    @Override
     public Object[] toArray() {
-        // TODO Auto-generated method stub
-        return null;
+        return members.toArray();
     }
 
-    @Override
     public <T> T[] toArray( T[] a ) {
-        // TODO Auto-generated method stub
-        return null;
+        return members.toArray( a );
     }
-    
 }

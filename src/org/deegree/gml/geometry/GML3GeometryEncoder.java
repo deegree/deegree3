@@ -112,7 +112,7 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.refs.GeometryReference;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1504,13 +1504,13 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
         }
 
-        StandardGMLObjectProps props = geometry.getGMLProperties();
+        StandardGMLProps props = geometry.getGMLProperties();
         if ( props != null ) {
             exportStandardProps( writer, props );
         }
     }
 
-    private void exportStandardProps( XMLStreamWriter writer, StandardGMLObjectProps standardGMLProperties )
+    private void exportStandardProps( XMLStreamWriter writer, StandardGMLProps standardGMLProperties )
                             throws XMLStreamException {
 
         StringOrRef description = standardGMLProperties.getDescription();

@@ -32,12 +32,12 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
-import org.deegree.gml.props.StandardGMLObjectProps;
+import org.deegree.gml.props.StandardGMLProps;
 
 /**
  * Default implementation of {@link Definition}.
@@ -48,16 +48,21 @@ import org.deegree.gml.props.StandardGMLObjectProps;
  * @version $Revision$, $Date$
  */
 public class GenericDefinition implements Definition {
-    
+
     private String id;
-    
-    private StandardGMLObjectProps gmlProps;
+
+    private StandardGMLProps gmlProps;
+
+    public GenericDefinition( String id, StandardGMLProps gmlProps ) {
+        this.id = id;
+        this.gmlProps = gmlProps;
+    }
 
     @Override
     public String getId() {
         return id;
     }
-    
+
     public Object[] getMetadata() {
         return gmlProps.getMetadata();
     }
@@ -71,7 +76,7 @@ public class GenericDefinition implements Definition {
     }
 
     @Override
-    public StandardGMLObjectProps getGMLProperties() {
+    public StandardGMLProps getGMLProperties() {
         return gmlProps;
     }
 }

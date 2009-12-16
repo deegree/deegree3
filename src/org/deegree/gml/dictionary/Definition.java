@@ -32,9 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
+import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.gml.GMLObject;
 
 /**
@@ -46,5 +48,8 @@ import org.deegree.gml.GMLObject;
  * @version $Revision$, $Date$
  */
 public interface Definition extends GMLObject {
-    // no additional methods?
+
+    public StringOrRef getDescription();
+
+    public CodeType[] getNames();
 }
