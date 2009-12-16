@@ -238,23 +238,33 @@ public class WorldFileAccess {
      */
     public static void writeWorldFile( RasterGeoReference renv, File file, String extension )
                             throws IOException {
-
-        StringBuffer sb = new StringBuffer();
-
-        sb.append( renv.getResolutionX() ).append( "\n" ).append( renv.getRotationY() ).append( "\n" );
-        sb.append( renv.getRotationX() ).append( "\n" ).append( renv.getResolutionY() ).append( "\n" );
-        double[] orig = renv.getOrigin( OriginLocation.CENTER );
-        sb.append( orig[0] ).append( "\n" );
-        sb.append( orig[1] ).append( "\n" );
-
         File f = new File( FileUtils.getBasename( file ) + "." + extension );
-
         FileWriter fw = new FileWriter( f );
         PrintWriter pw = new PrintWriter( fw );
-
-        pw.print( sb.toString() );
-
+        writeWorldFile( renv, pw );
         pw.close();
         fw.close();
+    }
+
+    /**
+     * writes a RasterReference into a world file.
+     * 
+     * @param renv
+     *            the envelope
+     * @param writer
+     *            to write the worldfile to.
+     * @throws IOException
+     */
+    public static void writeWorldFile( RasterGeoReference renv, PrintWriter writer )
+                            throws IOException {
+
+        writer.println( renv.getResolutionX() );
+        writer.println( renv.getRotationY() );
+        writer.println( renv.getRotationX() );
+        writer.println( renv.getResolutionY() );
+        // worldfiles are centered.
+        double[] orig = renv.getOrigin( OriginLocation.CENTER );
+        writer.println( orig[0] );
+        writer.println( orig[1] );
     }
 }
