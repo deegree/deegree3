@@ -273,7 +273,7 @@ public class XYZReader implements RasterReader {
         this.rasterDataInfo = data.getDataInfo();
         ByteBuffer byteBuffer = ( (ByteBufferRasterData) data ).getByteBuffer();
         data = RasterDataFactory.createRasterData( width, height, data.getDataInfo(), geoReference, byteBuffer, true,
-                                                   FileUtils.getFilename( this.file ) );
+                                                   FileUtils.getFilename( this.file ), options );
 
         SimpleRaster simpleRaster = new SimpleRaster( data, rasterEnvelope, geoReference );
 
@@ -323,7 +323,7 @@ public class XYZReader implements RasterReader {
                             throws IOException {
         this.file = filename;
         // try to read from cache.
-        RasterCache cache = RasterCache.getInstance( null );
+        RasterCache cache = RasterCache.getInstance( options );
         File cacheFile = cache.createCacheFile( FileUtils.getFilename( this.file ) );
         SimpleRaster result = null;
         if ( cacheFile.exists() ) {
@@ -344,6 +344,9 @@ public class XYZReader implements RasterReader {
                 }
             }
             result = readASCIIGrid( reader, options );
+            reader.close();
+        } else {
+            LOG.info( "Cache seems coherent using cachefile: {}.", cacheFile );
         }
         return result;
     }
