@@ -52,6 +52,7 @@ import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.EnvelopePropertyType;
@@ -61,7 +62,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.props.StandardGMLObjectProps;
 
 /**
- * Version-agnostic representation of the standard properties that any GML feature allows for.
+ * Version-agnostic representation of the standard properties that any GML {@link Feature} allows for.
  * 
  * @see StandardGMLObjectProps
  * 

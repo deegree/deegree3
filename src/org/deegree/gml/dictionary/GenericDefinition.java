@@ -51,7 +51,7 @@ public class GenericDefinition implements Definition {
     
     private String id;
     
-    private StandardGMLObjectProps standardProps;
+    private StandardGMLObjectProps gmlProps;
 
     @Override
     public String getId() {
@@ -59,14 +59,19 @@ public class GenericDefinition implements Definition {
     }
     
     public Object[] getMetadata() {
-        return standardProps.getMetadata();
+        return gmlProps.getMetadata();
     }
 
     public StringOrRef getDescription() {
-        return standardProps.getDescription();
+        return gmlProps.getDescription();
     }
 
     public CodeType[] getNames() {
-        return standardProps.getNames();
+        return gmlProps.getNames();
+    }
+
+    @Override
+    public StandardGMLObjectProps getGMLProperties() {
+        return gmlProps;
     }
 }

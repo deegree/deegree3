@@ -61,7 +61,7 @@ import org.deegree.gml.GMLVersion;
  */
 public class GMLStandardPropsParser {
 
-    protected GMLVersion version;
+    private GMLVersion version;
 
     /**
      * Creates a new {@link GMLStandardPropsParser} for the specified GML version.

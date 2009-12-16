@@ -1361,7 +1361,7 @@ public class WKTWriter {
             writer.append( "" );
         writer.append( '\'' );
 
-        StandardGMLObjectProps props = geom.getAttachedProperties();
+        StandardGMLObjectProps props = geom.getGMLProperties();
         if ( props != null ) {
             int counter = 0;
             writer.append( ',' );

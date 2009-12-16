@@ -103,7 +103,7 @@ public class GeometryFixer {
             break;
         }
         }
-        repaired.setAttachedProperties( ring.getAttachedProperties() );
+        repaired.setGMLProperties( ring.getGMLProperties() );
         return repaired;
     }
 
@@ -169,7 +169,7 @@ public class GeometryFixer {
             }
         }
         }
-        fixedCurve.setAttachedProperties( curve.getAttachedProperties() );
+        fixedCurve.setGMLProperties( curve.getGMLProperties() );
         return fixedCurve;
     }
 
@@ -228,7 +228,7 @@ public class GeometryFixer {
             break;
         }
         }
-        fixedCurve.setAttachedProperties( curve.getAttachedProperties() );
+        fixedCurve.setGMLProperties( curve.getGMLProperties() );
         return fixedCurve;
     }
 
@@ -251,7 +251,7 @@ public class GeometryFixer {
             break;
         }
         }
-        fixedRing.setAttachedProperties( ring.getAttachedProperties() );
+        fixedRing.setGMLProperties( ring.getGMLProperties() );
         return fixedRing;
     }
 

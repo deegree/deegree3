@@ -169,19 +169,12 @@ public interface Geometry extends GMLObject {
     public void setCoordinateSystem( CRS crs );
 
     /**
-     * Returns attached properties (e.g. GML standard properties, such as <code>gml:name</code>).
-     * 
-     * @return the attached properties, may be null
-     */
-    public StandardGMLObjectProps getAttachedProperties();
-
-    /**
      * Sets the attached properties (e.g. GML standard properties, such as <code>gml:name</code>).
      * 
      * @param props
      *            properties to be attached
      */
-    public void setAttachedProperties( StandardGMLObjectProps props );
+    public void setGMLProperties( StandardGMLObjectProps props );
 
     /**
      * Returns the coordinate dimension, i.e. the dimension of the space that the geometry is embedded in.

@@ -39,6 +39,7 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.dictionary.Definition;
+import org.deegree.gml.props.StandardGMLObjectProps;
 
 /**
  * Basic interface for GML objects.
@@ -69,4 +70,11 @@ public interface GMLObject {
      * @return the id of the object, or <code>null</code> if it doesn't have an id
      */
     public String getId();
+    
+    /**
+     * Returns the standard GML properties (e.g. <code>gml:name</code>).
+     * 
+     * @return the standard GML properties, may be <code><null</code>
+     */
+    public StandardGMLObjectProps getGMLProperties();    
 }

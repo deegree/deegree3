@@ -279,12 +279,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public StandardGMLObjectProps getAttachedProperties() {
+    public StandardGMLObjectProps getGMLProperties() {
         return standardProps;
     }
 
     @Override
-    public void setAttachedProperties( StandardGMLObjectProps standardProps ) {
+    public void setGMLProperties( StandardGMLObjectProps standardProps ) {
         this.standardProps = standardProps;
     }
 

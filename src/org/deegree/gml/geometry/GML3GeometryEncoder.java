@@ -1504,7 +1504,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
         }
 
-        StandardGMLObjectProps props = geometry.getAttachedProperties();
+        StandardGMLObjectProps props = geometry.getGMLProperties();
         if ( props != null ) {
             exportStandardProps( writer, props );
         }

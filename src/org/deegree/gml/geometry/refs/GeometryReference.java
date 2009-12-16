@@ -185,13 +185,13 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
     }
 
     @Override
-    public StandardGMLObjectProps getAttachedProperties() {
-        return getReferencedObject().getAttachedProperties();
+    public StandardGMLObjectProps getGMLProperties() {
+        return getReferencedObject().getGMLProperties();
     }
 
     @Override
-    public void setAttachedProperties( StandardGMLObjectProps standardProps ) {
-        getReferencedObject().setAttachedProperties( standardProps );
+    public void setGMLProperties( StandardGMLObjectProps standardProps ) {
+        getReferencedObject().setGMLProperties( standardProps );
     }
 
     @Override
