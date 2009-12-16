@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
@@ -109,6 +110,7 @@ public class GMLStreamReader {
      */
     public void setApplicationSchema( ApplicationSchema schema ) {
         this.schema = schema;
+        idContext.setApplicationSchema( schema );
     }
 
     /**
@@ -153,10 +155,21 @@ public class GMLStreamReader {
      * 
      * @return deegree model representation for the current GML object element
      * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      */
     public GMLObject read()
-                            throws XMLStreamException {
-        throw new UnsupportedOperationException( "Automatic determination of GML objects types is not implemented yet." );
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        GMLObject object = null;
+        QName elName = xmlStream.getName();
+        if ( schema != null && schema.getFeatureType( elName ) != null ) {
+            object = readFeature();
+        } else {
+            // TODO
+            object = readGeometry();
+        }
+        return object;
     }
 
     /**
@@ -179,7 +192,7 @@ public class GMLStreamReader {
      * <p>
      * Please note that {@link #readStreamFeatureCollection()} should be preferred (especially for large feature
      * collections), because it does not need to built and store all features in memory at once.
-     * </p> 
+     * </p>
      * 
      * @return deegree model representation for the current GML feature collection element
      * @throws XMLStreamException

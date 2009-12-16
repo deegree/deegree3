@@ -35,28 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.dictionary.Definition;
+import org.deegree.gml.dictionary.Dictionary;
 
 /**
  * Basic interface for GML objects.
  * <p>
- * In the latest version of GML (3.2.1), eight classes of GML objects exist:
+ * Currently, deegree has built-in support for the following types of GML objects:
  * <ul>
- * <li>feature</li>
- * <li>geometry</li>
- * <li>value</li>
- * <li>topology</li>
- * <li>crs</li>
- * <li>time object</li>
- * <li>coverage</li>
- * <li>style</li>
+ * <li>{@link Feature}</li>
+ * <li>{@link Geometry}</li>
+ * <li>{@link Definition}</li>
+ * <li>{@link CoordinateSystem} (TODO needs integration with the GML package)</li>
  * </ul>
- * </p>
- * 
+ *
  * @see Feature
  * @see Geometry
- * 
+ * @see Definition
+ * @see CoordinateSystem
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 

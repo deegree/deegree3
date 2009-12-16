@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLObjectResolver;
 import org.deegree.gml.ReferenceResolvingException;
@@ -61,16 +59,6 @@ public class FeatureStoreGMLIdResolver implements GMLObjectResolver {
      */
     public FeatureStoreGMLIdResolver( FeatureStore fs ) {
         this.fs = fs;
-    }
-
-    @Override
-    public Feature getFeature( String uri, String baseURL ) {
-        return (Feature) getObject( uri, baseURL );
-    }
-
-    @Override
-    public Geometry getGeometry( String uri, String baseURL ) {
-        return (Geometry) getObject( uri, baseURL );
     }
 
     @Override

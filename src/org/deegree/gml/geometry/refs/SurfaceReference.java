@@ -74,36 +74,36 @@ public class SurfaceReference<T extends Surface> extends GeometricPrimitiveRefer
 
     @Override
     public Measure getArea( Unit requestedBaseUnit ) {
-        return getReferencedGeometry().getArea( requestedBaseUnit );
+        return getReferencedObject().getArea( requestedBaseUnit );
     }
 
     @Override
     public SurfaceType getSurfaceType() {
-        return getReferencedGeometry().getSurfaceType();
+        return getReferencedObject().getSurfaceType();
     }
 
     @Override
     public Point getCentroid() {
-        return getReferencedGeometry().getCentroid();
+        return getReferencedObject().getCentroid();
     }
 
     @Override
     public Points getExteriorRingCoordinates() {
-        return getReferencedGeometry().getExteriorRingCoordinates();
+        return getReferencedObject().getExteriorRingCoordinates();
     }
 
     @Override
     public List<Points> getInteriorRingsCoordinates() {
-        return getReferencedGeometry().getInteriorRingsCoordinates();
+        return getReferencedObject().getInteriorRingsCoordinates();
     }
 
     @Override
     public List<? extends SurfacePatch> getPatches() {
-        return getReferencedGeometry().getPatches();
+        return getReferencedObject().getPatches();
     }
 
     @Override
     public Measure getPerimeter( Unit requestedUnit ) {
-        return getReferencedGeometry().getPerimeter( requestedUnit );
+        return getReferencedObject().getPerimeter( requestedUnit );
     }
 }

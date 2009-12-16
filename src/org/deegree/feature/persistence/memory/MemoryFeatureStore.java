@@ -159,20 +159,20 @@ public class MemoryFeatureStore implements FeatureStore {
         GMLDocumentIdContext idContext = gmlReader.getIdContext();
         idContext.resolveLocalRefs();
 
-        // add features
-        Map<String, Feature> idToFeature = idContext.getFeatures();
+        // add all features and geometries from the document
+        Map<String, GMLObject> idToFeature = idContext.getObjects();
         for ( String id : idToFeature.keySet() ) {
-            Feature feature = idToFeature.get( id );
-            FeatureType ft = feature.getType();
-            FeatureCollection fc2 = ftToFeatures.get( ft );
-            fc2.add( feature );
-            idToObject.put( id, feature );
-        }
-
-        // add geometries
-        Map<String, Geometry> idToGeometry = idContext.getGeometries();
-        for ( String id : idToGeometry.keySet() ) {
-            idToObject.put( id, idToGeometry.get( id ) );
+            GMLObject object = idToFeature.get( id );
+            if ( object instanceof Feature ) {
+                Feature feature = (Feature) object;
+                FeatureType ft = feature.getType();
+                FeatureCollection fc2 = ftToFeatures.get( ft );
+                fc2.add( feature );
+                idToObject.put( id, feature );
+            } else if ( object instanceof Geometry ) {
+                idToObject.put( id, idToFeature.get( id ) );
+            }
+            idToObject.put( id, object );
         }
     }
 

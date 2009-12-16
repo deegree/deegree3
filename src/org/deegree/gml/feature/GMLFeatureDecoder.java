@@ -320,11 +320,11 @@ public class GMLFeatureDecoder extends XMLAdapter {
         feature = ft.newFeature( fid, propertyList, version );
 
         if ( fid != null && !"".equals( fid ) ) {
-            if ( idContext.getFeatureById( fid ) != null ) {
+            if ( idContext.getObject( fid ) != null ) {
                 String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
                 throw new XMLParsingException( xmlStream, msg );
             }
-            idContext.addFeature( feature );
+            idContext.addObject( feature );
         }
         return feature;
     }
@@ -418,11 +418,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
                     } else {
                         refGeometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
                     }
-
-                    // local feature reference?
-                    if ( href.startsWith( "#" ) ) {
-                        idContext.addGeometryReference( refGeometry );
-                    }
+                    idContext.addReference( refGeometry );
                     property = new GenericProperty<Geometry>( propDecl, propName, refGeometry );
                     xmlStream.nextTag();
                 } else {
@@ -441,12 +437,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
                     } else {
                         refFeature = new FeatureReference( idContext, uri, xmlStream.getSystemId() );
                     }
-
-                    // local feature reference?
-                    if ( uri.startsWith( "#" ) ) {
-                        idContext.addFeatureReference( refFeature );
-                    }
-
+                    idContext.addReference( refFeature );
                     property = new GenericProperty<Feature>( propDecl, propName, refFeature );
                     xmlStream.nextTag();
                 } else {

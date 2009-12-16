@@ -367,7 +367,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             return (AbstractDefaultGeometry) geometry;
         }
         if ( geometry instanceof GeometryReference<?> ) {
-            Geometry refGeometry = ( (GeometryReference<?>) geometry ).getReferencedGeometry();
+            Geometry refGeometry = ( (GeometryReference<?>) geometry ).getReferencedObject();
             if ( refGeometry instanceof AbstractDefaultGeometry ) {
                 return (AbstractDefaultGeometry) refGeometry;
             }

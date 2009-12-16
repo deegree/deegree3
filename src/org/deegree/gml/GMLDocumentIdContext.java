@@ -41,10 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Geometry;
-import org.deegree.gml.feature.FeatureReference;
-import org.deegree.gml.geometry.refs.GeometryReference;
+import org.deegree.feature.types.ApplicationSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,126 +64,104 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLDocumentIdContext.class );
 
-    private final Map<String, Feature> idToFeature = new HashMap<String, Feature>();
-
-    private final Map<String, Geometry> idToGeometry = new HashMap<String, Geometry>();
-
-    private final List<FeatureReference> featureReferences = new ArrayList<FeatureReference>();
-
-    private final List<GeometryReference<?>> localGeometryReferences = new ArrayList<GeometryReference<?>>();
-
     private final GMLVersion version;
 
+    private final Map<String, GMLObject> idToObject = new HashMap<String, GMLObject>();
+
+    private final List<GMLReference<?>> refs = new ArrayList<GMLReference<?>>();
+
+    private ApplicationSchema schema;
+
     /**
-     * Creates a new {@link GMLDocumentIdContext} instance for a GML document with the given version.
+     * Creates a new {@link GMLDocumentIdContext} instance for a GML document of the given version.
      * 
      * @param version
-     *            gml version, must not be <code>null</code>
+     *            GML version, must not be <code>null</code>
      */
     public GMLDocumentIdContext( GMLVersion version ) {
         this.version = version;
     }
 
-    public void addFeature( Feature feature ) {
-        String id = feature.getId();
+    /**
+     * Sets the application schema (necessary for {@link #getObject(String, String)}.
+     * 
+     * @param schema
+     *            application schema to use for parsing external references
+     */
+    public void setApplicationSchema( ApplicationSchema schema ) {
+        this.schema = schema;
+    }
+
+    /**
+     * Adds a new {@link GMLObject} that has been encountered during the parsing of the GML document.
+     * 
+     * @param object
+     *            GML object, must not be <code>null</code> and must not be of type {@link GMLReference}
+     */
+    public void addObject( GMLObject object ) {
+        String id = object.getId();
         if ( id != null && id.length() > 0 ) {
-            idToFeature.put( feature.getId(), feature );
+            idToObject.put( object.getId(), object );
         }
     }
 
-    public void addGeometry( Geometry geometry ) {
-        String id = geometry.getId();
-        if ( id != null && id.length() > 0 ) {
-            idToGeometry.put( geometry.getId(), geometry );
-        }
+    /**
+     * Adds a new {@link GMLReference} that has been encountered during the parsing of the GML document.
+     * 
+     * @param ref
+     *            GML reference, must not be <code>null</code>
+     */
+    public void addReference( GMLReference<?> ref ) {
+        refs.add( ref );
     }
 
-    public void addFeatureReference( FeatureReference ref ) {
-        featureReferences.add( ref );
+    /**
+     * Returns the {@link GMLObject} with the specified id.
+     * 
+     * @param id
+     *            id of the object to be returned
+     * @return the object, or <code>null</code> if it has not been added before
+     */
+    public GMLObject getObject( String id ) {
+        return idToObject.get( id );
     }
 
-    public void addGeometryReference( GeometryReference ref ) {
-        if ( ref.isLocal() ) {
-            localGeometryReferences.add( ref );
-        }
-    }
-
-    public Feature getFeatureById( String gmlId ) {
-        return idToFeature.get( gmlId );
-    }
-
-    public Geometry getGeometryById( String gmlId ) {
-        return idToGeometry.get( gmlId );
-    }
-
-    @Override
-    public Feature getFeature( String uri, String baseURL ) {
-        Feature feature = null;
-        if ( uri.startsWith( "#" ) ) {
-            feature = idToFeature.get( uri.substring( 1 ) );
-        } else {
-            try {
-                URL resolvedURL = null;
-                if ( baseURL != null ) {
-                    resolvedURL = new URL( new URL( baseURL ), uri );
-                } else {
-                    resolvedURL = new URL( uri );
-                }
-                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, resolvedURL );
-                feature = gmlReader.readFeature();
-                gmlReader.close();
-                LOG.debug( "Read GML feature" );
-            } catch ( Exception e ) {
-                throw new RuntimeException( "Unable to resolve external geometry reference: " + e.getMessage() );
-            }
-        }
-        return feature;
-    }
-
-    @Override
-    public Geometry getGeometry( String uri, String baseURL ) {
-        Geometry geometry = null;
-
-        if ( uri.startsWith( "#" ) ) {
-            geometry = idToGeometry.get( uri.substring( 1 ) );
-        } else {
-            try {
-                URL resolvedURL = null;
-                if ( baseURL != null ) {
-                    resolvedURL = new URL( new URL( baseURL ), uri );
-                } else {
-                    resolvedURL = new URL( uri );
-                }
-                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, resolvedURL );
-                geometry = gmlReader.readGeometry();
-                gmlReader.close();
-                LOG.debug( "Read GML geometry: '" + geometry.getClass() + "'" );
-            } catch ( Exception e ) {
-                throw new RuntimeException( "Unable to resolve external geometry reference: " + e.getMessage() );
-            }
-        }
-        return geometry;
+    /**
+     * Returns all {@link GMLObject} (but no {@link GMLReference} instances) that have been added.
+     * 
+     * @return all gml objects that have been added before, may be empty, but never <code>null</code>
+     */
+    public Map<String, GMLObject> getObjects() {
+        return idToObject;
     }
 
     @Override
     public GMLObject getObject( String uri, String baseURL ) {
-        GMLObject o = getFeature( uri, baseURL );
-        if ( o == null ) {
-            o = getGeometry( uri, baseURL );
+        GMLObject object = null;
+        if ( uri.startsWith( "#" ) ) {
+            object = idToObject.get( uri.substring( 1 ) );
+        } else {
+            try {
+                URL resolvedURL = null;
+                if ( baseURL != null ) {
+                    resolvedURL = new URL( new URL( baseURL ), uri );
+                } else {
+                    resolvedURL = new URL( uri );
+                }
+                GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, resolvedURL );
+                gmlReader.setApplicationSchema( schema );
+                object = gmlReader.read();
+                gmlReader.close();
+                LOG.debug( "Read GML object: id='" + object.getId() + "'" );
+            } catch ( Exception e ) {
+                throw new RuntimeException( "Unable to resolve external object reference: " + e.getMessage() );
+            }
         }
-        return o;
-    }
-
-    public Map<String, Feature> getFeatures() {
-        return idToFeature;
-    }
-
-    public Map<String, Geometry> getGeometries() {
-        return idToGeometry;
+        return object;
     }
 
     /**
-     * Resolves all local references.
+     * Resolves all local references that have been added before against the added objects.
      * 
      * @throws ReferenceResolvingException
      *             if a local reference cannot be resolved
@@ -194,25 +169,13 @@ public class GMLDocumentIdContext implements GMLObjectResolver {
     public void resolveLocalRefs()
                             throws ReferenceResolvingException {
 
-        for ( FeatureReference ref : featureReferences ) {
+        for ( GMLReference<?> ref : refs ) {
             if ( ref.isLocal() ) {
-                String fid = ref.getURI().substring( 1 );
-                LOG.debug( "Resolving reference to feature '" + fid + "'" );
-                if ( ref.getReferencedFeature() == null ) {
-                    String msg = "Cannot resolve reference to feature with id '" + fid
-                                 + "'. There is no feature with this id in the document.";
-                    throw new ReferenceResolvingException( msg );
-                }
-            }
-        }
-
-        for ( GeometryReference<?> ref : localGeometryReferences ) {
-            if ( ref.isLocal() ) {
-                String gid = ref.getURI().substring( 1 );
-                LOG.debug( "Resolving reference to geometry '" + gid + "'" );
-                if ( ref.getReferencedGeometry() == null ) {
-                    String msg = "Cannot resolve reference to feature with id '" + gid
-                                 + "'. There is no feature with this id in the document.";
+                String id = ref.getURI().substring( 1 );
+                LOG.debug( "Resolving reference to object '" + id + "'" );
+                if ( ref.getReferencedObject() == null ) {
+                    String msg = "Cannot resolve reference to object with id '" + id
+                                 + "'. There is no object with this id in the document.";
                     throw new ReferenceResolvingException( msg );
                 }
             }

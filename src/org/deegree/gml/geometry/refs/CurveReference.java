@@ -76,51 +76,51 @@ public class CurveReference<T extends Curve> extends GeometricPrimitiveReference
 
     @Override
     public LineString getAsLineString() {
-        return getReferencedGeometry().getAsLineString();
+        return getReferencedObject().getAsLineString();
     }
 
     @Override
     public Pair<Point, Point> getBoundary() {
-        return getReferencedGeometry().getBoundary();
+        return getReferencedObject().getBoundary();
     }
 
     @Override
     public Points getControlPoints() {
-        return getReferencedGeometry().getControlPoints();
+        return getReferencedObject().getControlPoints();
     }
 
     @Override
     public List<CurveSegment> getCurveSegments() {
-        return getReferencedGeometry().getCurveSegments();
+        return getReferencedObject().getCurveSegments();
     }
 
     @Override
     public CurveType getCurveType() {
-        return getReferencedGeometry().getCurveType();
+        return getReferencedObject().getCurveType();
     }
 
     @Override
     public Point getEndPoint() {
-        return getReferencedGeometry().getEndPoint();
+        return getReferencedObject().getEndPoint();
     }
 
     @Override
     public Measure getLength( Unit requestedUnit ) {
-        return getReferencedGeometry().getLength( requestedUnit );
+        return getReferencedObject().getLength( requestedUnit );
     }
 
     @Override
     public PrimitiveType getPrimitiveType() {
-        return getReferencedGeometry().getPrimitiveType();
+        return getReferencedObject().getPrimitiveType();
     }
 
     @Override
     public Point getStartPoint() {
-        return getReferencedGeometry().getStartPoint();
+        return getReferencedObject().getStartPoint();
     }
 
     @Override
     public boolean isClosed() {
-        return getReferencedGeometry().isClosed();
+        return getReferencedObject().isClosed();
     }
 }

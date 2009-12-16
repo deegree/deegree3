@@ -565,7 +565,7 @@ public class Java2DRenderer implements Renderer {
 
     public void render( Styling styling, Geometry geom ) {
         if ( geom instanceof GeometryReference<?> ) {
-            render( styling, ( (GeometryReference<?>) geom ).getReferencedGeometry() );
+            render( styling, ( (GeometryReference<?>) geom ).getReferencedObject() );
         }
         if ( styling instanceof PointStyling ) {
             render( (PointStyling) styling, geom );

@@ -74,16 +74,16 @@ public class PolygonReference extends SurfaceReference<Polygon> implements Polyg
 
     @Override
     public Ring getExteriorRing() {
-        return getReferencedGeometry().getExteriorRing();
+        return getReferencedObject().getExteriorRing();
     }
 
     @Override
     public List<Ring> getInteriorRings() {
-        return getReferencedGeometry().getInteriorRings();
+        return getReferencedObject().getInteriorRings();
     }
     
     @Override
     public List<PolygonPatch> getPatches() {
-        return getReferencedGeometry().getPatches();
+        return getReferencedObject().getPatches();
     }
 }

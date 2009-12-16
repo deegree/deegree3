@@ -107,7 +107,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
      * 
      */
     public GML2GeometryDecoder() {
-        this( new GeometryFactory(), new GMLDocumentIdContext(GMLVersion.GML_2) );
+        this( new GeometryFactory(), new GMLDocumentIdContext( GMLVersion.GML_2 ) );
     }
 
     /**
@@ -261,7 +261,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         }
         xmlStream.require( END_ELEMENT, GML21NS, "MultiPolygon" );
         MultiPolygon multiPolygon = geomFac.createMultiPolygon( gid, crs, members );
-        idContext.addGeometry( multiPolygon );
+        idContext.addObject( multiPolygon );
         return multiPolygon;
     }
 
@@ -272,11 +272,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
             polygon = new PolygonReference( idContext, href, xmlStream.getSystemId() );
-
-            // local geometry reference?
-            if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference<?>) polygon );
-            }
+            idContext.addReference( (GeometryReference<?>) polygon );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
                              + "'. Polygon value has already been specified using xlink.";
@@ -337,7 +333,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
 
         xmlStream.require( END_ELEMENT, GML21NS, "MultiLineString" );
         MultiLineString multiLineString = geomFac.createMultiLineString( gid, crs, members );
-        idContext.addGeometry( multiLineString );
+        idContext.addObject( multiLineString );
         return multiLineString;
     }
 
@@ -348,11 +344,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
             lineString = new LineStringReference( idContext, href, xmlStream.getSystemId() );
-
-            // local geometry reference?
-            if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference<?>) lineString );
-            }
+            idContext.addReference( (GeometryReference<?>) lineString );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
                              + "'. LineString value has already been specified using xlink.";
@@ -412,7 +404,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         }
         xmlStream.require( END_ELEMENT, GML21NS, "MultiPoint" );
         MultiPoint multiPoint = geomFac.createMultiPoint( gid, crs, members );
-        idContext.addGeometry( multiPoint );
+        idContext.addObject( multiPoint );
         return multiPoint;
     }
 
@@ -423,11 +415,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
             point = new PointReference( idContext, href, xmlStream.getSystemId() );
-
-            // local geometry reference?
-            if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference<?>) point );
-            }
+            idContext.addReference( (GeometryReference<?>) point );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
                              + "'. Point value has already been specified using xlink.";
@@ -487,7 +475,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         }
         xmlStream.require( END_ELEMENT, GML21NS, "MultiGeometry" );
         MultiGeometry<Geometry> multiGeometry = geomFac.createMultiGeometry( gid, crs, members );
-        idContext.addGeometry( multiGeometry );
+        idContext.addObject( multiGeometry );
         return multiGeometry;
     }
 
@@ -498,11 +486,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
             geometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
-
-            // local geometry reference?
-            if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference<?>) geometry );
-            }
+            idContext.addReference( (GeometryReference<?>) geometry );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
                              + "'. Geometry value has already been specified using xlink.";
@@ -566,7 +550,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         }
 
         Envelope envelope = geomFac.createEnvelope( points.get( 0 ).getAsArray(), points.get( 1 ).getAsArray(), crs );
-        idContext.addGeometry( envelope );
+        idContext.addObject( envelope );
         return envelope;
     }
 
@@ -618,7 +602,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         LineString lineString = geomFac.createLineString( gid, crs, geomFac.createPoints( points ) );
-        idContext.addGeometry( lineString );
+        idContext.addObject( lineString );
         return lineString;
     }
 
@@ -679,7 +663,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         }
         xmlStream.require( END_ELEMENT, GML21NS, "Polygon" );
         Polygon polygon = geomFac.createPolygon( gid, crs, exteriorRing, interiorRings );
-        idContext.addGeometry( polygon );
+        idContext.addObject( polygon );
         return polygon;
 
     }
@@ -713,7 +697,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         }
         xmlStream.require( END_ELEMENT, GML21NS, "LinearRing" );
         LinearRing linearRing = geomFac.createLinearRing( gid, crs, points );
-        idContext.addGeometry( linearRing );
+        idContext.addObject( linearRing );
         return linearRing;
     }
 
@@ -792,7 +776,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
         }
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GML21NS, "Point" );
-        idContext.addGeometry( point );
+        idContext.addObject( point );
         return point;
     }
 

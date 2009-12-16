@@ -248,7 +248,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
     @Override
     public void exportReference( GeometryReference<Geometry> geometryRef )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        export( geometryRef.getReferencedGeometry() );
+        export( geometryRef.getReferencedObject() );
     }
 
     /**

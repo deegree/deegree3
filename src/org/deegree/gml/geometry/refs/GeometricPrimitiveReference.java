@@ -72,6 +72,6 @@ public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends G
 
     @Override
     public PrimitiveType getPrimitiveType() {
-        return getReferencedGeometry().getPrimitiveType();
+        return getReferencedObject().getPrimitiveType();
     }
 }

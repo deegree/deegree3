@@ -346,8 +346,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     if ( !( propertyValue instanceof FeatureReference ) && !features.contains( propertyValue ) ) {
                         findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
                     } else if ( ( (FeatureReference) propertyValue ).isLocal()
-                                && !( features.contains( ( (FeatureReference) propertyValue ).getReferencedFeature() ) ) ) {
-                        findFeaturesAndGeometries( ( (FeatureReference) propertyValue ).getReferencedFeature(),
+                                && !( features.contains( ( (FeatureReference) propertyValue ).getReferencedObject() ) ) ) {
+                        findFeaturesAndGeometries( ( (FeatureReference) propertyValue ).getReferencedObject(),
                                                    geometries, features, fids, gids );
                     }
                 } else if ( propertyValue instanceof Geometry ) {
