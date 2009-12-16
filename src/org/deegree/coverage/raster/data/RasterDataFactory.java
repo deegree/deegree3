@@ -48,6 +48,7 @@ import org.deegree.coverage.raster.data.nio.LineInterleavedRasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.grid.CacheRasterReader;
 
@@ -148,7 +149,7 @@ public class RasterDataFactory {
                                                          RasterReader reader, boolean addToCache ) {
         RasterReader newReader = reader;
         if ( addToCache ) {
-            RasterCache cache = RasterCache.getInstance( null );
+            RasterCache cache = RasterCache.getInstance();
             newReader = cache.addReader( reader );
         }
         ByteBufferRasterData result;
@@ -225,7 +226,43 @@ public class RasterDataFactory {
     public static ByteBufferRasterData createRasterData( int width, int height, RasterDataInfo rdi,
                                                          RasterGeoReference geoRef, ByteBuffer byteBuffer,
                                                          boolean createCacheFile, String cacheId ) {
-        RasterCache cache = RasterCache.getInstance( null );
+        RasterCache cache = RasterCache.getInstance();
+        File cacheFile = null;
+        if ( createCacheFile ) {
+            cacheFile = cache.createCacheFile( cacheId );
+        }
+        CacheRasterReader inMem = new CacheRasterReader( byteBuffer, width, height, cacheFile, createCacheFile, rdi,
+                                                         geoRef, cache );
+        return createRasterData( width, height, rdi, inMem, true );
+    }
+
+    /**
+     * Creates a RasterData object object with given size, number of bands, data type and interleaving filled with the
+     * given ByteArray. A cachereader will be created.
+     * 
+     * @param width
+     *            width of the raster
+     * @param height
+     *            height of the raster
+     * @param rdi
+     *            containing the number of bands, the data type and the interleave type.
+     * @param geoRef
+     *            needed for the reader.
+     * @param byteBuffer
+     *            on which the memory reader will operate upon.
+     * @param createCacheFile
+     *            true if a cache file should back the data
+     * @param cacheId
+     *            the name of the cache file to use in the default {@link RasterCache}.
+     * @param options
+     *            which can be used to get the cache data from.
+     * @return new RasterData
+     */
+    public static ByteBufferRasterData createRasterData( int width, int height, RasterDataInfo rdi,
+                                                         RasterGeoReference geoRef, ByteBuffer byteBuffer,
+                                                         boolean createCacheFile, String cacheId,
+                                                         RasterIOOptions options ) {
+        RasterCache cache = RasterCache.getInstance( options );
         File cacheFile = null;
         if ( createCacheFile ) {
             cacheFile = cache.createCacheFile( cacheId );
