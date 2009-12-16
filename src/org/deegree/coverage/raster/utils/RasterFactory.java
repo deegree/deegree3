@@ -42,6 +42,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferFloat;
 import java.awt.image.PixelInterleavedSampleModel;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -60,8 +61,6 @@ import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
-
-import javax.media.jai.DataBufferFloat;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -473,21 +472,25 @@ public class RasterFactory {
             }
             break;
         case FLOAT:
-            float[] dataBuffer = new float[bands * width * height];
-            float[] floatValues = new float[bands];
-            for ( int y = 0; y < height; y++ ) {
-                for ( int x = 0; x < width; x++ ) {
-                    raster.getFloatPixel( x, y, floatValues );
-                    System.arraycopy( floatValues, 0, dataBuffer, ( ( y * width ) + x ) * bands, bands );
-
-                }
-            }
+            // float[] dataBuffer = new float[bands * width * height];
+            // float[] floatValues = new float[bands];
+            // for ( int y = 0; y < height; y++ ) {
+            // for ( int x = 0; x < width; x++ ) {
+            // raster.getFloatPixel( x, y, floatValues );
+            // System.arraycopy( floatValues, 0, dataBuffer, ( ( y * width ) + x ) * bands, bands );
+            //
+            // }
+            // }
             // set data does not work.. it will round to int :-)
             SampleModel fm = new BandedSampleModel( DataBuffer.TYPE_FLOAT, raster.getWidth(), raster.getHeight(), bands );
-            DataBuffer db = new DataBufferFloat( dataBuffer, dataBuffer.length );
+
+            byte[] noData = sourceRaster.getNullPixel( null );
+            FloatBuffer f = ByteBuffer.wrap( noData ).asFloatBuffer();
+
+            DataBuffer db = new RawDataBufferFloat( raster.getByteBuffer(), f.get( 0 ) );
+            new DataBufferFloat( 12 );
             WritableRaster wr = Raster.createWritableRaster( fm, db, null );
-            BufferedImage floatImage = new BufferedImage( new FloatColorModel( sourceRaster.getNullPixel( null ) ), wr,
-                                                          false, null );
+            BufferedImage floatImage = new BufferedImage( new FloatColorModel( noData ), wr, false, null );
             return floatImage;
             // break;
         case SHORT:

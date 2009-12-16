@@ -189,7 +189,16 @@ public class RasterBuilder {
                 LOG.debug( "Found following files: \n{}", coverageFiles.toString() );
             }
             List<AbstractRaster> rasters = new ArrayList<AbstractRaster>( coverageFiles.size() );
-            QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, options );
+            RasterIOOptions opts = new RasterIOOptions();
+            opts.copyOf( options );
+            String cacheDir = opts.get( RasterIOOptions.LOCAL_RASTER_CACHE_DIR );
+            if ( cacheDir == null ) {
+                opts.add( RasterIOOptions.LOCAL_RASTER_CACHE_DIR, directory.getName() );
+            }
+            if ( opts.get( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
+                opts.add( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR, "yes" );
+            }
+            QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, opts );
             Envelope domain = inf.envelope;
             RasterGeoReference rasterDomain = inf.rasterGeoReference;
             // IndexedMemoryTileContainer container = new IndexedMemoryTileContainer( domain, rasterDomain,
@@ -227,7 +236,7 @@ public class RasterBuilder {
         Envelope rasterEnvelope = null;
         for ( File filename : coverageFiles ) {
             try {
-                LOG.info( "Creating raster from file: {}", filename );
+                LOG.info( "{}) Creating raster from file: {}", System.currentTimeMillis(), filename );
                 RasterIOOptions newOpts = RasterIOOptions.forFile( filename );
                 newOpts.copyOf( options );
                 AbstractRaster raster = RasterFactory.loadRasterFromFile( filename, newOpts );
