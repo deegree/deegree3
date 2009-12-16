@@ -278,4 +278,9 @@ public class SimpleRaster extends AbstractRaster {
     public String toString() {
         return "SimpleRaster: " + envelopeString();
     }
+
+    @Override
+    public boolean isSimpleRaster() {
+        return true;
+    }
 }

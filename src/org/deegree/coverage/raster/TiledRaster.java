@@ -272,7 +272,10 @@ public class TiledRaster extends AbstractRaster {
                     LOG.debug( "Adding raster intersection:{}, rasterInfo:{}, rasterref: {} ",
                                new Object[] { subsetEnv, r.getRasterDataInfo(), r.getRasterReference() } );
                 }
+
                 result.setSubRaster( subsetEnv, r );
+                // RasterCache.dispose();
+                // System.gc();
             }
         }
         // try {

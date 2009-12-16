@@ -270,4 +270,11 @@ public abstract class AbstractRaster extends AbstractCoverage {
      */
     public abstract RasterDataInfo getRasterDataInfo();
 
+    /**
+     * @return true if the given raster is a simple raster, false otherwise.
+     */
+    public boolean isSimpleRaster() {
+        return false;
+    }
+
 }
