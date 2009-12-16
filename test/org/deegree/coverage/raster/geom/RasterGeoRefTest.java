@@ -478,6 +478,74 @@ public class RasterGeoRefTest {
     }
 
     /**
+     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, RasterRect, CRS)}
+     */
+    @Test
+    public void getSubEnvelope() {
+
+        int width = 3;
+        int height = 2;
+        RasterRect subRect = new RasterRect( 4, 2, width, height );
+
+        // CENTER
+        Envelope env = REF_CENTER.getEnvelope( CENTER, subRect, defaultCRS );
+        double[] min = env.getMin().getAsArray();
+        double[] max = env.getMax().getAsArray();
+        assertEquals( 30, env.getSpan0(), 0.00001 );
+        assertEquals( 20, env.getSpan1(), 0.00001 );
+
+        assertEquals( 1040, min[0], 0.00001 );
+        assertEquals( 960, min[1], 0.00001 );
+        assertEquals( 1070, max[0], 0.00001 );
+        assertEquals( 980, max[1], 0.00001 );
+
+        env = REF_OUTER.getEnvelope( OUTER, subRect, defaultCRS );
+        min = env.getMin().getAsArray();
+        max = env.getMax().getAsArray();
+        assertEquals( 30, env.getSpan0(), 0.00001 );
+        assertEquals( 20, env.getSpan1(), 0.00001 );
+
+        assertEquals( 1040, min[0], 0.00001 );
+        assertEquals( 960, min[1], 0.00001 );
+        assertEquals( 1070, max[0], 0.00001 );
+        assertEquals( 980, max[1], 0.00001 );
+    }
+
+    /**
+     * Test {@link RasterGeoReference#getEnvelope(OriginLocation, RasterRect, CRS)}
+     */
+    @Test
+    public void getSubEnvelopeWithTarget() {
+
+        int width = 3;
+        int height = 2;
+        RasterRect subRect = new RasterRect( 4, 2, width, height );
+
+        // CENTER
+        Envelope env = REF_CENTER.getEnvelope( OUTER, subRect, defaultCRS );
+        double[] min = env.getMin().getAsArray();
+        double[] max = env.getMax().getAsArray();
+        assertEquals( 30, env.getSpan0(), 0.00001 );
+        assertEquals( 20, env.getSpan1(), 0.00001 );
+
+        assertEquals( 1035, min[0], 0.00001 );
+        assertEquals( 965, min[1], 0.00001 );
+        assertEquals( 1065, max[0], 0.00001 );
+        assertEquals( 985, max[1], 0.00001 );
+
+        env = REF_OUTER.getEnvelope( CENTER, subRect, defaultCRS );
+        min = env.getMin().getAsArray();
+        max = env.getMax().getAsArray();
+        assertEquals( 30, env.getSpan0(), 0.00001 );
+        assertEquals( 20, env.getSpan1(), 0.00001 );
+
+        assertEquals( 1045, min[0], 0.00001 );
+        assertEquals( 955, min[1], 0.00001 );
+        assertEquals( 1075, max[0], 0.00001 );
+        assertEquals( 975, max[1], 0.00001 );
+    }
+
+    /**
      * Test {@link RasterGeoReference#getSize(Envelope)}
      */
     @Test
