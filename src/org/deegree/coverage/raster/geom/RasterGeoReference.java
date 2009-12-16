@@ -44,7 +44,6 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.sin;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.geom.AffineTransform;
@@ -410,58 +409,87 @@ public class RasterGeoReference {
     }
 
     /**
-     * Returns an Envelope for a raster with given size.
+     * Returns an Envelope for a raster with given size and given x,y raster location.
+     * 
+     * The calculation considers the origin and resolution of the this raster.
+     * 
+     * @param rasterRect
+     *            defining the x,y raster coordinates (as integers) as well as the width and height of the raster.
+     * @param crs
+     *            the coordinate system for the envelope
+     * 
+     * @return the calculated envelope
+     */
+    public Envelope getEnvelope( RasterRect rasterRect, CRS crs ) {
+        return getEnvelope( location, rasterRect, crs );
+    }
+
+    /**
+     * Returns an Envelope for a raster with given size and given x,y raster location.
      * 
      * The calculation considers the origin and resolution of the raster.
      * 
      * @param targetLocation
      *            of the origin, specifies if the the newly created envelope should consider the origin located at the
      *            OUTER or CENTER of a pixel.
-     * @param width
-     *            in raster coordinates
-     * @param height
-     *            in raster coordinates
+     * @param rasterRect
+     *            defining the x,y raster coordinates (as integers) as well as the width and height of the raster.
      * @param crs
      *            the coordinate system for the envelope
      * 
      * @return the calculated envelope
      */
-    public Envelope getEnvelope( OriginLocation targetLocation, int width, int height, CRS crs ) {
+    public Envelope getEnvelope( OriginLocation targetLocation, RasterRect rasterRect, CRS crs ) {
+        // if the targetlocation must be center, we add half a pixel, because we need to get the world coordinate of the
+        // center of the pixel.
+        double nullX = rasterRect.x + ( targetLocation == CENTER ? 0.5 : 0 );
+        double nullY = rasterRect.y + ( targetLocation == CENTER ? 0.5 : 0 );
+        double tw = nullX + rasterRect.width;
+        double th = nullY + rasterRect.height;
 
-        double tw = width;
-        double th = height;
-        if ( location == CENTER ) {
-            // add half a pixel, because we need to get the world coordinate of the center of the pixel.
-            tw += 0.5;
-            th += 0.5;
-        }
+        // double tw = rasterRect.width;
+        // double th = rasterRect.height;
 
-        if ( location != targetLocation ) {
-            if ( targetLocation == OUTER ) {
-                // this location is center, the target location is outer, subtract 0.5 pixel from the width|height.
-                tw -= 0.5;
-                th -= 0.5;
-            } else {
-                // this location is outer, the target location is center, add 0.5 pixel to the width|height
-                tw += 0.5;
-                th += 0.5;
-            }
-        }
+        // if ( location == CENTER ) {
+        // // if the targetlocation must be center, we add half a pixel, because we need to get the world coordinate of
+        // // the center of the pixel.
+        // tw += 0.5;
+        // th += 0.5;
+        // }
+        //
+        // if ( location != targetLocation ) {
+        // if ( targetLocation == OUTER ) {
+        // // this location is center, the target location is outer, subtract 0.5 pixel from the width|height.
+        // // tw -= 0.5;
+        // // th -= 0.5;
+        // pixelAddUp -= 0.5;
+        // } else {
+        // // this location is outer, the target location is center, add 0.5 pixel to the width|height
+        // // tw += 0.5;
+        // // th += 0.5;
+        // pixelAddUp += 0.5;
+        // }
+        // }
+
+        // nullX += pixelAddUp;
+        // nullY += pixelAddUp;
+        // tw += pixelAddUp;
+        // th += pixelAddUp;
 
         double[] widthHeightPos = getWorldCoordinate( tw, th );
-        double[] origin = getOrigin();
-
-        if ( location != targetLocation ) {
-            if ( targetLocation == OUTER ) {
-                // this location is center, the target location is outer, subtract 0.5 res to the origin.
-                origin[0] -= resX * 0.5;
-                origin[1] -= resY * 0.5;
-            } else {
-                // this location is outer, the target location is center, add 0.5 resolution to the origin
-                origin[0] += resX * 0.5;
-                origin[1] += resY * 0.5;
-            }
-        }
+        double[] origin = getWorldCoordinate( nullX, nullY );
+        // double[] origin = getOrigin();
+        // if ( location != targetLocation ) {
+        // if ( targetLocation == OUTER ) {
+        // // this location is center, the target location is outer, subtract 0.5 res to the origin.
+        // origin[0] -= resX * 0.5;
+        // origin[1] -= resY * 0.5;
+        // } else {
+        // // this location is outer, the target location is center, add 0.5 resolution to the origin
+        // origin[0] += resX * 0.5;
+        // origin[1] += resY * 0.5;
+        // }
+        // }
 
         // convert to lower-left and upper-right for the envelope
         double min0 = min( widthHeightPos[0], origin[0] );
@@ -492,6 +520,27 @@ public class RasterGeoReference {
             }
         }
         return result;
+    }
+
+    /**
+     * Returns an Envelope for a raster with given size.
+     * 
+     * The calculation considers the origin and resolution of the raster.
+     * 
+     * @param targetLocation
+     *            of the origin, specifies if the the newly created envelope should consider the origin located at the
+     *            OUTER or CENTER of a pixel.
+     * @param width
+     *            in raster coordinates
+     * @param height
+     *            in raster coordinates
+     * @param crs
+     *            the coordinate system for the envelope
+     * 
+     * @return the calculated envelope
+     */
+    public Envelope getEnvelope( OriginLocation targetLocation, int width, int height, CRS crs ) {
+        return getEnvelope( targetLocation, new RasterRect( 0, 0, width, height ), crs );
     }
 
     /**
@@ -600,25 +649,25 @@ public class RasterGeoReference {
             double[] max = transformedEnv.getMax().getAsArray();
 
             int[] rasterCoordinate = getRasterCoordinate( min[0], max[1] );
-            double raster0 = rasterCoordinate[0];
-            double raster1 = rasterCoordinate[1];
-            if ( location == CENTER ) {
-                // take the 'upper' left raster position as the new origin, thus add a half pixel.
-                raster0 += 0.5;
-                raster1 += 0.5;
-            }
-            if ( tLoc != location ) {
-                if ( tLoc == OUTER ) {
-                    // this location is center, the above subtracted 0.5 will get the raster location of the centered
-                    // view, but to get an OUTER view we need to subtract another half a pixel.
-                    raster0 -= 0.5;
-                    raster1 -= 0.5;
-                } else {
-                    // this location is OUTER, add 0.5 to get the center location
-                    raster0 += 0.5;
-                    raster1 += 0.5;
-                }
-            }
+            // take the 'upper' left raster position as the new origin, thus add a half pixel.
+            double raster0 = rasterCoordinate[0] + ( tLoc == CENTER ? 0.5 : 0 );
+            double raster1 = rasterCoordinate[1] + ( tLoc == CENTER ? 0.5 : 0 );
+            // if ( location == CENTER ) {
+            // raster0 += 0.5;
+            // raster1 += 0.5;
+            // }
+            // if ( tLoc != location ) {
+            // if ( tLoc == OUTER ) {
+            // // this location is center, the above subtracted 0.5 will get the raster location of the centered
+            // // view, but to get an OUTER view we need to subtract another half a pixel.
+            // raster0 -= 0.5;
+            // raster1 -= 0.5;
+            // } else {
+            // // this location is OUTER, add 0.5 to get the center location
+            // raster0 += 0.5;
+            // raster1 += 0.5;
+            // }
+            // }
             double[] worldCoordinate = getWorldCoordinate( raster0, raster1 );
 
             return new RasterGeoReference( tLoc, this.getResolutionX(), this.getResolutionY(), this.getRotationX(),
