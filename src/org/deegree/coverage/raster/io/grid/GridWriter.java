@@ -40,13 +40,13 @@ package org.deegree.coverage.raster.io.grid;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -66,6 +66,7 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.slf4j.Logger;
 
 /**
  * The <code>GridWriter</code> class TODO add class documentation here.
@@ -76,6 +77,7 @@ import org.deegree.geometry.GeometryFactory;
  * 
  */
 public class GridWriter implements RasterWriter {
+    private static final Logger LOG = getLogger( GridWriter.class );
 
     /** Defining the number of columns of the grid rasterwriter, to be used in the RasterIOOptions */
     public final static String RASTERIO_COLUMNS = "grid_writer_columns";
@@ -105,9 +107,13 @@ public class GridWriter implements RasterWriter {
 
     private int tileRasterHeight;
 
-    private FileChannel readAccess;
+    // private FileChannel readAccess;
+    //
+    // private FileChannel writeAccess;
 
-    private FileChannel writeAccess;
+    private FileInputStream readStream;
+
+    private FileOutputStream writeStream;
 
     private File gridFile;
 
@@ -118,6 +124,8 @@ public class GridWriter implements RasterWriter {
     private int tilesInFile;
 
     private int bytesPerTile;
+
+    private boolean leaveStreamOpen;
 
     /**
      * An empty constructor used in the {@link GridRasterIOProvider}, to a location in time where no information is
@@ -302,60 +310,69 @@ public class GridWriter implements RasterWriter {
                                                                       this.dataInfo ), options );
     }
 
-    private final synchronized FileChannel getReadChannel()
-                            throws FileNotFoundException {
-        if ( this.readAccess == null ) {
-            this.readAccess = new FileInputStream( gridFile ).getChannel();
+    private final FileChannel getReadChannel()
+                            throws IOException {
+        synchronized ( tileData ) {
+            if ( this.readStream == null ) {
+                if ( !gridFile.exists() ) {
+                    // the file was deleted
+                    gridFile.createNewFile();
+                }
+                this.readStream = new FileInputStream( gridFile );
+            }
+            return readStream.getChannel();
         }
-        return readAccess;
     }
 
     private final synchronized FileChannel getWriteChannel()
-                            throws FileNotFoundException {
-        if ( this.writeAccess == null ) {
-            this.writeAccess = new RandomAccessFile( gridFile, "rw" ).getChannel();
+                            throws IOException {
+        synchronized ( tileData ) {
+            if ( this.writeStream == null ) {
+                if ( !gridFile.exists() ) {
+                    // the file was deleted
+                    gridFile.createNewFile();
+                }
+                this.writeStream = new FileOutputStream( gridFile );
+            }
+            return writeStream.getChannel();
         }
-        return writeAccess;
     }
 
     /**
-     * @param raster
-     * @param columnId
-     * @param rowId
-     * @throws IOException
+     * Signals the gridfile reader that it should (not) close the stream after a read.
+     * 
+     * @param yesNo
      */
-    private void write( AbstractRaster raster, int column, int row )
-                            throws IOException {
-        Envelope tileEnvelope = getTileEnvelope( column, row );
-        RasterGeoReference tileRasterReference = RasterGeoReference.create( OriginLocation.OUTER, tileEnvelope,
-                                                                            tileRasterWidth, tileRasterHeight );
-        SimpleRaster subRaster = raster.getSubRaster( tileEnvelope ).getAsSimpleRaster();
-        RasterRect newDataPosition = tileRasterReference.convertEnvelopeToRasterCRS( subRaster.getEnvelope() );
-
+    protected void leaveStreamOpen( boolean yesNo ) {
+        this.leaveStreamOpen = yesNo;
         synchronized ( tileData ) {
-            // read in the data.
-            ByteBufferRasterData fileData = readData( getReadChannel(), column, row );
-            // override the new data with the old data.
-            fileData.setSubset( newDataPosition.x, newDataPosition.y, newDataPosition.width, newDataPosition.height,
-                                subRaster.getRasterData() );
-            // try {
-            // RasterFactory.saveRasterToFile( subRaster, new File( "/tmp/subraster_" + row + "," + column + ".png" ) );
-            // ImageIO.write( RasterFactory.rasterDataToImage( fileData ), "png", new File( "/tmp/filedata_" + row
-            // + "," + column + ".png" ) );
-            // } catch ( IOException e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
+            if ( !this.leaveStreamOpen ) {
+                try {
+                    closeWriteStream();
+                } catch ( IOException e ) {
+                    LOG.debug( "Could not close stream because: {}", e.getLocalizedMessage(), e );
+                }
+            }
+        }
+    }
 
-            int position = calcFilePosition( column, row );
-            FileChannel fileChannel = getWriteChannel();
-            FileLock lock = fileChannel.lock( position, position + bytesPerTile, false );
-            fileChannel.position( position );
-            ByteBuffer buffer = fileData.getByteBuffer();
-            buffer.rewind();
-            fileChannel.write( buffer );
-            lock.release();
-            tileData.notifyAll();
+    private final void closeWriteStream()
+                            throws IOException {
+        synchronized ( tileData ) {
+            if ( this.writeStream != null && !this.leaveStreamOpen ) {
+                this.writeStream.close();
+                this.writeStream = null;
+            }
+        }
+    }
+
+    private final void closeReadStream()
+                            throws IOException {
+        synchronized ( tileData ) {
+            if ( this.readStream != null && !this.leaveStreamOpen ) {
+                this.readStream.close();
+                this.readStream = null;
+            }
         }
     }
 
@@ -365,17 +382,20 @@ public class GridWriter implements RasterWriter {
         return tileInBlob * bytesPerTile;
     }
 
-    private ByteBufferRasterData readData( FileChannel channel, int column, int row )
+    private ByteBufferRasterData readData( int column, int row )
                             throws IOException {
-
-        ByteBuffer buffer = tileData.getByteBuffer();
-        buffer.rewind();
-        int position = calcFilePosition( column, row );
-        // transfer the data from the blob
-        channel.position( position );
-        channel.read( buffer );
-        buffer.rewind();
-        return tileData;
+        synchronized ( tileData ) {
+            ByteBuffer buffer = tileData.getByteBuffer();
+            buffer.rewind();
+            int position = calcFilePosition( column, row );
+            // transfer the data from the blob
+            FileChannel channel = getReadChannel();
+            channel.position( position );
+            channel.read( buffer );
+            closeReadStream();
+            buffer.rewind();
+            return tileData;
+        }
 
     }
 
@@ -460,7 +480,7 @@ public class GridWriter implements RasterWriter {
             newBytes.rewind();
             fileChannel.write( newBytes );
             lock.release();
-            tileData.notifyAll();
+            closeWriteStream();
         }
     }
 
@@ -468,9 +488,10 @@ public class GridWriter implements RasterWriter {
      * @param row
      * @param column
      * @param tileBuffer
+     * @return true if the writing of the tile was successful.
      * @throws IOException
      */
-    public void writeTile( int column, int row, ByteBuffer tileBuffer )
+    public boolean writeTile( int column, int row, ByteBuffer tileBuffer )
                             throws IOException {
         if ( tileBuffer == null || tileBuffer.capacity() != this.bytesPerTile ) {
             throw new IllegalArgumentException( "Wrong number of bytes." );
@@ -483,7 +504,49 @@ public class GridWriter implements RasterWriter {
             tileBuffer.rewind();
             fileChannel.write( tileBuffer );
             lock.release();
-            tileData.notifyAll();
+            closeWriteStream();
+        }
+        return true;
+    }
+
+    /**
+     * @param raster
+     * @param columnId
+     * @param rowId
+     * @throws IOException
+     */
+    private void write( AbstractRaster raster, int column, int row )
+                            throws IOException {
+        Envelope tileEnvelope = getTileEnvelope( column, row );
+        RasterGeoReference tileRasterReference = RasterGeoReference.create( OriginLocation.OUTER, tileEnvelope,
+                                                                            tileRasterWidth, tileRasterHeight );
+        SimpleRaster subRaster = raster.getSubRaster( tileEnvelope ).getAsSimpleRaster();
+        RasterRect newDataPosition = tileRasterReference.convertEnvelopeToRasterCRS( subRaster.getEnvelope() );
+
+        synchronized ( tileData ) {
+            // read in the data.
+            ByteBufferRasterData fileData = readData( column, row );
+            // override the new data with the old data.
+            fileData.setSubset( newDataPosition.x, newDataPosition.y, newDataPosition.width, newDataPosition.height,
+                                subRaster.getRasterData() );
+            // try {
+            // RasterFactory.saveRasterToFile( subRaster, new File( "/tmp/subraster_" + row + "," + column + ".png" ) );
+            // ImageIO.write( RasterFactory.rasterDataToImage( fileData ), "png", new File( "/tmp/filedata_" + row
+            // + "," + column + ".png" ) );
+            // } catch ( IOException e ) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // }
+
+            int position = calcFilePosition( column, row );
+            FileChannel fileChannel = getWriteChannel();
+            FileLock lock = fileChannel.lock( position, position + bytesPerTile, false );
+            fileChannel.position( position );
+            ByteBuffer buffer = fileData.getByteBuffer();
+            buffer.rewind();
+            fileChannel.write( buffer );
+            lock.release();
+            closeWriteStream();
         }
     }
 }

@@ -71,9 +71,11 @@ public class GridFileReader extends GridReader {
 
     private static final Logger LOG = getLogger( GridFileReader.class );
 
-    private FileChannel fileAccess;
+    private FileInputStream fileAccess;
 
     private File gridFile;
+
+    private boolean leaveOpen = false;
 
     /**
      * An empty constructor used in the {@link GridRasterIOProvider}, to a location in time where no information is
@@ -111,11 +113,20 @@ public class GridFileReader extends GridReader {
     protected synchronized void instantiate( GridMetaInfoFile infoFile, File gridFile ) {
         super.instantiate( infoFile );
         this.gridFile = gridFile;
-        if ( gridFile != null ) {
-            // set the tiles per blob depend on the gridFile size (if not full etc.)
-            setTilesPerBlob( (int) ( gridFile.length() / getBytesPerTile() ) );
-        }
+        // if ( gridFile != null ) {
+        // // set the tiles per blob depend on the gridFile size (if not full etc.)
+        // setTilesPerBlob( (int) ( gridFile.length() / getBytesPerTile() ) );
+        // }
         LOG.debug( "Tiles in grid blob (" + gridFile + "): " + getTilesPerBlob() );
+    }
+
+    /**
+     * Signals the gridfile reader that it should (not) close the stream after a read.
+     * 
+     * @param yesNo
+     */
+    protected void leaveStreamOpen( boolean yesNo ) {
+        this.leaveOpen = yesNo;
     }
 
     /**
@@ -132,12 +143,24 @@ public class GridFileReader extends GridReader {
         }
     }
 
-    private final synchronized FileChannel getFileChannel()
+    private final FileChannel getFileChannel()
                             throws FileNotFoundException {
-        if ( this.fileAccess == null ) {
-            this.fileAccess = new FileInputStream( gridFile ).getChannel();
+        synchronized ( gridFile ) {
+            if ( this.fileAccess == null ) {
+                this.fileAccess = new FileInputStream( gridFile );
+            }
+            return fileAccess.getChannel();
         }
-        return fileAccess;
+    }
+
+    private final void closeReadStream()
+                            throws IOException {
+        synchronized ( gridFile ) {
+            if ( this.fileAccess != null && !this.leaveOpen ) {
+                this.fileAccess.close();
+                this.fileAccess = null;
+            }
+        }
     }
 
     @Override
@@ -194,14 +217,17 @@ public class GridFileReader extends GridReader {
             if ( resultBuffer == null ) {
                 resultBuffer = ByteBufferPool.allocate( size, false );
             }
-            FileChannel channel = getFileChannel();
-            RasterRect tmpRect = new RasterRect( 0, 0, fRect.width, fRect.height );
-            for ( int col = minCRmaxCR[0]; col <= minCRmaxCR[2]; ++col ) {
-                for ( int row = minCRmaxCR[1]; row <= minCRmaxCR[3]; ++row ) {
-                    readValuesFromTile( col, row, fRect, channel, resultBuffer );
+            synchronized ( gridFile ) {
+                FileChannel channel = getFileChannel();
+                RasterRect tmpRect = new RasterRect( 0, 0, fRect.width, fRect.height );
+                for ( int col = minCRmaxCR[0]; col <= minCRmaxCR[2]; ++col ) {
+                    for ( int row = minCRmaxCR[1]; row <= minCRmaxCR[3]; ++row ) {
+                        readValuesFromTile( col, row, fRect, channel, resultBuffer );
+                    }
                 }
+                res = new BufferResult( tmpRect, resultBuffer );
+                closeReadStream();
             }
-            res = new BufferResult( tmpRect, resultBuffer );
         }
         return res;
     }
@@ -209,15 +235,24 @@ public class GridFileReader extends GridReader {
     @Override
     protected void read( int columnId, int rowId, ByteBuffer buffer )
                             throws IOException {
-        FileChannel channel = getFileChannel();
+
         int tileId = getTileId( columnId, rowId );
         long begin = System.currentTimeMillis();
         int tileInBlob = tileId % getTilesPerBlob();
         // transfer the data from the blob
         try {
-            LOG.debug( "Tile id: {} -> pos in blob: {}", tileId, +tileInBlob );
-            channel.position( tileInBlob * getBytesPerTile() );
-            channel.read( buffer );
+            synchronized ( gridFile ) {
+                FileChannel channel = getFileChannel();
+                // MappedByteBuffer map = channel.map( MapMode.READ_ONLY, tileInBlob * getBytesPerTile(),
+                // buffer.remaining() );
+                // buffer.put( map );
+                // map.
+
+                // LOG.debug( "Tile id: {} -> pos in blob: {}", tileId, +tileInBlob );
+                channel.position( tileInBlob * getBytesPerTile() );
+                channel.read( buffer );
+                closeReadStream();
+            }
             // rewinding is not an option, buffer.rewind();
         } catch ( IOException e ) {
             LOG.error( "Error reading tile data from blob: " + e.getMessage(), e );

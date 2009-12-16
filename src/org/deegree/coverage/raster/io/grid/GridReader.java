@@ -319,7 +319,7 @@ public abstract class GridReader implements RasterReader {
     public ByteBuffer getTileData( int column, int row, ByteBuffer buffer )
                             throws IOException {
         if ( buffer == null ) {
-            buffer = allocateTileBuffer();
+            buffer = allocateTileBuffer( false, false );
         }
         read( column, row, buffer );
 
@@ -331,9 +331,9 @@ public abstract class GridReader implements RasterReader {
      * 
      * @return a ByteBuffer which can hold a tile.
      */
-    protected ByteBuffer allocateTileBuffer() {
+    protected ByteBuffer allocateTileBuffer( boolean direct, boolean forCache ) {
         return ByteBufferPool.allocate( sampleSize * infoFile.getTileRasterHeight() * infoFile.getTileRasterWidth(),
-                                        false );
+                                        direct, forCache );
     }
 
     /**

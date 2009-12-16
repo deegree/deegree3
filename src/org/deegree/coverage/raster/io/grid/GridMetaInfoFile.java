@@ -88,6 +88,8 @@ public class GridMetaInfoFile {
 
     private final RasterDataInfo dataInfo;
 
+    private Envelope envelope;
+
     /**
      * @param geoReference
      * @param rows
@@ -120,6 +122,10 @@ public class GridMetaInfoFile {
         this.columns = columns;
         this.rows = rows;
         this.dataInfo = dataInfo;
+        /* rb: crs null, use the default crs */
+        // the outer envelope
+        envelope = geoReference.getEnvelope( OriginLocation.OUTER, tileRasterWidth * columns, tileRasterHeight * rows,
+                                             null );
     }
 
     /**
@@ -158,6 +164,10 @@ public class GridMetaInfoFile {
             throw new IOException( "Given reader may not be null" );
         }
         RasterGeoReference worldFile = WorldFileAccess.readWorldFile( readerOnInfoFile, options );
+        if ( worldFile != null ) {
+            // we are outer.
+            worldFile.createRelocatedReference( OriginLocation.OUTER );
+        }
 
         // read grid info
         int rows = Integer.parseInt( readerOnInfoFile.readLine() );
@@ -226,13 +236,7 @@ public class GridMetaInfoFile {
             throw new IOException( "The writer is null." );
         }
         // begins with standard world file entries
-        writer.println( metaInfo.getGeoReference().getResolutionX() );
-        writer.println( metaInfo.getGeoReference().getRotationY() );
-        writer.println( metaInfo.getGeoReference().getRotationX() );
-        writer.println( metaInfo.getGeoReference().getResolutionY() );
-        double[] origin = metaInfo.getGeoReference().getOrigin();
-        writer.println( origin[0] );
-        writer.println( origin[1] );
+        WorldFileAccess.writeWorldFile( metaInfo.getGeoReference(), writer );
         // now infos on grid
         writer.println( metaInfo.rows );
         writer.println( metaInfo.columns );
@@ -307,8 +311,20 @@ public class GridMetaInfoFile {
      * @return an envelope based on the number of columns/rows in the grid file and the number of tile samples.
      */
     public Envelope getEnvelope( OriginLocation location ) {
-        /* rb: crs null, use the default crs */
-        return geoReference.getEnvelope( location, tileRasterWidth * columns, tileRasterHeight * rows, null );
+        // if ( location == null || geoReference.getOriginLocation() == location ) {
+        return envelope;
+        // }
+        // get a relocated envelope (fitting the grid)
+        // return geoReference.getEnvelope( location, tileRasterWidth * columns, tileRasterHeight * rows, null );
+    }
+
+    /**
+     * Set the envelope
+     * 
+     * @param envelope
+     */
+    public void setEnvelope( Envelope envelope ) {
+        this.envelope = envelope;
     }
 
     /**
