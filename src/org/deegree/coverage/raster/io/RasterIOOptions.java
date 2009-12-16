@@ -88,6 +88,19 @@ public class RasterIOOptions {
      */
     public static final String CRS = "CRS";
 
+    /**
+     * This key will get the local raster cache directory to be used inside the raster cache directory for the given
+     * raster. For example the raster cache directory is /tmp/ and the LOCAL_RASTER_CACHE_DIR is set to 'some_name' all
+     * raster caches will reside in /tmp/some_name/
+     */
+    public static final String LOCAL_RASTER_CACHE_DIR = "local_raster_cache";
+
+    /** The raster cache dir to be used. */
+    public static final String RASTER_CACHE_DIR = "raster_cache_dir";
+
+    /** A key to signal the creation of missing raster dirs. */
+    public static final String CREATE_RASTER_MISSING_CACHE_DIR = "create_raster_dir_if_missing";
+
     private final Map<String, String> options = new HashMap<String, String>();
 
     private RasterGeoReference geoRef;
@@ -369,13 +382,22 @@ public class RasterIOOptions {
             }
             setNoData( otherOptions.getNoDataValue() );
             if ( getRasterOriginLocation() != OriginLocation.CENTER ) {
-                add( RasterIOOptions.GEO_ORIGIN_LOCATION, otherOptions.getRasterOriginLocation().name() );
+                add( GEO_ORIGIN_LOCATION, otherOptions.getRasterOriginLocation().name() );
             }
             if ( getCRS() == null ) {
-                add( RasterIOOptions.CRS, otherOptions.getCRS().getName() );
+                add( CRS, otherOptions.getCRS().getName() );
             }
+            if ( get( LOCAL_RASTER_CACHE_DIR ) == null ) {
+                add( LOCAL_RASTER_CACHE_DIR, otherOptions.get( LOCAL_RASTER_CACHE_DIR ) );
+            }
+            if ( get( RASTER_CACHE_DIR ) == null ) {
+                add( RASTER_CACHE_DIR, otherOptions.get( RASTER_CACHE_DIR ) );
+            }
+            if ( get( CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
+                add( CREATE_RASTER_MISSING_CACHE_DIR, otherOptions.get( CREATE_RASTER_MISSING_CACHE_DIR ) );
+            }
+
         }
 
     }
-
 }
