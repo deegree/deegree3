@@ -39,7 +39,6 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.dictionary.Definition;
-import org.deegree.gml.dictionary.Dictionary;
 
 /**
  * Basic interface for GML objects.

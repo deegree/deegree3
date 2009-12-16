@@ -103,7 +103,7 @@ abstract class AbstractFeature implements Feature {
     @Override
     public Envelope getEnvelope() {
         if ( standardProps == null ) {
-            standardProps = new StandardGMLFeatureProps( null, null, null, null );
+            standardProps = new StandardGMLFeatureProps( null, null, null, null, null );
         }
         if ( standardProps.getBoundedBy() == null ) {
             standardProps.setBoundedBy( calcEnvelope() );

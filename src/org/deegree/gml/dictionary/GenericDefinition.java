@@ -35,13 +35,38 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
+import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.types.ows.StringOrRef;
+import org.deegree.gml.props.StandardGMLObjectProps;
+
+/**
+ * Default implementation of {@link Definition}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class GenericDefinition implements Definition {
     
     private String id;
+    
+    private StandardGMLObjectProps standardProps;
 
     @Override
     public String getId() {
         return id;
-    } 
+    }
+    
+    public Object[] getMetadata() {
+        return standardProps.getMetadata();
+    }
 
+    public StringOrRef getDescription() {
+        return standardProps.getDescription();
+    }
+
+    public CodeType[] getNames() {
+        return standardProps.getNames();
+    }
 }

@@ -32,13 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
 import java.util.List;
 
 /**
- * Base interface for all GML definition objects.
+ * {@link Definition} that is a collection of {@link Definition} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

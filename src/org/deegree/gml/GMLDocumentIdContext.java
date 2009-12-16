@@ -46,13 +46,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keeps track of {@link GMLObject}s in GML instance documents, their ids and local xlink references during the parsing
+ * Keeps track of {@link GMLObject}s inside GML instance documents, their ids and local xlink references during the parsing
  * of GML documents.
  * <p>
  * Can be used for resolving local xlink-references at the end of the parsing process of a GML instance document or to
  * access all encountered objects on any level of the document.
  * </p>
  * 
+ * @see GMLObjectResolver
  * @see GMLStreamReader
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>

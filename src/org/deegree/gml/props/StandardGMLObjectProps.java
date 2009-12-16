@@ -36,9 +36,9 @@
 
 package org.deegree.gml.props;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.feature.types.property.PrimitiveType.STRING;
-import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
 import javax.xml.namespace.QName;
 
@@ -47,58 +47,79 @@ import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLObject;
 
 /**
- * Version-agnostic representation of the standard properties that any GML object allows for.
+ * Version-agnostic representation of the standard properties that any {@link GMLObject} allows for.
+ * <p>
+ * The following properties exist (description taken from GML 3.1.1/3.2.1 schemas):
+ * <ul>
+ * <li><b><code>gml:metaDataProperty</code></b>: Contains or refers to a metadata package that contains metadata
+ * properties. Has been deprecated in GML 3.2.1.</li>
+ * <li><b><code>gml:description</code></b>: The value of this property is a text description of the object.
+ * gml:description uses gml:StringOrRefType as its content model, so it may contain a simple text string content, or
+ * carry a reference to an external description. The use of gml:description to reference an external description has
+ * been deprecated and replaced by the gml:descriptionReference property.</li>
+ * <li><b><code>gml:descriptionReference</code></b>: The value of this property is a remote text description of the
+ * object. The xlink:href attribute of the gml:descriptionReference property references the external description.</li>
+ * <li><b><code>gml:identifier</code></b>: Often, a special identifier is assigned to an object by the maintaining
+ * authority with the intention that it is used in references to the object For such cases, the codeSpace shall be
+ * provided. That identifier is usually unique either globally or within an application domain. gml:identifier is a
+ * pre-defined property for such identifiers.</li>
+ * <li><b><code>gml:name</code></b>: The gml:name property provides a label or identifier for the object, commonly a
+ * descriptive name. An object may have several names, typically assigned by different authorities. gml:name uses the
+ * gml:CodeType content model. The authority for a name is indicated by the value of its (optional) codeSpace attribute.
+ * The name may or may not be unique, as determined by the rules of the organization responsible for the codeSpace. In
+ * common usage there will be one name per authority, so a processing application may select the name from its preferred
+ * codeSpace.</li>
+ * </ul>
+ * </p>
  * <p>
  * <table border="1">
  * <tr>
  * <th>Property name</th>
- * <th>Multiplicity</th>
- * <th>Description (from GML 3.1.1/3.2.1 schemas)</th>
+ * <th>GML 2</th>
+ * <th>GML 3.0</th>
+ * <th>GML 3.1</th>
+ * <th>GML 3.2</th>
  * </tr>
- * <tr>
- * <td><code>gml:metaDataProperty</code></td>
- * <td><code>0...*</code></td>
- * <td>Contains or refers to a metadata package that contains metadata properties. <i>NOTE: This property is deprecated
- * in GML 3.2.1.</i></td>
+ * <tr align="center">
+ * <td><code>metaDataProperty</code></td>
+ * <td><code>n/a</code></td>
+ * <td><code>MetaDataPropertyType (0...*)</code></td>
+ * <td><code>MetaDataPropertyType (0...*)</code></td>
+ * <td><code>MetaDataPropertyType (0...*)</code></td>
  * </tr>
- * <tr>
- * <td><code>gml:description</code></td>
- * <td><code>0...1</code></td>
- * <td>The value of this property is a text description of the object. <code>gml:description</code> uses
- * <code>gml:StringOrRefType</code> as its content model, so it may contain a simple text string content, or carry a
- * reference to an external description. The use of gml:description to reference an external description has been
- * deprecated and replaced by the <code>gml:descriptionReference</code> property.</td>
+ * <tr align="center">
+ * <td><code>description</code></td>
+ * <td><code>string (0...1)</code></td>
+ * <td><code>StringOrRefType (0...1)</code></td>
+ * <td><code>StringOrRefType (0...1)</code></td>
+ * <td><code>StringOrRefType (0...1)</code></td>
  * </tr>
- * <tr>
- * <td><code>gml:descriptionReference</code></td>
- * <td><code>0...1</code></td>
- * <td>The value of this property is a remote text description of the object. The <code>xlink:href</code> attribute of
- * the <code>gml:descriptionReference</code> property references the external description.</td>
+ * <tr align="center">
+ * <td><code>descriptionReference</code></td>
+ * <td><code>n/a</code></td>
+ * <td><code>n/a</code></td>
+ * <td><code>n/a</code></td>
+ * <td><code>ReferenceType (0...1)</code></td>
  * </tr>
- * <tr>
- * <td><code>gml:identifier</code></td>
- * <td><code>0...1</code></td>
- * <td>Often, a special identifier is assigned to an object by the maintaining authority with the intention that it is
- * used in references to the object For such cases, the codeSpace shall be provided. That identifier is usually unique
- * either globally or within an application domain. <code>gml:identifier</code> is a pre-defined property for such
- * identifiers.</td>
+ * <tr align="center">
+ * <td><code>identifier</code></td>
+ * <td><code>n/a</code></td>
+ * <td><code>n/a</code></td>
+ * <td><code>n/a</code></td>
+ * <td><code>CodeWithAuthorityType (0...1)</code></td>
  * </tr>
- * <tr>
- * <td><code>gml:name</code></td>
- * <td><code>0...*</code></td>
- * <td>The <code>gml:name</code> property provides a label or identifier for the object, commonly a descriptive name. An
- * object may have several names, typically assigned by different authorities. <code>gml:name</code> uses the
- * <code>gml:CodeType</code> content model. The authority for a name is indicated by the value of its (optional)
- * <code>codeSpace</code> attribute. The name may or may not be unique, as determined by the rules of the organization
- * responsible for the codeSpace. In common usage there will be one name per authority, so a processing application may
- * select the name from its preferred codeSpace.</td>
+ * <tr align="center">
+ * <td><code>name</code></td>
+ * <td><code>string (0...1)</code></td>
+ * <td><code>CodeType (0...*)</code></td>
+ * <td><code>CodeType (0...*)</code></td>
+ * <td><code>CodeType (0...*)</code></td>
  * </tr>
  * </table>
  * </p>
@@ -119,9 +140,6 @@ public class StandardGMLObjectProps {
     /** GML 2 standard property type 'gml:name' */
     public static final SimplePropertyType<String> PT_NAME_GML2;
 
-    /** GML 2 standard property type 'gml:boundedBy' */
-    public static final PropertyType PT_BOUNDED_BY_GML2;
-
     /** GML 3.0/3.1 standard property type 'gml:metaDataProperty' */
     public static final CustomPropertyType PT_META_DATA_PROPERTY_GML31;
 
@@ -131,15 +149,25 @@ public class StandardGMLObjectProps {
     /** GML 3.0/3.1 standard property type 'gml:name' */
     public static final CodePropertyType PT_NAME_GML31;
 
+    /** GML 3.2 standard property type 'gml:metaDataProperty' */
+    public static final CustomPropertyType PT_META_DATA_PROPERTY_GML32;
+
+    /** GML 3.2 standard property type 'gml:description' */
+    public static final StringOrRefPropertyType PT_DESCRIPTION_GML32;
+    
+    /** GML 3.2 standard property type 'gml:descriptionReference' */
+    public static final StringOrRefPropertyType PT_DESCRIPTION_REFERENCE_GML32;
+
+    /** GML 3.2 standard property type 'gml:identifier' */
+    public static final CodePropertyType PT_IDENTIFIER_GML32;      
+    
+    /** GML 3.2 standard property type 'gml:name' */
+    public static final CodePropertyType PT_NAME_GML32;    
+    
     static {
         PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING, false,
                                                               null );
         PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING, false, null );
-
-        // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
-        PT_BOUNDED_BY_GML2 = new GeometryPropertyType( new QName( GMLNS, "boundedBy" ), 0, 1,
-                                                       GeometryPropertyType.GeometryType.GEOMETRY,
-                                                       GeometryPropertyType.CoordinateDimension.DIM_2, false, null, INLINE );
 
         // TODO correct this (should be a MetaDataPropertyType)
         PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null,
@@ -147,21 +175,46 @@ public class StandardGMLObjectProps {
         // TODO correct this (should be a StringOrRefType)
         PT_DESCRIPTION_GML31 = new StringOrRefPropertyType( new QName( GMLNS, "description" ), 0, 1, false, null );
         PT_NAME_GML31 = new CodePropertyType( new QName( GMLNS, "name" ), 0, -1, false, null );
+        
+        // TODO correct this (should be a MetaDataPropertyType)
+        PT_META_DATA_PROPERTY_GML32 = new CustomPropertyType( new QName( GML3_2_NS, "metaDataProperty" ), 0, -1, null,
+                                                              false, null );
+        // TODO correct this (should be a StringOrRefType)
+        PT_DESCRIPTION_GML32 = new StringOrRefPropertyType( new QName( GML3_2_NS, "description" ), 0, 1, false, null );
+        // TODO correct this (should be a ReferenceType)
+        PT_DESCRIPTION_REFERENCE_GML32 = new StringOrRefPropertyType( new QName( GML3_2_NS, "descriptionReference" ), 0, 1, false, null );
+        PT_IDENTIFIER_GML32 = new CodePropertyType( new QName( GML3_2_NS, "identifier" ), 0, -1, false, null );
+        PT_NAME_GML32 = new CodePropertyType( new QName( GML3_2_NS, "name" ), 0, -1, false, null );        
     }
 
     protected Object[] metadata;
 
     protected StringOrRef description;
 
+    protected CodeType identifier;
+
     protected CodeType[] names;
 
-    public StandardGMLObjectProps( Object[] metadata, StringOrRef description, CodeType[] names ) {
+    /**
+     * Creates a new {@link StandardGMLObjectProps} instance.
+     * 
+     * @param metadata
+     *            metadata values, may be <code>null</code>
+     * @param description
+     *            description, may be <code>null</code>
+     * @param identifier
+     *            identifier, may be <code>null</code>
+     * @param names
+     *            names, may be <code>null</code>
+     */
+    public StandardGMLObjectProps( Object[] metadata, StringOrRef description, CodeType identifier, CodeType[] names ) {
         if ( metadata == null ) {
             this.metadata = new Object[0];
         } else {
             this.metadata = metadata;
         }
         this.description = description;
+        this.identifier = identifier;
         if ( names == null ) {
             this.names = new CodeType[0];
         } else {
@@ -169,14 +222,38 @@ public class StandardGMLObjectProps {
         }
     }
 
+    /**
+     * Returns the metadata values.
+     * 
+     * @return the metadata values, may be empty, but never <code>null</code>
+     */
     public Object[] getMetadata() {
         return metadata;
     }
 
+    /**
+     * Returns the description.
+     * 
+     * @return the description, may be <code>null</code>
+     */
     public StringOrRef getDescription() {
         return description;
     }
 
+    /**
+     * Returns the identifier.
+     * 
+     * @return the identifier, may be <code>null</code>
+     */
+    public CodeType getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * Returns the names.
+     * 
+     * @return the names, may be empty, but never <code>null</code>
+     */
     public CodeType[] getNames() {
         return names;
     }

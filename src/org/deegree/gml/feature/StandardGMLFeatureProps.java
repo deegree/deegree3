@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.feature.types.property.PrimitiveType.STRING;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,13 +56,14 @@ import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.PropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.props.StandardGMLObjectProps;
 
 /**
  * Version-agnostic representation of the standard properties that any GML feature allows for.
+ * 
+ * @see StandardGMLObjectProps
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -71,17 +72,14 @@ import org.deegree.gml.props.StandardGMLObjectProps;
  */
 public class StandardGMLFeatureProps extends StandardGMLObjectProps {
 
-    /** GML 2 standard property type 'gml:description' */
-    public static final SimplePropertyType<String> PT_DESCRIPTION_GML2;
-
-    /** GML 2 standard property type 'gml:name' */
-    public static final SimplePropertyType<String> PT_NAME_GML2;
-
     /** GML 2 standard property type 'gml:boundedBy' */
-    public static final PropertyType PT_BOUNDED_BY_GML2;
+    public static final PropertyType<Envelope> PT_BOUNDED_BY_GML2;
 
     /** GML 3.0/3.1 standard property type 'gml:boundedBy' */
-    public static final PropertyType PT_BOUNDED_BY_GML31;
+    public static final PropertyType<Envelope> PT_BOUNDED_BY_GML31;
+
+    /** GML 3.2 standard property type 'gml:boundedBy' */
+    public static final PropertyType<Envelope> PT_BOUNDED_BY_GML32;
 
     private final static Map<QName, PropertyType<?>> GML2PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
 
@@ -90,15 +88,14 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
     private final static Map<QName, PropertyType<?>> GML32PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
 
     static {
-        PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING, false,
-                                                              null );
-        PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING, false, null );
-
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
         PT_BOUNDED_BY_GML2 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1, false, null );
 
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
         PT_BOUNDED_BY_GML31 = new EnvelopePropertyType( new QName( GMLNS, "boundedBy" ), 0, 1, false, null );
+
+        // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
+        PT_BOUNDED_BY_GML32 = new EnvelopePropertyType( new QName( GML3_2_NS, "boundedBy" ), 0, 1, false, null );
 
         // fill lookup maps
         GML2PropNameToPropType.put( PT_DESCRIPTION_GML2.getName(), PT_DESCRIPTION_GML2 );
@@ -109,6 +106,13 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         GML31PropNameToPropType.put( PT_DESCRIPTION_GML31.getName(), PT_DESCRIPTION_GML31 );
         GML31PropNameToPropType.put( PT_NAME_GML31.getName(), PT_NAME_GML31 );
         GML31PropNameToPropType.put( PT_BOUNDED_BY_GML31.getName(), PT_BOUNDED_BY_GML31 );
+
+        GML32PropNameToPropType.put( PT_META_DATA_PROPERTY_GML32.getName(), PT_META_DATA_PROPERTY_GML32 );
+        GML32PropNameToPropType.put( PT_DESCRIPTION_GML32.getName(), PT_DESCRIPTION_GML32 );
+        GML32PropNameToPropType.put( PT_DESCRIPTION_REFERENCE_GML32.getName(), PT_DESCRIPTION_REFERENCE_GML32 );
+        GML32PropNameToPropType.put( PT_IDENTIFIER_GML32.getName(), PT_IDENTIFIER_GML32 );
+        GML32PropNameToPropType.put( PT_NAME_GML32.getName(), PT_NAME_GML32 );
+        GML32PropNameToPropType.put( PT_BOUNDED_BY_GML32.getName(), PT_BOUNDED_BY_GML32 );
     }
 
     private Envelope boundedBy;
@@ -117,12 +121,19 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
      * Creates a new {@link StandardGMLFeatureProps} instance.
      * 
      * @param metadata
+     *            metadata values, may be <code>null</code>
      * @param description
+     *            description, may be <code>null</code>
+     * @param identifier
+     *            identifier, may be <code>null</code>
      * @param names
+     *            names, may be <code>null</code>
      * @param boundedBy
+     *            bounding box, may be <code>null</code>
      */
-    public StandardGMLFeatureProps( Object[] metadata, StringOrRef description, CodeType[] names, Envelope boundedBy ) {
-        super( metadata, description, names );
+    public StandardGMLFeatureProps( Object[] metadata, StringOrRef description, CodeType identifier, CodeType[] names,
+                                    Envelope boundedBy ) {
+        super( metadata, description, identifier, names );
         this.boundedBy = boundedBy;
     }
 
@@ -382,7 +393,6 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         case GML_32:
             pts = GML32PropNameToPropType.values();
             break;
-
         }
         return pts;
     }
@@ -396,8 +406,8 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
      *            GML version, must not be <code>null</code>
      * @return standard GML property type, or <code>null</code> if no such property type exists
      */
-    public static PropertyType getPropertyType( QName propName, GMLVersion version ) {
-        PropertyType pt = null;
+    public static PropertyType<?> getPropertyType( QName propName, GMLVersion version ) {
+        PropertyType<?> pt = null;
         switch ( version ) {
         case GML_2:
             pt = GML2PropNameToPropType.get( propName );
@@ -489,6 +499,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
 
         List<Object> metadata = new LinkedList<Object>();
         StringOrRef description = null;
+        CodeType identifier = null;
         List<CodeType> names = new LinkedList<CodeType>();
         Envelope boundedBy = null;
         int firstCustomPropIndex = 0;
@@ -544,7 +555,7 @@ public class StandardGMLFeatureProps extends StandardGMLObjectProps {
         }
         StandardGMLFeatureProps gmlProps = new StandardGMLFeatureProps(
                                                                         metadata.toArray( new Object[metadata.size()] ),
-                                                                        description,
+                                                                        description, identifier,
                                                                         names.toArray( new CodeType[names.size()] ),
                                                                         boundedBy );
         List<Property<?>> nonGMLProps = props.subList( firstCustomPropIndex, props.size() );

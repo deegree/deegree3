@@ -36,7 +36,8 @@
 package org.deegree.gml;
 
 /**
- * Provides the functionality to retrieve {@link GMLObject} instances by a URI (which may be document local or remote).
+ * Implementations provide the functionality to retrieve {@link GMLObject} instances by their URI (which may be document
+ * local or remote).
  * <p>
  * A local reference is always constructed as <code># + id</code>.
  * </p>
@@ -54,7 +55,7 @@ public interface GMLObjectResolver {
      * @param uri
      *            URI that identifies the object, must not be <code>null</code>
      * @param baseURL
-     *            optional baseURL for resolving URIs that are relative URLs
+     *            optional baseURL for resolving URIs that are relative URLs, may be <code>null</code>
      * @return the referenced object or <code>null</code> if no such object exists
      */
     public GMLObject getObject( String uri, String baseURL );
