@@ -176,8 +176,9 @@ public class FeatureStoreManager {
         String ns = jaxbConfig.getNamespace();
         String id = jaxbConfig.getDataSourceName();
         String bbox = jaxbConfig.getBBoxStatement();
+        String multiRes = jaxbConfig.getMultiResolutionTable();
 
-        SimpleSQLDatastore fs = new SimpleSQLDatastore( connId, srs, stmt, name, ns, bbox );
+        SimpleSQLDatastore fs = new SimpleSQLDatastore( connId, srs, stmt, name, ns, bbox, multiRes );
         registerAndInit( fs, id );
         return fs;
     }

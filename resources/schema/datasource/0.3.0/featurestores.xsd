@@ -72,6 +72,7 @@
           <element name="BBoxStatement" type="string" />
           <element name="Namespace" type="string" minOccurs="0" />
           <element name="FeatureTypeName" type="string" minOccurs="0" />
+          <element name="MultiResolutionTable" type="string" minOccurs="0" />
         </sequence>
       </extension>
     </complexContent>

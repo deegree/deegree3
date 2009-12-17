@@ -140,6 +140,8 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     GeometryTransformer transformer;
 
+    private String multiRes;
+
     /**
      * @param connId
      * @param crs
@@ -147,8 +149,10 @@ public class SimpleSQLDatastore implements FeatureStore {
      * @param featureName
      * @param namespace
      * @param bbox
+     * @param multiRes
      */
-    public SimpleSQLDatastore( String connId, String crs, String sql, String featureName, String namespace, String bbox ) {
+    public SimpleSQLDatastore( String connId, String crs, String sql, String featureName, String namespace,
+                               String bbox, String multiRes ) {
         this.connId = connId;
         this.crs = new CRS( crs );
         sql = sql.trim();
@@ -167,6 +171,7 @@ public class SimpleSQLDatastore implements FeatureStore {
             LOG.error( "The invalid crs '{}' was specified for the simple SQL data store.", crs );
             LOG.debug( "Stack trace:", e );
         }
+        this.multiRes = multiRes;
     }
 
     public FeatureStoreTransaction acquireTransaction()
