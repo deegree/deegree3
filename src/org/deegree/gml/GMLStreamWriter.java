@@ -191,15 +191,6 @@ public class GMLStreamWriter {
         this.schemaLocation = schemaLocation;
     }
 
-    /**
-     * Controls the formatting of written coordinates in geometries.
-     * 
-     * @param formatter
-     */
-    public void setCoordinateFormatter( Object formatter ) {
-        // TODO
-    }
-
     public void setAutoNamespaceBinding( boolean autoNs ) {
         this.autoNs = autoNs;
     }

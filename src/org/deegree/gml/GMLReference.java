@@ -39,8 +39,8 @@ package org.deegree.gml;
 import org.deegree.gml.props.StandardGMLProps;
 
 /**
- * Represents a reference to a {@link GMLObject}, which is usually expressed using an <code>xlink:href</code> attribute
- * in GML (may be document-local or remote).
+ * Represents a reference to a {@link GMLObject}, corresponds to a GML property with an <code>xlink:href</code>
+ * attribute (may be document-local or remote).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -77,9 +77,9 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
     }
 
     /**
-     * Returns the URI of the feature.
+     * Returns the URI of the object.
      * 
-     * @return the URI of the feature, never <code>null</code>
+     * @return the URI of the object, never <code>null</code>
      */
     public String getURI() {
         return uri;
@@ -107,7 +107,7 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
         if ( object == null ) {
             object = (T) resolver.getObject( uri, baseURL );
             if ( object == null ) {
-                String msg = "Unable to resolve reference '" + uri + "'.";
+                String msg = "Unable to resolve reference to '" + uri + "'.";
                 throw new ReferenceResolvingException( msg );
             }
         }

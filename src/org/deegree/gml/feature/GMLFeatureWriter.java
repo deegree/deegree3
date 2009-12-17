@@ -137,11 +137,11 @@ public class GMLFeatureWriter {
 
     /**
      * @param version
-     *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
+     *            GML version of the output, must not be <code>null</code>
      * @param writer
      * @param outputCRS
-     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
-     *            used)
+     *            crs used for exported geometries, may be <code>null</code> (in this case, the original crs of the
+     *            geometries is used)
      * @param formatter
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
      *            <code>null</code> (use 5 decimal places)
@@ -150,7 +150,7 @@ public class GMLFeatureWriter {
      *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
      *            , the substring <code>{}</code> is replaced by the object id
      * @param requestedProps
-     *            properties to be exported, may be <code>null</code>
+     *            properties to be exported, may be <code>null</code> (export all properties)
      * @param traverseXlinkDepth
      * @param traverseXlinkExpiry
      * @param exportSfGeometries
@@ -215,7 +215,7 @@ public class GMLFeatureWriter {
         if ( fcEnv != null ) {
             geometryWriter.exportEnvelope( col.getEnvelope() );
         } else {
-            writer.writeEmptyElement( gmlNs, "null" );
+            writer.writeEmptyElement( gmlNs, gmlNull );
         }
         writer.writeEndElement();
         for ( Feature f : col ) {
@@ -383,13 +383,11 @@ public class GMLFeatureWriter {
             writer.writeEndElement();
         } else if ( propertyType instanceof StringOrRefPropertyType ) {
             StringOrRef stringOrRef = (StringOrRef) value;
-
             if ( stringOrRef.getString() == null || stringOrRef.getString().length() == 0 ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( stringOrRef.getRef() != null ) {
                     writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
                 }
-
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
 
@@ -401,7 +399,6 @@ public class GMLFeatureWriter {
                 }
                 writer.writeEndElement();
             }
-
         } else if ( propertyType instanceof CustomPropertyType ) {
             GenericCustomPropertyWriter.export( (GenericCustomPropertyValue) value, writer );
         }

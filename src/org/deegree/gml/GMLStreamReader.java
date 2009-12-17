@@ -83,9 +83,9 @@ public class GMLStreamReader {
 
     private GeometryFactory geomFac;
 
-    private GMLGeometryReader geometryDecoder;
+    private GMLGeometryReader geometryReader;
 
-    private GMLFeatureReader featureDecoder;
+    private GMLFeatureReader featureReader;
 
     /**
      * Creates a new {@link GMLStreamReader} instance.
@@ -133,13 +133,13 @@ public class GMLStreamReader {
     public void setGeometryFactory( GeometryFactory geomFac ) {
         switch ( version ) {
         case GML_2: {
-            geometryDecoder = new GML2GeometryReader( geomFac, idContext );
+            geometryReader = new GML2GeometryReader( geomFac, idContext );
             break;
         }
         case GML_30:
         case GML_31:
         case GML_32: {
-            geometryDecoder = new GML3GeometryReader( version, geomFac, idContext );
+            geometryReader = new GML3GeometryReader( version, geomFac, idContext );
             break;
         }
         }
@@ -274,30 +274,30 @@ public class GMLStreamReader {
     }
 
     private GMLFeatureReader getFeatureReader() {
-        if ( featureDecoder == null ) {
-            featureDecoder = new GMLFeatureReader( version, schema, idContext, resolver );
-            if ( geometryDecoder != null ) {
-                featureDecoder.setGeometryReader( geometryDecoder );
+        if ( featureReader == null ) {
+            featureReader = new GMLFeatureReader( version, schema, idContext, resolver );
+            if ( geometryReader != null ) {
+                featureReader.setGeometryReader( geometryReader );
             }
         }
-        return featureDecoder;
+        return featureReader;
     }
 
     private GMLGeometryReader getGeometryReader() {
-        if ( geometryDecoder == null ) {
+        if ( geometryReader == null ) {
             switch ( version ) {
             case GML_2: {
-                geometryDecoder = new GML2GeometryReader( new GeometryFactory(), idContext );
+                geometryReader = new GML2GeometryReader( new GeometryFactory(), idContext );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
-                geometryDecoder = new GML3GeometryReader( version, new GeometryFactory(), idContext );
+                geometryReader = new GML3GeometryReader( version, new GeometryFactory(), idContext );
                 break;
             }
             }
         }
-        return geometryDecoder;
+        return geometryReader;
     }
 }
