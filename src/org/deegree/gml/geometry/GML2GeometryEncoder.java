@@ -395,7 +395,9 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "MultiPolygon", GML21NS );
 
-        writer.writeAttribute( "gid", multiPolygon.getId() );
+        if ( multiPolygon.getId() != null ) {
+            writer.writeAttribute( "gid", multiPolygon.getId() );
+        }
         writer.writeAttribute( "srsName", multiPolygon.getCoordinateSystem().getName() );
 
         for ( Polygon polygon : multiPolygon ) {
