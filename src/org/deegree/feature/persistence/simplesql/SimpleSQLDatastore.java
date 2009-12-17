@@ -49,6 +49,7 @@ import static org.deegree.feature.types.property.PrimitiveType.BOOLEAN;
 import static org.deegree.feature.types.property.PrimitiveType.STRING;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -407,15 +408,26 @@ public class SimpleSQLDatastore implements FeatureStore {
                                         if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE ) {
                                             byte[] bs = set.getBytes( pt.getName().getLocalPart() );
                                             if ( bs != null ) {
-                                                Geometry geom = WKBReader.read( bs );
-                                                geom.setCoordinateSystem( crs );
-                                                props.add( new GenericProperty( pt, geom ) );
+                                                try {
+                                                    Geometry geom = WKBReader.read( bs );
+                                                    geom.setCoordinateSystem( crs );
+                                                    props.add( new GenericProperty( pt, geom ) );
+                                                } catch ( ParseException e ) {
+                                                    LOG.warn( "WKB from the DB could not be parsed: '{}'.",
+                                                              e.getLocalizedMessage() );
+                                                    LOG.debug( "Stack trace:", e );
+                                                }
                                             }
                                         }
                                     } else {
                                         Object obj = set.getObject( pt.getName().getLocalPart() );
                                         if ( obj != null ) {
-                                            props.add( new GenericProperty( pt, obj ) );
+                                            if ( obj instanceof Integer ) {
+                                                BigInteger theInt = new BigInteger( ( (Integer) obj ).toString() );
+                                                props.add( new GenericProperty( pt, theInt ) );
+                                            } else {
+                                                props.add( new GenericProperty( pt, obj ) );
+                                            }
                                         }
                                     }
                                 }
@@ -425,9 +437,6 @@ public class SimpleSQLDatastore implements FeatureStore {
                             LOG.warn( "Data store could not be accessed: '{}'.", e.getLocalizedMessage() );
                             LOG.debug( "Stack trace:", e );
                             available = false;
-                        } catch ( ParseException e ) {
-                            LOG.warn( "WKB from the DB could not be parsed: '{}'.", e.getLocalizedMessage() );
-                            LOG.debug( "Stack trace:", e );
                         }
                         return null;
                     }
