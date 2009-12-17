@@ -59,6 +59,8 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericProperty;
@@ -73,6 +75,7 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -84,6 +87,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
@@ -128,6 +132,8 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     private String bbox;
 
+    GeometryTransformer transformer;
+
     /**
      * @param connId
      * @param crs
@@ -147,6 +153,14 @@ public class SimpleSQLDatastore implements FeatureStore {
         this.bbox = bbox;
         this.featureName = featureName == null ? "feature" : featureName;
         this.namespace = namespace == null ? "http://www.deegree.org/app" : namespace;
+        try {
+            transformer = new GeometryTransformer( this.crs.getWrappedCRS() );
+        } catch ( IllegalArgumentException e ) {
+            LOG.error( "Stack trace:", e );
+        } catch ( UnknownCRSException e ) {
+            LOG.error( "The invalid crs '{}' was specified for the simple SQL data store.", crs );
+            LOG.debug( "Stack trace:", e );
+        }
     }
 
     public FeatureStoreTransaction acquireTransaction()
@@ -312,15 +326,26 @@ public class SimpleSQLDatastore implements FeatureStore {
         try {
             LinkedList<FeatureResultSet> list = new LinkedList<FeatureResultSet>();
 
-            for ( Query q : queries ) {
+            for ( final Query q : queries ) {
                 FeatureResultSet set = new IteratorResultSet( new CloseableIterator<Feature>() {
                     ResultSet set = null;
 
                     PreparedStatement stmt = null;
 
                     {
-                        stmt = conn.prepareStatement( sql + " limit 0" );
-                        stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
+                        stmt = conn.prepareStatement( sql );
+                        Envelope bbox = (Envelope) q.getHint( QueryHint.HINT_LOOSE_BBOX );
+                        try {
+                            bbox = (Envelope) transformer.transform( bbox );
+                        } catch ( UnknownCRSException e ) {
+                            LOG.warn( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
+                            LOG.debug( "Stack trace:", e );
+                        } catch ( TransformationException e ) {
+                            LOG.warn( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
+                            LOG.debug( "Stack trace:", e );
+                        }
+                        stmt.setString( 1, WKTWriter.write( bbox ) );
+                        LOG.debug( "Statement to fetch features was '{}'.", stmt );
                         stmt.execute();
                         set = stmt.getResultSet();
                     }
