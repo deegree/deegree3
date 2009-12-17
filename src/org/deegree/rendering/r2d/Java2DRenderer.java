@@ -158,7 +158,6 @@ public class Java2DRenderer implements Renderer {
                     double cose = sin( rad * minx ) * sin( rad * maxx ) + cos( rad * minx ) * cos( rad * maxx );
                     double dist = r * acos( cose ) * cos( rad * miny );
                     res = abs( dist * 1000 / width );
-                    System.out.println( res );
                 }
             } catch ( UnknownCRSException e ) {
                 LOG.warn( "Could not determine CRS of bbox, assuming it's in meter..." );
