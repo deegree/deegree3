@@ -204,6 +204,9 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
         for ( Geometry geom : this ) {
             result = result.merge( geom.getEnvelope() );
         }
+        if ( result.getCoordinateSystem() == null ) {
+            result.setCoordinateSystem( crs );
+        }
         return result;
     }
 

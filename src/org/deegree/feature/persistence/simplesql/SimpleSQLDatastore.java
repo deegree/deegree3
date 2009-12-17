@@ -117,7 +117,7 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     private StoredFeatureTypeMetadata metadata;
 
-    private CRS crs;
+    CRS crs;
 
     String sql;
 
