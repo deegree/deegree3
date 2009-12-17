@@ -35,12 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.simplesql;
 
+import static java.lang.Boolean.TRUE;
 import static java.sql.Types.BINARY;
 import static java.sql.Types.BIT;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.VARCHAR;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
+import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.PrimitiveType.BOOLEAN;
@@ -402,11 +404,13 @@ public class SimpleSQLDatastore implements FeatureStore {
                                 LinkedList<Property<?>> props = new LinkedList<Property<?>>();
                                 for ( PropertyType<?> pt : featureType.getPropertyDeclarations() ) {
                                     if ( pt instanceof GeometryPropertyType ) {
-                                        byte[] bs = set.getBytes( pt.getName().getLocalPart() );
-                                        if ( bs != null ) {
-                                            Geometry geom = WKBReader.read( bs );
-                                            geom.setCoordinateSystem( crs );
-                                            props.add( new GenericProperty( pt, geom ) );
+                                        if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE ) {
+                                            byte[] bs = set.getBytes( pt.getName().getLocalPart() );
+                                            if ( bs != null ) {
+                                                Geometry geom = WKBReader.read( bs );
+                                                geom.setCoordinateSystem( crs );
+                                                props.add( new GenericProperty( pt, geom ) );
+                                            }
                                         }
                                     } else {
                                         Object obj = set.getObject( pt.getName().getLocalPart() );
