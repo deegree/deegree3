@@ -198,12 +198,12 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
             exportedIds.add( polygon.getId() );
             writer.writeAttribute( "gid", polygon.getId() );
         }
-        if ( polygon.getCoordinateSystem().getName() != null ) {
+        if ( polygon.getCoordinateSystem() != null && polygon.getCoordinateSystem().getName() != null ) {
             writer.writeAttribute( "srsName", polygon.getCoordinateSystem().getName() );
         }
 
         LinearRing outerRing = (LinearRing) polygon.getExteriorRing();
-        if ( exportedIds.contains( outerRing.getId() ) ) {
+        if ( outerRing.getId() != null && exportedIds.contains( outerRing.getId() ) ) {
             writer.writeEmptyElement( "gml", "outerBoundaryIs", GML21NS );
             writer.writeAttribute( "xlink", XLNNS, "href", "#" + outerRing.getId() );
 
@@ -242,7 +242,7 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
             exportedIds.add( linearRing.getId() );
             writer.writeAttribute( "gid", linearRing.getId() );
         }
-        if ( linearRing.getCoordinateSystem().getName() != null ) {
+        if ( linearRing.getCoordinateSystem() != null && linearRing.getCoordinateSystem().getName() != null ) {
             writer.writeAttribute( "srsName", linearRing.getCoordinateSystem().getName() );
         }
 
@@ -401,7 +401,7 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
         writer.writeAttribute( "srsName", multiPolygon.getCoordinateSystem().getName() );
 
         for ( Polygon polygon : multiPolygon ) {
-            if ( exportedIds.contains( polygon.getId() ) ) {
+            if ( polygon.getId() != null && exportedIds.contains( polygon.getId() ) ) {
                 writer.writeEmptyElement( "gml", "polygonMember", GML21NS );
                 writer.writeAttribute( "xlink", XLNNS, "href", "#" + polygon.getId() );
 
