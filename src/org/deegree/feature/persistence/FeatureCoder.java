@@ -60,7 +60,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
@@ -133,7 +133,7 @@ public class FeatureCoder {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs, GMLObjectResolver idResolver )
+    public static Feature decode( InputStream is, ApplicationSchema schema, CRS crs, GMLReferenceResolver idResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
 

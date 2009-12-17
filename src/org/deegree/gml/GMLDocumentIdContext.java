@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * access all encountered objects on any level of the document.
  * </p>
  * 
- * @see GMLObjectResolver
+ * @see GMLReferenceResolver
  * @see GMLStreamReader
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLDocumentIdContext implements GMLObjectResolver {
+public class GMLDocumentIdContext implements GMLReferenceResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger( GMLDocumentIdContext.class );
 

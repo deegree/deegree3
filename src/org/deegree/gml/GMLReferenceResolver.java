@@ -42,12 +42,14 @@ package org.deegree.gml;
  * A local reference is always constructed as <code># + id</code>.
  * </p>
  * 
+ * @see GMLReference
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface GMLObjectResolver {
+public interface GMLReferenceResolver {
 
     /**
      * Returns the {@link GMLObject} that is referenced by the given URI.

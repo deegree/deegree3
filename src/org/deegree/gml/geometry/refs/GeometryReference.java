@@ -43,7 +43,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLReference;
 import org.deegree.gml.props.StandardGMLProps;
 
@@ -70,7 +70,7 @@ public class GeometryReference<T extends Geometry> extends GMLReference<T> imple
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public GeometryReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public GeometryReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super (resolver, uri, baseURL);
     }
 

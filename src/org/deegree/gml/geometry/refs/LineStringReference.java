@@ -37,7 +37,7 @@
 package org.deegree.gml.geometry.refs;
 
 import org.deegree.geometry.primitive.LineString;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -59,7 +59,7 @@ public class LineStringReference extends CurveReference<LineString> implements L
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public LineStringReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public LineStringReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 

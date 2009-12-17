@@ -52,7 +52,7 @@ import org.deegree.gml.props.StandardGMLProps;
  */
 public class GMLReference<T extends GMLObject> implements GMLObject {
 
-    private final GMLObjectResolver resolver;
+    private final GMLReferenceResolver resolver;
 
     private final String uri;
 
@@ -70,7 +70,7 @@ public class GMLReference<T extends GMLObject> implements GMLObject {
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public GMLReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public GMLReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         this.resolver = resolver;
         this.uri = uri;
         this.baseURL = baseURL;

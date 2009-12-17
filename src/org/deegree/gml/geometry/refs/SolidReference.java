@@ -42,7 +42,7 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -64,7 +64,7 @@ public class SolidReference<T extends Solid> extends GeometryReference<T> implem
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public SolidReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public SolidReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 

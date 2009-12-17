@@ -44,7 +44,7 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -68,7 +68,7 @@ public class SurfaceReference<T extends Surface> extends GeometricPrimitiveRefer
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public SurfaceReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public SurfaceReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 

@@ -41,7 +41,7 @@ import java.util.List;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -63,7 +63,7 @@ public class PolygonReference extends SurfaceReference<Polygon> implements Polyg
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public PolygonReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public PolygonReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 

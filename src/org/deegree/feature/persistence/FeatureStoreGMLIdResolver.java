@@ -36,18 +36,18 @@
 package org.deegree.feature.persistence;
 
 import org.deegree.gml.GMLObject;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.ReferenceResolvingException;
 
 /**
- * {@link GMLObjectResolver} that uses a {@link FeatureStore} for resolving local object references.
+ * {@link GMLReferenceResolver} that uses a {@link FeatureStore} for resolving local object references.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureStoreGMLIdResolver implements GMLObjectResolver {
+public class FeatureStoreGMLIdResolver implements GMLReferenceResolver {
 
     private final FeatureStore fs;
 

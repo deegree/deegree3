@@ -85,7 +85,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
@@ -127,7 +127,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private GMLGeometryDecoder geomParser;
 
-    private GMLObjectResolver specialResolver;
+    private GMLReferenceResolver specialResolver;
 
     private final GMLVersion version;
 
@@ -172,7 +172,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * @param version
      *            GML version, must not be <code>null</code>
      */
-    public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLObjectResolver resolver,
+    public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLReferenceResolver resolver,
                               GMLVersion version ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();

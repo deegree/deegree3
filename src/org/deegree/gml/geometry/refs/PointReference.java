@@ -37,7 +37,7 @@
 package org.deegree.gml.geometry.refs;
 
 import org.deegree.geometry.primitive.Point;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -59,7 +59,7 @@ public class PointReference extends GeometricPrimitiveReference<Point> implement
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public PointReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public PointReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
     }
 

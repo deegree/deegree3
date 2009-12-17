@@ -75,7 +75,7 @@ public class GMLStreamReader {
 
     private final GMLDocumentIdContext idContext;
 
-    private GMLObjectResolver resolver;
+    private GMLReferenceResolver resolver;
 
     private ApplicationSchema schema;
 
@@ -145,7 +145,7 @@ public class GMLStreamReader {
         }
     }
 
-    public void setResolver( GMLObjectResolver resolver ) {
+    public void setResolver( GMLReferenceResolver resolver ) {
         this.resolver = resolver;
     }
 

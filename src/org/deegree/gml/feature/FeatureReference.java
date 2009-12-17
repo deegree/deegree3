@@ -46,7 +46,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.GMLObjectResolver;
+import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLVersion;
 import org.jaxen.JaxenException;
@@ -72,7 +72,7 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
      * @param baseURL
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
-    public FeatureReference( GMLObjectResolver resolver, String uri, String baseURL ) {
+    public FeatureReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
         super (resolver, uri, baseURL);
     }
 
