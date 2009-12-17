@@ -38,8 +38,10 @@ package org.deegree.feature.persistence.simplesql;
 import static java.lang.Boolean.TRUE;
 import static java.sql.Types.BINARY;
 import static java.sql.Types.BIT;
+import static java.sql.Types.CHAR;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.OTHER;
+import static java.sql.Types.SMALLINT;
 import static java.sql.Types.VARCHAR;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
@@ -263,9 +265,11 @@ public class SimpleSQLDatastore implements FeatureStore {
                 int colType = md.getColumnType( i );
                 switch ( colType ) {
                 case VARCHAR:
+                case CHAR:
                     pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, STRING, false, null );
                     break;
                 case INTEGER:
+                case SMALLINT:
                     pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER,
                                                          false, null );
                     break;
