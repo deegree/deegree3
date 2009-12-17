@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.simplesql;
 
+import static java.sql.Types.BINARY;
 import static java.sql.Types.BIT;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.OTHER;
@@ -269,6 +270,7 @@ public class SimpleSQLDatastore implements FeatureStore {
                     pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, BOOLEAN, false, null );
                     break;
                 case OTHER:
+                case BINARY:
                     pt = new GeometryPropertyType( new QName( namespace, name ), 0, 1, GEOMETRY, DIM_2_OR_3, false,
                                                    null, null );
                     break;
