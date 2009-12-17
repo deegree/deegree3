@@ -124,8 +124,8 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     protected ByteBufferRasterData createCompatibleEmptyRasterData() {
-        return new BandInterleavedRasterData( view, getOriginalWidth(), getOriginalHeight(), dataAccess.getReader(),
-                                              this.dataInfo, false );
+        return new BandInterleavedRasterData( getView(), getOriginalWidth(), getOriginalHeight(),
+                                              dataAccess.getReader(), this.dataInfo, false );
     }
 
     @Override

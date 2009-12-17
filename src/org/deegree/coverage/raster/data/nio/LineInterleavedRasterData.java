@@ -125,8 +125,8 @@ public class LineInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     protected ByteBufferRasterData createCompatibleEmptyRasterData() {
-        return new LineInterleavedRasterData( view, getOriginalWidth(), getOriginalHeight(), dataAccess.getReader(),
-                                              dataInfo, false );
+        return new LineInterleavedRasterData( getView(), getOriginalWidth(), getOriginalHeight(),
+                                              dataAccess.getReader(), dataInfo, false );
     }
 
     @Override

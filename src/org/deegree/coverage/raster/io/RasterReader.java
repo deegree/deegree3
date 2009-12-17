@@ -137,4 +137,9 @@ public interface RasterReader {
      */
     public boolean canReadTiles();
 
+    /**
+     * @return a String which identifies this reader for used the data source, for example the file name, or an url.
+     */
+    public String getDataLocationId();
+
 }

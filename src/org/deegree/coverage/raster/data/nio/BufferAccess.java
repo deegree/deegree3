@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.coverage.raster.data.container;
+package org.deegree.coverage.raster.data.nio;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,13 +45,14 @@ import java.nio.ByteBuffer;
 
 import org.deegree.coverage.raster.data.ByteBufferPool;
 import org.deegree.coverage.raster.data.DataView;
+import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.slf4j.Logger;
 
 /**
- * The <code>BufferAccess</code> class TODO add class documentation here.
+ * The <code>BufferAccess</code> glue between the databuffer and the reader (which has access to the real data).
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -87,9 +88,23 @@ public class BufferAccess {
 
     private int maxDataHeight;
 
+    private final String LOCK = "lock";
+
     // /** Intersection of the view with the values from the byte buffer. */
     // private RasterRect dataRect;
 
+    /**
+     * Glue
+     * 
+     * @param rasterReader
+     * @param maxDataWidth
+     * @param maxDataHeight
+     * @param view
+     * @param dataInfo
+     * @param pixelStride
+     * @param lineStride
+     * @param bandStride
+     */
     public BufferAccess( RasterReader rasterReader, int maxDataWidth, int maxDataHeight, DataView view,
                          RasterDataInfo dataInfo, int pixelStride, int lineStride, int bandStride ) {
         this.reader = rasterReader;
@@ -99,16 +114,31 @@ public class BufferAccess {
         this.dataInfo = dataInfo;
         this.maxDataWidth = maxDataWidth;
         this.maxDataHeight = maxDataHeight;
-
         RasterRect origData = new RasterRect( 0, 0, maxDataWidth, maxDataHeight );
         maxViewData = RasterRect.intersection( origData, view );
         if ( maxViewData == null ) {
             maxViewData = new RasterRect( 0, 0, 0, 0 );
         }
         this.lineStride = maxViewData.width * pixelStride;
-
         // the byte buffer intersection is the whole view
         // dataRect = new RasterRect( 0, 0, view.width, view.height );
+    }
+
+    /**
+     * @param view2
+     */
+    private void createMaxView( DataView viewOnData ) {
+        RasterRect origData = new RasterRect( 0, 0, maxDataWidth, maxDataHeight );
+        maxViewData = RasterRect.intersection( origData, viewOnData );
+        if ( maxViewData == null ) {
+            maxViewData = new RasterRect( 0, 0, 0, 0 );
+        }
+        this.dataInfo = viewOnData.dataInfo;
+        this.maxDataHeight = viewOnData.height;
+        this.maxDataWidth = viewOnData.width;
+        // the data was freshly set, the line stride must be recalculated.
+        this.lineStride = maxDataWidth * pixelStride;
+
     }
 
     /**
@@ -201,32 +231,36 @@ public class BufferAccess {
      * Prepares the byte buffer for reading / writing thus instantiates it with values (no) data;
      */
     public void prepareBuffer() {
-        if ( data == null ) {
-            data = ByteBufferPool.allocate( requiredBufferSize(), false );
-            boolean noData = false;
-            if ( reader != null ) {
-                try {
-                    BufferResult dataResult = reader.read( maxViewData, data );
-                    data = dataResult.getResult();
-                    data.rewind();
-                    // RasterRect rect = dataResult.getRect();
-                    // lineStride = pixelStride * rect.width;
-                } catch ( IOException e ) {
-                    LOG.debug( "No data available: " + e.getLocalizedMessage(), e );
-                    // the data is no longer available, lets just fill it with no data values
-                    noData = true;
+        synchronized ( LOCK ) {
+            if ( data == null ) {
+                data = ByteBufferPool.allocate( requiredBufferSize(), false );
+                boolean noData = false;
+                if ( reader != null ) {
+                    try {
+                        BufferResult dataResult = reader.read( maxViewData, data );
+                        data = dataResult.getResult();
+                        data.rewind();
+                        // RasterRect rect = dataResult.getRect();
+                        // lineStride = pixelStride * rect.width;
+                    } catch ( IOException e ) {
+                        LOG.debug( "No data available: " + e.getLocalizedMessage(), e );
+                        // the data is no longer available, lets just fill it with no data values
+                        noData = true;
+                    }
+                }
+                if ( noData ) {
+                    fillWithNoData();
                 }
             }
-            if ( noData ) {
-                fillWithNoData();
-            }
         }
+
     }
 
     /**
      * Fills the entire buffer with no data values. Note this operation is only possible on writable buffers.
      */
     public void fillWithNoData() {
+        // synchronized ( LOCK ) {
         if ( data == null ) {
             data = ByteBufferPool.allocate( requiredBufferSize(), false );
         }
@@ -240,6 +274,7 @@ public class BufferAccess {
                 pos = data.position();
             }
         }
+        // }
     }
 
     /**
@@ -256,8 +291,10 @@ public class BufferAccess {
      * @return The internal ByteBuffer.
      */
     public ByteBuffer getByteBuffer() {
+        // synchronized ( LOCK ) {
         if ( data == null ) {
             prepareBuffer();
+            // }
         }
         return data;
     }
@@ -265,21 +302,21 @@ public class BufferAccess {
     /**
      * @param newData
      *            to use.
-     * @param original
+     * @param dataRect
+     *            defining the width, height and offset for the data.
      */
-    public void setByteBuffer( ByteBuffer newData, DataView original ) {
-        if ( newData != null ) {
-            if ( original != null ) {
-                // current buffer access is the original.
-                // dataRect = original;
-
+    void setByteBuffer( ByteBuffer newData, DataView dataRect ) {
+        synchronized ( LOCK ) {
+            if ( newData != null ) {
+                createMaxView( dataRect );
+                if ( newData.capacity() < requiredBufferSize() ) {
+                    LOG.error( "The given byteBuffer does not contain enough space for the current view." );
+                    return;
+                }
+                // update the line stride to match the data.
             }
-            if ( newData.capacity() < requiredBufferSize() ) {
-                LOG.error( "The given byteBuffer does not contain enough space for the current view." );
-                return;
-            }
+            this.data = newData;
         }
-        this.data = newData;
     }
 
     /**
@@ -291,16 +328,38 @@ public class BufferAccess {
     }
 
     /**
-     * @return
+     * @return the height of the raster backing this buffer.
      */
-    public int getMaxDataHeight() {
+    protected int getMaxDataHeight() {
         return this.maxDataHeight;
     }
 
     /**
-     * @return
+     * @return the width of the raster backing this buffer.
      */
-    public int getMaxDataWidth() {
+    protected int getMaxDataWidth() {
         return maxDataWidth;
+    }
+
+    /**
+     * @return true if this BufferAccess instantiated it's buffer already.
+     */
+    protected boolean hasDataBuffer() {
+        // rb: no need to synchronize this I think.
+        return data != null;
+    }
+
+    /**
+     * @return the raster's view on the data, not the rectangle for which the buffer has data.
+     */
+    protected DataView getView() {
+        return view;
+    }
+
+    /**
+     * @return the rectangle for which the loaded buffer has data.
+     */
+    protected RasterRect getDataRectangle() {
+        return maxViewData;
     }
 }

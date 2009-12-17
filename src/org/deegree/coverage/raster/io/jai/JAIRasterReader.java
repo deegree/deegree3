@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Set;
 
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.container.BufferResult;
@@ -80,6 +81,8 @@ public class JAIRasterReader implements RasterReader {
 
     private JAIRasterDataReader reader;
 
+    private String dataLocationId;
+
     @Override
     public AbstractRaster load( File file, RasterIOOptions options ) {
         LOG.debug( "reading " + file + " with JAI" );
@@ -99,7 +102,7 @@ public class JAIRasterReader implements RasterReader {
     private AbstractRaster loadFromReader( JAIRasterDataReader reader, RasterIOOptions options ) {
         width = reader.getWidth();
         height = reader.getHeight();
-
+        setID( options );
         reader.close();
         OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();
         // create a 1:1 mapping
@@ -123,6 +126,15 @@ public class JAIRasterReader implements RasterReader {
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
         RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy() );
         return new SimpleRaster( source, envelope, rasterReference );
+    }
+
+    private void setID( RasterIOOptions options ) {
+        this.dataLocationId = options != null ? options.get( RasterIOOptions.ORIGIN_OF_RASTER ) : null;
+        if ( dataLocationId == null ) {
+            if ( this.file != null ) {
+                this.dataLocationId = FileUtils.getFilename( this.file );
+            }
+        }
     }
 
     @Override
@@ -174,5 +186,10 @@ public class JAIRasterReader implements RasterReader {
     @Override
     public RasterDataInfo getRasterDataInfo() {
         return null;
+    }
+
+    @Override
+    public String getDataLocationId() {
+        return dataLocationId;
     }
 }

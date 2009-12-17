@@ -469,6 +469,11 @@ public abstract class GridReader implements RasterReader {
         public boolean canReadTiles() {
             return originalReader.canReadTiles();
         }
+
+        @Override
+        public String getDataLocationId() {
+            return originalReader.getDataLocationId();
+        }
     }
 
 }

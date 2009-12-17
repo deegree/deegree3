@@ -77,6 +77,8 @@ public class GridFileReader extends GridReader {
 
     private boolean leaveOpen = false;
 
+    private String dataLocationId;
+
     /**
      * An empty constructor used in the {@link GridRasterIOProvider}, to a location in time where no information is
      * known yet.
@@ -113,6 +115,10 @@ public class GridFileReader extends GridReader {
     protected synchronized void instantiate( GridMetaInfoFile infoFile, File gridFile ) {
         super.instantiate( infoFile );
         this.gridFile = gridFile;
+        // set the location id to the grid files file name.
+        if ( this.dataLocationId == null && gridFile != null ) {
+            this.dataLocationId = FileUtils.getFilename( this.gridFile );
+        }
         // if ( gridFile != null ) {
         // // set the tiles per blob depend on the gridFile size (if not full etc.)
         // setTilesPerBlob( (int) ( gridFile.length() / getBytesPerTile() ) );
@@ -137,6 +143,7 @@ public class GridFileReader extends GridReader {
     private synchronized void instantiate( File gridFile, RasterIOOptions options )
                             throws NumberFormatException, IOException {
         if ( infoFile == null && gridFile != null ) {
+            this.dataLocationId = options == null ? null : options.get( RasterIOOptions.ORIGIN_OF_RASTER );
             File metaInfo = GridMetaInfoFile.fileNameFromOptions( gridFile.getParent(),
                                                                   FileUtils.getFilename( gridFile ), options );
             this.instantiate( GridMetaInfoFile.readFromFile( metaInfo, options ), gridFile );
@@ -331,6 +338,11 @@ public class GridFileReader extends GridReader {
     @Override
     public File file() {
         return gridFile;
+    }
+
+    @Override
+    public String getDataLocationId() {
+        return dataLocationId;
     }
 
 }

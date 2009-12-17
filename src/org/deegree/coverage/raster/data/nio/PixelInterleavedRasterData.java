@@ -127,8 +127,8 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     protected ByteBufferRasterData createCompatibleEmptyRasterData() {
-        return new PixelInterleavedRasterData( view, getOriginalWidth(), getOriginalHeight(), dataAccess.getReader(),
-                                               this.dataInfo, false );
+        return new PixelInterleavedRasterData( getView(), getOriginalWidth(), getOriginalHeight(),
+                                               dataAccess.getReader(), this.dataInfo, false );
     }
 
     @Override
@@ -148,7 +148,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public byte[] getPixel( int x, int y, byte[] result ) {
-        if ( view.dataInfo.bands != dataInfo.bands ) {
+        if ( getView().dataInfo.bands != dataInfo.bands ) {
             return super.getPixel( x, y, result );
         }
         if ( result == null ) {
@@ -168,7 +168,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public void setPixel( int x, int y, byte[] result ) {
-        if ( view.dataInfo.bands != dataInfo.bands ) {
+        if ( getView().dataInfo.bands != dataInfo.bands ) {
             // Is this a view on less bands?
             super.setPixel( x, y, result );
             return;
@@ -195,12 +195,12 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
         // copy data direct if interleaving type is identical
 
-        if ( srcRaster instanceof PixelInterleavedRasterData && view.dataInfo.bands == dataInfo.bands ) {
+        if ( srcRaster instanceof PixelInterleavedRasterData && getView().dataInfo.bands == dataInfo.bands ) {
             // calculate if the getWidth || getWidth methods would exceed the actual rasterWidth
             PixelInterleavedRasterData raster = (PixelInterleavedRasterData) srcRaster;
 
-            int srcRasterPosx = raster.view.x + srcX;
-            int srcRasterPosy = raster.view.y + srcY;
+            int srcRasterPosx = raster.getView().x + srcX;
+            int srcRasterPosy = raster.getView().y + srcY;
             int possibleSrcWidth = raster.getWidth();
             int possibleSrcHeight = raster.getHeight();
 
@@ -234,16 +234,29 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
                 possibleSrcHeight = raster.getOriginalHeight() - srcRasterPosy;
             }
             // reset to the view, for the calculation of the position
-            srcRasterPosx -= raster.view.x;
-            srcRasterPosy -= raster.view.y;
+            srcRasterPosx -= raster.getView().x;
+            srcRasterPosy -= raster.getView().y;
+            // int srcRasterPosx = raster.getView().x;
+            // int srcRasterPosy = raster.getView().y;
 
             // find the smallest denominator of all values.
-            int subWidth = clampSize( getWidth(), dstX, possibleSrcWidth,
-                                      0/* the possible srcWidth has been determined */, width );
-            int subHeight = clampSize( getHeight(), dstY, possibleSrcHeight, 0/*
-                                                                               * the possible srcWidth has been
-                                                                               * determined
-                                                                               */, height );
+            // int subWidth = clampSize( getWidth(), dstX, possibleSrcWidth,
+            // 0/* the possible srcWidth has been determined */, width );
+            // int subHeight = clampSize( getHeight(), dstY, possibleSrcHeight, 0/*
+            // * the possible srcWidth has been
+            // * determined
+            // */, height );
+            int subWidth = clampSize( getWidth(), dstX, raster.dataAccess.getDataRectangle().width, 0/*
+                                                                                                      * the possible
+                                                                                                      * srcWidth has
+                                                                                                      * been determined
+                                                                                                      */, width );
+            int subHeight = clampSize( getHeight(), dstY, raster.dataAccess.getDataRectangle().height, 0/*
+                                                                                                         * the possible
+                                                                                                         * srcWidth has
+                                                                                                         * been
+                                                                                                         * determined
+                                                                                                         */, height );
 
             if ( subHeight <= 0 || subWidth <= 0 ) {
                 return;

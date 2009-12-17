@@ -101,6 +101,12 @@ public class RasterIOOptions {
     /** A key to signal the creation of missing raster dirs. */
     public static final String CREATE_RASTER_MISSING_CACHE_DIR = "create_raster_dir_if_missing";
 
+    /**
+     * Use this key to add the origin of the raster read, this might be handy if reading rasters from an URL (Stream)
+     * and the cache can use this id to load data from cache.
+     */
+    public static final String ORIGIN_OF_RASTER = "raster_origin";
+
     private final Map<String, String> options = new HashMap<String, String>();
 
     private RasterGeoReference geoRef;
@@ -395,6 +401,9 @@ public class RasterIOOptions {
             }
             if ( get( CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
                 add( CREATE_RASTER_MISSING_CACHE_DIR, otherOptions.get( CREATE_RASTER_MISSING_CACHE_DIR ) );
+            }
+            if ( get( ORIGIN_OF_RASTER ) == null ) {
+                add( ORIGIN_OF_RASTER, otherOptions.get( ORIGIN_OF_RASTER ) );
             }
 
         }

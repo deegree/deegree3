@@ -350,7 +350,9 @@ public class RasterCache {
         while ( createNew && f.exists() ) {
             f = new File( this.cacheDir, id + "_" + ( index++ ) + FILE_EXTENSION );
         }
+
         if ( id == null ) {
+            // if the id was null, delete the file on exit.
             f.deleteOnExit();
         }
         return f;
@@ -423,7 +425,8 @@ public class RasterCache {
                 }
             }
         }
-        LOG.debug( "Disposing allocated {} MB on the heap.", ( allocatedMem / ( 1024 * 1024d ) ) );
+        LOG.info( "Disposing allocated {} MB on the heap.",
+                  ( Math.round( ( allocatedMem / ( 1024 * 1024d ) ) * 100d ) / 100d ) );
 
     }
 

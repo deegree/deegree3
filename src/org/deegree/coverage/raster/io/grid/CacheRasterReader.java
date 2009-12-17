@@ -754,6 +754,11 @@ public class CacheRasterReader extends GridFileReader {
         return width;
     }
 
+    @Override
+    public String getDataLocationId() {
+        return ( cachedReader != null ) ? cachedReader.getDataLocationId() : super.getDataLocationId();
+    }
+
     /**
      * Return the current time millis of the last read action. This method is needed for caching.
      * 

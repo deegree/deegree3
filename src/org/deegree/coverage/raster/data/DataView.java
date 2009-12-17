@@ -55,6 +55,12 @@ import org.deegree.coverage.raster.geom.RasterRect;
  */
 public class DataView extends RasterRect {
 
+    private int bandStride;
+
+    private int lineStride;
+
+    private int pixelStride;
+
     /** the view info on the raster data */
     public final RasterDataInfo dataInfo;
 
