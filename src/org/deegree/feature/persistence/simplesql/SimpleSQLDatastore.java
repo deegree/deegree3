@@ -457,12 +457,14 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     public int queryHits( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        throw new FeatureStoreException( "Counting queries are not implemented for the simple SQL datastore." );
+        // TODO
+        return query( query ).toCollection().size();
     }
 
     public int queryHits( Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
-        throw new FeatureStoreException( "Counting queries are not implemented for the simple SQL datastore." );
+        // TODO
+        return query( queries ).toCollection().size();
     }
 
 }
