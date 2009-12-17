@@ -73,7 +73,9 @@ public class RasterCache {
     /**
      * Default cache dir if no directory was given.
      */
-    public static final File DEFAULT_CACHE_DIR = new File( "/media/storage/tmp/" );
+    public static final File DEFAULT_CACHE_DIR = new File( System.getProperty( "java.io.tmpdir" ) );
+         
+//    public static final File DEFAULT_CACHE_DIR = new File( "/media/storage/tmp/" );
 
     /**
      * Standard name for a deegree cache file.
