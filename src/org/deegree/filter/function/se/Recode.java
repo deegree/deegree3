@@ -93,6 +93,9 @@ public class Recode extends Function {
             Continuation<StringBuffer> contn = contns.next();
 
             if ( data.next().doubleValue() == val ) {
+                if ( contn == null ) {
+                    return new Object[] { target.toString() };
+                }
                 contn.evaluate( target, f );
                 return new Object[] { target.toString() };
             }
