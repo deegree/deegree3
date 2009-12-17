@@ -1,3 +1,4 @@
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -32,57 +33,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.geometry;
+
+package org.deegree.gml.feature;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.crs.CRS;
-import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
 
 /**
- * Interface for all version of GML geometry decoders. Any new geometry decoder should implement this interface.
+ * Interface for parsers that convert the GML representation of custom properties into an object representation.
  * 
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
  * 
- * @author last edited by: $Author$
+ * @version $Revision: $, $Date: $
  * 
- * @version $Revision$, $Date$
- * 
+ * @param <T>
+ *            type of the object representation
  */
-public interface GMLGeometryDecoder {
+public interface CustomPropertyReader<T> {
 
     /**
+     * Returns the object representation for the property element event that the cursor of the given
+     * <code>XMLStreamReader</code> points at.
+     * 
      * @param xmlStream
-     * @return
-     * @throws XMLParsingException
+     *            cursor must point at the <code>START_ELEMENT</code> event of the property element, afterwards points
+     *            at the next event after the <code>END_ELEMENT</code> event of the property element
+     * @return object representation for the given property element
      * @throws XMLStreamException
-     * @throws UnknownCRSException
+     * @throws XMLParsingException
      */
-    public Geometry parse( XMLStreamReaderWrapper xmlStream )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException;
+    public T parse( XMLStreamReaderWrapper xmlStream )
+                            throws XMLStreamException, XMLParsingException;
 
-    /**
-     * @param xmlStream
-     * @param defaultCRS
-     * @return
-     * @throws XMLParsingException
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     */
-    public Geometry parse( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException;
-
-    /**
-     * @param xmlStream
-     * @param defaultCRS
-     * @return
-     * @throws XMLParsingException
-     * @throws XMLStreamException
-     */
-    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
-                            throws XMLParsingException, XMLStreamException;
 }

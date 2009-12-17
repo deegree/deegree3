@@ -60,17 +60,17 @@ import org.deegree.gml.GMLVersion;
  * 
  * @version $Revision$, $Date$
  */
-public class GMLStandardPropsParser {
+public class GMLStandardPropsReader {
 
     private GMLVersion version;
 
     /**
-     * Creates a new {@link GMLStandardPropsParser} for the specified GML version.
+     * Creates a new {@link GMLStandardPropsReader} for the specified GML version.
      * 
      * @param version
      *            GML version, must not be <code>null</code>
      */
-    public GMLStandardPropsParser( GMLVersion version ) {
+    public GMLStandardPropsReader( GMLVersion version ) {
         this.version = version;
     }
 

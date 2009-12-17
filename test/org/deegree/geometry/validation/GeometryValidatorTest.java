@@ -57,8 +57,8 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryDecoder;
-import org.deegree.gml.geometry.GML3GeometryDecoderTest;
+import org.deegree.gml.geometry.GML3GeometryReader;
+import org.deegree.gml.geometry.GML3GeometryReaderTest;
 import org.junit.Test;
 
 /**
@@ -268,7 +268,7 @@ public class GeometryValidatorTest {
     }
 
     private Geometry parseGeometry( String fileName ) throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
-        URL docURL = GML3GeometryDecoderTest.class.getResource( BASE_DIR + fileName );
+        URL docURL = GML3GeometryReaderTest.class.getResource( BASE_DIR + fileName );
         return GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL ).readGeometry();
     }
 }

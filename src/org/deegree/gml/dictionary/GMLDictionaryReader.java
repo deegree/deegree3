@@ -51,7 +51,7 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.props.GMLStandardPropsParser;
+import org.deegree.gml.props.GMLStandardPropsReader;
 import org.deegree.gml.props.StandardGMLProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,9 +66,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class DictionaryStreamReader {
+public class GMLDictionaryReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DictionaryStreamReader.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLDictionaryReader.class );
 
     private final GMLVersion version;
 
@@ -76,15 +76,15 @@ public class DictionaryStreamReader {
 
     private final GMLDocumentIdContext idContext;
 
-    private final GMLStandardPropsParser propsReader;
+    private final GMLStandardPropsReader propsReader;
 
     private final String gmlNs;
 
-    public DictionaryStreamReader( GMLVersion version, XMLStreamReader xmlStream, GMLDocumentIdContext idContext ) {
+    public GMLDictionaryReader( GMLVersion version, XMLStreamReader xmlStream, GMLDocumentIdContext idContext ) {
         this.version = version;
         this.xmlStream = xmlStream;
         this.idContext = idContext;
-        propsReader = new GMLStandardPropsParser( version );
+        propsReader = new GMLStandardPropsReader( version );
         gmlNs = version.getNamespace();
     }
 

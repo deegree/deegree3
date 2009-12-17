@@ -57,8 +57,8 @@ import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.GML3FeatureEncoder;
-import org.deegree.gml.feature.GMLFeatureDecoder;
+import org.deegree.gml.feature.GML3FeatureWriter;
+import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
@@ -71,7 +71,7 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GMLFeatureEncoderTest {
+public class GMLFeatureWriterTest {
 
     private final String DIR = "testdata/features/";
 
@@ -90,7 +90,7 @@ public class GMLFeatureEncoderTest {
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
-        URL docURL = GMLFeatureEncoderTest.class.getResource( DIR + SOURCE_FILE );
+        URL docURL = GMLFeatureWriterTest.class.getResource( DIR + SOURCE_FILE );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         gmlReader.setApplicationSchema( schema );
         Feature feature = gmlReader.readFeature();
@@ -107,7 +107,7 @@ public class GMLFeatureEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3FeatureEncoder exporter = new GML3FeatureEncoder( writer, null );
+        GML3FeatureWriter exporter = new GML3FeatureWriter( writer, null );
         exporter.export( feature );
         writer.flush();
         writer.close();

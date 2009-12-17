@@ -53,7 +53,7 @@ import org.deegree.feature.types.GenericCustomPropertyValue;
  * 
  * @version $Revision$, $Date$
  */
-public class GenericCustomPropertyExporter {
+public class GenericCustomPropertyWriter {
 
     /**
      * Exports the given {@link GenericCustomPropertyValue} to the XML stream.

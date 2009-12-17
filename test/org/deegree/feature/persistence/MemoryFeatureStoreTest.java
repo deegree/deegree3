@@ -69,7 +69,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.ReferenceResolvingException;
-import org.deegree.gml.feature.GMLFeatureDecoderTest;
+import org.deegree.gml.feature.GMLFeatureReaderTest;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,7 +97,7 @@ public class MemoryFeatureStoreTest {
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         store = new MemoryFeatureStore( docURL, schema );
     }
 

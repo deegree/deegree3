@@ -115,8 +115,8 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
-import org.deegree.gml.geometry.GML2GeometryDecoder;
+import org.deegree.gml.feature.generic.GenericCustomPropertyReader;
+import org.deegree.gml.geometry.GML2GeometryReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +128,7 @@ import org.slf4j.LoggerFactory;
  * <li>TODO add here more differences</li>
  * </ul>
  * 
- * All the v1.0.0 elements are parse with {@link GML2GeometryDecoder}.
+ * All the v1.0.0 elements are parse with {@link GML2GeometryReader}.
  * 
  * It was decided not to extend Filter110XMLDecoder as both filters should have static parse methods that make accessing
  * easier (than creating a superfluous instance beforehand)
@@ -668,7 +668,7 @@ public class Filter100XMLDecoder {
     private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         // TODO outfactor generic XML representation and parser to commons
-        GenericCustomPropertyParser literalParser = new GenericCustomPropertyParser();
+        GenericCustomPropertyReader literalParser = new GenericCustomPropertyReader();
         GenericCustomPropertyValue value = literalParser.parse( new XMLStreamReaderWrapper( xmlStream, null ) );
 
         List<GenericCustomPropertyValue> childNodes = value.getChildNodes();
@@ -810,7 +810,7 @@ public class Filter100XMLDecoder {
 
         // TODO remove this after GML parser is adapted
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-        GML2GeometryDecoder geomParser = new GML2GeometryDecoder();
+        GML2GeometryReader geomParser = new GML2GeometryReader();
 
         // always first parameter: 'ogc:PropertyName'
         PropertyName param1 = parsePropertyName( xmlStream );

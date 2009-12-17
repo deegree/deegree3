@@ -74,14 +74,14 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.generic.GenericCustomPropertyExporter;
-import org.deegree.gml.geometry.GML3GeometryEncoder;
+import org.deegree.gml.feature.generic.GenericCustomPropertyWriter;
+import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Encodes features and properties into GML. Delegates {@link Geometry} exporting tasks to the
- * {@link GML3GeometryEncoder}.
+ * {@link GML3GeometryWriter}.
  * <p>
  * <h4>XLink handling</h4>
  * This implementation is aware of xlinks (local as well as remote) and allows to set the
@@ -94,9 +94,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GML3FeatureEncoder implements GMLFeatureEncoder {
+public class GML3FeatureWriter implements GMLFeatureWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML3FeatureEncoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML3FeatureWriter.class );
 
     private GMLVersion version;
 
@@ -104,7 +104,7 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
 
     private XMLStreamWriter writer;
 
-    private GML3GeometryEncoder geometryExporter;
+    private GML3GeometryWriter geometryExporter;
 
     private String referenceTemplate;
 
@@ -123,9 +123,9 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
      *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
      *            used)
      */
-    public GML3FeatureEncoder( XMLStreamWriter writer, CRS outputCRS ) {
+    public GML3FeatureWriter( XMLStreamWriter writer, CRS outputCRS ) {
         this.writer = writer;
-        geometryExporter = new GML3GeometryEncoder( version, writer, outputCRS, null, false, exportedIds );
+        geometryExporter = new GML3GeometryWriter( version, writer, outputCRS, null, false, exportedIds );
     }
 
     /**
@@ -148,7 +148,7 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
      * @param traverseXlinkExpiry
      * @param exportSfGeometries
      */
-    public GML3FeatureEncoder( GMLVersion version, XMLStreamWriter writer, CRS outputCRS,
+    public GML3FeatureWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCRS,
                                CoordinateFormatter formatter, String referenceTemplate, PropertyName[] requestedProps,
                                int traverseXlinkDepth, int traverseXlinkExpiry, boolean exportSfGeometries ) {
         this.version = version;
@@ -161,7 +161,7 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
-        geometryExporter = new GML3GeometryEncoder( version, writer, outputCRS, formatter, exportSfGeometries,
+        geometryExporter = new GML3GeometryWriter( version, writer, outputCRS, formatter, exportSfGeometries,
                                                     exportedIds );
         // TODO
         this.exportSf = false;
@@ -342,7 +342,7 @@ public class GML3FeatureEncoder implements GMLFeatureEncoder {
             }
 
         } else if ( propertyType instanceof CustomPropertyType ) {
-            GenericCustomPropertyExporter.export( (GenericCustomPropertyValue) value, writer );
+            GenericCustomPropertyWriter.export( (GenericCustomPropertyValue) value, writer );
         }
     }
 

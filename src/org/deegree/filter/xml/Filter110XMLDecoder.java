@@ -121,8 +121,8 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
-import org.deegree.gml.geometry.GML3GeometryDecoder;
+import org.deegree.gml.feature.generic.GenericCustomPropertyReader;
+import org.deegree.gml.geometry.GML3GeometryReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -694,7 +694,7 @@ public class Filter110XMLDecoder {
     private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         // TODO outfactor generic XML representation and parser to commons
-        GenericCustomPropertyParser literalParser = new GenericCustomPropertyParser();
+        GenericCustomPropertyReader literalParser = new GenericCustomPropertyReader();
         GenericCustomPropertyValue value = literalParser.parse( new XMLStreamReaderWrapper( xmlStream, null ) );
 
         List<GenericCustomPropertyValue> childNodes = value.getChildNodes();
@@ -834,7 +834,7 @@ public class Filter110XMLDecoder {
         xmlStream.nextTag();
 
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-        GML3GeometryDecoder geomParser = new GML3GeometryDecoder( GMLVersion.GML_31, null, null );
+        GML3GeometryReader geomParser = new GML3GeometryReader( GMLVersion.GML_31, null, null );
 
         try {
             switch ( type ) {

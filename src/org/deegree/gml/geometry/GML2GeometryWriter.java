@@ -78,7 +78,7 @@ import org.deegree.gml.geometry.refs.GeometryReference;
  * @version $Revision$, $Date$
  * 
  */
-public class GML2GeometryEncoder implements GMLGeometryEncoder {
+public class GML2GeometryWriter implements GMLGeometryWriter {
 
     private static final String GML21NS = "http://www.opengis.net/gml";
 
@@ -91,7 +91,7 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
     /**
      * @param writer
      */
-    public GML2GeometryEncoder( XMLStreamWriter writer ) {
+    public GML2GeometryWriter( XMLStreamWriter writer ) {
         this( writer, null, new HashSet<String>() );
     }
 
@@ -103,7 +103,7 @@ public class GML2GeometryEncoder implements GMLGeometryEncoder {
      * @param exportedIds
      *            must not be null
      */
-    public GML2GeometryEncoder( XMLStreamWriter writer, CoordinateFormatter formatter, Set<String> exportedIds ) {
+    public GML2GeometryWriter( XMLStreamWriter writer, CoordinateFormatter formatter, Set<String> exportedIds ) {
         this.writer = writer;
         this.exportedIds = exportedIds;
         if ( formatter == null ) {

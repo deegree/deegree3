@@ -54,7 +54,7 @@ import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryReader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,7 +67,7 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class GML3SurfacePatchDecoderTest {
+public class GML3SurfacePatchReaderTest {
 
     private GeometryFactory geomFac;
 
@@ -135,14 +135,14 @@ public class GML3SurfacePatchDecoderTest {
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML3SurfacePatchDecoderTest.class.getResource( "../../geometry/gml/testdata/patches/"
+                                                                       GML3SurfacePatchReaderTest.class.getResource( "../../geometry/gml/testdata/patches/"
                                                                                                                        + fileName ) );
         xmlReader.nextTag();
         return xmlReader;
     }
 
-    private GML3SurfacePatchDecoder getPatchParser() {
+    private GML3SurfacePatchReader getPatchParser() {
         GeometryFactory geomFac = new GeometryFactory();
-        return new GML3SurfacePatchDecoder( new GML3GeometryDecoder(GMLVersion.GML_31, null, null), geomFac );
+        return new GML3SurfacePatchReader( new GML3GeometryReader(GMLVersion.GML_31, null, null), geomFac );
     }
 }

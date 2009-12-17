@@ -47,7 +47,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.GMLFeatureDecoderTest;
+import org.deegree.gml.feature.GMLFeatureReaderTest;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
@@ -83,7 +83,7 @@ public class FeatureXPathTest {
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         gmlReader.setApplicationSchema( schema );
         fc = (FeatureCollection) gmlReader.readFeature();

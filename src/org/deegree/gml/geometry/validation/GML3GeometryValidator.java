@@ -59,7 +59,7 @@ import org.deegree.geometry.validation.GeometryValidationEventHandler;
 import org.deegree.geometry.validation.GeometryValidator;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryDecoder;
+import org.deegree.gml.geometry.GML3GeometryReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +80,7 @@ public class GML3GeometryValidator extends XMLAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryValidator.class );
 
-    private GML3GeometryDecoder geomParser;
+    private GML3GeometryReader geomParser;
 
     private XMLStreamReaderWrapper xmlStream;
 
@@ -96,7 +96,7 @@ public class GML3GeometryValidator extends XMLAdapter {
     public GML3GeometryValidator( GMLVersion version, XMLStreamReaderWrapper xmlStream,
                                   GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
-        geomParser = new GML3GeometryDecoder( version, new GeometryFactory(),
+        geomParser = new GML3GeometryReader( version, new GeometryFactory(),
                                               new GMLDocumentIdContext( GMLVersion.GML_31 ) );
         this.gmlErrorHandler = gmlErrorHandler;
     }

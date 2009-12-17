@@ -32,17 +32,19 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml.feature;
+package org.deegree.gml.geometry;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.Feature;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 
 /**
- * Interface for all versions of GML Feature encoders. Any new version of a GML feature encoder should be integrated by
- * implementing this interface.
+ * Interface for all version of GML geometry decoders. Any new geometry decoder should implement this interface.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -51,18 +53,36 @@ import org.deegree.feature.Feature;
  * @version $Revision$, $Date$
  * 
  */
-public interface GMLFeatureEncoder {
+public interface GMLGeometryReader {
 
     /**
-     * @param feature
+     * @param xmlStream
+     * @return
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parse( XMLStreamReaderWrapper xmlStream )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException;
+
+    /**
+     * @param xmlStream
+     * @param defaultCRS
+     * @return
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parse( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException;
+
+    /**
+     * @param xmlStream
+     * @param defaultCRS
+     * @return
+     * @throws XMLParsingException
      * @throws XMLStreamException
      */
-    public void export( Feature feature )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
-
-    /**
-     * @param featureId
-     * @return
-     */
-    public boolean isExported( String featureId );
+    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+                            throws XMLParsingException, XMLStreamException;
 }

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
+import static junit.framework.Assert.assertEquals;
 import static org.deegree.gml.GMLVersion.GML_30;
 
 import java.io.IOException;
@@ -45,45 +46,35 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.types.ows.CodeType;
 import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.GMLObject;
 import org.junit.Test;
 
-public class DictionaryStreamReaderTest {
+/**
+ * Tests that check the correct reading of {@link Definition} and {@link Dictionary} objects from GML documents.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ * 
+ * @version $Revision:$, $Date:$
+ */
+public class GMLDictionaryReaderTest {
 
     @Test
-    public void testParsingExample1()
+    public void testReadExampleDictionary()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
-        URL url = DictionaryStreamReaderTest.class.getResource( "example_dictionary.gml" );
+        URL url = GMLDictionaryReaderTest.class.getResource( "example_dictionary.gml" );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                          url.openStream() );
         // skip START_DOCUMENT event
         xmlStream.nextTag();
 
-        GMLDocumentIdContext idContext = new GMLDocumentIdContext( GML_30 );
-        
-        DictionaryStreamReader dictReader = new DictionaryStreamReader( GML_30, xmlStream, idContext );
-        Dictionary dict = (Dictionary) dictReader.parse();
+        GMLDictionaryReader dictReader = new GMLDictionaryReader( GML_30, xmlStream, new GMLDocumentIdContext( GML_30 ) );
 
-        printDefinition( dict, "" );
-        
-        for (GMLObject o : idContext.getObjects().values()) {
-            System.out.println (o.getId());
-        }
-    }
-    
-    private void printDefinition (Definition def, String indent) {
-        System.out.println( indent + "-id: " + def.getId() );
-        System.out.println( indent + "-description: " +def.getDescription() );
-        for ( CodeType name : def.getNames() ) {
-            System.out.println( indent + "-name: " + name );
-        }        
-        if (def instanceof Dictionary) {
-            for ( Definition member : ((Dictionary) def) ) {
-                printDefinition( member, indent + " " );
-            }
-        }
+        Dictionary dict = (Dictionary) dictReader.parse();
+        assertEquals( "CodeLists", dict.getId() );
+        assertEquals( 2, dict.size() );
+        assertEquals ("XP_HorizontaleAusrichtung", dict.get( 0 ).getId());
+        assertEquals ("XP_BedeutungenBereich", dict.get( 1 ).getId());
     }
 }

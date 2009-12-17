@@ -66,7 +66,7 @@ import org.deegree.gml.geometry.refs.GeometryReference;
  * @version $Revision$, $Date$
  * 
  */
-public interface GMLGeometryEncoder {
+public interface GMLGeometryWriter {
 
     /**
      * Exports a general geometry. This is the method to call when there is no information about the geometry (the case

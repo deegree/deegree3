@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,39 +32,37 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
 package org.deegree.gml.feature;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.feature.Feature;
 
 /**
- * Interface for parsers that convert the GML representation of custom properties into an object representation.
+ * Interface for all versions of GML Feature encoders. Any new version of a GML feature encoder should be integrated by
+ * implementing this interface.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @version $Revision: $, $Date: $
+ * @author last edited by: $Author$
  * 
- * @param <T>
- *            type of the object representation
+ * @version $Revision$, $Date$
+ * 
  */
-public interface CustomPropertyDecoder<T> {
+public interface GMLFeatureWriter {
 
     /**
-     * Returns the object representation for the property element event that the cursor of the given
-     * <code>XMLStreamReader</code> points at.
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event of the property element, afterwards points
-     *            at the next event after the <code>END_ELEMENT</code> event of the property element
-     * @return object representation for the given property element
+     * @param feature
      * @throws XMLStreamException
-     * @throws XMLParsingException
      */
-    public T parse( XMLStreamReaderWrapper xmlStream )
-                            throws XMLStreamException, XMLParsingException;
+    public void export( Feature feature )
+                            throws XMLStreamException, UnknownCRSException, TransformationException;
 
+    /**
+     * @param featureId
+     * @return
+     */
+    public boolean isExported( String featureId );
 }

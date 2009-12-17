@@ -58,7 +58,7 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryEncoder;
+import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.junit.Before;
 import org.junit.Test;
 

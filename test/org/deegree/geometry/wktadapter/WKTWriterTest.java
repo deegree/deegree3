@@ -70,8 +70,8 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryDecoder;
-import org.deegree.gml.geometry.GML3GeometryDecoderTest;
+import org.deegree.gml.geometry.GML3GeometryReader;
+import org.deegree.gml.geometry.GML3GeometryReaderTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -482,7 +482,7 @@ public class WKTWriterTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
 
-        URL gmlDocURL = GML3GeometryDecoderTest.class.getResource( BASE_DIR + fileName );
+        URL gmlDocURL = GML3GeometryReaderTest.class.getResource( BASE_DIR + fileName );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, gmlDocURL );
         return gmlReader.readGeometry();
     }
@@ -495,7 +495,7 @@ public class WKTWriterTest extends TestCase {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource( BASE_DIR + fileName ) );
         xmlReader.nextTag();
-        Envelope envelope = new GML3GeometryDecoder( GMLVersion.GML_31, null, null ).parseEnvelope( xmlReader, null );
+        Envelope envelope = new GML3GeometryReader( GMLVersion.GML_31, null, null ).parseEnvelope( xmlReader, null );
         return envelope;
     }
 

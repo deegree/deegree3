@@ -41,17 +41,17 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.types.GenericCustomPropertyValue;
-import org.deegree.gml.feature.CustomPropertyDecoder;
+import org.deegree.gml.feature.CustomPropertyReader;
 
 /**
- * {@link CustomPropertyDecoder} that produces {@link GenericCustomPropertyValue} objects.
+ * {@link CustomPropertyReader} that produces {@link GenericCustomPropertyValue} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GenericCustomPropertyParser implements CustomPropertyDecoder<GenericCustomPropertyValue>{
+public class GenericCustomPropertyReader implements CustomPropertyReader<GenericCustomPropertyValue>{
 
     @Override
     public GenericCustomPropertyValue parse( XMLStreamReaderWrapper xmlStream )

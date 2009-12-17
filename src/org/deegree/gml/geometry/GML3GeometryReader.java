@@ -102,7 +102,7 @@ import org.deegree.gml.geometry.refs.PointReference;
 import org.deegree.gml.geometry.refs.PolygonReference;
 import org.deegree.gml.geometry.refs.SolidReference;
 import org.deegree.gml.geometry.refs.SurfaceReference;
-import org.deegree.gml.props.GMLStandardPropsParser;
+import org.deegree.gml.props.GMLStandardPropsReader;
 import org.deegree.gml.props.StandardGMLProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,19 +156,19 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GML3GeometryDecoder extends GML3BaseDecoder implements GMLGeometryDecoder {
+public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeometryReader {
 
-    private static Logger LOG = LoggerFactory.getLogger( GML3GeometryDecoder.class );
+    private static Logger LOG = LoggerFactory.getLogger( GML3GeometryReader.class );
 
     private static String FID = "gid";
 
     private static String GMLID = "id";
 
-    private final GMLStandardPropsParser propsParser;
+    private final GMLStandardPropsReader propsParser;
     
-    private final GML3CurveSegmentDecoder curveSegmentParser;
+    private final GML3CurveSegmentReader curveSegmentParser;
 
-    private final GML3SurfacePatchDecoder surfacePatchParser;
+    private final GML3SurfacePatchReader surfacePatchParser;
 
     private final GMLDocumentIdContext idContext;
 
@@ -245,7 +245,7 @@ public class GML3GeometryDecoder extends GML3BaseDecoder implements GMLGeometryD
     }
 
     /**
-     * Creates a new {@link GML3GeometryDecoder} instance.
+     * Creates a new {@link GML3GeometryReader} instance.
      * 
      * @param version
      *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
@@ -254,16 +254,16 @@ public class GML3GeometryDecoder extends GML3BaseDecoder implements GMLGeometryD
      * @param idContext
      *            id context for keeping track of objects and references, can be <code>null</code>
      */
-    public GML3GeometryDecoder( GMLVersion version, GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
+    public GML3GeometryReader( GMLVersion version, GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
         super( version, geomFac != null ? geomFac : new GeometryFactory() );
         if ( idContext != null ) {
             this.idContext = idContext;
         } else {
             this.idContext = new GMLDocumentIdContext( version );
         }
-        propsParser = new GMLStandardPropsParser( version );
-        curveSegmentParser = new GML3CurveSegmentDecoder( this, this.geomFac );
-        surfacePatchParser = new GML3SurfacePatchDecoder( this, this.geomFac );
+        propsParser = new GMLStandardPropsReader( version );
+        curveSegmentParser = new GML3CurveSegmentReader( this, this.geomFac );
+        surfacePatchParser = new GML3SurfacePatchReader( this, this.geomFac );
     }
 
     /**

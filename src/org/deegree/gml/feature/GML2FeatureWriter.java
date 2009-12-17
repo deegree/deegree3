@@ -68,8 +68,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML2GeometryEncoder;
-import org.deegree.gml.geometry.GMLGeometryEncoder;
+import org.deegree.gml.geometry.GML2GeometryWriter;
+import org.deegree.gml.geometry.GMLGeometryWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,15 +84,15 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class GML2FeatureEncoder implements GMLFeatureEncoder {
+public class GML2FeatureWriter implements GMLFeatureWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML2FeatureEncoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML2FeatureWriter.class );
 
     private Set<String> exportedIds = new HashSet<String>();
 
     private XMLStreamWriter writer;
 
-    private GMLGeometryEncoder geometryExporter;
+    private GMLGeometryWriter geometryExporter;
 
     /**
      * @param writer
@@ -103,10 +103,10 @@ public class GML2FeatureEncoder implements GMLFeatureEncoder {
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
      *            <code>null</code> (use 5 decimal places)
      */
-    public GML2FeatureEncoder( XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter ) {
+    public GML2FeatureWriter( XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter ) {
         this.writer = writer;
         // TODO outputCRS is not used here!!
-        geometryExporter = new GML2GeometryEncoder( writer, formatter, exportedIds );
+        geometryExporter = new GML2GeometryWriter( writer, formatter, exportedIds );
     }
 
     // public void export( FeatureCollection featureCol ) throws XMLStreamException {

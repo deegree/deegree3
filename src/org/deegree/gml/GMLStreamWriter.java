@@ -53,12 +53,12 @@ import org.deegree.feature.Feature;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
-import org.deegree.gml.feature.GML2FeatureEncoder;
-import org.deegree.gml.feature.GML3FeatureEncoder;
-import org.deegree.gml.feature.GMLFeatureEncoder;
-import org.deegree.gml.geometry.GML2GeometryEncoder;
-import org.deegree.gml.geometry.GML3GeometryEncoder;
-import org.deegree.gml.geometry.GMLGeometryEncoder;
+import org.deegree.gml.feature.GML2FeatureWriter;
+import org.deegree.gml.feature.GML3FeatureWriter;
+import org.deegree.gml.feature.GMLFeatureWriter;
+import org.deegree.gml.geometry.GML2GeometryWriter;
+import org.deegree.gml.geometry.GML3GeometryWriter;
+import org.deegree.gml.geometry.GMLGeometryWriter;
 
 /**
  * Stream-based writer for all kinds of GML objects supported by deegree.
@@ -92,9 +92,9 @@ public class GMLStreamWriter {
 
     private String schemaLocation;
 
-    private GMLGeometryEncoder geometryEncoder;
+    private GMLGeometryWriter geometryEncoder;
 
-    private GMLFeatureEncoder featureEncoder;
+    private GMLFeatureWriter featureEncoder;
 
     private PropertyName[] featureProps;
 
@@ -291,19 +291,19 @@ public class GMLStreamWriter {
         xmlStream.close();
     }
 
-    private GMLFeatureEncoder getFeatureEncoder() {
+    private GMLFeatureWriter getFeatureEncoder() {
         if ( featureEncoder == null ) {
             switch ( version ) {
             case GML_2: {
                 // TODO
-                featureEncoder = new GML2FeatureEncoder( xmlStream, crs, formatter );
+                featureEncoder = new GML2FeatureWriter( xmlStream, crs, formatter );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
                 // TODO
-                featureEncoder = new GML3FeatureEncoder( version, xmlStream, crs, formatter, localXLinkTemplate,
+                featureEncoder = new GML3FeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate,
                                                          featureProps, inlineXLinklevels, traverseXLinkExpiry, false );
                 break;
             }
@@ -312,19 +312,19 @@ public class GMLStreamWriter {
         return featureEncoder;
     }
 
-    private GMLGeometryEncoder getGeometryEncoder() {
+    private GMLGeometryWriter getGeometryEncoder() {
         if ( geometryEncoder == null ) {
             switch ( version ) {
             case GML_2: {
                 // TODO
-                geometryEncoder = new GML2GeometryEncoder( xmlStream );
+                geometryEncoder = new GML2GeometryWriter( xmlStream );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
                 // TODO
-                geometryEncoder = new GML3GeometryEncoder( version, xmlStream, crs, formatter, false,
+                geometryEncoder = new GML3GeometryWriter( version, xmlStream, crs, formatter, false,
                                                            new HashSet<String>() );
                 break;
             }

@@ -87,12 +87,12 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.generic.GenericCustomPropertyParser;
+import org.deegree.gml.feature.generic.GenericCustomPropertyReader;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.gml.feature.schema.DefaultGMLTypes;
-import org.deegree.gml.geometry.GML2GeometryDecoder;
-import org.deegree.gml.geometry.GML3GeometryDecoder;
-import org.deegree.gml.geometry.GMLGeometryDecoder;
+import org.deegree.gml.geometry.GML2GeometryReader;
+import org.deegree.gml.geometry.GML3GeometryReader;
+import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.geometry.refs.GeometryReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,9 +105,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLFeatureDecoder extends XMLAdapter {
+public class GMLFeatureReader extends XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureDecoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureReader.class );
 
     private static String FID = "fid";
 
@@ -121,18 +121,18 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private final GeometryFactory geomFac;
 
-    private final Map<PropertyType, CustomPropertyDecoder<?>> ptToParser = new HashMap<PropertyType, CustomPropertyDecoder<?>>();
+    private final Map<PropertyType, CustomPropertyReader<?>> ptToParser = new HashMap<PropertyType, CustomPropertyReader<?>>();
 
     private final GMLDocumentIdContext idContext;
 
-    private GMLGeometryDecoder geomParser;
+    private GMLGeometryReader geomParser;
 
     private GMLReferenceResolver specialResolver;
 
     private final GMLVersion version;
 
     /**
-     * Creates a new {@link GMLFeatureDecoder} instance that is configured for building features with the specified
+     * Creates a new {@link GMLFeatureReader} instance that is configured for building features with the specified
      * feature types.
      * 
      * @param schema
@@ -143,14 +143,14 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * @param version
      *            GML version, must not be <code>null</code>
      */
-    public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLVersion version ) {
+    public GMLFeatureReader( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLVersion version ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext != null ? idContext : new GMLDocumentIdContext( version );
         if ( version.equals( GMLVersion.GML_2 ) ) {
-            this.geomParser = new GML2GeometryDecoder( geomFac, idContext );
+            this.geomParser = new GML2GeometryReader( geomFac, idContext );
         } else {
-            this.geomParser = new GML3GeometryDecoder( version, geomFac, idContext );
+            this.geomParser = new GML3GeometryReader( version, geomFac, idContext );
         }
         this.version = version;
         if ( version.equals( GMLVersion.GML_32 ) ) {
@@ -161,7 +161,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
     }
 
     /**
-     * Creates a new {@link GMLFeatureDecoder} instance that is configured for building features with the specified
+     * Creates a new {@link GMLFeatureReader} instance that is configured for building features with the specified
      * feature types.
      * 
      * @param schema
@@ -172,16 +172,16 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * @param version
      *            GML version, must not be <code>null</code>
      */
-    public GMLFeatureDecoder( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLReferenceResolver resolver,
+    public GMLFeatureReader( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLReferenceResolver resolver,
                               GMLVersion version ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
         this.specialResolver = resolver;
         if ( version.equals( GMLVersion.GML_2 ) ) {
-            this.geomParser = new GML2GeometryDecoder( geomFac, idContext );
+            this.geomParser = new GML2GeometryReader( geomFac, idContext );
         } else {
-            this.geomParser = new GML3GeometryDecoder( version, geomFac, idContext );
+            this.geomParser = new GML3GeometryReader( version, geomFac, idContext );
         }
         this.version = version;
         if ( version.equals( GMLVersion.GML_32 ) ) {
@@ -191,17 +191,17 @@ public class GMLFeatureDecoder extends XMLAdapter {
         }
     }
 
-    public void setGeometryDecoder( GMLGeometryDecoder decoder ) {
+    public void setGeometryDecoder( GMLGeometryReader decoder ) {
         this.geomParser = decoder;
     }
 
     /**
-     * Registers a {@link CustomPropertyDecoder} that is invoked to parse properties of a certain type.
+     * Registers a {@link CustomPropertyReader} that is invoked to parse properties of a certain type.
      * 
      * @param pt
      * @param parser
      */
-    public void registerCustomPropertyParser( PropertyType pt, CustomPropertyDecoder<?> parser ) {
+    public void registerCustomPropertyParser( PropertyType pt, CustomPropertyReader<?> parser ) {
         this.ptToParser.put( pt, parser );
     }
 
@@ -402,7 +402,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
         LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
         LOG.debug( "- property declaration: " + propDecl );
 
-        CustomPropertyDecoder<?> parser = ptToParser.get( propDecl );
+        CustomPropertyReader<?> parser = ptToParser.get( propDecl );
 
         if ( parser == null ) {
             if ( propDecl instanceof SimplePropertyType ) {
@@ -461,7 +461,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
                     xmlStream.skipElement();
                 }
             } else if ( propDecl instanceof CustomPropertyType ) {
-                Object value = new GenericCustomPropertyParser().parse( xmlStream );
+                Object value = new GenericCustomPropertyReader().parse( xmlStream );
                 property = new GenericProperty<Object>( propDecl, propName, value );
             } else if ( propDecl instanceof EnvelopePropertyType ) {
                 Envelope env = null;

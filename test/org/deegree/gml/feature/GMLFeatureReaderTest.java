@@ -68,14 +68,14 @@ import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Test;
 
 /**
- * Tests that check the extraction of {@link Feature}s from GML documents.
+ * Tests that check the correct reading of {@link Feature} objects from GML documents.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLFeatureDecoderTest {
+public class GMLFeatureReaderTest {
 
     private static final String BASE_DIR = "testdata/features/";
 
@@ -84,11 +84,11 @@ public class GMLFeatureDecoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, ReferenceResolvingException {
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureDecoder decoder = new GMLFeatureDecoder( null, null, GMLVersion.GML_31 );
+        GMLFeatureReader decoder = new GMLFeatureReader( null, null, GMLVersion.GML_31 );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) decoder.parseFeature( wrapper, null );
         decoder.getDocumentIdContext().resolveLocalRefs();
@@ -100,11 +100,11 @@ public class GMLFeatureDecoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException,
                             ReferenceResolvingException, XMLParsingException, UnknownCRSException {
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection_no_schema.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection_no_schema.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, null, GMLVersion.GML_31);
+        GMLFeatureReader gmlAdapter = new GMLFeatureReader( null, null, GMLVersion.GML_31);
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         gmlAdapter.getDocumentIdContext().resolveLocalRefs();
@@ -118,7 +118,7 @@ public class GMLFeatureDecoderTest {
                             XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
                             ReferenceResolvingException {
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf0.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf0.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
@@ -156,7 +156,7 @@ public class GMLFeatureDecoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, TransformationException {
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf1.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf1.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
 
@@ -176,7 +176,7 @@ public class GMLFeatureDecoderTest {
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        GML3FeatureEncoder encoder = new GML3FeatureEncoder( writer, null );
+        GML3FeatureWriter encoder = new GML3FeatureWriter( writer, null );
         encoder.export( fc );
         writer.close();
     }
@@ -188,7 +188,7 @@ public class GMLFeatureDecoderTest {
                             XMLParsingException, UnknownCRSException, JAXBException, TransformationException,
                             ReferenceResolvingException {
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset-sf2.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset-sf2.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
@@ -209,7 +209,7 @@ public class GMLFeatureDecoderTest {
     public void testParsingCite100()
                             throws FactoryConfigurationError, Exception {
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "dataset.xml" );
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "dataset.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();

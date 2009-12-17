@@ -82,15 +82,15 @@ import org.deegree.gml.GMLVersion;
  * 
  * @version $Revision:$, $Date:$
  */
-class GML3SurfacePatchDecoder extends GML3BaseDecoder {
+class GML3SurfacePatchReader extends GML3GeometryBaseReader {
 
-    private GML3GeometryDecoder geometryParser;
+    private GML3GeometryReader geometryParser;
 
     /**
      * @param geometryParser
      * @param geomFac
      */
-    GML3SurfacePatchDecoder( GML3GeometryDecoder geometryParser, GeometryFactory geomFac ) {
+    GML3SurfacePatchReader( GML3GeometryReader geometryParser, GeometryFactory geomFac ) {
         super( geometryParser.version, geomFac );
         this.geometryParser = geometryParser;
     }

@@ -48,7 +48,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryDecoderTest;
+import org.deegree.gml.geometry.GML3GeometryReaderTest;
 import org.deegree.gml.geometry.validation.GML3GeometryValidator;
 import org.deegree.gml.geometry.validation.GMLElementIdentifier;
 import org.deegree.gml.geometry.validation.GMLValidationEventHandler;
@@ -119,7 +119,7 @@ public class GMLGeometryValidatorTest {
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML3GeometryDecoderTest.class.getResource( BASE_DIR
+                                                                       GML3GeometryReaderTest.class.getResource( BASE_DIR
                                                                                                                    + fileName ) );
         return xmlReader;
     }

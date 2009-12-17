@@ -104,17 +104,17 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-class GML3CurveSegmentDecoder extends GML3BaseDecoder {
+class GML3CurveSegmentReader extends GML3GeometryBaseReader {
 
-    private static Logger LOG = LoggerFactory.getLogger( GML3CurveSegmentDecoder.class );
+    private static Logger LOG = LoggerFactory.getLogger( GML3CurveSegmentReader.class );
 
-    private GML3GeometryDecoder geometryParser;
+    private GML3GeometryReader geometryParser;
 
     /**
      * @param geometryParser
      * @param geomFac
      */
-    GML3CurveSegmentDecoder( GML3GeometryDecoder geometryParser, GeometryFactory geomFac ) {
+    GML3CurveSegmentReader( GML3GeometryReader geometryParser, GeometryFactory geomFac ) {
         super( geometryParser.version, geomFac );
         this.geometryParser = geometryParser;
     }

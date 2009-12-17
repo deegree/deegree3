@@ -48,10 +48,10 @@ import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.gml.feature.GMLFeatureDecoder;
-import org.deegree.gml.geometry.GML2GeometryDecoder;
-import org.deegree.gml.geometry.GML3GeometryDecoder;
-import org.deegree.gml.geometry.GMLGeometryDecoder;
+import org.deegree.gml.feature.GMLFeatureReader;
+import org.deegree.gml.geometry.GML2GeometryReader;
+import org.deegree.gml.geometry.GML3GeometryReader;
+import org.deegree.gml.geometry.GMLGeometryReader;
 
 /**
  * Stream-based reader for all kinds of GML objects supported by deegree.
@@ -83,9 +83,9 @@ public class GMLStreamReader {
 
     private GeometryFactory geomFac;
 
-    private GMLGeometryDecoder geometryDecoder;
+    private GMLGeometryReader geometryDecoder;
 
-    private GMLFeatureDecoder featureDecoder;
+    private GMLFeatureReader featureDecoder;
 
     /**
      * Creates a new {@link GMLStreamReader} instance.
@@ -133,18 +133,24 @@ public class GMLStreamReader {
     public void setGeometryFactory( GeometryFactory geomFac ) {
         switch ( version ) {
         case GML_2: {
-            geometryDecoder = new GML2GeometryDecoder( geomFac, idContext );
+            geometryDecoder = new GML2GeometryReader( geomFac, idContext );
             break;
         }
         case GML_30:
         case GML_31:
         case GML_32: {
-            geometryDecoder = new GML3GeometryDecoder( version, geomFac, idContext );
+            geometryDecoder = new GML3GeometryReader( version, geomFac, idContext );
             break;
         }
         }
     }
 
+    /**
+     * Controls the {@link GMLReferenceResolver} that the generated {@link GMLReference}s shall use for resolving
+     * themselves.
+     * 
+     * @param resolver
+     */
     public void setResolver( GMLReferenceResolver resolver ) {
         this.resolver = resolver;
     }
@@ -153,7 +159,7 @@ public class GMLStreamReader {
      * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
      * stream points to.
      * 
-     * @return deegree model representation for the current GML object element
+     * @return deegree model representation for the current GML object element, never <code>null</code>
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws XMLParsingException
@@ -176,7 +182,7 @@ public class GMLStreamReader {
      * Returns the deegree model representation for the GML feature element event that the cursor of the underlying xml
      * stream points to.
      * 
-     * @return deegree model representation for the current GML feature element
+     * @return deegree model representation for the current GML feature element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws UnknownCRSException
@@ -194,7 +200,7 @@ public class GMLStreamReader {
      * collections), because it does not need to built and store all features in memory at once.
      * </p>
      * 
-     * @return deegree model representation for the current GML feature collection element
+     * @return deegree model representation for the current GML feature collection element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws UnknownCRSException
@@ -212,7 +218,7 @@ public class GMLStreamReader {
      * caller to control the consumption by iterating over the features in the returned collection.
      * </p>
      * 
-     * @return deegree model representation for the current GML feature collection element
+     * @return deegree model representation for the current GML feature collection element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws UnknownCRSException
@@ -226,7 +232,7 @@ public class GMLStreamReader {
      * Returns the deegree model representation for the GML geometry element event that the cursor of the underlying xml
      * stream points to.
      * 
-     * @return deegree model representation for the current GML geometry element
+     * @return deegree model representation for the current GML geometry element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws UnknownCRSException
@@ -240,7 +246,7 @@ public class GMLStreamReader {
      * Returns the deegree model representation for the GML crs element event that the cursor of the underlying xml
      * stream points to.
      * 
-     * @return deegree model representation for the current GML crs element
+     * @return deegree model representation for the current GML crs element, never <code>null</code>
      * @throws XMLStreamException
      */
     public CRS readCRS()
@@ -267,9 +273,9 @@ public class GMLStreamReader {
         xmlStream.close();
     }
 
-    private GMLFeatureDecoder getFeatureDecoder() {
+    private GMLFeatureReader getFeatureDecoder() {
         if ( featureDecoder == null ) {
-            featureDecoder = new GMLFeatureDecoder( schema, idContext, resolver, version );
+            featureDecoder = new GMLFeatureReader( schema, idContext, resolver, version );
             if ( geometryDecoder != null ) {
                 featureDecoder.setGeometryDecoder( geometryDecoder );
             }
@@ -277,17 +283,17 @@ public class GMLStreamReader {
         return featureDecoder;
     }
 
-    private GMLGeometryDecoder getGeometryDecoder() {
+    private GMLGeometryReader getGeometryDecoder() {
         if ( geometryDecoder == null ) {
             switch ( version ) {
             case GML_2: {
-                geometryDecoder = new GML2GeometryDecoder( new GeometryFactory(), idContext );
+                geometryDecoder = new GML2GeometryReader( new GeometryFactory(), idContext );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
-                geometryDecoder = new GML3GeometryDecoder( version, new GeometryFactory(), idContext );
+                geometryDecoder = new GML3GeometryReader( version, new GeometryFactory(), idContext );
                 break;
             }
             }

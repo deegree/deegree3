@@ -66,9 +66,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-class GML3BaseDecoder {
+class GML3GeometryBaseReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML3BaseDecoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryBaseReader.class );
 
     protected final GMLVersion version;
 
@@ -86,7 +86,7 @@ class GML3BaseDecoder {
 
     private final QName GML_Z;
 
-    protected GML3BaseDecoder( GMLVersion version, GeometryFactory geomFac ) {
+    protected GML3GeometryBaseReader( GMLVersion version, GeometryFactory geomFac ) {
         this.version = version;
         this.gmlNs = version.getNamespace();
         this.geomFac = geomFac;

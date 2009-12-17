@@ -85,9 +85,9 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class GML2GeometryDecoder implements GMLGeometryDecoder {
+public class GML2GeometryReader implements GMLGeometryReader {
 
-    private static Logger LOG = LoggerFactory.getLogger( GML2GeometryDecoder.class );
+    private static Logger LOG = LoggerFactory.getLogger( GML2GeometryReader.class );
 
     private static String FID = "gid";
 
@@ -106,7 +106,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
     /**
      * 
      */
-    public GML2GeometryDecoder() {
+    public GML2GeometryReader() {
         this( new GeometryFactory(), new GMLDocumentIdContext( GMLVersion.GML_2 ) );
     }
 
@@ -114,7 +114,7 @@ public class GML2GeometryDecoder implements GMLGeometryDecoder {
      * @param geomFac
      * @param idContext
      */
-    public GML2GeometryDecoder( GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
+    public GML2GeometryReader( GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
         this.geomFac = geomFac;
         this.idContext = idContext;
     }

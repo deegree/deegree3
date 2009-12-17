@@ -128,9 +128,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GML3GeometryEncoder implements GMLGeometryEncoder {
+public class GML3GeometryWriter implements GMLGeometryWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryEncoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryWriter.class );
 
     private final GMLVersion version;
 
@@ -152,7 +152,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
     private final boolean exportSf;
 
     /**
-     * Creates a new {@link GML3GeometryEncoder} instance.
+     * Creates a new {@link GML3GeometryWriter} instance.
      * 
      * @param version
      *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
@@ -169,7 +169,7 @@ public class GML3GeometryEncoder implements GMLGeometryEncoder {
      *            they are exported without id attributes)
      * @param exportedIds
      */
-    public GML3GeometryEncoder( GMLVersion version, XMLStreamWriter writer, CRS outputCrs,
+    public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCrs,
                                 CoordinateFormatter formatter, boolean exportSf, Set<String> exportedIds ) {
         this.version = version;
         this.writer = writer;
