@@ -64,6 +64,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
 import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
+import org.deegree.feature.persistence.simplesql.SimpleSQLDatastore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
@@ -164,13 +165,21 @@ public class FeatureStoreManager {
     /**
      * @param jaxbConfig
      * @return a corresponding feature store, initialized
+     * @throws FeatureStoreException
      */
-    public static synchronized FeatureStore create( DirectSQLDataSourceType jaxbConfig ) {
+    public static synchronized FeatureStore create( DirectSQLDataSourceType jaxbConfig )
+                            throws FeatureStoreException {
         String connId = jaxbConfig.getConnectionPoolId();
         String srs = jaxbConfig.getStorageSRS();
         String stmt = jaxbConfig.getSQLStatement();
-        // work in progress
-        return null;
+        String name = jaxbConfig.getFeatureTypeName();
+        String ns = jaxbConfig.getNamespace();
+        String id = jaxbConfig.getDataSourceName();
+        String bbox = jaxbConfig.getBBoxStatement();
+
+        SimpleSQLDatastore fs = new SimpleSQLDatastore( connId, srs, stmt, name, ns, bbox );
+        registerAndInit( fs, id );
+        return fs;
     }
 
     /**
