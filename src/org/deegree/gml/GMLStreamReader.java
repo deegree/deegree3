@@ -189,7 +189,7 @@ public class GMLStreamReader {
      */
     public Feature readFeature()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        return getFeatureDecoder().parseFeature( xmlStream, defaultCRS );
+        return getFeatureReader().parseFeature( xmlStream, defaultCRS );
     }
 
     /**
@@ -207,7 +207,7 @@ public class GMLStreamReader {
      */
     public FeatureCollection readFeatureCollection()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        return (FeatureCollection) getFeatureDecoder().parseFeature( xmlStream, defaultCRS );
+        return (FeatureCollection) getFeatureReader().parseFeature( xmlStream, defaultCRS );
     }
 
     /**
@@ -239,7 +239,7 @@ public class GMLStreamReader {
      */
     public Geometry readGeometry()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        return getGeometryDecoder().parse( xmlStream, defaultCRS );
+        return getGeometryReader().parse( xmlStream, defaultCRS );
     }
 
     /**
@@ -273,17 +273,17 @@ public class GMLStreamReader {
         xmlStream.close();
     }
 
-    private GMLFeatureReader getFeatureDecoder() {
+    private GMLFeatureReader getFeatureReader() {
         if ( featureDecoder == null ) {
-            featureDecoder = new GMLFeatureReader( schema, idContext, resolver, version );
+            featureDecoder = new GMLFeatureReader( version, schema, idContext, resolver );
             if ( geometryDecoder != null ) {
-                featureDecoder.setGeometryDecoder( geometryDecoder );
+                featureDecoder.setGeometryReader( geometryDecoder );
             }
         }
         return featureDecoder;
     }
 
-    private GMLGeometryReader getGeometryDecoder() {
+    private GMLGeometryReader getGeometryReader() {
         if ( geometryDecoder == null ) {
             switch ( version ) {
             case GML_2: {

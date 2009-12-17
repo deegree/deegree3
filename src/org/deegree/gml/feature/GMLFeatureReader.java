@@ -98,7 +98,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Decodes GML-encoded features and feature collections.
+ * Stream-based reader for GML-encoded features and feature collections.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -125,7 +125,7 @@ public class GMLFeatureReader extends XMLAdapter {
 
     private final GMLDocumentIdContext idContext;
 
-    private GMLGeometryReader geomParser;
+    private GMLGeometryReader geomReader;
 
     private GMLReferenceResolver specialResolver;
 
@@ -135,22 +135,22 @@ public class GMLFeatureReader extends XMLAdapter {
      * Creates a new {@link GMLFeatureReader} instance that is configured for building features with the specified
      * feature types.
      * 
+     * @param version
+     *            GML version, must not be <code>null</code>
      * @param schema
      *            application schema that defines the feature types, must not be <code>null</code>
      * @param idContext
      *            id context to be used for registering gml:ids (features and geometries) and resolving local xlinks,
      *            can be <code>null</code>
-     * @param version
-     *            GML version, must not be <code>null</code>
      */
-    public GMLFeatureReader( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLVersion version ) {
+    public GMLFeatureReader( GMLVersion version, ApplicationSchema schema, GMLDocumentIdContext idContext ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext != null ? idContext : new GMLDocumentIdContext( version );
         if ( version.equals( GMLVersion.GML_2 ) ) {
-            this.geomParser = new GML2GeometryReader( geomFac, idContext );
+            this.geomReader = new GML2GeometryReader( geomFac, idContext );
         } else {
-            this.geomParser = new GML3GeometryReader( version, geomFac, idContext );
+            this.geomReader = new GML3GeometryReader( version, geomFac, idContext );
         }
         this.version = version;
         if ( version.equals( GMLVersion.GML_32 ) ) {
@@ -164,24 +164,24 @@ public class GMLFeatureReader extends XMLAdapter {
      * Creates a new {@link GMLFeatureReader} instance that is configured for building features with the specified
      * feature types.
      * 
+     * @param version
+     *            GML version, must not be <code>null</code>
      * @param schema
      *            application schema that defines the feature types, must not be <code>null</code>
      * @param idContext
      *            id context to be used for registering gml:ids (features and geometries and resolving local xlinks and
      * @param resolver
-     * @param version
-     *            GML version, must not be <code>null</code>
      */
-    public GMLFeatureReader( ApplicationSchema schema, GMLDocumentIdContext idContext, GMLReferenceResolver resolver,
-                              GMLVersion version ) {
+    public GMLFeatureReader( GMLVersion version, ApplicationSchema schema, GMLDocumentIdContext idContext,
+                             GMLReferenceResolver resolver ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
         this.specialResolver = resolver;
         if ( version.equals( GMLVersion.GML_2 ) ) {
-            this.geomParser = new GML2GeometryReader( geomFac, idContext );
+            this.geomReader = new GML2GeometryReader( geomFac, idContext );
         } else {
-            this.geomParser = new GML3GeometryReader( version, geomFac, idContext );
+            this.geomReader = new GML3GeometryReader( version, geomFac, idContext );
         }
         this.version = version;
         if ( version.equals( GMLVersion.GML_32 ) ) {
@@ -191,8 +191,8 @@ public class GMLFeatureReader extends XMLAdapter {
         }
     }
 
-    public void setGeometryDecoder( GMLGeometryReader decoder ) {
-        this.geomParser = decoder;
+    public void setGeometryReader( GMLGeometryReader geomReader ) {
+        this.geomReader = geomReader;
     }
 
     /**
@@ -424,7 +424,7 @@ public class GMLFeatureReader extends XMLAdapter {
                 } else {
                     xmlStream.nextTag();
                     Geometry geometry = null;
-                    geometry = geomParser.parse( xmlStream, crs );
+                    geometry = geomReader.parse( xmlStream, crs );
                     property = new GenericProperty<Geometry>( propDecl, propName, geometry );
                     xmlStream.nextTag();
                 }
@@ -470,7 +470,7 @@ public class GMLFeatureReader extends XMLAdapter {
                     // TODO
                     StAXParsingHelper.skipElement( xmlStream );
                 } else {
-                    env = geomParser.parseEnvelope( xmlStream, crs );
+                    env = geomReader.parseEnvelope( xmlStream, crs );
                     property = new GenericProperty<Object>( propDecl, propName, env );
                 }
                 xmlStream.nextTag();

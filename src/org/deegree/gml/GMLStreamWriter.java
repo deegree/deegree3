@@ -53,8 +53,6 @@ import org.deegree.feature.Feature;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
-import org.deegree.gml.feature.GML2FeatureWriter;
-import org.deegree.gml.feature.GML3FeatureWriter;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
@@ -92,9 +90,9 @@ public class GMLStreamWriter {
 
     private String schemaLocation;
 
-    private GMLGeometryWriter geometryEncoder;
+    private GMLGeometryWriter geometryWriter;
 
-    private GMLFeatureWriter featureEncoder;
+    private GMLFeatureWriter featureWriter;
 
     private PropertyName[] featureProps;
 
@@ -215,8 +213,8 @@ public class GMLStreamWriter {
      */
     public boolean isObjectExported( String gmlId ) {
         // TODO do this properly
-        if ( featureEncoder != null ) {
-            return featureEncoder.isExported( gmlId );
+        if ( featureWriter != null ) {
+            return featureWriter.isExported( gmlId );
         }
         return false;
     }
@@ -252,7 +250,7 @@ public class GMLStreamWriter {
      */
     public void write( Feature feature )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        getFeatureEncoder().export( feature );
+        getFeatureWriter().export( feature );
     }
 
     /**
@@ -266,7 +264,7 @@ public class GMLStreamWriter {
      */
     public void write( Geometry geometry )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        getGeometryEncoder().export( geometry );
+        getGeometryWriter().export( geometry );
     }
 
     /**
@@ -291,45 +289,32 @@ public class GMLStreamWriter {
         xmlStream.close();
     }
 
-    private GMLFeatureWriter getFeatureEncoder() {
-        if ( featureEncoder == null ) {
-            switch ( version ) {
-            case GML_2: {
-                // TODO
-                featureEncoder = new GML2FeatureWriter( xmlStream, crs, formatter );
-                break;
-            }
-            case GML_30:
-            case GML_31:
-            case GML_32: {
-                // TODO
-                featureEncoder = new GML3FeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate,
-                                                         featureProps, inlineXLinklevels, traverseXLinkExpiry, false );
-                break;
-            }
-            }
+    private GMLFeatureWriter getFeatureWriter() {
+        if ( featureWriter == null ) {
+            featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate, featureProps,
+                                                  inlineXLinklevels, traverseXLinkExpiry, false );
         }
-        return featureEncoder;
+        return featureWriter;
     }
 
-    private GMLGeometryWriter getGeometryEncoder() {
-        if ( geometryEncoder == null ) {
+    private GMLGeometryWriter getGeometryWriter() {
+        if ( geometryWriter == null ) {
             switch ( version ) {
             case GML_2: {
                 // TODO
-                geometryEncoder = new GML2GeometryWriter( xmlStream );
+                geometryWriter = new GML2GeometryWriter( xmlStream );
                 break;
             }
             case GML_30:
             case GML_31:
             case GML_32: {
                 // TODO
-                geometryEncoder = new GML3GeometryWriter( version, xmlStream, crs, formatter, false,
-                                                           new HashSet<String>() );
+                geometryWriter = new GML3GeometryWriter( version, xmlStream, crs, formatter, false,
+                                                         new HashSet<String>() );
                 break;
             }
             }
         }
-        return geometryEncoder;
+        return geometryWriter;
     }
 }

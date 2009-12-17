@@ -88,7 +88,7 @@ public class GMLFeatureReaderTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureReader decoder = new GMLFeatureReader( null, null, GMLVersion.GML_31 );
+        GMLFeatureReader decoder = new GMLFeatureReader( GMLVersion.GML_31, null, null );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) decoder.parseFeature( wrapper, null );
         decoder.getDocumentIdContext().resolveLocalRefs();
@@ -104,7 +104,7 @@ public class GMLFeatureReaderTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureReader gmlAdapter = new GMLFeatureReader( null, null, GMLVersion.GML_31);
+        GMLFeatureReader gmlAdapter = new GMLFeatureReader( GMLVersion.GML_31, null, null);
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         gmlAdapter.getDocumentIdContext().resolveLocalRefs();
@@ -176,7 +176,7 @@ public class GMLFeatureReaderTest {
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-        GML3FeatureWriter encoder = new GML3FeatureWriter( writer, null );
+        GMLFeatureWriter encoder = new GMLFeatureWriter( writer, null );
         encoder.export( fc );
         writer.close();
     }

@@ -79,19 +79,17 @@ import org.slf4j.LoggerFactory;
  * TODO
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class GML2GeometryReader implements GMLGeometryReader {
 
     private static Logger LOG = LoggerFactory.getLogger( GML2GeometryReader.class );
 
-    private static String FID = "gid";
+    private static String GID = "gid";
 
-    private static final String GML21NS = "http://www.opengis.net/gml";
+    private static final String GML21NS = CommonNamespaces.GMLNS;
 
     private static final QName GML_X = new QName( GML21NS, "X" );
 
@@ -882,7 +880,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
     }
 
     private String parseGeometryId( XMLStreamReaderWrapper xmlStream ) {
-        String gid = xmlStream.getAttributeValue( null, FID );
+        String gid = xmlStream.getAttributeValue( null, GID );
 
         // Check that the geometry id has the correct form. "gid" and "gml:id" are both based
         // on the XML type "ID": http://www.w3.org/TR/xmlschema11-2/#NCName

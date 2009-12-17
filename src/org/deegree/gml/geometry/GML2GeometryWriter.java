@@ -72,11 +72,9 @@ import org.deegree.gml.geometry.refs.GeometryReference;
  * Exports a Geometry bean (that belongs to GML 2.1.*) via a {@link XMLStreamWriter}.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class GML2GeometryWriter implements GMLGeometryWriter {
 
