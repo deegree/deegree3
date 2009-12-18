@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,17 +32,17 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
 import org.deegree.feature.Feature;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class FeatureNode extends ElementNode {
@@ -51,8 +51,8 @@ public class FeatureNode extends ElementNode {
 
     private Feature feature;
 
-    public FeatureNode (Node parentNode, Feature feature) {
-        super (feature.getName());
+    public FeatureNode( Node parentNode, Feature feature ) {
+        super( feature.getName() );
         this.parentNode = parentNode;
         this.feature = feature;
     }
@@ -62,7 +62,7 @@ public class FeatureNode extends ElementNode {
         return parentNode;
     }
 
-    Feature getFeature () {
+    public Feature getFeature() {
         return feature;
     }
 }
