@@ -95,7 +95,7 @@ public class GenericFeature extends AbstractFeature {
         } else {
             Pair<StandardGMLFeatureProps, List<Property<?>>> pair = StandardGMLFeatureProps.create( props, version );
             standardProps = pair.first;
-            this.props = pair.second;
+            this.props = new ArrayList<Property<?>>( pair.second );
         }
     }
 
