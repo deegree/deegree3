@@ -45,7 +45,7 @@ import org.deegree.commons.datasource.configuration.DCRecordStoreType;
 import org.deegree.commons.datasource.configuration.ISORecordStoreType;
 import org.deegree.commons.datasource.configuration.RecordStoreType;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.record.persistence.dc.GenericRecordStore;
+import org.deegree.record.persistence.genericrecordstore.GenericRecordStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -37,6 +37,7 @@ package org.deegree.record.persistence;
 
 import java.io.Writer;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -83,7 +84,7 @@ public interface RecordStore {
      * @param xmlWriter
      *            writer to export to, must not be <code>null</code>
      */
-    public void describeRecord();
+    public void describeRecord(XMLStreamWriter writer, QName typeName);
 
     /**
      * 
@@ -105,7 +106,23 @@ public interface RecordStore {
                             throws SQLException, XMLStreamException;
 
     /**
-     * Returns the TypeNames that are known in the Backend
+     * Returns the typeNames that are known in the backend.
+     * <br/>
+     * i.e. the genericRecordStore holds the two profiles, the DUBLIN CORE and the ISO profile. 
+     * 
+     * @return QName
+     */
+    public QName[] getTypeNames();
+    
+    /**
+     * Sets the typeName that is requested.
+     * 
+     * @param qName
+     */
+    public void setTypeName(QName qName);
+    
+    /**
+     * Returns the typeName that is requested. 
      * 
      * @return QName
      */
