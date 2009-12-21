@@ -33,15 +33,23 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.dc;
+package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Array;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,7 +82,9 @@ import org.deegree.record.persistence.RecordStoreException;
  */
 public class GenericRecordStore implements RecordStore {
 
-    private final QName typeNames = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
+    private QName[] typeNames = new QName[2];
+
+    private QName typeName = null;
 
     private String connectionId;
 
@@ -110,16 +120,25 @@ public class GenericRecordStore implements RecordStore {
      * @see org.deegree.record.persistence.RecordStore#describeRecord(javax.xml.stream.XMLStreamWriter)
      */
     @Override
-    public void describeRecord() {
+    public void describeRecord( XMLStreamWriter writer, QName typeName ) {
+        //InputStream in;// = new FileInputStream(""); 
+        URL url;
+        if ( typeName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ) ) ) {
+            // a static file...should be in a better way, of course
+            
+                //in = new FileInputStream( "../dc/dc.xsd" );
+                url = GenericRecordStore.class.getResource( "dc.xsd" );
+            
+        } else {
+            //in = new FileInputStream( "../gmd/gmd.xsd" );
+            url = GenericRecordStore.class.getResource( "gmd_metadata.xsd" );
+        }
+        
 
-        // a static file...should be in a better way, of course
-        File file = new File( "/home/thomas/workspace/d3_core/src/org/deegree/record/persistence/dc/dc.xsd" );
-
-        XMLAdapter ada = new XMLAdapter( file );
+        XMLAdapter ada = new XMLAdapter( url );
 
         System.out.println( ada.toString() );
-        OMNamespace elem = ada.getRootElement().getDefaultNamespace();
-
+        readXMLFragment( ada.toString(), writer );
     }
 
     /*
@@ -152,9 +171,28 @@ public class GenericRecordStore implements RecordStore {
      * @see org.deegree.record.persistence.RecordStore#getTypeNames()
      */
     @Override
-    public QName getTypeName() {
+    public QName[] getTypeNames() {
+
+        typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
+        typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
 
         return typeNames;
+    }
+
+    /**
+     * @return the typeName
+     */
+    @Override
+    public QName getTypeName() {
+        return typeName;
+    }
+
+    /**
+     * @param typeNames
+     *            the typeNames to set
+     */
+    public void setTypeName( QName typeName ) {
+        this.typeName = typeName;
     }
 
     /*
