@@ -37,7 +37,6 @@
 package org.deegree.gml.feature;
 
 import static javax.xml.XMLConstants.NULL_NS_URI;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
@@ -215,7 +214,9 @@ public class GMLFeatureWriter {
         if ( fcEnv != null ) {
             geometryWriter.exportEnvelope( col.getEnvelope() );
         } else {
-            writer.writeEmptyElement( gmlNs, gmlNull );
+            writer.writeStartElement( gmlNs, gmlNull );
+            writer.writeCharacters( "missing" );
+            writer.writeEndElement();
         }
         writer.writeEndElement();
         for ( Feature f : col ) {
@@ -246,7 +247,9 @@ public class GMLFeatureWriter {
         if ( fcEnv != null ) {
             geometryWriter.exportEnvelope( fc.getEnvelope() );
         } else {
-            writer.writeEmptyElement( gmlNs, gmlNull );
+            writer.writeStartElement( gmlNs, gmlNull );
+            writer.writeCharacters( "missing" );
+            writer.writeEndElement();
         }
         writer.writeEndElement();
 
@@ -366,7 +369,9 @@ public class GMLFeatureWriter {
             if ( value != null ) {
                 geometryWriter.exportEnvelope( (Envelope) value );
             } else {
-                writer.writeEmptyElement( GMLNS, gmlNull );
+                writer.writeStartElement( gmlNs, gmlNull );
+                writer.writeCharacters( "missing" );
+                writer.writeEndElement();
             }
             writer.writeEndElement();
         } else if ( propertyType instanceof LengthPropertyType ) {
