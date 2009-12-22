@@ -113,19 +113,6 @@ public interface RecordStore {
      * @return QName
      */
     public QName[] getTypeNames();
+     
     
-    /**
-     * Sets the typeName that is requested.
-     * 
-     * @param qName
-     */
-    public void setTypeName(QName qName);
-    
-    /**
-     * Returns the typeName that is requested. 
-     * 
-     * @return QName
-     */
-    public QName getTypeName();
-
 }
