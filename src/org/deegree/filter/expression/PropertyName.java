@@ -133,10 +133,14 @@ public class PropertyName implements Expression {
     public QName getAsQName() {
         if ( simpleProp == null && isSimple() ) {
             int colonIdx = xPath.indexOf( ":" );
-            String prefix = xPath.substring( 0, colonIdx );
-            String localPart = xPath.substring( colonIdx + 1 );
-            String namespace = nsContext.translateNamespacePrefixToUri( prefix );
-            simpleProp = new QName( namespace, localPart );
+            if ( colonIdx == -1 ) {
+                simpleProp = new QName( xPath );
+            } else {
+                String prefix = xPath.substring( 0, colonIdx );
+                String localPart = xPath.substring( colonIdx + 1 );
+                String namespace = nsContext.translateNamespacePrefixToUri( prefix );
+                simpleProp = new QName( namespace, localPart );
+            }
         }
         return simpleProp;
     }
