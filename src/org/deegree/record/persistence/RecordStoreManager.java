@@ -96,6 +96,7 @@ public class RecordStoreManager {
         String id = config.getDataSourceName();
         
 
+        //TODO rename in GenericRecordStoreType
         if ( config instanceof DCRecordStoreType ) {
 
             DCRecordStoreType dcConfig = (DCRecordStoreType) config;
