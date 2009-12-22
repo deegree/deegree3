@@ -35,9 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
-import java.io.Writer;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -45,7 +43,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGres;
 
 /**
  * Base interface of the {@link Record} persistence layer, provides access to stored {@link Record} instances and their
@@ -81,10 +78,11 @@ public interface RecordStore {
     /**
      * Exports the XML schema for the associated metadata format.
      * 
-     * @param xmlWriter
+     * @param writer
      *            writer to export to, must not be <code>null</code>
+     * @param typeName
      */
-    public void describeRecord(XMLStreamWriter writer, QName typeName);
+    public void describeRecord( XMLStreamWriter writer, QName typeName );
 
     /**
      * 
@@ -106,13 +104,11 @@ public interface RecordStore {
                             throws SQLException, XMLStreamException;
 
     /**
-     * Returns the typeNames that are known in the backend.
-     * <br/>
-     * i.e. the genericRecordStore holds the two profiles, the DUBLIN CORE and the ISO profile. 
+     * Returns the typeNames that are known in the backend. <br/>
+     * i.e. the GenericRecordStore holds the two profiles, the DUBLIN CORE and the ISO profile.
      * 
      * @return QName
      */
     public QName[] getTypeNames();
-     
-    
+
 }
