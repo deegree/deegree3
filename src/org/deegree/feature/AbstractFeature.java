@@ -68,18 +68,18 @@ abstract class AbstractFeature implements Feature {
 
     /** Stores the default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
     protected StandardGMLFeatureProps standardProps;
-    
+
     @Override
     public StandardGMLProps getGMLProperties() {
         return standardProps;
-    }    
-    
+    }
+
     public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
                             throws JaxenException {
 
         // simple property with just a simple element step?
         QName simplePropName = propName.getAsQName();
-        if (simplePropName != null) {
+        if ( simplePropName != null ) {
             return getPropertyValues( simplePropName, version );
         }
 
@@ -98,6 +98,8 @@ abstract class AbstractFeature implements Feature {
                 resultValues[i++] = ( (AttributeNode) node ).getValue();
             } else if ( node instanceof CustomElementNode ) {
                 resultValues[i++] = ( (CustomElementNode) node ).getElement();
+            } else if ( node instanceof FeatureNode ) {
+                resultValues[i++] = ( (FeatureNode) node ).getFeature();
             } else {
                 // TODO is node.toString() o.k. for all other node types?
                 resultValues[i++] = node.toString();
@@ -105,7 +107,7 @@ abstract class AbstractFeature implements Feature {
         }
         return resultValues;
     }
-   
+
     @Override
     public Envelope getEnvelope() {
         if ( standardProps == null ) {
