@@ -57,7 +57,10 @@ public class CSWConstants {
     public static final String CSW_202_NS = "http://www.opengis.net/cat/csw/2.0.2";
 
     /** Location of the schema */
-    public static final String CSW_202_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd";
+    public static final String CSW_202_DISCOVERY_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd";
+    
+    /** Location of the schema */
+    public static final String CSW_202_PUBLICATION_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-publication.xsd";
 
     /** Location of the schema */
     public static final String CSW_202_RECORD = "http://schemas.opengis.net/csw/2.0.2/record.xsd";
