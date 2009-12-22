@@ -371,21 +371,17 @@ public class Java2DRenderer implements Renderer {
         x = p.x;
         y = p.y;
 
-        BufferedImage img = null;
-
         Graphic g = styling.graphic;
+        Rectangle2D.Double rect = getGraphicBounds( g, x, y, styling.uom );
 
         if ( g.image == null ) {
-            renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this, x, y,
-                        g.rotation );
+            renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this,
+                        rect.x, rect.y, g.rotation );
             return;
         }
 
-        img = g.image;
-
-        if ( img != null ) {
-            Rectangle2D.Double rect = getGraphicBounds( g, x, y, styling.uom );
-            graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
+        if ( g.image != null ) {
+            graphics.drawImage( g.image, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
         }
     }
 
