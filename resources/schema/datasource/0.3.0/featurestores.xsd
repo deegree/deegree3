@@ -50,7 +50,7 @@
     <complexContent>
       <extension base="ds:FeatureStoreType">
         <sequence>
-          <element name="StorageSRS" type="string" />
+          <element name="StorageSRS" type="string" minOccurs="0" />
           <element name="File" type="string" />
         </sequence>
       </extension>

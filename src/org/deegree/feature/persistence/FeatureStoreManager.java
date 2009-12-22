@@ -225,7 +225,13 @@ public class FeatureStoreManager {
         String id = jaxbConfig.getDataSourceName();
         XMLAdapter resolver = new XMLAdapter();
         resolver.setSystemId( baseURL );
-        CRS crs = new CRS( jaxbConfig.getStorageSRS().trim() );
+        String srs = jaxbConfig.getStorageSRS();
+        if ( srs == null ) {
+            srs = "EPSG:4326";
+        } else {
+            srs = srs.trim();
+        }
+        CRS crs = new CRS( srs );
 
         String shapeFileName = null;
         try {
