@@ -35,21 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,7 +52,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -82,9 +73,7 @@ import org.deegree.record.persistence.RecordStoreException;
  */
 public class GenericRecordStore implements RecordStore {
 
-    private QName[] typeNames = new QName[2];
-
-    private QName typeName = null;
+    private static QName[] typeNames = new QName[2];
 
     private String connectionId;
 
@@ -108,6 +97,9 @@ public class GenericRecordStore implements RecordStore {
         formatTypeInGenericRecordStore.put( "summary", "recordsummary" );
         formatTypeInGenericRecordStore.put( "full", "recordfull" );
 
+        typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
+        typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
+
     }
 
     public GenericRecordStore( String connectionId ) {
@@ -121,19 +113,17 @@ public class GenericRecordStore implements RecordStore {
      */
     @Override
     public void describeRecord( XMLStreamWriter writer, QName typeName ) {
-        //InputStream in;// = new FileInputStream(""); 
+
         URL url;
-        if ( typeName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ) ) ) {
-            // a static file...should be in a better way, of course
-            
-                //in = new FileInputStream( "../dc/dc.xsd" );
-                url = GenericRecordStore.class.getResource( "dc.xsd" );
-            
+        if ( typeName.equals( typeNames[0] ) ) {
+
+            // in = new FileInputStream( "../dc/dc.xsd" );
+            url = GenericRecordStore.class.getResource( "dc.xsd" );
+
         } else {
-            //in = new FileInputStream( "../gmd/gmd.xsd" );
+            // in = new FileInputStream( "../gmd/gmd.xsd" );
             url = GenericRecordStore.class.getResource( "gmd_metadata.xsd" );
         }
-        
 
         XMLAdapter ada = new XMLAdapter( url );
 
@@ -173,26 +163,7 @@ public class GenericRecordStore implements RecordStore {
     @Override
     public QName[] getTypeNames() {
 
-        typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
-        typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
-
         return typeNames;
-    }
-
-    /**
-     * @return the typeName
-     */
-    @Override
-    public QName getTypeName() {
-        return typeName;
-    }
-
-    /**
-     * @param typeNames
-     *            the typeNames to set
-     */
-    public void setTypeName( QName typeName ) {
-        this.typeName = typeName;
     }
 
     /*
