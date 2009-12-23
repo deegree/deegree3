@@ -37,7 +37,7 @@ package org.deegree.gml.dictionary;
 
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
-import org.deegree.gml.props.StandardGMLProps;
+import org.deegree.gml.props.GMLStdProps;
 
 /**
  * Default implementation of {@link Definition}.
@@ -51,9 +51,17 @@ public class GenericDefinition implements Definition {
 
     private String id;
 
-    private StandardGMLProps gmlProps;
+    private GMLStdProps gmlProps;
 
-    public GenericDefinition( String id, StandardGMLProps gmlProps ) {
+    /**
+     * Creates a new {@link GenericDefinition} instance.
+     * 
+     * @param id
+     *            id of the definition, can be <code>null</code>
+     * @param gmlProps
+     *            GML standard properties (which contain description and names), must not be <code>null</code>
+     */
+    public GenericDefinition( String id, GMLStdProps gmlProps ) {
         this.id = id;
         this.gmlProps = gmlProps;
     }
@@ -63,20 +71,18 @@ public class GenericDefinition implements Definition {
         return id;
     }
 
-    public Object[] getMetadata() {
-        return gmlProps.getMetadata();
-    }
-
+    @Override
     public StringOrRef getDescription() {
         return gmlProps.getDescription();
     }
 
+    @Override
     public CodeType[] getNames() {
         return gmlProps.getNames();
     }
 
     @Override
-    public StandardGMLProps getGMLProperties() {
+    public GMLStdProps getGMLProperties() {
         return gmlProps;
     }
 }

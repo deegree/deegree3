@@ -42,6 +42,8 @@ import org.deegree.gml.GMLObject;
 /**
  * Base interface for all GML definition objects.
  * 
+ * @see Dictionary
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
@@ -49,7 +51,17 @@ import org.deegree.gml.GMLObject;
  */
 public interface Definition extends GMLObject {
 
+    /**
+     * Returns the description.
+     * 
+     * @return the description, can be <code>null</code>
+     */
     public StringOrRef getDescription();
 
+    /**
+     * Returns the names.
+     * 
+     * @return the names, can be empty, but never <code>null</code>
+     */
     public CodeType[] getNames();
 }

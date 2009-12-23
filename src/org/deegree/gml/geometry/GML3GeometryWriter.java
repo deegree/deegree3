@@ -110,8 +110,8 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.refs.GeometryReference;
-import org.deegree.gml.props.GMLStandardPropsWriter;
-import org.deegree.gml.props.StandardGMLProps;
+import org.deegree.gml.props.GMLStdPropsWriter;
+import org.deegree.gml.props.GMLStdProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,7 +150,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private final boolean exportSf;
 
-    private final GMLStandardPropsWriter stdPropsWriter;
+    private final GMLStdPropsWriter stdPropsWriter;
 
     /**
      * Creates a new {@link GML3GeometryWriter} instance.
@@ -194,7 +194,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             this.formatter = formatter;
         }
         this.exportedIds = exportedIds;
-        this.stdPropsWriter = new GMLStandardPropsWriter( version, writer );
+        this.stdPropsWriter = new GMLStdPropsWriter( version, writer );
     }
 
     /**
@@ -1506,7 +1506,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
         }
 
-        StandardGMLProps props = geometry.getGMLProperties();
+        GMLStdProps props = geometry.getGMLProperties();
         if ( props != null ) {
             stdPropsWriter.write( props );
         }

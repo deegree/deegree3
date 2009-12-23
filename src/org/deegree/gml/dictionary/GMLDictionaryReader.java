@@ -51,8 +51,8 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.props.GMLStandardPropsReader;
-import org.deegree.gml.props.StandardGMLProps;
+import org.deegree.gml.props.GMLStdPropsReader;
+import org.deegree.gml.props.GMLStdProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +76,7 @@ public class GMLDictionaryReader {
 
     private final GMLDocumentIdContext idContext;
 
-    private final GMLStandardPropsReader propsReader;
+    private final GMLStdPropsReader propsReader;
 
     private final String gmlNs;
 
@@ -84,21 +84,19 @@ public class GMLDictionaryReader {
         this.version = version;
         this.xmlStream = xmlStream;
         this.idContext = idContext;
-        propsReader = new GMLStandardPropsReader( version );
+        propsReader = new GMLStdPropsReader( version );
         gmlNs = version.getNamespace();
     }
 
-    public Definition parse()
+    public Definition read()
                             throws XMLStreamException {
-
         Definition definition = null;
-
         QName elName = xmlStream.getName();
         if ( new QName( gmlNs, "Dictionary" ).equals( elName )
              || new QName( gmlNs, "DefinitionCollection" ).equals( elName ) ) {
-            definition = parseDictionary();
+            definition = readDictionary();
         } else if ( new QName( gmlNs, "Definition" ).equals( elName ) ) {
-            definition = parseDefinition();
+            definition = readDefinition();
         } else {
             String msg = "Invalid gml:Definition element: " + xmlStream.getName()
                          + "' is not a GML definition (or dictionary or definition collection) element.";
@@ -107,21 +105,23 @@ public class GMLDictionaryReader {
         return definition;
     }
 
-    public Definition parseDefinition()
+    private Definition readDefinition()
                             throws XMLStreamException {
         String id = xmlStream.getAttributeValue( gmlNs, "id" );
-        StandardGMLProps standardProps = propsReader.read( xmlStream );
+        GMLStdProps standardProps = propsReader.read( xmlStream );
         xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Definition" );
         Definition def = new GenericDefinition( id, standardProps );
         idContext.addObject( def );
         return def;
     }
 
-    public Dictionary parseDictionary()
+    public Dictionary readDictionary()
                             throws XMLStreamException {
 
+        boolean isDefinitionCollection = xmlStream.getName().equals( new QName( gmlNs, "DefinitionCollection" ) );
+
         String id = xmlStream.getAttributeValue( gmlNs, "id" );
-        StandardGMLProps standardProps = propsReader.read( xmlStream );
+        GMLStdProps standardProps = propsReader.read( xmlStream );
 
         List<Definition> members = new LinkedList<Definition>();
 
@@ -130,7 +130,7 @@ public class GMLDictionaryReader {
             if ( new QName( gmlNs, "dictionaryEntry" ).equals( elName )
                  || new QName( gmlNs, "definitionMember" ).equals( elName ) ) {
                 xmlStream.nextTag();
-                members.add( parse() );
+                members.add( read() );
                 xmlStream.nextTag();
             } else if ( new QName( gmlNs, "indirectEntry" ).equals( elName ) ) {
                 String msg = "Handling of 'indirectEntry' is not implemented yet.";
@@ -143,7 +143,7 @@ public class GMLDictionaryReader {
         }
 
         StAXParsingHelper.require( xmlStream, END_ELEMENT );
-        Dictionary def = new GenericDictionary( id, standardProps, members );
+        Dictionary def = new GenericDictionary( id, standardProps, members, isDefinitionCollection );
         idContext.addObject( def );
         return def;
     }

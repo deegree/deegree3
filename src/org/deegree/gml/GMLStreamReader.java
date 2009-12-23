@@ -254,7 +254,7 @@ public class GMLStreamReader {
      * @throws XMLStreamException
      */    
     public Dictionary readDictionary() throws XMLStreamException {
-        return getDictionaryReader().parseDictionary();
+        return getDictionaryReader().readDictionary();
     }
 
     /**

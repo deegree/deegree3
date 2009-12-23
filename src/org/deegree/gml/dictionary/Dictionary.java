@@ -46,5 +46,12 @@ import java.util.List;
  * @version $Revision$, $Date$
  */
 public interface Dictionary extends Definition, List<Definition> {
-    // no additional methods?
+
+    /**
+     * Returns whether the {@link Dictionary} represents a generic GML dictionary or a GML definition collection.
+     * 
+     * @return true, if this is a defininition collection, false otherwise
+     */
+    public boolean isDefinitionCollection();
+
 }

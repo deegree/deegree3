@@ -61,7 +61,7 @@ import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
 import org.deegree.gml.geometry.refs.GeometryReference;
-import org.deegree.gml.props.StandardGMLProps;
+import org.deegree.gml.props.GMLStdProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +103,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     // contains an equivalent (or best-fit) JTS geometry object
     protected com.vividsolutions.jts.geom.Geometry jtsGeometry;
 
-    private StandardGMLProps standardProps;
+    private GMLStdProps standardProps;
 
     /**
      * @param id
@@ -279,12 +279,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public StandardGMLProps getGMLProperties() {
+    public GMLStdProps getGMLProperties() {
         return standardProps;
     }
 
     @Override
-    public void setGMLProperties( StandardGMLProps standardProps ) {
+    public void setGMLProperties( GMLStdProps standardProps ) {
         this.standardProps = standardProps;
     }
 

@@ -132,7 +132,7 @@ import org.deegree.gml.GMLObject;
  * 
  * @version $Revision: $, $Date: $
  */
-public class StandardGMLProps {
+public class GMLStdProps {
 
     /** GML 2 standard property type 'gml:description' */
     public static final SimplePropertyType<String> PT_DESCRIPTION_GML2;
@@ -196,7 +196,7 @@ public class StandardGMLProps {
     protected CodeType[] names;
 
     /**
-     * Creates a new {@link StandardGMLProps} instance.
+     * Creates a new {@link GMLStdProps} instance.
      * 
      * @param metadata
      *            metadata values, may be <code>null</code>
@@ -207,7 +207,7 @@ public class StandardGMLProps {
      * @param names
      *            names, may be <code>null</code>
      */
-    public StandardGMLProps( Object[] metadata, StringOrRef description, CodeType identifier, CodeType[] names ) {
+    public GMLStdProps( Object[] metadata, StringOrRef description, CodeType identifier, CodeType[] names ) {
         if ( metadata == null ) {
             this.metadata = new Object[0];
         } else {

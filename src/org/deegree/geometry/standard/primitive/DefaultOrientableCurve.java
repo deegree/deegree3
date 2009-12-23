@@ -52,7 +52,7 @@ import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.gml.props.StandardGMLProps;
+import org.deegree.gml.props.GMLStdProps;
 
 /**
  * Default implementation of {@link OrientableCurve}.
@@ -72,7 +72,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
 
     private boolean isReversed;
 
-    private StandardGMLProps standardProps;
+    private GMLStdProps standardProps;
 
     /**
      * Creates a new <code>DefaultOrientableCurve</code> instance from the given parameters.

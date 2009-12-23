@@ -102,8 +102,8 @@ import org.deegree.gml.geometry.refs.PointReference;
 import org.deegree.gml.geometry.refs.PolygonReference;
 import org.deegree.gml.geometry.refs.SolidReference;
 import org.deegree.gml.geometry.refs.SurfaceReference;
-import org.deegree.gml.props.GMLStandardPropsReader;
-import org.deegree.gml.props.StandardGMLProps;
+import org.deegree.gml.props.GMLStdPropsReader;
+import org.deegree.gml.props.GMLStdProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,7 +164,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
     private static String GMLID = "id";
 
-    private final GMLStandardPropsReader propsParser;
+    private final GMLStdPropsReader propsParser;
     
     private final GML3CurveSegmentReader curveSegmentParser;
 
@@ -261,7 +261,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         } else {
             this.idContext = new GMLDocumentIdContext( version );
         }
-        propsParser = new GMLStandardPropsReader( version );
+        propsParser = new GMLStdPropsReader( version );
         curveSegmentParser = new GML3CurveSegmentReader( this, this.geomFac );
         surfacePatchParser = new GML3SurfacePatchReader( this, this.geomFac );
     }
@@ -999,7 +999,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         Point point = null;
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         // must contain one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
         if ( xmlStream.getEventType() == START_ELEMENT ) {
@@ -1058,7 +1058,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Point> points = null;
         if ( xmlStream.getEventType() == XMLStreamConstants.START_ELEMENT ) {
@@ -1123,7 +1123,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "segments" );
         List<CurveSegment> segments = new LinkedList<CurveSegment>();
@@ -1161,7 +1161,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "baseCurve" );
         Curve baseCurve = parseCurveProperty( xmlStream, crs );
@@ -1194,7 +1194,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         Points points = curveSegmentParser.parseControlPoints( xmlStream, crs );
         if ( points.size() < 4 ) {
@@ -1228,7 +1228,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
@@ -1269,7 +1269,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         Ring exteriorRing = null;
         List<Ring> interiorRings = new LinkedList<Ring>();
@@ -1350,7 +1350,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
         xmlStream.require( START_ELEMENT, gmlNs, "patches" );
@@ -1386,7 +1386,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<PolygonPatch> memberPatches = new LinkedList<PolygonPatch>();
         xmlStream.require( START_ELEMENT, gmlNs, "polygonPatches" );
@@ -1422,7 +1422,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
         xmlStream.require( START_ELEMENT, gmlNs, "trianglePatches" );
@@ -1461,7 +1461,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
         xmlStream.require( START_ELEMENT, gmlNs, "trianglePatches" );
@@ -1563,7 +1563,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         xmlStream.require( XMLStreamConstants.START_ELEMENT, gmlNs, "baseSurface" );
         Surface baseSurface = parseSurfaceProperty( xmlStream, defaultCRS );
@@ -1597,7 +1597,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         Surface exteriorSurface = null;
         List<Surface> interiorSurfaces = new LinkedList<Surface>();
@@ -1650,7 +1650,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
@@ -1686,7 +1686,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Surface> memberSurfaces = new LinkedList<Surface>();
 
@@ -1722,7 +1722,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Solid> memberSolids = new LinkedList<Solid>();
         do {
@@ -1757,7 +1757,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<GeometricPrimitive> memberSolids = new LinkedList<GeometricPrimitive>();
 
@@ -1794,7 +1794,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Point> members = new LinkedList<Point>();
 
@@ -1846,7 +1846,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Curve> members = new LinkedList<Curve>();
 
@@ -1897,7 +1897,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
         List<LineString> members = new LinkedList<LineString>();
 
         if ( xmlStream.isStartElement() ) {
@@ -1941,7 +1941,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Surface> members = new LinkedList<Surface>();
 
@@ -1992,7 +1992,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Polygon> members = new LinkedList<Polygon>();
 
@@ -2036,7 +2036,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Solid> members = new LinkedList<Solid>();
 
@@ -2087,7 +2087,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-        StandardGMLProps standardProps = propsParser.read( xmlStream );
+        GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<Geometry> members = new LinkedList<Geometry>();
 

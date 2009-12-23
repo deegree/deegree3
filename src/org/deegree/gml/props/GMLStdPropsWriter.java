@@ -45,7 +45,7 @@ import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Stream-based writer for the {@link StandardGMLProps} that can occur at the beginning of every GML encoded object.
+ * Stream-based writer for the {@link GMLStdProps} that can occur at the beginning of every GML encoded object.
  * 
  * TODO handle gml:metadataProperty, gml:identifier and gml:descriptionReference
  * 
@@ -54,7 +54,7 @@ import org.deegree.gml.GMLVersion;
  * 
  * @version $Revision$, $Date$
  */
-public class GMLStandardPropsWriter {
+public class GMLStdPropsWriter {
 
     private final GMLVersion version;
 
@@ -63,27 +63,27 @@ public class GMLStandardPropsWriter {
     private final XMLStreamWriter writer;
 
     /**
-     * Creates a new {@link GMLStandardPropsWriter} instance.
+     * Creates a new {@link GMLStdPropsWriter} instance.
      * 
      * @param version
      *            GML version, must not be <code>null</code>
      * @param writer
      *            XML stream used to write the output, must not be <code>null</code>
      */
-    public GMLStandardPropsWriter( GMLVersion version, XMLStreamWriter writer ) {
+    public GMLStdPropsWriter( GMLVersion version, XMLStreamWriter writer ) {
         this.version = version;
         this.gmlNs = version.getNamespace();
         this.writer = writer;
     }
 
     /**
-     * Writes a GML representation of the given {@link StandardGMLProps} to the stream.
+     * Writes a GML representation of the given {@link GMLStdProps} to the stream.
      * 
      * @param props
      *            properties to be exported, must not be <code>null</code>
      * @throws XMLStreamException
      */
-    public void write( StandardGMLProps props )
+    public void write( GMLStdProps props )
                             throws XMLStreamException {
         switch ( version ) {
         case GML_2:
@@ -99,7 +99,7 @@ public class GMLStandardPropsWriter {
         }
     }
 
-    private void writeGML2( StandardGMLProps props )
+    private void writeGML2( GMLStdProps props )
                             throws XMLStreamException {
 
         StringOrRef description = props.getDescription();
@@ -128,7 +128,7 @@ public class GMLStandardPropsWriter {
         }
     }
 
-    private void writeGML3( StandardGMLProps props )
+    private void writeGML3( GMLStdProps props )
                             throws XMLStreamException {
 
         StringOrRef description = props.getDescription();
@@ -155,7 +155,7 @@ public class GMLStandardPropsWriter {
         }
     }
 
-    private void writeGML32( StandardGMLProps props )
+    private void writeGML32( GMLStdProps props )
                             throws XMLStreamException {
 
         StringOrRef description = props.getDescription();

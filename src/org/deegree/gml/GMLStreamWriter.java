@@ -53,6 +53,8 @@ import org.deegree.feature.Feature;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.gml.dictionary.Definition;
+import org.deegree.gml.dictionary.GMLDictionaryWriter;
 import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
@@ -93,6 +95,8 @@ public class GMLStreamWriter {
     private GMLGeometryWriter geometryWriter;
 
     private GMLFeatureWriter featureWriter;
+    
+    private GMLDictionaryWriter dictionaryWriter;
 
     private PropertyName[] featureProps;
 
@@ -225,6 +229,8 @@ public class GMLStreamWriter {
             write( (Feature) object );
         } else if ( object instanceof Geometry ) {
             write( (Geometry) object );
+        } else if ( object instanceof Definition ) {
+            write( (Definition) object );
         } else {
             throw new XMLStreamException( "Unhandled GMLObject: " + object );
         }
@@ -259,15 +265,15 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Writes a GML representation of the given {@link CRS} to the stream.
+     * Writes a GML representation of the given {@link Definition} to the stream.
      * 
-     * @param crs
+     * @param definition
      *            object to be written, must not be <code>null</code>
      * @throws XMLStreamException
      */
-    public void write( CRS crs )
+    public void write( Definition definition )
                             throws XMLStreamException {
-        throw new UnsupportedOperationException( "Writing of crs is not implemented yet." );
+        getDictionaryWriter().write (definition);
     }
 
     /**
@@ -308,4 +314,11 @@ public class GMLStreamWriter {
         }
         return geometryWriter;
     }
+    
+    private GMLDictionaryWriter getDictionaryWriter() {
+        if ( dictionaryWriter == null ) {
+            dictionaryWriter = new GMLDictionaryWriter( version, xmlStream);
+        }
+        return dictionaryWriter;
+    }    
 }

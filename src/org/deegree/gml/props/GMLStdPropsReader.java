@@ -53,24 +53,24 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Stream-based reader for the {@link StandardGMLProps} that can occur at the beginning of every GML encoded object.
+ * Stream-based reader for the {@link GMLStdProps} that can occur at the beginning of every GML encoded object.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GMLStandardPropsReader {
+public class GMLStdPropsReader {
 
     private GMLVersion version;
 
     /**
-     * Creates a new {@link GMLStandardPropsReader} for the specified GML version.
+     * Creates a new {@link GMLStdPropsReader} for the specified GML version.
      * 
      * @param version
      *            GML version, must not be <code>null</code>
      */
-    public GMLStandardPropsReader( GMLVersion version ) {
+    public GMLStdPropsReader( GMLVersion version ) {
         this.version = version;
     }
 
@@ -87,12 +87,12 @@ public class GMLStandardPropsReader {
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GML&gt;), points at the at the
      *            first tag event (<code>START_ELEMENT/END_ELEMENT</code>) that does not belong to an element from the
      *            <code>StandardObjectProperties</code> group afterwards
-     * @return corresponding {@link StandardGMLProps} object, never <code>null</code>
+     * @return corresponding {@link GMLStdProps} object, never <code>null</code>
      * @throws XMLStreamException
      */
-    public StandardGMLProps read( XMLStreamReader xmlStream )
+    public GMLStdProps read( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        StandardGMLProps props = null;
+        GMLStdProps props = null;
         switch ( version ) {
         case GML_2:
             props = readGML2( xmlStream );
@@ -108,7 +108,7 @@ public class GMLStandardPropsReader {
         return props;
     }
 
-    private StandardGMLProps readGML2( XMLStreamReader xmlStream )
+    private GMLStdProps readGML2( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -134,10 +134,10 @@ public class GMLStandardPropsReader {
             xmlStream.nextTag();
         }
 
-        return new StandardGMLProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
+        return new GMLStdProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
     }
 
-    private StandardGMLProps readGML31( XMLStreamReader xmlStream )
+    private GMLStdProps readGML31( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -163,10 +163,10 @@ public class GMLStandardPropsReader {
             xmlStream.nextTag();
         }
 
-        return new StandardGMLProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
+        return new GMLStdProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
     }
 
-    private StandardGMLProps readGML32( XMLStreamReader xmlStream )
+    private GMLStdProps readGML32( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -199,7 +199,7 @@ public class GMLStandardPropsReader {
             xmlStream.nextTag();
         }
 
-        return new StandardGMLProps( metadata, description, identifier, names.toArray( new CodeType[names.size()] ) );
+        return new GMLStdProps( metadata, description, identifier, names.toArray( new CodeType[names.size()] ) );
     }
 
     private Object readMetadataProperty( XMLStreamReader xmlStream )
