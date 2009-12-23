@@ -71,7 +71,7 @@ import org.slf4j.Logger;
  */
 public class Java2DRasterRenderer implements RasterRenderer {
 
-    private static final Logger LOG = getLogger( Java2DRenderer.class );
+    private static final Logger LOG = getLogger( Java2DRasterRenderer.class );
 
     private Graphics2D graphics;
 
@@ -134,9 +134,9 @@ public class Java2DRasterRenderer implements RasterRenderer {
 
         if ( styling.categorize != null || styling.interpolate != null || styling.shaded != null ) {
             LOG.trace( "Creating raster ColorMap..." );
-            if ( styling.categorize != null ){
+            if ( styling.categorize != null ) {
                 img = styling.categorize.evaluateRaster( raster, styling );
-            }            else if ( styling.interpolate != null )
+            } else if ( styling.interpolate != null )
                 img = styling.interpolate.evaluateRaster( raster, styling );
 
             if ( styling.shaded != null ) {
@@ -206,7 +206,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
      * 
      * @param channels
      * @param raster
-     * @return
      */
     private AbstractRaster evaluateChannelSelections( RasterChannelSelection channels, AbstractRaster raster ) {
         if ( channels.getMode() == ChannelSelectionMode.NONE )
@@ -282,11 +281,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         return newData;
     }
 
-    public int byte2int( byte val ) {
-        return ( val >= 0 ? val : val - 2 * Byte.MIN_VALUE );
-    }
-
-    public byte int2byte( int val ) {
+    private static final byte int2byte( final int val ) {
         // if ( val < 0 )
         // return int2byte( val - 2 * Byte.MIN_VALUE );
         return ( val < 128 ? (byte) val : (byte) ( val + 2 * Byte.MIN_VALUE ) );
@@ -298,6 +293,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
      * 
      * @param raster
      *            Input raster, containing a DEM, with R rows and C columns
+     * @param style
      * @return a gray-scale raster (with bytes), with R-2 rows and C-2 columns
      */
     public AbstractRaster performHillShading( AbstractRaster raster, RasterStyling style ) {
