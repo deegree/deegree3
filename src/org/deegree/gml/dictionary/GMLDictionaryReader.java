@@ -110,18 +110,18 @@ public class GMLDictionaryReader {
     public Definition parseDefinition()
                             throws XMLStreamException {
         String id = xmlStream.getAttributeValue( gmlNs, "id" );
-        StandardGMLProps standardProps = propsReader.parse( xmlStream );
+        StandardGMLProps standardProps = propsReader.read( xmlStream );
         xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Definition" );
         Definition def = new GenericDefinition( id, standardProps );
         idContext.addObject( def );
         return def;
     }
 
-    public Definition parseDictionary()
+    public Dictionary parseDictionary()
                             throws XMLStreamException {
 
         String id = xmlStream.getAttributeValue( gmlNs, "id" );
-        StandardGMLProps standardProps = propsReader.parse( xmlStream );
+        StandardGMLProps standardProps = propsReader.read( xmlStream );
 
         List<Definition> members = new LinkedList<Definition>();
 
@@ -143,7 +143,7 @@ public class GMLDictionaryReader {
         }
 
         StAXParsingHelper.require( xmlStream, END_ELEMENT );
-        Definition def = new GenericDictionary( id, standardProps, members );
+        Dictionary def = new GenericDictionary( id, standardProps, members );
         idContext.addObject( def );
         return def;
     }

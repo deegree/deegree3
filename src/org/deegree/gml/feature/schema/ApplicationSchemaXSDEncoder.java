@@ -57,6 +57,7 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
+import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
@@ -167,6 +168,8 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeStartElement( XSNS, "schema" );
         writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
+        writer.writeAttribute( "attributeFormDefault", "unqualified" );
+        writer.writeAttribute( "elementFormDefault", "qualified" );
 
         for ( String importNamespace : importURLs.keySet() ) {
             writer.writeEmptyElement( XSNS, "import" );
@@ -302,8 +305,33 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         if ( pt instanceof SimplePropertyType ) {
-            writer.writeAttribute( "type", "xs:string" );
-            writer.writeComment( "TODO: export primitive type information" );
+            PrimitiveType type = ((SimplePropertyType) pt ).getPrimitiveType();          
+            switch (type) {
+            case BOOLEAN:
+                writer.writeAttribute( "type", "xs:boolean" );
+                break;
+            case DATE:
+                writer.writeAttribute( "type", "xs:date" );
+                break;
+            case DATE_TIME:
+                writer.writeAttribute( "type", "xs:dateTime" );
+                break;
+            case DECIMAL:
+                writer.writeAttribute( "type", "xs:decimal" );
+                break;
+            case DOUBLE:
+                writer.writeAttribute( "type", "xs:double" );
+                break;
+            case INTEGER:
+                writer.writeAttribute( "type", "xs:integer" );
+                break;
+            case STRING:
+                writer.writeAttribute( "type", "xs:string" );
+                break;
+            case TIME:
+                writer.writeAttribute( "type", "xs:string" );
+                break;
+            }
         } else if ( pt instanceof GeometryPropertyType ) {
             // TODO handle restricted types (e.g. 'gml:PointPropertyType')
             writer.writeAttribute( "type", "gml:GeometryPropertyType" );

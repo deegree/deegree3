@@ -48,6 +48,8 @@ import org.deegree.feature.StreamFeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.gml.dictionary.Dictionary;
+import org.deegree.gml.dictionary.GMLDictionaryReader;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
@@ -86,6 +88,8 @@ public class GMLStreamReader {
     private GMLGeometryReader geometryReader;
 
     private GMLFeatureReader featureReader;
+
+    private GMLDictionaryReader dictReader;
 
     /**
      * Creates a new {@link GMLStreamReader} instance.
@@ -243,6 +247,17 @@ public class GMLStreamReader {
     }
 
     /**
+     * Returns the deegree model representation for the GML dictionary element event that the cursor of the underlying xml
+     * stream points to.
+     * 
+     * @return deegree model representation for the current GML dictionary element, never <code>null</code>
+     * @throws XMLStreamException
+     */    
+    public Dictionary readDictionary() throws XMLStreamException {
+        return getDictionaryReader().parseDictionary();
+    }
+
+    /**
      * Returns the deegree model representation for the GML crs element event that the cursor of the underlying xml
      * stream points to.
      * 
@@ -300,4 +315,11 @@ public class GMLStreamReader {
         }
         return geometryReader;
     }
+    
+    private GMLDictionaryReader getDictionaryReader() {
+        if ( dictReader == null ) {
+            dictReader = new GMLDictionaryReader( version, xmlStream, idContext);
+        }
+        return dictReader;
+    }    
 }

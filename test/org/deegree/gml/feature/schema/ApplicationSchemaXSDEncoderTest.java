@@ -66,7 +66,7 @@ import org.junit.Test;
  */
 public class ApplicationSchemaXSDEncoderTest {
 
-    @Test
+//    @Test
     public void testExportAsGML31()
                             throws XMLStreamException, IOException, JAXBException {
 

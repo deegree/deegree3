@@ -32,53 +32,33 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.gml;
+----------------------------------------------------------------------------*/
+package org.deegree.gml.dictionary;
+
+import javax.xml.stream.XMLStreamWriter;
+
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
 
 /**
- * Indicates that a reference to a GML object cannot be resolved.
+ * Stream-based writer for GML dictionaries and definitions.
  * 
- * @see GMLReference
- * @see GMLReferenceResolver
+ * @see GMLStreamWriter
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class ReferenceResolvingException extends RuntimeException {
+public class GMLDictionaryWriter {
 
-    private static final long serialVersionUID = -7702695645031124014L;
+    private final GMLVersion version;
 
-    /**
-     * Creates a new {@link ReferenceResolvingException} with the given detail message.
-     * 
-     * @param msg
-     *            detail message
-     */
-    public ReferenceResolvingException( String msg ) {
-        super( msg );
+    private final XMLStreamWriter writer;
+
+    public GMLDictionaryWriter( GMLVersion version, XMLStreamWriter writer) {
+        this.version = version;
+        this.writer = writer;
     }
-
-    /**
-     * Creates a new {@link ReferenceResolvingException} with the given cause.
-     * 
-     * @param cause
-     *            causing exception
-     */
-    public ReferenceResolvingException( Throwable cause ) {
-        super( cause );
-    }
-
-    /**
-     * Creates a new {@link ReferenceResolvingException} with the given detail message and cause.
-     * 
-     * @param msg
-     *            detail message
-     * @param cause
-     *            causing exception
-     */
-    public ReferenceResolvingException( String msg, Throwable cause ) {
-        super( msg, cause );
-    }
+    
 }

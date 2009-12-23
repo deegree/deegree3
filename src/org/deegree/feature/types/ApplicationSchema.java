@@ -38,6 +38,7 @@ package org.deegree.feature.types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class ApplicationSchema {
 
     private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchema.class );
 
-    private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
+    private final Map<QName, FeatureType> ftNameToFt = new LinkedHashMap<QName, FeatureType>();
 
     // key: feature type A, value: feature type B (A is in substitutionGroup B)
     private final Map<FeatureType, FeatureType> ftToSuperFt = new HashMap<FeatureType, FeatureType>();

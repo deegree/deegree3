@@ -54,14 +54,34 @@ import javax.xml.namespace.QName;
  */
 public class SimplePropertyType<T> extends AbstractPropertyType<T> {
 
-    private PrimitiveType primitiveType;
+    private final PrimitiveType primitiveType;
+
+    private final QName xsdTypeName;
+    
+    private String codeList;
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
                                List<PropertyType<?>> substitutions ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.primitiveType = type;
+        this.xsdTypeName = null;
     }
 
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
+                               List<PropertyType<?>> substitutions, QName xsdTypeName ) {
+        super( name, minOccurs, maxOccurs, isAbstract, substitutions );
+        this.primitiveType = type;
+        this.xsdTypeName = xsdTypeName;
+    }
+
+    public void setCodeList (String codeList) {
+        this.codeList = codeList;
+    }
+
+    public String getCodeList () {
+        return codeList;
+    }    
+    
     /**
      * Returns the primitive type.
      * 
@@ -69,6 +89,15 @@ public class SimplePropertyType<T> extends AbstractPropertyType<T> {
      */
     public PrimitiveType getPrimitiveType() {
         return primitiveType;
+    }
+
+    /**
+     * Returns the type name of the XSD type (for custom simple types).
+     * 
+     * @return the type name, can be <code>null</code>
+     */
+    public QName getXSDTypeName() {
+        return xsdTypeName;
     }
 
     @Override

@@ -152,38 +152,48 @@
       </complexContent>
     </complexType>
   </element>
-  <simpleType name="PrimitiveType">
+<simpleType name="PrimitiveType">
     <restriction base="string">
-      <enumeration value="string">
+      <enumeration value="STRING">
         <annotation>
-          <documentation>String-valued property</documentation>
+          <documentation>String-valued property (=xs:string)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="boolean">
+      <enumeration value="BOOLEAN">
         <annotation>
-          <documentation>Boolean-valued property</documentation>
+          <documentation>Boolean-valued property (=xs:boolean)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="integer">
+      <enumeration value="DECIMAL">
         <annotation>
-          <documentation>Integer-valued property</documentation>
+          <documentation>Decimal-valued property (=xs:decimal)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="decimal">
+      <enumeration value="DOUBLE">
         <annotation>
-          <documentation>Decimal-valued property</documentation>
+          <documentation>Double-valued property (=xs:double)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="float">
+      <enumeration value="INTEGER">
         <annotation>
-          <documentation>Float-valued property</documentation>
+          <documentation>Integer-valued property (=xs:integer)</documentation>
+        </annotation>
+      </enumeration>      
+      <enumeration value="DATE">
+        <annotation>
+          <documentation>Date-valued property (=xs:date)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="date">
+      <enumeration value="DATE_TIME">
         <annotation>
-          <documentation>Decimal-valued property</documentation>
-        </annotation>
+          <documentation>Date-valued property (=xs:dateTime)</documentation>
+        </annotation>        
       </enumeration>
+      <enumeration value="TIME">
+        <annotation>
+          <documentation>Time-valued property (=xs:time)</documentation>
+        </annotation>        
+      </enumeration>      
       <!-- TODO other primitive data types -->
     </restriction>
   </simpleType>

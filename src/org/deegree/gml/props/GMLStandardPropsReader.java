@@ -53,7 +53,7 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Parser for the {@link StandardGMLProps} that can occur at the beginning of every GML object.
+ * Stream-based reader for the {@link StandardGMLProps} that can occur at the beginning of every GML encoded object.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -90,25 +90,25 @@ public class GMLStandardPropsReader {
      * @return corresponding {@link StandardGMLProps} object, never <code>null</code>
      * @throws XMLStreamException
      */
-    public StandardGMLProps parse( XMLStreamReader xmlStream )
+    public StandardGMLProps read( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         StandardGMLProps props = null;
         switch ( version ) {
         case GML_2:
-            props = parse2( xmlStream );
+            props = readGML2( xmlStream );
             break;
         case GML_30:
         case GML_31:
-            props = parse31( xmlStream );
+            props = readGML31( xmlStream );
             break;
         case GML_32:
-            props = parse32( xmlStream );
+            props = readGML32( xmlStream );
             break;
         }
         return props;
     }
 
-    private StandardGMLProps parse2( XMLStreamReader xmlStream )
+    private StandardGMLProps readGML2( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -116,28 +116,28 @@ public class GMLStandardPropsReader {
         // 'gml:metaDataProperty' (0...unbounded)
         Object[] metadata = null;
         while ( event == START_ELEMENT && new QName( GMLNS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
-            parseMetadataProperty( xmlStream );
+            readMetadataProperty( xmlStream );
             xmlStream.nextTag();
         }
 
         // 'gml:description' (0...1)
         StringOrRef description = null;
         if ( event == START_ELEMENT && new QName( GMLNS, "description" ).equals( xmlStream.getName() ) ) {
-            description = parseDescription( xmlStream );
+            description = readDescription( xmlStream );
             xmlStream.nextTag();
         }
 
         // 'gml:name' (0...1)
         List<CodeType> names = new LinkedList<CodeType>();
         while ( event == START_ELEMENT && new QName( GMLNS, "name" ).equals( xmlStream.getName() ) ) {
-            names.add( parseName( xmlStream ) );
+            names.add( readName( xmlStream ) );
             xmlStream.nextTag();
         }
 
         return new StandardGMLProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
     }
 
-    private StandardGMLProps parse31( XMLStreamReader xmlStream )
+    private StandardGMLProps readGML31( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -145,28 +145,28 @@ public class GMLStandardPropsReader {
         // 'gml:metaDataProperty' (0...unbounded)
         Object[] metadata = null;
         while ( event == START_ELEMENT && new QName( GMLNS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
-            parseMetadataProperty( xmlStream );
+            readMetadataProperty( xmlStream );
             xmlStream.nextTag();
         }
 
         // 'gml:description' (0...1)
         StringOrRef description = null;
         if ( event == START_ELEMENT && new QName( GMLNS, "description" ).equals( xmlStream.getName() ) ) {
-            description = parseDescription( xmlStream );
+            description = readDescription( xmlStream );
             xmlStream.nextTag();
         }
 
         // 'gml:name' (0...unbounded)
         List<CodeType> names = new LinkedList<CodeType>();
         while ( event == START_ELEMENT && new QName( GMLNS, "name" ).equals( xmlStream.getName() ) ) {
-            names.add( parseName( xmlStream ) );
+            names.add( readName( xmlStream ) );
             xmlStream.nextTag();
         }
 
         return new StandardGMLProps( metadata, description, null, names.toArray( new CodeType[names.size()] ) );
     }
 
-    private StandardGMLProps parse32( XMLStreamReader xmlStream )
+    private StandardGMLProps readGML32( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -174,43 +174,42 @@ public class GMLStandardPropsReader {
         // 'gml:metaDataProperty' (0...unbounded)
         Object[] metadata = null;
         while ( event == START_ELEMENT && new QName( GML3_2_NS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
-            parseMetadataProperty( xmlStream );
+            readMetadataProperty( xmlStream );
             xmlStream.nextTag();
         }
 
         // 'gml:description' (0...1)
         StringOrRef description = null;
         if ( event == START_ELEMENT && new QName( GML3_2_NS, "description" ).equals( xmlStream.getName() ) ) {
-            description = parseDescription( xmlStream );
+            description = readDescription( xmlStream );
             xmlStream.nextTag();
         }
 
         // 'gml:identifier' (0...1)
         CodeType identifier = null;
         while ( event == START_ELEMENT && new QName( GML3_2_NS, "identifier" ).equals( xmlStream.getName() ) ) {
-            identifier = parseIdentifier( xmlStream );
+            identifier = readIdentifier( xmlStream );
             xmlStream.nextTag();
         }
 
         // 'gml:name' (0...unbounded)
         List<CodeType> names = new LinkedList<CodeType>();
         while ( event == START_ELEMENT && new QName( GML3_2_NS, "name" ).equals( xmlStream.getName() ) ) {
-            names.add( parseName( xmlStream ) );
+            names.add( readName( xmlStream ) );
             xmlStream.nextTag();
         }
 
-        return new StandardGMLProps( metadata, description, identifier,
-                                           names.toArray( new CodeType[names.size()] ) );
+        return new StandardGMLProps( metadata, description, identifier, names.toArray( new CodeType[names.size()] ) );
     }
 
-    private Object parseMetadataProperty( XMLStreamReader xmlStream )
+    private Object readMetadataProperty( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        StAXParsingHelper.skipElement(xmlStream);
+        StAXParsingHelper.skipElement( xmlStream );
         // TODO
         return null;
     }
 
-    private StringOrRef parseDescription( XMLStreamReader xmlStream )
+    private StringOrRef readDescription( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
@@ -218,7 +217,7 @@ public class GMLStandardPropsReader {
         return new StringOrRef( string, ref );
     }
 
-    private CodeType parseIdentifier( XMLStreamReader xmlStream )
+    private CodeType readIdentifier( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
@@ -229,7 +228,7 @@ public class GMLStandardPropsReader {
         return new CodeType( code, codeSpace );
     }
 
-    private CodeType parseName( XMLStreamReader xmlStream )
+    private CodeType readName( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
         String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );

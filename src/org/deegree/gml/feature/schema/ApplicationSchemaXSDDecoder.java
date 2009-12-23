@@ -380,9 +380,12 @@ public class ApplicationSchemaXSDDecoder {
             XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
             switch ( typeDef.getTypeCategory() ) {
             case XSTypeDefinition.SIMPLE_TYPE: {
+
+                QName typeName = typeDef.getName() != null ? new QName( typeDef.getNamespace(), typeDef.getName() ) : null;
                 pt = new SimplePropertyType<Object>( ptName, minOccurs, maxOccurs,
                                                      getPrimitiveType( (XSSimpleType) typeDef ),
-                                                     elementDecl.getAbstract(), ptSubstitutions );
+                                                     elementDecl.getAbstract(), ptSubstitutions, typeName );
+                ( (SimplePropertyType<?>) pt ).setCodeList( getCodeListId( elementDecl ) );
                 break;
             }
             case XSTypeDefinition.COMPLEX_TYPE: {
@@ -451,6 +454,28 @@ public class ApplicationSchemaXSDDecoder {
         return pt;
     }
 
+    private String getCodeListId( XSElementDeclaration elementDecl ) {
+        String codeListId = null;
+        // handle adv schemas (referenced code list id inside annotation element)
+        XSObjectList annotations = elementDecl.getAnnotations();
+        if ( annotations.getLength() > 0 ) {
+            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
+            String s = annotation.getAnnotationString();
+            XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
+            NamespaceContext nsContext = new NamespaceContext();
+            nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+            nsContext.addNamespace( "adv", "http://www.adv-online.de/nas" );
+            codeListId = adapter.getNodeAsString(
+                                                  adapter.getRootElement(),
+                                                  new XPath( "xs:appinfo/adv:referenzierteCodeList/text()", nsContext ),
+                                                  null );
+            if (codeListId != null) {
+                codeListId = codeListId.trim();
+            }
+        }
+        return codeListId;
+    }
+
     /**
      * Analyzes the given complex type definition and returns a {@link FeaturePropertyType} if it defines a feature
      * property.
@@ -515,10 +540,12 @@ public class ApplicationSchemaXSDDecoder {
                             pt = null;
                             if ( GMLNS.equals( elementName.getNamespaceURI() ) ) {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
-                                                              elementDecl2.getAbstract(), ptSubstitutions, ValueRepresentation.BOTH );
+                                                              elementDecl2.getAbstract(), ptSubstitutions,
+                                                              ValueRepresentation.BOTH );
                             } else {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName,
-                                                              elementDecl2.getAbstract(), ptSubstitutions, ValueRepresentation.BOTH );
+                                                              elementDecl2.getAbstract(), ptSubstitutions,
+                                                              ValueRepresentation.BOTH );
                             }
                             featurePropertyTypes.add( pt );
                             return pt;
@@ -581,7 +608,8 @@ public class ApplicationSchemaXSDDecoder {
                 LOG.debug( "Identified a feature property (urn:x-gml:targetElement)." );
                 QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
                 FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                                  elementDecl.getAbstract(), ptSubstitutions, ValueRepresentation.BOTH );
+                                                                  elementDecl.getAbstract(), ptSubstitutions,
+                                                                  ValueRepresentation.BOTH );
                 featurePropertyTypes.add( pt );
                 return pt;
             }
@@ -608,7 +636,8 @@ public class ApplicationSchemaXSDDecoder {
                 LOG.trace( "Identified a feature property (adv style)." );
                 QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
                 FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
-                                                                  elementDecl.getAbstract(), ptSubstitutions, ValueRepresentation.BOTH );
+                                                                  elementDecl.getAbstract(), ptSubstitutions,
+                                                                  ValueRepresentation.BOTH );
                 featurePropertyTypes.add( pt );
                 return pt;
             }

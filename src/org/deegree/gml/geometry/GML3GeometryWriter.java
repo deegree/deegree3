@@ -46,8 +46,6 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.crs.CRS;
 import org.deegree.crs.CoordinateTransformer;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
@@ -112,6 +110,7 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.refs.GeometryReference;
+import org.deegree.gml.props.GMLStandardPropsWriter;
 import org.deegree.gml.props.StandardGMLProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,6 +150,8 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private final boolean exportSf;
 
+    private final GMLStandardPropsWriter stdPropsWriter;
+
     /**
      * Creates a new {@link GML3GeometryWriter} instance.
      * 
@@ -170,7 +171,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
      * @param exportedIds
      */
     public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCrs,
-                                CoordinateFormatter formatter, boolean exportSf, Set<String> exportedIds ) {
+                               CoordinateFormatter formatter, boolean exportSf, Set<String> exportedIds ) {
         this.version = version;
         this.writer = writer;
         this.outputCRS = outputCrs;
@@ -193,6 +194,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             this.formatter = formatter;
         }
         this.exportedIds = exportedIds;
+        this.stdPropsWriter = new GMLStandardPropsWriter( version, writer );
     }
 
     /**
@@ -1506,34 +1508,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
         StandardGMLProps props = geometry.getGMLProperties();
         if ( props != null ) {
-            exportStandardProps( writer, props );
-        }
-    }
-
-    private void exportStandardProps( XMLStreamWriter writer, StandardGMLProps standardGMLProperties )
-                            throws XMLStreamException {
-
-        StringOrRef description = standardGMLProperties.getDescription();
-        if ( description != null ) {
-            writer.writeStartElement( GMLNS, "description" );
-            if ( description.getRef() != null ) {
-                writer.writeAttribute( XLNNS, "xlink", description.getRef() );
-            }
-            if ( description.getString() != null ) {
-                writer.writeCharacters( description.getString() );
-            }
-            writer.writeEndElement();
-        }
-
-        for ( CodeType name : standardGMLProperties.getNames() ) {
-            writer.writeStartElement( GMLNS, "name" );
-            if ( name.getCodeSpace() != null ) {
-                writer.writeAttribute( "codeSpace", name.getCodeSpace() );
-            }
-            if ( name.getCode() != null ) {
-                writer.writeCharacters( name.getCode() );
-            }
-            writer.writeEndElement();
+            stdPropsWriter.write( props );
         }
     }
 
