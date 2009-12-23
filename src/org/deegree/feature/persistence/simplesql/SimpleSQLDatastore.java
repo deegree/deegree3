@@ -44,7 +44,9 @@ import static java.sql.Types.OTHER;
 import static java.sql.Types.SMALLINT;
 import static java.sql.Types.VARCHAR;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
+import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
+import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.PrimitiveType.BOOLEAN;
@@ -60,10 +62,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.CloseableIterator;
+import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -81,7 +85,6 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -124,8 +127,6 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     CRS crs;
 
-    String sql;
-
     private ApplicationSchema schema;
 
     GeometryFactory fac = new GeometryFactory();
@@ -140,7 +141,7 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     GeometryTransformer transformer;
 
-    private String multiRes;
+    TreeMap<Integer, String> lods;
 
     /**
      * @param connId
@@ -149,17 +150,16 @@ public class SimpleSQLDatastore implements FeatureStore {
      * @param featureName
      * @param namespace
      * @param bbox
-     * @param multiRes
+     * @param lods
      */
     public SimpleSQLDatastore( String connId, String crs, String sql, String featureName, String namespace,
-                               String bbox, String multiRes ) {
+                               String bbox, List<Pair<Integer, String>> lods ) {
         this.connId = connId;
         this.crs = new CRS( crs );
         sql = sql.trim();
         if ( sql.endsWith( ";" ) ) {
             sql = sql.substring( 0, sql.length() - 1 );
         }
-        this.sql = sql;
         this.bbox = bbox;
         this.featureName = featureName == null ? "feature" : featureName;
         this.namespace = namespace == null ? "http://www.deegree.org/app" : namespace;
@@ -171,7 +171,11 @@ public class SimpleSQLDatastore implements FeatureStore {
             LOG.error( "The invalid crs '{}' was specified for the simple SQL data store.", crs );
             LOG.debug( "Stack trace:", e );
         }
-        this.multiRes = multiRes;
+        this.lods = new TreeMap<Integer, String>();
+        this.lods.put( -1, sql );
+        for ( Pair<Integer, String> p : lods ) {
+            this.lods.put( p.first, p.second );
+        }
     }
 
     public FeatureStoreTransaction acquireTransaction()
@@ -257,7 +261,7 @@ public class SimpleSQLDatastore implements FeatureStore {
         PreparedStatement stmt = null;
         try {
             conn = getConnection( connId );
-            stmt = conn.prepareStatement( sql + " limit 0" );
+            stmt = conn.prepareStatement( lods.values().iterator().next() + " limit 0" );
             stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
             stmt.execute();
             set = stmt.getResultSet();
@@ -347,8 +351,21 @@ public class SimpleSQLDatastore implements FeatureStore {
                     PreparedStatement stmt = null;
 
                     {
+                        Envelope bbox = (Envelope) q.getHint( HINT_LOOSE_BBOX );
+                        Object scaleHint = q.getHint( HINT_SCALE );
+                        int scale = -1;
+                        if ( scaleHint != null ) {
+                            scale = (Integer) scaleHint;
+                        }
+                        String sql = null;
+                        for ( Integer i : lods.keySet() ) {
+                            if ( i <= scale ) {
+                                LOG.debug( "Considering use of LOD with scale {}.", i );
+                                sql = lods.get( i );
+                            }
+                        }
+
                         stmt = conn.prepareStatement( sql );
-                        Envelope bbox = (Envelope) q.getHint( QueryHint.HINT_LOOSE_BBOX );
                         try {
                             bbox = (Envelope) transformer.transform( bbox );
                         } catch ( UnknownCRSException e ) {

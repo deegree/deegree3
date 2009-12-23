@@ -70,9 +70,17 @@
           <element name="ConnectionPoolId" type="string" />
           <element name="SQLStatement" type="string" />
           <element name="BBoxStatement" type="string" />
+          <element name="LODStatement" minOccurs="0" maxOccurs="unbounded">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="aboveScale" type="int" />
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
           <element name="Namespace" type="string" minOccurs="0" />
           <element name="FeatureTypeName" type="string" minOccurs="0" />
-          <element name="MultiResolutionTable" type="string" minOccurs="0" />
         </sequence>
       </extension>
     </complexContent>

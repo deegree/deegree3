@@ -35,10 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
+import static org.deegree.commons.utils.CollectionUtils.map;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,8 +57,12 @@ import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
+import org.deegree.commons.datasource.configuration.DirectSQLDataSourceType.LODStatement;
 import org.deegree.commons.datasource.configuration.FeatureStoreType.NamespaceHint;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType.GMLFeatureCollectionFileURL;
+import org.deegree.commons.utils.CollectionUtils;
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.crs.CRS;
 import org.deegree.feature.FeatureCollection;
@@ -87,6 +94,12 @@ public class FeatureStoreManager {
     private static final Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
 
     private static Map<String, FeatureStore> idToFs = Collections.synchronizedMap( new HashMap<String, FeatureStore>() );
+
+    private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
+        public Pair<Integer, String> apply( LODStatement u ) {
+            return new Pair<Integer, String>( u.getAboveScale(), u.getValue() );
+        }
+    };
 
     /**
      * Returns the global {@link FeatureStore} instance with the specified identifier.
@@ -176,9 +189,9 @@ public class FeatureStoreManager {
         String ns = jaxbConfig.getNamespace();
         String id = jaxbConfig.getDataSourceName();
         String bbox = jaxbConfig.getBBoxStatement();
-        String multiRes = jaxbConfig.getMultiResolutionTable();
+        LinkedList<Pair<Integer, String>> lods = map( jaxbConfig.getLODStatement(), lodMapper );
 
-        SimpleSQLDatastore fs = new SimpleSQLDatastore( connId, srs, stmt, name, ns, bbox, multiRes );
+        SimpleSQLDatastore fs = new SimpleSQLDatastore( connId, srs, stmt, name, ns, bbox, lods );
         registerAndInit( fs, id );
         return fs;
     }
