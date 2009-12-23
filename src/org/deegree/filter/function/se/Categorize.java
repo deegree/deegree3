@@ -37,6 +37,7 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
@@ -82,7 +83,7 @@ public class Categorize extends Function {
 
     private List<StringBuffer> values = new ArrayList<StringBuffer>();
 
-    private String[] valuesArray = null;
+    private Color[] valuesArray = null;
 
     private List<StringBuffer> thresholds = new ArrayList<StringBuffer>();
 
@@ -145,8 +146,6 @@ public class Categorize extends Function {
         int col = -1, row = -1;
         RasterData data = raster.getAsSimpleRaster().getRasterData();
 
-        buildLookupArrays();
-
         try {
             RasterDataUtility converter = new RasterDataUtility( raster, style.channelSelection );
 
@@ -183,12 +182,12 @@ public class Categorize extends Function {
         } else {
             pos = pos * ( -1 ) - 1;
         }
-        String color = valuesArray[pos].toString();
-        return decodeWithAlpha( color );
+
+        return valuesArray[pos];
     }
 
     /**
-     * Looks up a value in the current categories and thresholds. Naive implementation.
+     * Looks up a value in the current categories and thresholds. Naive implementation. Used for comparisons in tests.
      * 
      * @param val
      *            double value
@@ -249,51 +248,24 @@ public class Categorize extends Function {
         }
 
         in.require( END_ELEMENT, null, "Categorize" );
-    }
 
-    // public String toString()
-    // {
-    // String r = "";
-    // if (contn != null)
-    // r += contn.toString();
-    // return r;
-    // }
+        buildLookupArrays();
+    }
 
     @Override
     public String toString() {
-        String r = "\nCategorize [ ";
-        r += "\nValues: " + values.toString();
-        r += "\nThresholds: " + thresholds.toString();
-        if ( valuesArray != null )
-            r += "\nValues Array: " + printArray( valuesArray );
-        if ( thresholdsArray != null )
-            r += "\nThresholds Array: " + printArray( thresholdsArray );
-        r += "\n Preceding: " + precedingBelongs;
-        r += "\n ]";
-        return r;
-    }
-
-    /**
-     * @param a
-     * @return a string
-     */
-    public String printArray( Object[] a ) {
-        String result = a[0].toString();
-        for ( int i = 1; i < a.length; i++ )
-            result += ", " + a[i].toString();
-        result = "{" + result + "}";
-        return result;
+        return generateToString( this );
     }
 
     /** Create the sorted lookup arrays from the StringBuffer lists */
     public void buildLookupArrays() {
         LOG.debug( "Building look-up arrays, for binary search... " );
         if ( valuesArray == null ) {
-            valuesArray = new String[values.size()];
-            List<String> list = new ArrayList<String>( values.size() );
+            valuesArray = new Color[values.size()];
+            List<Color> list = new ArrayList<Color>( values.size() );
             Iterator<StringBuffer> i = values.iterator();
             while ( i.hasNext() )
-                list.add( i.next().toString() );
+                list.add( decodeWithAlpha( i.next().toString() ) );
             valuesArray = list.toArray( valuesArray );
         }
 

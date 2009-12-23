@@ -115,27 +115,28 @@ public class Java2DRasterRenderer implements RasterRenderer {
      * @param raster
      */
     public void render( RasterStyling styling, AbstractRaster raster ) {
-        LOG.trace( "Rendering raster with style..." );
+        LOG.trace( "Rendering raster with style '{}'.", styling );
         BufferedImage img = null;
         if ( raster == null ) {
             LOG.warn( "Trying to render null raster." );
             return;
         }
         if ( styling == null ) {
-            LOG.warn( "Raster style is null, rendering without style" );
+            LOG.debug( "Raster style is null, rendering without style" );
             render( raster );
             return;
         }
 
-        if ( styling.channelSelection != null )
+        if ( styling.channelSelection != null ) {
             // Compute channel selection indexes on current raster
             styling.channelSelection.evaluate( raster.getRasterDataInfo().bandInfo );
+        }
 
         if ( styling.categorize != null || styling.interpolate != null || styling.shaded != null ) {
             LOG.trace( "Creating raster ColorMap..." );
-            if ( styling.categorize != null )
+            if ( styling.categorize != null ){
                 img = styling.categorize.evaluateRaster( raster, styling );
-            else if ( styling.interpolate != null )
+            }            else if ( styling.interpolate != null )
                 img = styling.interpolate.evaluateRaster( raster, styling );
 
             if ( styling.shaded != null ) {

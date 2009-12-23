@@ -133,7 +133,7 @@ public class RasterDataUtility {
 
     /**
      * 
-     * @param data
+     * @param d
      *            raster data
      */
     public RasterDataUtility( RasterData d ) {
@@ -162,95 +162,26 @@ public class RasterDataUtility {
             setGamma( 1.0 );
     }
 
-    /**
-     * 
-     * @return the image pixels as a matrix of floats
-     */
-    public float[][] parse() {
-
-        float[][] values = null;
-        int row = -1, col = -1;
-
-        LOG.debug( "Parsing raster data. Raster has {} bands and datatype {}.", bands, data.getDataType() );
-        BandType[] allb = data.getDataInfo().bandInfo;
-        String b = allb[0].toString();
-        for ( int i = 1; i < bands; i++ )
-            b += ", " + allb[i].toString();
-        b = "[" + b + "]";
-        LOG.debug( "Raster bands are: {}", b );
-        LOG.debug( "Raster has size {} x {} ", height, width );
-
-        try {
-            values = new float[height][width];
-
-            switch ( data.getDataType() ) {
-            case BYTE:
-                byte[] bpixel = new byte[bands];
-                for ( col = 0; col < width; col++ ) {
-                    for ( row = 0; row < height; row++ ) {
-                        Float f = combineBytes( data.getBytePixel( col, row, bpixel ) );
-                        // Compensate for the fact that byte is a signed datatype. This is used in grayscale images,
-                        // range 0-255
-                        values[row][col] = ( ( f >= 0 ) ? ( f ) : ( f + 256 ) );
-                    }
-                }
-                break;
-            case SHORT:
-            case USHORT:
-                short[] spixel = new short[bands];
-                for ( col = 0; col < width; col++ ) {
-                    for ( row = 0; row < height; row++ ) {
-                        values[row][col] = combineShorts( data.getShortPixel( col, row, spixel ) );
-                    }
-                }
-                break;
-            case INT:
-                int[] ipixel = new int[bands];
-                for ( col = 0; col < width; col++ ) {
-                    for ( row = 0; row < height; row++ ) {
-                        values[row][col] = combineInts( data.getIntPixel( col, row, ipixel ) );
-                    }
-                }
-                break;
-            case FLOAT:
-
-                float[] fpixel = new float[bands];
-                for ( col = 0; col < width; col++ ) {
-                    for ( row = 0; row < height; row++ ) {
-                        values[row][col] = combineFloats( data.getFloatPixel( col, row, fpixel ) );
-                    }
-                }
-            default:
-                throw new IllegalArgumentException( "Cannot parse datatype " + data.getDataType().toString() );
-            }
-        } catch ( NullPointerException e ) {
-            LOG.error( "Error while parsing raster data, @ row={}, col={}", row, col );
-            // e.printStackTrace();
-        }
-
-        return values;
-    }
-
     private float combineFloats( float[] pixel ) {
         try {
             if ( channelMappings == true ) {
-                if ( gray != -1 )
+                if ( gray != -1 ) {
                     return pixel[gray];
-                else
-                    return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
-            } else {
-                switch ( bands ) {
-                case 1: /* Gray-scale */
-                    return (float) pixel[0];
-                case 2: /* Gray-scale + alpha: ignore alpha */
-                    return (float) pixel[bands - alphaIndex - 1];
-                case 3: /* RGB bands: use gray-pixel intensity */
-                    return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-                case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                    return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
-                default:
-                    return 0;
                 }
+
+                return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+            }
+            switch ( bands ) {
+            case 1: /* Gray-scale */
+                return pixel[0];
+            case 2: /* Gray-scale + alpha: ignore alpha */
+                return pixel[bands - alphaIndex - 1];
+            case 3: /* RGB bands: use gray-pixel intensity */
+                return ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                return ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+            default:
+                return 0;
             }
         } catch ( Exception e ) {
             return 0;
@@ -260,23 +191,23 @@ public class RasterDataUtility {
     private float combineShorts( short[] pixel ) {
         try {
             if ( channelMappings == true ) {
-                if ( gray != -1 )
+                if ( gray != -1 ) {
                     return pixel[gray];
-                else
-                    return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
-            } else {
-                switch ( bands ) {
-                case 1: /* Gray-scale */
-                    return (float) pixel[0];
-                case 2: /* Gray-scale + alpha: ignore alpha */
-                    return (float) pixel[bands - alphaIndex - 1];
-                case 3: /* RGB bands: use gray-pixel intensity */
-                    return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-                case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                    return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
-                default:
-                    return 0;
                 }
+
+                return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+            }
+            switch ( bands ) {
+            case 1: /* Gray-scale */
+                return pixel[0];
+            case 2: /* Gray-scale + alpha: ignore alpha */
+                return pixel[bands - alphaIndex - 1];
+            case 3: /* RGB bands: use gray-pixel intensity */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+            default:
+                return 0;
             }
         } catch ( Exception e ) {
             return 0;
@@ -286,23 +217,23 @@ public class RasterDataUtility {
     private float combineInts( int[] pixel ) {
         try {
             if ( channelMappings == true ) {
-                if ( gray != -1 )
+                if ( gray != -1 ) {
                     return pixel[gray];
-                else
-                    return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
-            } else {
-                switch ( bands ) {
-                case 1: /* Gray-scale */
-                    return (float) pixel[0];
-                case 2: /* Gray-scale + alpha: ignore alpha */
-                    return (float) pixel[bands - alphaIndex - 1];
-                case 3: /* RGB bands: use gray-pixel intensity */
-                    return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-                case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                    return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
-                default:
-                    return 0;
                 }
+
+                return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+            }
+            switch ( bands ) {
+            case 1: /* Gray-scale */
+                return pixel[0];
+            case 2: /* Gray-scale + alpha: ignore alpha */
+                return pixel[bands - alphaIndex - 1];
+            case 3: /* RGB bands: use gray-pixel intensity */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+            default:
+                return 0;
             }
         } catch ( Exception e ) {
             return 0;
@@ -314,21 +245,19 @@ public class RasterDataUtility {
             if ( channelMappings == true ) {
                 if ( gray != -1 )
                     return pixel[gray];
-                else
-                    return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
-            } else {
-                switch ( bands ) {
-                case 1: /* Gray-scale */
-                    return (float) pixel[0];
-                case 2: /* Gray-scale + alpha: ignore alpha */
-                    return (float) pixel[bands - alphaIndex - 1];
-                case 3: /* RGB bands: use gray-pixel intensity */
-                    return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-                case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                    return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
-                default:
-                    return 0;
-                }
+                return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+            }
+            switch ( bands ) {
+            case 1: /* Gray-scale */
+                return pixel[0];
+            case 2: /* Gray-scale + alpha: ignore alpha */
+                return pixel[bands - alphaIndex - 1];
+            case 3: /* RGB bands: use gray-pixel intensity */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
+            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
+                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+            default:
+                return 0;
             }
         } catch ( Exception e ) {
             return 0;
@@ -543,8 +472,8 @@ public class RasterDataUtility {
                         max = ( val > max ? val : max );
                     }
             }
-            rastermin = (int) min;
-            rastermax = (int) max;
+            rastermin = min;
+            rastermax = max;
             // Precompute a lookup table (only for BYTE data)
             min = ( 0 < rastermin ? 0 : rastermin );
             max = ( rastermax < 255 ? rastermax : 255 );

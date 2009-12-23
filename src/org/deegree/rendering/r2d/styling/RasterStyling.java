@@ -36,6 +36,7 @@
 
 package org.deegree.rendering.r2d.styling;
 
+import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.rendering.r2d.styling.RasterStyling.Overlap.RANDOM;
 import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
 
@@ -45,8 +46,6 @@ import org.deegree.filter.function.se.Categorize;
 import org.deegree.filter.function.se.Interpolate;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.components.UOM;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <code>RasterStyling</code>
@@ -102,8 +101,6 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
      */
     public static class ShadedRelief implements Copyable<ShadedRelief> {
 
-        static Logger LOG = LoggerFactory.getLogger( ShadedRelief.class );
-
         /** Default is false. */
         public boolean brightnessOnly;
 
@@ -122,13 +119,15 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
             copy.brightnessOnly = brightnessOnly;
             copy.reliefFactor = reliefFactor;
+            copy.azimuthAngle = azimuthAngle;
+            copy.Alt = Alt;
 
             return copy;
         }
 
+        @Override
         public String toString() {
-            return "ShadedRelief: { BrightnessOnly: " + brightnessOnly + ", ReliefFactor: " + reliefFactor
-                   + ", Illumination Angle: " + azimuthAngle + ", Illumination Altitude: " + Alt + "}";
+            return generateToString( this );
         }
     }
 
@@ -159,6 +158,11 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
             copy.gamma = gamma;
 
             return copy;
+        }
+
+        @Override
+        public String toString() {
+            return generateToString( this );
         }
     }
 
@@ -207,4 +211,10 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
 
         return copy;
     }
+
+    @Override
+    public String toString() {
+        return generateToString( this );
+    }
+
 }
