@@ -376,12 +376,13 @@ public class Java2DRenderer implements Renderer {
 
         if ( g.image == null ) {
             renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this,
-                        rect.x, rect.y, g.rotation );
+                        rect.getCenterX(), rect.getCenterY(), g.rotation );
             return;
         }
 
         if ( g.image != null ) {
-            graphics.drawImage( g.image, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
+            graphics.drawImage( g.image, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ),
+                                null );
         }
     }
 
