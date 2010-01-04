@@ -39,7 +39,9 @@ import static java.lang.Boolean.TRUE;
 import static java.sql.Types.BINARY;
 import static java.sql.Types.BIT;
 import static java.sql.Types.CHAR;
+import static java.sql.Types.DOUBLE;
 import static java.sql.Types.INTEGER;
+import static java.sql.Types.NUMERIC;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.SMALLINT;
 import static java.sql.Types.VARCHAR;
@@ -50,9 +52,11 @@ import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.PrimitiveType.BOOLEAN;
+import static org.deegree.feature.types.property.PrimitiveType.DECIMAL;
 import static org.deegree.feature.types.property.PrimitiveType.STRING;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -285,6 +289,10 @@ public class SimpleSQLDatastore implements FeatureStore {
                 case BIT:
                     pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, BOOLEAN, false, null );
                     break;
+                case NUMERIC:
+                case DOUBLE:
+                    pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, DECIMAL, false, null );
+                    break;
                 case OTHER:
                 case BINARY:
                     pt = new GeometryPropertyType( new QName( namespace, name ), 0, 1, GEOMETRY, DIM_2_OR_3, false,
@@ -451,6 +459,9 @@ public class SimpleSQLDatastore implements FeatureStore {
                                             if ( obj instanceof Integer ) {
                                                 BigInteger theInt = new BigInteger( ( (Integer) obj ).toString() );
                                                 props.add( new GenericProperty( pt, theInt ) );
+                                            } else if ( obj instanceof Double ) {
+                                                BigDecimal dec = new BigDecimal( (Double) obj );
+                                                props.add( new GenericProperty( pt, dec ) );
                                             } else {
                                                 props.add( new GenericProperty( pt, obj ) );
                                             }
