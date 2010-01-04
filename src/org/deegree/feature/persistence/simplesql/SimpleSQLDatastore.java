@@ -104,6 +104,7 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
+import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.gml.GMLObject;
 import org.slf4j.Logger;
 
@@ -445,6 +446,11 @@ public class SimpleSQLDatastore implements FeatureStore {
                                                 try {
                                                     Geometry geom = WKBReader.read( bs );
                                                     geom.setCoordinateSystem( crs );
+                                                    if ( geom instanceof MultiGeometry<?> ) {
+                                                        for ( Geometry g : (MultiGeometry<?>) geom ) {
+                                                            g.setCoordinateSystem( crs );
+                                                        }
+                                                    }
                                                     props.add( new GenericProperty( pt, geom ) );
                                                 } catch ( ParseException e ) {
                                                     LOG.warn( "WKB from the DB could not be parsed: '{}'.",
