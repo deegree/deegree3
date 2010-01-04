@@ -36,6 +36,7 @@
 package org.deegree.record.persistence;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -43,6 +44,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.protocol.csw.CSWConstants.TransactionType;
+import org.deegree.record.publication.TransactionOperation;
 
 /**
  * Base interface of the {@link Record} persistence layer, provides access to stored {@link Record} instances and their
@@ -102,6 +105,20 @@ public interface RecordStore {
     public void getRecords( XMLStreamWriter writer, QName typeName, JDBCConnections connection,
                             GenericDatabaseDS genericDatabaseDS )
                             throws SQLException, XMLStreamException;
+    
+    
+    /**
+     * Exports the XML fragment to the recordstore
+     * 
+     * @param writer
+     * writer to export to, must not be <code>null</code>
+     * @param connection
+     * JDBC connection attributes
+     * @param transactionType
+     * The transactionType that is requested
+     * 
+     */
+    public void transaction(XMLStreamWriter writer, JDBCConnections connection, TransactionOperation operations) throws SQLException, XMLStreamException ;
 
     /**
      * Returns the typeNames that are known in the backend. <br/>

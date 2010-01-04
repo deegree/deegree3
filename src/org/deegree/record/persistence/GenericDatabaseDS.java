@@ -60,18 +60,21 @@ public class GenericDatabaseDS {
     private SetOfReturnableElements setOfReturnableElements;
 
     private int maxRecords;
+    
+    private int startPosition;
 
     private Set<String> table;
 
     private Set<String> column;
 
     public GenericDatabaseDS( Writer expressionWriter, ResultType resultType,
-                              SetOfReturnableElements setOfReturnableElements, int maxRecords, Set<String> table,
+                              SetOfReturnableElements setOfReturnableElements, int maxRecords, int startPosition, Set<String> table,
                               Set<String> column ) {
         this.expressionWriter = expressionWriter;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
         this.maxRecords = maxRecords;
+        this.startPosition = startPosition;
         this.table = table;
         this.column = column;
 
@@ -135,6 +138,22 @@ public class GenericDatabaseDS {
      */
     public void setMaxRecords( int maxRecords ) {
         this.maxRecords = maxRecords;
+    }
+    
+    
+
+    /**
+     * @return the startPosition
+     */
+    public int getStartPosition() {
+        return startPosition;
+    }
+
+    /**
+     * @param startPosition the startPosition to set
+     */
+    public void setStartPosition( int startPosition ) {
+        this.startPosition = startPosition;
     }
 
     /**

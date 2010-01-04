@@ -178,6 +178,27 @@ public class CSWConstants {
         FILTER
 
     }
+    
+    
+    /**
+     * 
+     * Defined in the CSW-publication.xsd. Specifies the data manipulation operations <br>
+     * <li>insert</li> <li>delete</li> <li>update</li> <br>
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum TransactionType {
+
+        INSERT,
+
+        DELETE,
+
+        UPDATE
+
+    }
 
     
 

@@ -40,8 +40,10 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,9 +61,12 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.TransactionType;
 import org.deegree.record.persistence.GenericDatabaseDS;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
+import org.deegree.record.publication.InsertTransaction;
+import org.deegree.record.publication.TransactionOperation;
 
 /**
  * {@link RecordStore} implementation of Dublin Core and ISO Profile.
@@ -387,7 +392,7 @@ public class GenericRecordStore implements RecordStore {
                 s += ", " + concatTableFROM( tableSet );
             }
 
-            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ";
+            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "." + commonForeignkey + " >= " + constraint.getStartPosition();
 
             if ( tableSet.size() == 0 ) {
                 s += " ";
@@ -395,7 +400,11 @@ public class GenericRecordStore implements RecordStore {
                 s += " AND " + concatTableWHERE( tableSet );
             }
 
-            s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
+            if ( tableSet.size() == 0 ) {
+                s += "LIMIT " + constraint.getMaxRecords();
+            } else {
+                s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
+            }
         } else {
             s += "SELECT " + formatType + ".data " + "FROM " + mainDatabaseTable + ", " + formatType;
 
@@ -405,7 +414,7 @@ public class GenericRecordStore implements RecordStore {
                 s += ", " + concatTableFROM( tableSet );
             }
 
-            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id LIMIT "
+            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " LIMIT "
                  + constraint.getMaxRecords();
 
         }
@@ -432,15 +441,19 @@ public class GenericRecordStore implements RecordStore {
                 s += ", " + concatTableFROM( tableSet );
             }
 
-            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ";
-
+            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "." + commonForeignkey + " >= " + constraint.getStartPosition();
+            
             if ( tableSet.size() == 0 ) {
                 s += " ";
             } else {
                 s += " AND " + concatTableWHERE( tableSet );
             }
 
-            s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
+            if ( tableSet.size() == 0 ) {
+                s += "LIMIT " + constraint.getMaxRecords();
+            } else {
+                s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
+            }
         } else {
             s += "SELECT COUNT(" + formatType + ".data) " + "FROM " + mainDatabaseTable + ", " + formatType;
 
@@ -450,7 +463,7 @@ public class GenericRecordStore implements RecordStore {
                 s += ", " + concatTableFROM( tableSet );
             }
 
-            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id LIMIT "
+            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " LIMIT "
                  + constraint.getMaxRecords();
 
         }
@@ -570,6 +583,49 @@ public class GenericRecordStore implements RecordStore {
                                + isoqp_title + ".title = " + rest;
 
         return sqlExpression;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.record.persistence.RecordStore#transaction(javax.xml.stream.XMLStreamWriter,
+     * org.deegree.commons.configuration.JDBCConnections, java.util.List)
+     */
+    @Override
+    public void transaction( XMLStreamWriter writer, JDBCConnections connection, TransactionOperation operations )
+                            throws SQLException, XMLStreamException {
+
+        Connection conn = ConnectionManager.getConnection( connectionId );
+        Statement stm = conn.createStatement();
+
+        switch ( operations.getType() ) {
+        case INSERT:
+            InsertTransaction ins = (InsertTransaction) operations;
+
+            String userdefTable = "INSERT INTO userdefinedqueryableproperties VALUES (7)";
+
+            String datasetsTable = "INSERT INTO datasets VALUES (7,null,null,'','',null,FALSE,'','', '', null)";
+
+            String sql = "INSERT INTO recordbrief (fk_datasets, format, data) values (7, 1, '"
+                         + ins.getElement().toStringWithConsume() + "')";
+            stm.executeUpdate( userdefTable );
+            stm.executeUpdate( datasetsTable );
+            stm.executeUpdate( sql );
+
+            stm.close();
+            conn.close();
+
+            break;
+
+        case UPDATE:
+
+            break;
+
+        case DELETE:
+
+            break;
+        }
+
     }
 
 }
