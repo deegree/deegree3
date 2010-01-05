@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
@@ -41,7 +41,7 @@ import java.nio.ByteBuffer;
 import javax.media.opengl.GL;
 
 /**
- *
+ * 
  * The <code>TextureTile</code> define the parameters necessary to create, request and render a texture to the DEM.
  * Texture are created and rendered with following options:
  * <ul>
@@ -50,11 +50,11 @@ import javax.media.opengl.GL;
  * <li>gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );</li>
  * <li>gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );</li>
  * </ul>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author: rbezema $
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class TextureTile {
 
@@ -77,7 +77,7 @@ public class TextureTile {
 
     /**
      * Construct a new texture tile.
-     *
+     * 
      * @param minX
      * @param minY
      * @param maxX
@@ -94,6 +94,7 @@ public class TextureTile {
         this.maxX = maxX;
         this.maxY = maxY;
 
+        // rb: what to do with lines?
         if ( maxX != minX ) {
             metersPerPixel = ( maxX - minX ) / pixelsX;
         } else {
@@ -149,7 +150,7 @@ public class TextureTile {
     }
 
     /**
-     *
+     * 
      * @return the width of the image.
      */
     public int getPixelsX() {
@@ -157,7 +158,7 @@ public class TextureTile {
     }
 
     /**
-     *
+     * 
      * @return the height of the image.
      */
     public int getPixelsY() {
@@ -177,7 +178,7 @@ public class TextureTile {
 
     /**
      * Remove the texture from the context.
-     *
+     * 
      * @param gl
      */
     public void disable( GL gl ) {
@@ -194,7 +195,7 @@ public class TextureTile {
 
     /**
      * load this texture to the gpu, using Texture Objects.
-     *
+     * 
      * @param gl
      */
     private void loadToGPU( GL gl ) {
@@ -227,7 +228,7 @@ public class TextureTile {
     }
 
     /**
-     *
+     * 
      * @return the GL-texture object id of this texture tile.
      */
     public int getId() {
