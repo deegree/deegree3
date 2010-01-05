@@ -167,7 +167,7 @@ public class SimpleSQLDatastore implements FeatureStore {
         }
         this.bbox = bbox;
         this.featureName = featureName == null ? "feature" : featureName;
-        this.namespace = namespace == null ? "http://www.deegree.org/app" : namespace;
+        this.namespace = namespace;
         try {
             transformer = new GeometryTransformer( this.crs.getWrappedCRS() );
         } catch ( IllegalArgumentException e ) {
