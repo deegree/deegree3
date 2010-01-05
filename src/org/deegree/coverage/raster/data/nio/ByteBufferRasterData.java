@@ -185,7 +185,10 @@ public abstract class ByteBufferRasterData implements RasterData {
         }
     }
 
-    protected DataView getView() {
+    /**
+     * @return the view on the data 
+     */
+    public DataView getView() {
         return dataAccess.getView();
     }
 
@@ -295,6 +298,13 @@ public abstract class ByteBufferRasterData implements RasterData {
      */
     public int getOriginalHeight() {
         return rasterHeight;
+    }
+
+    /**
+     * @return the domain of validity of the byte buffer, which need not be the view on the data.
+     */
+    public RasterRect getBytebufferDomain() {
+        return dataAccess.getBytebufferDomain();
     }
 
     /**
@@ -695,7 +705,7 @@ public abstract class ByteBufferRasterData implements RasterData {
                                                                                 sampleDomain.height, dataInfo ) );
         if ( dataAccess.hasDataBuffer() && dataAccess.getReader() == null ) {
             // the data was loaded, but no reader was available, we need a copy of the data.
-            result.dataAccess.setByteBuffer( getByteBuffer().asReadOnlyBuffer(), getView() );
+            result.dataAccess.setByteBuffer( getByteBuffer().asReadOnlyBuffer(), dataAccess.getBytebufferDomain() );
             // result.dataAccess.setByteBuffer( getByteBuffer().asReadOnlyBuffer(), view );
             // result.data = this.data.asReadOnlyBuffer();
         }
@@ -733,7 +743,7 @@ public abstract class ByteBufferRasterData implements RasterData {
         // result.dataAccess.setByteBuffer( getByteBuffer().asReadOnlyBuffer(), view );
         if ( dataAccess.hasDataBuffer() && dataAccess.getReader() == null ) {
             // the data was loaded, but no reader was available, we need a copy of the data.
-            result.dataAccess.setByteBuffer( getByteBuffer().asReadOnlyBuffer(), getView() );
+            result.dataAccess.setByteBuffer( getByteBuffer().asReadOnlyBuffer(), dataAccess.getBytebufferDomain() );
         }
 
         /** old comments */
@@ -778,6 +788,10 @@ public abstract class ByteBufferRasterData implements RasterData {
                 }
             }
         }
+    }
+
+    public void dispose() {
+        this.dataAccess.dispose();
     }
 
     public void setDoublePixel( int x, int y, double[] pixel ) {
