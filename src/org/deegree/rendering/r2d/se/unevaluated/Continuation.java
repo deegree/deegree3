@@ -78,7 +78,7 @@ public abstract class Continuation<T> {
     public void evaluate( T base, MatchableObject f ) {
         updateStep( base, f );
         if ( next != null ) {
-            evaluate( base, f );
+            next.evaluate( base, f );
         }
     }
 
