@@ -44,9 +44,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -113,7 +113,7 @@ public class GridWriter implements RasterWriter {
 
     private FileInputStream readStream;
 
-    private FileOutputStream writeStream;
+    private RandomAccessFile writeStream;
 
     private File gridFile;
 
@@ -160,7 +160,13 @@ public class GridWriter implements RasterWriter {
     private synchronized void instantiate( int targetColumns, int targetRows, Envelope rasterEnvelope,
                                            RasterGeoReference geoRef, File gridFile, RasterDataInfo dataInfo )
                             throws IOException {
-        this.envelope = rasterEnvelope;
+        if ( rasterEnvelope == null ) {
+            throw new NullPointerException( "The grid writer needs an envelope to work with." );
+        }
+        if ( geoRef == null ) {
+            throw new NullPointerException( "The grid writer needs a raster georeference to work with." );
+        }
+        this.envelope = geoRef.relocateEnvelope( OriginLocation.OUTER, rasterEnvelope );
         this.columns = targetColumns;
         this.rows = targetRows;
         this.geoRef = geoRef.createRelocatedReference( OriginLocation.OUTER );
@@ -263,17 +269,33 @@ public class GridWriter implements RasterWriter {
      * @param raster
      *            to write
      * @param options
-     *            can hold information about the info file etc.
+     *            can hold information about the info file etc. If <code>null</code> no meta data file will be written.
+     *            Applications should make sure they call {@link GridWriter#writeMetadataFile(RasterIOOptions)}
      * @throws IOException
      */
     public void write( AbstractRaster raster, RasterIOOptions options )
                             throws IOException {
 
-        Envelope env = raster.getEnvelope();
+        Envelope env = raster.getRasterReference().relocateEnvelope( OriginLocation.OUTER, raster.getEnvelope() );
+        // System.out.println( "new: " + env );
+        // System.out.println( "old: " + raster.getEnvelope() );
+        // env = geoRef.relocateEnvelope( env );
         int minColumn = getColumn( env.getMin().get0() );
         int minRow = getRow( env.getMax().get1() );
         int maxColumn = getColumn( env.getMax().get0() );
         int maxRow = getRow( env.getMin().get1() );
+        int[] max = geoRef.getRasterCoordinate( env.getMax().get0(), env.getMin().get1() );
+        if ( max[0] % tileRasterWidth == 0 ) {
+            // System.out.println( "reducing max col" );
+            // found an edge, don't use the last tile.
+            maxColumn--;
+        }
+        if ( max[1] % tileRasterHeight == 0 ) {
+            // System.out.println( "reducing max row" );
+            // found an edge, don't use the last tile.
+            maxRow--;
+        }
+
         if ( ( maxColumn == -1 ) || ( maxRow == -1 ) || ( minColumn == columns ) || ( minRow == rows ) ) {
             throw new IOException( "The given raster is outside the envelope." );
         }
@@ -282,12 +304,24 @@ public class GridWriter implements RasterWriter {
         minRow = max( minRow, 0 );
         maxColumn = min( maxColumn, columns - 1 );
         maxRow = min( maxRow, rows - 1 );
-        for ( int row = minRow; row <= maxRow; row++ ) {
-            for ( int column = minColumn; column <= maxColumn; column++ ) {
-                write( raster, column, row );
+        // System.out.println( "minCol: " + minColumn + " maxCol: " + maxColumn + " | minRow: " + minRow + ", maxRow: "
+        // + maxRow );
+        synchronized ( tileData ) {
+            this.leaveStreamOpen( true );
+            for ( int row = minRow; row <= maxRow; row++ ) {
+                for ( int column = minColumn; column <= maxColumn; column++ ) {
+                    write( raster, column, row );
+                }
+                // rb: don't call dispose, it will cause dead locks, because dispose it self can call this method.
+                // RasterCache.dispose();
             }
+            this.leaveStreamOpen( false );
+            this.closeWriteStream();
+            this.closeReadStream();
         }
-        writeMetadataFile( options );
+        if ( options != null ) {
+            writeMetadataFile( options );
+        }
     }
 
     /**
@@ -330,9 +364,10 @@ public class GridWriter implements RasterWriter {
             if ( this.writeStream == null ) {
                 if ( !gridFile.exists() ) {
                     // the file was deleted
+                    System.out.println( "Creating new file." );
                     gridFile.createNewFile();
                 }
-                this.writeStream = new FileOutputStream( gridFile );
+                this.writeStream = new RandomAccessFile( gridFile, "rw" );
             }
             return writeStream.getChannel();
         }
@@ -344,8 +379,10 @@ public class GridWriter implements RasterWriter {
      * @param yesNo
      */
     protected void leaveStreamOpen( boolean yesNo ) {
-        this.leaveStreamOpen = yesNo;
+        // System.out.println( "trying enter yesno: " + Thread.currentThread().getName() );
         synchronized ( tileData ) {
+            this.leaveStreamOpen = yesNo;
+            // System.out.println( "entered yesno: " + Thread.currentThread().getName() );
             if ( !this.leaveStreamOpen ) {
                 try {
                     closeWriteStream();
@@ -353,6 +390,7 @@ public class GridWriter implements RasterWriter {
                     LOG.debug( "Could not close stream because: {}", e.getLocalizedMessage(), e );
                 }
             }
+            // System.out.println( "leaving yesno: " + Thread.currentThread().getName() );
         }
     }
 
@@ -369,16 +407,18 @@ public class GridWriter implements RasterWriter {
     private final void closeReadStream()
                             throws IOException {
         synchronized ( tileData ) {
-            if ( this.readStream != null && !this.leaveStreamOpen ) {
+            if ( this.readStream != null /* && !this.leaveStreamOpen */) {
                 this.readStream.close();
                 this.readStream = null;
             }
         }
     }
 
-    private int calcFilePosition( int column, int row ) {
-        int tileId = getTileId( column, row );
-        int tileInBlob = tileId % tilesInFile;
+    private long calcFilePosition( int column, int row ) {
+        long tileId = getTileId( column, row );
+        // System.out.println( "row: " + row + ", col: " + column + " is tile in file: " + tileId );
+        long tileInBlob = tileId % tilesInFile;
+        // System.out.println( "tile in blob: " + tileInBlob );
         return tileInBlob * bytesPerTile;
     }
 
@@ -386,8 +426,8 @@ public class GridWriter implements RasterWriter {
                             throws IOException {
         synchronized ( tileData ) {
             ByteBuffer buffer = tileData.getByteBuffer();
-            buffer.rewind();
-            int position = calcFilePosition( column, row );
+            buffer.clear();
+            long position = calcFilePosition( column, row );
             // transfer the data from the blob
             FileChannel channel = getReadChannel();
             channel.position( position );
@@ -395,6 +435,8 @@ public class GridWriter implements RasterWriter {
             closeReadStream();
             buffer.rewind();
             return tileData;
+            // return new PixelInterleavedRasterData( new RasterRect( 0, 0, tileRasterWidth, tileRasterHeight ),
+            // tileRasterWidth, tileRasterHeight, this.dataInfo );
         }
 
     }
@@ -409,43 +451,53 @@ public class GridWriter implements RasterWriter {
      * @return the tile's envelope
      */
     protected Envelope getTileEnvelope( int column, int row ) {
-        double xOffset = column * tileWidth;
-        double yOffset = ( rows - row - 1 ) * tileHeight;
+        int xOffset = column * tileRasterWidth;
+        int yOffset = row * tileRasterHeight;
 
-        double minX = envelope.getMin().get0() + xOffset;
-        double minY = envelope.getMin().get1() + yOffset;
-        double maxX = minX + tileWidth;
-        double maxY = minY + tileHeight;
+        RasterRect rect = new RasterRect( xOffset, yOffset, tileRasterWidth, tileRasterHeight );
+        return this.geoRef.getEnvelope( rect, null );
 
-        return geomFac.createEnvelope( minX, minY, maxX, maxY, envelope.getCoordinateSystem() );
+        // double xOffset = column * tileWidth;
+        // double yOffset = ( rows - row - 1 ) * tileHeight;
+        //
+        // double minX = envelope.getMin().get0() + xOffset;
+        // double minY = envelope.getMin().get1() + yOffset;
+        // double maxX = minX + tileWidth;
+        // double maxY = minY + tileHeight;
+        //
+        // return geomFac.createEnvelope( minX, minY, maxX, maxY, envelope.getCoordinateSystem() );
     }
 
     private int getColumn( double x ) {
-        double dx = x - envelope.getMin().get0();
-        int column = (int) Math.floor( ( columns * dx ) / envelope.getSpan0() );
-        if ( column < 0 ) {
-            // signal outside
-            return -1;
-        }
-        if ( column > columns - 1 ) {
-            // signal outside
-            return columns;
-        }
-        return column;
+        int[] rasterCoordinate = this.geoRef.getRasterCoordinate( x, 0 );
+        return Math.min( columns, Math.max( -1, ( rasterCoordinate[0] / tileRasterWidth ) ) );
+        // double dx = x - envelope.getMin().get0();
+        // int column = (int) Math.floor( ( columns * dx ) / envelope.getSpan0() );
+        // if ( column < 0 ) {
+        // // signal outside
+        // return -1;
+        // }
+        // if ( column > columns - 1 ) {
+        // // signal outside
+        // return columns;
+        // }
+        // return column;
     }
 
     private int getRow( double y ) {
-        double dy = y - envelope.getMin().get1();
-        int row = (int) Math.floor( ( ( rows * ( envelope.getSpan1() - dy ) ) / envelope.getSpan1() ) );
-        if ( row < 0 ) {
-            // signal outside
-            return -1;
-        }
-        if ( row > rows - 1 ) {
-            // signal outside
-            return rows;
-        }
-        return row;
+        int[] rasterCoordinate = this.geoRef.getRasterCoordinate( 0, y );
+        return Math.min( rows, Math.max( -1, ( rasterCoordinate[1] / tileRasterHeight ) ) );
+        // double dy = y - envelope.getMin().get1();
+        // int row = (int) Math.floor( ( ( rows * ( envelope.getSpan1() - dy ) ) / envelope.getSpan1() ) );
+        // if ( row < 0 ) {
+        // // signal outside
+        // return -1;
+        // }
+        // if ( row > rows - 1 ) {
+        // // signal outside
+        // return rows;
+        // }
+        // return row;
     }
 
     /**
@@ -497,7 +549,7 @@ public class GridWriter implements RasterWriter {
             throw new IllegalArgumentException( "Wrong number of bytes." );
         }
         synchronized ( tileData ) {
-            int position = calcFilePosition( column, row );
+            long position = calcFilePosition( column, row );
             FileChannel fileChannel = getWriteChannel();
             FileLock lock = fileChannel.lock( position, position + bytesPerTile, false );
             fileChannel.position( position );
@@ -517,36 +569,77 @@ public class GridWriter implements RasterWriter {
      */
     private void write( AbstractRaster raster, int column, int row )
                             throws IOException {
+        String name = Thread.currentThread().getName();
+        // System.out.println( name + ": " + row + ", " + column );
         Envelope tileEnvelope = getTileEnvelope( column, row );
-        RasterGeoReference tileRasterReference = RasterGeoReference.create( OriginLocation.OUTER, tileEnvelope,
-                                                                            tileRasterWidth, tileRasterHeight );
-        SimpleRaster subRaster = raster.getSubRaster( tileEnvelope ).getAsSimpleRaster();
-        RasterRect newDataPosition = tileRasterReference.convertEnvelopeToRasterCRS( subRaster.getEnvelope() );
+        // System.out.println( "tile env: " + tileEnvelope );
+        RasterGeoReference tileRasterReference = this.geoRef.createRelocatedReference( tileEnvelope );
+        // System.out.println( "tile raster ref: " + tileRasterReference );
+        if ( tileEnvelope.intersects( raster.getEnvelope() ) ) {
+            // RasterGeoReference tileRasterReference = RasterGeoReference.create( OriginLocation.OUTER,
+            // tileEnvelope,
+            // tileRasterWidth, tileRasterHeight );
+            SimpleRaster subRaster = raster.getSubRaster( tileEnvelope ).getAsSimpleRaster();
+            // System.out.println( "subraster ref: " + subRaster );
+            RasterRect newDataPosition = tileRasterReference.convertEnvelopeToRasterCRS( subRaster.getEnvelope() );
+            // System.out.println( "new Data position: " + newDataPosition );
+            // RasterFactory.saveRasterToFile( raster, new File( "/tmp/" + Thread.currentThread().getName() + ".tif" )
+            // );
+            synchronized ( tileData ) {
+                // read in the data.
+                ByteBufferRasterData fileData = readData( column, row );
 
-        synchronized ( tileData ) {
-            // read in the data.
-            ByteBufferRasterData fileData = readData( column, row );
-            // override the new data with the old data.
-            fileData.setSubset( newDataPosition.x, newDataPosition.y, newDataPosition.width, newDataPosition.height,
-                                subRaster.getRasterData() );
-            // try {
-            // RasterFactory.saveRasterToFile( subRaster, new File( "/tmp/subraster_" + row + "," + column + ".png" ) );
-            // ImageIO.write( RasterFactory.rasterDataToImage( fileData ), "png", new File( "/tmp/filedata_" + row
-            // + "," + column + ".png" ) );
-            // } catch ( IOException e ) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
+                // BufferedImage image = RasterFactory.rasterDataToImage( fileData );
+                // ImageIO.write( image, "tif", new File( "/tmp/from_grid_before_writing_"
+                // + Thread.currentThread().getName() + ".tif" ) );
 
-            int position = calcFilePosition( column, row );
-            FileChannel fileChannel = getWriteChannel();
-            FileLock lock = fileChannel.lock( position, position + bytesPerTile, false );
-            fileChannel.position( position );
-            ByteBuffer buffer = fileData.getByteBuffer();
-            buffer.rewind();
-            fileChannel.write( buffer );
-            lock.release();
-            closeWriteStream();
+                // override the new data with the old data.
+                // fileData.setSubset( newDataPosition.x, newDataPosition.y, newDataPosition.width,
+                // newDataPosition.height,
+                // subRaster.getRasterData() );
+                fileData.setSubset( 0, 0, newDataPosition.width, newDataPosition.height, subRaster.getRasterData() );
+
+                // image = RasterFactory.rasterDataToImage( subRaster.getRasterData() );
+                // ImageIO.write( image, "tif", new File( "/tmp/from_grid_original_" + Thread.currentThread().getName()
+                // + ".tif" ) );
+
+                // image = RasterFactory.rasterDataToImage( fileData );
+                // ImageIO.write( image, "tif", new File( "/tmp/from_grid_after_subset_"
+                // + Thread.currentThread().getName() + ".tif" ) );
+
+                // // try {
+                // RasterFactory.saveRasterToFile( subRaster, new File( "/tmp/subraster_" + row + "," + column + ".png"
+                // ) );
+                // ImageIO.write( RasterFactory.rasterDataToImage( fileData ), "png", new File( "/tmp/filedata_" + row
+                // + "," + column + ".png" ) );
+                // } catch ( IOException e ) {
+                // // TODO Auto-generated catch block
+                // e.printStackTrace();
+                // }
+
+                long position = calcFilePosition( column, row );
+                // System.out.println( "position in file: " + position );
+                FileChannel fileChannel = getWriteChannel();
+                FileLock lock = fileChannel.lock( position, position + bytesPerTile, false );
+                fileChannel.position( position );
+                ByteBuffer buffer = fileData.getByteBuffer();
+                buffer.rewind();
+                // byte[] first4 = new byte[4];
+                // buffer.get( first4 );
+                // System.out.println( "first four: " + Integer.toHexString( first4[0] & 0xff ) + " "
+                // + Integer.toHexString( first4[1] & 0xff ) + " "
+                // + Integer.toHexString( first4[2] & 0xff ) + " "
+                // + Integer.toHexString( first4[3] & 0xff ) + " " );
+                buffer.rewind();
+                fileChannel.write( buffer );
+                lock.release();
+                closeWriteStream();
+
+                // fileData = readData( column, row );
+                // image = RasterFactory.rasterDataToImage( fileData );
+                // ImageIO.write( image, "tif", new File( "/tmp/from_grid_after_writing_"
+                // + Thread.currentThread().getName() + ".tif" ) );
+            }
         }
     }
 }
