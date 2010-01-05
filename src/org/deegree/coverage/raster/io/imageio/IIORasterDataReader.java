@@ -373,25 +373,27 @@ public class IIORasterDataReader implements RasterDataReader {
         ImageReadParam rp = new ImageReadParam();
         Rectangle dataRect = new Rectangle( 0, 0, getWidth(), getHeight() );
         Rectangle intersection = dataRect.intersection( new Rectangle( rect.x, rect.y, rect.width, rect.height ) );
-        rp.setSourceRegion( intersection );
-        try {
-            BufferedImage img = null;
-            synchronized ( reader ) {
-                img = reader.read( 0, rp );
-            }
-            Raster raster = img.getRaster();
-            if ( resultBuffer == null ) {
-                resultBuffer = ByteBufferPool.allocate( getRasterDataInfo().bands * getRasterDataInfo().dataSize
-                                                        * intersection.width * intersection.height, false );
-            }
+        if ( intersection.width > 0 && intersection.height > 0 ) {
+            rp.setSourceRegion( intersection );
+            try {
+                BufferedImage img = null;
+                synchronized ( reader ) {
+                    img = reader.read( 0, rp );
+                }
+                Raster raster = img.getRaster();
+                if ( resultBuffer == null ) {
+                    resultBuffer = ByteBufferPool.allocate( getRasterDataInfo().bands * getRasterDataInfo().dataSize
+                                                            * intersection.width * intersection.height, false );
+                }
 
-            // DataBuffer buffer = raster.getDataBuffer();
-            int imgDataType = raster.getSampleModel().getDataType();
-            DataType type = DataType.fromDataBufferType( imgDataType );
-            RasterFactory.rasterToByteBuffer( raster, 0, 0, img.getWidth(), img.getHeight(), type, resultBuffer );
-            result = new BufferResult( new RasterRect( intersection ), resultBuffer );
-        } catch ( IOException e ) {
-            LOG.debug( "Could not read the given rect: " + rect + " because: " + e.getLocalizedMessage(), e );
+                // DataBuffer buffer = raster.getDataBuffer();
+                int imgDataType = raster.getSampleModel().getDataType();
+                DataType type = DataType.fromDataBufferType( imgDataType );
+                RasterFactory.rasterToByteBuffer( raster, 0, 0, img.getWidth(), img.getHeight(), type, resultBuffer );
+                result = new BufferResult( new RasterRect( intersection ), resultBuffer );
+            } catch ( IOException e ) {
+                LOG.debug( "Could not read the given rect: " + rect + " because: " + e.getLocalizedMessage(), e );
+            }
         }
         return result;
     }

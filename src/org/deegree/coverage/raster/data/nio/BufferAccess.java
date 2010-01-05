@@ -239,8 +239,10 @@ public class BufferAccess {
                 if ( reader != null ) {
                     try {
                         BufferResult dataResult = reader.read( maxViewData, data );
-                        data = dataResult.getResult();
-                        data.rewind();
+                        if ( dataResult != null ) {
+                            data = dataResult.getResult();
+                            data.rewind();
+                        }
                         // RasterRect rect = dataResult.getRect();
                         // lineStride = pixelStride * rect.width;
                     } catch ( IOException e ) {
