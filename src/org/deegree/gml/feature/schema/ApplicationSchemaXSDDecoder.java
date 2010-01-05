@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/core/trunk/src/org/deegree/gml/feature/schema/ApplicationSchemaXSDDecoder.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -98,9 +98,9 @@ import org.slf4j.LoggerFactory;
  * @see ApplicationSchema
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 21259 $, $Date: 2009-12-04 14:06:58 +0100 (Fr, 04 Dez 2009) $
+ * @version $Revision$, $Date$
  */
 public class ApplicationSchemaXSDDecoder {
 
@@ -126,7 +126,7 @@ public class ApplicationSchemaXSDDecoder {
 
     private final Map<String, String> nsToPrefix = new HashMap<String, String>();
 
-    private static int prefixIndex = 0;
+    private int prefixIndex = 0;
 
     /**
      * @param gmlVersion
@@ -142,7 +142,6 @@ public class ApplicationSchemaXSDDecoder {
     public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, Map<String, String> namespaceHints, String... schemaUrls )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
-
         if ( namespaceHints != null ) {
             for ( Entry<String, String> prefixToNs : namespaceHints.entrySet() ) {
                 nsToPrefix.put( prefixToNs.getValue(), prefixToNs.getKey() );
@@ -381,7 +380,8 @@ public class ApplicationSchemaXSDDecoder {
             switch ( typeDef.getTypeCategory() ) {
             case XSTypeDefinition.SIMPLE_TYPE: {
 
-                QName typeName = typeDef.getName() != null ? new QName( typeDef.getNamespace(), typeDef.getName() ) : null;
+                QName typeName = typeDef.getName() != null ? new QName( typeDef.getNamespace(), typeDef.getName() )
+                                                          : null;
                 pt = new SimplePropertyType<Object>( ptName, minOccurs, maxOccurs,
                                                      getPrimitiveType( (XSSimpleType) typeDef ),
                                                      elementDecl.getAbstract(), ptSubstitutions, typeName );
@@ -469,7 +469,7 @@ public class ApplicationSchemaXSDDecoder {
                                                   adapter.getRootElement(),
                                                   new XPath( "xs:appinfo/adv:referenzierteCodeList/text()", nsContext ),
                                                   null );
-            if (codeListId != null) {
+            if ( codeListId != null ) {
                 codeListId = codeListId.trim();
             }
         }
