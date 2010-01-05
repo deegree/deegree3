@@ -736,4 +736,9 @@ public interface RasterData {
     public void setSubset( int x, int y, int width, int height, int dstBand, RasterData sourceRaster, int srcBand,
                            int xOffset, int yOffset );
 
+    /**
+     * Try to dispose all allocated memory of this data object.
+     */
+    public void dispose();
+
 }
