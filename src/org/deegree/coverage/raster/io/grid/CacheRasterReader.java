@@ -789,6 +789,11 @@ public class CacheRasterReader extends GridFileReader {
         return result;
     }
 
+    @Override
+    public void dispose() {
+        this.dispose( false );
+    }
+
     /**
      * Causes the cachefile to be written (if existing) and the memory buffers to be set to null.
      * 

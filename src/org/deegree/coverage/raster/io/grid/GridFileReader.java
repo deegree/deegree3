@@ -83,7 +83,7 @@ public class GridFileReader extends GridReader {
      * An empty constructor used in the {@link GridRasterIOProvider}, to a location in time where no information is
      * known yet.
      */
-    GridFileReader() {
+    public GridFileReader() {
         // empty constructor, no values are known yet (GridRasterIOProvider).
     }
 
@@ -294,7 +294,7 @@ public class GridFileReader extends GridReader {
 
             // the tile id inside the file.
             int tileId = getTileId( tileColumn, tileRow );
-            int filePos = (int) ( ( tileId % getTilesPerBlob() ) * getBytesPerTile() );
+            long filePos = ( ( tileId % getTilesPerBlob() ) * getBytesPerTile() );
 
             // the size of one line of the intersection.
             int lineSize = inter.width * sampleSize;
@@ -315,7 +315,7 @@ public class GridFileReader extends GridReader {
             // limit of the buffer.
             int limit = 0;
             // the current file position.
-            int filePosition = 0;
+            long filePosition = 0;
             // loop over the intersection rows and put them into the right place in the bytebuffer.
             // File format is as follows, tile0_0[0/tilewidth*tileheight*samplesize],
             // tile0_1[prevtilepos/tilewidth*tileheight*samplesize], so first get file position of the tile, and add
@@ -343,6 +343,10 @@ public class GridFileReader extends GridReader {
     @Override
     public String getDataLocationId() {
         return dataLocationId;
+    }
+
+    public void dispose() {
+        // nothing to do.
     }
 
 }
