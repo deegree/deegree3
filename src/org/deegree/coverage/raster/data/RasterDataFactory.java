@@ -51,6 +51,7 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.grid.CacheRasterReader;
+import org.deegree.coverage.raster.io.grid.GridReader;
 
 /**
  * This class creates RasterData objects with a given interleaving type.
@@ -273,6 +274,20 @@ public class RasterDataFactory {
     }
 
     /**
+     * Encapsulates a Grid of Raster data as a new Raster data object. This tiled raster data object cascades the pixel
+     * operations for the underlying raster data grid.
+     * 
+     * @param reader
+     *            to be used.
+     * @param options
+     *            holding information on the io settings.
+     * @return a new TiledRasterData.
+     */
+    public static TiledRasterData createTiledRasterData( GridReader reader, RasterIOOptions options ) {
+        return new TiledRasterData( reader );
+    }
+
+    /**
      * Constructor wrapper.
      * 
      * @param noData
@@ -285,4 +300,5 @@ public class RasterDataFactory {
                                              InterleaveType interleaveType ) {
         return new RasterDataInfo( noData, bands, dataType, interleaveType );
     }
+
 }
