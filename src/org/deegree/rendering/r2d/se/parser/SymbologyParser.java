@@ -52,6 +52,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.skipElement;
 import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.deegree.rendering.r2d.styling.components.UOM.Foot;
@@ -1388,7 +1389,7 @@ public class SymbologyParser {
                         }
                     }, contn );
                 } else if ( name.equals( "font-color" ) ) {
-                    in.getElementText();
+                    skipElement( in );
                     LOG.warn( "The non-standard font-color Svg/CssParameter is not supported any more. Use a standard Fill element instead." );
                 } else {
                     in.getElementText();
