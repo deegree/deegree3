@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
-import java.util.Arrays;
-
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.container.MemoryRasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
@@ -180,10 +178,7 @@ public class SimpleRaster extends AbstractRaster {
 
     @Override
     public SimpleRaster getSubRaster( Envelope envelope, BandType[] bands ) {
-        if ( getEnvelope().equals( envelope )
-             && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
-            return this;
-        }
+        //rb: testing for envelope equality can lead to a memory leak, because the memory can not be freed.
         RasterRect rasterRect = getRasterReference().convertEnvelopeToRasterCRS( envelope );
         RasterGeoReference rasterReference = getRasterReference().createRelocatedReference( envelope );
         // RasterData view = getReadOnlyRasterData().getSubset( rasterRect, bands );
@@ -284,5 +279,14 @@ public class SimpleRaster extends AbstractRaster {
     @Override
     public boolean isSimpleRaster() {
         return true;
+    }
+
+    /**
+     * Cleans up all used memory buffers.
+     */
+    public void dispose() {
+        RasterData data = this.getRasterData();
+        data.dispose();
+
     }
 }
