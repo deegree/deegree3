@@ -38,6 +38,7 @@
 
 package org.deegree.coverage.raster.data.info;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
@@ -69,6 +70,8 @@ public class RasterDataInfo {
 
     /** The byte size of a single band unit */
     public final int dataSize;
+
+    private final ByteBuffer noDataWrapper;
 
     /**
      * 
@@ -103,6 +106,7 @@ public class RasterDataInfo {
         } else {
             this.noDataPixel = noDataPixel;
         }
+        this.noDataWrapper = ByteBuffer.wrap( this.noDataPixel );
     }
 
     /**
@@ -195,13 +199,118 @@ public class RasterDataInfo {
     }
 
     /**
+     * Returns the no data values for the given band. If the band is outside an empty array is returned. If the result
+     * is <code>null</code> or is to small for the datasize, a new allocated byte array will be returned. Otherwise the
+     * no data value for the requested band is copied at position 0 of the result array.
+     * 
+     * @param band
+     *            to get the value for.
+     * @param result
+     *            to put the value in.
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
+     */
+    public byte[] getNoDataSample( int band, byte[] result ) {
+        if ( result == null || result.length < dataSize ) {
+            result = new byte[dataSize];
+        }
+        if ( band > bands ) {
+            return result;
+        }
+        System.arraycopy( noDataPixel, band * dataSize, result, 0, dataSize );
+        return result;
+    }
+
+    /**
+     * Returns the no data value for the given band, if the band is outside the number of bands or the given type is not
+     * of {@link DataType#BYTE} 0 will be returned.
+     * 
+     * @param band
+     *            to get the no data value for.
+     * @return the no data value for the given band.
+     */
+    public byte getByteNoDataForBand( int band ) {
+        byte result = 0;
+        if ( band < this.bands ) {
+            result = noDataPixel[band];
+        }
+        return result;
+    }
+
+    /**
+     * Returns the no data value for the given band, if the band is outside the number of bands or the given type is not
+     * of {@link DataType#SHORT} or {@link DataType#USHORT} 0 will be returned.
+     * 
+     * @param band
+     *            to get the no data value for.
+     * @return the no data value for the given band.
+     */
+    public short getShortNoDataForBand( int band ) {
+        short result = 0;
+        if ( band < this.bands && ( this.dataType == DataType.SHORT || this.dataType == DataType.USHORT ) ) {
+            result = noDataWrapper.getShort( band * dataSize );
+            if ( this.dataType == DataType.USHORT ) {
+                result *= 0xFFFF;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the no data value for the given band, if the band is outside the number of bands or the given type is not
+     * of {@link DataType#INT} 0 will be returned.
+     * 
+     * @param band
+     *            to get the no data value for.
+     * @return the no data value for the given band.
+     */
+    public int getIntNoDataForBand( int band ) {
+        int result = 0;
+        if ( band < this.bands && this.dataType == DataType.INT ) {
+            result = noDataWrapper.getInt( band * dataSize );
+        }
+        return result;
+    }
+
+    /**
+     * Returns the no data value for the given band, if the band is outside the number of bands or the given type is not
+     * of {@link DataType#FLOAT} 0 will be returned.
+     * 
+     * @param band
+     *            to get the no data value for.
+     * @return the no data value for the given band.
+     */
+    public float getFloatNoDataForBand( int band ) {
+        float result = 0;
+        if ( band < this.bands && this.dataType == DataType.FLOAT ) {
+            result = noDataWrapper.getFloat( band * dataSize );
+        }
+        return result;
+    }
+
+    /**
+     * Returns the no data value for the given band, if the band is outside the number of bands or the given type is not
+     * of {@link DataType#DOUBLE} 0 will be returned.
+     * 
+     * @param band
+     *            to get the no data value for.
+     * @return the no data value for the given band.
+     */
+    public double getDoubleNoDataForBand( int band ) {
+        double result = 0;
+        if ( band < this.bands && this.dataType == DataType.DOUBLE ) {
+            result = noDataWrapper.getDouble( band * dataSize );
+        }
+        return result;
+    }
+
+    /**
      * Sets the no data values for this raster's bands
      * 
      * @param values
      *            an array with the null values
      */
     public void setNoDataPixel( byte[] values ) {
-        if ( values.length % dataSize != 0 ) {
+        if ( values == null || values.length % dataSize != 0 ) {
             LOG.error( "invalid null pixel values" );
             return;
         }
