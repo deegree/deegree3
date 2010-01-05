@@ -74,8 +74,8 @@ public class RasterCache {
      * Default cache dir if no directory was given.
      */
     public static final File DEFAULT_CACHE_DIR = new File( System.getProperty( "java.io.tmpdir" ) );
-         
-//    public static final File DEFAULT_CACHE_DIR = new File( "/media/storage/tmp/" );
+
+    // public static final File DEFAULT_CACHE_DIR = new File( "/media/storage/tmp/" );
 
     /**
      * Standard name for a deegree cache file.
@@ -147,6 +147,9 @@ public class RasterCache {
             }
         } else {
             LOG.debug( "Not adding reader to cache, because it is was null." );
+        }
+        if ( LOG.isDebugEnabled() && result != null && reader != null ) {
+            LOG.debug( "Adding reader to cache {} with id: {}.", reader, reader.getDataLocationId() );
         }
         // System.out.println( "size: " + cache.size() );
         return result;
@@ -427,7 +430,7 @@ public class RasterCache {
                 }
             }
         }
-        LOG.info( "Disposing allocated {} MB on the heap.",
+        LOG.debug( "Disposing allocated {} MB on the heap.",
                   ( Math.round( ( allocatedMem / ( 1024 * 1024d ) ) * 100d ) / 100d ) );
 
     }
@@ -436,7 +439,6 @@ public class RasterCache {
      * 
      */
     private static void output() {
-        System.out.println( "cache siez: " + cache.size() );
         int i = 0;
         Iterator<CacheRasterReader> it = cache.iterator();
         long allocatedMem = 0;
