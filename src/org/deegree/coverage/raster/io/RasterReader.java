@@ -95,34 +95,37 @@ public interface RasterReader {
     public Set<String> getSupportedFormats();
 
     /**
-     * @return
+     * @return true if a cache file should be created for the read raster.
      */
     public boolean shouldCreateCacheFile();
 
+    /**
+     * @return the file from which the raster was read.
+     */
     public File file();
 
     /**
-     * @return
+     * @return the width (in pixels) of the read raster 
      */
     public int getWidth();
 
     /**
-     * @return
+     * @return the height (in pixels) of the read raster
      */
     public int getHeight();
 
     /**
-     * @return
+     * @return the geo reference of the read raster
      */
     public RasterGeoReference getGeoReference();
 
     /**
-     * @param rect
-     * @param result
-     * @return
+     * @param rect to read.
+     * @param result to store the result in
+     * @return the read buffer and its domain
      * @throws IOException
      */
-    public BufferResult read( RasterRect rect, ByteBuffer buffer )
+    public BufferResult read( RasterRect rect, ByteBuffer result )
                             throws IOException;
 
     /**
@@ -141,5 +144,10 @@ public interface RasterReader {
      * @return a String which identifies this reader for used the data source, for example the file name, or an url.
      */
     public String getDataLocationId();
+
+    /**
+     * Signals the reader that it should try to dispose all in memory data.
+     */
+    public void dispose();
 
 }
