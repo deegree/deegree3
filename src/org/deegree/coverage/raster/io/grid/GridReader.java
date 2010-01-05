@@ -151,22 +151,28 @@ public abstract class GridReader implements RasterReader {
     /**
      * Calculates the envelope for a tile at a given position in the grid.
      * 
-     * @param columnId
+     * @param column
      *            column id, must be in the range [0 ... #columns - 1]
-     * @param rowId
+     * @param row
      *            row id, must be in the range [0 ... #rows - 1]
      * @return the tile's envelope
      */
-    protected Envelope getTileEnvelope( int columnId, int rowId ) {
-        double xOffset = columnId * tileWidth;
-        double yOffset = ( infoFile.rows() - rowId - 1 ) * tileHeight;
+    protected Envelope getTileEnvelope( int column, int row ) {
+        int xOffset = column * infoFile.getTileRasterWidth();
+        int yOffset = row * infoFile.getTileRasterHeight();
 
-        double minX = envelope.getMin().get0() + xOffset;
-        double minY = envelope.getMin().get1() + yOffset;
-        double maxX = minX + tileWidth;
-        double maxY = minY + tileHeight;
-
-        return geomFac.createEnvelope( minX, minY, maxX, maxY, envelope.getCoordinateSystem() );
+        RasterRect rect = new RasterRect( xOffset, yOffset, infoFile.getTileRasterWidth(),
+                                          infoFile.getTileRasterHeight() );
+        return infoFile.getGeoReference().getEnvelope( rect, null );
+        // double xOffset = columnId * tileWidth;
+        // double yOffset = ( infoFile.rows() - rowId - 1 ) * tileHeight;
+        //
+        // double minX = envelope.getMin().get0() + xOffset;
+        // double minY = envelope.getMin().get1() + yOffset;
+        // double maxX = minX + tileWidth;
+        // double maxY = minY + tileHeight;
+        //
+        // return geomFac.createEnvelope( minX, minY, maxX, maxY, envelope.getCoordinateSystem() );
     }
 
     /**
@@ -236,12 +242,26 @@ public abstract class GridReader implements RasterReader {
 
     @Override
     public int getHeight() {
-        return infoFile.rows();
+        return this.rasterRect.height;
     }
 
     @Override
     public int getWidth() {
-        return infoFile.columns();
+        return this.rasterRect.width;
+    }
+
+    /**
+     * @return the width of a tile in raster coordinates.
+     */
+    public int getTileRasterWidth() {
+        return this.infoFile.getTileRasterWidth();
+    }
+
+    /**
+     * @return the height of a tile in raster coordinates.
+     */
+    public int getTileRasterHeight() {
+        return this.infoFile.getTileRasterHeight();
     }
 
     @Override
@@ -282,8 +302,8 @@ public abstract class GridReader implements RasterReader {
         if ( row < 0 ) {
             row = -1;
         }
-        if ( row >= infoFile.columns() ) {
-            row = infoFile.columns();
+        if ( row >= infoFile.rows() ) {
+            row = infoFile.rows();
         }
         return row;
     }
@@ -473,6 +493,11 @@ public abstract class GridReader implements RasterReader {
         @Override
         public String getDataLocationId() {
             return originalReader.getDataLocationId();
+        }
+
+        @Override
+        public void dispose() {
+            originalReader.dispose();
         }
     }
 
