@@ -233,4 +233,11 @@ public class IIORasterReader implements RasterReader {
     public String getDataLocationId() {
         return dataLocationId;
     }
+
+    @Override
+    public void dispose() {
+        if ( reader != null ) {
+            reader.dispose();
+        }
+    }
 }

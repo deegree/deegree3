@@ -460,4 +460,14 @@ public class IIORasterDataReader implements RasterDataReader {
         }
         return result;
     }
+
+    /**
+     * 
+     */
+    public void dispose() {
+        if ( reader != null ) {
+            reader.dispose();
+        }
+
+    }
 }
