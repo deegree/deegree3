@@ -418,4 +418,9 @@ public class XYZReader implements RasterReader {
     public String getDataLocationId() {
         return dataLocationId;
     }
+
+    @Override
+    public void dispose() {
+        // nothing to do yet.
+    }
 }
