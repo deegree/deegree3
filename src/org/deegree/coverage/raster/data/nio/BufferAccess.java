@@ -127,13 +127,14 @@ public class BufferAccess {
     /**
      * @param view2
      */
-    private void createMaxView( DataView viewOnData ) {
-        RasterRect origData = new RasterRect( 0, 0, maxDataWidth, maxDataHeight );
-        maxViewData = RasterRect.intersection( origData, viewOnData );
-        if ( maxViewData == null ) {
-            maxViewData = new RasterRect( 0, 0, 0, 0 );
-        }
-        this.dataInfo = viewOnData.dataInfo;
+    private void createMaxView( RasterRect viewOnData ) {
+        // RasterRect origData = new RasterRect( 0, 0, maxDataWidth, maxDataHeight );
+        // maxViewData = RasterRect.intersection( origData, viewOnData );
+        // if ( maxViewData == null ) {
+        // maxViewData = new RasterRect( 0, 0, 0, 0 );
+        // }
+        maxViewData = viewOnData;
+        // this.dataInfo = viewOnData.dataInfo;
         this.maxDataHeight = viewOnData.height;
         this.maxDataWidth = viewOnData.width;
         // the data was freshly set, the line stride must be recalculated.
@@ -305,7 +306,7 @@ public class BufferAccess {
      * @param dataRect
      *            defining the width, height and offset for the data.
      */
-    void setByteBuffer( ByteBuffer newData, DataView dataRect ) {
+    void setByteBuffer( ByteBuffer newData, RasterRect dataRect ) {
         synchronized ( LOCK ) {
             if ( newData != null ) {
                 createMaxView( dataRect );
@@ -342,6 +343,13 @@ public class BufferAccess {
     }
 
     /**
+     * @return the domain of validity of the bytebuffer.
+     */
+    protected RasterRect getBytebufferDomain() {
+        return maxViewData;
+    }
+
+    /**
      * @return true if this BufferAccess instantiated it's buffer already.
      */
     protected boolean hasDataBuffer() {
@@ -361,5 +369,19 @@ public class BufferAccess {
      */
     protected RasterRect getDataRectangle() {
         return maxViewData;
+    }
+
+    /**
+     * Set the memory buffer to null and call dispose on the reader as well.
+     */
+    public void dispose() {
+        synchronized ( LOCK ) {
+            if ( data != null ) {
+                data = null;
+            }
+            if ( reader != null ) {
+                reader.dispose();
+            }
+        }
     }
 }
