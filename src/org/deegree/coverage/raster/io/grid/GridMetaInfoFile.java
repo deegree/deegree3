@@ -166,7 +166,8 @@ public class GridMetaInfoFile {
         RasterGeoReference worldFile = WorldFileAccess.readWorldFile( readerOnInfoFile, options );
         if ( worldFile != null ) {
             // we are outer.
-            worldFile.createRelocatedReference( OriginLocation.OUTER );
+            worldFile = worldFile.createRelocatedReference( OriginLocation.OUTER );
+            // worldFile.createRelocatedReference( OriginLocation.OUTER );
         }
 
         // read grid info
