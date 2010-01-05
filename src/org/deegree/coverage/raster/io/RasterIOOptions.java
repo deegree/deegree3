@@ -381,13 +381,13 @@ public class RasterIOOptions {
             }
 
             if ( get( OPT_FORMAT ) == null ) {
-                otherOptions.get( OPT_FORMAT );
+                add( OPT_FORMAT, otherOptions.get( OPT_FORMAT ) );
             }
             if ( getRasterGeoReference() == null ) {
                 setRasterGeoReference( otherOptions.getRasterGeoReference() );
             }
             setNoData( otherOptions.getNoDataValue() );
-            if ( getRasterOriginLocation() != OriginLocation.CENTER ) {
+            if ( getRasterOriginLocation() == OriginLocation.CENTER ) {
                 add( GEO_ORIGIN_LOCATION, otherOptions.getRasterOriginLocation().name() );
             }
             if ( getCRS() == null ) {
