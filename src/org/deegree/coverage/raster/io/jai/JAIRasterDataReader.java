@@ -215,4 +215,11 @@ public class JAIRasterDataReader implements RasterDataReader {
         return file;
     }
 
+    /**
+     * 
+     */
+    public void dispose() {
+        // nothing to do.
+    }
+
 }
