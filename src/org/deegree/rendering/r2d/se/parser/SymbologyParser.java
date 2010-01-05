@@ -1030,7 +1030,7 @@ public class SymbologyParser {
                     baseOrEvaluated.stroke = pair.first;
 
                     if ( pair.second != null ) {
-                        contn = new Continuation<PolygonStyling>() {
+                        contn = new Continuation<PolygonStyling>( contn ) {
                             @Override
                             public void updateStep( PolygonStyling base, MatchableObject f ) {
                                 pair.second.evaluate( base.stroke, f );
@@ -1047,7 +1047,7 @@ public class SymbologyParser {
                     baseOrEvaluated.fill = fillPair.first;
 
                     if ( fillPair.second != null ) {
-                        contn = new Continuation<PolygonStyling>() {
+                        contn = new Continuation<PolygonStyling>( contn ) {
                             @Override
                             public void updateStep( PolygonStyling base, MatchableObject f ) {
                                 fillPair.second.evaluate( base.fill, f );
