@@ -190,7 +190,7 @@ public class SymbologyParser {
                 if ( pair != null ) {
                     base.graphic = pair.first;
                     if ( pair.second != null ) {
-                        contn = new Continuation<Fill>() {
+                        contn = new Continuation<Fill>( contn ) {
                             @Override
                             public void updateStep( Fill base, MatchableObject f ) {
                                 pair.second.evaluate( base.graphic, f );
@@ -324,7 +324,7 @@ public class SymbologyParser {
                 if ( pair != null ) {
                     base.fill = pair.first;
                     if ( pair.second != null ) {
-                        contn = new Continuation<Stroke>() {
+                        contn = new Continuation<Stroke>( contn ) {
                             @Override
                             public void updateStep( Stroke base, MatchableObject f ) {
                                 pair.second.evaluate( base.fill, f );
@@ -347,7 +347,7 @@ public class SymbologyParser {
                         if ( pair != null ) {
                             base.stroke = pair.first;
                             if ( pair.second != null ) {
-                                contn = new Continuation<Stroke>() {
+                                contn = new Continuation<Stroke>( contn ) {
                                     @Override
                                     public void updateStep( Stroke base, MatchableObject f ) {
                                         pair.second.evaluate( base.stroke, f );
@@ -472,7 +472,7 @@ public class SymbologyParser {
                 final Pair<Fill, Continuation<Fill>> fill = parseFill( in );
                 base.fill = fill.first;
                 if ( fill.second != null ) {
-                    contn = new Continuation<Mark>() {
+                    contn = new Continuation<Mark>( contn ) {
                         @Override
                         public void updateStep( Mark base, MatchableObject f ) {
                             fill.second.evaluate( base.fill, f );
@@ -485,7 +485,7 @@ public class SymbologyParser {
                 final Pair<Stroke, Continuation<Stroke>> stroke = parseStroke( in );
                 base.stroke = stroke.first;
                 if ( stroke.second != null ) {
-                    contn = new Continuation<Mark>() {
+                    contn = new Continuation<Mark>( contn ) {
                         @Override
                         public void updateStep( Mark base, MatchableObject f ) {
                             stroke.second.evaluate( base.stroke, f );
@@ -576,7 +576,7 @@ public class SymbologyParser {
                 if ( pair != null ) {
                     base.mark = pair.first;
                     if ( pair.second != null ) {
-                        contn = new Continuation<Graphic>() {
+                        contn = new Continuation<Graphic>( contn ) {
                             @Override
                             public void updateStep( Graphic base, MatchableObject f ) {
                                 pair.second.evaluate( base.mark, f );
@@ -975,7 +975,7 @@ public class SymbologyParser {
                     baseOrEvaluated.stroke = pair.first;
 
                     if ( pair.second != null ) {
-                        contn = new Continuation<LineStyling>() {
+                        contn = new Continuation<LineStyling>( contn ) {
                             @Override
                             public void updateStep( LineStyling base, MatchableObject f ) {
                                 pair.second.evaluate( base.stroke, f );
@@ -1278,7 +1278,7 @@ public class SymbologyParser {
                             baseOrEvaluated.linePlacement = pair.first;
 
                             if ( pair.second != null ) {
-                                contn = new Continuation<TextStyling>() {
+                                contn = new Continuation<TextStyling>( contn ) {
                                     @Override
                                     public void updateStep( TextStyling base, MatchableObject f ) {
                                         pair.second.evaluate( base.linePlacement, f );
@@ -1296,7 +1296,7 @@ public class SymbologyParser {
                     baseOrEvaluated.halo = haloPair.first;
 
                     if ( haloPair.second != null ) {
-                        contn = new Continuation<TextStyling>() {
+                        contn = new Continuation<TextStyling>( contn ) {
                             @Override
                             public void updateStep( TextStyling base, MatchableObject f ) {
                                 haloPair.second.evaluate( base.halo, f );
@@ -1312,7 +1312,7 @@ public class SymbologyParser {
                     baseOrEvaluated.font = fontPair.first;
 
                     if ( fontPair.second != null ) {
-                        contn = new Continuation<TextStyling>() {
+                        contn = new Continuation<TextStyling>( contn ) {
                             @Override
                             public void updateStep( TextStyling base, MatchableObject f ) {
                                 fontPair.second.evaluate( base.font, f );
@@ -1328,7 +1328,7 @@ public class SymbologyParser {
                     baseOrEvaluated.fill = fillPair.first;
 
                     if ( fillPair.second != null ) {
-                        contn = new Continuation<TextStyling>() {
+                        contn = new Continuation<TextStyling>( contn ) {
                             @Override
                             public void updateStep( TextStyling base, MatchableObject f ) {
                                 fillPair.second.evaluate( base.fill, f );
@@ -1429,7 +1429,7 @@ public class SymbologyParser {
                     baseOrEvaluated.fill = fillPair.first;
 
                     if ( fillPair.second != null ) {
-                        contn = new Continuation<Halo>() {
+                        contn = new Continuation<Halo>( contn ) {
                             @Override
                             public void updateStep( Halo base, MatchableObject f ) {
                                 fillPair.second.evaluate( base.fill, f );
