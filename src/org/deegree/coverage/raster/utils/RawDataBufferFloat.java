@@ -41,6 +41,9 @@ package org.deegree.coverage.raster.utils;
 import java.awt.image.DataBuffer;
 import java.nio.ByteBuffer;
 
+import org.deegree.coverage.raster.data.DataView;
+import org.deegree.coverage.raster.geom.RasterRect;
+
 /**
  * The <code>RawDataBufferFloat</code> class TODO add class documentation here.
  * 
@@ -57,18 +60,39 @@ public class RawDataBufferFloat extends DataBuffer {
 
     private final int SIZE = Float.SIZE / 8;
 
+    private RasterRect bufferDomain;
+
+    private DataView view;
+
+    private RasterRect maxViewData;
+
+    private int toNullPoint;
+
+    private int lineStride;
+
     /**
      * @param floatBuffer
      */
-    public RawDataBufferFloat( ByteBuffer floatBuffer, float noData ) {
+    public RawDataBufferFloat( ByteBuffer floatBuffer, float noData, RasterRect bufferDomain, DataView view ) {
         super( DataBuffer.TYPE_FLOAT, 1 );
         this.floatBuffer = floatBuffer;
         this.noData = Float.floatToIntBits( noData );
+        this.bufferDomain = bufferDomain;
+        this.view = view;
+        this.maxViewData = RasterRect.intersection( bufferDomain, view );
+        toNullPoint = ( ( bufferDomain.width * maxViewData.y ) + maxViewData.x );
+        lineStride = bufferDomain.width;
+    }
+
+    private int calculatePosition( int index ) {
+        int yPos = index / maxViewData.width;
+        int xPos = index - ( maxViewData.width * yPos );
+        return ( toNullPoint + ( ( yPos * lineStride ) + xPos ) ) * SIZE;
     }
 
     @Override
     public int getElem( int i ) {
-        int index = i * SIZE;
+        int index = calculatePosition( i );
         if ( index >= floatBuffer.capacity() || index >= floatBuffer.limit() ) {
             return noData;
         }
@@ -80,7 +104,7 @@ public class RawDataBufferFloat extends DataBuffer {
 
     @Override
     public float getElemFloat( int i ) {
-        int index = i * SIZE;
+        int index = calculatePosition( i );
         if ( index >= floatBuffer.capacity() || index >= floatBuffer.limit() ) {
             return noData;
         }
@@ -101,7 +125,7 @@ public class RawDataBufferFloat extends DataBuffer {
 
     @Override
     public void setElem( int i, int val ) {
-        int index = i * SIZE;
+        int index = calculatePosition( i );
         if ( index < floatBuffer.capacity() && index < floatBuffer.limit() ) {
             System.out.println( "SETTING?" );
             floatBuffer.putInt( index, val );

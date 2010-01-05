@@ -42,7 +42,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferFloat;
 import java.awt.image.PixelInterleavedSampleModel;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -487,8 +486,9 @@ public class RasterFactory {
             byte[] noData = sourceRaster.getNullPixel( null );
             FloatBuffer f = ByteBuffer.wrap( noData ).asFloatBuffer();
 
-            DataBuffer db = new RawDataBufferFloat( raster.getByteBuffer(), f.get( 0 ) );
-            new DataBufferFloat( 12 );
+            DataBuffer db = new RawDataBufferFloat( raster.getByteBuffer(), f.get( 0 ), raster.getBytebufferDomain(),
+                                                    raster.getView() );
+            // new DataBufferFloat( 12 );
             WritableRaster wr = Raster.createWritableRaster( fm, db, null );
             BufferedImage floatImage = new BufferedImage( new FloatColorModel( noData ), wr, false, null );
             return floatImage;
