@@ -162,22 +162,34 @@ public abstract class GriddedTileContainer implements TileContainer {
 
         List<AbstractRaster> tiles = new ArrayList<AbstractRaster>();
 
-        int minColumnId = getColumnIdx( env.getMin().get0() + 0.00001 );
-        int minRowId = getRowIdx( env.getMax().get1() - 0.00001 );
-        int maxColumnId = getColumnIdx( env.getMax().get0() - 0.00001 );
-        int maxRowId = getRowIdx( env.getMin().get1() + 0.00001 );
+        int minColumn = getColumnIdx( env.getMin().get0() );
+        int minRow = getRowIdx( env.getMax().get1() );
+        int maxColumn = getColumnIdx( env.getMax().get0() );
+        int maxRow = getRowIdx( env.getMin().get1() );
+
+        int[] max = rasterReference.getRasterCoordinate( env.getMax().get0(), env.getMin().get1() );
+        double[] maxReal = rasterReference.getRasterCoordinateUnrounded( env.getMax().get0(), env.getMin().get1() );
+        if ( ( Math.abs( maxReal[0] - max[0] ) < 1E-6 ) && max[0] % tileSamplesX == 0 ) {
+            // found an edge, don't use the last tile.
+            maxColumn--;
+        }
+        if ( ( Math.abs( maxReal[1] - max[1] ) < 1E-6 ) && max[1] % tileSamplesY == 0 ) {
+            // found an edge, don't use the last tile.
+            maxRow--;
+        }
+
         // the requested envelope is outside the boundaries of the data
-        if ( ( maxColumnId == -1 ) || ( maxRowId == -1 ) || ( minColumnId == columns ) || ( minRowId == rows ) ) {
+        if ( ( maxColumn <= -1 ) || ( maxRow <= -1 ) || ( minColumn == columns ) || ( minRow == rows ) ) {
             return tiles;
         }
         // reset values to maximal/minimal allowed
-        minColumnId = max( minColumnId, 0 );
-        minRowId = max( minRowId, 0 );
-        maxColumnId = min( maxColumnId, columns - 1 );
-        maxRowId = min( maxRowId, rows - 1 );
+        minColumn = max( minColumn, 0 );
+        minRow = max( minRow, 0 );
+        maxColumn = min( maxColumn, columns - 1 );
+        maxRow = min( maxRow, rows - 1 );
 
-        for ( int rowId = minRowId; rowId <= maxRowId; rowId++ ) {
-            for ( int columnId = minColumnId; columnId <= maxColumnId; columnId++ ) {
+        for ( int rowId = minRow; rowId <= maxRow; rowId++ ) {
+            for ( int columnId = minColumn; columnId <= maxColumn; columnId++ ) {
                 AbstractRaster rasterTile = getTile( rowId, columnId );
                 tiles.add( rasterTile );
             }
@@ -250,6 +262,11 @@ public abstract class GriddedTileContainer implements TileContainer {
     }
 
     private int getColumnIdx( double x ) {
+        int[] rasterCoordinate = rasterReference.getRasterCoordinate( x, 0 );
+        if ( rasterCoordinate[0] < 0 ) {
+            return -1;
+        }
+        return Math.min( columns, Math.max( -1, ( rasterCoordinate[0] / tileSamplesX ) ) );
 
         // if ( x < envelope.getMin().get0() || x > envelope.getMax().get0() ) {
         // String msg = "Specified x coordinate (=" + x + ") is out of range [" + envelope.getMin().get0() + ";"
@@ -258,20 +275,25 @@ public abstract class GriddedTileContainer implements TileContainer {
         // throw new IllegalArgumentException( msg );
         // }
 
-        double dx = x - envelope.getMin().get0();
-        int columnIdx = (int) Math.floor( ( columns * dx ) / envelopeWidth );
-        if ( columnIdx < 0 ) {
-            // signal outside
-            return -1;
-        }
-        if ( columnIdx > columns - 1 ) {
-            // signal outside
-            return columns;
-        }
-        return columnIdx;
+        // double dx = x - envelope.getMin().get0();
+        // int columnIdx = (int) Math.floor( ( columns * dx ) / envelopeWidth );
+        // if ( columnIdx < 0 ) {
+        // // signal outside
+        // return -1;
+        // }
+        // if ( columnIdx > columns - 1 ) {
+        // // signal outside
+        // return columns;
+        // }
+        // return columnIdx;
     }
 
     private int getRowIdx( double y ) {
+        int[] rasterCoordinate = rasterReference.getRasterCoordinate( 0, y );
+        if ( rasterCoordinate[1] < 0 ) {
+            return -1;
+        }
+        return Math.min( rows, Math.max( -1, ( rasterCoordinate[1] / tileSamplesY ) ) );
 
         // if ( y < envelope.getMin().get1() || y > envelope.getMax().get1() ) {
         // String msg = "Specified y coordinate (=" + y + ") is out of range [" + envelope.getMin().get1() + ";"
@@ -280,16 +302,16 @@ public abstract class GriddedTileContainer implements TileContainer {
         // throw new IllegalArgumentException( msg );
         // }
 
-        double dy = y - envelope.getMin().get1();
-        int rowIdx = (int) Math.floor( ( ( rows * ( envelopeHeight - dy ) ) / envelopeHeight ) );
-        if ( rowIdx < 0 ) {
-            // signal outside
-            return -1;
-        }
-        if ( rowIdx > rows - 1 ) {
-            // signal outside
-            return rows;
-        }
-        return rowIdx;
+        // double dy = y - envelope.getMin().get1();
+        // int rowIdx = (int) Math.floor( ( ( rows * ( envelopeHeight - dy ) ) / envelopeHeight ) );
+        // if ( rowIdx < 0 ) {
+        // // signal outside
+        // return -1;
+        // }
+        // if ( rowIdx > rows - 1 ) {
+        // // signal outside
+        // return rows;
+        // }
+        // return rowIdx;
     }
 }
