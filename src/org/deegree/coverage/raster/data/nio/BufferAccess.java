@@ -43,7 +43,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.deegree.coverage.raster.data.ByteBufferPool;
+import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
@@ -294,10 +294,8 @@ public class BufferAccess {
      * @return The internal ByteBuffer.
      */
     public ByteBuffer getByteBuffer() {
-        // synchronized ( LOCK ) {
         if ( data == null ) {
             prepareBuffer();
-            // }
         }
         return data;
     }
