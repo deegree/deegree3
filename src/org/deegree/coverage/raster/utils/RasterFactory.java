@@ -64,16 +64,14 @@ import java.util.Set;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.ByteBufferPool;
+import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
-import org.deegree.coverage.raster.data.nio.BandInterleavedRasterData;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
-import org.deegree.coverage.raster.data.nio.LineInterleavedRasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
@@ -639,7 +637,7 @@ public class RasterFactory {
      * @param height
      * @param type
      * @param byteBuffer
-     * @return
+     * @return the byte buffer filled with data from the image raster.
      */
     public static ByteBuffer rasterToByteBuffer( Raster imageRaster, int x, int y, int width, int height,
                                                  DataType type, ByteBuffer byteBuffer ) {
@@ -653,7 +651,14 @@ public class RasterFactory {
         byteBuffer.clear();
         switch ( type ) {
         case BYTE:
+            // DataBufferByte data = ( (DataBufferByte) imageRaster.getDataBuffer() );
+            // int banks = data.getNumBanks();
             byteBuffer.put( (byte[]) imageRaster.getDataElements( x, y, width, height, null ) );
+            // rb: because the getDataElements uses the bankofset of the data
+            // for ( int bank = 0; bank < banks; ++bank ) {
+            // byte[] bs = data.getData( bank );
+            // byteBuffer.put( bs );
+            // }
             break;
         case DOUBLE:
             DoubleBuffer dbuf = byteBuffer.asDoubleBuffer();
@@ -797,7 +802,7 @@ public class RasterFactory {
      */
     public static SimpleRaster createEmptyRaster( RasterDataInfo rdi, Envelope worldEnvelope,
                                                   RasterGeoReference rasterGeoReference ) {
-        return createEmptyRaster( rdi, worldEnvelope, rasterGeoReference, null );
+        return createEmptyRaster( rdi, worldEnvelope, rasterGeoReference, null, false, null );
     }
 
     /**
@@ -813,32 +818,38 @@ public class RasterFactory {
      * @param reader
      *            to lazely instantiate the data from, may be <code>null</code>, if the raster should not be backed by
      *            any data.
+     * @param addToCache
+     *            true if the raster data of the given raster should be added to the cache.
+     * @param options
+     *            containing information about the raster caching.
      * @return a raster data object according to the given parameters.
      */
     public static SimpleRaster createEmptyRaster( RasterDataInfo rdi, Envelope worldEnvelope,
-                                                  RasterGeoReference rasterGeoReference, RasterReader reader ) {
+                                                  RasterGeoReference rasterGeoReference, RasterReader reader,
+                                                  boolean addToCache, RasterIOOptions options ) {
         SimpleRaster result = null;
         if ( rdi != null && rasterGeoReference != null && worldEnvelope != null ) {
-            ByteBufferRasterData data = null;
             RasterRect rasterRect = null;
             if ( reader == null ) {
                 rasterRect = rasterGeoReference.convertEnvelopeToRasterCRS( worldEnvelope );
             } else {
                 rasterRect = new RasterRect( 0, 0, reader.getWidth(), reader.getHeight() ); //
             }
+            ByteBufferRasterData data = RasterDataFactory.createRasterData( rasterRect, rdi, reader, addToCache,
+                                                                            options );
             // rasterGeoReference.convertEnvelopeToRasterCRS(
             // worldEnvelope );
-            switch ( rdi.interleaveType ) {
-            case BAND:
-                data = new BandInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
-                break;
-            case LINE:
-                data = new LineInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
-                break;
-            case PIXEL:
-                data = new PixelInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
-                break;
-            }
+            // switch ( rdi.interleaveType ) {
+            // case BAND:
+            // data = new BandInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
+            // break;
+            // case LINE:
+            // data = new LineInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
+            // break;
+            // case PIXEL:
+            // data = new PixelInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
+            // break;
+            // }
             result = new SimpleRaster( data, worldEnvelope, rasterGeoReference );
         }
         return result;
