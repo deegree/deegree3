@@ -30,9 +30,10 @@ ALTER TABLE ISOQP_TemporalExtent DROP CONSTRAINT FK_ISOQP_TemporalExtent_Dataset
 ALTER TABLE ISOQP_Title DROP CONSTRAINT FK_ISOQP_Title_Datasets;
 ALTER TABLE ISOQP_TopicCategory DROP CONSTRAINT FK_ISOQP_TopicCategory_Datasets;
 ALTER TABLE ISOQP_Type DROP CONSTRAINT FK_ISOQP_Type_Datasets;
+ALTER TABLE RecordFull DROP CONSTRAINT FK_Record_Datasets;
 ALTER TABLE RecordBrief DROP CONSTRAINT FK_Record_Datasets;
-
---ALTER TABLE DCQP_RIGHTS DROP CONSTRAINT FK_RIGHTS_Datasets;
+ALTER TABLE RecordSummary DROP CONSTRAINT FK_Record_Datasets;
+ALTER TABLE DCQP_RIGHTS DROP CONSTRAINT FK_DCQP_RIGHTS_Datasets;
 
 -- Drop Tables, Stored Procedures and Views 
 DROP TABLE Datasets;
@@ -357,10 +358,9 @@ CREATE TABLE RecordBrief (
 	data bytea NOT NULL
 );
 COMMENT ON TABLE RecordBrief
-    IS 'This is the mandatory table for the brief representation of a getRecords response, because a brief representation has to be allways provided.';
+    IS 'This is the table for the brief representation of a getRecords response, because a brief representation has to be allways provided.';
 
 CREATE TABLE RecordSummary ( 
-	ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
 	format numeric(2) NOT NULL,
 	data bytea NOT NULL
@@ -369,7 +369,6 @@ COMMENT ON TABLE RecordSummary
     IS 'This is the table for the summary representation of a getRecords response';
 
 CREATE TABLE RecordFull ( 
-	ID integer NOT NULL, 
 	fk_datasets integer NOT NULL,
 	format numeric(2) NOT NULL,
 	data bytea NOT NULL
@@ -497,11 +496,11 @@ ALTER TABLE RecordBrief ADD CONSTRAINT PK_RecordBrief
 
 
 ALTER TABLE RecordSummary ADD CONSTRAINT PK_RecordSummary
-	PRIMARY KEY (ID);
+	PRIMARY KEY (fk_datasets);
 
 
 ALTER TABLE RecordFull ADD CONSTRAINT PK_RecordFull
-	PRIMARY KEY (ID);
+	PRIMARY KEY (fk_datasets);
 
 
 ALTER TABLE UserDefinedQueryableProperties ADD CONSTRAINT PK_SelfQueryableProperties 
