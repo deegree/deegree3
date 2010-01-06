@@ -49,7 +49,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.coverage.raster.data.ByteBufferPool;
+import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.slf4j.Logger;
