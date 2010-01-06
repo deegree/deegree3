@@ -166,6 +166,8 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            width of the raster data
      * @param rasterHeight
      *            height of the raster data
+     * @param reader
+     *            to be used to read the data from a location.
      * @param originalDataInfo
      *            containing information about this raster data object
      * @param init
@@ -186,7 +188,7 @@ public abstract class ByteBufferRasterData implements RasterData {
     }
 
     /**
-     * @return the view on the data 
+     * @return the view on the data
      */
     public DataView getView() {
         return dataAccess.getView();
@@ -201,6 +203,8 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            width of the raster data
      * @param rasterHeight
      *            height of the raster data
+     * @param reader
+     *            to be used to read the data.
      * @param originalDataInfo
      *            containing information about this raster data object
      */
@@ -318,7 +322,7 @@ public abstract class ByteBufferRasterData implements RasterData {
         return getView().dataInfo.getNoDataPixel( result );
     }
 
-    public void setNullPixel( byte[] values ) {
+    public void setNoDataValue( byte[] values ) {
         getView().dataInfo.setNoDataPixel( values );
     }
 
