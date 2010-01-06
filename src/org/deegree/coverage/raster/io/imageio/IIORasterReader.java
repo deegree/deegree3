@@ -46,6 +46,8 @@ import javax.imageio.ImageIO;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -169,8 +171,13 @@ public class IIORasterReader implements RasterReader {
         // RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy()
         // );
         RasterDataInfo rdi = reader.getRasterDataInfo();
+        RasterCache cache = RasterCache.getInstance( options );
+        SimpleRaster result = cache.createFromCache( this, this.dataLocationId );
+        if ( result == null ) {
+            result = RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, options );
+        }
 
-        return RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, options );
+        return result;
         //
         // return new SimpleRaster( data, envelope, rasterReference );
     }
