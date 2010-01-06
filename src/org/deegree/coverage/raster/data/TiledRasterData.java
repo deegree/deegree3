@@ -162,7 +162,7 @@ public class TiledRasterData implements RasterData {
         final int tileY = ( y / tileHeight );
         final int tileX = ( x / tileWidth );
         final int index = ( tileY * columns ) + ( tileX );
-        if ( index > tiles.length ) {
+        if ( index >= tiles.length ) {
             return null;
         }
         return new MappedTile( this.tiles[index], x - ( tileX * tileWidth ), y - ( tileY * tileHeight ) );
