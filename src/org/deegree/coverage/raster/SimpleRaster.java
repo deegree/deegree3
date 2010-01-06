@@ -36,8 +36,6 @@
 package org.deegree.coverage.raster;
 
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.container.MemoryRasterDataContainer;
-import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -54,7 +52,9 @@ import org.deegree.geometry.Envelope;
  */
 public class SimpleRaster extends AbstractRaster {
 
-    private RasterDataContainer rasterDataContainer;
+    // private RasterDataContainer rasterDataContainer;
+
+    private RasterData data;
 
     /**
      * Create a SimpleRaster with no raster data but with an envelope and raster envelope.
@@ -80,24 +80,25 @@ public class SimpleRaster extends AbstractRaster {
      */
     public SimpleRaster( RasterData raster, Envelope envelope, RasterGeoReference rasterReference ) {
         this( envelope, rasterReference );
-
-        this.rasterDataContainer = new MemoryRasterDataContainer( raster );
+        this.data = raster;
+        // this.rasterDataContainer = new MemoryRasterDataContainer( raster );
     }
 
-    /**
-     * Creates a new SimpleRaster with given RasterDataContainer and Envelope
-     * 
-     * @param rasterDataContainer
-     *            data source for the SimpleRaster
-     * @param envelope
-     *            boundary of the new raster
-     * @param rasterReference
-     *            RasterReference for the new raster
-     */
-    public SimpleRaster( RasterDataContainer rasterDataContainer, Envelope envelope, RasterGeoReference rasterReference ) {
-        this( envelope, rasterReference );
-        this.rasterDataContainer = rasterDataContainer;
-    }
+    // /**
+    // * Creates a new SimpleRaster with given RasterDataContainer and Envelope
+    // *
+    // * @param rasterDataContainer
+    // * data source for the SimpleRaster
+    // * @param envelope
+    // * boundary of the new raster
+    // * @param rasterReference
+    // * RasterReference for the new raster
+    // */
+    // public SimpleRaster( RasterDataContainer rasterDataContainer, Envelope envelope, RasterGeoReference
+    // rasterReference ) {
+    // this( envelope, rasterReference );
+    //        
+    // }
 
     /**
      * Creates a SimpleRaster with same size, DataType and InterleaveType
@@ -159,7 +160,7 @@ public class SimpleRaster extends AbstractRaster {
      * @return The raster data of this SimpleRaster.
      */
     public RasterData getRasterData() {
-        return rasterDataContainer.getRasterData();
+        return data;
     }
 
     /**
@@ -168,7 +169,7 @@ public class SimpleRaster extends AbstractRaster {
      * @return The raster data of this SimpleRaster (read-only).
      */
     public RasterData getReadOnlyRasterData() {
-        return rasterDataContainer.getReadOnlyRasterData();
+        return ( data != null ) ? data.asReadOnly() : null;
     }
 
     @Override
@@ -178,7 +179,7 @@ public class SimpleRaster extends AbstractRaster {
 
     @Override
     public SimpleRaster getSubRaster( Envelope envelope, BandType[] bands ) {
-        //rb: testing for envelope equality can lead to a memory leak, because the memory can not be freed.
+        // rb: testing for envelope equality can lead to a memory leak, because the memory can not be freed.
         RasterRect rasterRect = getRasterReference().convertEnvelopeToRasterCRS( envelope );
         RasterGeoReference rasterReference = getRasterReference().createRelocatedReference( envelope );
         // RasterData view = getReadOnlyRasterData().getSubset( rasterRect, bands );
@@ -285,8 +286,11 @@ public class SimpleRaster extends AbstractRaster {
      * Cleans up all used memory buffers.
      */
     public void dispose() {
-        RasterData data = this.getRasterData();
-        data.dispose();
+        synchronized ( data ) {
+            if ( data != null ) {
+                data.dispose();
+            }
+        }
 
     }
 }
