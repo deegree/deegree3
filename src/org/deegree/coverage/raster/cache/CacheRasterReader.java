@@ -248,20 +248,22 @@ public class CacheRasterReader extends GridFileReader {
         this( cachedReader.getWidth(), cachedReader.getHeight(), cacheFile, cachedReader.shouldCreateCacheFile(),
               cachedReader.getRasterDataInfo(), cachedReader.getGeoReference(), cache );
         this.cachedReader = cachedReader;
-        if ( this.cachedReader != null && !this.cachedReader.canReadTiles() ) {
-            BufferResult result = null;
-            try {
-                result = this.cachedReader.read( new RasterRect( 0, 0, this.cachedReader.getWidth(),
-                                                                 this.cachedReader.getHeight() ), null );
-            } catch ( IOException e ) {
-                LOG.warn( "Could not create tiles from the reader because; {}", e.getLocalizedMessage(), e );
-                // e.printStackTrace();
-            }
-            if ( result != null ) {
-                createTilesFromFilledBuffer( result.getResult(), result.getRect().width, result.getRect().height );
-            }
-            result = null;
-        }
+        // rb: instantiate on load may not be the wanted thing.
+
+        // if ( this.cachedReader != null && !this.cachedReader.canReadTiles() ) {
+        // BufferResult result = null;
+        // try {
+        // result = this.cachedReader.read( new RasterRect( 0, 0, this.cachedReader.getWidth(),
+        // this.cachedReader.getHeight() ), null );
+        // } catch ( IOException e ) {
+        // LOG.warn( "Could not create tiles from the reader because; {}", e.getLocalizedMessage(), e );
+        // // e.printStackTrace();
+        // }
+        // if ( result != null ) {
+        // createTilesFromFilledBuffer( result.getResult(), result.getRect().width, result.getRect().height );
+        // }
+        // result = null;
+        // }
     }
 
     /**
