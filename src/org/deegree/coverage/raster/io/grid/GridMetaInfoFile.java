@@ -261,14 +261,18 @@ public class GridMetaInfoFile {
      */
     public static File fileNameFromOptions( String defaultDir, String filename, RasterIOOptions options ) {
 
-        String metaFile = options == null ? filename : options.get( METAINFO_FILE );
+        String metaFile = options == null ? null : options.get( METAINFO_FILE );
         if ( metaFile == null ) {
-            metaFile = defaultDir + File.separator + METAINFO_FILE_NAME;
+            if ( filename == null ) {
+                metaFile = defaultDir + File.separator + METAINFO_FILE_NAME;
+            } else {
+                metaFile = defaultDir + File.separator + filename;
+            }
         }
         if ( !metaFile.endsWith( METAINFO_FILE_EXT ) ) {
             metaFile += "." + METAINFO_FILE_EXT;
         }
-        return new File( defaultDir, metaFile );
+        return new File( metaFile );
     }
 
     /**
