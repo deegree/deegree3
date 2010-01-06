@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.publication;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -51,16 +53,16 @@ import org.deegree.record.publication.TransactionOperation;
  */
 public class InsertTransaction extends TransactionOperation {
 
-    private OMElement element;
+    private List<OMElement> element;
 
     private QName typeName;
 
     /**
      * @param handle
      */
-    public InsertTransaction( OMElement element, QName typeName, String handle ) {
+    public InsertTransaction( List<OMElement> transChildElementInsertAPISORecordList, QName typeName, String handle ) {
         super( handle );
-        this.element = element;
+        this.element = transChildElementInsertAPISORecordList;
         this.typeName = typeName;
 
     }
@@ -79,7 +81,7 @@ public class InsertTransaction extends TransactionOperation {
     /**
      * @return the element
      */
-    public OMElement getElement() {
+    public List<OMElement> getElement() {
         return element;
     }
 
@@ -87,7 +89,7 @@ public class InsertTransaction extends TransactionOperation {
      * @param element
      *            the element to set
      */
-    public void setElement( OMElement element ) {
+    public void setElement( List<OMElement> element ) {
         this.element = element;
     }
 
