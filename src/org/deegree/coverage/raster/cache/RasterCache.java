@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.coverage.raster.data;
+package org.deegree.coverage.raster.cache;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -48,12 +48,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
-import org.deegree.coverage.raster.io.grid.CacheRasterReader;
 import org.slf4j.Logger;
 
 /**
@@ -75,7 +74,8 @@ public class RasterCache {
      */
     public static final File DEFAULT_CACHE_DIR = new File( System.getProperty( "java.io.tmpdir" ) );
 
-    // public static final File DEFAULT_CACHE_DIR = new File( "/media/storage/tmp/" );
+    /** A key which can be given to the JVM to define the amount of memory used for caching. */
+    public static final String DEF_RASTER_CACHE = "deegree.raster.cache";
 
     /**
      * Standard name for a deegree cache file.
@@ -90,12 +90,42 @@ public class RasterCache {
 
     private static final long maxCacheMem;
     static {
-        // rb: todo get this from some system variable.
-        long mm = Runtime.getRuntime().maxMemory();
-        if ( mm == Long.MAX_VALUE ) {
-            mm = Math.round( Runtime.getRuntime().totalMemory() * 0.5 );
-        } else {
-            mm *= 0.5;
+        String cacheSize = System.getProperty( DEF_RASTER_CACHE );
+        long mm = 0;
+        if ( cacheSize != null ) {
+            int byteConvert = 1;
+            // split on no numbers.
+            String[] split = cacheSize.split( "\\D" );
+            // only the first split is of importance
+            String bytes = split[0];
+            if ( bytes.length() != cacheSize.length() ) {
+                // some characters were used after the split.
+                String unit = cacheSize.substring( bytes.length(), bytes.length() + 1 );
+                if ( unit.equalsIgnoreCase( "k" ) ) {
+                    byteConvert = 1024;
+                } else if ( unit.equalsIgnoreCase( "m" ) ) {
+                    byteConvert = 1024 * 1024;
+                } else if ( unit.equalsIgnoreCase( "g" ) ) {
+                    byteConvert = 1024 * 1024 * 1024;
+                }
+            }
+            try {
+                mm = Long.parseLong( bytes ) * byteConvert;
+                LOG.info( "Using {} of memory for raster caching (because it was set with the {} property).",
+                          ( mm * 1024 * 1024 ) + "Mb", DEF_RASTER_CACHE );
+            } catch ( NumberFormatException e ) {
+                LOG.warn(
+                          "Ignoring supplied property: {} because it could not be parsed: {}. Using 0.5 of the total memory for raster caching.",
+                          DEF_RASTER_CACHE, e.getLocalizedMessage() );
+            }
+
+        }
+        if ( mm == 0 ) {
+            if ( mm == Long.MAX_VALUE ) {
+                mm = Math.round( Runtime.getRuntime().totalMemory() * 0.5 );
+            } else {
+                mm *= 0.5;
+            }
         }
         maxCacheMem = mm;
     }
@@ -127,13 +157,7 @@ public class RasterCache {
                 boolean createCache = reader.shouldCreateCacheFile();
                 File cacheFile = null;
                 if ( createCache ) {
-                    File file = reader.file();
-                    if ( file == null ) {
-                        cacheFile = new File( cacheDir, UUID.randomUUID().toString() + FILE_EXTENSION );
-                        cacheFile.deleteOnExit();
-                    } else {
-                        cacheFile = new File( cacheDir, FileUtils.getBasename( file ) + FILE_EXTENSION );
-                    }
+                    cacheFile = createCacheFile( reader.getDataLocationId() );
                 }
                 result = new CacheRasterReader( reader, cacheFile, this );
             }
@@ -221,9 +245,17 @@ public class RasterCache {
     }
 
     /**
-     * Gets an instance of a data cache which uses the given directory as the cache directory.
+     * Gets an instance of a data cache which uses the given options to instantiate a cache. Currently following
+     * {@link RasterIOOptions} keys are evaluated. If the options are <code>null</code> the {@link #DEFAULT_CACHE_DIR}
+     * will be used.
+     * <ul>
+     * <li>{@link RasterIOOptions#RASTER_CACHE_DIR}</li>
+     * <li>{@link RasterIOOptions#LOCAL_RASTER_CACHE_DIR}</li>
+     * <li>{@link RasterIOOptions#CREATE_RASTER_MISSING_CACHE_DIR}</li>
+     * </ul>
      * 
-     * @param directory
+     * @param options
+     *            which can contain cache information.
      * @return a raster cache for the given directory.
      */
     public synchronized static RasterCache getInstance( RasterIOOptions options ) {
@@ -311,31 +343,6 @@ public class RasterCache {
     }
 
     /**
-     * The <code>CacheComparator</code> class TODO add class documentation here.
-     * 
-     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * @author last edited by: $Author$
-     * @version $Revision$, $Date$
-     * 
-     */
-    public static class CacheComparator implements Comparator<CacheRasterReader> {
-
-        @Override
-        public int compare( CacheRasterReader o1, CacheRasterReader o2 ) {
-            if ( o1 == null ) {
-                // System.out.println( "Hier o1 ==null" );
-                return -1;
-            }
-            if ( o2 == null ) {
-                // System.out.println( "Hier o2 ==null" );
-                return 1;
-            }
-            int result = o1.lastReadAccess() <= o2.lastReadAccess() ? -1 : 1;
-            return result;
-        }
-    }
-
-    /**
      * Creates a unique cachefile for the given id, if the id already exists in the cache directory an index will be
      * appended. if the given id is <code>null</code> a uuid will be used, this file will be marked to be deleted on
      * exit.
@@ -346,6 +353,7 @@ public class RasterCache {
      */
     public final File createCacheFile( String id ) {
         String fileName = id;
+        // rb: currently always use old file, don't try to create a new one.
         boolean createNew = false;
         if ( fileName == null ) {
             fileName = UUID.randomUUID().toString();
@@ -364,7 +372,7 @@ public class RasterCache {
     }
 
     /**
-     * Writes all current caches to their cache files, but leaves the in memory files alone.
+     * Writes all current caches to their cache files, but leaves the in memory cached rasters alone.
      */
     public static void flush() {
         synchronized ( cache ) {
@@ -380,14 +388,18 @@ public class RasterCache {
     }
 
     /**
+     * Tries to find the file with given id from the current cache directory and instantiates a cachedraster for it.
+     * 
      * @param reader
-     * @param filename
-     * @return
+     *            to be used for reading the original data, if parts of the cachefile are incoherent
+     * @param rasterId
+     *            the id of the raster if <code>null<code> no raster cache file will be created.
+     * @return the raster created from the cache or <code>null</code> if no cache file with given id was found.
      */
-    public SimpleRaster createFromCache( RasterReader reader, String filename ) {
+    public SimpleRaster createFromCache( RasterReader reader, String rasterId ) {
         SimpleRaster result = null;
-        if ( filename != null ) {
-            File cacheFile = new File( this.cacheDir, filename + FILE_EXTENSION );
+        if ( rasterId != null ) {
+            File cacheFile = new File( this.cacheDir, rasterId + FILE_EXTENSION );
             if ( cacheFile.exists() ) {
                 CacheRasterReader data = CacheRasterReader.createFromCache( reader, cacheFile, this );
                 if ( data != null ) {
@@ -411,7 +423,7 @@ public class RasterCache {
     }
 
     /**
-     * 
+     * Iterates over all current cache directories and calls dispose on their cache files.
      */
     public static void dispose() {
         // System.out.println( cache.size() + ") Cache: " + cache );
@@ -431,26 +443,31 @@ public class RasterCache {
             }
         }
         LOG.debug( "Disposing allocated {} MB on the heap.",
-                  ( Math.round( ( allocatedMem / ( 1024 * 1024d ) ) * 100d ) / 100d ) );
+                   ( Math.round( ( allocatedMem / ( 1024 * 1024d ) ) * 100d ) / 100d ) );
 
     }
 
     /**
+     * The <code>CacheComparator</code> class compares two raster readers for their last read access time.
+     * 
+     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+     * @author last edited by: $Author$
+     * @version $Revision$, $Date$
      * 
      */
-    private static void output() {
-        int i = 0;
-        Iterator<CacheRasterReader> it = cache.iterator();
-        long allocatedMem = 0;
-        while ( it != null && it.hasNext() ) {
-            CacheRasterReader next = it.next();
-            if ( next != null ) {
-                // synchronized ( MEM_LOCK ) {
-                // LOG.info( "Disposing for file: {}" + next.file() );
-                // currentlyUsedMemory -= next.dispose( false );
-                // allocatedMem += next.dispose( false );
-                // System.out.println( ( i++ ) + ") reader: " + next.file() );
+    static class CacheComparator implements Comparator<CacheRasterReader> {
+
+        @Override
+        public int compare( CacheRasterReader o1, CacheRasterReader o2 ) {
+            // rb: returning 0 will cause the above 'add' method to discard the new raster.
+            if ( o1 == null ) {
+                return -1;
             }
+            if ( o2 == null ) {
+                return 1;
+            }
+            int result = o1.lastReadAccess() <= o2.lastReadAccess() ? -1 : 1;
+            return result;
         }
     }
 

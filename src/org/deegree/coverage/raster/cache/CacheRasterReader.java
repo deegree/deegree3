@@ -36,10 +36,10 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.coverage.raster.io.grid;
+package org.deegree.coverage.raster.cache;
 
 import static java.lang.System.currentTimeMillis;
-import static org.deegree.coverage.raster.data.RasterCache.FILE_EXTENSION;
+import static org.deegree.coverage.raster.cache.RasterCache.FILE_EXTENSION;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -55,8 +55,6 @@ import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.data.ByteBufferPool;
-import org.deegree.coverage.raster.data.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -64,6 +62,10 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
+import org.deegree.coverage.raster.io.grid.GridFileReader;
+import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
+import org.deegree.coverage.raster.io.grid.GridWriter;
+import org.deegree.coverage.raster.utils.Rasters;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
@@ -108,6 +110,7 @@ public class CacheRasterReader extends GridFileReader {
     private RasterCache cacheManager;
 
     private CacheRasterReader( CacheInfo readValues, File cacheFile, RasterReader reader, RasterCache cacheManager ) {
+        this.cachedReader = reader;
         this.width = readValues.rWidth;
         this.height = readValues.rHeight;
         GridMetaInfoFile gmif = readValues.gmif;
@@ -169,9 +172,9 @@ public class CacheRasterReader extends GridFileReader {
             columns = gmif.columns();
             rows = gmif.rows();
         } else {
-            int numberOfTiles = calcApproxTiles( width, height );
-            this.tileWidth = calcTileSize( width, numberOfTiles );
-            this.tileHeight = calcTileSize( height, numberOfTiles );
+            int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
+            this.tileWidth = Rasters.calcTileSize( width, numberOfTiles );
+            this.tileHeight = Rasters.calcTileSize( height, numberOfTiles );
             columns = (int) Math.ceil( ( (double) width ) / tileWidth );
             rows = (int) Math.ceil( (double) height / tileHeight );
             this.geoRef = geoReference.createRelocatedReference( OriginLocation.OUTER );
@@ -206,6 +209,59 @@ public class CacheRasterReader extends GridFileReader {
 
         super.instantiate( gmif, cacheFile );
         lastReadAccess = currentTimeMillis();
+    }
+
+    /**
+     * Create a cached raster from the given bytebuffer.
+     * 
+     * @param filledBuffer
+     *            with values.
+     * @param width
+     *            of the raster for which this buffer is valid.
+     * @param height
+     *            of the raster for which this buffer is valid.
+     * @param cacheFile
+     *            to use for storage
+     * @param shouldCreateCachefile
+     *            if writing to disk should be enabled.
+     * @param dataInfo
+     *            defining the data
+     * @param geoReference
+     *            of the raster
+     * @param cache
+     *            used.
+     */
+    public CacheRasterReader( ByteBuffer filledBuffer, int width, int height, File cacheFile,
+                              boolean shouldCreateCachefile, RasterDataInfo dataInfo, RasterGeoReference geoReference,
+                              RasterCache cache ) {
+        this( width, height, cacheFile, shouldCreateCachefile, dataInfo, geoReference, cache );
+        createTilesFromFilledBuffer( filledBuffer, width, height );
+    }
+
+    /**
+     * @param cachedReader
+     * @param cacheFile
+     * @param cache
+     * 
+     */
+    public CacheRasterReader( RasterReader cachedReader, File cacheFile, RasterCache cache ) {
+        this( cachedReader.getWidth(), cachedReader.getHeight(), cacheFile, cachedReader.shouldCreateCacheFile(),
+              cachedReader.getRasterDataInfo(), cachedReader.getGeoReference(), cache );
+        this.cachedReader = cachedReader;
+        if ( this.cachedReader != null && !this.cachedReader.canReadTiles() ) {
+            BufferResult result = null;
+            try {
+                result = this.cachedReader.read( new RasterRect( 0, 0, this.cachedReader.getWidth(),
+                                                                 this.cachedReader.getHeight() ), null );
+            } catch ( IOException e ) {
+                LOG.warn( "Could not create tiles from the reader because; {}", e.getLocalizedMessage(), e );
+                // e.printStackTrace();
+            }
+            if ( result != null ) {
+                createTilesFromFilledBuffer( result.getResult(), result.getRect().width, result.getRect().height );
+            }
+            result = null;
+        }
     }
 
     /**
@@ -277,113 +333,23 @@ public class CacheRasterReader extends GridFileReader {
         return result;
     }
 
-    private String createId( int width, int height, RasterDataInfo rdi, RasterGeoReference geoRef ) {
-        StringBuilder sb = new StringBuilder( geoRef.toString() );
-        sb.append( "_bands_" ).append( rdi.bands );
-        sb.append( "_datatype_" ).append( rdi.dataType );
-        sb.append( "_w_" ).append( width );
-        sb.append( "_h_" ).append( height );
-        String result = sb.toString();
-        result = result.replaceAll( "{", "_" );
-        result = result.replaceAll( "}", "_" );
-        result = result.replaceAll( ":", "_" );
-        result = result.replaceAll( "\\s", "_" );
-        return result;
-    }
-
-    public CacheRasterReader( ByteBuffer filledBuffer, int width, int height, File cacheFile,
-                              boolean shouldCreateCachefile, RasterDataInfo dataInfo, RasterGeoReference geoReference,
-                              RasterCache cache ) {
-        this( width, height, cacheFile, shouldCreateCachefile, dataInfo, geoReference, cache );
-        createTilesFromFilledBuffer( filledBuffer, width, height );
-    }
-
     /**
-     * @param filledBuffer
-     */
-    private void createTilesFromFilledBuffer( ByteBuffer filledBuffer, int width, int height ) {
-        if ( filledBuffer != null ) {
-            synchronized ( tiles ) {
-                if ( tiles.length == 1 && tiles[0].length == 1 ) {
-                    tiles[0][0] = filledBuffer.asReadOnlyBuffer();
-                    tilesInMemory[0][0] = currentTimeMillis();
-                } else {
-                    // create tiling
-                    RasterRect tileRect = new RasterRect( 0, 0, tileWidth, tileHeight );
-                    RasterRect dataRect = new RasterRect( 0, 0, width, height );
-                    ByteBuffer origBuffer = filledBuffer.asReadOnlyBuffer();
-                    for ( int row = 0; row < tiles.length; ++row ) {
-                        for ( int col = 0; col < tiles[row].length; ++col ) {
-                            tileRect.x = col * tileWidth;
-                            tileRect.y = row * tileHeight;
-                            tiles[row][col] = allocateTileBuffer( false, true );
-                            try {
-                                copyValuesFromTile( dataRect, tileRect, origBuffer, tiles[row][col] );
-                                tilesInMemory[row][col] = currentTimeMillis();
-                            } catch ( IOException e ) {
-                                LOG.error( "Could not create tile from buffer because: " + e.getLocalizedMessage(), e );
-                            }
-                        }
-                    }
-                    // remove the old buffer from memory
-                    filledBuffer = null;
-                    origBuffer = null;
-                }
-            }
-        }
-    }
-
-    /**
-     * @param cachedReader
-     * @param cacheFile
-     * @param cache
+     * Creates a CachedRasterReader from the given cacheFile.
      * 
+     * @param reader
+     *            which backs the cache
+     * @param cacheFile
+     *            to instantiate from
+     * @param cache
+     *            manager to use.
+     * @return a {@link CacheRasterReader} or <code>null</code> if the cacheFile could not be read.
      */
-    public CacheRasterReader( RasterReader cachedReader, File cacheFile, RasterCache cache ) {
-        this( cachedReader.getWidth(), cachedReader.getHeight(), cacheFile, cachedReader.shouldCreateCacheFile(),
-              cachedReader.getRasterDataInfo(), cachedReader.getGeoReference(), cache );
-        this.cachedReader = cachedReader;
-        if ( this.cachedReader != null && !this.cachedReader.canReadTiles() ) {
-            BufferResult result = null;
-            try {
-                result = this.cachedReader.read( new RasterRect( 0, 0, this.cachedReader.getWidth(),
-                                                                 this.cachedReader.getHeight() ), null );
-            } catch ( IOException e ) {
-                LOG.warn( "Could not create tiles from the reader because; {}", e.getLocalizedMessage(), e );
-                // e.printStackTrace();
-            }
-            if ( result != null ) {
-                createTilesFromFilledBuffer( result.getResult(), result.getRect().width, result.getRect().height );
-            }
-            result = null;
+    public static CacheRasterReader createFromCache( RasterReader reader, File cacheFile, RasterCache cache ) {
+        CacheInfo readValues = instantiateFromFile( cacheFile );
+        if ( readValues != null ) {
+            return new CacheRasterReader( readValues, cacheFile, reader, cache );
         }
-    }
-
-    /**
-     * @param width2
-     * @param height2
-     * @param numberOfTiles
-     * @return
-     */
-    private final static int calcTileSize( float imageSide, int numberOfTiles ) {
-        double size = imageSide / numberOfTiles;
-        return (int) Math.ceil( size );
-    }
-
-    private final static int calcApproxTiles( int imageWidth, int imageHeight ) {
-        int largest = Math.max( imageWidth, imageHeight );
-        // smaller then
-        if ( largest < ( 0.5 * TILE_SIZE ) + TILE_SIZE ) {
-            return 1;
-        }
-        if ( largest < 2 * TILE_SIZE ) {
-            return 2;
-        }
-        int result = 3;
-        while ( largest > ( result * TILE_SIZE ) ) {
-            result++;
-        }
-        return result;
+        return null;
     }
 
     @Override
@@ -432,6 +398,184 @@ public class CacheRasterReader extends GridFileReader {
             }
         }
         return res;
+    }
+
+    @Override
+    public boolean canLoad( File filename ) {
+        return FILE_EXTENSION.equalsIgnoreCase( FileUtils.getFileExtension( filename ) );
+    }
+
+    @Override
+    public Set<String> getSupportedFormats() {
+        HashSet<String> result = new HashSet<String>();
+        result.add( FILE_EXTENSION );
+        return result;
+    }
+
+    @Override
+    public AbstractRaster load( InputStream stream, RasterIOOptions options )
+                            throws IOException {
+        throw new UnsupportedOperationException( "Loading from a stream is currently not supported" );
+    }
+
+    @Override
+    public boolean shouldCreateCacheFile() {
+        return false;
+    }
+
+    @Override
+    public RasterGeoReference getGeoReference() {
+        return geoRef;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public String getDataLocationId() {
+        return ( cachedReader != null ) ? cachedReader.getDataLocationId() : super.getDataLocationId();
+    }
+
+    /**
+     * Return the current time millis of the last read action. This method is needed for caching.
+     * 
+     * @return the {@link System#currentTimeMillis()} of the last read operation.
+     */
+    public long lastReadAccess() {
+        return lastReadAccess;
+    }
+
+    /**
+     * @return the current amount of memory this cached reader has on byte buffers.
+     * 
+     */
+    public long currentApproxMemory() {
+        long result = 0;
+        synchronized ( tiles ) {
+            if ( tiles != null ) {
+                for ( int i = 0; i < tiles.length; ++i ) {
+                    for ( int j = 0; j < tiles[i].length; ++j ) {
+                        if ( tiles[i][j] != null ) {
+                            result += tiles[i][j].capacity();
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void dispose() {
+        this.dispose( cachedReader != null && !cachedReader.shouldCreateCacheFile() );
+        if ( cachedReader != null ) {
+            cachedReader.dispose();
+        }
+    }
+
+    /**
+     * Causes the cachefile to be written (if existing) and the memory buffers to be set to null.
+     * 
+     * @param memoryBuffersAsWell
+     *            if true the memorybuffers (the ones which don't have rasterfiles to back them up) will be deleted as
+     *            well.
+     * 
+     * @return the amount of freed memory.
+     */
+    public long dispose( boolean memoryBuffersAsWell ) {
+        long result = 0;
+        if ( gridWriter != null ) {
+            result = writeCache( true, false );
+        } else {
+            if ( memoryBuffersAsWell ) {
+                synchronized ( tiles ) {
+                    // no writer, but still delete the buffers if requested.
+                    for ( int row = 0; row < tiles.length; ++row ) {
+                        for ( int column = 0; column < tiles[row].length; ++column ) {
+                            if ( tiles[row][column] != null ) {
+                                result += tiles[row][column].capacity();
+                                tiles[row][column] = null;
+                                tilesInMemory[row][column] = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof CacheRasterReader ) {
+            final CacheRasterReader that = (CacheRasterReader) other;
+            return this.file().equals( that.file() );
+        }
+        return false;
+    }
+
+    /**
+     * Writes all current in memory byte buffers to the cache file (if existing).
+     */
+    public void flush() {
+        writeCache( false, false );
+    }
+
+    private String createId( int width, int height, RasterDataInfo rdi, RasterGeoReference geoRef ) {
+        StringBuilder sb = new StringBuilder( geoRef.toString() );
+        sb.append( "_bands_" ).append( rdi.bands );
+        sb.append( "_datatype_" ).append( rdi.dataType );
+        sb.append( "_w_" ).append( width );
+        sb.append( "_h_" ).append( height );
+        String result = sb.toString();
+        result = result.replaceAll( "{", "_" );
+        result = result.replaceAll( "}", "_" );
+        result = result.replaceAll( ":", "_" );
+        result = result.replaceAll( "\\s", "_" );
+        return result;
+    }
+
+    /**
+     * @param filledBuffer
+     */
+    private void createTilesFromFilledBuffer( ByteBuffer filledBuffer, int width, int height ) {
+        if ( filledBuffer != null ) {
+            synchronized ( tiles ) {
+                if ( tiles.length == 1 && tiles[0].length == 1 ) {
+                    tiles[0][0] = filledBuffer.asReadOnlyBuffer();
+                    tilesInMemory[0][0] = currentTimeMillis();
+                } else {
+                    // create tiling
+                    RasterRect tileRect = new RasterRect( 0, 0, tileWidth, tileHeight );
+                    RasterRect dataRect = new RasterRect( 0, 0, width, height );
+                    ByteBuffer origBuffer = filledBuffer.asReadOnlyBuffer();
+                    for ( int row = 0; row < tiles.length; ++row ) {
+                        for ( int col = 0; col < tiles[row].length; ++col ) {
+                            tileRect.x = col * tileWidth;
+                            tileRect.y = row * tileHeight;
+                            tiles[row][col] = allocateTileBuffer( false, true );
+                            try {
+                                copyValuesFromTile( dataRect, tileRect, origBuffer, tiles[row][col] );
+                                tilesInMemory[row][col] = currentTimeMillis();
+                            } catch ( IOException e ) {
+                                LOG.error( "Could not create tile from buffer because: " + e.getLocalizedMessage(), e );
+                            }
+                        }
+                    }
+                    // remove the old buffer from memory
+                    filledBuffer = null;
+                    origBuffer = null;
+                }
+            }
+        }
     }
 
     private void copyValuesFromTile( int tileColumn, int tileRow, RasterRect dstRect, ByteBuffer srcBuffer,
@@ -580,7 +724,7 @@ public class CacheRasterReader extends GridFileReader {
                 if ( !rect.equals( tileRect ) ) {
                     // the tile rect was not filled correctly with data, make the data fit the grid
                     // layout.
-                    copyValuesFromTile( rect, tileRect, read.getResult(), result );
+                    copyValuesFromTile( rect, tileRect, read.getResult().asReadOnlyBuffer(), result );
                 }
                 // still synchronized on the tiles, so ok.
                 tilesInMemory[row][column] = currentTimeMillis();
@@ -716,134 +860,6 @@ public class CacheRasterReader extends GridFileReader {
         }
     }
 
-    @Override
-    public boolean canLoad( File filename ) {
-        return FILE_EXTENSION.equalsIgnoreCase( FileUtils.getFileExtension( filename ) );
-    }
-
-    @Override
-    public Set<String> getSupportedFormats() {
-        HashSet<String> result = new HashSet<String>();
-        result.add( FILE_EXTENSION );
-        return result;
-    }
-
-    @Override
-    public AbstractRaster load( InputStream stream, RasterIOOptions options )
-                            throws IOException {
-        throw new UnsupportedOperationException( "Loading from a stream is currently not supported" );
-    }
-
-    @Override
-    public boolean shouldCreateCacheFile() {
-        return false;
-    }
-
-    @Override
-    public RasterGeoReference getGeoReference() {
-        return geoRef;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public String getDataLocationId() {
-        return ( cachedReader != null ) ? cachedReader.getDataLocationId() : super.getDataLocationId();
-    }
-
-    /**
-     * Return the current time millis of the last read action. This method is needed for caching.
-     * 
-     * @return the {@link System#currentTimeMillis()} of the last read operation.
-     */
-    public long lastReadAccess() {
-        return lastReadAccess;
-    }
-
-    /**
-     * @return the current amount of memory this cached reader has on byte buffers.
-     * 
-     */
-    public long currentApproxMemory() {
-        long result = 0;
-        synchronized ( tiles ) {
-            if ( tiles != null ) {
-                for ( int i = 0; i < tiles.length; ++i ) {
-                    for ( int j = 0; j < tiles[i].length; ++j ) {
-                        if ( tiles[i][j] != null ) {
-                            result += tiles[i][j].capacity();
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public void dispose() {
-        this.dispose( false );
-    }
-
-    /**
-     * Causes the cachefile to be written (if existing) and the memory buffers to be set to null.
-     * 
-     * @param memoryBuffersAsWell
-     *            if true the memorybuffers (the ones which don't have rasterfiles to back them up) will be deleted as
-     *            well.
-     * 
-     * @return the amount of freed memory.
-     */
-    public long dispose( boolean memoryBuffersAsWell ) {
-        long result = 0;
-        if ( gridWriter != null ) {
-            result = writeCache( true, false );
-        } else {
-            if ( memoryBuffersAsWell ) {
-                synchronized ( tiles ) {
-                    // no writer, but still delete the buffers if requested.
-                    int rows = getTileRows();
-                    int columns = getTileColumns();
-                    for ( int row = 0; row < rows; ++row ) {
-                        for ( int column = 0; column < columns; ++column ) {
-                            if ( tiles[row][column] != null ) {
-                                result += tiles[row][column].capacity();
-                                tiles[row][column] = null;
-                                tilesInMemory[row][column] = 0;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public boolean equals( Object other ) {
-        if ( other != null && other instanceof CacheRasterReader ) {
-            final CacheRasterReader that = (CacheRasterReader) other;
-            return this.file().equals( that.file() );
-        }
-        return false;
-    }
-
-    /**
-     * Writes all current in memory byte buffers to the cache file (if existing).
-     */
-    public void flush() {
-        writeCache( false, false );
-    }
-
     private static class CacheInfo {
         /**
          * @param gmif
@@ -865,25 +881,6 @@ public class CacheRasterReader extends GridFileReader {
         GridMetaInfoFile gmif;
 
         long[][] tilesInFile;
-    }
-
-    /**
-     * Creates a CachedRasterReader from the given cacheFile.
-     * 
-     * @param reader
-     *            which backs the cache
-     * @param cacheFile
-     *            to instantiate from
-     * @param cache
-     *            manager to use.
-     * @return a {@link CacheRasterReader} or <code>null</code> if the cacheFile could not be read.
-     */
-    public static CacheRasterReader createFromCache( RasterReader reader, File cacheFile, RasterCache cache ) {
-        CacheInfo readValues = instantiateFromFile( cacheFile );
-        if ( readValues != null ) {
-            return new CacheRasterReader( readValues, cacheFile, reader, cache );
-        }
-        return null;
     }
 
 }

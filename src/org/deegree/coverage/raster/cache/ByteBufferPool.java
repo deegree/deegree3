@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.coverage.raster.data;
+package org.deegree.coverage.raster.cache;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,7 +45,8 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 
 /**
- * The <code>ByteBufferPool</code> class TODO add class documentation here.
+ * The <code>ByteBufferPool</code> will be the central place for buffering byte buffers used for rasters. Currently only
+ * new byte buffers are created, no pooling is done.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -57,7 +58,7 @@ public class ByteBufferPool {
 
     static long requestedMemory = 0;
 
-    private static double CACHE_REFRESH_SIZE = RasterCache.getMaximumCacheMemory() * 0.25;
+    private static double CACHE_REFRESH_SIZE = RasterCache.getMaximumCacheMemory() * 0.5;
 
     private static final String lock = "lock";
 
@@ -87,7 +88,7 @@ public class ByteBufferPool {
             }
         }
         LOG.debug( "Requested{}memory: {} MB", ( forCache ? " cache " : " " ), ( size / ( 1024 * 1024d ) ) );
-        long freeMem = RasterCache.freeMemory( size );
+        RasterCache.freeMemory( size );
         // LOG.info( "currently used cache memory: {} MB", ( freeMem / ( 1024d * 1024 ) ) );
         if ( direct ) {
             return ByteBuffer.allocateDirect( size );
