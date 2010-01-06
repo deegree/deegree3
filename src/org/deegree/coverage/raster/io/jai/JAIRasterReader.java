@@ -43,10 +43,7 @@ import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.container.BufferResult;
-import org.deegree.coverage.raster.data.container.RasterDataContainer;
-import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
@@ -54,6 +51,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,8 +122,10 @@ public class JAIRasterReader implements RasterReader {
 
         Envelope envelope = rasterReference.getEnvelope( width, height, null );
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
-        RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy() );
-        return new SimpleRaster( source, envelope, rasterReference );
+        // RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy()
+        // );
+        RasterDataInfo rdi = reader.getRasterDataInfo();
+        return RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, options );
     }
 
     private void setID( RasterIOOptions options ) {
@@ -185,7 +185,7 @@ public class JAIRasterReader implements RasterReader {
 
     @Override
     public RasterDataInfo getRasterDataInfo() {
-        return null;
+        return ( reader != null ) ? reader.getRasterDataInfo() : null;
     }
 
     @Override

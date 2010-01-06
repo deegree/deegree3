@@ -44,6 +44,7 @@ import java.io.InputStream;
 
 import javax.media.jai.JAI;
 
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.io.RasterDataReader;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -220,6 +221,13 @@ public class JAIRasterDataReader implements RasterDataReader {
      */
     public void dispose() {
         // nothing to do.
+    }
+
+    /**
+     * @return the raster data info.
+     */
+    public RasterDataInfo getRasterDataInfo() {
+        throw new UnsupportedOperationException( "Getting rdi is currently not supported." );
     }
 
 }
