@@ -35,7 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -43,7 +46,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,6 +56,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -61,7 +64,6 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.protocol.csw.CSWConstants.TransactionType;
 import org.deegree.record.persistence.GenericDatabaseDS;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
@@ -392,7 +394,8 @@ public class GenericRecordStore implements RecordStore {
                 s += ", " + concatTableFROM( tableSet );
             }
 
-            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "." + commonForeignkey + " >= " + constraint.getStartPosition();
+            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
+                 + "." + commonForeignkey + " >= " + constraint.getStartPosition();
 
             if ( tableSet.size() == 0 ) {
                 s += " ";
@@ -414,7 +417,8 @@ public class GenericRecordStore implements RecordStore {
                 s += ", " + concatTableFROM( tableSet );
             }
 
-            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " LIMIT "
+            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
+                 + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " LIMIT "
                  + constraint.getMaxRecords();
 
         }
@@ -441,8 +445,9 @@ public class GenericRecordStore implements RecordStore {
                 s += ", " + concatTableFROM( tableSet );
             }
 
-            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "." + commonForeignkey + " >= " + constraint.getStartPosition();
-            
+            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
+                 + "." + commonForeignkey + " >= " + constraint.getStartPosition();
+
             if ( tableSet.size() == 0 ) {
                 s += " ";
             } else {
@@ -463,7 +468,8 @@ public class GenericRecordStore implements RecordStore {
                 s += ", " + concatTableFROM( tableSet );
             }
 
-            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " LIMIT "
+            s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
+                 + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " LIMIT "
                  + constraint.getMaxRecords();
 
         }
@@ -601,16 +607,61 @@ public class GenericRecordStore implements RecordStore {
         switch ( operations.getType() ) {
         case INSERT:
             InsertTransaction ins = (InsertTransaction) operations;
+            // ins.getElement().serialize( writer );
+            int result = 0;
 
-            String userdefTable = "INSERT INTO userdefinedqueryableproperties VALUES (7)";
+            // ----- to get the ID Rows
+            String selectIDRows = "SELECT COUNT(*) from datasets";
+            ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
 
-            String datasetsTable = "INSERT INTO datasets VALUES (7,null,null,'','',null,FALSE,'','', '', null)";
+            while ( rsBrief.next() ) {
 
-            String sql = "INSERT INTO recordbrief (fk_datasets, format, data) values (7, 1, '"
-                         + ins.getElement().toStringWithConsume() + "')";
-            stm.executeUpdate( userdefTable );
-            stm.executeUpdate( datasetsTable );
-            stm.executeUpdate( sql );
+                result = rsBrief.getInt( 1 );
+
+            }
+            rsBrief.close();
+            // ----- to get the ID Rows
+
+            for ( OMElement element : ins.getElement() ) {
+                result++;
+                // String elementString = element.toStringWithConsume().replace( " ", "" );
+                // elementString = element.toStringWithConsume().replace( "\n", "" );
+
+                // String sql = "";
+                // OutputStream out = new ByteArrayOutputStream();
+
+                /*
+                 * XMLStreamWriter XMLwriter; try {
+                 * 
+                 * 
+                 * XMLwriter = XMLOutputFactory.newInstance().createXMLStreamWriter( out );
+                 * 
+                 * 
+                 * element.serialize( XMLwriter );
+                 * 
+                 * 
+                 * 
+                 * XMLwriter.flush();
+                 * 
+                 * 
+                 * } catch ( XMLStreamException e ) { // TODO Auto-generated catch block e.printStackTrace(); } catch (
+                 * FactoryConfigurationError e ) { // TODO Auto-generated catch block e.printStackTrace(); }
+                 */
+                Writer insertWriter = new StringWriter();
+                String sql = "";
+                try {
+                    insertWriter.append( "INSERT INTO userdefinedqueryableproperties VALUES (" + result + ");" );
+                    ISOQPParsing elementParsing = new ISOQPParsing( element );
+                    sql = elementParsing.generateInsertStatement( insertWriter, result ).toString();
+                } catch ( IOException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                System.out.println( sql );
+                stm.executeUpdate( sql );
+
+            }
 
             stm.close();
             conn.close();
