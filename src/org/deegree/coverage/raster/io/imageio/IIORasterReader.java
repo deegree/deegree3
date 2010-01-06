@@ -170,7 +170,7 @@ public class IIORasterReader implements RasterReader {
         // );
         RasterDataInfo rdi = reader.getRasterDataInfo();
 
-        return RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this );
+        return RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, options );
         //
         // return new SimpleRaster( data, envelope, rasterReference );
     }
