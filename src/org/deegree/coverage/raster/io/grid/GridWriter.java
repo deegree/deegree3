@@ -51,11 +51,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
@@ -65,7 +67,6 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.slf4j.Logger;
 
 /**
@@ -85,7 +86,7 @@ public class GridWriter implements RasterWriter {
     /** Defining the number of rows of the grid rasterwriter, to be used in the RasterIOOptions */
     public final static String RASTERIO_ROWS = "grid_writer_rows";
 
-    private final static GeometryFactory geomFac = new GeometryFactory();
+    // private final static GeometryFactory geomFac = new GeometryFactory();
 
     private final static int DEFAULT_RASTER_TILE_WIDTH = 512;
 
@@ -284,14 +285,14 @@ public class GridWriter implements RasterWriter {
         int minRow = getRow( env.getMax().get1() );
         int maxColumn = getColumn( env.getMax().get0() );
         int maxRow = getRow( env.getMin().get1() );
+
         int[] max = geoRef.getRasterCoordinate( env.getMax().get0(), env.getMin().get1() );
-        if ( max[0] % tileRasterWidth == 0 ) {
-            // System.out.println( "reducing max col" );
+        double[] maxReal = geoRef.getRasterCoordinateUnrounded( env.getMax().get0(), env.getMin().get1() );
+        if ( ( Math.abs( maxReal[0] - max[0] ) < 1E-6 ) && max[0] % tileRasterWidth == 0 ) {
             // found an edge, don't use the last tile.
             maxColumn--;
         }
-        if ( max[1] % tileRasterHeight == 0 ) {
-            // System.out.println( "reducing max row" );
+        if ( ( Math.abs( maxReal[1] - max[1] ) < 1E-6 ) && max[1] % tileRasterHeight == 0 ) {
             // found an edge, don't use the last tile.
             maxRow--;
         }
@@ -378,7 +379,7 @@ public class GridWriter implements RasterWriter {
      * 
      * @param yesNo
      */
-    protected void leaveStreamOpen( boolean yesNo ) {
+    public void leaveStreamOpen( boolean yesNo ) {
         // System.out.println( "trying enter yesno: " + Thread.currentThread().getName() );
         synchronized ( tileData ) {
             this.leaveStreamOpen = yesNo;
@@ -470,6 +471,9 @@ public class GridWriter implements RasterWriter {
 
     private int getColumn( double x ) {
         int[] rasterCoordinate = this.geoRef.getRasterCoordinate( x, 0 );
+        if ( rasterCoordinate[0] < 0 ) {
+            return -1;
+        }
         return Math.min( columns, Math.max( -1, ( rasterCoordinate[0] / tileRasterWidth ) ) );
         // double dx = x - envelope.getMin().get0();
         // int column = (int) Math.floor( ( columns * dx ) / envelope.getSpan0() );
@@ -486,6 +490,9 @@ public class GridWriter implements RasterWriter {
 
     private int getRow( double y ) {
         int[] rasterCoordinate = this.geoRef.getRasterCoordinate( 0, y );
+        if ( rasterCoordinate[1] < 0 ) {
+            return -1;
+        }
         return Math.min( rows, Math.max( -1, ( rasterCoordinate[1] / tileRasterHeight ) ) );
         // double dy = y - envelope.getMin().get1();
         // int row = (int) Math.floor( ( ( rows * ( envelope.getSpan1() - dy ) ) / envelope.getSpan1() ) );
@@ -569,7 +576,7 @@ public class GridWriter implements RasterWriter {
      */
     private void write( AbstractRaster raster, int column, int row )
                             throws IOException {
-        String name = Thread.currentThread().getName();
+        // String name = Thread.currentThread().getName();
         // System.out.println( name + ": " + row + ", " + column );
         Envelope tileEnvelope = getTileEnvelope( column, row );
         // System.out.println( "tile env: " + tileEnvelope );
@@ -623,14 +630,13 @@ public class GridWriter implements RasterWriter {
                 FileLock lock = fileChannel.lock( position, position + bytesPerTile, false );
                 fileChannel.position( position );
                 ByteBuffer buffer = fileData.getByteBuffer();
-                buffer.rewind();
                 // byte[] first4 = new byte[4];
                 // buffer.get( first4 );
                 // System.out.println( "first four: " + Integer.toHexString( first4[0] & 0xff ) + " "
                 // + Integer.toHexString( first4[1] & 0xff ) + " "
                 // + Integer.toHexString( first4[2] & 0xff ) + " "
                 // + Integer.toHexString( first4[3] & 0xff ) + " " );
-                buffer.rewind();
+                buffer.clear();
                 fileChannel.write( buffer );
                 lock.release();
                 closeWriteStream();
@@ -639,6 +645,20 @@ public class GridWriter implements RasterWriter {
                 // image = RasterFactory.rasterDataToImage( fileData );
                 // ImageIO.write( image, "tif", new File( "/tmp/from_grid_after_writing_"
                 // + Thread.currentThread().getName() + ".tif" ) );
+            }
+            /**
+             * Clean up any loaded resources.
+             */
+            if ( raster instanceof TiledRaster ) {
+                List<AbstractRaster> tiles = ( (TiledRaster) raster ).getTileContainer().getTiles( tileEnvelope );
+                if ( tiles != null && !tiles.isEmpty() ) {
+                    for ( AbstractRaster ar : tiles ) {
+                        if ( ar.isSimpleRaster() ) {
+                            ( (SimpleRaster) ar ).dispose();
+                        }
+                    }
+                }
+
             }
         }
     }
