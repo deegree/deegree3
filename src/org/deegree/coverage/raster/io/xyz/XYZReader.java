@@ -55,7 +55,7 @@ import java.util.Set;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.RasterCache;
+import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.container.BufferResult;
@@ -261,7 +261,7 @@ public class XYZReader implements RasterReader {
         height = size[1];
         // the first data should not be added to the cache, it is only temporary
         RasterData data = RasterDataFactory.createRasterData( size[0], size[1], DataType.FLOAT, false );
-        data.setNullPixel( options.getNoDataValue() );
+        data.setNoDataValue( options.getNoDataValue() );
 
         for ( GridPoint p : gridPoints ) {
             int[] pos = geoReference.getRasterCoordinate( p.x, p.y );
@@ -358,7 +358,7 @@ public class XYZReader implements RasterReader {
         }
         // rb: setting the no value pixel from the options, should the cache actually save the no data value?
         if ( result != null && options != null && options.getNoDataValue() != null ) {
-            result.getRasterData().setNullPixel( options.getNoDataValue() );
+            result.getRasterData().setNoDataValue( options.getNoDataValue() );
         }
 
         return result;
