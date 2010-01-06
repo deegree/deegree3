@@ -102,7 +102,7 @@ public class ApplicationSchema {
 
         // build substitution group lookup maps
         if ( ftToSuperFt != null ) {
-            ftToSuperFt.putAll( ftToSuperFt );
+            this.ftToSuperFt.putAll( ftToSuperFt );
 
             for ( FeatureType ft : fts ) {
                 List<FeatureType> substitutionGroups = new ArrayList<FeatureType>();
