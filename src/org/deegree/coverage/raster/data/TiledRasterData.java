@@ -45,7 +45,9 @@ import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.grid.GridReader;
+import org.deegree.coverage.raster.io.grid.TileOffsetReader;
 
 /**
  * The <code>TiledRasterData</code> is a grid of raster data, wrapping all pixel operations on the tiles.
@@ -74,9 +76,10 @@ public class TiledRasterData implements RasterData {
     /**
      * @param reader
      *            to be used for the tiles.
+     * @param noData
      * 
      */
-    protected TiledRasterData( GridReader reader ) {
+    protected TiledRasterData( GridReader reader, RasterIOOptions options ) {
         if ( reader == null ) {
             throw new NullPointerException( "Grid reader may not be null." );
         }
@@ -87,9 +90,12 @@ public class TiledRasterData implements RasterData {
         tiles = new RasterData[this.columns * this.rows];
         for ( int row = 0; row < rows; ++row ) {
             for ( int col = 0; col < columns; ++col ) {
-                tiles[( row * columns ) + col] = RasterDataFactory.createRasterData( tileWidth, tileHeight,
-                                                                                     reader.getRasterDataInfo(),
-                                                                                     reader, false );
+                TileOffsetReader r = new TileOffsetReader( reader, new RasterRect( col * tileWidth, row * tileHeight,
+                                                                                   tileWidth, tileHeight ) );
+                tiles[( row * columns ) + col] = RasterDataFactory.createRasterData( new RasterRect( 0, 0, tileWidth,
+                                                                                                     tileHeight ),
+                                                                                     reader.getRasterDataInfo(), r,
+                                                                                     false, options );
             }
         }
         this.sampleDomain = new RasterRect( 0, 0, reader.getWidth(), reader.getHeight() );
@@ -387,7 +393,10 @@ public class TiledRasterData implements RasterData {
         if ( tile == null ) {
             return dataInfo.getFloatNoDataForBand( band );
         }
-        return tile.data.getFloatSample( tile.mappedX, tile.mappedY, band );
+        synchronized ( tiles ) {
+            return tile.data.getFloatSample( tile.mappedX, tile.mappedY, band );
+        }
+
     }
 
     @Override
@@ -884,7 +893,7 @@ public class TiledRasterData implements RasterData {
     }
 
     @Override
-    public void setNullPixel( byte[] values ) {
+    public void setNoDataValue( byte[] values ) {
         dataInfo.setNoDataPixel( null );
     }
 
@@ -1045,9 +1054,11 @@ public class TiledRasterData implements RasterData {
     @Override
     public void dispose() {
         if ( tiles != null ) {
-            for ( int i = 0; i < tiles.length; ++i ) {
-                if ( tiles[i] != null ) {
-                    tiles[i].dispose();
+            synchronized ( tiles ) {
+                for ( int i = 0; i < tiles.length; ++i ) {
+                    if ( tiles[i] != null ) {
+                        tiles[i].dispose();
+                    }
                 }
             }
         }
