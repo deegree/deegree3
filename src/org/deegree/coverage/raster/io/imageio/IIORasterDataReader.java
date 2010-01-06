@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io.imageio;
 
-import static java.lang.Math.min;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
 
 import java.awt.Rectangle;
@@ -58,7 +57,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RenderedOp;
 
-import org.deegree.coverage.raster.data.ByteBufferPool;
+import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
@@ -69,6 +68,7 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterDataReader;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
+import org.deegree.coverage.raster.utils.Rasters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +85,8 @@ public class IIORasterDataReader implements RasterDataReader {
 
     // io handles
     private File file;
+
+    private final String LOCK = "lock";
 
     private InputStream inputStream;
 
@@ -162,17 +164,20 @@ public class IIORasterDataReader implements RasterDataReader {
      * @return new RasterData
      */
     public ByteBufferRasterData read() {
-        if ( !imageReadFailed && findReaderForIO() ) {
-            try {
-                BufferedImage img = reader.read( 0 );
-                resetStream();
-                return rasterDataFromImage( img, options );
-            } catch ( IOException e ) {
-                LOG.error( "couldn't open image:" + e.getMessage(), e );
-                this.imageReadFailed = true;
+        BufferedImage result = null;
+        synchronized ( LOCK ) {
+            if ( !imageReadFailed && findReaderForIO() ) {
+                try {
+                    result = reader.read( 0 );
+                    resetStream();
+                    return rasterDataFromImage( result, options );
+                } catch ( IOException e ) {
+                    LOG.error( "couldn't open image:" + e.getMessage(), e );
+                    this.imageReadFailed = true;
+                }
             }
         }
-        return null;
+        return rasterDataFromImage( result, options );
     }
 
     /**
@@ -201,14 +206,18 @@ public class IIORasterDataReader implements RasterDataReader {
      * @return raster height
      */
     public int getWidth() {
-        if ( width == -1 && !widthReadFailed && findReaderForIO() ) {
-            try {
-                width = reader.getWidth( 0 );
-            } catch ( IOException e ) {
-                LOG.debug( "couldn't open image for width:" + e.getMessage(), e );
-                this.widthReadFailed = true;
+        if ( width == -1 ) {
+            synchronized ( LOCK ) {
+                if ( width == -1 && !widthReadFailed && findReaderForIO() ) {
+                    try {
+                        width = reader.getWidth( 0 );
+                    } catch ( IOException e ) {
+                        LOG.debug( "couldn't open image for width:" + e.getMessage(), e );
+                        this.widthReadFailed = true;
+                    }
+                    resetStream();
+                }
             }
-            resetStream();
         }
         return width;
     }
@@ -219,14 +228,18 @@ public class IIORasterDataReader implements RasterDataReader {
      * @return raster height
      */
     public int getHeight() {
-        if ( height == -1 && !heightReadFailed && findReaderForIO() ) {
-            try {
-                height = reader.getHeight( 0 );
-            } catch ( IOException e ) {
-                LOG.debug( "couldn't open image for height:" + e.getMessage(), e );
-                this.heightReadFailed = true;
+        if ( height == -1 ) {
+            synchronized ( LOCK ) {
+                if ( height == -1 && !heightReadFailed && findReaderForIO() ) {
+                    try {
+                        height = reader.getHeight( 0 );
+                    } catch ( IOException e ) {
+                        LOG.debug( "couldn't open image for height:" + e.getMessage(), e );
+                        this.heightReadFailed = true;
+                    }
+                    resetStream();
+                }
             }
-            resetStream();
         }
         return height;
     }
@@ -234,19 +247,23 @@ public class IIORasterDataReader implements RasterDataReader {
     /**
      * @return the raw metadata of the raster
      */
-    IIOMetadata getMetaData() {
+    protected IIOMetadata getMetaData() {
         // md == null,
         // 1. didn't read the metadata
         // 2. the reader couldn't read it, just do not try again.
         // 3.
-        if ( metaData == null && !metadataReadFailed && findReaderForIO() ) {
-            try {
-                metaData = reader.getImageMetadata( 0 );
-            } catch ( IOException e ) {
-                LOG.debug( "couldn't open metadata:" + e.getMessage(), e );
-                this.metadataReadFailed = true;
+        if ( metaData == null ) {
+            synchronized ( LOCK ) {
+                if ( metaData == null && !metadataReadFailed && findReaderForIO() ) {
+                    try {
+                        metaData = reader.getImageMetadata( 0 );
+                    } catch ( IOException e ) {
+                        LOG.debug( "couldn't open metadata:" + e.getMessage(), e );
+                        this.metadataReadFailed = true;
+                    }
+                    resetStream();
+                }
             }
-            resetStream();
         }
         return metaData;
     }
@@ -255,33 +272,37 @@ public class IIORasterDataReader implements RasterDataReader {
      * @return the raster data info object describing the data to be read.
      */
     public RasterDataInfo getRasterDataInfo() {
-        if ( rdi == null && !rdiReadFailed && findReaderForIO() ) {
-            try {
-                Iterator<ImageTypeSpecifier> imageTypes = reader.getImageTypes( 0 );
-                while ( imageTypes.hasNext() && rdi == null ) {
-                    ImageTypeSpecifier its = imageTypes.next();
-                    if ( its != null ) {
-                        BufferedImage bi = its.createBufferedImage( 2, 2 );
-                        BandType[] bands = BandType.fromBufferedImageType( bi.getType(), its.getNumBands() );
-                        DataType type = DataType.fromDataBufferType( its.getSampleModel().getDataType() );
-                        if ( type != DataType.FLOAT && type != DataType.DOUBLE && type != DataType.BYTE
-                             && bands.length > 1 ) {
-                            type = DataType.BYTE;
-                            boolean alphaLast = ( bands.length == 4 ) && ( bands[3] == BandType.ALPHA );
-                            bands[0] = BandType.RED;
-                            bands[1] = BandType.GREEN;
-                            bands[2] = BandType.BLUE;
-                            if ( bands.length == 4 && !alphaLast ) {
-                                bands[3] = BandType.ALPHA;
+        if ( rdi == null ) {
+            synchronized ( LOCK ) {
+                if ( rdi == null && !rdiReadFailed && findReaderForIO() ) {
+                    try {
+                        Iterator<ImageTypeSpecifier> imageTypes = reader.getImageTypes( 0 );
+                        while ( imageTypes.hasNext() && rdi == null ) {
+                            ImageTypeSpecifier its = imageTypes.next();
+                            if ( its != null ) {
+                                BufferedImage bi = its.createBufferedImage( 2, 2 );
+                                BandType[] bands = BandType.fromBufferedImageType( bi.getType(), its.getNumBands() );
+                                DataType type = DataType.fromDataBufferType( its.getSampleModel().getDataType() );
+                                if ( type != DataType.FLOAT && type != DataType.DOUBLE && type != DataType.BYTE
+                                     && bands.length > 1 ) {
+                                    type = DataType.BYTE;
+                                    boolean alphaLast = ( bands.length == 4 ) && ( bands[3] == BandType.ALPHA );
+                                    bands[0] = BandType.RED;
+                                    bands[1] = BandType.GREEN;
+                                    bands[2] = BandType.BLUE;
+                                    if ( bands.length == 4 && !alphaLast ) {
+                                        bands[3] = BandType.ALPHA;
+                                    }
+                                }
+                                rdi = new RasterDataInfo( bands, type, InterleaveType.PIXEL );
                             }
                         }
-                        rdi = new RasterDataInfo( bands, type, InterleaveType.PIXEL );
+
+                    } catch ( IOException e ) {
+                        LOG.debug( "couldn't create a raster data info object:" + e.getMessage(), e );
+                        rdiReadFailed = true;
                     }
                 }
-
-            } catch ( IOException e ) {
-                LOG.debug( "couldn't create a raster data info object:" + e.getMessage(), e );
-                rdiReadFailed = true;
             }
         }
         return rdi;
@@ -291,11 +312,13 @@ public class IIORasterDataReader implements RasterDataReader {
      * Removes the internal references to the loaded raster to allow garbage collection of the raster.
      */
     public void close() {
-        if ( reader != null && reader.getInput() != null ) {
-            try {
-                ( (ImageInputStream) reader.getInput() ).close();
-            } catch ( IOException e ) {
-                LOG.debug( "Could not close the imagestream, ignoring.", e );
+        synchronized ( LOCK ) {
+            if ( reader != null && reader.getInput() != null ) {
+                try {
+                    ( (ImageInputStream) reader.getInput() ).close();
+                } catch ( IOException e ) {
+                    LOG.debug( "Could not close the imagestream, ignoring.", e );
+                }
             }
         }
     }
@@ -306,35 +329,37 @@ public class IIORasterDataReader implements RasterDataReader {
      * @return true if the creation of the image reader was successful.
      */
     private boolean findReaderForIO() {
-        if ( this.reader == null && !retrievalOfReadersFailed ) {
-            try {
-                ImageInputStream iis = null;
-                if ( file != null ) {
-                    iis = ImageIO.createImageInputStream( file );
-                } else {
-                    if ( resetableStream ) {
-                        inputStream.mark( Integer.MAX_VALUE );
+        synchronized ( LOCK ) {
+            if ( this.reader == null && !retrievalOfReadersFailed ) {
+                try {
+                    ImageInputStream iis = null;
+                    if ( file != null ) {
+                        iis = ImageIO.createImageInputStream( file );
+                    } else {
+                        if ( resetableStream ) {
+                            inputStream.mark( Integer.MAX_VALUE );
+                        }
+                        iis = ImageIO.createImageInputStream( inputStream );
                     }
-                    iis = ImageIO.createImageInputStream( inputStream );
+                    Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName( format );
+                    if ( iter.hasNext() ) {
+                        // use the first.
+                        this.reader = iter.next();
+                        reader.setInput( iis );
+                        // done creating a reader.
+                        return true;
+                    }
+                    LOG.error( "couldn't find ImageReader" );
+                    this.retrievalOfReadersFailed = true;
+                } catch ( IOException e ) {
+                    LOG.debug( "Could not open an ImageStream for "
+                               + ( ( file != null ) ? "file: " + file.getAbsolutePath() : "stream " ) + ", because: "
+                               + e.getLocalizedMessage(), e );
+                    this.retrievalOfReadersFailed = true;
                 }
-                Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName( format );
-                if ( iter.hasNext() ) {
-                    // use the first.
-                    this.reader = iter.next();
-                    reader.setInput( iis );
-                    // done creating a reader.
-                    return true;
-                }
-                LOG.error( "couldn't find ImageReader" );
-                this.retrievalOfReadersFailed = true;
-            } catch ( IOException e ) {
-                LOG.debug( "Could not open an ImageStream for "
-                           + ( ( file != null ) ? "file: " + file.getAbsolutePath() : "stream " ) + ", because: "
-                           + e.getLocalizedMessage(), e );
-                this.retrievalOfReadersFailed = true;
             }
+            return ( this.reader != null && !retrievalOfReadersFailed );
         }
-        return ( this.reader != null && !retrievalOfReadersFailed );
     }
 
     /**
@@ -353,7 +378,11 @@ public class IIORasterDataReader implements RasterDataReader {
     boolean shouldCreateCacheFile() {
         boolean result = true;
         try {
-            result = !reader.isRandomAccessEasy( 0 );
+            synchronized ( LOCK ) {
+                if ( findReaderForIO() ) {
+                    result = !reader.isRandomAccessEasy( 0 );
+                }
+            }
         } catch ( IOException e ) {
             LOG.debug(
                        "Could not get easy access information from the imagereader, using configured value for using cache: "
@@ -377,20 +406,25 @@ public class IIORasterDataReader implements RasterDataReader {
             rp.setSourceRegion( intersection );
             try {
                 BufferedImage img = null;
-                synchronized ( reader ) {
-                    img = reader.read( 0, rp );
+                synchronized ( LOCK ) {
+                    if ( findReaderForIO() ) {
+                        img = reader.read( 0, rp );
+                    }
                 }
-                Raster raster = img.getRaster();
-                if ( resultBuffer == null ) {
-                    resultBuffer = ByteBufferPool.allocate( getRasterDataInfo().bands * getRasterDataInfo().dataSize
-                                                            * intersection.width * intersection.height, false );
-                }
+                if ( img != null ) {
+                    Raster raster = img.getRaster();
+                    if ( resultBuffer == null ) {
+                        resultBuffer = ByteBufferPool.allocate( getRasterDataInfo().bands
+                                                                * getRasterDataInfo().dataSize * intersection.width
+                                                                * intersection.height, false );
+                    }
 
-                // DataBuffer buffer = raster.getDataBuffer();
-                int imgDataType = raster.getSampleModel().getDataType();
-                DataType type = DataType.fromDataBufferType( imgDataType );
-                RasterFactory.rasterToByteBuffer( raster, 0, 0, img.getWidth(), img.getHeight(), type, resultBuffer );
-                result = new BufferResult( new RasterRect( intersection ), resultBuffer );
+                    // DataBuffer buffer = raster.getDataBuffer();
+                    int imgDataType = raster.getSampleModel().getDataType();
+                    DataType type = DataType.fromDataBufferType( imgDataType );
+                    RasterFactory.rasterToByteBuffer( raster, 0, 0, img.getWidth(), img.getHeight(), type, resultBuffer );
+                    result = new BufferResult( new RasterRect( intersection ), resultBuffer );
+                }
             } catch ( IOException e ) {
                 LOG.debug( "Could not read the given rect: " + rect + " because: " + e.getLocalizedMessage(), e );
             }
@@ -399,7 +433,49 @@ public class IIORasterDataReader implements RasterDataReader {
     }
 
     /**
-     * Below are some methods to get started with tiling on image io
+     * @return true if random access is easy for the image io reader.
+     */
+    public boolean getReadTiles() {
+        boolean result = false;
+        synchronized ( LOCK ) {
+            if ( findReaderForIO() ) {
+                try {
+                    result = reader != null ? reader.isRandomAccessEasy( 0 ) : false;
+                } catch ( IOException e ) {
+                    // just do nothing.
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 
+     */
+    public void dispose() {
+        synchronized ( LOCK ) {
+            if ( reader != null ) {
+                reader.dispose();
+                if ( reader.getInput() != null ) {
+                    Object input = reader.getInput();
+                    if ( input instanceof ImageInputStream ) {
+                        try {
+                            ( (ImageInputStream) input ).close();
+                        } catch ( IOException e ) {
+                            // just do nothing
+                        }
+                    }
+                }
+            }
+            // set the reader to null.
+            reader = null;
+        }
+
+    }
+
+    /**
+     * rb: Below is a method to get started with tiling on image io
      */
 
     @SuppressWarnings("unused")
@@ -411,65 +487,14 @@ public class IIORasterDataReader implements RasterDataReader {
 
         int width = result.getWidth();
         int height = result.getHeight();
-        int numberOfTiles = calcApproxTiles( width, height );
-        int tileSize = calcBestTileSize( width, height, numberOfTiles );
+        int numberOfTiles = Rasters.calcApproxTiles( width, height, 500 );
+        int tileWidth = Rasters.calcTileSize( width, numberOfTiles );
+        int tileHeight = Rasters.calcTileSize( height, numberOfTiles );
 
         ImageLayout layout = new ImageLayout();
-        layout.setTileWidth( tileSize );
-        layout.setTileHeight( tileSize );
+        layout.setTileWidth( tileWidth );
+        layout.setTileHeight( tileHeight );
         result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
         // return result;
-    }
-
-    /**
-     * @param width2
-     * @param height2
-     * @param numberOfTiles
-     * @return
-     */
-    private int calcBestTileSize( int imageWidth, int imageHeight, int numberOfTiles ) {
-        double smallest = min( imageWidth, imageHeight );
-        double size = smallest / numberOfTiles;
-        return (int) Math.round( size );
-    }
-
-    private int calcApproxTiles( int imageWidth, int imageHeight ) {
-        int TILE_SIZE = 500;
-        int largest = Math.max( imageWidth, imageHeight );
-        // smaller then
-        if ( largest < ( 0.5 * TILE_SIZE ) + TILE_SIZE ) {
-            return 1;
-        }
-        if ( largest < 2 * TILE_SIZE ) {
-            return 2;
-        }
-        int result = 3;
-        while ( largest > ( result * TILE_SIZE ) ) {
-            result++;
-        }
-        return result;
-    }
-
-    /**
-     * @return true if random access is easy for the image io reader.
-     */
-    public boolean getReadTiles() {
-        boolean result = false;
-        try {
-            result = reader != null ? reader.isRandomAccessEasy( 0 ) : false;
-        } catch ( IOException e ) {
-            // just do nothing.
-        }
-        return result;
-    }
-
-    /**
-     * 
-     */
-    public void dispose() {
-        if ( reader != null ) {
-            reader.dispose();
-        }
-
     }
 }
