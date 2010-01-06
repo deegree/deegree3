@@ -51,9 +51,10 @@ import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.TiledRaster;
+import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
-import org.deegree.coverage.raster.data.ByteBufferPool;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -143,7 +144,8 @@ public class GridFileReader extends GridReader {
     private synchronized void instantiate( File gridFile, RasterIOOptions options )
                             throws NumberFormatException, IOException {
         if ( infoFile == null && gridFile != null ) {
-            this.dataLocationId = options == null ? null : options.get( RasterIOOptions.ORIGIN_OF_RASTER );
+            this.dataLocationId = options == null ? FileUtils.getFilename( gridFile )
+                                                 : options.get( RasterIOOptions.ORIGIN_OF_RASTER );
             File metaInfo = GridMetaInfoFile.fileNameFromOptions( gridFile.getParent(),
                                                                   FileUtils.getFilename( gridFile ), options );
             this.instantiate( GridMetaInfoFile.readFromFile( metaInfo, options ), gridFile );
@@ -192,6 +194,7 @@ public class GridFileReader extends GridReader {
             instantiate( gridFile, options );
         }
 
+        byte[] noData = options == null ? null : options.getNoDataValue();
         int expectedTilesPerBlob = (int) ( gridFile.length() / getBytesPerTile() );
         if ( getTilesPerBlob() != expectedTilesPerBlob ) {
             LOG.error( "the number of tiles in the blob are wrong." );
@@ -201,8 +204,13 @@ public class GridFileReader extends GridReader {
         MemoryTileContainer mtc = new MemoryTileContainer();
         for ( int rowId = 0; rowId < infoFile.rows(); ++rowId ) {
             for ( int columnId = 0; columnId < infoFile.columns(); ++columnId ) {
-                AbstractRaster rasterTile = getTile( rowId, columnId );
-                mtc.addTile( rasterTile );
+                SimpleRaster rasterTile = (SimpleRaster) getTile( rowId, columnId );
+                if ( rasterTile != null ) {
+                    if ( noData != null ) {
+                        rasterTile.getRasterData().setNoDataValue( noData );
+                    }
+                    mtc.addTile( rasterTile );
+                }
             }
         }
 
