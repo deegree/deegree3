@@ -128,7 +128,7 @@ public class RasterRangeSetTest {
         AbstractRaster raster = RasterFactory.createRasterFromImage( image, env, OriginLocation.OUTER );
         SimpleRaster createdRaster = raster.getAsSimpleRaster();
         RasterData rasterData = createdRaster.getRasterData();
-        rasterData.setNullPixel( new byte[] { (byte) 1, (byte) 2, (byte) 3 } );
+        rasterData.setNoDataValue( new byte[] { (byte) 1, (byte) 2, (byte) 3 } );
         return createdRaster;
     }
 

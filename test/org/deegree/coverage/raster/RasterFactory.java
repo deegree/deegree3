@@ -38,7 +38,6 @@
 
 package org.deegree.coverage.raster;
 
-import static java.lang.Math.min;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.gc;
 
@@ -72,6 +71,7 @@ import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.utils.Rasters;
 import org.junit.Test;
 
 /**
@@ -259,8 +259,8 @@ public class RasterFactory {
         // if ( reader.isImageTiled( 0 ) ) {
         int width = reader.getWidth( 0 );
         int height = reader.getHeight( 0 );
-        int numberOfTiles = calcApproxTiles( width, height );
-        int tileSize = calcBestTileSize( width, height, numberOfTiles );
+        int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
+        int tileSize = Rasters.calcTileSize( width, numberOfTiles );
 
         ImageLayout layout = new ImageLayout();
         layout.setTileWidth( TILE_SIZE );
@@ -286,41 +286,13 @@ public class RasterFactory {
 
         int width = result.getWidth();
         int height = result.getHeight();
-        int numberOfTiles = calcApproxTiles( width, height );
-        int tileSize = calcBestTileSize( width, height, numberOfTiles );
+        int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
+        int tileSize = Rasters.calcTileSize( width, numberOfTiles );
 
         ImageLayout layout = new ImageLayout();
         layout.setTileWidth( tileSize );
         layout.setTileHeight( tileSize );
         result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
-    }
-
-    /**
-     * @param width2
-     * @param height2
-     * @param numberOfTiles
-     * @return
-     */
-    private int calcBestTileSize( int imageWidth, int imageHeight, int numberOfTiles ) {
-        double smallest = min( imageWidth, imageHeight );
-        double size = smallest / numberOfTiles;
-        return (int) Math.round( size );
-    }
-
-    public static int calcApproxTiles( int imageWidth, int imageHeight ) {
-        int largest = Math.max( imageWidth, imageHeight );
-        // smaller then
-        if ( largest < ( 0.5 * TILE_SIZE ) + TILE_SIZE ) {
-            return 1;
-        }
-        if ( largest < 2 * TILE_SIZE ) {
-            return 2;
-        }
-        int result = 3;
-        while ( largest > ( result * TILE_SIZE ) ) {
-            result++;
-        }
-        return result;
     }
 
     private void outputJAIParams() {
