@@ -129,7 +129,7 @@ public interface RasterData {
      * @param values
      *            an array with the null values
      */
-    public void setNullPixel( byte[] values );
+    public void setNoDataValue( byte[] values );
 
     /**
      * Returns a new RasterData with the same DataType and InterleaveType
