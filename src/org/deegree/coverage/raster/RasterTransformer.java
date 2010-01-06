@@ -152,7 +152,7 @@ public class RasterTransformer extends Transformer {
         RasterGeoReference srcREnv = simpleSourceRaster.getRasterReference();
 
         if ( backgroundValue != null ) {
-            srcData.setNullPixel( backgroundValue );
+            srcData.setNoDataValue( backgroundValue );
         }
 
         // interpolation is needed.
