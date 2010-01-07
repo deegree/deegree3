@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
 /**
@@ -46,22 +46,28 @@ package org.deegree.record.persistence;
 public class MappingInfo {
 
     private String table;
-    
+
     private String column;
-    
+
     private ColumnType type;
-    
-    public MappingInfo (String table, String column, ColumnType type) {
+
+    /**
+     * 
+     * @param table
+     *            specifies the table in which this property is archived
+     * @param column
+     *            specifies the columnname in the table
+     * @param type
+     *            specifies the type of the column
+     */
+    public MappingInfo( String table, String column, ColumnType type ) {
         this.table = table;
         this.column = column;
         this.type = type;
     }
-    
+
     public enum ColumnType {
-        STRING,
-        INTEGER,
-        DATE,
-        ENVELOPE
+        STRING, INTEGER, DATE, ENVELOPE
     }
 
     /**
@@ -77,7 +83,5 @@ public class MappingInfo {
     public String getColumn() {
         return column;
     }
-    
-    
-    
+
 }
