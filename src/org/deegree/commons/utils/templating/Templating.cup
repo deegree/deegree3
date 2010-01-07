@@ -1,0 +1,66 @@
+package org.deegree.commons.utils.templating;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java_cup.runtime.*;
+import org.deegree.commons.utils.*;
+
+terminal           TEXT_TOKEN, TEMPLATE_CALL_TOKEN, TEMPLATE_DEFINITION_TOKEN, MAP_DEFINITION_TOKEN, MAP_CALL_TOKEN;
+non terminal       definition, tmplortext, map;
+
+definition ::= TEMPLATE_DEFINITION_TOKEN:def tmplortext:list             {: RESULT = new HashMap();
+                                                                            ((HashMap)RESULT).put(def, list); :}
+         | TEMPLATE_DEFINITION_TOKEN:def tmplortext:list definition:defs {: if(defs instanceof HashMap) ((HashMap)defs).put(def, list);
+                                                                            RESULT = defs; :}
+         | MAP_DEFINITION_TOKEN:def map:map                              {: RESULT = new HashMap();
+                                                                            String[] ss = ((String)map).split("\n");
+                                                                            HashMap res = new HashMap();
+                                                                            for(String s : ss){
+                                                                              s = s.trim();
+                                                                              int idx = s.lastIndexOf("=");
+                                                                              if(!s.isEmpty()) res.put(s.substring(0, idx), s.substring(idx + 1, s.length()));
+                                                                            }
+                                                                            ((HashMap)RESULT).put(def, res); :}
+         | MAP_DEFINITION_TOKEN:def map:map definition:defs              {: String[] ss = ((String)map).split("\n");
+                                                                            HashMap res = new HashMap();
+                                                                            for(String s : ss){
+                                                                              s = s.trim();
+                                                                              int idx = s.lastIndexOf("=");
+                                                                              if(!s.isEmpty()) res.put(s.substring(0, idx), s.substring(idx + 1, s.length()));
+                                                                            }
+                                                                            ((HashMap)defs).put(def, res);
+                                                                            RESULT = defs; :};
+
+tmplortext ::= TEXT_TOKEN:text tmplortext:rest      {: if(rest instanceof LinkedList){
+                                                         if(((LinkedList)rest).peek() instanceof String){
+                                                           ((LinkedList)rest).addFirst(((String)text) + ((String)((LinkedList)rest).poll()));
+                                                         }else{
+                                                           ((LinkedList)rest).addFirst(text);
+                                                         }
+                                                       }
+                                                       RESULT = rest; :}
+         | TEMPLATE_CALL_TOKEN:call tmplortext:rest {: if(rest instanceof Exception){
+                                                         RESULT = rest;
+                                                       }else{
+                                                         String s = (String)call;
+                                                         int idx = s.lastIndexOf(":");
+                                                         if(rest instanceof LinkedList) ((LinkedList)rest).addFirst(new StringPair(s.substring(0, idx), s.substring(idx + 1, s.length())));
+                                                         RESULT = rest;
+                                                       } :}
+         | TEXT_TOKEN:text                          {: RESULT = new LinkedList();
+                                                       ((LinkedList)RESULT).add(text); :}
+         | TEMPLATE_CALL_TOKEN:call                 {: RESULT = new LinkedList();
+                                                       String s = (String)call;
+                                                       int idx = s.lastIndexOf(":");
+                                                       ((LinkedList)RESULT).add(new StringPair(s.substring(0, idx), s.substring(idx + 1, s.length()))); :}
+         | MAP_CALL_TOKEN:call                      {: RESULT = new LinkedList();
+                                                       String s = (String)call;
+                                                       int idx = s.lastIndexOf(":");
+                                                       ((LinkedList)RESULT).add(new StringPair(s.substring(0, idx), s.substring(idx + 1, s.length()))); :}
+         | MAP_CALL_TOKEN:call tmplortext:rest      {: String s = (String)call;
+                                                       int idx = s.lastIndexOf(":");
+                                                       if(rest instanceof LinkedList) ((LinkedList)rest).addFirst(new StringPair(s.substring(0, idx), s.substring(idx + 1, s.length())));
+                                                       RESULT = rest; :};
+
+map ::= TEXT_TOKEN:text map:rest {: RESULT = text + ((String)rest); :}
+         | TEXT_TOKEN:text       {: RESULT = text; :};
