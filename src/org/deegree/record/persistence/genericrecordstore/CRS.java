@@ -99,6 +99,10 @@ public class CRS {
         this.version = version;
     }
 
+    public String toString(){
+        
+        return authority + ":" + id + ":" + version;
+    }
     
     
 }

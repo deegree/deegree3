@@ -201,13 +201,13 @@ public class ISOQPParsing extends XMLAdapter {
         insertStatement = generateRecordBrief( qp, insertStatement, id );
         insertStatement = generateRecordFull( this.elementFull, insertStatement, id );
         if ( qp.getTitle() != null ) {
-            insertStatement = generateISOQP_titleStatement( qp.getTitle(), id, insertStatement );
+            insertStatement = generateISOQP_titleStatement( qp.getTitle(), insertStatement, id );
         }
         if ( qp.getType() != null ) {
-            insertStatement = generateISOQP_typeStatement( qp.getType(), id, insertStatement );
+            insertStatement = generateISOQP_typeStatement( qp.getType(), insertStatement, id );
         }
         if(qp.getBoundingBox() != null){
-            insertStatement = generateISOQP_boundingBoxStatement(qp.getBoundingBox(), id, insertStatement);
+            insertStatement = generateISOQP_boundingBoxStatement(qp.getBoundingBox(), insertStatement, id);
         }
         return insertStatement;
     }
@@ -235,20 +235,22 @@ public class ISOQPParsing extends XMLAdapter {
         return writer;
     }
 
-    private Writer generateRecordBrief( QueryableProperties qp, Writer writer, int id )
+    private Writer generateRecordBrief( QueryableProperties qp, Writer writer, int fk_datasets )
                             throws IOException {
         OMElement omElement = null;
-
+        final String databaseTable = "recordbrief";
+        int id = 0;
+        try {
+            id = getLastDataset( connection, databaseTable );
+            id++;
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace namespace = factory.createOMNamespace( rootElement.getDefaultNamespace().getNamespaceURI(), "gmd" );
-        /*
-         * if(rootElement.getDefaultNamespace().equals( qp.getIdentifier().getNamespace() )){
-         * System.out.println("hier bin ich"); qp.setIdentifier( factory.createOMElement(
-         * qp.getIdentifier().getLocalName(), namespace ) );
-         * 
-         * }
-         */
-
+        
         omElement = factory.createOMElement( "MD_Metadata", namespace );
         omElement.addChild( identifier );
         if ( hierarchyLevel != null ) {
@@ -257,18 +259,98 @@ public class ISOQPParsing extends XMLAdapter {
         if ( identificationInfo != null ) {
             omElement.addChild( identificationInfo );
         }
+        
+        
 
-        writer.append( "INSERT INTO recordbrief (fk_datasets, format, data) VALUES (" + id + ", 2, '"
+        writer.append( "INSERT INTO recordbrief (id, fk_datasets, format, data) VALUES (" + id + "," + fk_datasets + ", 2, '"
                        + omElement.toString() + "');" );
+        
+        id++;
+        writer = generateDCBrief( qp, writer, id, fk_datasets, databaseTable );
 
         return writer;
     }
+    
+    private Writer generateDCBrief(QueryableProperties qp, Writer writer, int id, int fk_datasets, String databaseTable){
+        OMElement omElement = null;
+        
+        //if this method is used standalone
+        int idTemp = 0;
+        try {
+            idTemp = getLastDataset( connection, databaseTable );
+            
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if(idTemp == id){
+            id++;            
+        }
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace namespace = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
+        OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
+        OMNamespace namespaceOWS = factory.createOMNamespace( "http://www.opengis.net/ows", "ows" );
+        
+        //TODO think about the right corners
+        omElement = factory.createOMElement( "BriefRecord", namespace );
+        OMElement omIdentifier = factory.createOMElement( "identifier", namespaceDC );
+        OMElement omType = factory.createOMElement( "type", namespaceDC );
+        OMElement omBoundingBox = factory.createOMElement( "BoundingBox", namespaceOWS );
+        OMElement omLowerCorner = factory.createOMElement( "LowerCorner", namespaceOWS );
+        OMElement omUpperCorner = factory.createOMElement( "UpperCorner", namespaceOWS );
+        
+        
+        omIdentifier.setText( qp.getIdentifier() );
+        
+        omElement.addChild( omIdentifier );
+        
+        for(String title : qp.getTitle()){
+            OMElement omTitle = factory.createOMElement( "title", namespaceDC );
+            omTitle.setText( title );
+            omElement.addChild( omTitle );
+        }
+        if(qp.getType() != null){
+            omType.setText( qp.getType() );
+            }else{
+                omType.setText( "" );
+            }
+        omElement.addChild( omType );
+        
+        omLowerCorner.setText( qp.getBoundingBox().getEastBoundLongitude() + " " + qp.getBoundingBox().getSouthBoundLatitude() );
+        omUpperCorner.setText( qp.getBoundingBox().getWestBoundLongitude() + " " + qp.getBoundingBox().getNorthBoundLatitude() );
+        omBoundingBox.addChild( omLowerCorner );
+        omBoundingBox.addChild( omUpperCorner );
+        if(qp.getCrs() != null){
+            omBoundingBox.addAttribute( "crs", qp.getCrs().toString(), namespaceOWS );
+        }
+        
+        omElement.addChild( omBoundingBox );
+        
+        try {
+            writer.append( "INSERT INTO recordbrief (id, fk_datasets, format, data) VALUES (" + id + "," + fk_datasets + ", 1, '"
+                           + omElement.toString() + "');" );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return writer;
+        
+    }
 
-    private Writer generateRecordFull( OMElement element, Writer writer, int id )
+    private Writer generateRecordFull( OMElement element, Writer writer, int fk_datasets )
                             throws IOException {
-
-        System.out.println( element );
-        writer.append( "INSERT INTO recordfull (fk_datasets, format, data) VALUES (" + id + ", 2, '"
+        final String databaseTable = "recordfull";
+        int id = 0;
+        try {
+            id = getLastDataset( connection, databaseTable );
+            id++;
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        writer.append( "INSERT INTO recordfull (id, fk_datasets, format, data) VALUES (" + id + "," + fk_datasets + ", 2, '"
                        + element.toString() + "');" );
 
         return writer;
@@ -281,7 +363,7 @@ public class ISOQPParsing extends XMLAdapter {
         return writer;
     }
 
-    private Writer generateISOQP_titleStatement( List<String> titles, int mainDatabaseTableID, Writer writer ) {
+    private Writer generateISOQP_titleStatement( List<String> titles, Writer writer, int mainDatabaseTableID ) {
         final String databaseTable = "isoqp_title";
         int id = 0;
         try {
@@ -304,7 +386,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private Writer generateISOQP_typeStatement( String type, int mainDatabaseTableID, Writer writer ) {
+    private Writer generateISOQP_typeStatement( String type, Writer writer, int mainDatabaseTableID ) {
         final String databaseTable = "isoqp_type";
         int id = 0;
         try {
@@ -325,7 +407,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private Writer generateISOQP_boundingBoxStatement( BoundingBox bbox, int mainDatabaseTableID, Writer writer ) {
+    private Writer generateISOQP_boundingBoxStatement( BoundingBox bbox, Writer writer, int mainDatabaseTableID ) {
         final String databaseTable = "isoqp_boundingbox";
         int id = 0;
         try {

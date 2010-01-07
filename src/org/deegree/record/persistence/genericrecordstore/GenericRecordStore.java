@@ -80,7 +80,9 @@ import org.deegree.record.publication.TransactionOperation;
  */
 public class GenericRecordStore implements RecordStore {
 
-    private static QName[] typeNames = new QName[2];
+    //private static QName[] typeNames = new QName[2] ;
+    
+    private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>(); 
 
     private String connectionId;
 
@@ -104,8 +106,11 @@ public class GenericRecordStore implements RecordStore {
         formatTypeInGenericRecordStore.put( "summary", "recordsummary" );
         formatTypeInGenericRecordStore.put( "full", "recordfull" );
 
-        typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
-        typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
+        //typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
+        //typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
+        
+        typeNames.put( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ), 1 );
+        typeNames.put( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" ), 2 );
 
     }
 
@@ -121,16 +126,20 @@ public class GenericRecordStore implements RecordStore {
     @Override
     public void describeRecord( XMLStreamWriter writer, QName typeName ) {
 
-        URL url;
-        if ( typeName.equals( typeNames[0] ) ) {
+        URL url = null;
+        for(QName name : typeNames.keySet()){
+            if ( typeName.equals( name ) ) {
 
-            // in = new FileInputStream( "../dc/dc.xsd" );
-            url = GenericRecordStore.class.getResource( "dc.xsd" );
+                // in = new FileInputStream( "../dc/dc.xsd" );
+                url = GenericRecordStore.class.getResource( "dc.xsd" );
 
-        } else {
-            // in = new FileInputStream( "../gmd/gmd.xsd" );
-            url = GenericRecordStore.class.getResource( "gmd_metadata.xsd" );
+            } else {
+                // in = new FileInputStream( "../gmd/gmd.xsd" );
+                url = GenericRecordStore.class.getResource( "gmd_metadata.xsd" );
+            }
         }
+        
+        
 
         XMLAdapter ada = new XMLAdapter( url );
 
@@ -168,7 +177,7 @@ public class GenericRecordStore implements RecordStore {
      * @see org.deegree.record.persistence.RecordStore#getTypeNames()
      */
     @Override
-    public QName[] getTypeNames() {
+    public Map<QName, Integer> getTypeNames() {
 
         return typeNames;
     }
@@ -222,10 +231,19 @@ public class GenericRecordStore implements RecordStore {
         int countRows = 0;
         int nextRecord = 0;
         int returnedRecords = 0;
-
+        int profileFormatNumber = 1;
+        
         String selectCountRows = "";
+        
+        for(QName whichTypeName : typeNames.keySet()){
+            if(typeName == whichTypeName){
+                profileFormatNumber = typeNames.get( whichTypeName );
+                break;
+            }
+            
+        }
 
-        selectCountRows = generateCOUNTStatement( formatType, constraint );
+        selectCountRows = generateCOUNTStatement( formatType, constraint, profileFormatNumber );
 
         // ConnectionManager.addConnections( con );
         for ( PooledConnection pool : con.getPooledConnection() ) {
@@ -291,6 +309,15 @@ public class GenericRecordStore implements RecordStore {
     private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, GenericDatabaseDS constraint,
                                        JDBCConnections con )
                             throws SQLException, XMLStreamException {
+        int profileFormatNumber = 1;
+        
+        for(QName whichTypeName : typeNames.keySet()){
+            if(typeName.equals( whichTypeName)){
+                profileFormatNumber = typeNames.get( whichTypeName );
+                break;
+            }
+            
+        }
 
         for ( PooledConnection pool : con.getPooledConnection() ) {
             Connection conn = ConnectionManager.getConnection( connectionId );
@@ -299,7 +326,7 @@ public class GenericRecordStore implements RecordStore {
 
             case brief:
 
-                String selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ), constraint );
+                String selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ), constraint,profileFormatNumber );
                 ResultSet rsBrief = conn.createStatement().executeQuery( selectBrief );
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "brief" ),
@@ -318,7 +345,7 @@ public class GenericRecordStore implements RecordStore {
             case summary:
 
                 String selectSummary = generateSELECTStatement( formatTypeInGenericRecordStore.get( "summary" ),
-                                                                constraint );
+                                                                constraint, profileFormatNumber );
                 ResultSet rsSummary = conn.createStatement().executeQuery( selectSummary );
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "summary" ),
@@ -335,7 +362,7 @@ public class GenericRecordStore implements RecordStore {
                 break;
             case full:
 
-                String selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint );
+                String selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint, profileFormatNumber );
                 ResultSet rsFull = conn.createStatement().executeQuery( selectFull );
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "full" ),
@@ -383,7 +410,7 @@ public class GenericRecordStore implements RecordStore {
      * @param constraint
      * @return
      */
-    private String generateSELECTStatement( String formatType, GenericDatabaseDS constraint ) {
+    private String generateSELECTStatement( String formatType, GenericDatabaseDS constraint, int profileFormatNumber ) {
         String s = "";
         if ( constraint.getExpressionWriter() != null ) {
             s += "SELECT " + formatType + ".data " + "FROM " + mainDatabaseTable + ", " + formatType;
@@ -395,7 +422,8 @@ public class GenericRecordStore implements RecordStore {
             }
 
             s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
-                 + "." + commonForeignkey + " >= " + constraint.getStartPosition();
+                 + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " ";
+            s += "AND " + formatType + "." + "format = " + profileFormatNumber + " "; 
 
             if ( tableSet.size() == 0 ) {
                 s += " ";
@@ -431,7 +459,7 @@ public class GenericRecordStore implements RecordStore {
      * @param constraint
      * @return
      */
-    private String generateCOUNTStatement( String formatType, GenericDatabaseDS constraint ) {
+    private String generateCOUNTStatement( String formatType, GenericDatabaseDS constraint, int profileFormatNumber ) {
         String s = "";
         if ( constraint.getExpressionWriter() != null ) {
             s += "SELECT COUNT(" + formatType + ".data) " + "FROM " + mainDatabaseTable + ", " + formatType;
@@ -443,12 +471,13 @@ public class GenericRecordStore implements RecordStore {
             }
 
             s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
-                 + "." + commonForeignkey + " >= " + constraint.getStartPosition();
+                 + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " ";
+            s += "AND " + formatType + "." + "format = " + profileFormatNumber + " "; 
 
             if ( tableSet.size() == 0 ) {
                 s += " ";
             } else {
-                s += " AND " + concatTableWHERE( tableSet );
+                s += "AND " + concatTableWHERE( tableSet );
             }
 
             s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
