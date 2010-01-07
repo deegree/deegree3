@@ -522,22 +522,23 @@ public class WKTWriter {
 
         writer.append( ')' );
         List<Ring> interiorRings = geometry.getInteriorRings();
-        for ( Ring r : interiorRings ) {
+        if ( interiorRings != null ) {
+            for ( Ring r : interiorRings ) {
 
-            writer.append( ",(" );
-            counter = 0;
-            for ( Point point : r.getControlPoints() ) {
+                writer.append( ",(" );
+                counter = 0;
+                for ( Point point : r.getControlPoints() ) {
 
-                counter++;
-                if ( counter < r.getControlPoints().size() ) {
-                    writePointWithoutPrefix( point, writer );
-                    writer.append( ',' );
-                } else {
-                    writePointWithoutPrefix( point, writer );
+                    counter++;
+                    if ( counter < r.getControlPoints().size() ) {
+                        writePointWithoutPrefix( point, writer );
+                        writer.append( ',' );
+                    } else {
+                        writePointWithoutPrefix( point, writer );
+                    }
                 }
+                writer.append( ')' );
             }
-            writer.append( ')' );
-
         }
 
     }
