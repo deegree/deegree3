@@ -10,11 +10,20 @@ values (7, 1, 'this is a test...');
 
 
 
---to delete the inserted dataset
+--to delete the inserted dataset for recordBrief
 delete from recordbrief
 where fk_datasets >= 7;
 
 delete from recordfull
+where fk_datasets >= 7;
+
+delete from isoqp_title
+where fk_datasets >= 7;
+
+delete from isoqp_type
+where fk_datasets >= 7;
+
+delete from isoqp_boundingbox
 where fk_datasets >= 7;
 
 delete from datasets 
