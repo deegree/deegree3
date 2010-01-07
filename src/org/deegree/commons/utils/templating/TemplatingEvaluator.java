@@ -137,14 +137,14 @@ public class TemplatingEvaluator {
      * @param col
      * @return a string produced by evaluating the templates
      */
-    public static String evalTemplating( Map<String, List<?>> map, MatchableObject col ) {
+    public static String evalTemplating( Map<String, ?> map, MatchableObject col ) {
         if ( map.get( "start" ) == null ) {
             throw new IllegalArgumentException( "A template with name 'start' must be defined." );
         }
 
         StringBuilder sb = new StringBuilder();
         try {
-            eval( sb, map.get( "start" ), map, col, true );
+            eval( sb, (List<?>) map.get( "start" ), map, col, true );
         } catch ( FilterEvaluationException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
