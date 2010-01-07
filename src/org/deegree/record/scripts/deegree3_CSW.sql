@@ -30,9 +30,9 @@ ALTER TABLE ISOQP_TemporalExtent DROP CONSTRAINT FK_ISOQP_TemporalExtent_Dataset
 ALTER TABLE ISOQP_Title DROP CONSTRAINT FK_ISOQP_Title_Datasets;
 ALTER TABLE ISOQP_TopicCategory DROP CONSTRAINT FK_ISOQP_TopicCategory_Datasets;
 ALTER TABLE ISOQP_Type DROP CONSTRAINT FK_ISOQP_Type_Datasets;
-ALTER TABLE RecordFull DROP CONSTRAINT FK_Record_Datasets;
-ALTER TABLE RecordBrief DROP CONSTRAINT FK_Record_Datasets;
-ALTER TABLE RecordSummary DROP CONSTRAINT FK_Record_Datasets;
+ALTER TABLE RecordFull DROP CONSTRAINT fk_recordfull_datasets;
+ALTER TABLE RecordBrief DROP CONSTRAINT fk_recordbrief_datasets;
+ALTER TABLE RecordSummary DROP CONSTRAINT fk_recordsummary_datasets;
 ALTER TABLE DCQP_RIGHTS DROP CONSTRAINT FK_DCQP_RIGHTS_Datasets;
 
 -- Drop Tables, Stored Procedures and Views 
@@ -353,6 +353,7 @@ COMMENT ON COLUMN ISOQP_Type.Type
     IS 'MD_Metadata.hierarchyLevel.MD_ScopeCode/@codeListValue. If MD_Metadata.hierarchyLevel is missing, ''Type'' will be considered as "Dataset" (default).';
 
 CREATE TABLE RecordBrief ( 
+	ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
 	format numeric(2) NOT NULL,
 	data bytea NOT NULL
@@ -361,6 +362,7 @@ COMMENT ON TABLE RecordBrief
     IS 'This is the table for the brief representation of a getRecords response, because a brief representation has to be allways provided.';
 
 CREATE TABLE RecordSummary ( 
+    ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
 	format numeric(2) NOT NULL,
 	data bytea NOT NULL
@@ -369,6 +371,7 @@ COMMENT ON TABLE RecordSummary
     IS 'This is the table for the summary representation of a getRecords response';
 
 CREATE TABLE RecordFull ( 
+    ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
 	format numeric(2) NOT NULL,
 	data bytea NOT NULL
@@ -492,15 +495,15 @@ ALTER TABLE ISOQP_Type ADD CONSTRAINT PK_ISOQP_Type
 
 
 ALTER TABLE RecordBrief ADD CONSTRAINT PK_RecordBrief
-	PRIMARY KEY (fk_datasets);
+	PRIMARY KEY (ID);
 
 
 ALTER TABLE RecordSummary ADD CONSTRAINT PK_RecordSummary
-	PRIMARY KEY (fk_datasets);
+	PRIMARY KEY (ID);
 
 
 ALTER TABLE RecordFull ADD CONSTRAINT PK_RecordFull
-	PRIMARY KEY (fk_datasets);
+	PRIMARY KEY (ID);
 
 
 ALTER TABLE UserDefinedQueryableProperties ADD CONSTRAINT PK_SelfQueryableProperties 
