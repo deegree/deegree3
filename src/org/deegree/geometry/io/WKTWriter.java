@@ -35,8 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -94,10 +98,10 @@ import org.deegree.geometry.primitive.segments.Geodesic;
 import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
 import org.deegree.gml.props.GMLStdProps;
+import org.slf4j.Logger;
 
 /**
  * Writes {@link Geometry} objects as Well-Known Text (WKT).
@@ -110,11 +114,9 @@ import org.deegree.gml.props.GMLStdProps;
  */
 public class WKTWriter {
 
-    private static final com.vividsolutions.jts.io.WKTWriter jtsWriter = new com.vividsolutions.jts.io.WKTWriter();
+    private static final Logger LOG = getLogger( WKTWriter.class );
 
     private Set<WKTFlag> flags;
-
-    private Writer writer;
 
     private CurveLinearizer linearizer;
 
@@ -149,9 +151,20 @@ public class WKTWriter {
 
     }
 
-    public WKTWriter( Set<WKTFlag> flags, Writer writer, CoordinateFormatter formatter ) {
+    /**
+     * Create a wkt writer with the given flags and formatter.
+     * 
+     * @param flags
+     *            signaling the capabilities of this writer, if <code>null</code> only some geometries can be exported
+     *            (all dialects are disabled).
+     * @param formatter
+     *            to use, if <code>null</code> the default decimal formatter with 5 decimals is used.
+     */
+    public WKTWriter( Set<WKTFlag> flags, CoordinateFormatter formatter ) {
         this.flags = flags;
-        this.writer = writer;
+        if ( this.flags == null ) {
+            this.flags = new HashSet<WKTFlag>();
+        }
         if ( formatter == null ) {
             this.formatter = new DecimalCoordinateFormatter( 5 );
         } else {
@@ -1317,26 +1330,50 @@ public class WKTWriter {
     }
 
     /**
+     * Export the given geometry to wkt, without using any {@link WKTFlag}s. The writing is done to a StringWriter,
+     * which should be handled with care.
      * 
      * @param geom
-     * @return
+     *            to export.
+     * @return a wkt String representation of the given geometry, of the emtpy string if the geometry is
+     *         <code>null</code>
      */
-    @Deprecated
     public static String write( Geometry geom ) {
-
-        return jtsWriter.write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
+        if ( geom == null ) {
+            return "";
+        }
+        StringWriter writer = new StringWriter();
+        try {
+            write( geom, writer );
+        } catch ( IOException e ) {
+            LOG.error( "Error while exporting geometry becauese: " + e.getLocalizedMessage(), e );
+        }
+        return writer.toString();
     }
 
     /**
+     * Export the given geometry to wkt, without using any {@link WKTFlag}s. The writing is done using the given writer
+     * instance, if no writer instance is given (<code>null</code>) a {@link NullPointerException} will be thrown.
      * 
      * @param geom
+     *            to export, if <code>null</code> the method will return.
      * @param writer
+     *            to write to.
      * @throws IOException
+     *             if an error occurs while using the writer.
+     * @throws NullPointerException
+     *             if the writer is <code>null</code>
      */
-    @Deprecated
     public static void write( Geometry geom, Writer writer )
-                            throws IOException {
-        jtsWriter.write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(), writer );
+                            throws IOException, NullPointerException {
+        if ( geom == null ) {
+            return;
+        }
+        if ( writer == null ) {
+            throw new NullPointerException( "The writer may not be null." );
+        }
+        WKTWriter wktW = new WKTWriter( null, null );
+        wktW.writeGeometry( geom, writer );
     }
 
     /**
