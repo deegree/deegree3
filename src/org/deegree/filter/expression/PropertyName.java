@@ -119,7 +119,8 @@ public class PropertyName implements Expression {
         if ( isSimple == null ) {
             // TODO check against XPath spec.
             isSimple = !xPath.contains( "@" ) && !xPath.contains( "/" ) && !xPath.contains( "[" )
-                       && !xPath.contains( "::" ) && !xPath.contains( "(" ) && !xPath.contains( "=" );
+                       && !xPath.contains( "*" ) && !xPath.contains( "::" ) && !xPath.contains( "(" )
+                       && !xPath.contains( "=" );
         }
         return isSimple;
     }
