@@ -317,12 +317,12 @@ public class CurveLinearizer {
             if ( ascending ) {
                 if ( pts[i].get0() > pts[i + 1].get0() ) {
                     throw new UnsupportedOperationException(
-                                                             "It is expected that the control points are order on the X-axis either ascending or descending." );
+                                                             "It is expected that the control points are ordered on the X-axis either ascendingly or descendingly." );
                 }
             } else {
                 if ( pts[i].get0() < pts[i + 1].get0() ) {
                     throw new UnsupportedOperationException(
-                                                             "It is expected that the control points are order on the X-axis either ascending or descending." );
+                                                             "It is expected that the control points are ordered on the X-axis either ascendingly or descendingly." );
                 }
             }
         }
@@ -365,10 +365,10 @@ public class CurveLinearizer {
             numPoints = ( (MaxErrorCriterion) crit ).getMaxNumPoints();
             if ( numPoints <= 0 ) {
                 throw new UnsupportedOperationException(
-                                                         "Linearization of the cubic spline with MaxErrorCriterion is not suported, unless the number of points is provided." );
+                                                         "Linearization of the cubic spline with MaxErrorCriterion is not supported, unless the number of points is provided." );
                 // TODO it is mathematically hard to get an expression of the numOfPoints with respect to the error;
-                // there would be two work-around as I can see them: 1) through a trial-and-error procedure determine
-                // which how small should the sampling interval be, so that the difference in value is less that the
+                // there would be two work-arounds as I can see them: 1) through a trial-and-error procedure determine
+                // how small should the sampling interval be, so that the difference in value is less than the
                 // given error; 2) use the mathematical expression used for the arc/circle (something with Math.acos...)
                 // - it needs a good approximation for the radius.
             }
@@ -376,7 +376,7 @@ public class CurveLinearizer {
 
         double[] interpolated = interpolateSpline( n, h, xcoor, ycoor, vectorx, numPoints );
 
-        // populate a list of points, so that later a LineStringSegment can be build from it
+        // populate a list of points, so that later a LineStringSegment can be built from it
         List<Point> iPoints = new ArrayList<Point>();
         CRS crs = spline.getControlPoints().get( 0 ).getCoordinateSystem();
         PrecisionModel pm = spline.getControlPoints().get( 0 ).getPrecision();
