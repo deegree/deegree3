@@ -722,11 +722,22 @@ public class CacheRasterReader extends GridFileReader {
             }
             try {
                 BufferResult read = cachedReader.read( tileRect, result );
+                if ( read == null ) {
+                    return result;
+                }
                 RasterRect rect = read.getRect();
                 if ( !rect.equals( tileRect ) ) {
                     // the tile rect was not filled correctly with data, make the data fit the grid
                     // layout.
-                    copyValuesFromTile( rect, tileRect, read.getResult().asReadOnlyBuffer(), result );
+                    ByteBuffer src = read.getResult();
+                    if ( src == result ) {
+                        // create a copy
+                        LOG.info( "The did not fit, creating copy." );
+                        src = ByteBuffer.allocate( tileBuffer.capacity() );
+                        tileBuffer.clear();
+                        src.put( tileBuffer );
+                    }
+                    copyValuesFromTile( rect, tileRect, src, result );
                 }
                 // still synchronized on the tiles, so ok.
                 tilesInMemory[row][column] = currentTimeMillis();
