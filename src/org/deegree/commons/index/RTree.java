@@ -85,6 +85,9 @@ public class RTree<T> extends SpatialIndex<T> {
 
     private int maxNumberOfObjects = 128;
 
+    // rb: output the warning
+    boolean outputWarning = true;
+
     /**
      * @param rootEnvelope
      *            of this rtree.
@@ -126,15 +129,22 @@ public class RTree<T> extends SpatialIndex<T> {
             if ( intersects( bbox, e.bbox, 2 ) ) {
                 if ( e.next == null ) {
                     list.add( e.entryValue );
-                    if ( list.size() >= maxNumberOfObjects * 10 ) {
-                        LOG.warn( "Stopped collecting features when {} were loaded.", list.size() );
-                        return list;
+                    // rb: uncommented
+                    if ( ( list.size() >= maxNumberOfObjects * 10 && outputWarning ) ) {
+                        outputWarning = false;
+                        LOG.warn(
+                                  "Collecting features should stop because {} features were loaded, which was 10 times larger then the maxNumberOfObjects {} (which is currently hardcoded). Continue filling the list though.",
+                                  list.size(), this.maxNumberOfObjects );
+                        // return list;
                     }
                 } else {
                     list.addAll( query( bbox, e.next ) );
-                    if ( list.size() >= maxNumberOfObjects * 10 ) {
-                        LOG.warn( "Stopped collecting features when {} were loaded.", list.size() );
-                        return list;
+                    if ( ( list.size() >= maxNumberOfObjects * 10 ) && outputWarning ) {
+                        outputWarning = false;
+                        LOG.warn(
+                                  "Collecting features should stop because {} features were loaded, which was 10 times larger then the maxNumberOfObjects {} (which is currently hardcoded). Continue filling the list though.",
+                                  list.size(), this.maxNumberOfObjects );
+                        // return list;
                     }
                 }
             }

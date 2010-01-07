@@ -106,7 +106,7 @@ public class Query {
      *            if false, the feature store may omit the geometry property values in the result
      *            {@link QueryHint#HINT_NO_GEOMETRIES}
      * @param scale
-     *            if positive, a scale query hint will be used
+     *            if scale is positive, a scale query hint will be used
      */
     public Query( QName ftName, Envelope looseBbox, Filter filter, boolean withGeometries, int scale ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
