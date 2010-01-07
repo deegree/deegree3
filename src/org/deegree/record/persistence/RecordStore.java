@@ -37,6 +37,7 @@ package org.deegree.record.persistence;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -126,6 +127,6 @@ public interface RecordStore {
      * 
      * @return QName
      */
-    public QName[] getTypeNames();
+    public Map<QName, Integer> getTypeNames();
 
 }
