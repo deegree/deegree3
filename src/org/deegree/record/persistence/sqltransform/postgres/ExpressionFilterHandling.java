@@ -77,6 +77,7 @@ public class ExpressionFilterHandling {
         propToTableAndCol.put( "Subject", new MappingInfo( "isoqp_topiccategory", "topiccategory", STRING ) );
         propToTableAndCol.put( "AnyText", new MappingInfo( "datasets", "anytext", STRING ) );
         propToTableAndCol.put( "Identifier", new MappingInfo( "datasets", "identifier", STRING ) );
+        propToTableAndCol.put( "apiso:identifier", new MappingInfo( "datasets", "identifier", STRING ) );
         propToTableAndCol.put( "Modified", new MappingInfo( "datasets", "modified", DATE ) );
         propToTableAndCol.put( "CRS", new MappingInfo( "isoqp_crs", "crs", STRING ) );
         propToTableAndCol.put( "Association", new MappingInfo( "isoqp_association", "relation", STRING ) );
@@ -129,7 +130,7 @@ public class ExpressionFilterHandling {
 
                 }
             }
-
+            
             break;
 
         case LITERAL:
