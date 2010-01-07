@@ -403,11 +403,8 @@ public class GenericRecordStore implements RecordStore {
                 s += " AND " + concatTableWHERE( tableSet );
             }
 
-            if ( tableSet.size() == 0 ) {
-                s += "LIMIT " + constraint.getMaxRecords();
-            } else {
-                s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
-            }
+            s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
+
         } else {
             s += "SELECT " + formatType + ".data " + "FROM " + mainDatabaseTable + ", " + formatType;
 
@@ -454,11 +451,8 @@ public class GenericRecordStore implements RecordStore {
                 s += " AND " + concatTableWHERE( tableSet );
             }
 
-            if ( tableSet.size() == 0 ) {
-                s += "LIMIT " + constraint.getMaxRecords();
-            } else {
-                s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
-            }
+            s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
+
         } else {
             s += "SELECT COUNT(" + formatType + ".data) " + "FROM " + mainDatabaseTable + ", " + formatType;
 
@@ -608,22 +602,13 @@ public class GenericRecordStore implements RecordStore {
         case INSERT:
             InsertTransaction ins = (InsertTransaction) operations;
             // ins.getElement().serialize( writer );
-            int result = 0;
 
             // ----- to get the ID Rows
-            String selectIDRows = "SELECT COUNT(*) from datasets";
-            ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
-
-            while ( rsBrief.next() ) {
-
-                result = rsBrief.getInt( 1 );
-
-            }
-            rsBrief.close();
+            // int result = getLastDataset( conn, mainDatabaseTable );
             // ----- to get the ID Rows
 
             for ( OMElement element : ins.getElement() ) {
-                result++;
+                // result++;
                 // String elementString = element.toStringWithConsume().replace( " ", "" );
                 // elementString = element.toStringWithConsume().replace( "\n", "" );
 
@@ -650,9 +635,9 @@ public class GenericRecordStore implements RecordStore {
                 Writer insertWriter = new StringWriter();
                 String sql = "";
                 try {
-                    insertWriter.append( "INSERT INTO userdefinedqueryableproperties VALUES (" + result + ");" );
-                    ISOQPParsing elementParsing = new ISOQPParsing( element );
-                    sql = elementParsing.generateInsertStatement( insertWriter, result ).toString();
+
+                    ISOQPParsing elementParsing = new ISOQPParsing( element, conn );
+                    sql = elementParsing.generateInsertStatement( insertWriter ).toString();
                 } catch ( IOException e ) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -676,6 +661,22 @@ public class GenericRecordStore implements RecordStore {
 
             break;
         }
+
+    }
+
+    private int getLastDataset( Connection conn, String databaseTable )
+                            throws SQLException {
+        int result = 0;
+        String selectIDRows = "SELECT COUNT(*) from " + databaseTable;
+        ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
+
+        while ( rsBrief.next() ) {
+
+            result = rsBrief.getInt( 1 );
+
+        }
+        rsBrief.close();
+        return result;
 
     }
 

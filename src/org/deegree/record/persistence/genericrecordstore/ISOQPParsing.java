@@ -35,8 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import static org.deegree.record.persistence.MappingInfo.ColumnType.STRING;
+
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,9 +53,10 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.record.persistence.MappingInfo;
 
 /**
- * The parsing for the ISO application profile. 
+ * The parsing for the ISO application profile.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -68,6 +74,10 @@ public class ISOQPParsing extends XMLAdapter {
     // private OMElement recordBrief;
     private Writer writer;
 
+    private int id;
+
+    private Connection connection;
+
     private OMElement element;
 
     private OMElement elementFull;
@@ -79,10 +89,12 @@ public class ISOQPParsing extends XMLAdapter {
     private OMElement hierarchyLevel = null;
 
     private OMElement identificationInfo = null;
+    
 
-    public ISOQPParsing( OMElement element ) {
+    public ISOQPParsing( OMElement element, Connection connection ) {
         this.element = element;
         this.elementFull = element;
+        this.connection = connection;
 
         setRootElement( element );
         nsContext.addNamespace( rootElement.getDefaultNamespace().getPrefix(),
@@ -123,9 +135,10 @@ public class ISOQPParsing extends XMLAdapter {
 
             }
             if ( elem.getLocalName().equals( "hierarchyLevel" ) ) {
-
-                qp.setType( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
-
+                String type = getNodeAsString( elem, new XPath( "./gmd:MD_ScopeCode/@codeListValue", nsContext ), "Datasets" );
+                
+                qp.setType( type );
+                
                 hierarchyLevel = elem;
                 elementFull.addChild( hierarchyLevel );
                 continue;
@@ -181,16 +194,48 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    public Writer generateInsertStatement( Writer writer, int id )
+    public Writer generateInsertStatement( Writer writer )
                             throws IOException {
         Writer insertStatement;
-        insertStatement = generateRecordBrief( qp, writer, id );
+        insertStatement = generateMainDatabaseDataset( writer, qp );
+        insertStatement = generateRecordBrief( qp, insertStatement, id );
         insertStatement = generateRecordFull( this.elementFull, insertStatement, id );
-
+        if ( qp.getTitle() != null ) {
+            insertStatement = generateISOQP_titleStatement( qp.getTitle(), id, insertStatement );
+        }
+        if ( qp.getType() != null ) {
+            insertStatement = generateISOQP_typeStatement( qp.getType(), id, insertStatement );
+        }
+        if(qp.getBoundingBox() != null){
+            insertStatement = generateISOQP_boundingBoxStatement(qp.getBoundingBox(), id, insertStatement);
+        }
         return insertStatement;
     }
 
-    public Writer generateRecordBrief( QueryableProperties qp, Writer writer, int id )
+    private Writer generateMainDatabaseDataset( Writer writer, QueryableProperties qp ) {
+        final String databaseTable = "datasets";
+
+        try {
+            id = getLastDataset( connection, databaseTable );
+            id++;
+            writer.append( "INSERT INTO userdefinedqueryableproperties VALUES (" + id + ");" );
+            writer.append( "INSERT INTO "
+                           + databaseTable
+                           + " (id, version, status, anyText, identifier, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
+                           + id + ",null,null,'','" + qp.getIdentifier() + "',null,FALSE,'','','', null);" );
+
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return writer;
+    }
+
+    private Writer generateRecordBrief( QueryableProperties qp, Writer writer, int id )
                             throws IOException {
         OMElement omElement = null;
 
@@ -213,14 +258,7 @@ public class ISOQPParsing extends XMLAdapter {
             omElement.addChild( identificationInfo );
         }
 
-        /*
-         * id, version, status, anyText, identifier, modified, hassecurityconstraint, language, parentidentifier,
-         * source, association
-         */
-        writer.append( "INSERT INTO datasets VALUES (" + id + ",null,null,'','" + qp.getIdentifier()
-                       + "',null,FALSE,'','', '', null);" );
-
-        writer.append( "INSERT INTO recordbrief (fk_datasets, format, data) VALUES (" + id + ", 1, '"
+        writer.append( "INSERT INTO recordbrief (fk_datasets, format, data) VALUES (" + id + ", 2, '"
                        + omElement.toString() + "');" );
 
         return writer;
@@ -230,7 +268,7 @@ public class ISOQPParsing extends XMLAdapter {
                             throws IOException {
 
         System.out.println( element );
-        writer.append( "INSERT INTO recordfull (fk_datasets, format, data) VALUES (" + id + ", 1, '"
+        writer.append( "INSERT INTO recordfull (fk_datasets, format, data) VALUES (" + id + ", 2, '"
                        + element.toString() + "');" );
 
         return writer;
@@ -241,6 +279,89 @@ public class ISOQPParsing extends XMLAdapter {
      */
     public Writer getWriter() {
         return writer;
+    }
+
+    private Writer generateISOQP_titleStatement( List<String> titles, int mainDatabaseTableID, Writer writer ) {
+        final String databaseTable = "isoqp_title";
+        int id = 0;
+        try {
+            id = getLastDataset( connection, databaseTable );
+            for ( String title : titles ) {
+                id++;
+                writer.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, title) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + title + "');" );
+            }
+
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return writer;
+
+    }
+
+    private Writer generateISOQP_typeStatement( String type, int mainDatabaseTableID, Writer writer ) {
+        final String databaseTable = "isoqp_type";
+        int id = 0;
+        try {
+            id = getLastDataset( connection, databaseTable );
+            id++;
+            writer.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, type) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",'" + type + "');" );
+
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return writer;
+
+    }
+
+    private Writer generateISOQP_boundingBoxStatement( BoundingBox bbox, int mainDatabaseTableID, Writer writer ) {
+        final String databaseTable = "isoqp_boundingbox";
+        int id = 0;
+        try {
+            id = getLastDataset( connection, databaseTable );
+            id++;
+            writer.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, bbox) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",SetSRID('BOX3D(" + bbox.getEastBoundLongitude() + " "
+                           + bbox.getNorthBoundLatitude() + "," + bbox.getWestBoundLongitude() + " "
+                           + bbox.getSouthBoundLatitude() + ")'::box3d,4326));" );
+
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return writer;
+
+    }
+
+    private int getLastDataset( Connection conn, String databaseTable )
+                            throws SQLException {
+        int result = 0;
+        String selectIDRows = "SELECT COUNT(*) from " + databaseTable;
+        ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
+
+        while ( rsBrief.next() ) {
+
+            result = rsBrief.getInt( 1 );
+
+        }
+        rsBrief.close();
+        return result;
+
     }
 
 }
