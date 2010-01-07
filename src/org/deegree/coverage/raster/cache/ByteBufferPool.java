@@ -82,13 +82,13 @@ public class ByteBufferPool {
                             requestedMemory = 0;
                             RasterCache.updateCurrentlyUsedMemory();
                         }
-                    } ).run();
+                    } ).start();
                 }
 
             }
+            LOG.debug( "Requested{}memory: {} MB", ( forCache ? " cache " : " " ), ( size / ( 1024 * 1024d ) ) );
+            RasterCache.freeMemory( size );
         }
-        LOG.debug( "Requested{}memory: {} MB", ( forCache ? " cache " : " " ), ( size / ( 1024 * 1024d ) ) );
-        RasterCache.freeMemory( size );
         // LOG.info( "currently used cache memory: {} MB", ( freeMem / ( 1024d * 1024 ) ) );
         if ( direct ) {
             return ByteBuffer.allocateDirect( size );

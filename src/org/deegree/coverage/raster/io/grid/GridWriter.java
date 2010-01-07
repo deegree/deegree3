@@ -365,7 +365,7 @@ public class GridWriter implements RasterWriter {
             if ( this.writeStream == null ) {
                 if ( !gridFile.exists() ) {
                     // the file was deleted
-                    System.out.println( "Creating new file." );
+                    // System.out.println( "Creating new file." );
                     gridFile.createNewFile();
                 }
                 this.writeStream = new RandomAccessFile( gridFile, "rw" );

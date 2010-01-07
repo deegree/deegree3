@@ -546,36 +546,36 @@ public class CacheRasterReader extends GridFileReader {
     }
 
     /**
+     * only called from constructor, no synchronization needed.
+     * 
      * @param filledBuffer
      */
     private void createTilesFromFilledBuffer( ByteBuffer filledBuffer, int width, int height ) {
         if ( filledBuffer != null ) {
-            synchronized ( tiles ) {
-                if ( tiles.length == 1 && tiles[0].length == 1 ) {
-                    tiles[0][0] = filledBuffer.asReadOnlyBuffer();
-                    tilesInMemory[0][0] = currentTimeMillis();
-                } else {
-                    // create tiling
-                    RasterRect tileRect = new RasterRect( 0, 0, tileWidth, tileHeight );
-                    RasterRect dataRect = new RasterRect( 0, 0, width, height );
-                    ByteBuffer origBuffer = filledBuffer.asReadOnlyBuffer();
-                    for ( int row = 0; row < tiles.length; ++row ) {
-                        for ( int col = 0; col < tiles[row].length; ++col ) {
-                            tileRect.x = col * tileWidth;
-                            tileRect.y = row * tileHeight;
-                            tiles[row][col] = allocateTileBuffer( false, true );
-                            try {
-                                copyValuesFromTile( dataRect, tileRect, origBuffer, tiles[row][col] );
-                                tilesInMemory[row][col] = currentTimeMillis();
-                            } catch ( IOException e ) {
-                                LOG.error( "Could not create tile from buffer because: " + e.getLocalizedMessage(), e );
-                            }
+            if ( tiles.length == 1 && tiles[0].length == 1 ) {
+                tiles[0][0] = filledBuffer.asReadOnlyBuffer();
+                tilesInMemory[0][0] = currentTimeMillis();
+            } else {
+                // create tiling
+                RasterRect tileRect = new RasterRect( 0, 0, tileWidth, tileHeight );
+                RasterRect dataRect = new RasterRect( 0, 0, width, height );
+                ByteBuffer origBuffer = filledBuffer.asReadOnlyBuffer();
+                for ( int row = 0; row < tiles.length; ++row ) {
+                    for ( int col = 0; col < tiles[row].length; ++col ) {
+                        tileRect.x = col * tileWidth;
+                        tileRect.y = row * tileHeight;
+                        tiles[row][col] = allocateTileBuffer( false, true );
+                        try {
+                            copyValuesFromTile( dataRect, tileRect, origBuffer, tiles[row][col] );
+                            tilesInMemory[row][col] = currentTimeMillis();
+                        } catch ( IOException e ) {
+                            LOG.error( "Could not create tile from buffer because: " + e.getLocalizedMessage(), e );
                         }
                     }
-                    // remove the old buffer from memory
-                    filledBuffer = null;
-                    origBuffer = null;
                 }
+                // remove the old buffer from memory
+                filledBuffer = null;
+                origBuffer = null;
             }
         }
     }
@@ -677,10 +677,12 @@ public class CacheRasterReader extends GridFileReader {
      */
     private ByteBuffer getTileBuffer( int column, int row ) {
         ByteBuffer result = null;
+        // allocation of the buffer should not be in the synchronized block, it may cause a dead lock with the raster
+        // cache.
+        ByteBuffer tileBuffer = allocateTileBuffer( false, true );
         if ( row < tiles.length && column < tiles[row].length ) {
             synchronized ( tiles ) {
                 if ( tiles[row][column] == null || tilesInMemory[row][column] == 0 ) {
-                    ByteBuffer tileBuffer = allocateTileBuffer( false, true );
                     // check the cache file
                     if ( tilesOnFile != null && tilesOnFile[row][column] > 0 ) {
                         try {
@@ -717,9 +719,6 @@ public class CacheRasterReader extends GridFileReader {
         ByteBuffer result = tileBuffer;
         if ( cachedReader != null ) {
             RasterRect tileRect = new RasterRect( column * tileWidth, row * tileHeight, tileWidth, tileHeight );
-            if ( result == null ) {
-                result = allocateTileBuffer( false, true );
-            }
             try {
                 BufferResult read = cachedReader.read( tileRect, result );
                 if ( read == null ) {
@@ -732,7 +731,7 @@ public class CacheRasterReader extends GridFileReader {
                     ByteBuffer src = read.getResult();
                     if ( src == result ) {
                         // create a copy
-                        LOG.info( "The did not fit, creating copy." );
+                        LOG.debug( "The rectangle did not fit, creating copy." );
                         src = ByteBuffer.allocate( tileBuffer.capacity() );
                         tileBuffer.clear();
                         src.put( tileBuffer );
