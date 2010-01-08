@@ -51,6 +51,12 @@ public class CRS {
     
     private String version;
     
+    /**
+     * 
+     * @param authority
+     * @param id
+     * @param version
+     */
     public CRS(String authority, String id, String version){
         this.authority = authority;
         this.id = id;

@@ -80,9 +80,9 @@ import org.deegree.record.publication.TransactionOperation;
  */
 public class GenericRecordStore implements RecordStore {
 
-    //private static QName[] typeNames = new QName[2] ;
-    
-    private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>(); 
+    // private static QName[] typeNames = new QName[2] ;
+
+    private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
     private String connectionId;
 
@@ -106,9 +106,9 @@ public class GenericRecordStore implements RecordStore {
         formatTypeInGenericRecordStore.put( "summary", "recordsummary" );
         formatTypeInGenericRecordStore.put( "full", "recordfull" );
 
-        //typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
-        //typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
-        
+        // typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
+        // typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
+
         typeNames.put( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ), 1 );
         typeNames.put( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" ), 2 );
 
@@ -127,7 +127,7 @@ public class GenericRecordStore implements RecordStore {
     public void describeRecord( XMLStreamWriter writer, QName typeName ) {
 
         URL url = null;
-        for(QName name : typeNames.keySet()){
+        for ( QName name : typeNames.keySet() ) {
             if ( typeName.equals( name ) ) {
 
                 // in = new FileInputStream( "../dc/dc.xsd" );
@@ -138,8 +138,6 @@ public class GenericRecordStore implements RecordStore {
                 url = GenericRecordStore.class.getResource( "gmd_metadata.xsd" );
             }
         }
-        
-        
 
         XMLAdapter ada = new XMLAdapter( url );
 
@@ -232,15 +230,15 @@ public class GenericRecordStore implements RecordStore {
         int nextRecord = 0;
         int returnedRecords = 0;
         int profileFormatNumber = 1;
-        
+
         String selectCountRows = "";
-        
-        for(QName whichTypeName : typeNames.keySet()){
-            if(typeName == whichTypeName){
+
+        for ( QName whichTypeName : typeNames.keySet() ) {
+            if ( typeName == whichTypeName ) {
                 profileFormatNumber = typeNames.get( whichTypeName );
                 break;
             }
-            
+
         }
 
         selectCountRows = generateCOUNTStatement( formatType, constraint, profileFormatNumber );
@@ -310,13 +308,13 @@ public class GenericRecordStore implements RecordStore {
                                        JDBCConnections con )
                             throws SQLException, XMLStreamException {
         int profileFormatNumber = 1;
-        
-        for(QName whichTypeName : typeNames.keySet()){
-            if(typeName.equals( whichTypeName)){
+
+        for ( QName whichTypeName : typeNames.keySet() ) {
+            if ( typeName.equals( whichTypeName ) ) {
                 profileFormatNumber = typeNames.get( whichTypeName );
                 break;
             }
-            
+
         }
 
         for ( PooledConnection pool : con.getPooledConnection() ) {
@@ -326,7 +324,8 @@ public class GenericRecordStore implements RecordStore {
 
             case brief:
 
-                String selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ), constraint,profileFormatNumber );
+                String selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ),
+                                                              constraint, profileFormatNumber );
                 ResultSet rsBrief = conn.createStatement().executeQuery( selectBrief );
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "brief" ),
@@ -362,7 +361,8 @@ public class GenericRecordStore implements RecordStore {
                 break;
             case full:
 
-                String selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint, profileFormatNumber );
+                String selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint,
+                                                             profileFormatNumber );
                 ResultSet rsFull = conn.createStatement().executeQuery( selectFull );
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "full" ),
@@ -423,7 +423,7 @@ public class GenericRecordStore implements RecordStore {
 
             s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
                  + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " ";
-            s += "AND " + formatType + "." + "format = " + profileFormatNumber + " "; 
+            s += "AND " + formatType + "." + "format = " + profileFormatNumber + " ";
 
             if ( tableSet.size() == 0 ) {
                 s += " ";
@@ -472,7 +472,7 @@ public class GenericRecordStore implements RecordStore {
 
             s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
                  + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " ";
-            s += "AND " + formatType + "." + "format = " + profileFormatNumber + " "; 
+            s += "AND " + formatType + "." + "format = " + profileFormatNumber + " ";
 
             if ( tableSet.size() == 0 ) {
                 s += " ";
@@ -625,59 +625,24 @@ public class GenericRecordStore implements RecordStore {
                             throws SQLException, XMLStreamException {
 
         Connection conn = ConnectionManager.getConnection( connectionId );
-        Statement stm = conn.createStatement();
 
         switch ( operations.getType() ) {
         case INSERT:
             InsertTransaction ins = (InsertTransaction) operations;
-            // ins.getElement().serialize( writer );
-
-            // ----- to get the ID Rows
-            // int result = getLastDataset( conn, mainDatabaseTable );
-            // ----- to get the ID Rows
 
             for ( OMElement element : ins.getElement() ) {
-                // result++;
-                // String elementString = element.toStringWithConsume().replace( " ", "" );
-                // elementString = element.toStringWithConsume().replace( "\n", "" );
 
-                // String sql = "";
-                // OutputStream out = new ByteArrayOutputStream();
-
-                /*
-                 * XMLStreamWriter XMLwriter; try {
-                 * 
-                 * 
-                 * XMLwriter = XMLOutputFactory.newInstance().createXMLStreamWriter( out );
-                 * 
-                 * 
-                 * element.serialize( XMLwriter );
-                 * 
-                 * 
-                 * 
-                 * XMLwriter.flush();
-                 * 
-                 * 
-                 * } catch ( XMLStreamException e ) { // TODO Auto-generated catch block e.printStackTrace(); } catch (
-                 * FactoryConfigurationError e ) { // TODO Auto-generated catch block e.printStackTrace(); }
-                 */
-                Writer insertWriter = new StringWriter();
-                String sql = "";
                 try {
 
                     ISOQPParsing elementParsing = new ISOQPParsing( element, conn );
-                    sql = elementParsing.generateInsertStatement( insertWriter ).toString();
+                    elementParsing.executeInsertStatement();
                 } catch ( IOException e ) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
-                System.out.println( sql );
-                stm.executeUpdate( sql );
-
             }
 
-            stm.close();
             conn.close();
 
             break;
