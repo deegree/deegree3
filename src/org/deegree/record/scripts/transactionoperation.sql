@@ -14,6 +14,9 @@ values (7, 1, 'this is a test...');
 delete from recordbrief
 where fk_datasets >= 7;
 
+delete from recordsummary
+where fk_datasets >= 7;
+
 delete from recordfull
 where fk_datasets >= 7;
 
@@ -21,6 +24,12 @@ delete from isoqp_title
 where fk_datasets >= 7;
 
 delete from isoqp_type
+where fk_datasets >= 7;
+
+delete from isoqp_format
+where fk_datasets >= 7;
+
+delete from isoqp_abstract
 where fk_datasets >= 7;
 
 delete from isoqp_boundingbox
