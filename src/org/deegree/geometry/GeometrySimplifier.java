@@ -109,7 +109,8 @@ public class GeometrySimplifier {
      */
     public Geometry simplify( Geometry geometry ) {
         Geometry simplifiedG = homogenize( geometry );
-        return linearize( simplifiedG );
+        Geometry result = linearize( simplifiedG );
+        return result;
     }
 
     private Geometry linearize( Geometry geometry ) {
@@ -117,11 +118,12 @@ public class GeometrySimplifier {
             if ( geometry instanceof Curve ) {
                 CurveLinearizer curveLinearizer = new CurveLinearizer( new GeometryFactory() );
                 return curveLinearizer.linearize( (Curve) geometry, crit );
-
-            } else if ( geometry instanceof Surface ) {
-                SurfaceLinearizer surfaceLinearizer = new SurfaceLinearizer( new GeometryFactory() );
-                return surfaceLinearizer.linearize( (Surface) geometry, crit );
             }
+            // else if ( geometry instanceof Surface ) {
+            // SurfaceLinearizer surfaceLinearizer = new SurfaceLinearizer( new GeometryFactory() );
+            // Geometry result = surfaceLinearizer.linearize( (Surface) geometry, crit );
+            // return result;
+            // }
         }
         return geometry;
     }
