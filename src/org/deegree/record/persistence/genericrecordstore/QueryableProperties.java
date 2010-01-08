@@ -54,14 +54,11 @@ public class QueryableProperties {
     
     private List<String> title;
     
-    /*
-     * it's the abstract...but is a keyword in java
-     */
-    private List<String> abridgement;
+    private List<String> _abstract;
     
     private String anyText;
     
-    private List<String> format;
+    private List<Format> format;
     
     private String identifier;
     
@@ -77,11 +74,13 @@ public class QueryableProperties {
     
     private OMElement language;
     
-    private OMElement graphicOverview;
+    private List<Keyword> keywords;
     
     private OMElement serviceType;
     
     private OMElement serviceTypeVersion;
+    
+    
     
     public QueryableProperties(){
         
@@ -136,15 +135,15 @@ public class QueryableProperties {
     /**
      * @return the abridgement
      */
-    public List<String> getAbridgement() {
-        return abridgement;
+    public List<String> get_abstract() {
+        return _abstract;
     }
 
     /**
      * @param abridgement the abridgement to set
      */
-    public void setAbridgement( List<String> abridgement ) {
-        this.abridgement = abridgement;
+    public void set_abstract( List<String> _abstract ) {
+        this._abstract = _abstract;
     }
 
     /**
@@ -164,14 +163,14 @@ public class QueryableProperties {
     /**
      * @return the format
      */
-    public List<String> getFormat() {
+    public List<Format> getFormat() {
         return format;
     }
 
     /**
      * @param format the format to set
      */
-    public void setFormat( List<String> format ) {
+    public void setFormat( List<Format> format ) {
         this.format = format;
     }
 
@@ -247,20 +246,7 @@ public class QueryableProperties {
         this.language = language;
     }
 
-    /**
-     * @return the graphicOverview
-     */
-    public OMElement getGraphicOverview() {
-        return graphicOverview;
-    }
-
-    /**
-     * @param graphicOverview the graphicOverview to set
-     */
-    public void setGraphicOverview( OMElement graphicOverview ) {
-        this.graphicOverview = graphicOverview;
-    }
-
+    
     /**
      * @return the serviceType
      */
@@ -316,7 +302,22 @@ public class QueryableProperties {
     public void setBoundingBox( BoundingBox boundingBox ) {
         this.boundingBox = boundingBox;
     }
-    
+
+    /**
+     * @return the keywords
+     */
+    public List<Keyword> getKeywords() {
+        return keywords;
+    }
+
+    /**
+     * @param keywords the keywords to set
+     */
+    public void setKeywords( List<Keyword> keywords ) {
+        this.keywords = keywords;
+    }
+
+   
     
     
     
