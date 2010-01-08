@@ -109,7 +109,7 @@ public class GeometrySimplifier {
      */
     public Geometry simplify( Geometry geometry ) {
         Geometry simplifiedG = homogenize( geometry );
-        return linearize( geometry );
+        return linearize( simplifiedG );
     }
 
     private Geometry linearize( Geometry geometry ) {
@@ -128,7 +128,7 @@ public class GeometrySimplifier {
 
     @SuppressWarnings("unchecked")
     private Geometry homogenize( Geometry geometry ) {
-        Geometry simplifiedG = null;
+        Geometry simplifiedG = geometry;
         if ( homogenizeCollections ) {
             if ( geometry.getClass().equals( DefaultMultiGeometry.class ) ) {
                 throw new GeometryException( "Homogenizing is only possible for a DefaultMultiGeometry" );
