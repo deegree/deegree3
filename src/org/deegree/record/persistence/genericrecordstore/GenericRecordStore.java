@@ -37,6 +37,7 @@ package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -184,7 +185,7 @@ public class GenericRecordStore implements RecordStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public void getRecords( XMLStreamWriter writer, QName typeName, JDBCConnections con, GenericDatabaseDS constraint )
+    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, JDBCConnections con, GenericDatabaseDS constraint )
                             throws SQLException, XMLStreamException {
 
         if ( constraint.getTable() != null ) {
@@ -193,11 +194,24 @@ public class GenericRecordStore implements RecordStore {
             tableSet = new HashSet<String>();
         }
         correctTable( tableSet );
+        int profileFormatNumberOutputSchema = 0;
+        
+        if(typeName.getNamespaceURI().equals( outputSchema )){
+            
+        }else{
+            for(QName qName : typeNames.keySet()){
+                if(qName.getNamespaceURI().equals( outputSchema.toString() )){
+                    profileFormatNumberOutputSchema = typeNames.get( qName );
+                }
+            }
+        }
+        
+        
 
         switch ( constraint.getResultType() ) {
         case results:
 
-            doResultsOnGetRecord( writer, typeName, constraint, con );
+            doResultsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con );
             break;
         case hits:
 
@@ -305,7 +319,7 @@ public class GenericRecordStore implements RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, GenericDatabaseDS constraint,
+    private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema, GenericDatabaseDS constraint,
                                        JDBCConnections con )
                             throws SQLException, XMLStreamException {
         int profileFormatNumber = 1;
@@ -331,12 +345,28 @@ public class GenericRecordStore implements RecordStore {
 
                 doHitsOnGetRecord( writer, typeName, constraint, con, formatTypeInGenericRecordStore.get( "brief" ),
                                    "results" );
-
+                
+                
                 while ( rsBrief.next() ) {
 
-                    String result = rsBrief.getString( 1 );
-
-                    readXMLFragment( result, writer );
+                    
+                    if(profileFormatNumber == profileFormatNumberOutputSchema){
+                        String result = rsBrief.getString( 1 );
+                        readXMLFragment( result, writer );
+                    }else{
+                        int id = rsBrief.getInt( 2 );
+                        String selectBrief2 = generateSELECTStatementForID( formatTypeInGenericRecordStore.get( "brief" ),
+                                                                      constraint, profileFormatNumberOutputSchema, id );
+                        ResultSet rsBrief2 = conn.createStatement().executeQuery( selectBrief2 );
+                        
+                        while ( rsBrief2.next() ) {
+                            String result = rsBrief2.getString( 1 );
+                            readXMLFragment( result, writer );
+                        }
+                        rsBrief2.close();
+                        
+                    }
+                    
 
                 }
                 rsBrief.close();
@@ -352,9 +382,24 @@ public class GenericRecordStore implements RecordStore {
                                    "results" );
 
                 while ( rsSummary.next() ) {
-                    String result = rsSummary.getString( 1 );
+                    
 
-                    readXMLFragment( result, writer );
+                    if(profileFormatNumber == profileFormatNumberOutputSchema){
+                        String result = rsSummary.getString( 1 );
+                        readXMLFragment( result, writer );
+                    }else{
+                        int id = rsSummary.getInt( 2 );
+                        String selectSummary2 = generateSELECTStatementForID( formatTypeInGenericRecordStore.get( "summary" ),
+                                                                      constraint, profileFormatNumberOutputSchema, id );
+                        ResultSet rsSummary2 = conn.createStatement().executeQuery( selectSummary2 );
+                        
+                        while ( rsSummary2.next() ) {
+                            String result = rsSummary2.getString( 1 );
+                            readXMLFragment( result, writer );
+                        }
+                        rsSummary2.close();
+                        
+                    }
 
                 }
 
@@ -370,9 +415,24 @@ public class GenericRecordStore implements RecordStore {
                                    "results" );
 
                 while ( rsFull.next() ) {
-                    String result = rsFull.getString( 1 );
+                    
 
-                    readXMLFragment( result, writer );
+                    if(profileFormatNumber == profileFormatNumberOutputSchema){
+                        String result = rsFull.getString( 1 );
+                        readXMLFragment( result, writer );
+                    }else{
+                        int id = rsFull.getInt( 2 );
+                        String selectFull2 = generateSELECTStatementForID( formatTypeInGenericRecordStore.get( "full" ),
+                                                                      constraint, profileFormatNumberOutputSchema, id );
+                        ResultSet rsFull2 = conn.createStatement().executeQuery( selectFull2 );
+                        
+                        while ( rsFull2.next() ) {
+                            String result = rsFull2.getString( 1 );
+                            readXMLFragment( result, writer );
+                        }
+                        rsFull2.close();
+                        
+                    }
 
                 }
                 rsFull.close();
@@ -401,6 +461,20 @@ public class GenericRecordStore implements RecordStore {
         }
 
     }
+    
+    private String generateSELECTStatementForID(String formatType, GenericDatabaseDS constraint, int profileFormatNumberOutputSchema, int id){
+        String s = "";
+        
+        s += "SELECT " + formatType + ".data " + "FROM " + formatType + " ";
+        
+        s += "WHERE " + formatType + "." + commonForeignkey + " = " + id + " AND " + formatType
+             + ".format = " + profileFormatNumberOutputSchema ;
+    
+    System.out.println( s );
+    return s;
+        
+        
+    }
 
     /**
      * Selectstatement for the constrainted tables.
@@ -414,7 +488,7 @@ public class GenericRecordStore implements RecordStore {
     private String generateSELECTStatement( String formatType, GenericDatabaseDS constraint, int profileFormatNumber ) {
         String s = "";
         if ( constraint.getExpressionWriter() != null ) {
-            s += "SELECT " + formatType + ".data " + "FROM " + mainDatabaseTable + ", " + formatType;
+            s += "SELECT " + formatType + ".data, " + mainDatabaseTable + ".id " + "FROM " + mainDatabaseTable + ", " + formatType;
 
             if ( tableSet.size() == 0 ) {
                 s += " ";
@@ -435,7 +509,7 @@ public class GenericRecordStore implements RecordStore {
             s += "AND (" + constraint.getExpressionWriter().toString() + ") LIMIT " + constraint.getMaxRecords();
 
         } else {
-            s += "SELECT " + formatType + ".data " + "FROM " + mainDatabaseTable + ", " + formatType;
+            s += "SELECT " + formatType + ".data, " + mainDatabaseTable + ".id " + "FROM " + mainDatabaseTable + ", " + formatType;
 
             if ( tableSet.size() == 0 ) {
                 s += " ";

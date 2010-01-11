@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -103,8 +104,8 @@ public interface RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    public void getRecords( XMLStreamWriter writer, QName typeName, JDBCConnections connection,
-                            GenericDatabaseDS genericDatabaseDS )
+    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, JDBCConnections connection,
+                            GenericDatabaseDS genericDatabaseDS ) 
                             throws SQLException, XMLStreamException;
     
     /**

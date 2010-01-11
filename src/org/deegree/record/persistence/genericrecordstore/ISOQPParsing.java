@@ -547,6 +547,9 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
+    /**
+     * TODO ISO Summary record
+     */
     private void generateRecordSummary() {
         final String databaseTable = "recordsummary";
         generateDCSummary( databaseTable );
