@@ -107,6 +107,16 @@ public interface RecordStore {
                             GenericDatabaseDS genericDatabaseDS )
                             throws SQLException, XMLStreamException;
     
+    /**
+     * Exports the XML for the requested records.
+     * 
+     * @param writer
+     * @param connection
+     * @param idList
+     */
+    public void getRecordsById(XMLStreamWriter writer, JDBCConnections connection, List<String> idList);
+    
+    
     
     /**
      * Exports the XML fragment to the recordstore
