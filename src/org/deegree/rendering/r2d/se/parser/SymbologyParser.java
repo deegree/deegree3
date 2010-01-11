@@ -186,6 +186,7 @@ public class SymbologyParser {
             in.nextTag();
 
             if ( in.getLocalName().equals( "GraphicFill" ) ) {
+                in.nextTag();
                 final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
                 if ( pair != null ) {
                     base.graphic = pair.first;
@@ -198,6 +199,7 @@ public class SymbologyParser {
                         };
                     }
                 }
+                in.nextTag();
             }
 
             if ( in.getLocalName().endsWith( "Parameter" ) ) {
