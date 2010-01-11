@@ -36,7 +36,7 @@
 package org.deegree.record.persistence.genericrecordstore;
 
 /**
- * TODO add class documentation here
+ * BoundingBox representation for records. This class encapsulates the data for representation only. 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -53,6 +53,13 @@ public class BoundingBox {
     
     private double northBoundLatitude;
     
+    /**
+     * 
+     * @param westBoundLongitude
+     * @param southBoundLatitude
+     * @param eastBoundLongitude
+     * @param northBoundLatitude
+     */
     public BoundingBox(double westBoundLongitude, double southBoundLatitude, double eastBoundLongitude, double northBoundLatitude){
         this.westBoundLongitude = westBoundLongitude;
         this.southBoundLatitude = southBoundLatitude;

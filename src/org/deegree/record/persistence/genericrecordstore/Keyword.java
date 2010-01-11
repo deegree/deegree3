@@ -36,7 +36,7 @@
 package org.deegree.record.persistence.genericrecordstore;
 
 /**
- * TODO add class documentation here
+ * Keyword representation for records. This class encapsulates the data for representation only. 
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
