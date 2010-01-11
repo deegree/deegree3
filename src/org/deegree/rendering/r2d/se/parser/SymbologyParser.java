@@ -543,6 +543,7 @@ public class SymbologyParser {
         String format = null;
         BufferedImage img = null;
         String url = null;
+        Pair<InputStream, String> pair = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "ExternalGraphic" ) ) ) {
             in.nextTag();
@@ -551,12 +552,15 @@ public class SymbologyParser {
                 format = in.getElementText();
             }
             if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
-                Pair<InputStream, String> p = getOnlineResourceOrInlineContent( in );
-                if ( p.first != null && format != null && !format.equalsIgnoreCase( "image/svg" ) ) {
-                    img = ImageIO.read( p.first );
-                }
-                url = p.second;
+                pair = getOnlineResourceOrInlineContent( in );
             }
+        }
+
+        if ( pair != null ) {
+            if ( pair.first != null && format != null && !format.equalsIgnoreCase( "image/svg" ) ) {
+                img = ImageIO.read( pair.first );
+            }
+            url = pair.second;
         }
 
         return new Pair<BufferedImage, String>( img, url );
