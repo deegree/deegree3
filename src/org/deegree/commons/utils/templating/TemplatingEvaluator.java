@@ -86,6 +86,10 @@ public class TemplatingEvaluator {
                         sb.append( ( (Feature) object ).getId() );
                         continue;
                     }
+                    if ( tmplName.equals( "name" ) ) {
+                        sb.append( ( (Feature) object ).getName().getLocalPart() );
+                        continue;
+                    }
                     boolean odd = true;
                     for ( Property<?> prop : ( (Feature) object ).getProperties() ) {
                         if ( xpath.equals( prop.getName().getLocalPart() ) || xpath.equals( "*" ) ) {
