@@ -97,6 +97,8 @@ public class ISOQPParsing extends XMLAdapter {
 
     private Statement stm;
 
+    private List<Integer> recordInsertIDs = new ArrayList<Integer>();
+
     public ISOQPParsing( OMElement element, Connection connection ) {
         this.element = element;
         this.elementFull = element;
@@ -108,17 +110,27 @@ public class ISOQPParsing extends XMLAdapter {
         nsContext.addNamespace( CSW_PREFIX, CSWConstants.CSW_202_NS );
 
         try {
-            parsing( element );
+            parseAPISO( element );
 
-            // this.writer = generateRecordFull(element, generateRecordBrief( qp, writer, id ), id);
         } catch ( IOException e ) {
-            
+
             e.printStackTrace();
         }
 
     }
 
-    private void parsing( OMElement element )
+    /**
+     * Parses the recordelement that should be inserted into the backend. Every elementknot is put into an OMElement and
+     * its atomic representation:
+     * <p>
+     * e.g. the "fileIdentifier" is put into an OMElement identifier and its identification-String is put into the
+     * {@link QueryableProperties}.
+     * 
+     * @param element
+     *            the record that should be inserted into the backend
+     * @throws IOException
+     */
+    private void parseAPISO( OMElement element )
                             throws IOException {
 
         // /*/self::node() => /*/self::* => /* -> Transaction
@@ -150,27 +162,26 @@ public class ISOQPParsing extends XMLAdapter {
                 elementFull.addChild( hierarchyLevel );
                 continue;
             }
-            
+
             if ( elem.getLocalName().equals( "dateStamp" ) ) {
                 String[] dateStrings = getNodesAsStrings( elem, new XPath( "./gco:Date", nsContext ) );
                 Date[] dates = new Date[dateStrings.length];
                 Date date = null;
-                for(int i=0; i<dateStrings.length;i++){
+                for ( int i = 0; i < dateStrings.length; i++ ) {
                     try {
-                        date = new Date(dateStrings[i]);
+                        date = new Date( dateStrings[i] );
                     } catch ( ParseException e ) {
-                        
+
                         e.printStackTrace();
                     }
                     dates[i] = date;
-                    
+
                 }
-                
+
                 qp.setModified( Arrays.asList( dates ) );
-                
+
                 continue;
             }
-            
 
             if ( elem.getLocalName().equals( "referenceSystemInfo" ) ) {
                 OMElement e = getElement(
@@ -202,37 +213,29 @@ public class ISOQPParsing extends XMLAdapter {
              * if(elem.getLocalName().equals( "language" )){ language = elem; qp.setLanguage( language ); }
              */
             if ( elem.getLocalName().equals( "identificationInfo" ) ) {
-                
-                OMElement md_identification = getElement(
-                                                         elem,
-                                                         new XPath(
-                                                                    "./gmd:MD_Identification",
-                                                                    nsContext ) );
-                
-                OMElement _abstract = getElement(
-                                                         elem,
-                                                         new XPath(
-                                                                    "./gmd:abstract",
-                                                                    nsContext ) );
-                
+
+                OMElement md_identification = getElement( elem, new XPath( "./gmd:MD_Identification", nsContext ) );
+
+                OMElement _abstract = getElement( elem, new XPath( "./gmd:abstract", nsContext ) );
+
                 OMElement bbox = getElement(
                                              elem,
                                              new XPath(
                                                         "./gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
                                                         nsContext ) );
-                
+
                 List<OMElement> descriptiveKeywords = getElements(
-                                            elem,
-                                            new XPath(
-                                                       "./gmd:MD_DataIdentification/gmd:descriptiveKeywords",
-                                                       nsContext ) );
-                
+                                                                   elem,
+                                                                   new XPath(
+                                                                              "./gmd:MD_DataIdentification/gmd:descriptiveKeywords",
+                                                                              nsContext ) );
+
                 List<OMElement> topicCategories = getElements(
-                                                                  elem,
-                                                                  new XPath(
-                                                                             "./gmd:MD_DataIdentification/gmd:topicCategory",
-                                                                             nsContext ) );
-                
+                                                               elem,
+                                                               new XPath(
+                                                                          "./gmd:MD_DataIdentification/gmd:topicCategory",
+                                                                          nsContext ) );
+
                 String graphicOverview = getNodeAsString(
                                                           elem,
                                                           new XPath(
@@ -268,72 +271,83 @@ public class ISOQPParsing extends XMLAdapter {
 
                 // not necessary actually...
                 rp.setGraphicOverview( graphicOverview );
-                //TODO same with serviceType and serviceTypeVersion
-                Keyword keywordClass = new Keyword(); ;
+                // TODO same with serviceType and serviceTypeVersion
+                Keyword keywordClass = new Keyword();
+                ;
                 List<Keyword> listOfKeywords = new ArrayList<Keyword>();
                 for ( OMElement md_keywords : descriptiveKeywords ) {
-                    //keywordClass = 
-                    String keywordType = getNodeAsString(md_keywords, new XPath( "./gmd:MD_Keywords/gmd:type/MD_KeywordTypeCode/@codeListValue", nsContext), null);
-                    
-                    String keyword = getNodeAsString(md_keywords, new XPath( "./gmd:MD_Keywords/gmd:keyword/gco:CharacterString", nsContext), null);
-                    
-                    String thesaurus = getNodeAsString(md_keywords, new XPath( "./gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString", nsContext), null);
-                    
-                    for(OMElement topicCategoriesElement : topicCategories){
-                        String topicCategory = getNodeAsString(topicCategoriesElement, new XPath( "./gmd:MD_TopicCategoryCode", nsContext), null);
+                    // keywordClass =
+                    String keywordType = getNodeAsString(
+                                                          md_keywords,
+                                                          new XPath(
+                                                                     "./gmd:MD_Keywords/gmd:type/MD_KeywordTypeCode/@codeListValue",
+                                                                     nsContext ), null );
+
+                    String keyword = getNodeAsString( md_keywords,
+                                                      new XPath( "./gmd:MD_Keywords/gmd:keyword/gco:CharacterString",
+                                                                 nsContext ), null );
+
+                    String thesaurus = getNodeAsString(
+                                                        md_keywords,
+                                                        new XPath(
+                                                                   "./gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                                                                   nsContext ), null );
+
+                    for ( OMElement topicCategoriesElement : topicCategories ) {
+                        String topicCategory = getNodeAsString( topicCategoriesElement,
+                                                                new XPath( "./gmd:MD_TopicCategoryCode", nsContext ),
+                                                                null );
                         keywordClass.setKeyword( topicCategory );
                         listOfKeywords.add( keywordClass );
                     }
-                    
+
                     keywordClass.setKeywordType( keywordType );
                     keywordClass.setKeyword( keyword );
                     keywordClass.setThesaurus( thesaurus );
                     listOfKeywords.add( keywordClass );
-                    
+
                 }
-                
+
                 qp.setKeywords( listOfKeywords );
-                
-                
-                //TODO relation -- aggregationInfo
-                String[] _abstractStrings = getNodesAsStrings(
-                                                         _abstract,
-                                                         new XPath(
-                                                                    "./gco:CharacterString",
-                                                                    nsContext ));
-                
+
+                // TODO relation -- aggregationInfo
+                String[] _abstractStrings = getNodesAsStrings( _abstract,
+                                                               new XPath( "./gco:CharacterString", nsContext ) );
+
                 qp.set_abstract( Arrays.asList( _abstractStrings ) );
-                
+
                 identificationInfo = elem;
                 elementFull.addChild( identificationInfo );
                 continue;
 
             }
-            
+
             if ( elem.getLocalName().equals( "distributionInfo" ) ) {
                 List<OMElement> formats = getElements(
-                                                         elem,
-                                                         new XPath(
-                                                                    "./gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format",
-                                                                    nsContext ) );
-                
+                                                       elem,
+                                                       new XPath(
+                                                                  "./gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format",
+                                                                  nsContext ) );
+
                 Format formatClass = null;
                 List<Format> listOfFormats = new ArrayList<Format>();
                 for ( OMElement md_format : formats ) {
-                    formatClass = new Format(); 
-                    String formatName = getNodeAsString(md_format, new XPath( "./gmd:name/gco:CharacterString", nsContext), null);
-                    
-                    String formatVersion = getNodeAsString(md_format, new XPath( "./gmd:version/gco:CharacterString", nsContext), null);
-                       
+                    formatClass = new Format();
+                    String formatName = getNodeAsString( md_format, new XPath( "./gmd:name/gco:CharacterString",
+                                                                               nsContext ), null );
+
+                    String formatVersion = getNodeAsString( md_format, new XPath( "./gmd:version/gco:CharacterString",
+                                                                                  nsContext ), null );
+
                     formatClass.setName( formatName );
                     formatClass.setVersion( formatVersion );
-                    
+
                     listOfFormats.add( formatClass );
-                    
+
                 }
-                
+
                 qp.setFormat( listOfFormats );
-                
+
                 continue;
             }
 
@@ -343,6 +357,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     /**
      * TODO ExceptionHandling if there are properties that have to be in the insert statement
+     * 
      * @throws IOException
      */
     public void executeInsertStatement()
@@ -358,24 +373,22 @@ public class ISOQPParsing extends XMLAdapter {
         if ( qp.getType() != null ) {
             generateISOQP_typeStatement();
         }
-        if(qp.getSubject() != null){
+        if ( qp.getSubject() != null ) {
             generateISOQP_keywordStatement();
         }
-        if(qp.getFormat() != null){
+        if ( qp.getFormat() != null ) {
             generateISOQP_formatStatement();
         }
-        //TODO relation
-        if(qp.get_abstract() != null){
+        // TODO relation
+        if ( qp.get_abstract() != null ) {
             generateISOQP_AbstractStatement();
         }
-        //TODO spatial
+        // TODO spatial
         if ( qp.getBoundingBox() != null ) {
             generateISOQP_boundingBoxStatement();
         }
 
     }
-
-    
 
     /**
      * 
@@ -396,10 +409,10 @@ public class ISOQPParsing extends XMLAdapter {
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
-        
+
     }
 
     /**
@@ -421,10 +434,10 @@ public class ISOQPParsing extends XMLAdapter {
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
-        
+
     }
 
     /**
@@ -440,20 +453,23 @@ public class ISOQPParsing extends XMLAdapter {
             id = getLastDataset( connection, databaseTable );
             for ( Keyword keyword : qp.getKeywords() ) {
                 id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, keywordtype, keyword, thesaurus) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + keyword.getKeywordType() + "','" + keyword.getKeyword() + "','"+ keyword.getThesaurus() + "');";
+                sqlStatement = "INSERT INTO " + databaseTable
+                               + " (id, fk_datasets, keywordtype, keyword, thesaurus) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + keyword.getKeywordType() + "','" + keyword.getKeyword()
+                               + "','" + keyword.getThesaurus() + "');";
             }
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
-        
+
     }
 
     /**
-     * BE AWARE: here there is the "modified" attribute get from the first position. The backend has the possibility to add one such attribute. In the xsd-file there are more possible...
+     * BE AWARE: the "modified" attribute is get from the first position in the list. The backend has the possibility to
+     * add one such attribute. In the xsd-file there are more possible...
      * 
      */
     private void generateMainDatabaseDataset() {
@@ -462,17 +478,20 @@ public class ISOQPParsing extends XMLAdapter {
 
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            id++;
+            this.id = getLastDataset( connection, databaseTable );
+            this.id++;
             sqlStatement = "INSERT INTO userdefinedqueryableproperties VALUES (" + id + ");";
+
             sqlStatement += "INSERT INTO "
                             + databaseTable
                             + " (id, version, status, anyText, identifier, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
-                            + id + ",null,null,'','" + qp.getIdentifier() + "','"+ qp.getModified().get( 1 ) +"',FALSE,'','','', null);";
+                            + this.id + ",null,null,'','" + qp.getIdentifier() + "','" + qp.getModified().get( 0 )
+                            + "',FALSE,'','','', null);";
+            System.out.println( sqlStatement );
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
 
@@ -485,11 +504,11 @@ public class ISOQPParsing extends XMLAdapter {
 
         String sqlStatement = "";
         int fk_datasets = this.id;
-        int id = 0;
+        int idDatabaseTable = 0;
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            id++;
+            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable++;
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
             OMNamespace namespace = factory.createOMNamespace( rootElement.getDefaultNamespace().getNamespaceURI(),
@@ -509,28 +528,28 @@ public class ISOQPParsing extends XMLAdapter {
                 omElement.serialize( writer );
 
             } catch ( XMLStreamException e ) {
-                
+
                 e.printStackTrace();
             }
             // -------------------
-            sqlStatement = "INSERT INTO recordbrief (id, fk_datasets, format, data) VALUES (" + id + "," + fk_datasets
-                           + ", 2, '" + omElement.toString() + "');";
+            sqlStatement = "INSERT INTO recordbrief (id, fk_datasets, format, data) VALUES (" + idDatabaseTable + ","
+                           + fk_datasets + ", 2, '" + omElement.toString() + "');";
 
             stm.executeUpdate( sqlStatement );
             stm.close();
-            id++;
+
             generateDCBrief( databaseTable );
-            
+
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
 
     }
-    
-    private void generateRecordSummary(){
+
+    private void generateRecordSummary() {
         final String databaseTable = "recordsummary";
-        generateDCSummary(databaseTable);
+        generateDCSummary( databaseTable );
     }
 
     private void generateDCBrief( String databaseTable ) {
@@ -538,15 +557,13 @@ public class ISOQPParsing extends XMLAdapter {
         String sqlStatement = "";
 
         int fk_datasets = this.id;
-        // if this method is used stand-alone
-        int idTemp = 0;
+
+        int idDatabaseTable = 0;
         try {
             stm = connection.createStatement();
-            idTemp = getLastDataset( connection, databaseTable );
+            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable++;
 
-            if ( idTemp == this.id ) {
-                this.id++;
-            }
             OMFactory factory = OMAbstractFactory.getOMFactory();
             OMNamespace namespace = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
             OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
@@ -588,34 +605,35 @@ public class ISOQPParsing extends XMLAdapter {
 
             omElement.addChild( omBoundingBox );
 
-            sqlStatement = "INSERT INTO recordbrief (id, fk_datasets, format, data) VALUES (" + id + "," + fk_datasets
-                           + ", 1, '" + omElement.toString() + "');";
+            sqlStatement = "INSERT INTO recordbrief (id, fk_datasets, format, data) VALUES (" + idDatabaseTable + ","
+                           + fk_datasets + ", 1, '" + omElement.toString() + "');";
 
+            recordInsertIDs.add( idDatabaseTable );
+
+            System.out.println( "DC RecordBrief: " + sqlStatement );
             stm.executeUpdate( sqlStatement );
             stm.close();
 
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
 
     }
-    
-    private void generateDCSummary(String databaseTable){
-        
+
+    private void generateDCSummary( String databaseTable ) {
+
         OMElement omElement = null;
         String sqlStatement = "";
 
         int fk_datasets = this.id;
-        // if this method is used stand-alone
-        int idTemp = 0;
+
+        int idDatabaseTable = 0;
         try {
             stm = connection.createStatement();
-            idTemp = getLastDataset( connection, databaseTable );
+            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable++;
 
-            if ( idTemp == this.id ) {
-                this.id++;
-            }
             OMFactory factory = OMAbstractFactory.getOMFactory();
             OMNamespace namespace = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
             OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
@@ -630,61 +648,64 @@ public class ISOQPParsing extends XMLAdapter {
             OMElement omUpperCorner = factory.createOMElement( "UpperCorner", namespaceOWS );
 
             omIdentifier.setText( qp.getIdentifier() );
-            
-            //dc:identifier
+
+            // dc:identifier
             omElement.addChild( omIdentifier );
-            
-            //dc:title
+
+            // dc:title
             for ( String title : qp.getTitle() ) {
                 OMElement omTitle = factory.createOMElement( "title", namespaceDC );
                 omTitle.setText( title );
                 omElement.addChild( omTitle );
             }
-            //dc:type
+            // dc:type
             if ( qp.getType() != null ) {
                 omType.setText( qp.getType() );
             } else {
                 omType.setText( "" );
             }
             omElement.addChild( omType );
-            
-            //dc:subject
-            for ( Keyword subject : qp.getKeywords()) {
+
+            // dc:subject
+            for ( Keyword subject : qp.getKeywords() ) {
                 OMElement omSubject = factory.createOMElement( "subject", namespaceDC );
                 omSubject.setText( subject.getKeyword() );
                 omElement.addChild( omSubject );
             }
-            
-            //dc:format
-            for ( Format format : qp.getFormat()) {
+
+            // dc:format
+            if ( qp.getFormat() != null ) {
+                for ( Format format : qp.getFormat() ) {
+                    OMElement omFormat = factory.createOMElement( "format", namespaceDC );
+                    omFormat.setText( format.getName() );
+                    omElement.addChild( omFormat );
+                }
+            } else {
                 OMElement omFormat = factory.createOMElement( "format", namespaceDC );
-                omFormat.setText( format.getName() );
                 omElement.addChild( omFormat );
             }
-            
-            //dc:relation
-            //TODO
-            
-            //dct:modified
-            for ( Date date : qp.getModified()) {
+
+            // dc:relation
+            // TODO
+
+            // dct:modified
+            for ( Date date : qp.getModified() ) {
                 OMElement omModified = factory.createOMElement( "modified", namespaceDCT );
                 omModified.setText( date.toString() );
                 omElement.addChild( omModified );
             }
-            
-            //dct:abstract
-            for ( String _abstract : qp.get_abstract()) {
+
+            // dct:abstract
+            for ( String _abstract : qp.get_abstract() ) {
                 OMElement omAbstract = factory.createOMElement( "abstract", namespaceDCT );
                 omAbstract.setText( _abstract.toString() );
                 omElement.addChild( omAbstract );
             }
-            
-            //dct:spatial
-            //TODO
-            
-            
-            
-            //ows:BoundingBox
+
+            // dct:spatial
+            // TODO
+
+            // ows:BoundingBox
             omLowerCorner.setText( qp.getBoundingBox().getEastBoundLongitude() + " "
                                    + qp.getBoundingBox().getSouthBoundLatitude() );
             omUpperCorner.setText( qp.getBoundingBox().getWestBoundLongitude() + " "
@@ -697,18 +718,18 @@ public class ISOQPParsing extends XMLAdapter {
 
             omElement.addChild( omBoundingBox );
 
-            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES (" + id + "," + fk_datasets
-                           + ", 1, '" + omElement.toString() + "');";
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES ("
+                           + idDatabaseTable + "," + fk_datasets + ", 1, '" + omElement.toString() + "');";
 
+            System.out.println( sqlStatement );
             stm.executeUpdate( sqlStatement );
             stm.close();
 
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
 
-        
     }
 
     private void generateRecordFull()
@@ -716,18 +737,18 @@ public class ISOQPParsing extends XMLAdapter {
         final String databaseTable = "recordfull";
         String sqlStatement = "";
         int fk_datasets = this.id;
-        int id = 0;
+        int idDatabaseTable = 0;
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            id++;
-            sqlStatement = "INSERT INTO recordfull (id, fk_datasets, format, data) VALUES (" + id + "," + fk_datasets
-                           + ", 2, '" + elementFull.toString() + "');";
+            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable++;
+            sqlStatement = "INSERT INTO recordfull (id, fk_datasets, format, data) VALUES (" + idDatabaseTable + ","
+                           + fk_datasets + ", 2, '" + elementFull.toString() + "');";
 
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
 
@@ -751,7 +772,7 @@ public class ISOQPParsing extends XMLAdapter {
             stm.close();
 
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
 
@@ -772,7 +793,7 @@ public class ISOQPParsing extends XMLAdapter {
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
 
@@ -796,7 +817,7 @@ public class ISOQPParsing extends XMLAdapter {
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
-            
+
             e.printStackTrace();
         }
 
@@ -816,6 +837,13 @@ public class ISOQPParsing extends XMLAdapter {
         rsBrief.close();
         return result;
 
+    }
+
+    /**
+     * @return the recordInsertIDs
+     */
+    public List<Integer> getRecordInsertIDs() {
+        return recordInsertIDs;
     }
 
 }

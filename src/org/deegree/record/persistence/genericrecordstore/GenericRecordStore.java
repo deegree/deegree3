@@ -37,15 +37,14 @@ package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,8 +78,6 @@ import org.deegree.record.publication.TransactionOperation;
  * @version $Revision: $, $Date: $
  */
 public class GenericRecordStore implements RecordStore {
-
-    // private static QName[] typeNames = new QName[2] ;
 
     private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
@@ -190,7 +187,11 @@ public class GenericRecordStore implements RecordStore {
     public void getRecords( XMLStreamWriter writer, QName typeName, JDBCConnections con, GenericDatabaseDS constraint )
                             throws SQLException, XMLStreamException {
 
-        tableSet = constraint.getTable();
+        if ( constraint.getTable() != null ) {
+            tableSet = constraint.getTable();
+        } else {
+            tableSet = new HashSet<String>();
+        }
         correctTable( tableSet );
 
         switch ( constraint.getResultType() ) {
@@ -443,8 +444,8 @@ public class GenericRecordStore implements RecordStore {
             }
 
             s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
-                 + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " LIMIT "
-                 + constraint.getMaxRecords();
+                 + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " AND " + formatType + "."
+                 + "format = " + profileFormatNumber + " LIMIT " + constraint.getMaxRecords();
 
         }
         System.out.println( s );
@@ -636,8 +637,9 @@ public class GenericRecordStore implements RecordStore {
 
                     ISOQPParsing elementParsing = new ISOQPParsing( element, conn );
                     elementParsing.executeInsertStatement();
+                    getRecordsForTransactionInsertStatement( writer, conn, elementParsing.getRecordInsertIDs() );
                 } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
+
                     e.printStackTrace();
                 }
 
@@ -658,19 +660,49 @@ public class GenericRecordStore implements RecordStore {
 
     }
 
-    private int getLastDataset( Connection conn, String databaseTable )
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.record.persistence.RecordStore#getRecordsById(javax.xml.stream.XMLStreamWriter,
+     * org.deegree.commons.configuration.JDBCConnections, java.util.List)
+     */
+    @Override
+    public void getRecordsById( XMLStreamWriter writer, JDBCConnections connection, List<String> idList ) {
+
+    }
+
+    /**
+     * Gets the records in dublin core representation for the insert transaction operation.
+     * 
+     * @param writer
+     * @param conn
+     * @param insertedIds
+     *            the briefrecord datasets that have been inserted into the backend
+     * @throws SQLException
+     */
+    private void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, Connection conn,
+                                                          List<Integer> insertedIds )
                             throws SQLException {
-        int result = 0;
-        String selectIDRows = "SELECT COUNT(*) from " + databaseTable;
-        ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
+        String s = "";
+        for ( int i : insertedIds ) {
 
-        while ( rsBrief.next() ) {
+            s += "SELECT " + "recordbrief" + ".data " + "FROM " + mainDatabaseTable + ", " + "recordbrief" + " ";
 
-            result = rsBrief.getInt( 1 );
+            s += "WHERE " + "recordbrief" + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ";
 
+            s += "AND " + "recordbrief" + "." + "id" + " = " + i;
+            System.out.println( s );
+
+            ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s );
+
+            while ( rsInsertedDatasets.next() ) {
+                String result = rsInsertedDatasets.getString( 1 );
+
+                readXMLFragment( result, writer );
+
+            }
+            rsInsertedDatasets.close();
         }
-        rsBrief.close();
-        return result;
 
     }
 
