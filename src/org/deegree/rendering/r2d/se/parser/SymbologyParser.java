@@ -55,6 +55,7 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.skipElement;
 import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
 import static org.deegree.rendering.i18n.Messages.get;
+import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 import static org.deegree.rendering.r2d.styling.components.UOM.Foot;
 import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
 import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
@@ -72,6 +73,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -83,6 +85,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -416,7 +419,7 @@ public class SymbologyParser {
 
             sym: if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
                 LOG.debug( "Loading mark from external file." );
-                Pair<InputStream, String> pair = getOnlineResourceOrInlineContent( in );
+                Triple<InputStream, String, Continuation<StringBuffer>> pair = getOnlineResourceOrInlineContent( in );
                 if ( pair == null ) {
                     in.nextTag();
                     break sym;
@@ -502,17 +505,25 @@ public class SymbologyParser {
         return new Pair<Mark, Continuation<Mark>>( base, contn );
     }
 
-    private static Pair<InputStream, String> getOnlineResourceOrInlineContent( XMLStreamReader in )
+    private static Triple<InputStream, String, Continuation<StringBuffer>> getOnlineResourceOrInlineContent(
+                                                                                                             XMLStreamReader in )
                             throws XMLStreamException {
         if ( in.getLocalName().equals( "OnlineResource" ) ) {
             String str = in.getAttributeValue( XLNNS, "href" );
+
+            if ( str == null ) {
+                Continuation<StringBuffer> contn = updateOrContinue( in, "OnlineResource", new StringBuffer(),
+                                                                     SBUPDATER, null );
+                return new Triple<InputStream, String, Continuation<StringBuffer>>( null, null, contn );
+            }
+
             String strUrl = null;
             try {
                 URL url = resolve( str, in );
                 strUrl = url.toExternalForm();
                 LOG.debug( "Loading from URL '{}'", url );
                 in.nextTag();
-                return new Pair<InputStream, String>( url.openStream(), strUrl );
+                return new Triple<InputStream, String, Continuation<StringBuffer>>( url.openStream(), strUrl, null );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Could not retrieve content at URL '{}'.", str );
@@ -523,8 +534,8 @@ public class SymbologyParser {
         if ( in.getLocalName().equals( "InlineContent" ) ) {
             String format = in.getAttributeValue( null, "encoding" );
             if ( format.equalsIgnoreCase( "base64" ) ) {
-                return new Pair<InputStream, String>( new ByteArrayInputStream( Base64.decode( in.getElementText() ) ),
-                                                      null );
+                ByteArrayInputStream bis = new ByteArrayInputStream( Base64.decode( in.getElementText() ) );
+                return new Triple<InputStream, String, Continuation<StringBuffer>>( bis, null, null );
             }
             if ( format.equalsIgnoreCase( "xml" ) ) {
                 // TODO
@@ -534,7 +545,8 @@ public class SymbologyParser {
         return null;
     }
 
-    private static Pair<BufferedImage, String> parseExternalGraphic( XMLStreamReader in )
+    private static Triple<BufferedImage, String, Continuation<List<BufferedImage>>> parseExternalGraphic(
+                                                                                                          final XMLStreamReader in )
                             throws IOException, XMLStreamException {
         // TODO color replacement
 
@@ -543,7 +555,8 @@ public class SymbologyParser {
         String format = null;
         BufferedImage img = null;
         String url = null;
-        Pair<InputStream, String> pair = null;
+        Triple<InputStream, String, Continuation<StringBuffer>> pair = null;
+        Continuation<List<BufferedImage>> contn = null; // needs to be list to be updateable by reference...
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "ExternalGraphic" ) ) ) {
             in.nextTag();
@@ -561,9 +574,30 @@ public class SymbologyParser {
                 img = ImageIO.read( pair.first );
             }
             url = pair.second;
+
+            final Continuation<StringBuffer> sbcontn = pair.third;
+
+            if ( pair.third != null ) {
+                contn = new Continuation<List<BufferedImage>>() {
+                    @Override
+                    public void updateStep( List<BufferedImage> base, MatchableObject f ) {
+                        StringBuffer sb = new StringBuffer();
+                        sbcontn.evaluate( sb, f );
+                        try {
+                            base.add( ImageIO.read( resolve( sb.toString(), in ) ) );
+                        } catch ( MalformedURLException e ) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch ( IOException e ) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                };
+            }
         }
 
-        return new Pair<BufferedImage, String>( img, url );
+        return new Triple<BufferedImage, String, Continuation<List<BufferedImage>>>( img, url, contn );
     }
 
     private static Pair<Graphic, Continuation<Graphic>> parseGraphic( XMLStreamReader in )
@@ -593,9 +627,20 @@ public class SymbologyParser {
             }
             if ( in.getLocalName().equals( "ExternalGraphic" ) ) {
                 try {
-                    Pair<BufferedImage, String> p = parseExternalGraphic( in );
-                    base.image = p.first;
-                    base.imageURL = p.second;
+                    final Triple<BufferedImage, String, Continuation<List<BufferedImage>>> p = parseExternalGraphic( in );
+                    if ( p.third != null ) {
+                        contn = new Continuation<Graphic>( contn ) {
+                            @Override
+                            public void updateStep( Graphic base, MatchableObject f ) {
+                                LinkedList<BufferedImage> list = new LinkedList<BufferedImage>();
+                                p.third.evaluate( list, f );
+                                base.image = list.poll();
+                            }
+                        };
+                    } else {
+                        base.image = p.first;
+                        base.imageURL = p.second;
+                    }
                 } catch ( IOException e ) {
                     LOG.debug( "Stack trace", e );
                     LOG.warn( get( "R2D.EXTERNAL_GRAPHIC_NOT_LOADED" ),
