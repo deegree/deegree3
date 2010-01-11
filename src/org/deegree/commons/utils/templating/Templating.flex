@@ -24,25 +24,26 @@ import java_cup.runtime.*;
 %{
 %}
 
-WhiteSpace      = [ \b\f\n\r]
-LetterOrSpace   = ([:letter:] | [ ])
+WhiteSpace           = [ \b\f\n\r]
+LetterOrDigit        = ([:letter:] | [0-9])
+LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
 
 %%
 
 <YYINITIAL> {
   [<][?]                       { yybegin(TEMPLATE); }
   .                            |
-  {LetterOrSpace}+             |
+  {LetterOrDigitOrSpace}+      |
   [<][:letter:]+[>]            |
   [<][/][:letter:]+[>]         |
   {WhiteSpace}+                { return new Symbol(TemplatingSymbols.TEXT_TOKEN, yyline, yycolumn, yytext()); }
 }
 
 <TEMPLATE> {
-  {WhiteSpace}+                                                        {}
-  [^>] !([^]* ([:]?[:letter:]+[>]) [^]*) ([:][:letter:]+[>])           { yybegin(YYINITIAL); String s = yytext().trim(); s = s.substring(0, s.length() - 1); return new Symbol(TemplatingSymbols.TEMPLATE_CALL_TOKEN, yyline, yycolumn, s); }
-  [:letter:]+                                                          { return new Symbol(TemplatingSymbols.TEMPLATE_DEFINITION_TOKEN, yyline, yycolumn, yytext().trim()); }
-  [^>] !([^]* ([:]?{LetterOrSpace}+[>]) [^]*) ([:]{LetterOrSpace}+[>]) { yybegin(YYINITIAL); String s = yytext().trim(); s = s.substring(0, s.length() - 1); return new Symbol(TemplatingSymbols.MAP_CALL_TOKEN, yyline, yycolumn, s); }
-  {LetterOrSpace}+                                                     { return new Symbol(TemplatingSymbols.MAP_DEFINITION_TOKEN, yyline, yycolumn, yytext().trim()); }
-  [>]                                                                  { yybegin(YYINITIAL); }
+  {WhiteSpace}+                                                                      {}
+  [^>] !([^]* ([:]?{LetterOrDigit}+[>]) [^]*) ([:]{LetterOrDigit}+[>])               { yybegin(YYINITIAL); String s = yytext().trim(); s = s.substring(0, s.length() - 1); return new Symbol(TemplatingSymbols.TEMPLATE_CALL_TOKEN, yyline, yycolumn, s); }
+  {LetterOrDigit}+                                                                   { return new Symbol(TemplatingSymbols.TEMPLATE_DEFINITION_TOKEN, yyline, yycolumn, yytext().trim()); }
+  [^>] !([^]* ([:]?{LetterOrDigitOrSpace}+[>]) [^]*) ([:]{LetterOrDigitOrSpace}+[>]) { yybegin(YYINITIAL); String s = yytext().trim(); s = s.substring(0, s.length() - 1); return new Symbol(TemplatingSymbols.MAP_CALL_TOKEN, yyline, yycolumn, s); }
+  {LetterOrDigitOrSpace}+                                                            { return new Symbol(TemplatingSymbols.MAP_DEFINITION_TOKEN, yyline, yycolumn, yytext().trim()); }
+  [>]                                                                                { yybegin(YYINITIAL); }
 }
