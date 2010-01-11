@@ -72,8 +72,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -578,13 +580,28 @@ public class SymbologyParser {
             final Continuation<StringBuffer> sbcontn = pair.third;
 
             if ( pair.third != null ) {
+                final LinkedHashMap<String, BufferedImage> cache = new LinkedHashMap<String, BufferedImage>( 256 ) {
+                    private static final long serialVersionUID = -6847956873232942891L;
+
+                    @Override
+                    protected boolean removeEldestEntry( Map.Entry<String, BufferedImage> eldest ) {
+                        return size() > 256; // yeah, hardcoded max size... TODO
+                    }
+                };
                 contn = new Continuation<List<BufferedImage>>() {
                     @Override
                     public void updateStep( List<BufferedImage> base, MatchableObject f ) {
                         StringBuffer sb = new StringBuffer();
                         sbcontn.evaluate( sb, f );
+                        String file = sb.toString();
+                        if ( cache.containsKey( file ) ) {
+                            base.add( cache.get( file ) );
+                            return;
+                        }
                         try {
-                            base.add( ImageIO.read( resolve( sb.toString(), in ) ) );
+                            BufferedImage i = ImageIO.read( resolve( file, in ) );
+                            base.add( i );
+                            cache.put( file, i );
                         } catch ( MalformedURLException e ) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
