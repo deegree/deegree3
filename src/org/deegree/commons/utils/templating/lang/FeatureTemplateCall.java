@@ -108,7 +108,7 @@ public class FeatureTemplateCall {
                 ( (Index) o ).eval( sb, f, list );
             }
             if ( o instanceof OddEven ) {
-                ( (OddEven) o ).eval( sb, defs, f, list.indexOf( f ) );
+                ( (OddEven) o ).eval( sb, defs, f, 1 + list.indexOf( f ) );
             }
             if ( o instanceof GMLId ) {
                 ( (GMLId) o ).eval( sb, f );
