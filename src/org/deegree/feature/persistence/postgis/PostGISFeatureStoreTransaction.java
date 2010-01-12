@@ -130,7 +130,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
     }
 
-    public void prepareCommitAndRelease()
+    public void prepareCommit()
                             throws FeatureStoreException {
         LOG.debug( "Preparing commit of transaction." );
         try {
@@ -138,9 +138,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             LOG.debug( e.getMessage(), e.getNextException() );
-            throw new FeatureStoreException( "Unable to commit SQL transaction: " + e.getMessage() );
-        } finally {
-            store.releaseTransaction( this );
+            throw new FeatureStoreException( "Unable to prepare commit of SQL transaction: " + e.getMessage() );
         }
     }
 
