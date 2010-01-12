@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.deegree.feature.Feature;
@@ -60,6 +61,8 @@ public class FeatureTemplateCall {
 
     private String name, pattern;
 
+    private HashSet<Object> visited = new HashSet<Object>();
+
     /**
      * @param name
      * @param pattern
@@ -71,6 +74,10 @@ public class FeatureTemplateCall {
 
     private void eval( StringBuilder sb, HashMap<String, Object> defs, Feature f, TemplateDefinition t,
                        List<Feature> list ) {
+        if ( visited.contains( f ) ) {
+            // TODO add link?
+            return;
+        }
         for ( Object o : t.body ) {
             if ( o instanceof String ) {
                 sb.append( o );
@@ -122,13 +129,6 @@ public class FeatureTemplateCall {
         }
         TemplateDefinition t = (TemplateDefinition) def;
 
-        // if ( obj instanceof FeatureCollection ) {
-        // ArrayList<Feature> featureList = new ArrayList<Feature>( (FeatureCollection) obj );
-        // for ( Feature f : (FeatureCollection) obj ) {
-        // if ( pattern.equals( "*" ) || ( (Feature) obj ).getName().getLocalPart().equals( pattern ) ) {
-        // eval( sb, defs, f, t, featureList );
-        // }
-        // }
         if ( obj instanceof Feature ) {
             if ( pattern.equals( "*" ) || ( (Feature) obj ).getName().getLocalPart().equals( pattern ) ) {
                 eval( sb, defs, (Feature) obj, t, Collections.<Feature> singletonList( (Feature) obj ) );

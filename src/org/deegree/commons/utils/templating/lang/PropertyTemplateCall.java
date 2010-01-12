@@ -41,6 +41,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.deegree.feature.Feature;
@@ -63,6 +64,8 @@ public class PropertyTemplateCall {
 
     private String pattern;
 
+    private HashSet<Object> visited = new HashSet<Object>();
+
     /**
      * @param name
      * @param pattern
@@ -74,6 +77,10 @@ public class PropertyTemplateCall {
 
     private void eval( StringBuilder sb, TemplateDefinition t, Property<?> p, HashMap<String, Object> defs,
                        List<Property<?>> list ) {
+        if ( visited.contains( p ) ) {
+            // TODO add link?
+            return;
+        }
         for ( Object o : t.body ) {
             if ( o instanceof String ) {
                 sb.append( o );
