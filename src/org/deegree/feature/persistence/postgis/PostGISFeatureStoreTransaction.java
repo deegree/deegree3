@@ -56,7 +56,9 @@ import org.deegree.feature.Property;
 import org.deegree.feature.persistence.FeatureCoder;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
@@ -119,6 +121,20 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         try {
             persistEnvelopes();
             conn.commit();
+        } catch ( SQLException e ) {
+            LOG.debug( e.getMessage(), e );
+            LOG.debug( e.getMessage(), e.getNextException() );
+            throw new FeatureStoreException( "Unable to commit SQL transaction: " + e.getMessage() );
+        } finally {
+            store.releaseTransaction( this );
+        }
+    }
+
+    public void prepareCommitAndRelease()
+                            throws FeatureStoreException {
+        LOG.debug( "Preparing commit of transaction." );
+        try {
+            persistEnvelopes();
         } catch ( SQLException e ) {
             LOG.debug( e.getMessage(), e );
             LOG.debug( e.getMessage(), e.getNextException() );
@@ -272,9 +288,14 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     private void insertFeature( PreparedStatement stmt, Feature feature )
-                            throws SQLException {
+                            throws SQLException, FeatureStoreException {
 
-        CRS storageCRS = store.getMetadata( feature.getName() ).getDefaultCRS();
+        StoredFeatureTypeMetadata md = store.getMetadata( feature.getName() );
+        if ( md == null ) {
+            throw new FeatureStoreException( "Cannot insert feature '" + feature.getName()
+                                             + "': feature is not served by this feature store." );
+        }
+        CRS storageCRS = md.getDefaultCRS();
 
         stmt.setString( 1, feature.getId() );
         stmt.setString( 2, "TODO: gml_description" );
@@ -289,7 +310,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             throw new SQLException( msg, e );
         }
         stmt.setBytes( 4, bos.toByteArray() );
-//        System.out.println( "Wrote feature blob (" + bos.toByteArray().length + " bytes)" );
+        // System.out.println( "Wrote feature blob (" + bos.toByteArray().length + " bytes)" );
         Envelope bbox = feature.getEnvelope();
         if ( bbox != null ) {
             try {
@@ -406,4 +427,9 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         }
     }
 
+    public void prepareRollbackAndRelease()
+                            throws FeatureStoreException {
+        LOG.debug( "Preparing rollback of transaction." );
+        store.releaseTransaction( this );
+    }
 }

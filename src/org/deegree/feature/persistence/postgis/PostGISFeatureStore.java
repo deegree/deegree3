@@ -150,6 +150,40 @@ public class PostGISFeatureStore implements FeatureStore {
         defaultEnvelope = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
     }
 
+    public PostGISFeatureStoreTransaction acquireTransaction( Connection conn )
+                            throws FeatureStoreException {
+
+        while ( this.activeTransaction != null ) {
+            Thread holder = this.transactionHolder;
+            // check if transaction holder variable has (just) been cleared or if the other thread
+            // has been killed (avoid deadlocks)
+            if ( holder == null || !holder.isAlive() ) {
+                this.activeTransaction = null;
+                this.transactionHolder = null;
+                break;
+            }
+
+            try {
+                // wait until the transaction holder wakes us, but not longer than 5000
+                // milliseconds (as the transaction holder may very rarely get killed without
+                // signalling us)
+                wait( 5000 );
+            } catch ( InterruptedException e ) {
+                // nothing to do
+            }
+        }
+
+        try {
+            conn.setAutoCommit( false );
+            this.activeTransaction = new PostGISFeatureStoreTransaction( this, conn );
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( "Unable to disable auto commit on JDBC connection for transaction: "
+                                             + e.getMessage(), e );
+        }
+        this.transactionHolder = Thread.currentThread();
+        return this.activeTransaction;
+    }
+
     @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
@@ -576,16 +610,16 @@ public class PostGISFeatureStore implements FeatureStore {
             conn = ConnectionManager.getConnection( jdbcConnId );
             StringBuffer sql = new StringBuffer();
 
-            if (queries.length == 1) {
+            if ( queries.length == 1 ) {
                 sql.append( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                            + " WHERE gml_bounded_by && ? AND ft_type=?" );                
+                            + " WHERE gml_bounded_by && ? AND ft_type=?" );
             } else {
                 sql.append( "(SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
                             + " WHERE gml_bounded_by && ? AND ft_type=?)" );
                 for ( int i = 1; i < queries.length; i++ ) {
                     sql.append( "UNION (SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                + " WHERE gml_bounded_by && ? AND ft_type=?)" );                    
-                }                
+                                + " WHERE gml_bounded_by && ? AND ft_type=?)" );
+                }
             }
             stmt = conn.prepareStatement( sql.toString() );
             int i = 1;
