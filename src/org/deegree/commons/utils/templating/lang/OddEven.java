@@ -77,7 +77,7 @@ public class OddEven {
         }
 
         if ( obj instanceof Feature ) {
-            new FeatureTemplateCall( name, "*" ).eval( sb, defs, obj );
+            new FeatureTemplateCall( name, "*" ).eval( sb, defs, obj, idx );
         }
         if ( obj instanceof Property<?> ) {
             new PropertyTemplateCall( name, "*" ).eval( sb, defs, obj );

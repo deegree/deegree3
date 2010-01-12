@@ -81,6 +81,7 @@ public class PropertyTemplateCall {
             // TODO add link?
             return;
         }
+        int idx = 1;
         for ( Object o : t.body ) {
             if ( o instanceof String ) {
                 sb.append( o );
@@ -90,7 +91,7 @@ public class PropertyTemplateCall {
             }
             if ( o instanceof FeatureTemplateCall ) {
                 if ( ( p.getValue() instanceof Feature ) ) {
-                    ( (FeatureTemplateCall) o ).eval( sb, defs, p.getValue() );
+                    ( (FeatureTemplateCall) o ).eval( sb, defs, p.getValue(), idx++ );
                 }
             }
             if ( o instanceof PropertyTemplateCall ) {

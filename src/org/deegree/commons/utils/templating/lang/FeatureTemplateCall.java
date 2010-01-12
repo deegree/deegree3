@@ -38,10 +38,8 @@ package org.deegree.commons.utils.templating.lang;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -72,8 +70,7 @@ public class FeatureTemplateCall {
         this.pattern = pattern;
     }
 
-    private void eval( StringBuilder sb, HashMap<String, Object> defs, Feature f, TemplateDefinition t,
-                       List<Feature> list ) {
+    private void eval( StringBuilder sb, HashMap<String, Object> defs, Feature f, TemplateDefinition t, int idx ) {
         if ( visited.contains( f ) ) {
             // TODO add link?
             return;
@@ -86,9 +83,10 @@ public class FeatureTemplateCall {
                 ( (MapCall) o ).eval( sb, defs, f );
             }
             if ( o instanceof FeatureTemplateCall ) {
+                int nextIdx = 1;
                 if ( f instanceof FeatureCollection ) {
                     for ( Feature feat : (FeatureCollection) f ) {
-                        ( (FeatureTemplateCall) o ).eval( sb, defs, feat );
+                        ( (FeatureTemplateCall) o ).eval( sb, defs, feat, nextIdx++ );
                     }
                 }
             }
@@ -105,10 +103,10 @@ public class FeatureTemplateCall {
                 ( (Link) o ).eval( sb, f );
             }
             if ( o instanceof Index ) {
-                ( (Index) o ).eval( sb, f, list );
+                sb.append( idx );
             }
             if ( o instanceof OddEven ) {
-                ( (OddEven) o ).eval( sb, defs, f, 1 + list.indexOf( f ) );
+                ( (OddEven) o ).eval( sb, defs, f, idx );
             }
             if ( o instanceof GMLId ) {
                 ( (GMLId) o ).eval( sb, f );
@@ -120,8 +118,9 @@ public class FeatureTemplateCall {
      * @param sb
      * @param defs
      * @param obj
+     * @param idx
      */
-    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj ) {
+    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, int idx ) {
         Object def = defs.get( name );
         if ( def == null ) {
             LOG.warn( "No template definition with name '{}'.", name );
@@ -131,7 +130,7 @@ public class FeatureTemplateCall {
 
         if ( obj instanceof Feature ) {
             if ( pattern.equals( "*" ) || ( (Feature) obj ).getName().getLocalPart().equals( pattern ) ) {
-                eval( sb, defs, (Feature) obj, t, Collections.<Feature> singletonList( (Feature) obj ) );
+                eval( sb, defs, (Feature) obj, t, idx );
             }
         }
     }
