@@ -600,9 +600,7 @@ public class GenericRecordStore implements RecordStore {
                 }
 
             }
-
-            conn.close();
-
+            
             break;
 
         case UPDATE:
@@ -613,6 +611,7 @@ public class GenericRecordStore implements RecordStore {
 
             break;
         }
+        conn.close();
 
     }
 
@@ -628,7 +627,9 @@ public class GenericRecordStore implements RecordStore {
     }
 
     /**
-     * Gets the records in dublin core representation for the insert transaction operation.
+     * Gets the records in dublin core representation for the insert transaction operation. If there is an INSERT
+     * statement in the transaction operation there must be a brief representation of this inserted record presented in
+     * the response.
      * 
      * @param writer
      * @param conn

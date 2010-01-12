@@ -368,16 +368,16 @@ public class ISOQPParsing extends XMLAdapter {
         generateRecordSummary();
         generateRecordFull();
         if ( qp.getTitle() != null ) {
-            generateISOQP_titleStatement();
+            generateISOQP_TitleStatement();
         }
         if ( qp.getType() != null ) {
-            generateISOQP_typeStatement();
+            generateISOQP_TypeStatement();
         }
         if ( qp.getSubject() != null ) {
-            generateISOQP_keywordStatement();
+            generateISOQP_KeywordStatement();
         }
         if ( qp.getFormat() != null ) {
-            generateISOQP_formatStatement();
+            generateISOQP_FormatStatement();
         }
         // TODO relation
         if ( qp.get_abstract() != null ) {
@@ -385,84 +385,7 @@ public class ISOQPParsing extends XMLAdapter {
         }
         // TODO spatial
         if ( qp.getBoundingBox() != null ) {
-            generateISOQP_boundingBoxStatement();
-        }
-
-    }
-
-    /**
-     * 
-     */
-    private void generateISOQP_AbstractStatement() {
-        final String databaseTable = "isoqp_abstract";
-        String sqlStatement = "";
-        int mainDatabaseTableID = this.id;
-        int id = 0;
-        try {
-            stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            for ( String _abstract : qp.get_abstract() ) {
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, abstract) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + _abstract + "');";
-            }
-            stm.executeUpdate( sqlStatement );
-            stm.close();
-        } catch ( SQLException e ) {
-
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * 
-     */
-    private void generateISOQP_formatStatement() {
-        final String databaseTable = "isoqp_format";
-        String sqlStatement = "";
-        int mainDatabaseTableID = this.id;
-        int id = 0;
-        try {
-            stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            for ( Format format : qp.getFormat() ) {
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, format) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + format.getName() + "');";
-            }
-            stm.executeUpdate( sqlStatement );
-            stm.close();
-        } catch ( SQLException e ) {
-
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * 
-     */
-    private void generateISOQP_keywordStatement() {
-        final String databaseTable = "isoqp_keyword";
-        String sqlStatement = "";
-        int mainDatabaseTableID = this.id;
-        int id = 0;
-        try {
-            stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            for ( Keyword keyword : qp.getKeywords() ) {
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable
-                               + " (id, fk_datasets, keywordtype, keyword, thesaurus) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + keyword.getKeywordType() + "','" + keyword.getKeyword()
-                               + "','" + keyword.getThesaurus() + "');";
-            }
-            stm.executeUpdate( sqlStatement );
-            stm.close();
-        } catch ( SQLException e ) {
-
-            e.printStackTrace();
+            generateISOQP_BoundingBoxStatement();
         }
 
     }
@@ -757,7 +680,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private void generateISOQP_titleStatement() {
+    private void generateISOQP_TitleStatement() {
         final String databaseTable = "isoqp_title";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
@@ -781,7 +704,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private void generateISOQP_typeStatement() {
+    private void generateISOQP_TypeStatement() {
         final String databaseTable = "isoqp_type";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
@@ -802,7 +725,84 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private void generateISOQP_boundingBoxStatement() {
+    /**
+     * 
+     */
+    private void generateISOQP_KeywordStatement() {
+        final String databaseTable = "isoqp_keyword";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+            stm = connection.createStatement();
+            id = getLastDataset( connection, databaseTable );
+            for ( Keyword keyword : qp.getKeywords() ) {
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable
+                               + " (id, fk_datasets, keywordtype, keyword, thesaurus) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + keyword.getKeywordType() + "','" + keyword.getKeyword()
+                               + "','" + keyword.getThesaurus() + "');";
+            }
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+        } catch ( SQLException e ) {
+    
+            e.printStackTrace();
+        }
+    
+    }
+
+    /**
+     * 
+     */
+    private void generateISOQP_FormatStatement() {
+        final String databaseTable = "isoqp_format";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+            stm = connection.createStatement();
+            id = getLastDataset( connection, databaseTable );
+            for ( Format format : qp.getFormat() ) {
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, format) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + format.getName() + "');";
+            }
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+        } catch ( SQLException e ) {
+    
+            e.printStackTrace();
+        }
+    
+    }
+
+    /**
+     * 
+     */
+    private void generateISOQP_AbstractStatement() {
+        final String databaseTable = "isoqp_abstract";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+            stm = connection.createStatement();
+            id = getLastDataset( connection, databaseTable );
+            for ( String _abstract : qp.get_abstract() ) {
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, abstract) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + _abstract + "');";
+            }
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+        } catch ( SQLException e ) {
+    
+            e.printStackTrace();
+        }
+    
+    }
+
+    private void generateISOQP_BoundingBoxStatement() {
         final String databaseTable = "isoqp_boundingbox";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
