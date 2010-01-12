@@ -701,8 +701,10 @@ public class Filter110XMLDecoder {
         if ( childNodes.size() == 0 ) {
             List<String> textNodes = value.getTextNodes();
             if ( textNodes.size() >= 1 ) {
+                // ms: TODO clean up
                 return new Literal<String>( textNodes.get( 0 ) );
             }
+            return new Literal<String>( "" );
         }
         return new Literal<GenericCustomPropertyValue>( value );
     }
