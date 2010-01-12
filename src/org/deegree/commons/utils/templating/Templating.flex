@@ -19,7 +19,7 @@ import java_cup.runtime.*;
 %line
 %column
 %public
-%states TEMPLATE
+%states TEMPLATE MAP_KEY MAP_VALUE
 
 %{
 %}
@@ -40,10 +40,65 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
 }
 
 <TEMPLATE> {
-  {WhiteSpace}+                                                                      {}
-  [^>] !([^]* ([:]?{LetterOrDigit}+[>]) [^]*) ([:]{LetterOrDigit}+[>])               { yybegin(YYINITIAL); String s = yytext().trim(); s = s.substring(0, s.length() - 1); return new Symbol(TemplatingSymbols.TEMPLATE_CALL_TOKEN, yyline, yycolumn, s); }
-  {LetterOrDigit}+                                                                   { return new Symbol(TemplatingSymbols.TEMPLATE_DEFINITION_TOKEN, yyline, yycolumn, yytext().trim()); }
-  [^>] !([^]* ([:]?{LetterOrDigitOrSpace}+[>]) [^]*) ([:]{LetterOrDigitOrSpace}+[>]) { yybegin(YYINITIAL); String s = yytext().trim(); s = s.substring(0, s.length() - 1); return new Symbol(TemplatingSymbols.MAP_CALL_TOKEN, yyline, yycolumn, s); }
-  {LetterOrDigitOrSpace}+                                                            { return new Symbol(TemplatingSymbols.MAP_DEFINITION_TOKEN, yyline, yycolumn, yytext().trim()); }
-  [>]                                                                                { yybegin(YYINITIAL); }
+  {WhiteSpace}+    
+              {}
+
+  property[ ]!([^]* ([:]?{LetterOrDigit}+[>]) [^]*) [:]{LetterOrDigit}+ 
+              { String s = yytext().trim().substring(9);
+                return new Symbol(TemplatingSymbols.PROPERTY_TEMPLATE_CALL_TOKEN, yyline, yycolumn, s.split(":", 2)); }
+
+  feature[ ]!([^]* ([:]?{LetterOrDigit}+[>]) [^]*) [:]{LetterOrDigit}+   
+              { String s = yytext().trim().substring(8);
+                return new Symbol(TemplatingSymbols.FEATURE_TEMPLATE_CALL_TOKEN, yyline, yycolumn, s.split(":", 2)); }
+
+  template[ ]{LetterOrDigit}+                                             
+              { String s = yytext().trim().substring(9);
+                return new Symbol(TemplatingSymbols.TEMPLATE_DEFINITION_TOKEN, yyline, yycolumn, s); }
+
+  (name | value) [:]map[ ]{LetterOrDigit}+                                
+              { String s = yytext().trim();
+                String[] vals = s.split(":", 2);
+                vals[1] = vals[1].substring(4);
+                return new Symbol(TemplatingSymbols.MAP_CALL_TOKEN, yyline, yycolumn, vals); }
+
+  odd [:]{LetterOrDigit}+                                 
+              { String s = yytext().trim().substring(4);
+                return new Symbol(TemplatingSymbols.ODD_CALL_TOKEN, yyline, yycolumn, s); }
+
+  even [:]{LetterOrDigit}+                                     
+              { String s = yytext().trim().substring(5);
+                return new Symbol(TemplatingSymbols.EVEN_CALL_TOKEN, yyline, yycolumn, s); }
+
+  value[:]link                                                  
+              { return new Symbol(TemplatingSymbols.LINK_CALL_TOKEN, yyline, yycolumn); }
+
+  index                                                         
+              { return new Symbol(TemplatingSymbols.INDEX_CALL_TOKEN, yyline, yycolumn); }
+
+  map[ ]{LetterOrDigit}+
+              { yybegin(MAP_KEY);
+                String s = yytext().trim().substring(4);
+                return new Symbol(TemplatingSymbols.MAP_DEFINITION_TOKEN, yyline, yycolumn, s); }
+
+  name                                                          
+              { return new Symbol(TemplatingSymbols.NAME_TOKEN, yyline, yycolumn); }
+
+  value                                                      
+              { return new Symbol(TemplatingSymbols.VALUE_TOKEN, yyline, yycolumn); }
+
+  [>]                                                     
+              { yybegin(YYINITIAL); }
+}
+
+<MAP_KEY> {
+  [>]                   {}
+  {WhiteSpace}+         {}
+  [<][?]                { yybegin(TEMPLATE); }
+  [^<>=\n][^=]*         { return new Symbol(TemplatingSymbols.MAP_KEY_TOKEN, yyline, yycolumn, yytext().trim()); }
+  [=]                   { yybegin(MAP_VALUE); }
+}
+
+<MAP_VALUE> {
+  {WhiteSpace}+         {}
+  .*                    { yybegin(MAP_KEY); return new Symbol(TemplatingSymbols.MAP_VALUE_TOKEN, yyline, yycolumn, yytext().trim()); }
 }
