@@ -125,12 +125,12 @@ License: The Apache Software License, Version 2.0
 Responsible: rbezema
 
 === cup ===
-Files: cup-0.10k.jar
+Files: cup-0.11a.jar
 URL: http://www2.cs.tum.edu/projects/cup/
-Version: 0.10k
+Version: 0.11a
 Description: CUP is a LALR Parser Generator
 Used for: generation of small parsers
-Origin of files: CUP distribution or files included in Debian 5.0.1: http://www2.cs.tum.edu/projects/cup/java_cup_v10k.tar.gz
+Origin of files: CUP distribution or files included in Debian: http://www2.cs.tum.edu/projects/cup/java-cup-11a.jar
 Licence: Custom license
 Responsible: aschmitz
 
