@@ -90,6 +90,6 @@
     <dependency org="opengis-schemas" name="opengis_schemas_2009-05-08" rev="" transitive="false" conf="${module.name}-build" />
 
     <!-- CUP runtime for generated parsers -->
-    <dependency org="cup" name="cup" rev="0.10k" transitive="false" conf="${module.name}-build" />
+    <dependency org="cup" name="cup" rev="0.11a" transitive="false" conf="${module.name}-build" />
   </dependencies>
 </ivy-module>
