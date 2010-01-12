@@ -522,10 +522,16 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-            stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                          + " WHERE ft_type=? AND gml_bounded_by && ?" );
+            String sql = "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE ft_type=?";
+            if ( looseBBox != null ) {
+                sql += " AND gml_bounded_by && ?";
+            }
+            stmt = conn.prepareStatement( sql );
+
             stmt.setShort( 1, ftNameToFtId.get( ftName ) );
-            stmt.setObject( 2, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+            if ( looseBBox != null ) {
+                stmt.setObject( 2, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+            }
             rs = stmt.executeQuery();
             result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
                                                                           new FeatureStoreGMLIdResolver( this ) ) );
