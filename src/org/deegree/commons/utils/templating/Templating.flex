@@ -40,39 +40,39 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
 }
 
 <TEMPLATE> {
-  {WhiteSpace}+    
+  {WhiteSpace}+
               {}
 
-  property[ ]!([^]* ([:]?{LetterOrDigit}+[>]) [^]*) [:]{LetterOrDigit}+ 
+  property[ ]!([^]* ([:]?{LetterOrDigit}+[>]) [^]*) [:]{LetterOrDigit}+
               { String s = yytext().trim().substring(9);
                 return new Symbol(TemplatingSymbols.PROPERTY_TEMPLATE_CALL_TOKEN, yyline, yycolumn, s.split(":", 2)); }
 
-  feature[ ]!([^]* ([:]?{LetterOrDigit}+[>]) [^]*) [:]{LetterOrDigit}+   
+  feature[ ]!([^]* ([:]?{LetterOrDigit}+[>]) [^]*) [:]{LetterOrDigit}+
               { String s = yytext().trim().substring(8);
                 return new Symbol(TemplatingSymbols.FEATURE_TEMPLATE_CALL_TOKEN, yyline, yycolumn, s.split(":", 2)); }
 
-  template[ ]{LetterOrDigit}+                                             
+  template[ ]{LetterOrDigit}+
               { String s = yytext().trim().substring(9);
                 return new Symbol(TemplatingSymbols.TEMPLATE_DEFINITION_TOKEN, yyline, yycolumn, s); }
 
-  (name | value) [:]map[ ]{LetterOrDigit}+                                
+  (name | value) [:]map[ ]{LetterOrDigit}+
               { String s = yytext().trim();
                 String[] vals = s.split(":", 2);
                 vals[1] = vals[1].substring(4);
                 return new Symbol(TemplatingSymbols.MAP_CALL_TOKEN, yyline, yycolumn, vals); }
 
-  odd [:]{LetterOrDigit}+                                 
+  odd [:]{LetterOrDigit}+
               { String s = yytext().trim().substring(4);
                 return new Symbol(TemplatingSymbols.ODD_CALL_TOKEN, yyline, yycolumn, s); }
 
-  even [:]{LetterOrDigit}+                                     
+  even [:]{LetterOrDigit}+
               { String s = yytext().trim().substring(5);
                 return new Symbol(TemplatingSymbols.EVEN_CALL_TOKEN, yyline, yycolumn, s); }
 
-  value[:]link                                                  
+  value[:]link
               { return new Symbol(TemplatingSymbols.LINK_CALL_TOKEN, yyline, yycolumn); }
 
-  index                                                         
+  index
               { return new Symbol(TemplatingSymbols.INDEX_CALL_TOKEN, yyline, yycolumn); }
 
   map[ ]{LetterOrDigit}+
@@ -80,13 +80,16 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
                 String s = yytext().trim().substring(4);
                 return new Symbol(TemplatingSymbols.MAP_DEFINITION_TOKEN, yyline, yycolumn, s); }
 
-  name                                                          
+  name
               { return new Symbol(TemplatingSymbols.NAME_TOKEN, yyline, yycolumn); }
 
-  value                                                      
+  value
               { return new Symbol(TemplatingSymbols.VALUE_TOKEN, yyline, yycolumn); }
 
-  [>]                                                     
+  gmlid
+              { return new Symbol(TemplatingSymbols.GMLID_TOKEN, yyline, yycolumn); }
+
+  [>]
               { yybegin(YYINITIAL); }
 }
 

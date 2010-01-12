@@ -105,6 +105,9 @@ public class PropertyTemplateCall {
             if ( o instanceof OddEven ) {
                 ( (OddEven) o ).eval( sb, defs, p, list.indexOf( p ) );
             }
+            if ( o instanceof GMLId ) {
+                ( (GMLId) o ).eval( sb, p );
+            }
         }
     }
 

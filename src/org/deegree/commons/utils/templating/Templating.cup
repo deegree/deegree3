@@ -8,7 +8,7 @@ import org.deegree.commons.utils.templating.lang.*;
 
 terminal String    TEXT_TOKEN, TEMPLATE_DEFINITION_TOKEN, MAP_DEFINITION_TOKEN,
                    EVEN_CALL_TOKEN, ODD_CALL_TOKEN, INDEX_CALL_TOKEN, VALUE_TOKEN, NAME_TOKEN,
-                   LINK_CALL_TOKEN, MAP_KEY_TOKEN, MAP_VALUE_TOKEN;
+                   LINK_CALL_TOKEN, MAP_KEY_TOKEN, MAP_VALUE_TOKEN, GMLID_TOKEN;
 terminal String[]  PROPERTY_TEMPLATE_CALL_TOKEN, FEATURE_TEMPLATE_CALL_TOKEN, MAP_CALL_TOKEN;
 non terminal HashMap<String, Definition>      definition;
 non terminal TemplateDefinition               template;
@@ -32,7 +32,7 @@ template ::= templatebody:obj template:tmpl     {: tmpl.body.add(0, obj);
                                                    RESULT = tmpl; :}
          | templatebody:obj                     {: RESULT = new TemplateDefinition();
                                                    RESULT.body.add(obj); :};
-         
+
 templatebody ::= TEXT_TOKEN:text                {: RESULT = text; :}
          | PROPERTY_TEMPLATE_CALL_TOKEN:call    {: RESULT = new PropertyTemplateCall(call[1], call[0]); :}
          | FEATURE_TEMPLATE_CALL_TOKEN:call     {: RESULT = new FeatureTemplateCall(call[1], call[0]); :}
@@ -43,7 +43,8 @@ templatebody ::= TEXT_TOKEN:text                {: RESULT = text; :}
          | INDEX_CALL_TOKEN                     {: RESULT = new Index(); :}
          | NAME_TOKEN                           {: RESULT = new Name(); :}
          | VALUE_TOKEN                          {: RESULT = new Value(); :}
-         | LINK_CALL_TOKEN                      {: RESULT = new Link(); :};
+         | LINK_CALL_TOKEN                      {: RESULT = new Link(); :}
+         | GMLID_TOKEN                          {: RESULT = new GMLId(); :};
 
 map ::= MAP_KEY_TOKEN:key MAP_VALUE_TOKEN:val map:def {: def.map.put(key, val);
                                                          RESULT = def; :}
