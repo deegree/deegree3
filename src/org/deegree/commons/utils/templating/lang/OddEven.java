@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.templating.lang;
 
+import static java.util.Collections.singletonList;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 
 import java.util.HashMap;
@@ -77,10 +78,10 @@ public class OddEven {
         }
 
         if ( obj instanceof Feature ) {
-            new FeatureTemplateCall( name, "*" ).eval( sb, defs, obj, idx );
+            new FeatureTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, idx );
         }
         if ( obj instanceof Property<?> ) {
-            new PropertyTemplateCall( name, "*" ).eval( sb, defs, obj );
+            new PropertyTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj );
         }
     }
 

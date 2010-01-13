@@ -62,17 +62,21 @@ public class PropertyTemplateCall {
 
     private String name;
 
-    private String pattern;
+    private List<String> patterns;
 
     private HashSet<Object> visited = new HashSet<Object>();
 
+    private final boolean negate;
+
     /**
      * @param name
-     * @param pattern
+     * @param patterns
+     * @param negate
      */
-    public PropertyTemplateCall( String name, String pattern ) {
+    public PropertyTemplateCall( String name, List<String> patterns, boolean negate ) {
         this.name = name;
-        this.pattern = pattern;
+        this.patterns = patterns;
+        this.negate = negate;
     }
 
     private void eval( StringBuilder sb, TemplateDefinition t, Property<?> p, HashMap<String, Object> defs,
@@ -138,7 +142,8 @@ public class PropertyTemplateCall {
         }
 
         for ( Property<?> p : ( (Feature) obj ).getProperties() ) {
-            if ( !pattern.equals( "*" ) && !pattern.equals( p.getName().getLocalPart() ) ) {
+            String nm = p.getName().getLocalPart();
+            if ( !patterns.get( 0 ).equals( "*" ) && !( patterns.contains( nm ) ^ negate ) ) {
                 continue;
             }
             eval( sb, t, p, defs, asList( ( (Feature) obj ).getProperties() ) );

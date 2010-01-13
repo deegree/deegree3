@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -57,17 +58,23 @@ public class FeatureTemplateCall {
 
     private static final Logger LOG = getLogger( FeatureTemplateCall.class );
 
-    private String name, pattern;
+    private String name;
+
+    private List<String> patterns;
 
     private HashSet<Object> visited = new HashSet<Object>();
 
+    private boolean negate;
+
     /**
      * @param name
-     * @param pattern
+     * @param patterns
+     * @param negate
      */
-    public FeatureTemplateCall( String name, String pattern ) {
+    public FeatureTemplateCall( String name, List<String> patterns, boolean negate ) {
         this.name = name;
-        this.pattern = pattern;
+        this.patterns = patterns;
+        this.negate = negate;
     }
 
     private void eval( StringBuilder sb, HashMap<String, Object> defs, Feature f, TemplateDefinition t, int idx ) {
@@ -129,7 +136,8 @@ public class FeatureTemplateCall {
         TemplateDefinition t = (TemplateDefinition) def;
 
         if ( obj instanceof Feature ) {
-            if ( pattern.equals( "*" ) || ( (Feature) obj ).getName().getLocalPart().equals( pattern ) ) {
+            String nm = ( (Feature) obj ).getName().getLocalPart();
+            if ( patterns.get( 0 ).equals( "*" ) || ( patterns.contains( nm ) ^ negate ) ) {
                 eval( sb, defs, (Feature) obj, t, idx );
             }
         }
