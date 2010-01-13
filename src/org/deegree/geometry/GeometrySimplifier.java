@@ -132,18 +132,21 @@ public class GeometrySimplifier {
     private Geometry homogenize( Geometry geometry ) {
         Geometry simplifiedG = geometry;
         if ( homogenizeCollections ) {
-            if ( geometry.getClass().equals( DefaultMultiGeometry.class ) ) {
-                throw new GeometryException( "Homogenizing is only possible for a DefaultMultiGeometry" );
+            if ( !geometry.getClass().equals( DefaultMultiGeometry.class ) ) {
+                throw new GeometryException(
+                                             "Homogenizing is only possible for a DefaultMultiGeometry. The geometry to be simplified is "
+                                                                     + geometry.getClass() );
             }
 
             // see if the multiGeometry members are of the same type
             PrimitiveType gType = null;
-            for ( Geometry g : (DefaultMultiGeometry<Geometry>) geometry ) {
-                if ( !geometry.getGeometryType().equals( GeometryType.PRIMITIVE_GEOMETRY ) ) {
+            for ( Geometry gMember : (DefaultMultiGeometry<Geometry>) geometry ) {
+                if ( !gMember.getGeometryType().equals( GeometryType.PRIMITIVE_GEOMETRY ) ) {
                     throw new GeometryException(
-                                                 "At this time the GeometrySimplifier only accepts MultiGeometries that have primitive geometries as members" );
+                                                 "At this time the GeometrySimplifier only accepts MultiGeometries that have primitive geometries as members. The geometry to be simplified has a member of type "
+                                                                         + gMember.getClass() );
                 }
-                PrimitiveType memberType = ( (GeometricPrimitive) g ).getPrimitiveType();
+                PrimitiveType memberType = ( (GeometricPrimitive) gMember ).getPrimitiveType();
                 if ( gType != null && !gType.equals( memberType ) ) {
                     throw new GeometryException(
                                                  "Cannot homogenize a MultiGeometry that contains members of different types." );
