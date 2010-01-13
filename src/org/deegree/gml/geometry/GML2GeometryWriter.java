@@ -55,6 +55,7 @@ import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
@@ -66,6 +67,7 @@ import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
+import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.gml.geometry.refs.GeometryReference;
 
 /**
@@ -183,6 +185,31 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         writer.writeEndElement(); // </gml:coord>
     }
 
+    private void exportCoordinates( Points points )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( "gml", "coordinates", GML21NS );
+        writer.writeAttribute( "decimal", "." );
+        writer.writeAttribute( "cs", "," );
+        writer.writeAttribute( "ts", " " );
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for ( Point point : points ) {
+            if ( !first ) {
+                sb.append( " " );
+            }
+            double[] ords = point.getAsArray();
+            sb.append( formatter.format( ords[0] ) );
+            for ( int i = 1; i < ords.length; i++ ) {
+                sb.append( "," );
+                sb.append( formatter.format( ords[i] ) );
+            }
+            first = false;
+        }
+        writer.writeCharacters( sb.toString() );
+        writer.writeEndElement();
+    }
+
     /**
      * @param polygon
      * @throws XMLStreamException
@@ -244,31 +271,28 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
             writer.writeAttribute( "srsName", linearRing.getCoordinateSystem().getName() );
         }
 
-        for ( Point point : linearRing.getControlPoints() ) {
-            exportCoord( point );
-        }
+        exportCoordinates( linearRing.getControlPoints() );
+
         writer.writeEndElement(); // </gml:LinearRing>
     }
 
     /**
-     * @param linearString
+     * @param lineString
      * @throws XMLStreamException
      */
-    public void exportLineString( LineString linearString )
+    public void exportLineString( LineString lineString )
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "LineString", GML21NS );
 
-        if ( linearString.getId() != null ) {
-            exportedIds.add( linearString.getId() );
-            writer.writeAttribute( "gid", linearString.getId() );
+        if ( lineString.getId() != null ) {
+            exportedIds.add( lineString.getId() );
+            writer.writeAttribute( "gid", lineString.getId() );
         }
-        if ( linearString.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", linearString.getCoordinateSystem().getName() );
+        if ( lineString.getCoordinateSystem().getName() != null ) {
+            writer.writeAttribute( "srsName", lineString.getCoordinateSystem().getName() );
         }
 
-        for ( Point point : linearString.getControlPoints() ) {
-            exportCoord( point );
-        }
+        exportCoordinates( lineString.getControlPoints() );
         writer.writeEndElement(); // </gml:LineString>
     }
 
@@ -289,11 +313,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
             writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getName() );
         }
 
-        Point min = envelope.getMin();
-        exportCoord( min );
-
-        Point max = envelope.getMax();
-        exportCoord( max );
+        exportCoordinates( new PointsArray( envelope.getMin(), envelope.getMax()) );
 
         writer.writeEndElement(); // </gml:Box>
     }
