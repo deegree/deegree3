@@ -93,21 +93,22 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
 
             Iterator<Feature> iter = rs.iterator();
 
-            boolean nextRead = true;
+            boolean nextCalled = true;
 
             Feature next = null;
 
             @Override
             public boolean hasNext() {
-                if ( !nextRead ) {
+                if ( !nextCalled ) {
                     return next != null;
                 }
                 next = null;
                 while ( iter.hasNext() ) {
-                    next = iter.next();
+                    Feature candidate = iter.next();
                     try {
-                        if ( filter.evaluate( next ) ) {
-                            nextRead = false;
+                        if ( filter.evaluate( candidate ) ) {
+                            nextCalled = false;
+                            next = candidate;
                             break;
                         }
                     } catch ( FilterEvaluationException e ) {
@@ -122,7 +123,7 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
-                nextRead = true;
+                nextCalled = true;
                 return next;
             }
 
