@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
+import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
@@ -103,10 +104,11 @@ public interface RecordStore {
      *            PostGresFilterTransformator that transforms the filterexpression into an SQL compatible fragment
      * @throws SQLException
      * @throws XMLStreamException
+     * @throws IOException 
      */
     public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, JDBCConnections connection,
                             GenericDatabaseDS genericDatabaseDS ) 
-                            throws SQLException, XMLStreamException;
+                            throws SQLException, XMLStreamException, IOException;
     
     /**
      * Exports the XML for the requested records.
