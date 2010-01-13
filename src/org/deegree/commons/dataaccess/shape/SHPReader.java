@@ -205,6 +205,8 @@ public class SHPReader {
 
     private SpatialIndex<Long> rtree;
 
+    private boolean recordNumStartsWith0 = false;
+
     /**
      * @param in
      * @param crs
@@ -329,7 +331,15 @@ public class SHPReader {
         for ( Long ptr : pointers ) {
             in.seek( ptr - 8 );
 
-            int num = in.readInt() - 1;
+            int num = in.readInt();
+            if ( num == 0 && !recordNumStartsWith0 ) {
+                LOG.warn( "PLEASE NOTE THIS: Detected that the shape file starts counting record numbers at 0 and not at 1 as specified!" );
+                LOG.warn( "PLEASE NOTE THIS: This is now considered when querying, but you should fix the shape file!" );
+                recordNumStartsWith0 = true;
+            }
+            if ( !recordNumStartsWith0 ) {
+                num -= 1;
+            }
 
             if ( !withGeometry && !exact ) {
                 list.add( new Pair<Integer, Geometry>( num, null ) );
