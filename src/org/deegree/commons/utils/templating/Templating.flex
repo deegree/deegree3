@@ -47,9 +47,11 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
               { String s = yytext().trim().substring(9);
                 return new Symbol(TemplatingSymbols.PROPERTY_TEMPLATE_CALL_TOKEN, yyline, yycolumn, s.split(":", 2)); }
 
-  feature[ ]!([^]* ([:]?{LetterOrDigit}+[>]) [^]*) [:]{LetterOrDigit}+
+  feature[ ]!([^]* ([:]?{LetterOrDigit}+[>]) [^]*) [:](template[ ])?{LetterOrDigit}+
               { String s = yytext().trim().substring(8);
-                return new Symbol(TemplatingSymbols.FEATURE_TEMPLATE_CALL_TOKEN, yyline, yycolumn, s.split(":", 2)); }
+                String[] ss = s.split(":", 2);
+                if(ss[1].startsWith("template ")) ss[1] = ss[1].substring(9);
+                return new Symbol(TemplatingSymbols.FEATURE_TEMPLATE_CALL_TOKEN, yyline, yycolumn, ss); }
 
   template[ ]{LetterOrDigit}+
               { String s = yytext().trim().substring(9);
