@@ -8,7 +8,7 @@ import org.deegree.commons.utils.templating.lang.*;
 
 terminal String    TEXT_TOKEN, TEMPLATE_DEFINITION_TOKEN, MAP_DEFINITION_TOKEN,
                    EVEN_CALL_TOKEN, ODD_CALL_TOKEN, INDEX_CALL_TOKEN, VALUE_TOKEN, NAME_TOKEN,
-                   LINK_CALL_TOKEN, MAP_KEY_TOKEN, MAP_VALUE_TOKEN, GMLID_TOKEN;
+                   LINK_CALL_TOKEN, MAP_KEY_TOKEN, MAP_VALUE_TOKEN, GMLID_TOKEN, END_DEFINITION_TOKEN;
 terminal String[]  PROPERTY_TEMPLATE_CALL_TOKEN, FEATURE_TEMPLATE_CALL_TOKEN, MAP_CALL_TOKEN;
 non terminal HashMap<String, Definition>      definition;
 non terminal TemplateDefinition               template;
@@ -31,7 +31,8 @@ definition ::= TEMPLATE_DEFINITION_TOKEN:def template:tmpl             {: RESULT
 template ::= templatebody:obj template:tmpl     {: tmpl.body.add(0, obj);
                                                    RESULT = tmpl; :}
          | templatebody:obj                     {: RESULT = new TemplateDefinition();
-                                                   RESULT.body.add(obj); :};
+                                                   RESULT.body.add(obj); :}
+         | END_DEFINITION_TOKEN                 {: RESULT = new TemplateDefinition(); :};
 
 templatebody ::= TEXT_TOKEN:text                {: RESULT = text; :}
          | PROPERTY_TEMPLATE_CALL_TOKEN:call    {: RESULT = new PropertyTemplateCall(call[1], call[0]); :}
@@ -49,4 +50,5 @@ templatebody ::= TEXT_TOKEN:text                {: RESULT = text; :}
 map ::= MAP_KEY_TOKEN:key MAP_VALUE_TOKEN:val map:def {: def.map.put(key, val);
                                                          RESULT = def; :}
          | MAP_KEY_TOKEN:key MAP_VALUE_TOKEN:val      {: RESULT = new MapDefinition();
-                                                         RESULT.map.put(key, val); :};
+                                                         RESULT.map.put(key, val); :}
+         | END_DEFINITION_TOKEN                       {: RESULT = new MapDefinition(); :};

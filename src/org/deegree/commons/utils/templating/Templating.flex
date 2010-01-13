@@ -31,12 +31,13 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
 %%
 
 <YYINITIAL> {
-  [<][?]                       { yybegin(TEMPLATE); }
-  .                            |
-  {LetterOrDigitOrSpace}+      |
-  [<][:letter:]+[>]            |
-  [<][/][:letter:]+[>]         |
-  {WhiteSpace}+                { return new Symbol(TemplatingSymbols.TEXT_TOKEN, yyline, yycolumn, yytext()); }
+  [<][?]                                    { yybegin(TEMPLATE); }
+  .                                         |
+  {LetterOrDigitOrSpace}+                   |
+  [<][:letter:]+[>]                         |
+  [<][/][:letter:]+[>]                      |
+  {WhiteSpace}+                             { return new Symbol(TemplatingSymbols.TEXT_TOKEN, yyline, yycolumn, yytext()); }
+  {WhiteSpace}*[<][/][?][>]{WhiteSpace}*    { return new Symbol(TemplatingSymbols.END_DEFINITION_TOKEN, yyline, yycolumn); }
 }
 
 <TEMPLATE> {
@@ -96,11 +97,12 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
 }
 
 <MAP_KEY> {
-  [>]                   {}
-  {WhiteSpace}+         {}
-  [<][?]                { yybegin(TEMPLATE); }
-  [^<>=\n][^=]*         { return new Symbol(TemplatingSymbols.MAP_KEY_TOKEN, yyline, yycolumn, yytext().trim()); }
-  [=]                   { yybegin(MAP_VALUE); }
+  [>]                                     {}
+  {WhiteSpace}+                           {}
+  [<][?]                                  { yybegin(TEMPLATE); }
+  [^<>=\n][^=]*                           { return new Symbol(TemplatingSymbols.MAP_KEY_TOKEN, yyline, yycolumn, yytext().trim()); }
+  [=]                                     { yybegin(MAP_VALUE); }
+  {WhiteSpace}*[<][/][?][>]{WhiteSpace}*  { yybegin(YYINITIAL); return new Symbol(TemplatingSymbols.END_DEFINITION_TOKEN, yyline, yycolumn); }
 }
 
 <MAP_VALUE> {
