@@ -401,6 +401,7 @@ public class ShapeFeatureStore implements FeatureStore {
                         entry = dbf.getEntry( pair.first );
                     } catch ( IOException e ) {
                         LOG.debug( "Stack trace", e );
+                        LOG.debug( "Query bbox: {}", bbox );
                         throw new FeatureStoreException( e );
                     }
                 }
@@ -472,7 +473,7 @@ public class ShapeFeatureStore implements FeatureStore {
     public int queryHits( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO
-        return query( queries ).toCollection().size();       
+        return query( queries ).toCollection().size();
     }
 
     /**
