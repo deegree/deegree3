@@ -128,6 +128,8 @@ public class ApplicationSchemaXSDDecoder {
 
     private int prefixIndex = 0;
 
+    private final GMLVersion gmlVersion;
+
     /**
      * @param gmlVersion
      * @param namespaceHints
@@ -148,6 +150,7 @@ public class ApplicationSchemaXSDDecoder {
             }
         }
 
+        this.gmlVersion = gmlVersion;
         analyzer = new GMLSchemaAnalyzer( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
 
@@ -373,7 +376,7 @@ public class ApplicationSchemaXSDDecoder {
         // HACK HACK HACK
         if ( GMLNS.equals( elementDecl.getNamespace() )
              && ( "boundedBy".equals( elementDecl.getName() ) || "name".equals( elementDecl.getName() )
-                  || "description".equals( elementDecl.getName() ) || "metaDataProperty".equals( elementDecl.getName() ) ) ) {
+                  || "description".equals( elementDecl.getName() ) || "metaDataProperty".equals( elementDecl.getName() ) || ( "location".equals( elementDecl.getName() ) && gmlVersion != GMLVersion.GML_2 ) ) ) {
             LOG.trace( "Omitting from feature type -- GML standard property." );
         } else {
             XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
