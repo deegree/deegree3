@@ -74,6 +74,7 @@ public class CRS {
      * @param authority the authority to set
      */
     public void setAuthority( String authority ) {
+        
         this.authority = authority;
     }
 
@@ -88,6 +89,7 @@ public class CRS {
      * @param id the id to set
      */
     public void setId( String id ) {
+        
         this.id = id;
     }
 
@@ -102,6 +104,7 @@ public class CRS {
      * @param version the version to set
      */
     public void setVersion( String version ) {
+        
         this.version = version;
     }
 

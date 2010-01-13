@@ -35,6 +35,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import java.util.List;
+
 /**
  * Properties that are just returnable by applicationprofiles such as ISO 
  * 
@@ -47,8 +49,61 @@ public class ReturnableProperties {
     
     private String graphicOverview;
     
+    private String creator;
     
+    private String publisher;
+        
+    private String contributor;
     
+    private List<String> rights;
+    
+    private String source;
+    
+    private String language;
+    
+
+    /**
+     * @return the creator
+     */
+    public String getCreator() {
+        return creator;
+    }
+
+    /**
+     * @param creator the creator to set
+     */
+    public void setCreator( String creator ) {
+        this.creator = creator;
+    }
+
+    /**
+     * @return the publisher
+     */
+    public String getPublisher() {
+        return publisher;
+    }
+
+    /**
+     * @param publisher the publisher to set
+     */
+    public void setPublisher( String publisher ) {
+        this.publisher = publisher;
+    }
+
+    /**
+     * @return the contributor
+     */
+    public String getContributor() {
+        return contributor;
+    }
+
+    /**
+     * @param contributor the contributor to set
+     */
+    public void setContributor( String contributor ) {
+        this.contributor = contributor;
+    }
+
     
     
     /**
@@ -63,6 +118,48 @@ public class ReturnableProperties {
      */
     public void setGraphicOverview( String graphicOverview ) {
         this.graphicOverview = graphicOverview;
+    }
+
+    /**
+     * @return the rights
+     */
+    public List<String> getRights() {
+        return rights;
+    }
+
+    /**
+     * @param rights the rights to set
+     */
+    public void setRights( List<String> rights ) {
+        this.rights = rights;
+    }
+
+    /**
+     * @return the source
+     */
+    public String getSource() {
+        return source;
+    }
+
+    /**
+     * @param source the source to set
+     */
+    public void setSource( String source ) {
+        this.source = source;
+    }
+    
+    /**
+     * @return the language
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage( String language ) {
+        this.language = language;
     }
 
 

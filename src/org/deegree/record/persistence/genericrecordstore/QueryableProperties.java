@@ -54,7 +54,10 @@ public class QueryableProperties {
     
     private List<String> title;
     
+    private List<String> alternateTitle;
+    
     private List<String> _abstract;
+    
     
     private String anyText;
     
@@ -62,7 +65,7 @@ public class QueryableProperties {
     
     private String identifier;
     
-    private List<Date> modified;
+    private Date modified;
     
     private String type;
     
@@ -72,7 +75,9 @@ public class QueryableProperties {
     
     private CRS crs;
     
-    private OMElement language;
+    
+    
+    private String resourceLanguage;
     
     private List<Keyword> keywords;
     
@@ -191,14 +196,14 @@ public class QueryableProperties {
     /**
      * @return the modified
      */
-    public List<Date> getModified() {
+    public Date getModified() {
         return modified;
     }
 
     /**
      * @param modified the modified to set
      */
-    public void setModified( List<Date> modified ) {
+    public void setModified( Date modified ) {
         this.modified = modified;
     }
 
@@ -232,19 +237,7 @@ public class QueryableProperties {
         this.crs = crs;
     }
 
-    /**
-     * @return the language
-     */
-    public OMElement getLanguage() {
-        return language;
-    }
-
-    /**
-     * @param language the language to set
-     */
-    public void setLanguage( OMElement language ) {
-        this.language = language;
-    }
+   
 
     
     /**
@@ -315,6 +308,34 @@ public class QueryableProperties {
      */
     public void setKeywords( List<Keyword> keywords ) {
         this.keywords = keywords;
+    }
+
+    /**
+     * @return the alternateTitle
+     */
+    public List<String> getAlternateTitle() {
+        return alternateTitle;
+    }
+
+    /**
+     * @param alternateTitle the alternateTitle to set
+     */
+    public void setAlternateTitle( List<String> alternateTitle ) {
+        this.alternateTitle = alternateTitle;
+    }
+
+    /**
+     * @return the resourceLanguage
+     */
+    public String getResourceLanguage() {
+        return resourceLanguage;
+    }
+
+    /**
+     * @param resourceLanguage the resourceLanguage to set
+     */
+    public void setResourceLanguage( String resourceLanguage ) {
+        this.resourceLanguage = resourceLanguage;
     }
 
    

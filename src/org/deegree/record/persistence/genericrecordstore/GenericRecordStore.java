@@ -35,10 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -140,7 +144,7 @@ public class GenericRecordStore implements RecordStore {
         XMLAdapter ada = new XMLAdapter( url );
 
         System.out.println( ada.toString() );
-        readXMLFragment( ada.toString(), writer );
+        // readXMLFragment( ada.toString(), writer );
     }
 
     /*
@@ -187,7 +191,7 @@ public class GenericRecordStore implements RecordStore {
     @Override
     public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, JDBCConnections con,
                             GenericDatabaseDS constraint )
-                            throws SQLException, XMLStreamException {
+                            throws SQLException, XMLStreamException, IOException {
 
         if ( constraint.getTable() != null ) {
             tableSet = constraint.getTable();
@@ -237,24 +241,24 @@ public class GenericRecordStore implements RecordStore {
      * @param resultType
      * @throws SQLException
      * @throws XMLStreamException
+     * @throws IOException 
      */
     private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
                                     GenericDatabaseDS constraint, JDBCConnections con, String formatType,
                                     String resultType )
-                            throws SQLException, XMLStreamException {
+                            throws SQLException, XMLStreamException, IOException {
 
         int countRows = 0;
         int nextRecord = 0;
         int returnedRecords = 0;
 
-        String selectCountRows = "";
 
-        selectCountRows = generateSELECTStatement( formatType, constraint, profileFormatNumberOutputSchema, true );
+        Writer selectCountRows = generateSELECTStatement( formatType, constraint, profileFormatNumberOutputSchema, true );
 
         // ConnectionManager.addConnections( con );
         for ( PooledConnection pool : con.getPooledConnection() ) {
             Connection conn = ConnectionManager.getConnection( connectionId );
-            ResultSet rs = conn.createStatement().executeQuery( selectCountRows );
+            ResultSet rs = conn.createStatement().executeQuery( selectCountRows.toString() );
 
             while ( rs.next() ) {
                 countRows = rs.getInt( 1 );
@@ -311,71 +315,70 @@ public class GenericRecordStore implements RecordStore {
      * @param con
      * @throws SQLException
      * @throws XMLStreamException
+     * @throws IOException 
      */
     private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
                                        GenericDatabaseDS constraint, JDBCConnections con )
-                            throws SQLException, XMLStreamException {
+                            throws SQLException, XMLStreamException, IOException {
 
         for ( PooledConnection pool : con.getPooledConnection() ) {
             Connection conn = ConnectionManager.getConnection( connectionId );
 
+            ResultSet rs = null;
             switch ( constraint.getSetOfReturnableElements() ) {
 
             case brief:
 
-                String selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ),
+                Writer selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ),
                                                               constraint, profileFormatNumberOutputSchema, false );
-                ResultSet rsBrief = conn.createStatement().executeQuery( selectBrief );
+                rs = conn.createStatement().executeQuery( selectBrief.toString() );
 
                 doHitsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con,
                                    formatTypeInGenericRecordStore.get( "brief" ), "results" );
 
-                while ( rsBrief.next() ) {
-
-                    String result = rsBrief.getString( 1 );
-                    readXMLFragment( result, writer );
-
-                }
-                rsBrief.close();
-
                 break;
             case summary:
 
-                String selectSummary = generateSELECTStatement( formatTypeInGenericRecordStore.get( "summary" ),
+                Writer selectSummary = generateSELECTStatement( formatTypeInGenericRecordStore.get( "summary" ),
                                                                 constraint, profileFormatNumberOutputSchema, false );
-                ResultSet rsSummary = conn.createStatement().executeQuery( selectSummary );
+                rs = conn.createStatement().executeQuery( selectSummary.toString() );
 
                 doHitsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con,
                                    formatTypeInGenericRecordStore.get( "summary" ), "results" );
 
-                while ( rsSummary.next() ) {
-
-                    String result = rsSummary.getString( 1 );
-                    readXMLFragment( result, writer );
-
-                }
-
-                rsSummary.close();
                 break;
             case full:
 
-                String selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint,
+                Writer selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint,
                                                              profileFormatNumberOutputSchema, false );
-                ResultSet rsFull = conn.createStatement().executeQuery( selectFull );
+                rs = conn.createStatement().executeQuery( selectFull.toString() );
 
                 doHitsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con,
                                    formatTypeInGenericRecordStore.get( "full" ), "results" );
 
-                while ( rsFull.next() ) {
+                break;
+            }
 
-                    String result = rsFull.getString( 1 );
-                    readXMLFragment( result, writer );
+            if ( rs != null ) {
+                while ( rs.next() ) {
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream( rs.getBytes( 1 ) );
+
+                    //TODO remove hardcoding 
+                    Charset charset = Charset.forName( "UTF-8" );
+                    InputStreamReader isr = null;
+                    try {
+                        isr = new InputStreamReader( bais, charset );
+                    } catch ( Exception e ) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                    readXMLFragment( isr, writer );
 
                 }
-                rsFull.close();
-
-                break;
-            }// muss dann noch gecatcht werden
+                rs.close();
+            }
 
             conn.close();
 
@@ -389,7 +392,7 @@ public class GenericRecordStore implements RecordStore {
      * 
      * @param tableSet
      */
-    public void correctTable( Set<String> tableSet ) {
+    private void correctTable( Set<String> tableSet ) {
         for ( String s : tableSet ) {
             if ( mainDatabaseTable.equals( s ) ) {
                 tableSet.remove( s );
@@ -407,17 +410,18 @@ public class GenericRecordStore implements RecordStore {
      * @param formatType
      * @param constraint
      * @return
+     * @throws IOException 
      */
-    private String generateSELECTStatement( String formatType, GenericDatabaseDS constraint,
-                                            int profileFormatNumberOutputSchema, boolean setCount ) {
-        String s = "";
-        String b = "";
+    private Writer generateSELECTStatement( String formatType, GenericDatabaseDS constraint,
+                                            int profileFormatNumberOutputSchema, boolean setCount ) throws IOException {
+        Writer s = new StringWriter();
+        Writer constraintExpression = new StringWriter();
         String COUNT_PRE;
         String COUNT_SUF;
-        if ( constraint.getExpressionWriter() != null ) {
-            b = constraint.getExpressionWriter().toString();
+        if ( constraint.getExpressionWriter().equals( null) ) {
+            constraintExpression.append( "AND (" + constraint.getExpressionWriter().toString() + ") ");
         } else {
-            b = "";
+            constraintExpression.append( "");
         }
 
         if ( setCount == true ) {
@@ -428,30 +432,30 @@ public class GenericRecordStore implements RecordStore {
             COUNT_SUF = "";
         }
 
-        s += "SELECT " + COUNT_PRE + formatType + ".data" + COUNT_SUF + " FROM " + formatType + " ";
+        s.append( "SELECT " + COUNT_PRE + formatType + ".data" + COUNT_SUF + " FROM " + formatType + " ");
 
-        s += "WHERE " + formatType + ".format = " + profileFormatNumberOutputSchema + " ";
+        s.append( "WHERE " + formatType + ".format = " + profileFormatNumberOutputSchema + " ");
 
-        s += "AND " + formatType + ".data IN(";
+        s.append( "AND " + formatType + ".data IN(");
 
-        s += "SELECT " + formatType + ".data FROM " + mainDatabaseTable + ", " + formatType;
-
-        if ( tableSet.size() == 0 ) {
-            s += " ";
-        } else {
-            s += ", " + concatTableFROM( tableSet );
-        }
-
-        s += "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "."
-             + commonForeignkey + " >= " + constraint.getStartPosition();
+        s.append( "SELECT " + formatType + ".data FROM " + mainDatabaseTable + ", " + formatType);
 
         if ( tableSet.size() == 0 ) {
-            s += " ";
+            s.append( ' ');
         } else {
-            s += " AND " + concatTableWHERE( tableSet );
+            s.append( ", " + concatTableFROM( tableSet ));
         }
 
-        s += "AND (" + b + ") LIMIT " + constraint.getMaxRecords() + ")";
+        s.append( "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "."
+             + commonForeignkey + " >= " + constraint.getStartPosition());
+
+        if ( tableSet.size() == 0 ) {
+            s.append( ' ' );
+        } else {
+            s.append( " AND " + concatTableWHERE( tableSet ));
+        }
+
+        s.append( constraintExpression + ")" + " LIMIT " + constraint.getMaxRecords() );
 
         System.out.println( s );
         return s;
@@ -462,17 +466,18 @@ public class GenericRecordStore implements RecordStore {
      * 
      * @param table
      * @return
+     * @throws IOException 
      */
-    private String concatTableWHERE( Set<String> table ) {
-        String string = "";
+    private Writer concatTableWHERE( Set<String> table ) throws IOException {
+        Writer string = new StringWriter();
         int counter = 0;
 
         for ( String s : table ) {
             if ( table.size() - 1 != counter ) {
                 counter++;
-                string += s + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND ";
+                string.append( s + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND ");
             } else {
-                string += s + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ";
+                string.append( s + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ");
             }
         }
         return string;
@@ -481,17 +486,18 @@ public class GenericRecordStore implements RecordStore {
     /**
      * @param table
      * @return
+     * @throws IOException 
      */
-    private String concatTableFROM( Set<String> table ) {
-        String string = "";
+    private Writer concatTableFROM( Set<String> table ) throws IOException {
+        Writer string = new StringWriter();
         int counter = 0;
 
         for ( String s : table ) {
             if ( table.size() - 1 != counter ) {
                 counter++;
-                string += s + ", ";
+                string.append( s + ", ");
             } else {
-                string += s + " ";
+                string.append( s + " ");
             }
         }
         return string;
@@ -500,16 +506,16 @@ public class GenericRecordStore implements RecordStore {
     /**
      * Reads a valid XML fragment
      * 
-     * @param result
+     * @param
      * @param xmlWriter
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      */
-    private void readXMLFragment( String result, XMLStreamWriter xmlWriter ) {
+    private void readXMLFragment( InputStreamReader isr, XMLStreamWriter xmlWriter ) {
 
         XMLStreamReader xmlReader;
         try {
-            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( result ) );
+            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
 
             // skip START_DOCUMENT
             xmlReader.nextTag();
@@ -519,10 +525,8 @@ public class GenericRecordStore implements RecordStore {
             xmlReader.close();
 
         } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( FactoryConfigurationError e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -600,7 +604,7 @@ public class GenericRecordStore implements RecordStore {
                 }
 
             }
-            
+
             break;
 
         case UPDATE:
@@ -636,26 +640,33 @@ public class GenericRecordStore implements RecordStore {
      * @param insertedIds
      *            the briefrecord datasets that have been inserted into the backend
      * @throws SQLException
+     * @throws IOException 
      */
     private void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, Connection conn,
                                                           List<Integer> insertedIds )
-                            throws SQLException {
-        String s = "";
+                            throws SQLException, IOException {
+
         for ( int i : insertedIds ) {
+            Writer s = new StringWriter();
+            s.append( " SELECT " + "recordbrief" + ".data " + "FROM " + mainDatabaseTable + ", " + "recordbrief" + " ");
 
-            s += "SELECT " + "recordbrief" + ".data " + "FROM " + mainDatabaseTable + ", " + "recordbrief" + " ";
+            s.append(  " WHERE " + "recordbrief" + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ");
 
-            s += "WHERE " + "recordbrief" + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ";
-
-            s += "AND " + "recordbrief" + "." + "id" + " = " + i;
+            s.append( " AND " + "recordbrief" + "." + "id" + " = " + i);
             System.out.println( s );
 
-            ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s );
+            ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
 
             while ( rsInsertedDatasets.next() ) {
-                String result = rsInsertedDatasets.getString( 1 );
+                ByteArrayInputStream bais = new ByteArrayInputStream( rsInsertedDatasets.getBytes( 1 ) );
 
-                readXMLFragment( result, writer );
+                Charset charset = Charset.forName( "UTF-8" );
+                InputStreamReader isr = null;
+                
+                    isr = new InputStreamReader( bais, charset );
+                
+
+                readXMLFragment( isr, writer );
 
             }
             rsInsertedDatasets.close();

@@ -35,6 +35,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import java.util.List;
+
 /**
  * Keyword representation for records. This class encapsulates the data for representation only. 
  * 
@@ -47,7 +49,7 @@ public class Keyword {
     
     private String keywordType;
     
-    private String keyword;
+    private List<String> keywords;
     
     private String thesaurus;
 
@@ -68,15 +70,15 @@ public class Keyword {
     /**
      * @return the keyword
      */
-    public String getKeyword() {
-        return keyword;
+    public List<String> getKeywords() {
+        return keywords;
     }
 
     /**
      * @param keyword the keyword to set
      */
-    public void setKeyword( String keyword ) {
-        this.keyword = keyword;
+    public void setKeywords( List<String> keywords ) {
+        this.keywords = keywords;
     }
 
     /**
