@@ -275,8 +275,16 @@ public class DBFReader {
                 String val = getString( bs, encoding ).trim();
                 switch ( field.propertyType.getPrimitiveType() ) {
                 case DECIMAL: {
-                    property = new GenericProperty<BigDecimal>( field.propertyType, val.isEmpty() ? null
-                                                                                                 : new BigDecimal( val ) );
+                    BigDecimal dec = null;
+                    try {
+                        dec = val.isEmpty() ? null : new BigDecimal( val );
+                    } catch ( NumberFormatException e ) {
+                        dec = new BigDecimal( 0 );
+                        LOG.debug( "Value '{}' for '{}' could not be parsed as decimal value!", val,
+                                   field.propertyType.getName() );
+                        // needs a stack trace on trace? this will output a LOT of stack traces...
+                    }
+                    property = new GenericProperty<BigDecimal>( field.propertyType, dec );
                     break;
                 }
                 case DOUBLE: {
