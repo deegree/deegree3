@@ -111,6 +111,7 @@ public class MapCall {
 
         if ( !md.map.containsKey( key ) ) {
             LOG.warn( "Map template definition with name '{}' does not contain key '{}'.", name, key );
+            sb.append( key );
             return;
         }
         sb.append( md.map.get( key ) );
