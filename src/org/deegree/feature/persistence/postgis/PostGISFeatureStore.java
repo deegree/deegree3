@@ -565,21 +565,29 @@ public class PostGISFeatureStore implements FeatureStore {
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
             StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                                 + " WHERE gml_bounded_by && ? AND ft_type IN(?" );
+                                                 + " WHERE " );
+            if ( looseBBox != null ) {
+                sql.append( "gml_bounded_by && ? AND " );
+            }
+            sql.append( "ft_type IN(?" );
             for ( int i = 1; i < ftId.length; i++ ) {
                 sql.append( ",?" );
             }
             sql.append( ") ORDER BY position('['||ft_type||']' IN ?)" );
             stmt = conn.prepareStatement( sql.toString() );
-            stmt.setObject( 1, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+            int firstFtArg = 1;
+            if ( looseBBox != null ) {
+                stmt.setObject( 1, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+                firstFtArg++;
+            }
             StringBuffer orderString = new StringBuffer();
             for ( int i = 0; i < ftId.length; i++ ) {
-                stmt.setShort( i + 2, ftId[i] );
+                stmt.setShort( i + firstFtArg, ftId[i] );
                 orderString.append( "[" );
                 orderString.append( "" + ftId[i] );
                 orderString.append( "]" );
             }
-            stmt.setString( ftId.length + 2, orderString.toString() );
+            stmt.setString( ftId.length + firstFtArg, orderString.toString() );
             LOG.debug( "Query {}", stmt );
 
             rs = stmt.executeQuery();
@@ -617,20 +625,32 @@ public class PostGISFeatureStore implements FeatureStore {
             StringBuffer sql = new StringBuffer();
 
             if ( queries.length == 1 ) {
-                sql.append( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                            + " WHERE gml_bounded_by && ? AND ft_type=?" );
+                sql.append( "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE " );
+                if ( looseBBox != null ) {
+                    sql.append( "gml_bounded_by && ? AND " );
+                }
+                sql.append( "ft_type=?" );
             } else {
-                sql.append( "(SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                            + " WHERE gml_bounded_by && ? AND ft_type=?)" );
+                sql.append( "(SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE " );
+                if ( looseBBox != null ) {
+                    sql.append( "gml_bounded_by && ? AND " );
+                }
+                sql.append( "ft_type=?)" );
                 for ( int i = 1; i < queries.length; i++ ) {
                     sql.append( "UNION (SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" )
-                                + " WHERE gml_bounded_by && ? AND ft_type=?)" );
+                                + " WHERE " );
+                    if ( looseBBox != null ) {
+                        sql.append( "gml_bounded_by && ? AND " );
+                    }
+                    sql.append( "ft_type=?)" );
                 }
             }
             stmt = conn.prepareStatement( sql.toString() );
             int i = 1;
             for ( Query query : queries ) {
-                stmt.setObject( i++, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+                if ( looseBBox != null ) {
+                    stmt.setObject( i++, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+                }
                 stmt.setShort( i++, getFtId( query.getTypeNames()[0].getFeatureTypeName() ) );
                 StringBuffer orderString = new StringBuffer();
                 stmt.setString( ftId.length + 2, orderString.toString() );
@@ -687,6 +707,7 @@ public class PostGISFeatureStore implements FeatureStore {
                 try {
                     rs = query( queries[i++] );
                 } catch ( Exception e ) {
+                    LOG.debug( e.getMessage(), e );
                     throw new RuntimeException( e.getMessage(), e );
                 }
                 return rs;
@@ -739,15 +760,17 @@ public class PostGISFeatureStore implements FeatureStore {
                             throws FilterEvaluationException {
 
         Geometry transformedLiteral = literal;
-        CRS literalCRS = literal.getCoordinateSystem();
-        if ( literal != null && literalCRS != null && !( crs.equals( literalCRS ) ) ) {
-            LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getName() + " -> "
-                       + crs.getName() );
-            try {
-                GeometryTransformer transformer = new GeometryTransformer( crs.getWrappedCRS() );
-                transformedLiteral = transformer.transform( literal );
-            } catch ( Exception e ) {
-                throw new FilterEvaluationException( e.getMessage() );
+        if ( literal != null ) {
+            CRS literalCRS = literal.getCoordinateSystem();
+            if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
+                LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getName() + " -> "
+                           + crs.getName() );
+                try {
+                    GeometryTransformer transformer = new GeometryTransformer( crs.getWrappedCRS() );
+                    transformedLiteral = transformer.transform( literal );
+                } catch ( Exception e ) {
+                    throw new FilterEvaluationException( e.getMessage() );
+                }
             }
         }
         return transformedLiteral;
