@@ -540,7 +540,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
                     } else if ( PT_NAME_GML31.getName().equals( propName ) ) {
                         names.add( (CodeType) property.getValue() );
                         firstCustomPropIndex++;
-                    } else if ( PT_BOUNDED_BY_GML31.equals( propName ) ) {
+                    } else if ( PT_BOUNDED_BY_GML31.getName().equals( propName ) ) {
                         boundedBy = (Envelope) property.getValue();
                         firstCustomPropIndex++;
                     }
