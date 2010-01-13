@@ -59,7 +59,6 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.dataaccess.dbase.DBFReader;
 import org.deegree.commons.dataaccess.shape.SHPReader;
 import org.deegree.commons.index.RTree;
-import org.deegree.commons.index.SpatialIndex;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
@@ -241,8 +240,8 @@ public class ShapeFeatureStore implements FeatureStore {
         File rtfile = new File( name + ".rti" );
         if ( rtfile.exists() && !( rtfile.lastModified() < shpFile.lastModified() ) && !forceIndexRebuild ) {
             try {
-                SpatialIndex<Long> rtree = new RTree<Long>( new FileInputStream( name + ".rti" ) );
-                shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree );
+                RTree<Long> rtree = new RTree<Long>( new FileInputStream( name + ".rti" ) );
+                shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree, rtree.getExtraFlag() );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
@@ -255,16 +254,16 @@ public class ShapeFeatureStore implements FeatureStore {
             }
         }
 
-        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, null );
+        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, null, false );
 
         LOG.debug( "Building rtree index in memory for '{}'", new File( name ).getName() );
 
-        RTree<Long> rtree = createIndex( shp );
+        Pair<RTree<Long>, Boolean> p = createIndex( shp );
         shp.close();
         LOG.debug( "done." );
-        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree );
+        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, p.first, p.second );
         RandomAccessFile output = new RandomAccessFile( name + ".rti", "rw" );
-        rtree.write( output );
+        p.first.write( output, p.second );
         output.close();
         return shp;
     }
@@ -273,17 +272,17 @@ public class ShapeFeatureStore implements FeatureStore {
      * @param shapeReader
      * @throws IOException
      */
-    private RTree<Long> createIndex( SHPReader shapeReader )
+    private Pair<RTree<Long>, Boolean> createIndex( SHPReader shapeReader )
                             throws IOException {
         Envelope env = shapeReader.getEnvelope();
         // use 128 values per rect.
         RTree<Long> result = new RTree<Long>( env, -1 );
         // to work around Java's non-existent variant type
         LOG.debug( "Read envelopes from shape file..." );
-        ArrayList<Pair<Envelope, Long>> list = shapeReader.readEnvelopes();
+        Pair<ArrayList<Pair<Envelope, Long>>, Boolean> p = shapeReader.readEnvelopes();
         LOG.debug( "done." );
-        result.insertBulk( list );
-        return result;
+        result.insertBulk( p.first );
+        return new Pair<RTree<Long>, Boolean>( result, p.second );
 
     }
 
@@ -540,4 +539,5 @@ public class ShapeFeatureStore implements FeatureStore {
     public ApplicationSchema getSchema() {
         return schema;
     }
+
 }

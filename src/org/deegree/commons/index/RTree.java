@@ -88,6 +88,8 @@ public class RTree<T> extends SpatialIndex<T> {
     // rb: output the warning
     boolean outputWarning = true;
 
+    private boolean extraFlag;
+
     /**
      * @param rootEnvelope
      *            of this rtree.
@@ -118,6 +120,7 @@ public class RTree<T> extends SpatialIndex<T> {
         maxNumberOfObjects = in.readInt();
         bbox = (float[]) in.readObject();
         root = (Entry[]) in.readObject();
+        extraFlag = in.readBoolean();
         in.close();
     }
 
@@ -302,7 +305,6 @@ public class RTree<T> extends SpatialIndex<T> {
      * buildtree).
      * 
      * @param rects
-     * @return
      */
     @SuppressWarnings("unchecked")
     private Entry<T>[] buildFromFloat( List<Pair<float[], ?>> rects ) {
@@ -371,15 +373,17 @@ public class RTree<T> extends SpatialIndex<T> {
 
     /**
      * @param output
+     * @param extraFlag
      * @throws IOException
      */
-    public void write( RandomAccessFile output )
+    public void write( RandomAccessFile output, boolean extraFlag )
                             throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream( bos );
         out.writeInt( maxNumberOfObjects );
         out.writeObject( bbox );
         out.writeObject( root );
+        out.writeBoolean( extraFlag );
         out.close();
         output.write( bos.toByteArray() );
         // output.close();
@@ -408,6 +412,13 @@ public class RTree<T> extends SpatialIndex<T> {
     @Override
     public boolean insert( Envelope envelope, T object ) {
         throw new UnsupportedOperationException( "Inserting of a single object should be implemented" );
+    }
+
+    /**
+     * @return extra flag read from a file (used for hacking around buggy shp files)
+     */
+    public boolean getExtraFlag() {
+        return extraFlag;
     }
 
 }

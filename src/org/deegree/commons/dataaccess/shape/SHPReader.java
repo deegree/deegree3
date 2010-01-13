@@ -211,12 +211,15 @@ public class SHPReader {
      * @param in
      * @param crs
      * @param rtree
+     * @param startsWithZero
      * @throws IOException
      */
-    public SHPReader( RandomAccessFile in, CRS crs, SpatialIndex<Long> rtree ) throws IOException {
+    public SHPReader( RandomAccessFile in, CRS crs, SpatialIndex<Long> rtree, boolean startsWithZero )
+                            throws IOException {
         this.in = in;
         this.crs = crs;
         this.rtree = rtree;
+        this.recordNumStartsWith0 = startsWithZero;
         if ( in.readInt() != FILETYPE ) {
             LOG.warn( "File type is wrong, unexpected things might happen, continuing anyway..." );
         }
@@ -429,14 +432,18 @@ public class SHPReader {
      * @return a list of all envelopes (minx, miny, maxx, maxy)
      * @throws IOException
      */
-    public ArrayList<Pair<Envelope, Long>> readEnvelopes()
+    public Pair<ArrayList<Pair<Envelope, Long>>, Boolean> readEnvelopes()
                             throws IOException {
         ArrayList<Pair<Envelope, Long>> list = new ArrayList<Pair<Envelope, Long>>();
+        boolean startsFromZero = false;
 
         in.seek( 100 );
 
         while ( in.getFilePointer() + 1 < in.length() ) {
-            in.skipBytes( 4 );
+            int recNum = in.readInt();
+            if ( !startsFromZero ) {
+                startsFromZero = recNum == 0;
+            }
             int length = in.readInt() * 2; // bah, 16 bit length units here as well!
             long pos = in.getFilePointer();
             int type = readLEInt( in );
@@ -446,13 +453,16 @@ public class SHPReader {
             case POINT: {
                 double x = readLEDouble( in );
                 double y = readLEDouble( in );
-                list.add( new Pair<Envelope, Long>( fac.createEnvelope( x, y, x, y, null ), pos ) );
+                Pair<Envelope, Long> p = new Pair<Envelope, Long>( fac.createEnvelope( x, y, x, y, null ), pos );
+                list.add( p );
                 break;
             }
             default: {
-                list.add( new Pair<Envelope, Long>( fac.createEnvelope( readLEDouble( in ), readLEDouble( in ),
-                                                                        readLEDouble( in ), readLEDouble( in ), null ),
-                                                    pos ) );
+                Pair<Envelope, Long> p = new Pair<Envelope, Long>( fac.createEnvelope( readLEDouble( in ),
+                                                                                       readLEDouble( in ),
+                                                                                       readLEDouble( in ),
+                                                                                       readLEDouble( in ), null ), pos );
+                list.add( p );
                 break;
             }
             }
@@ -460,7 +470,7 @@ public class SHPReader {
             in.seek( pos + length );
         }
 
-        return list;
+        return new Pair<ArrayList<Pair<Envelope, Long>>, Boolean>( list, startsFromZero );
     }
 
     /**
