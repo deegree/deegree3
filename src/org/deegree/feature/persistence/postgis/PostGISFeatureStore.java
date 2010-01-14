@@ -113,7 +113,9 @@ public class PostGISFeatureStore implements FeatureStore {
 
     final Map<QName, Envelope> ftNameToBBox = new HashMap<QName, Envelope>();
 
-    private Envelope defaultEnvelope;
+    private final Map<QName, FeatureTypeMapping> relMapping;
+
+    private final Envelope defaultEnvelope;
 
     private final String jdbcConnId;
 
@@ -141,12 +143,17 @@ public class PostGISFeatureStore implements FeatureStore {
      *            name of the database schema, can be <code>null</code> (-> public schema)
      * @param storageSRS
      *            srs used for stored geometries, must not be <code>null</code>
+     * @param relMapping
+     *            key: feature type name, value: relational mapping information for feature type, may be
+     *            <code>null</code>
      */
-    public PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema, CRS storageSRS ) {
+    public PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema, CRS storageSRS,
+                                Map<QName, FeatureTypeMapping> relMapping ) {
         this.schema = schema;
         this.jdbcConnId = jdbcConnId;
         this.dbSchema = dbSchema;
         this.storageSRS = storageSRS;
+        this.relMapping = relMapping;
         defaultEnvelope = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
     }
 

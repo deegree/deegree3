@@ -49,6 +49,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.configuration.GMLVersionType;
 import org.deegree.commons.datasource.configuration.DirectSQLDataSourceType;
@@ -60,7 +61,6 @@ import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
 import org.deegree.commons.datasource.configuration.DirectSQLDataSourceType.LODStatement;
 import org.deegree.commons.datasource.configuration.FeatureStoreType.NamespaceHint;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType.GMLFeatureCollectionFileURL;
-import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.xml.XMLAdapter;
@@ -69,7 +69,11 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;
+import org.deegree.feature.persistence.postgis.FeatureTypeMapping;
+import org.deegree.feature.persistence.postgis.JAXBApplicationSchemaAdapter;
+import org.deegree.feature.persistence.postgis.PostGISApplicationSchema;
 import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
+import org.deegree.feature.persistence.postgis.jaxbconfig.ApplicationSchemaDecl;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.persistence.simplesql.SimpleSQLDatastore;
 import org.deegree.feature.types.ApplicationSchema;
@@ -355,6 +359,8 @@ public class FeatureStoreManager {
         resolver.setSystemId( baseURL );
 
         ApplicationSchema schema = null;
+        Map<QName, FeatureTypeMapping> relMapping = null;
+
         try {
             String[] schemaURLs = new String[jaxbConfig.getGMLSchemaFileURL().size()];
             int i = 0;
@@ -369,6 +375,25 @@ public class FeatureStoreManager {
                                                                                    getHintMap( jaxbConfig.getNamespaceHint() ),
                                                                                    schemaURLs );
             schema = decoder.extractFeatureTypeSchema();
+
+            // additionally evaluate relational mapping
+            if ( jaxbConfig.getRelationalMapping() != null && !jaxbConfig.getRelationalMapping().isEmpty() ) {
+                String relationalMappingFile = jaxbConfig.getRelationalMapping().get( 0 ).trim();
+                URL resolved = resolver.resolve( relationalMappingFile );
+                LOG.info( "Using relational mapping information from '" + resolved + "'." );
+
+                JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
+                Unmarshaller u = jc.createUnmarshaller();
+                ApplicationSchemaDecl relAppSchema = (ApplicationSchemaDecl) u.unmarshal( resolved );
+                PostGISApplicationSchema pgAppSchema = JAXBApplicationSchemaAdapter.toInternal( relAppSchema );
+                relMapping = pgAppSchema.getFtMapping();
+                System.out.println( relMapping.get(
+                                                    new QName( "http://www.deegree.org/xplanung/1/0",
+                                                               "BP_AbgrabungsFlaeche" ) ).getPropertyHints(
+                                                                                                            new QName(
+                                                                                                                       "http://www.deegree.org/xplanung/1/0",
+                                                                                                                       "rechtsstand" ) ) );
+            }
         } catch ( Exception e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
             LOG.error( msg, e );
@@ -377,7 +402,7 @@ public class FeatureStoreManager {
 
         CRS storageSRS = new CRS( jaxbConfig.getStorageSRS() );
         PostGISFeatureStore fs = new PostGISFeatureStore( schema, jaxbConfig.getJDBCConnId(),
-                                                          jaxbConfig.getDBSchemaQualifier(), storageSRS );
+                                                          jaxbConfig.getDBSchemaQualifier(), storageSRS, relMapping );
         registerAndInit( fs, id );
         return fs;
     }

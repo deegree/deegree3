@@ -130,7 +130,7 @@
           <element name="StorageSRS" type="string" />
           <element name="JDBCConnId" type="string" />
           <element name="DBSchemaQualifier" type="string" minOccurs="0" />
-          <element name="GMLSchemaFileURL" maxOccurs="unbounded">
+          <element name="GMLSchemaFileURL" minOccurs="0" maxOccurs="unbounded">
             <complexType>
               <simpleContent>
                 <extension base="string">
@@ -139,6 +139,7 @@
               </simpleContent>
             </complexType>
           </element>
+          <element name="RelationalMapping" type="string" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </extension>
     </complexContent>

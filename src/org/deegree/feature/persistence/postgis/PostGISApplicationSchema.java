@@ -111,6 +111,10 @@ public class PostGISApplicationSchema {
         return globalHints;
     }
 
+    public Map<QName, FeatureTypeMapping> getFtMapping() {
+        return ftNamesToHints;
+    }    
+    
     /**
      * Returns the mapping hints for the specified feature type.
      * 

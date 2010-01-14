@@ -116,7 +116,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generates GML 3 (3.0 / 3.1 / 3.2) representations from {@link Geometry} objects.
+ * Generates GML 3 (3.0/3.1/3.2) representations from {@link Geometry} objects.
  * <p>
  * This class is not thread-safe.
  * </p>
