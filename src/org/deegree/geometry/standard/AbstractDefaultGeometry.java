@@ -43,6 +43,7 @@ import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
@@ -377,5 +378,10 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     private Points getAsPoints( CoordinateSequence seq ) {
         return new JTSPoints( seq );
+    }
+
+    @Override
+    public String toString() {
+        return WKTWriter.write( this );
     }
 }
