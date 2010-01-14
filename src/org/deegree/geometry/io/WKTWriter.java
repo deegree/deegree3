@@ -106,7 +106,7 @@ import org.slf4j.Logger;
 /**
  * Writes {@link Geometry} objects as Well-Known Text (WKT).
  * 
- * 
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a> 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
@@ -125,7 +125,6 @@ public class WKTWriter {
     private int linearizedControlPoints = 5;
 
     /**
-     * 
      * The flag is used to specify which geometric operations the database is capable of
      * 
      * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
@@ -148,7 +147,6 @@ public class WKTWriter {
         USE_COMPOSITES,
         /** Use deegree-WKT-extensions (object ids, properties, all geometry types) */
         USE_DKT
-
     }
 
     /**

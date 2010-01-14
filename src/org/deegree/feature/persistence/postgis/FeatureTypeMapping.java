@@ -64,12 +64,12 @@ public class FeatureTypeMapping {
         this.ftMapping = ftMapping;
         this.propNameToMapping = propNameToMapping;
     }
-
+   
     public FeatureTypeMappingHints getFeatureTypeHints() {
         return ftMapping;
     }
 
     public PropertyMappingType getPropertyHints( QName propName ) {
         return propNameToMapping.get( propName );
-    }
+    }    
 }

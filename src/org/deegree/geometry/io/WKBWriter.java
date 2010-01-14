@@ -33,51 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.types.datetime;
+package org.deegree.geometry.io;
 
-import java.text.ParseException;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+
+import com.vividsolutions.jts.io.OutputStreamOutStream;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Represents an <code>xs:date</code> instance.
+ * Writes {@link Geometry} objects encoded as Well-Known Binary (WKB).
+ * 
+ * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves)
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Date implements Comparable<Date> {
+public class WKBWriter {
 
-    private final String isoDate;
+    // TODO remove the need for this object
+    private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
 
-    private final java.util.Date date;
-
-    public Date( String isoDate ) throws ParseException {
-        this.isoDate = isoDate;
-        date = DateUtils.parseISO8601Date( isoDate );
-    }
-    
-    // TODO name this properly
-    public java.util.Date getDate () {
-        return date;
+    public static byte[] write( Geometry geom )
+                            throws ParseException {
+        // com.vividsolutions.jts.io.WKBWriter is not thread safe
+        return new com.vividsolutions.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
     }
 
-    @Override
-    public int compareTo( Date o ) {
-        return this.date.compareTo( o.date );
-    }
-
-    @Override
-    public boolean equals( Object o ) {
-        if ( !( o instanceof Date ) ) {
-            return false;
-        }
-        return this.date.equals( ( (Date) o ).date );
-    }
-
-    @Override
-    public String toString() {
-        return isoDate;
+    public static void write( Geometry geom, OutputStream os )
+                            throws IOException, ParseException {
+        // com.vividsolutions.jts.io.WKBWriter is not thread safe
+        new com.vividsolutions.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(),
+                                                         new OutputStreamOutStream( os ) );
     }
 }

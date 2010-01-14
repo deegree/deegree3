@@ -376,23 +376,16 @@ public class FeatureStoreManager {
                                                                                    schemaURLs );
             schema = decoder.extractFeatureTypeSchema();
 
-            // additionally evaluate relational mapping
+            // additionally evaluate relational mapping (TODO: multiple files)
             if ( jaxbConfig.getRelationalMapping() != null && !jaxbConfig.getRelationalMapping().isEmpty() ) {
                 String relationalMappingFile = jaxbConfig.getRelationalMapping().get( 0 ).trim();
                 URL resolved = resolver.resolve( relationalMappingFile );
                 LOG.info( "Using relational mapping information from '" + resolved + "'." );
-
                 JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
                 Unmarshaller u = jc.createUnmarshaller();
                 ApplicationSchemaDecl relAppSchema = (ApplicationSchemaDecl) u.unmarshal( resolved );
                 PostGISApplicationSchema pgAppSchema = JAXBApplicationSchemaAdapter.toInternal( relAppSchema );
                 relMapping = pgAppSchema.getFtMapping();
-                System.out.println( relMapping.get(
-                                                    new QName( "http://www.deegree.org/xplanung/1/0",
-                                                               "BP_AbgrabungsFlaeche" ) ).getPropertyHints(
-                                                                                                            new QName(
-                                                                                                                       "http://www.deegree.org/xplanung/1/0",
-                                                                                                                       "rechtsstand" ) ) );
             }
         } catch ( Exception e ) {
             String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );

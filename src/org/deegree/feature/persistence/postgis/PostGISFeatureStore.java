@@ -157,6 +157,17 @@ public class PostGISFeatureStore implements FeatureStore {
         defaultEnvelope = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRS.EPSG_4326 );
     }
 
+    /**
+     * Returns the relational mapping for the given feature type name.
+     * 
+     * @param ftName
+     *            name of the feature type
+     * @return relational mapping for the feature type, may be <code>null</code> (no relational mapping)
+     */
+    FeatureTypeMapping getMapping( QName ftName ) {
+        return relMapping == null ? null : relMapping.get( ftName );
+    }
+
     public PostGISFeatureStoreTransaction acquireTransaction( Connection conn )
                             throws FeatureStoreException {
 
