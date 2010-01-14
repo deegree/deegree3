@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,27 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
 import java.io.File;
-
 import java.io.IOException;
 
 import org.slf4j.Logger;
 
 /**
  * This class contains static utility methods for writing files when a log is set to debug.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class LogUtils {
     /**
      * Writes the given {@link String} to the specified file, if the log level is set to debug. *
-     *
+     * 
      * @param log
      *            the log to check for the log level
      * @param file
@@ -70,7 +69,7 @@ public class LogUtils {
     /**
      * Writes the given {@link String} to a temporary file (created from specified prefix and suffix), if the log level
      * is set to debug.
-     *
+     * 
      * @see File#createTempFile(String, String) *
      * @param log
      *            the log to check for the log level
@@ -94,7 +93,7 @@ public class LogUtils {
 
     /**
      * Writes the given binary data to the specified file, if the log level is set to debug.
-     *
+     * 
      * @param log
      *            the log to check for the log level
      * @param file
@@ -112,7 +111,7 @@ public class LogUtils {
     /**
      * Writes the given binary data to a temporary file (created from specified prefix and suffix), if the log level is
      * set to debug.
-     *
+     * 
      * @see File#createTempFile(String, String) *
      * @param log
      *            the log to check for the log level
@@ -133,5 +132,60 @@ public class LogUtils {
                            + ".", e );
             }
         }
+    }
+
+    /**
+     * Create a string as follows: ${message} + took: ... {[ms]}{[second|minute][s]} the current time millis will be
+     * used as the end time.
+     * 
+     * @param message
+     *            to start with
+     * @param startTime
+     * @param roundToMinutes
+     *            if true the second| minutes syntax will be used, if falls only ms will be appended.
+     * @return a string as follows: ${message} + took: ... [second|minute][s]
+     */
+    public static String createDurationTimeString( String message, long startTime, boolean roundToMinutes ) {
+        return createTimeString( message, startTime, System.currentTimeMillis(), roundToMinutes );
+    }
+
+    /**
+     * Create a string as follows: ${message} + took: ... {[ms]}{[second|minute][s]}
+     * 
+     * @param message
+     *            to start with
+     * @param startTime
+     * @param endTime
+     * @param roundToMinutes
+     *            if true the second| minutes syntax will be used, if falls only ms will be appended.
+     * @return a string as follows: ${message} + took: ... [second|minute][s]
+     */
+    public static String createTimeString( String message, long startTime, long endTime, boolean roundToMinutes ) {
+        StringBuilder sb = new StringBuilder( message );
+
+        long totalTime = endTime - startTime;
+        sb.append( " took: " );
+        if ( roundToMinutes ) {
+            double rPT = Math.round( ( Math.round( ( totalTime ) / 10d ) / 100d ) );
+            double min = Math.round( rPT / 60d );
+            if ( rPT > 60 ) {
+                sb.append( min );
+                sb.append( " minute" );
+                if ( min > 1 ) {
+                    sb.append( "s" );
+                }
+            } else {
+                sb.append( rPT );
+                sb.append( " second" );
+                if ( rPT != 1.0 ) {
+                    sb.append( "s" );
+                }
+            }
+        } else {
+            sb.append( totalTime );
+            sb.append( " ms" );
+        }
+        sb.append( "." );
+        return sb.toString();
     }
 }
