@@ -37,6 +37,7 @@ package org.deegree.gml;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -276,6 +277,15 @@ public class GMLStreamReader {
      */
     public GMLDocumentIdContext getIdContext() {
         return idContext;
+    }
+
+    /**
+     * Returns the underlying {@link XMLStreamReader}.
+     * 
+     * @return the underlying {@link XMLStreamReader}, never <code>null</code>
+     */
+    public XMLStreamReader getXMLReader() {
+        return xmlStream;
     }
 
     /**

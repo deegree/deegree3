@@ -48,6 +48,7 @@ import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSNamedMap;
+import org.apache.xerces.xs.XSNamespaceItemList;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.slf4j.Logger;
@@ -100,6 +101,10 @@ public class XSModelAnalyzer {
     public XSModelAnalyzer( String... schemaUrls ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
         xmlSchema = loadModel( schemaUrls );
+    }
+
+    public XSNamespaceItemList getNamespaces () {
+        return xmlSchema.getNamespaceItems();
     }
 
     /**

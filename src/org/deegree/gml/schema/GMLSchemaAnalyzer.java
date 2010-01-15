@@ -44,7 +44,7 @@ import org.deegree.commons.xml.schema.XSModelAnalyzer;
 import org.deegree.gml.GMLVersion;
 
 /**
- * Provides convenient access to the <i>object</i> element declarations of a GML schema (both application and GML core
+ * Provides  access to the <i>object</i> element declarations of a GML schema (both application and GML core
  * schema objects).
  * <p>
  * An element declaration is an <i>object</i> element declaration, if it is in one or more of GML's object substitution
@@ -75,6 +75,10 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
     private static final String GML_32_NS = CommonNamespaces.GML3_2_NS;
 
     private GMLVersion version;
+
+    private XSElementDeclaration abstractObjectElementDecl;
+
+    private XSElementDeclaration abstractGmlElementDecl;
 
     private XSElementDeclaration abstractFeatureElementDecl;
 
@@ -118,6 +122,8 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
         }
         case GML_30:
         case GML_31: {
+            abstractObjectElementDecl = xmlSchema.getElementDeclaration( "_Object", GML_PRE_32_NS );
+            abstractGmlElementDecl = xmlSchema.getElementDeclaration( "_GML", GML_PRE_32_NS );
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
             abstractValueElementDecl = xmlSchema.getElementDeclaration( "_Value", GML_PRE_32_NS );
@@ -131,6 +137,8 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
             break;
         }
         case GML_32: {
+            abstractObjectElementDecl = xmlSchema.getElementDeclaration( "AbstractObject", GML_32_NS );
+            abstractGmlElementDecl = xmlSchema.getElementDeclaration( "AbstractGML", GML_32_NS );
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "AbstractFeature", GML_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "AbstractGeometry", GML_32_NS );
             abstractValueElementDecl = xmlSchema.getElementDeclaration( "AbstractValue", GML_32_NS );
@@ -144,6 +152,27 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
             break;
         }
         }
+    }
+
+    /**
+     * Returns the element declaration of the abstract object element, i.e.
+     * <code>{http://www.opengis.net/gml}_Object</code> (GML 3.0 to 3.1) or
+     * <code>{http://www.opengis.net/gml/3.2}AbstractObject</code> (GML 3.2).
+     * 
+     * @return declaration object of the abstract object element, may be <code>null</code> (for GML 2)
+     */
+    public XSElementDeclaration getAbstractObjectElementDeclaration() {
+        return abstractObjectElementDecl;
+    }
+
+    /**
+     * Returns the element declaration of the abstract GML element, i.e. <code>{http://www.opengis.net/gml}_GML</code>
+     * (GML 3.0 to 3.1) or <code>{http://www.opengis.net/gml/3.2}AbstractGML</code> (GML 3.2).
+     * 
+     * @return declaration object of the abstract GML element, may be <code>null</code> (for GML 2)
+     */
+    public XSElementDeclaration getAbstractGMLElementDeclaration() {
+        return abstractGmlElementDecl;
     }
 
     /**
@@ -173,7 +202,7 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
      * <code>{http://www.opengis.net/gml}_CurveSegment</code> (GML 3 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractCurveSegment</code> (GML 3.2).
      * 
-     * @return declaration object of the abstract curve segment element
+     * @return declaration object of the abstract curve segment element, may be <code>null</code> (for GML 2)
      */
     public XSElementDeclaration getAbstractCurveSegmentElementDeclaration() {
         return abstractCurveSegmentElementDecl;
@@ -184,10 +213,18 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
      * <code>{http://www.opengis.net/gml}_SurfacePatch</code> (GML 3 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractSurfacePatch</code> (GML 3.2).
      * 
-     * @return element declaration object of the abstract geometry element
+     * @return element declaration object of the abstract geometry element, may be <code>null</code> (for GML 2)
      */
     public XSElementDeclaration getAbstractSurfacePatchElementDeclaration() {
         return abstractSurfacePatchElementDecl;
+    }
+
+    public List<XSElementDeclaration> getObjectElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractObjectElementDecl, namespace, true, onlyConcrete );
+    }
+
+    public List<XSElementDeclaration> getGmlElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractGmlElementDecl, namespace, true, onlyConcrete );
     }
 
     public List<XSElementDeclaration> getFeatureElementDeclarations( String namespace, boolean onlyConcrete ) {

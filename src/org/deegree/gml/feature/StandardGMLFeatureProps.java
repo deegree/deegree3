@@ -198,7 +198,26 @@ public class StandardGMLFeatureProps extends GMLStdProps {
             }
             break;
         case GML_32:
-            throw new UnsupportedOperationException( "Not implemented yet." );
+            if ( metadata != null ) {
+                for ( Object metadataItem : metadata ) {
+                    props.add( new GenericProperty<Object>( PT_META_DATA_PROPERTY_GML32, metadataItem ) );
+                }
+            }
+            if ( description != null ) {
+                props.add( new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML32, description ) );
+            }
+            if ( names != null ) {
+                for ( CodeType name : names ) {
+                    props.add( new GenericProperty<CodeType>( PT_NAME_GML32, name ) );
+                }
+            }
+            if ( identifier != null ) {
+                props.add( new GenericProperty<CodeType>( PT_IDENTIFIER_GML32, identifier ) );
+            }
+            if ( boundedBy != null ) {
+                props.add( new GenericProperty<Envelope>( PT_BOUNDED_BY_GML32, boundedBy ) );
+            }
+            break;
         }
         return props;
     }
@@ -509,7 +528,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
         case GML_2: {
             for ( Property<?> property : props ) {
                 QName propName = property.getName();
-                if ( CommonNamespaces.GMLNS.equals( propName.getNamespaceURI() ) ) {
+                if ( GMLNS.equals( propName.getNamespaceURI() ) ) {
                     if ( PT_DESCRIPTION_GML2.getName().equals( propName ) ) {
                         description = new StringOrRef( (String) property.getValue(), null );
                         firstCustomPropIndex++;
@@ -530,7 +549,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
         case GML_31: {
             for ( Property<?> property : props ) {
                 QName propName = property.getName();
-                if ( CommonNamespaces.GMLNS.equals( propName.getNamespaceURI() ) ) {
+                if ( GMLNS.equals( propName.getNamespaceURI() ) ) {
                     if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) ) {
                         metadata.add( property.getValue() );
                         firstCustomPropIndex++;
@@ -551,7 +570,34 @@ public class StandardGMLFeatureProps extends GMLStdProps {
             break;
         }
         case GML_32: {
-            throw new UnsupportedOperationException( "Not implemented yet." );
+            for ( Property<?> property : props ) {
+                QName propName = property.getName();
+                if ( GML3_2_NS.equals( propName.getNamespaceURI() ) ) {
+                    if ( PT_META_DATA_PROPERTY_GML32.getName().equals( propName ) ) {
+                        metadata.add( property.getValue() );
+                        firstCustomPropIndex++;
+                    } else if ( PT_DESCRIPTION_GML32.getName().equals( propName ) ) {
+                        description = (StringOrRef) property.getValue();
+                        firstCustomPropIndex++;
+                    } else if ( PT_DESCRIPTION_REFERENCE_GML32.getName().equals( propName ) ) {
+                        // TODO
+                        // description = (StringOrRef) property.getValue();
+                        firstCustomPropIndex++;
+                    } else if ( PT_IDENTIFIER_GML32.getName().equals( propName ) ) {
+                        identifier = (CodeType) property.getValue();
+                        firstCustomPropIndex++;
+                    } else if ( PT_NAME_GML32.getName().equals( propName ) ) {
+                        names.add( (CodeType) property.getValue() );
+                        firstCustomPropIndex++;
+                    } else if ( PT_BOUNDED_BY_GML32.getName().equals( propName ) ) {
+                        boundedBy = (Envelope) property.getValue();
+                        firstCustomPropIndex++;
+                    }
+                } else {
+                    break;
+                }
+            }
+            break;
         }
         }
         StandardGMLFeatureProps gmlProps = new StandardGMLFeatureProps(

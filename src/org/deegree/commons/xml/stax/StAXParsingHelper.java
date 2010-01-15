@@ -328,4 +328,14 @@ public class StAXParsingHelper {
                                                               String localName ) {
         return parseAsBoolean( xmlStream, getRequiredAttributeValue( xmlStream, namespaceURI, localName ) );
     }
+
+    public static void nextElement( XMLStreamReader xmlReader ) throws XMLStreamException {
+        xmlReader.next();        
+        while (xmlReader.getEventType() != END_DOCUMENT && !xmlReader.isStartElement() && !xmlReader.isEndElement() ) {
+            xmlReader.next();
+        }
+        if (xmlReader.getEventType() == END_DOCUMENT) {
+            throw new NoSuchElementException();
+        }
+    }
 }
