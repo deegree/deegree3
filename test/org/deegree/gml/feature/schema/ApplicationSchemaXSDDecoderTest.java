@@ -43,7 +43,6 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Test;
 
 /**
@@ -54,7 +53,7 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GMLApplicationSchemaXSDDecoderTest {
+public class ApplicationSchemaXSDDecoderTest {
 
     @Test
     public void testParsingPhilosopher()
@@ -68,6 +67,20 @@ public class GMLApplicationSchemaXSDDecoderTest {
         // TODO do more thorough testing
     }
 
+    @Test
+    public void testParsingPhilosopherAndWFS()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
+        String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL, schemaURL2 );
+        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        System.out.println (fts [0].getName());
+        Assert.assertEquals( 5, fts.length );
+        // TODO do more thorough testing
+    }
+    
     @Test
     public void testParsingCityGML()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,

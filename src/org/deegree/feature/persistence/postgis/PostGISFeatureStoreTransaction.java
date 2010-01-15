@@ -273,11 +273,13 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
 
         long begin = System.currentTimeMillis();
 
+        String fid = null;
         try {
             String sql = "INSERT INTO " + store.qualifyTableName( "gml_objects" )
                          + " (gml_id,gml_description,ft_type,binary_object,gml_bounded_by) VALUES(?,?,?,?,?)";
             PreparedStatement gmlObjectsInsertStmt = conn.prepareStatement( sql );
             for ( Feature feature : features ) {
+                fid = feature.getId();
                 int internalId = insertFeature( gmlObjectsInsertStmt, feature );
                 FeatureTypeMapping mapping = store.getMapping( feature.getName() );
                 if ( mapping != null ) {
@@ -287,8 +289,9 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
             // stmt.executeBatch();
             gmlObjectsInsertStmt.close();
         } catch ( SQLException e ) {
-            LOG.debug( e.getMessage(), e );
-            throw new FeatureStoreException( e.getMessage(), e );
+            String msg = "Error inserting feature '" + fid + "':" + e.getMessage();
+            LOG.debug( msg, e );
+            throw new FeatureStoreException( msg, e );
         }
 
         long elapsed = System.currentTimeMillis() - begin;

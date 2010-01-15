@@ -36,15 +36,18 @@
 package org.deegree.commons.xml.schema;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.impl.xs.util.StringListImpl;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
-import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSNamedMap;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.slf4j.Logger;
@@ -123,22 +126,48 @@ public class XSModelAnalyzer {
      */
     public List<XSElementDeclaration> getSubstitutions( XSElementDeclaration elementDecl, String namespace,
                                                         boolean transitive, boolean onlyConcrete ) {
-        XSObjectList xsObjectList = xmlSchema.getSubstitutionGroup( elementDecl );
-        List<XSElementDeclaration> substitutions = new ArrayList<XSElementDeclaration>( xsObjectList.getLength() );
-        for ( int i = 0; i < xsObjectList.getLength(); i++ ) {
-            XSElementDeclaration substitution = (XSElementDeclaration) xsObjectList.item( i );
-            if ( transitive || substitution.getSubstitutionGroupAffiliation().equals( elementDecl ) ) {
-                if ( !substitution.getAbstract() || !onlyConcrete ) {
-                    if ( namespace == null || namespace.equals( substitution.getNamespace() ) ) {
-                        substitutions.add( (XSElementDeclaration) xsObjectList.item( i ) );
+
+        // NOTE: XSModel#getSubstitutionGroup() would be much easier, but doesn't seem to work correctly for XSModels
+        // that have been loaded from multiple files which have overlapping includes
+
+        // first collect all element names, because XSModels seem to contain multiple XSElementDeclaration
+        // elements for the same name (when multiple schema files are involved)
+        Set<QName> elementNames = new HashSet<QName>();
+        XSNamedMap elementDecls = xmlSchema.getComponents( XSConstants.ELEMENT_DECLARATION );
+        for ( int i = 0; i < elementDecls.getLength(); i++ ) {
+            XSElementDeclaration candidate = (XSElementDeclaration) elementDecls.item( i );
+            if ( namespace == null || namespace.equals( candidate.getNamespace() ) ) {
+                if ( !onlyConcrete || !candidate.getAbstract() ) {
+                    if ( transitive ) {
+                        if ( candidate.getNamespace().equals( elementDecl.getNamespace() )
+                             && candidate.getName().equals( elementDecl.getName() ) ) {
+                            elementNames.add( new QName( candidate.getNamespace(), candidate.getName() ) );
+                            continue;
+                        }
+                    }
+                    XSElementDeclaration substitutionGroup = candidate.getSubstitutionGroupAffiliation();
+                    while ( substitutionGroup != null ) {
+                        if ( substitutionGroup.getNamespace().equals( elementDecl.getNamespace() )
+                             && substitutionGroup.getName().equals( elementDecl.getName() ) ) {
+                            elementNames.add( new QName( candidate.getNamespace(), candidate.getName() ) );
+                            break;
+                        }
+                        if ( transitive ) {
+                            substitutionGroup = substitutionGroup.getSubstitutionGroupAffiliation();
+                        } else {
+                            substitutionGroup = null;
+                        }
                     }
                 }
             }
         }
-        if ( transitive && ( !onlyConcrete || !elementDecl.getAbstract() ) ) {
-            substitutions.add( elementDecl );
+
+        List<XSElementDeclaration> substDecls = new ArrayList<XSElementDeclaration>( elementNames.size() );
+        for ( QName name : elementNames ) {
+            substDecls.add( xmlSchema.getElementDeclaration( name.getLocalPart(), name.getNamespaceURI() ) );
         }
-        return substitutions;
+
+        return substDecls;
     }
 
     /**

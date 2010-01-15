@@ -44,6 +44,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
@@ -83,6 +84,35 @@ public class XSModelAnalyzerTest {
         List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
                                                                                         null, true, true );
         assertEquals( 5, concreteFeatureElements.size() );
+    }
+
+    /**
+     * Check the correct determining of substitutable elements.
+     * 
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    @Test
+    public void testConcreteFeatureElements2()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = XSModelAnalyzerTest.class.getResource( "Philosopher.xsd" ).toString();
+        String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
+
+        XSModelAnalyzer analyzer = new XSModelAnalyzer( schemaURL, schemaURL2 );
+        XSModel model = analyzer.getXSModel();
+        XSElementDeclaration a = model.getElementDeclaration( "Philosopher", "http://www.deegree.org/app" );
+        XSElementDeclaration b = model.getElementDeclaration( "FeatureCollection", "http://www.opengis.net/wfs" );
+        System.out.println( a.getSubstitutionGroupAffiliation() );
+        System.out.println( b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation() );
+
+        QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
+        List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
+                                                                                        null, true, true );
+        // System.out.println (concreteFeatureElements.size());
     }
 
     @Test

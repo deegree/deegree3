@@ -56,7 +56,7 @@ import org.junit.Test;
  * 
  * @version $Revision:$, $Date:$
  */
-public class XSModelGMLAnalyzerTest {
+public class GMLSchemaAnalyzerTest {
 
     @Test
     public void testPhilosopher()
@@ -64,9 +64,9 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer(
-                                                              GMLVersion.GML_31,
-                                                              this.getClass().getResource(
-                                                                                           "../testdata/schema/Philosopher.xsd" ).toString() );
+                                                            GMLVersion.GML_31,
+                                                            this.getClass().getResource(
+                                                                                         "../testdata/schema/Philosopher.xsd" ).toString() );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations(
                                                                                                  "http://www.deegree.org/app",
                                                                                                  false );
@@ -83,6 +83,18 @@ public class XSModelGMLAnalyzerTest {
         for ( XSElementDeclaration geometryElementDecl : geometryElementDecls ) {
             System.out.println( "- Geometry type: " + geometryElementDecl.getName() );
         }
+    }
+
+    @Test
+    public void testPhilosopherAndWFS()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
+        String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
+        GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL2, schemaURL );
+        Assert.assertEquals( 4, analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app", true ).size() );
+        Assert.assertEquals( 1, analyzer.getFeatureElementDeclarations( "http://www.opengis.net/wfs", true ).size() );
     }
 
     @Test
