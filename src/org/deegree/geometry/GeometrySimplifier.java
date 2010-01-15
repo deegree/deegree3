@@ -101,7 +101,7 @@ public class GeometrySimplifier {
     }
 
     /**
-     * Simplification means homogenizing and linearizaion
+     * Simplification means homogenizing and linearization
      * 
      * @param geometry
      *            the geometry to be simplified

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.linearization;
 
@@ -50,10 +50,10 @@ import com.vividsolutions.jts.geom.LinearRing;
 
 /**
  * Provides methods for the linearization of planar surfaces, i.e. {@link PolygonPatch}es and {@link Polygon}s.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: elmasri$
- *
+ * 
  * @version $Revision: $, $Date: 9 May 2008 13:09:29$
  */
 public class SurfaceLinearizer {
@@ -76,7 +76,7 @@ public class SurfaceLinearizer {
      * <p>
      * NOTE: This method respects the semantic difference between {@link Surface} and {@link Polygon} geometries: if the
      * input is a {@link Polygon}, a polygon geometry will be returned.
-     *
+     * 
      * @param surface
      * @param crit
      * @return linearized version of the input curve
@@ -87,10 +87,7 @@ public class SurfaceLinearizer {
         case Polygon: {
             Polygon polygon = (Polygon) surface;
             Ring exteriorRing = polygon.getExteriorRing();
-            Ring linearizedExteriorRing = null;
-            if ( linearizedExteriorRing != null ) {
-                linearizedExteriorRing = (Ring) curveLinearizer.linearize( exteriorRing, crit );
-            }
+            Ring linearizedExteriorRing = (Ring) curveLinearizer.linearize( exteriorRing, crit );
             List<Ring> interiorRings = polygon.getInteriorRings();
             List<Ring> linearizedInteriorRings = new ArrayList<Ring>( interiorRings.size() );
             for ( Ring interiorRing : interiorRings ) {
@@ -119,7 +116,7 @@ public class SurfaceLinearizer {
     /**
      * Returns a linearized version (i.e. a {@link PolygonPatch} that only uses {@link LinearRing}s as boundaries) of
      * the given {@link PolygonPatch}.
-     *
+     * 
      * @param patch
      * @param crit
      *            determines the interpolation quality / number of interpolation points

@@ -585,8 +585,6 @@ public class CurveLinearizer {
             }
         }
 
-        System.out.println( numPoints );
-
         if ( numPoints > maxNumPoints ) {
             return interpolate( p0, p1, p2, maxNumPoints, isCircle );
         }
