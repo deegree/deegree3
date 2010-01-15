@@ -36,6 +36,7 @@
 package org.deegree.geometry.standard.primitive;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.crs.CRS;
@@ -80,6 +81,9 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
         super( id, crs, pm, createPatchList( exteriorRing, interiorRings ) );
         this.exteriorRing = exteriorRing;
         this.interiorRings = interiorRings;
+        if ( interiorRings == null ) {
+            this.interiorRings = Collections.emptyList();
+        }
     }
 
     private static List<PolygonPatch> createPatchList( Ring exteriorRing, List<Ring> interiorRings ) {
