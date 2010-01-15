@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -165,7 +166,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     private static String GMLID = "id";
 
     private final GMLStdPropsReader propsParser;
-    
+
     private final GML3CurveSegmentReader curveSegmentParser;
 
     private final GML3SurfacePatchReader surfacePatchParser;
@@ -1353,11 +1354,28 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
-        xmlStream.require( START_ELEMENT, gmlNs, "patches" );
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            memberPatches.add( surfacePatchParser.parseSurfacePatch( xmlStream, crs ) );
+        if ( xmlStream.getEventType() != START_ELEMENT || !gmlNs.equals( xmlStream.getNamespaceURI())) {
+            String msg = "Surface requires a patches, trianglePatches or polygonPatches child element.";
+            throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.require( END_ELEMENT, gmlNs, "patches" );
+        String localName = xmlStream.getLocalName();
+        if ("patches".equals( localName )) {
+            while ( xmlStream.nextTag() == START_ELEMENT ) {
+                memberPatches.add( surfacePatchParser.parseSurfacePatch( xmlStream, crs ) );
+            }
+            xmlStream.require( END_ELEMENT, gmlNs, "patches" );
+        } else if ("trianglePatches".equals( localName )) {
+            while ( xmlStream.nextTag() == START_ELEMENT ) {
+                memberPatches.add( surfacePatchParser.parseTriangle( xmlStream, crs ) );
+            }
+            xmlStream.require( END_ELEMENT, gmlNs, "trianglePatches" );
+        } else if ("polygonPatches".equals( localName )) {
+            while ( xmlStream.nextTag() == START_ELEMENT ) {
+                memberPatches.add( surfacePatchParser.parsePolygonPatch( xmlStream, crs ) );
+            }
+            xmlStream.require( END_ELEMENT, gmlNs, "polygonPatches" );
+        }
+
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, gmlNs, "Surface" );
         Surface surface = geomFac.createSurface( gid, memberPatches, crs );
