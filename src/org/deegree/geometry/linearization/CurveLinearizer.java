@@ -230,39 +230,6 @@ public class CurveLinearizer {
                                                                                           arc.getPoint3(),
                                                                                           arc instanceof Circle, error,
                                                                                           maxNumPoints ) );
-            Point p0 = arc.getPoint1();
-            Point p1 = arc.getPoint2();
-            Point p2 = arc.getPoint3();
-
-            Point center = calcCircleCenter( p0, p1, p2 );
-
-            double centerX = center.get0();
-            double centerY = center.get1();
-
-            double dx = p0.get0() - centerX;
-            double dy = p0.get1() - centerY;
-            double ex = p2.get0() - centerX;
-            double ey = p2.get1() - centerY;
-
-            double startAngle = Math.atan2( dy, dx );
-
-            boolean isCircle = arc instanceof Circle;
-            double endAngle = isCircle ? startAngle : Math.atan2( ey, ex );
-            double radius = Math.sqrt( dx * dx + dy * dy );
-
-            double angleStep;
-            long numPoints;
-            if ( arc instanceof Circle ) {
-                angleStep = Math.floor( 2 * Math.acos( 1 - error / radius ) );
-                numPoints = Math.round( 2 * Math.PI / angleStep );
-            } else {
-                angleStep = Math.floor( 2 * Math.acos( 1 - error / radius ) );
-                if ( endAngle < startAngle ) {
-                    endAngle += Math.PI;
-                }
-                numPoints = Math.round( ( endAngle - startAngle ) / angleStep );
-            }
-
         } else {
             String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
             throw new IllegalArgumentException( msg );
