@@ -118,12 +118,11 @@ public class GeometrySimplifier {
             if ( geometry instanceof Curve ) {
                 CurveLinearizer curveLinearizer = new CurveLinearizer( new GeometryFactory() );
                 return curveLinearizer.linearize( (Curve) geometry, crit );
+            } else if ( geometry instanceof Surface ) {
+                SurfaceLinearizer surfaceLinearizer = new SurfaceLinearizer( new GeometryFactory() );
+                Geometry result = surfaceLinearizer.linearize( (Surface) geometry, crit );
+                return result;
             }
-            // else if ( geometry instanceof Surface ) {
-            // SurfaceLinearizer surfaceLinearizer = new SurfaceLinearizer( new GeometryFactory() );
-            // Geometry result = surfaceLinearizer.linearize( (Surface) geometry, crit );
-            // return result;
-            // }
         }
         return geometry;
     }

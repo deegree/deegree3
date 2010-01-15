@@ -93,7 +93,8 @@ public class SurfaceLinearizer {
             for ( Ring interiorRing : interiorRings ) {
                 linearizedInteriorRings.add( (Ring) curveLinearizer.linearize( interiorRing, crit ) );
             }
-            linearizedSurface = geomFac.createPolygon( null, null, linearizedExteriorRing, interiorRings );
+            linearizedSurface = geomFac.createPolygon( polygon.getId(), polygon.getCoordinateSystem(),
+                                                       linearizedExteriorRing, interiorRings );
             break;
         }
         default: {
