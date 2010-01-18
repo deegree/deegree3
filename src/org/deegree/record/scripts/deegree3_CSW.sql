@@ -571,8 +571,8 @@ ALTER TABLE UserDefinedQueryableProperties
 --	ADD CONSTRAINT UQ_DCQP_Rights_ID UNIQUE (ID);
 
 -- Create Foreign Key Constraints 
-ALTER TABLE Datasets ADD CONSTRAINT FK_Datasets_SelfQueryableProperties 
-	FOREIGN KEY (ID) REFERENCES UserDefinedQueryableProperties (fk_datasets);
+--ALTER TABLE Datasets ADD CONSTRAINT FK_Datasets_SelfQueryableProperties 
+--	FOREIGN KEY (ID) REFERENCES UserDefinedQueryableProperties (fk_datasets);
 
 ALTER TABLE ISOQP_Abstract ADD CONSTRAINT FK_ISOQP_Abstract_Datasets 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
