@@ -50,7 +50,6 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -103,8 +102,8 @@ import org.deegree.gml.geometry.refs.PointReference;
 import org.deegree.gml.geometry.refs.PolygonReference;
 import org.deegree.gml.geometry.refs.SolidReference;
 import org.deegree.gml.geometry.refs.SurfaceReference;
-import org.deegree.gml.props.GMLStdPropsReader;
 import org.deegree.gml.props.GMLStdProps;
+import org.deegree.gml.props.GMLStdPropsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

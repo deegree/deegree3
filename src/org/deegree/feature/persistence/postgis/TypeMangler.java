@@ -38,14 +38,23 @@ package org.deegree.feature.persistence.postgis;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.deegree.commons.types.datetime.Date;
+import org.deegree.feature.Property;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
+import org.jaxen.BaseXPath;
+import org.jaxen.JaxenException;
+import org.jaxen.NamespaceContext;
+import org.jaxen.expr.Expr;
+import org.jaxen.expr.LocationPath;
+import org.jaxen.expr.NameStep;
+import org.jaxen.expr.Predicate;
 
 import com.vividsolutions.jts.io.ParseException;
 
-/** 
+/**
  * Converts between types used by the feature model and PostGIS data types.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -54,31 +63,61 @@ import com.vividsolutions.jts.io.ParseException;
  * @version $Revision$, $Date$
  */
 class TypeMangler {
-    
-//    static Object getPostGISType (Property<?> property) {
-//        Object pgType = null;
-//        if ( value instanceof Geometry ) {
-//            try {
-//                value = WKBWriter.write( (Geometry) value );
-//                stmt.setObject( columnId++, value );
-//            } catch ( ParseException e ) {
-//                throw new SQLException( e.getMessage(), e );
-//            }
-//        } else if ( value instanceof Date ) {
-//            stmt.setDate( columnId++, new java.sql.Date( ( (Date) value ).getDate().getTime() ) );
-//        } else if ( value instanceof BigInteger ) {
-//            int intVal = Integer.parseInt( value.toString() );
-//            stmt.setInt( columnId++, intVal );
-//        } else if ( value instanceof BigDecimal ) {
-//            double doubleVal = ( (BigDecimal) value ).doubleValue();
-//            stmt.setDouble( columnId++, doubleVal );
-//        } else {
-//            stmt.setObject( columnId++, value );
-//        }
-//        return deegreeType;
-//    }
-//
-//    static Object getDeegreeType (Object postGISType) {
-//        
-//    }
+
+    /**
+     * Converts the given {@link Property} value to an object suitable for PostgreSQL/PostGIS.
+     * 
+     * @param value
+     * @return
+     * @throws SQLException
+     */
+    static Object toPostGIS( Object value )
+                            throws SQLException {
+        Object pgObject = null;
+        if ( value instanceof Geometry ) {
+            try {
+                pgObject = WKBWriter.write( (Geometry) value );
+            } catch ( ParseException e ) {
+                throw new SQLException( e.getMessage(), e );
+            }
+        } else if ( value instanceof Date ) {
+            pgObject = new java.sql.Date( ( (Date) value ).getDate().getTime() );
+        } else if ( value instanceof BigInteger ) {
+            pgObject = Integer.parseInt( value.toString() );
+        } else if ( value instanceof BigDecimal ) {
+            pgObject = ( (BigDecimal) value ).doubleValue();
+        } else {
+            pgObject = value;
+        }
+        return pgObject;
+    }
+
+    // static Object getDeegreeType (Object postGISType) {
+    //        
+    // }
+    public static void main( String[] args )
+                            throws JaxenException {
+
+        String xPath = "app:placeOfDeath[3]/app:Place/app:country/app:Country";
+        NamespaceContext nsContext = null;
+
+        BaseXPath jaxenXpath = new BaseXPath( xPath, null );
+        jaxenXpath.setNamespaceContext( nsContext );
+        Expr rootExpr = jaxenXpath.getRootExpr();
+        System.out.println( rootExpr );
+        if ( rootExpr instanceof LocationPath ) {
+            LocationPath lp = (LocationPath) rootExpr;
+            for ( Object step : lp.getSteps() ) {
+                NameStep ns = (NameStep) step;
+                List predicates = ns.getPredicates();
+                for ( Object predicate : predicates ) {
+                    Predicate pred =  (Predicate) predicate;
+                    System.out.println (pred.getExpr().getClass().getName());
+                }
+                System.out.println ("local name: " + ns.getLocalName());
+                System.out.println ("prefix: " + ns.getPrefix());
+                break;
+            }
+        }
+    }
 }

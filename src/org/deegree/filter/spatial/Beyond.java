@@ -42,7 +42,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 
 /**
- * If geometries are outside the specified distance of one another. 
+ * {@link SpatialOperator} that evaluates to true, iff geometries are beyond the specified distance of each other.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -62,8 +62,6 @@ public class Beyond extends SpatialOperator {
         this.geometry = geometry;
         this.distance = distance;
     }
-    
-    
 
     /**
      * @return the propName
@@ -72,8 +70,6 @@ public class Beyond extends SpatialOperator {
         return propName;
     }
 
-
-
     /**
      * @return the geometry
      */
@@ -81,16 +77,12 @@ public class Beyond extends SpatialOperator {
         return geometry;
     }
 
-
-
     /**
      * @return the distance
      */
     public Measure getDistance() {
         return distance;
     }
-
-
 
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
@@ -114,7 +106,7 @@ public class Beyond extends SpatialOperator {
     }
 
     @Override
-    public Object[] getParams () {
-        return new Object [] {propName, geometry};
-    }    
+    public Object[] getParams() {
+        return new Object[] { propName, geometry };
+    }
 }

@@ -42,11 +42,17 @@ import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
+ * <p>
+ * From the Filter Encoding Implementation Specification 1.1: <i>If the optional &lt;PropertyName&gt; element is not specified,
+ * the calling service must determine which spatial property is the spatial key and apply the BBOX operator accordingly.
+ * For feature types that has a single spatial property, this is a trivial matter. For feature types that have multiple
+ * spatial properties, the calling service either knows which spatial property is the spatial key or the calling service
+ * generates an exception indicating that the feature contains multiple spatial properties and the <propertyName>
+ * element must be specified.</i>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -54,8 +60,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision:$, $Date:$
  */
 public class BBOX extends SpatialOperator {
-
-    private static final Logger LOG = LoggerFactory.getLogger( BBOX.class );
 
     private final PropertyName propName;
 
@@ -71,7 +75,9 @@ public class BBOX extends SpatialOperator {
     }
 
     /**
-     * @return the envelope
+     * Returns the envelope which is tested for intersection.
+     * 
+     * @return the envelope, never <code>null</code>
      */
     public Envelope getBoundingBox() {
         return bbox;

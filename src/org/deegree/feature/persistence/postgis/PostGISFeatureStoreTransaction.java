@@ -416,25 +416,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         stmt.setInt( 1, internalId );
         int columnId = 2;
         for ( Entry<String, Object> entry : columnsToValues.entrySet() ) {
-            Object value = entry.getValue();
-            if ( value instanceof Geometry ) {
-                try {
-                    value = WKBWriter.write( (Geometry) value );
-                    stmt.setObject( columnId++, value );
-                } catch ( ParseException e ) {
-                    throw new SQLException( e.getMessage(), e );
-                }
-            } else if ( value instanceof Date ) {
-                stmt.setDate( columnId++, new java.sql.Date( ( (Date) value ).getDate().getTime() ) );
-            } else if ( value instanceof BigInteger ) {
-                int intVal = Integer.parseInt( value.toString() );
-                stmt.setInt( columnId++, intVal );
-            } else if ( value instanceof BigDecimal ) {
-                double doubleVal = ( (BigDecimal) value ).doubleValue();
-                stmt.setDouble( columnId++, doubleVal );
-            } else {
-                stmt.setObject( columnId++, value );
-            }
+            Object pgValue = TypeMangler.toPostGIS( entry.getValue() );
+            stmt.setObject( columnId++, pgValue );
         }
         stmt.executeUpdate();
         stmt.close();

@@ -41,11 +41,14 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.gml.GMLVersion;
+import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
 import org.jaxen.NamespaceContext;
+import org.jaxen.expr.Expr;
 
 /**
- * TODO add documentation here
+ * {@link Expression} that usually just encodes the name of a property of an object, but may also contains an XPath 1.0
+ * expression.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -54,24 +57,26 @@ import org.jaxen.NamespaceContext;
  */
 public class PropertyName implements Expression {
 
-    private String xPath;
+    private String text;
 
     private NamespaceContext nsContext;
+
+    private Expr xpath;
 
     private QName simpleProp;
 
     private Boolean isSimple;
 
     /**
-     * Creates a new {@link PropertyName} instance from an XPath-expression and the namespace bindings.
+     * Creates a new {@link PropertyName} instance from an encoded XPath-expression and the namespace bindings.
      * 
-     * @param xPath
+     * @param text
      *            XPath-expression, this may be the empty string, but never <code>null</code>
      * @param nsContext
      *            binding of the namespaces used in the XPath expression
      */
-    public PropertyName( String xPath, NamespaceContext nsContext ) {
-        this.xPath = xPath;
+    public PropertyName( String text, NamespaceContext nsContext ) {
+        this.text = text;
         this.nsContext = nsContext;
     }
 
@@ -86,10 +91,31 @@ public class PropertyName implements Expression {
         if ( name.getNamespaceURI() != null ) {
             String prefix = ( name.getPrefix() != null && !"".equals( name.getPrefix() ) ) ? name.getPrefix() : "app";
             ( (org.deegree.commons.xml.NamespaceContext) nsContext ).addNamespace( prefix, name.getNamespaceURI() );
-            this.xPath = prefix + ":" + name.getLocalPart();
+            this.text = prefix + ":" + name.getLocalPart();
         } else {
-            this.xPath = name.getLocalPart();
+            this.text = name.getLocalPart();
         }
+    }
+
+    /**
+     * Returns the <a href="http://jaxen.codehaus.org/">Jaxen</a> representation of the XPath expression, which provides
+     * access to the syntax tree.
+     * 
+     * @return the compiled expression, or <code>null</code> if this {@link PropertyName} represents the empty string
+     * @throws FilterEvaluationException
+     *             if this {@link PropertyName} does not denote a valid XPath 1.0 expression
+     */
+    public Expr getAsXPath()
+                            throws FilterEvaluationException {
+        if ( xpath == null && !text.isEmpty() ) {
+            try {
+                xpath = new BaseXPath( text, null ).getRootExpr();
+            } catch ( JaxenException e ) {
+                String msg = "'" + text + "' does not denote a valid XPath 1.0 expression: " + e.getMessage();
+                throw new FilterEvaluationException( msg );
+            }
+        }
+        return xpath;
     }
 
     /**
@@ -98,7 +124,28 @@ public class PropertyName implements Expression {
      * @return the XPath property name, this may be an empty string, but never <code>null</code>
      */
     public String getPropertyName() {
-        return xPath;
+        return text;
+    }
+
+    /**
+     * If the property name is simple, the element name is returned.
+     * 
+     * @see #isSimple()
+     * @return the qualified name value, or <code>null</code> if the property name is not simple
+     */
+    public QName getAsQName() {
+        if ( simpleProp == null && isSimple() ) {
+            int colonIdx = text.indexOf( ":" );
+            if ( colonIdx == -1 ) {
+                simpleProp = new QName( text );
+            } else {
+                String prefix = text.substring( 0, colonIdx );
+                String localPart = text.substring( colonIdx + 1 );
+                String namespace = nsContext.translateNamespacePrefixToUri( prefix );
+                simpleProp = new QName( namespace, localPart );
+            }
+        }
+        return simpleProp;
     }
 
     /**
@@ -118,32 +165,10 @@ public class PropertyName implements Expression {
     public boolean isSimple() {
         if ( isSimple == null ) {
             // TODO check against XPath spec.
-            isSimple = !xPath.contains( "@" ) && !xPath.contains( "/" ) && !xPath.contains( "[" )
-                       && !xPath.contains( "*" ) && !xPath.contains( "::" ) && !xPath.contains( "(" )
-                       && !xPath.contains( "=" );
+            isSimple = !text.contains( "@" ) && !text.contains( "/" ) && !text.contains( "[" ) && !text.contains( "*" )
+                       && !text.contains( "::" ) && !text.contains( "(" ) && !text.contains( "=" );
         }
         return isSimple;
-    }
-
-    /**
-     * If the property name is simple, the element name is returned.
-     * 
-     * @see #isSimple()
-     * @return the qualified name value, or <code>null</code> if the property name is not simple
-     */
-    public QName getAsQName() {
-        if ( simpleProp == null && isSimple() ) {
-            int colonIdx = xPath.indexOf( ":" );
-            if ( colonIdx == -1 ) {
-                simpleProp = new QName( xPath );
-            } else {
-                String prefix = xPath.substring( 0, colonIdx );
-                String localPart = xPath.substring( colonIdx + 1 );
-                String namespace = nsContext.translateNamespacePrefixToUri( prefix );
-                simpleProp = new QName( namespace, localPart );
-            }
-        }
-        return simpleProp;
     }
 
     @Override
@@ -156,6 +181,7 @@ public class PropertyName implements Expression {
                             throws FilterEvaluationException {
         Object[] values;
         try {
+            // TODO outfactor GML version
             values = obj.getPropertyValues( this, GMLVersion.GML_31 );
         } catch ( JaxenException e ) {
             e.printStackTrace();
@@ -171,7 +197,7 @@ public class PropertyName implements Expression {
 
     @Override
     public String toString( String indent ) {
-        String s = indent + "-PropertyName ('" + xPath + "')\n";
+        String s = indent + "-PropertyName ('" + text + "')\n";
         return s;
     }
 
