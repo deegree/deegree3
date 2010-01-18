@@ -92,11 +92,15 @@ public class DataSourceHandler {
                 try {
                     resolutionDir = new File( adapter.resolve( directory.getValue() ).getFile() );
                     RasterIOOptions options = new RasterIOOptions();
+                    String fp = directory.getFilePattern();
+                    if ( fp == null ) {
+                        fp = "*";
+                    }
+                    options.add( RasterIOOptions.OPT_FORMAT, fp );
                     if ( crs != null ) {
                         options.add( RasterIOOptions.CRS, crs.getName() );
                     }
-                    AbstractRaster rasterLevel = buildTiledRaster( resolutionDir, directory.getFilePattern(),
-                                                                   directory.isRecursive(), options );
+                    AbstractRaster rasterLevel = buildTiledRaster( resolutionDir, directory.isRecursive(), options );
                     // double res = RasterBuilder.getPixelResolution( resolution.getRes(), resolutionDir );
                     mrr.addRaster( rasterLevel );
                 } catch ( MalformedURLException e ) {
@@ -129,10 +133,15 @@ public class DataSourceHandler {
                     File rasterFiles = new File( adapter.resolve( directory.getValue() ).getFile() );
                     boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
                     RasterIOOptions options = new RasterIOOptions();
+                    String fp = directory.getFilePattern();
+                    if ( fp == null ) {
+                        fp = "*";
+                    }
+                    options.add( RasterIOOptions.OPT_FORMAT, fp );
                     if ( crs != null ) {
                         options.add( RasterIOOptions.CRS, crs.getName() );
                     }
-                    return buildTiledRaster( rasterFiles, directory.getFilePattern(), recursive, options );
+                    return buildTiledRaster( rasterFiles, recursive, options );
                 }
                 if ( file != null ) {
                     final File loc = new File( adapter.resolve( file.getValue() ).getFile() );

@@ -75,8 +75,6 @@ public class RasterBuilder {
      * 
      * @param resolutionDirectory
      *            locating the different resolutions
-     * @param extension
-     *            to scan the directories for
      * @param recursive
      *            if the sub directories of the resolution directories should be scanned as well
      * @param options
@@ -84,12 +82,12 @@ public class RasterBuilder {
      * @return a {@link MultiResolutionRaster} filled with {@link TiledRaster}s or <code>null</code> if the
      *         resolutionDirectory is not a directory.
      */
-    public static MultiResolutionRaster buildMultiResolutionRaster( File resolutionDirectory, String extension,
-                                                                    boolean recursive, RasterIOOptions options ) {
+    public static MultiResolutionRaster buildMultiResolutionRaster( File resolutionDirectory, boolean recursive,
+                                                                    RasterIOOptions options ) {
         if ( !resolutionDirectory.isDirectory() ) {
             return null;
         }
-        return buildMultiResolutionRaster( findResolutionDirs( resolutionDirectory ), extension, recursive, options );
+        return buildMultiResolutionRaster( findResolutionDirs( resolutionDirectory ), recursive, options );
     }
 
     /**
@@ -117,20 +115,18 @@ public class RasterBuilder {
     /**
      * @param resolutionDirectories
      *            locating the different resolutions
-     * @param extension
-     *            to scan the directories for
      * @param recursive
      *            if the sub directories of the resolution directories should be scanned as well
      * @param options
      *            containing values for the loading of the raster data.
      * @return a {@link MultiResolutionRaster} filled with {@link TiledRaster}s
      */
-    public static MultiResolutionRaster buildMultiResolutionRaster( List<File> resolutionDirectories, String extension,
+    public static MultiResolutionRaster buildMultiResolutionRaster( List<File> resolutionDirectories,
                                                                     boolean recursive, RasterIOOptions options ) {
         MultiResolutionRaster mrr = new MultiResolutionRaster();
         for ( File resDir : resolutionDirectories ) {
             if ( resDir != null && resDir.isDirectory() ) {
-                AbstractRaster rasterLevel = RasterBuilder.buildTiledRaster( resDir, extension, recursive, options );
+                AbstractRaster rasterLevel = RasterBuilder.buildTiledRaster( resDir, recursive, options );
                 if ( rasterLevel != null ) {
                     mrr.addRaster( rasterLevel );
                 }
@@ -166,11 +162,12 @@ public class RasterBuilder {
 
     /**
      * Scan the given directory (recursively) for files with given extension and create a tiled raster from them. The
-     * tile raster will use an {@link IndexedMemoryTileContainer}.
+     * tile raster will use an {@link IndexedMemoryTileContainer}. The options should define an
+     * {@link RasterIOOptions#OPT_FORMAT} to be used as file extension which will be case insensitive extension of the
+     * files to to scan for
+     * 
      * 
      * @param directory
-     * @param extension
-     *            case insensitive extension of the files to to scan for
      * @param recursive
      *            if true sub directories will be scanned as well.
      * @param options
@@ -179,9 +176,9 @@ public class RasterBuilder {
      * @return a new {@link TiledRaster} or <code>null</code> if no raster files were found at the given location, with
      *         the given extension.
      */
-    public static AbstractRaster buildTiledRaster( File directory, String extension, boolean recursive,
-                                                   RasterIOOptions options ) {
+    public static AbstractRaster buildTiledRaster( File directory, boolean recursive, RasterIOOptions options ) {
         LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
+        String extension = options.get( RasterIOOptions.OPT_FORMAT );
         List<File> coverageFiles = FileUtils.findFilesForExtensions( directory, recursive, extension );
         TiledRaster raster = null;
         if ( !coverageFiles.isEmpty() ) {
