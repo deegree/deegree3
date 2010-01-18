@@ -35,8 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -56,6 +60,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -73,6 +78,7 @@ import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.TransactionOperation;
+import org.deegree.record.publication.UpdateTransaction;
 
 /**
  * {@link RecordStore} implementation of Dublin Core and ISO Profile.
@@ -362,7 +368,8 @@ public class GenericRecordStore implements RecordStore {
             if ( rs != null ) {
                 while ( rs.next() ) {
 
-                    ByteArrayInputStream bais = new ByteArrayInputStream( rs.getBytes( 1 ) );
+                    BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
+                    //ByteArrayInputStream bais2 = new ByteArrayInputStream( rs.getBytes( 1 ) );
 
                     //TODO remove hardcoding 
                     Charset charset = Charset.forName( "UTF-8" );
@@ -370,10 +377,12 @@ public class GenericRecordStore implements RecordStore {
                     try {
                         isr = new InputStreamReader( bais, charset );
                     } catch ( Exception e ) {
-                        // TODO Auto-generated catch block
+                        
                         e.printStackTrace();
                     }
-
+                    
+                    
+                    
                     readXMLFragment( isr, writer );
 
                 }
@@ -418,7 +427,7 @@ public class GenericRecordStore implements RecordStore {
         Writer constraintExpression = new StringWriter();
         String COUNT_PRE;
         String COUNT_SUF;
-        if ( constraint.getExpressionWriter().equals( null) ) {
+        if ( !constraint.getExpressionWriter().equals( null) ) {
             constraintExpression.append( "AND (" + constraint.getExpressionWriter().toString() + ") ");
         } else {
             constraintExpression.append( "");
@@ -505,28 +514,47 @@ public class GenericRecordStore implements RecordStore {
 
     /**
      * Reads a valid XML fragment
-     * 
+     * TODO change fileOutput back into streamWriter
      * @param
      * @param xmlWriter
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      */
     private void readXMLFragment( InputStreamReader isr, XMLStreamWriter xmlWriter ) {
-
+        
+       
+        
+        
+        //XMLStreamReader xmlReaderOut;
+        
         XMLStreamReader xmlReader;
         try {
+            FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
+            XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
+            
             xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
+            
 
             // skip START_DOCUMENT
             xmlReader.nextTag();
+            
+            
+            XMLAdapter.writeElement( out, xmlReader );
 
-            XMLAdapter.writeElement( xmlWriter, xmlReader );
-
+            //XMLAdapter.writeElement( xmlWriter, xmlReader );
+            fout.close();
             xmlReader.close();
 
         } catch ( XMLStreamException e ) {
             e.printStackTrace();
         } catch ( FactoryConfigurationError e ) {
+            e.printStackTrace();
+        }
+        catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -608,6 +636,11 @@ public class GenericRecordStore implements RecordStore {
             break;
 
         case UPDATE:
+            
+            UpdateTransaction upd = (UpdateTransaction) operations;
+            
+            ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement(), conn );
+            elementParsing.executeUpdateStatement();
 
             break;
 

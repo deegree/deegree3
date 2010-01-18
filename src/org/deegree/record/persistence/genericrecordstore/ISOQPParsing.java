@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,8 +50,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -57,6 +58,7 @@ import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.crs.CRS;
 import org.deegree.protocol.csw.CSWConstants;
 
 /**
@@ -85,6 +87,8 @@ public class ISOQPParsing extends XMLAdapter {
 
     private OMNamespace namespaceDCT = factory.createOMNamespace( "http://purl.org/dc/terms/", "dct" );
 
+    private OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+
     private int id;
 
     private Connection connection;
@@ -98,25 +102,25 @@ public class ISOQPParsing extends XMLAdapter {
     private OMElement identifier = null;
 
     private OMElement hierarchyLevel = null;
-    
+
     private OMElement hierarchyLevelName = null;
-    
+
     private OMElement language = null;
-    
+
     private OMElement dataQualityInfo = null;
-    
+
     private OMElement characterSet = null;
-    
+
     private OMElement metadataStandardName = null;
-    
+
     private OMElement metadataStandardVersion = null;
-    
+
     private OMElement parentIdentifier = null;
 
     private OMElement identificationInfo = null;
 
     private OMElement referenceSystemInfo = null;
-    
+
     private OMElement distributionInfo = null;
 
     private Statement stm;
@@ -174,6 +178,8 @@ public class ISOQPParsing extends XMLAdapter {
                 qp.setIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
 
                 identifier = elem;
+                OMNamespace namespace = identifier.getNamespace();
+                identifier.setNamespace( namespace );
                 elementFull.addChild( identifier );
 
                 continue;
@@ -186,13 +192,17 @@ public class ISOQPParsing extends XMLAdapter {
                 qp.setType( type );
 
                 hierarchyLevel = elem;
+                OMNamespace namespace = hierarchyLevel.getNamespace();
+                hierarchyLevel.setNamespace( namespace );
                 elementFull.addChild( hierarchyLevel );
                 continue;
             }
-            
+
             if ( elem.getLocalName().equals( "hierarchyLevelName" ) ) {
-                
+
                 hierarchyLevelName = elem;
+                OMNamespace namespace = hierarchyLevelName.getNamespace();
+                hierarchyLevelName.setNamespace( namespace );
                 elementFull.addChild( hierarchyLevelName );
                 continue;
             }
@@ -228,25 +238,28 @@ public class ISOQPParsing extends XMLAdapter {
                 continue;
             }
 
+            // TODO there are more than one refSysInfo!!
             if ( elem.getLocalName().equals( "referenceSystemInfo" ) ) {
-                OMElement e = getElement(
-                                          elem,
-                                          new XPath(
-                                                     "./gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
-                                                     nsContext ) );
-                String crsIdentification = getNodeAsString( e,
-                                                            new XPath( "./gmd:code/gco:CharacterString", nsContext ),
-                                                            "" );
+                OMElement crsElement = getElement(
+                                                   elem,
+                                                   new XPath(
+                                                              "./gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
+                                                              nsContext ) );
+                String crsIdentification = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
+                                                                                   nsContext ), "" );
 
-                String crsAuthority = getNodeAsString( e,
-                                                       new XPath( "./gmd:codeSpace/gco:CharacterString", nsContext ),
-                                                       "" );
+                String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
+                                                                              nsContext ), "" );
 
-                String crsVersion = getNodeAsString( e, new XPath( "./gmd:version/gco:CharacterString", nsContext ), "" );
+                String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
+                                                                            nsContext ), "" );
 
-                CRS crs = new CRS( crsAuthority, crsIdentification, crsVersion );
+                // CRS crs = new CRS( crsAuthority, crsIdentification, crsVersion );
+                CRS crs = new CRS( crsIdentification );
                 qp.setCrs( crs );
                 referenceSystemInfo = elem;
+                OMNamespace namespace = referenceSystemInfo.getNamespace();
+                referenceSystemInfo.setNamespace( namespace );
                 elementFull.addChild( referenceSystemInfo );
 
                 continue;
@@ -259,25 +272,25 @@ public class ISOQPParsing extends XMLAdapter {
                 language = elem;
                 continue;
             }
-            
+
             if ( elem.getLocalName().equals( "dataQualityInfo" ) ) {
 
                 dataQualityInfo = elem;
                 continue;
             }
-            
+
             if ( elem.getLocalName().equals( "characterSet" ) ) {
 
                 characterSet = elem;
                 continue;
             }
-            
+
             if ( elem.getLocalName().equals( "metadataStandardName" ) ) {
 
                 metadataStandardName = elem;
                 continue;
             }
-            
+
             if ( elem.getLocalName().equals( "metadataStandardVersion" ) ) {
 
                 metadataStandardVersion = elem;
@@ -448,6 +461,8 @@ public class ISOQPParsing extends XMLAdapter {
                 qp.set_abstract( Arrays.asList( _abstractStrings ) );
 
                 identificationInfo = elem;
+                OMNamespace namespace = identificationInfo.getNamespace();
+                identificationInfo.setNamespace( namespace );
                 elementFull.addChild( identificationInfo );
                 continue;
 
@@ -481,11 +496,11 @@ public class ISOQPParsing extends XMLAdapter {
 
                 continue;
             }
-            
+
             if ( elem.getLocalName().equals( "distributionInfo" ) ) {
                 distributionInfo = elem;
                 continue;
-                
+
             }
 
         }
@@ -528,6 +543,113 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
+     * 
+     */
+    public void executeUpdateStatement() {
+        final String databaseTable = "datasets";
+
+        StringWriter sqlStatementUpdate = new StringWriter( 500 );
+        StringBuffer buf = new StringBuffer();
+        int requestedId = 0;
+        try {
+            stm = connection.createStatement();
+            sqlStatementUpdate.append( "SELECT " + databaseTable + ".id from " + databaseTable + " where "
+                                       + databaseTable + ".identifier = '" + qp.getIdentifier() + "'" );
+            System.out.println( sqlStatementUpdate.toString() );
+            buf = sqlStatementUpdate.getBuffer();
+            ResultSet rs = connection.createStatement().executeQuery( sqlStatementUpdate.toString() );
+
+            if ( rs != null ) {
+                while ( rs.next() ) {
+                    requestedId = rs.getInt( 1 );
+                    System.out.println( rs.getInt( 1 ) );
+                }
+                buf.setLength( 0 );
+                rs.close();
+            }
+            if ( requestedId != 0 ) {
+                // TODO version
+
+                // TODO status
+
+                // anyText
+                if ( qp.getAnyText() != null ) {
+
+                    sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET anyText = '" + qp.getAnyText()
+                                              + "' WHERE id = " + requestedId );
+
+                    buf = sqlStatementUpdate.getBuffer();
+                    System.out.println( sqlStatementUpdate.toString() );
+                    stm.executeUpdate( sqlStatementUpdate.toString() );
+                    buf.setLength( 0 );
+
+                }
+                // identifier
+                if ( qp.getIdentifier() != null ) {
+
+                    sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET identifier = '" + qp.getIdentifier()
+                                              + "' WHERE id = " + requestedId );
+
+                    buf = sqlStatementUpdate.getBuffer();
+                    System.out.println( sqlStatementUpdate.toString() );
+                    stm.executeUpdate( sqlStatementUpdate.toString() );
+                    buf.setLength( 0 );
+                }
+                // modified
+                if ( !qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
+                    sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET modified = '" + qp.getModified()
+                                              + "' WHERE id = " + requestedId );
+                    buf = sqlStatementUpdate.getBuffer();
+                    System.out.println( sqlStatementUpdate.toString() );
+                    stm.executeUpdate( sqlStatementUpdate.toString() );
+                    buf.setLength( 0 );
+                }
+                // TODO hassecurityconstraints
+
+                // language
+                if ( rp.getLanguage() != null ) {
+                    sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET language = '" + rp.getLanguage()
+                                              + "' WHERE id = " + requestedId );
+
+                    buf = sqlStatementUpdate.getBuffer();
+                    System.out.println( sqlStatementUpdate.toString() );
+                    stm.executeUpdate( sqlStatementUpdate.toString() );
+                    buf.setLength( 0 );
+                }
+                // TODO parentidentifier
+
+                // TODO source
+
+                // TODO association
+
+                // recordBrief update
+                updateRecord( requestedId, "recordbrief" );
+
+                // recordSummary update
+                updateRecord( requestedId, "recordsummary" );
+
+                // recordFull update
+                updateRecord( requestedId, "recordfull" );
+            } else {
+                // TODO think about what response should be written if there is no such dataset in the backend??
+                String msg = "No dataset found for the identifier --> " + qp.getIdentifier() + " <--. ";
+                throw new SQLException( msg );
+            }
+
+            stm.close();
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        } catch ( IOException e ) {
+
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * BE AWARE: the "modified" attribute is get from the first position in the list. The backend has the possibility to
      * add one such attribute. In the xsd-file there are more possible...
      * 
@@ -540,7 +662,7 @@ public class ISOQPParsing extends XMLAdapter {
             stm = connection.createStatement();
             this.id = getLastDataset( connection, databaseTable );
             this.id++;
-            sqlStatement = "INSERT INTO userdefinedqueryableproperties VALUES (" + id + ");";
+            // sqlStatement = "INSERT INTO userdefinedqueryableproperties VALUES (" + id + ");";
 
             if ( qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
                 qp.setModified( null );
@@ -567,14 +689,75 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private void generateRecordBrief()
+    private void updateRecord( int fk_datasets, String databaseTable )
                             throws IOException {
         
+        String elementName = "";
+        String isoOMElement = "";
+
+        //final String databaseTable = "recordbrief";
+        if(databaseTable.equals( "recordbrief" )){
+            elementName = "BriefRecord";
+            isoOMElement = setISOBriefElements().toString();
+            
+        }else if(databaseTable.equals( "recordsummary" )){
+            elementName = "SummaryRecord";
+            isoOMElement = setISOSummaryElements().toString();
+            
+        }else{
+            elementName = "Record";
+            isoOMElement = elementFull.toString();
+        }
+        
+
+        StringWriter sqlStatement = new StringWriter( 500 );
+        StringBuffer buf = new StringBuffer();
+        OMElement omElement = null;
+
+        try {
+            // DC-update
+            OMFactory factory = OMAbstractFactory.getOMFactory();
+            OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
+
+            omElement = factory.createOMElement( elementName, namespaceCSW );
+
+            setDCBriefElements( factory, omElement );
+
+            setBoundingBoxElement( factory, omElement );
+
+            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + omElement.toString()
+                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 1 );
+
+            buf = sqlStatement.getBuffer();
+            System.out.println( sqlStatement.toString() );
+            stm.executeUpdate( sqlStatement.toString() );
+            buf.setLength( 0 );
+
+            // ISO-update
+            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + isoOMElement
+                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 2 );
+
+            buf = sqlStatement.getBuffer();
+            System.out.println( sqlStatement.toString() );
+            stm.executeUpdate( sqlStatement.toString() );
+            buf.setLength( 0 );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    private void generateRecordBrief()
+                            throws IOException {
+
         final String databaseTable = "recordbrief";
 
         String sqlStatement = "";
         int fk_datasets = this.id;
         int idDatabaseTable = 0;
+
         try {
             stm = connection.createStatement();
             idDatabaseTable = getLastDataset( connection, databaseTable );
@@ -582,7 +765,7 @@ public class ISOQPParsing extends XMLAdapter {
 
             // -------------------
             sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES ("
-                           + idDatabaseTable + "," + fk_datasets + ", 2, '" + setISOBriefElements( ).toString() + "');";
+                           + idDatabaseTable + "," + fk_datasets + ", 2, '" + setISOBriefElements().toString() + "');";
 
             stm.executeUpdate( sqlStatement );
             stm.close();
@@ -596,13 +779,99 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
+//    private void updateRecordSummary( int fk_datasets )
+//                            throws IOException {
+//
+//        final String databaseTable = "recordsummary";
+//
+//        StringWriter sqlStatement = new StringWriter( 500 );
+//        StringBuffer buf = new StringBuffer();
+//        OMElement omElement = null;
+//
+//        try {
+//            // DC-update
+//            OMFactory factory = OMAbstractFactory.getOMFactory();
+//            OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
+//
+//            omElement = factory.createOMElement( "SummaryRecord", namespaceCSW );
+//
+//            setDCBriefElements( factory, omElement );
+//
+//            setBoundingBoxElement( factory, omElement );
+//
+//            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + omElement.toString()
+//                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 1 );
+//
+//            buf = sqlStatement.getBuffer();
+//            System.out.println( sqlStatement.toString() );
+//            stm.executeUpdate( sqlStatement.toString() );
+//            buf.setLength( 0 );
+//
+//            // ISO-update
+//            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + setISOSummaryElements().toString()
+//                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 2 );
+//
+//            buf = sqlStatement.getBuffer();
+//            System.out.println( sqlStatement.toString() );
+//            stm.executeUpdate( sqlStatement.toString() );
+//            buf.setLength( 0 );
+//
+//        } catch ( SQLException e ) {
+//
+//            e.printStackTrace();
+//        }
+//
+//    }
+
+//    private void updateRecordFull( int fk_datasets )
+//                            throws IOException {
+//
+//        final String databaseTable = "recordfull";
+//
+//        StringWriter sqlStatement = new StringWriter( 500 );
+//        StringBuffer buf = new StringBuffer();
+//        OMElement omElement = null;
+//
+//        try {
+//            // DC-update
+//            OMFactory factory = OMAbstractFactory.getOMFactory();
+//            OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
+//
+//            omElement = factory.createOMElement( "Record", namespaceCSW );
+//
+//            setDCBriefElements( factory, omElement );
+//
+//            setBoundingBoxElement( factory, omElement );
+//
+//            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + omElement.toString()
+//                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 1 );
+//
+//            buf = sqlStatement.getBuffer();
+//            System.out.println( sqlStatement.toString() );
+//            stm.executeUpdate( sqlStatement.toString() );
+//            buf.setLength( 0 );
+//
+//            // ISO-update
+//            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + elementFull.toString()
+//                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 2 );
+//
+//            buf = sqlStatement.getBuffer();
+//            System.out.println( sqlStatement.toString() );
+//            stm.executeUpdate( sqlStatement.toString() );
+//            buf.setLength( 0 );
+//
+//        } catch ( SQLException e ) {
+//
+//            e.printStackTrace();
+//        }
+//
+//    }
+
     /**
      * TODO ISO Summary record
      */
     private void generateRecordSummary() {
         final String databaseTable = "recordsummary";
-
-       
 
         String sqlStatement = "";
         int fk_datasets = this.id;
@@ -612,11 +881,10 @@ public class ISOQPParsing extends XMLAdapter {
             idDatabaseTable = getLastDataset( connection, databaseTable );
             idDatabaseTable++;
 
-            
-            
             // -------------------
             sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES ("
-                           + idDatabaseTable + "," + fk_datasets + ", 2, '" + setISOSummaryElements( ).toString() + "');";
+                           + idDatabaseTable + "," + fk_datasets + ", 2, '" + setISOSummaryElements().toString()
+                           + "');";
 
             stm.executeUpdate( sqlStatement );
             stm.close();
@@ -915,6 +1183,28 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
+    private void generateISOQP_CRSStatement() {
+        final String databaseTable = "isoqp_crs";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+            stm = connection.createStatement();
+            id = getLastDataset( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, authority, id_crs, version) VALUES ("
+                           + id + "," + mainDatabaseTableID + "," + qp.getCrs().getName() + "," + qp.getCrs().getName()
+                           + "," + qp.getCrs().getName() + ");";
+
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
     private int getLastDataset( Connection conn, String databaseTable )
                             throws SQLException {
         int result = 0;
@@ -1055,6 +1345,8 @@ public class ISOQPParsing extends XMLAdapter {
         OMElement omBoundingBox = factory.createOMElement( "BoundingBox", namespaceOWS );
         OMElement omLowerCorner = factory.createOMElement( "LowerCorner", namespaceOWS );
         OMElement omUpperCorner = factory.createOMElement( "UpperCorner", namespaceOWS );
+        // OMAttribute omCrs = factory.createOMAttribute( "crs", namespaceOWS, qp.getCrs() );
+        System.out.println( qp.getCrs() );
 
         omLowerCorner.setText( qp.getBoundingBox().getEastBoundLongitude() + " "
                                + qp.getBoundingBox().getSouthBoundLatitude() );
@@ -1063,7 +1355,7 @@ public class ISOQPParsing extends XMLAdapter {
         omBoundingBox.addChild( omLowerCorner );
         omBoundingBox.addChild( omUpperCorner );
         if ( qp.getCrs() != null ) {
-            omBoundingBox.addAttribute( "crs", qp.getCrs().toString(), namespaceOWS );
+            // omBoundingBox.addAttribute( omCrs );
         }
 
         omElement.addChild( omBoundingBox );
@@ -1074,9 +1366,9 @@ public class ISOQPParsing extends XMLAdapter {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement omElement;
-        OMNamespace namespace = factory.createOMNamespace( rootElement.getDefaultNamespace().getNamespaceURI(), "gmd" );
+        // OMElement omIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
 
-        omElement = factory.createOMElement( "MD_Metadata", namespace );
+        omElement = factory.createOMElement( "MD_Metadata", namespaceGMD );
         omElement.addChild( identifier );
         if ( hierarchyLevel != null ) {
             omElement.addChild( hierarchyLevel );
@@ -1085,17 +1377,18 @@ public class ISOQPParsing extends XMLAdapter {
             omElement.addChild( identificationInfo );
         }
         return omElement;
-        
+
     }
-    
-    private OMElement setISOSummaryElements(){
-        
-       // OMFactory factory = OMAbstractFactory.getOMFactory();
+
+    private OMElement setISOSummaryElements() {
+
+        // OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement omElement;
-        //OMNamespace namespace = factory.createOMNamespace( rootElement.getDefaultNamespace().getNamespaceURI(), "gmd" );
-        
-        omElement = setISOBriefElements( );
-        
+        // OMNamespace namespace = factory.createOMNamespace( rootElement.getDefaultNamespace().getNamespaceURI(), "gmd"
+        // );
+
+        omElement = setISOBriefElements();
+
         if ( distributionInfo != null ) {
             omElement.addChild( distributionInfo );
         }
@@ -1123,10 +1416,9 @@ public class ISOQPParsing extends XMLAdapter {
         if ( referenceSystemInfo != null ) {
             omElement.addChild( referenceSystemInfo );
         }
-        
+
         return omElement;
-        
-        
+
     }
 
 }

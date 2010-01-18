@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.types.datetime.Date;
+import org.deegree.crs.CRS;
 
 /**
  * Properties that are queryable by applicationprofiles such as ISO 
@@ -57,7 +58,6 @@ public class QueryableProperties {
     private List<String> alternateTitle;
     
     private List<String> _abstract;
-    
     
     private String anyText;
     
