@@ -58,7 +58,7 @@ public class RawDataBufferFloat extends DataBuffer {
 
     private int noData;
 
-    private final int SIZE = Float.SIZE / 8;
+    private static final int SIZE = Float.SIZE / 8;
 
     private RasterRect bufferDomain;
 
@@ -74,7 +74,7 @@ public class RawDataBufferFloat extends DataBuffer {
      * @param floatBuffer
      */
     public RawDataBufferFloat( ByteBuffer floatBuffer, float noData, RasterRect bufferDomain, DataView view ) {
-        super( DataBuffer.TYPE_FLOAT, 1 );
+        super( DataBuffer.TYPE_FLOAT, floatBuffer.capacity() / SIZE );
         this.floatBuffer = floatBuffer;
         this.noData = Float.floatToIntBits( noData );
         this.bufferDomain = bufferDomain;
