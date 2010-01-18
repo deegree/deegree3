@@ -112,8 +112,8 @@ public class JOGLUtils {
      * Returns the number of texture image units that can be used in fragment shaders.
      * <p>
      * NOTE: This method evaluates the value of <code>GL_MAX_TEXTURE_IMAGE_UNITS</code>. The number is usually not
-     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed
-     * shader functions.
+     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed shader
+     * functions.
      * </p>
      * 
      * @param gl
@@ -276,13 +276,112 @@ public class JOGLUtils {
      */
     public static int convertBytesToRGBInt( byte[] color ) {
         int result = 0;
-        result |= ( color[0] & 0x000000FF );
+        result |= ( color[0] & 0xFF );
         result <<= 8;
-        result |= ( color[1] & 0x000000FF );
+        result |= ( color[1] & 0xFF );
         result <<= 8;
-        result |= ( color[2] & 0x000000FF );
+        result |= ( color[2] & 0xFF );
 
         return result;
+    }
+
+    /**
+     * Read the framebuffer's rgba values and place them into a {@link ByteBuffer}. If the resultImage was
+     * <code>null</code> or it's height or width are to small a new ByteBuffer is created.
+     * 
+     * @param glContext
+     *            to get the image from.
+     * @param imageBuffer
+     *            to write the framebuffer to.
+     * @param viewPortX
+     *            the x location in the framebuffer.
+     * @param viewPortY
+     *            the y location in the framebuffer.
+     * @param width
+     *            of read in the framebuffer.
+     * @param height
+     *            of read in the framebuffer.
+     * @return the resultImage or a newly created BufferedImage holding the requested data from the framebuffer.
+     */
+    public static ByteBuffer getFrameBufferRGBA( GL glContext, ByteBuffer imageBuffer, int viewPortX, int viewPortY,
+                                                 int width, int height ) {
+        if ( imageBuffer == null || ( imageBuffer.capacity() < ( width * height * 4 ) ) ) {
+            imageBuffer = BufferUtil.newByteBuffer( width * height * 4 );
+        }
+        imageBuffer.rewind();
+        glContext.glPixelStorei( GL.GL_PACK_ALIGNMENT, 1 );
+        glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGBA, GL_UNSIGNED_BYTE, imageBuffer );
+        imageBuffer.rewind();
+        return imageBuffer;
+    }
+
+    /**
+     * Read the framebuffer's rgb values and place them into a {@link BufferedImage}. If the resultImage was
+     * <code>null</code> or it's height or width are to small a new BufferedImage is created. The resultImage type is
+     * supposed to be {@link BufferedImage#TYPE_INT_RGB}.
+     * 
+     * @param glContext
+     *            to get the image from.
+     * @param imageBuffer
+     *            to write the framebuffer to.
+     * @param viewPortX
+     *            the x location in the framebuffer.
+     * @param viewPortY
+     *            the y location in the framebuffer.
+     * @param width
+     *            of read in the framebuffer.
+     * @param height
+     *            of read in the framebuffer.
+     * @param resultImage
+     *            which will hold the result, may be <code>null</code>
+     * @return the resultImage or a newly created BufferedImage holding the requested data from the framebuffer.
+     */
+    public static BufferedImage getFrameBufferRGBA( GL glContext, ByteBuffer imageBuffer, int viewPortX, int viewPortY,
+                                                    int width, int height, BufferedImage resultImage ) {
+        imageBuffer = getFrameBufferRGBA( glContext, imageBuffer, viewPortX, viewPortY, width, height );
+        if ( resultImage == null || resultImage.getWidth() < width || resultImage.getHeight() < height ) {
+            resultImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+        }
+        imageBuffer.rewind();
+        byte[] color = new byte[4];
+        for ( int y = height - 1; y >= 0; --y ) {
+            for ( int x = 0; x < width; x++ ) {
+                imageBuffer.get( color );
+                resultImage.setRGB( x, y, convertBytesToARGBInt( color ) );
+            }
+        }
+
+        return resultImage;
+    }
+
+    /**
+     * Read the framebuffer's rgb values and place them into a {@link ByteBuffer}. If the resultImage was
+     * <code>null</code> or it's height or width are to small a new ByteBuffer is created.
+     * 
+     * @param glContext
+     *            to get the image from.
+     * @param imageBuffer
+     *            to write the framebuffer to.
+     * @param viewPortX
+     *            the x location in the framebuffer.
+     * @param viewPortY
+     *            the y location in the framebuffer.
+     * @param width
+     *            of read in the framebuffer.
+     * @param height
+     *            of read in the framebuffer.
+     * @return the resultImage or a newly created BufferedImage holding the requested data from the framebuffer.
+     */
+    public static ByteBuffer getFrameBufferRGB( GL glContext, ByteBuffer imageBuffer, int viewPortX, int viewPortY,
+                                                int width, int height ) {
+        if ( imageBuffer == null || ( imageBuffer.capacity() < ( width * height * 3 ) ) ) {
+            imageBuffer = BufferUtil.newByteBuffer( width * height * 3 );
+        }
+        imageBuffer.rewind();
+        glContext.glPixelStorei( GL.GL_PACK_ALIGNMENT, 1 );
+        glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGB, GL_UNSIGNED_BYTE, imageBuffer );
+        imageBuffer.rewind();
+        return imageBuffer;
     }
 
     /**
@@ -308,12 +407,7 @@ public class JOGLUtils {
      */
     public static BufferedImage getFrameBufferRGB( GL glContext, ByteBuffer imageBuffer, int viewPortX, int viewPortY,
                                                    int width, int height, BufferedImage resultImage ) {
-        if ( imageBuffer == null || ( imageBuffer.capacity() < ( width * height * 3 ) ) ) {
-            imageBuffer = BufferUtil.newByteBuffer( width * height * 3 );
-        }
-        imageBuffer.rewind();
-        glContext.glPixelStorei( GL.GL_PACK_ALIGNMENT, 1 );
-        glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGB, GL_UNSIGNED_BYTE, imageBuffer );
+        imageBuffer = getFrameBufferRGB( glContext, imageBuffer, viewPortX, viewPortY, width, height );
         if ( resultImage == null || resultImage.getWidth() < width || resultImage.getHeight() < height ) {
             resultImage = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
         }
