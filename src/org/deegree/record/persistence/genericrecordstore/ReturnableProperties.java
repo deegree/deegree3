@@ -61,6 +61,8 @@ public class ReturnableProperties {
     
     private String language;
     
+    private String relation;
+    
 
     /**
      * @return the creator
@@ -160,6 +162,20 @@ public class ReturnableProperties {
      */
     public void setLanguage( String language ) {
         this.language = language;
+    }
+
+    /**
+     * @return the relation
+     */
+    public String getRelation() {
+        return relation;
+    }
+
+    /**
+     * @param relation the relation to set
+     */
+    public void setRelation( String relation ) {
+        this.relation = relation;
     }
 
 

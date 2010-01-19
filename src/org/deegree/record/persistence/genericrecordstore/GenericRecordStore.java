@@ -645,7 +645,7 @@ public class GenericRecordStore implements RecordStore {
             break;
 
         case DELETE:
-
+            
             break;
         }
         conn.close();

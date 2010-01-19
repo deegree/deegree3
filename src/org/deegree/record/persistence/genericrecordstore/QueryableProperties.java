@@ -51,11 +51,11 @@ import org.deegree.crs.CRS;
  */
 public class QueryableProperties {
     
-    private List<String> subject;
+    //---<common queryable properties>
+    //dc:subject
+    private List<Keyword> keywords;
     
     private List<String> title;
-    
-    private List<String> alternateTitle;
     
     private List<String> _abstract;
     
@@ -71,15 +71,37 @@ public class QueryableProperties {
     
     private BoundingBox boundingBox;
     
-    private OMElement identificationInfo;
-    
     private CRS crs;
+    
+  //---</common queryable properties>
+    
+    //---<additional common queryable properties>
+    
+    private Date revisionDate;
+    
+    private List<String> alternateTitle;
+    
+    private Date creationDate;
+    
+    private Date publicationDate;
+    
+    private String organisationName;
+    
+    private boolean hasSecurityConstraints;
+    
+    private String language;
+    
+    private String resourceIdentifier;
+    
+    private String parentIdentifier;
+    
+  //---</additional common queryable properties>
     
     
     
     private String resourceLanguage;
     
-    private List<Keyword> keywords;
+    
     
     private OMElement serviceType;
     
@@ -108,35 +130,8 @@ public class QueryableProperties {
         
     }*/
 
-    /**
-     * @return the subject
-     */
-    public List<String> getSubject() {
-        return subject;
-    }
-
-    /**
-     * @param subject the subject to set
-     */
-    public void setSubject( List<String> subject ) {
-        this.subject = subject;
-    }
-
     
-    /**
-     * @return the identificationInfo
-     */
-    public OMElement getIdentificationInfo() {
-        return identificationInfo;
-    }
-
-    /**
-     * @param identificationInfo the identificationInfo to set
-     */
-    public void setIdentificationInfo( OMElement identificationInfo ) {
-        this.identificationInfo = identificationInfo;
-    }
-
+    
     /**
      * @return the abridgement
      */
@@ -336,6 +331,118 @@ public class QueryableProperties {
      */
     public void setResourceLanguage( String resourceLanguage ) {
         this.resourceLanguage = resourceLanguage;
+    }
+
+    /**
+     * @return the revisionDate
+     */
+    public Date getRevisionDate() {
+        return revisionDate;
+    }
+
+    /**
+     * @param revisionDate the revisionDate to set
+     */
+    public void setRevisionDate( Date revisionDate ) {
+        this.revisionDate = revisionDate;
+    }
+
+    /**
+     * @return the creationDate
+     */
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    /**
+     * @param creationDate the creationDate to set
+     */
+    public void setCreationDate( Date creationDate ) {
+        this.creationDate = creationDate;
+    }
+
+    /**
+     * @return the publicationDate
+     */
+    public Date getPublicationDate() {
+        return publicationDate;
+    }
+
+    /**
+     * @param publicationDate the publicationDate to set
+     */
+    public void setPublicationDate( Date publicationDate ) {
+        this.publicationDate = publicationDate;
+    }
+
+    /**
+     * @return the organisationName
+     */
+    public String getOrganisationName() {
+        return organisationName;
+    }
+
+    /**
+     * @param organisationName the organisationName to set
+     */
+    public void setOrganisationName( String organisationName ) {
+        this.organisationName = organisationName;
+    }
+
+    /**
+     * @return the hasSecurityConstraints
+     */
+    public boolean isHasSecurityConstraints() {
+        return hasSecurityConstraints;
+    }
+
+    /**
+     * @param hasSecurityConstraints the hasSecurityConstraints to set
+     */
+    public void setHasSecurityConstraints( boolean hasSecurityConstraints ) {
+        this.hasSecurityConstraints = hasSecurityConstraints;
+    }
+
+    /**
+     * @return the language
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage( String language ) {
+        this.language = language;
+    }
+
+    /**
+     * @return the resourceIdentifier
+     */
+    public String getResourceIdentifier() {
+        return resourceIdentifier;
+    }
+
+    /**
+     * @param resourceIdentifier the resourceIdentifier to set
+     */
+    public void setResourceIdentifier( String resourceIdentifier ) {
+        this.resourceIdentifier = resourceIdentifier;
+    }
+
+    /**
+     * @return the parentIdentifier
+     */
+    public String getParentIdentifier() {
+        return parentIdentifier;
+    }
+
+    /**
+     * @param parentIdentifier the parentIdentifier to set
+     */
+    public void setParentIdentifier( String parentIdentifier ) {
+        this.parentIdentifier = parentIdentifier;
     }
 
    

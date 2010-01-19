@@ -200,6 +200,18 @@ public class ISOQPParsing extends XMLAdapter {
                 
                 continue;
             }
+            
+            if ( elem.getLocalName().equals( "parentIdentifier" ) ) {
+                qp.setParentIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
+
+                parentIdentifier = elem;
+                OMNamespace namespace = parentIdentifier.getNamespace();
+                parentIdentifier.setNamespace( namespace );
+                
+
+                continue;
+
+            }
 
             if ( elem.getLocalName().equals( "dateStamp" ) ) {
 
@@ -292,6 +304,7 @@ public class ISOQPParsing extends XMLAdapter {
             if ( elem.getLocalName().equals( "parentIdentifier" ) ) {
 
                 parentIdentifier = elem;
+                qp.setParentIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
                 continue;
             }
 
@@ -446,8 +459,75 @@ public class ISOQPParsing extends XMLAdapter {
                 }
 
                 qp.setKeywords( listOfKeywords );
+                
+                //TODO be aware of Dateincompatibilities and read them from the right knot revisionDate
+                String revisionDateString = getNodeAsString( elem, new XPath( "./gco:Date", nsContext ), "0000-00-00" );
+                Date date = null;
+                try {
+                    date = new Date( revisionDateString );
+                } catch ( ParseException e ) {
 
-                // TODO relation -- aggregationInfo
+                    e.printStackTrace();
+                }
+
+                qp.setRevisionDate( date );
+                
+                
+                //TODO be aware of Dateincompatibilities and read them from the right knot  creationDate
+                String creationDateString = getNodeAsString( elem, new XPath( "./gco:Date", nsContext ), "0000-00-00" );
+                
+                try {
+                    date = new Date( creationDateString );
+                } catch ( ParseException e ) {
+
+                    e.printStackTrace();
+                }
+
+                qp.setCreationDate( date );
+                
+                //TODO be aware of Dateincompatibilities and read them from the right knot  publicationDate
+                String publicationDateString = getNodeAsString( elem, new XPath( "./gco:Date", nsContext ), "0000-00-00" );
+                
+                try {
+                    date = new Date( publicationDateString );
+                } catch ( ParseException e ) {
+
+                    e.printStackTrace();
+                }
+
+                qp.setPublicationDate( date );
+                
+                
+                //TODO maybe md_dataIdentification
+                String relation = getNodeAsString(
+                                                  md_identification,
+                                                  new XPath(
+                                                             "./gmd:aggreationInfo/gco:CharacterString",
+                                                             nsContext ), null );
+                rp.setRelation( relation );
+                
+              //TODO maybe md_dataIdentification
+                String[] rightsStrings = getNodesAsStrings( md_identification,
+                                                               new XPath( "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue", nsContext ) );
+                
+                rp.setRights( Arrays.asList( rightsStrings ) );
+                
+                //TODO RevisionDate
+                
+                String organisationName = getNodeAsString(
+                                                  md_identification,
+                                                  new XPath(
+                                                             "./gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString",
+                                                             nsContext ), null );
+                
+                qp.setOrganisationName( organisationName );
+                
+                boolean hasSecurityConstraint = getNodeAsBoolean( md_identification, new XPath(
+                                                                                               "./gmd:MD_Identification/gmd:resourceConstraints/gmd:MD_SecurityConstraints",
+                                                                                               nsContext ), false );
+                qp.setHasSecurityConstraints( hasSecurityConstraint );
+                
+                
                 String[] _abstractStrings = getNodesAsStrings( _abstract,
                                                                new XPath( "./gco:CharacterString", nsContext ) );
 
@@ -528,6 +608,15 @@ public class ISOQPParsing extends XMLAdapter {
         // TODO relation
         if ( qp.get_abstract() != null ) {
             generateISOQP_AbstractStatement( isUpdate );
+        }
+        if ( qp.getAlternateTitle() != null ) {
+            generateISOQP_AlternateTitleStatement( isUpdate );
+        }
+        if ( qp.getResourceIdentifier() != null ) {
+            generateISOQP_ResourceIdentifierStatement( isUpdate );
+        }
+        if ( qp.getOrganisationName() != null ) {
+            generateISOQP_OrganisationNameStatement( isUpdate );
         }
         // TODO spatial
         if ( qp.getBoundingBox() != null ) {
@@ -636,6 +725,12 @@ public class ISOQPParsing extends XMLAdapter {
                 generateISOQP_FormatStatement( isUpdate );
 
                 generateISOQP_AbstractStatement( isUpdate );
+                
+                generateISOQP_AlternateTitleStatement( isUpdate );
+                
+                generateISOQP_ResourceIdentifierStatement(isUpdate);
+                
+                generateISOQP_OrganisationNameStatement(isUpdate);
 
                 generateISOQP_BoundingBoxStatement( isUpdate );
 
@@ -684,7 +779,7 @@ public class ISOQPParsing extends XMLAdapter {
                             + databaseTable
                             + " (id, version, status, anyText, identifier, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
                             + this.id + ",null,null,'" + qp.getAnyText() + "','" + qp.getIdentifier() + "',"
-                            + modifiedAttribute + ",FALSE,'" + rp.getLanguage() + "','','', null);";
+                            + modifiedAttribute + ","+ qp.isHasSecurityConstraints() +",'" + rp.getLanguage() + "','"+ qp.getParentIdentifier() +"','', null);";
             System.out.println( sqlStatement );
             stm.executeUpdate( sqlStatement );
             stm.close();
@@ -951,6 +1046,203 @@ public class ISOQPParsing extends XMLAdapter {
                            + idDatabaseTable + "," + fk_datasets + ", 1, '" + omElement.toString() + "');";
 
             System.out.println( "DC RecordFull: " + sqlStatement );
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+    
+    private void generateISOQP_OrganisationNameStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_organisationname";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+            stm = connection.createStatement();
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, organisationname) VALUES (" + id + ","
+                + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '" + qp.getResourceIdentifier() + "' WHERE fk_datasets = "
+                               + mainDatabaseTableID + ";";
+            }
+            
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+    
+    private void generateISOQP_RevisionDateStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_revisiondate";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        String revisionDateAttribute = "";
+        int id = 0;
+        try {
+            
+            if ( qp.getRevisionDate().equals( new Date( "0000-00-00" ) ) ) {
+                qp.setModified( null );
+                revisionDateAttribute = "" + qp.getRevisionDate();
+            } else {
+                revisionDateAttribute = "'" + qp.getRevisionDate() + "'";
+            }
+            
+            stm = connection.createStatement();
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, revisiondate) VALUES (" + id + ","
+                + mainDatabaseTableID + ",'" + revisionDateAttribute + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET revisiondate = " + revisionDateAttribute + " WHERE fk_datasets = "
+                               + mainDatabaseTableID + ";";
+            }
+            
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        } catch ( ParseException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    private void generateISOQP_CreationDateStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_creationdate";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        String creationDateAttribute = "";
+        int id = 0;
+        try {
+            
+            if ( qp.getRevisionDate().equals( new Date( "0000-00-00" ) ) ) {
+                qp.setModified( null );
+                creationDateAttribute = "" + qp.getCreationDate();
+            } else {
+                creationDateAttribute = "'" + qp.getCreationDate() + "'";
+            }
+            stm = connection.createStatement();
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, creationdate) VALUES (" + id + ","
+                + mainDatabaseTableID + ",'" + creationDateAttribute + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET creationdate = " + creationDateAttribute + " WHERE fk_datasets = "
+                               + mainDatabaseTableID + ";";
+            }
+            
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        } catch ( ParseException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    private void generateISOQP_PublicationDateStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_publicationdate";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        String publicationDateAttribute = "";
+        int id = 0;
+        try {
+            
+            if ( qp.getRevisionDate().equals( new Date( "0000-00-00" ) ) ) {
+                qp.setModified( null );
+                publicationDateAttribute = "" + qp.getPublicationDate();
+            } else {
+                publicationDateAttribute = "'" + qp.getPublicationDate() + "'";
+            }
+            stm = connection.createStatement();
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, publicationdate) VALUES (" + id + ","
+                + mainDatabaseTableID + "," + publicationDateAttribute + ");";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET publicationdate = " + publicationDateAttribute + " WHERE fk_datasets = "
+                               + mainDatabaseTableID + ";";
+            }
+            
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        } catch ( ParseException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    private void generateISOQP_ResourceIdentifierStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_resourceidentifier";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+            stm = connection.createStatement();
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, resourceidentifier) VALUES (" + id + ","
+                + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET resourceidentifier = '" + qp.getResourceIdentifier() + "' WHERE fk_datasets = "
+                               + mainDatabaseTableID + ";";
+            }
+            
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+    
+    private void generateISOQP_AlternateTitleStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_alternatetitle";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+            stm = connection.createStatement();
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
+            }
+            id = getLastDatasetId( connection, databaseTable );
+            for ( String alternateTitle : qp.getAlternateTitle() ) {
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, alternatetitle) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + alternateTitle + "');";
+            }
+
             stm.executeUpdate( sqlStatement );
             stm.close();
 
