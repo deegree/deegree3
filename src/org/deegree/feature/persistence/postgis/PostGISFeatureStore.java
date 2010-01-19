@@ -70,13 +70,10 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.query.Query.QueryHint;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -449,8 +446,9 @@ public class PostGISFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
-        FeatureResultSet rs = null;
+        FeatureResultSet result = null;
         Filter filter = query.getFilter();
+
         if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
             QName ftName = query.getTypeNames()[0].getFeatureTypeName();
             FeatureType ft = schema.getFeatureType( ftName );
@@ -458,29 +456,21 @@ public class PostGISFeatureStore implements FeatureStore {
                 String msg = "Feature type '" + ftName + "' is not served by this feature store.";
                 throw new FeatureStoreException( msg );
             }
-            rs = queryByOperatorFilter( ftName, (OperatorFilter) filter,
-                                        (Envelope) query.getHint( QueryHint.HINT_LOOSE_BBOX ) );
-            if ( filter != null ) {
-                rs = new FilteredFeatureResultSet( rs, filter );
-            }
+            result = queryByOperatorFilter( ftName, (OperatorFilter) filter,
+                                            (Envelope) query.getHint( QueryHint.HINT_LOOSE_BBOX ),
+                                            query.getSortProperties() );
         } else {
             // must be an id filter based query
             if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
                 String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
                 throw new FilterEvaluationException( msg );
             }
-            rs = queryByIdFilter( (IdFilter) filter );
+            result = queryByIdFilter( (IdFilter) filter, query.getSortProperties() );
         }
-
-        // sort features
-        SortProperty[] sortCrit = query.getSortProperties();
-        if ( sortCrit != null ) {
-            rs = new CachedFeatureResultSet( Features.sortFc( rs.toCollection(), sortCrit ) );
-        }
-        return rs;
+        return result;
     }
 
-    private FeatureResultSet queryByIdFilter( IdFilter filter )
+    private FeatureResultSet queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
 
         FeatureResultSet result = null;
@@ -527,11 +517,27 @@ public class PostGISFeatureStore implements FeatureStore {
                 }
             }
         }
+
+        // sort features
+        if ( sortCrit != null ) {
+            result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+        }
         return result;
     }
 
-    private FeatureResultSet queryByOperatorFilter( QName ftName, OperatorFilter filter, Envelope looseBBox )
-                            throws FeatureStoreException {
+    private FeatureResultSet queryByOperatorFilter( QName ftName, OperatorFilter filter, Envelope looseBBox,
+                                                    SortProperty[] sortCrit )
+                            throws FeatureStoreException, FilterEvaluationException {
+
+        LOG.debug( "Query by operator filter" );
+
+        FeatureType ft = schema.getFeatureType( ftName );
+        FeatureTypeMapping mapping = getMapping( ftName );
+        WhereBuilder wb = null;
+        if ( filter != null && mapping != null ) {
+            wb = new WhereBuilder( this, ft, mapping, filter );
+            LOG.debug( "WHERE clause: " + wb.getWhereClause() );
+        }
 
         FeatureResultSet result = null;
 
@@ -540,15 +546,32 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
-            String sql = "SELECT gml_id,binary_object FROM " + qualifyTableName( "gml_objects" ) + " WHERE ft_type=?";
+            String sql = "SELECT x1.gml_id,x1.binary_object FROM " + qualifyTableName( "gml_objects" ) + " x1";
+            if ( mapping != null ) {
+                sql += " LEFT JOIN " + qualifyTableName( mapping.getFeatureTypeHints().getDBTable() )
+                       + " x2 ON x1.id=x2.id";
+            }
+            sql += " WHERE x1.ft_type=?";
             if ( looseBBox != null ) {
-                sql += " AND gml_bounded_by && ?";
+                sql += " AND x1.gml_bounded_by && ?";
+
+            }
+            if ( wb != null && wb.getWhereClause().length() > 0 ) {
+                sql += " AND " + wb.getWhereClause();
             }
             stmt = conn.prepareStatement( sql );
+            LOG.debug( "SQL: " + stmt );
 
-            stmt.setShort( 1, ftNameToFtId.get( ftName ) );
+            int argIdx = 1;
+            stmt.setShort( argIdx++, ftNameToFtId.get( ftName ) );
             if ( looseBBox != null ) {
-                stmt.setObject( 2, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+                stmt.setObject( argIdx++, toPGPolygon( (Envelope) getCompatibleGeometry( looseBBox, storageSRS ), -1 ) );
+            }
+            if ( wb != null && wb.getWhereClause().length() > 0 ) {
+                for ( Object arg : wb.getWhereParams() ) {
+                    LOG.debug( "Setting argument: " + arg );
+                    stmt.setObject( argIdx++, arg );
+                }
             }
             rs = stmt.executeQuery();
             result = new IteratorResultSet( new FeatureResultSetIterator( rs, conn, stmt,
@@ -558,6 +581,16 @@ public class PostGISFeatureStore implements FeatureStore {
             String msg = "Error performing query: " + e.getMessage();
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
+        }
+
+        if ( filter != null && wb != null && wb.needsPostFiltering() ) {
+            LOG.debug( "Applying in-memory post-filtering." );
+            result = new FilteredFeatureResultSet( result, filter );
+        }
+
+        if ( sortCrit != null && wb != null && wb.needsPostSorting() ) {
+            LOG.debug( "Applying in-memory post-sorting." );
+            result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
         }
         return result;
     }
@@ -751,27 +784,6 @@ public class PostGISFeatureStore implements FeatureStore {
                             throws FeatureStoreException, FilterEvaluationException {
         // TODO
         return query( queries ).toCollection().size();
-    }
-
-    private PropertyName findGeoProp( FeatureType ft )
-                            throws FilterEvaluationException {
-
-        PropertyName propName = null;
-
-        // TODO what about geometry properties on subfeature levels
-        for ( PropertyType<?> pt : ft.getPropertyDeclarations() ) {
-            if ( pt instanceof GeometryPropertyType ) {
-                propName = new PropertyName( pt.getName() );
-                break;
-            }
-        }
-
-        if ( propName == null ) {
-            String msg = "Cannot perform BBox query: requested feature type ('" + ft.getName()
-                         + "') does not have a geometry property.";
-            throw new FilterEvaluationException( msg );
-        }
-        return propName;
     }
 
     private Geometry getCompatibleGeometry( Geometry literal, CRS crs )

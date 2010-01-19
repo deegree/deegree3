@@ -35,12 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.postgis;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappingType;
+import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;
+import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingType;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -55,17 +62,24 @@ import org.deegree.filter.comparison.PropertyIsLessThan;
 import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
+import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.logical.LogicalOperator;
+import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.geometry.Geometry;
 import org.jaxen.expr.Expr;
+import org.jaxen.expr.LocationPath;
+import org.jaxen.expr.NameStep;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Creates SQL-WHERE clauses from {@link Filter} expressions (to restrict SQL <code>ResultSet</code>s to those features
+ * Creates SQL-WHERE clauses from {@link Filter} expressions (to restrict SQL <code>ResultSet</code>s to rows/features
  * that match a given filter). Also handles the creation of ORDER-BY clauses.
  * <p>
  * Note that the generated WHERE and ORDER-BY clauses are sometimes not sufficient to guarantee that the
- * <code>ResultSet</code> contains the targeted feature instances only and/or keeps the requested feature order. This
+ * <code>ResultSet</code> only contains the targeted feature instances and/or keeps the requested feature order. This
  * happens when the {@link PropertyName}s used in the Filter/sort criteria are not mapped to columns in the database or
  * the contained XPath expressions are not mappable to an equivalent SQL expression. In these cases, one or both of the
  * methods {@link #needsPostFiltering}/{@link #needsPostSorting} return true and the corresponding
@@ -79,6 +93,8 @@ import org.jaxen.expr.Expr;
  */
 class WhereBuilder {
 
+    private static final Logger LOG = LoggerFactory.getLogger( WhereBuilder.class );
+
     private final PostGISFeatureStore fs;
 
     private final FeatureType ft;
@@ -91,13 +107,13 @@ class WhereBuilder {
 
     private boolean needsPostSorting;
 
-    private StringBuilder whereClause;
+    private StringBuilder whereClause = new StringBuilder();
 
-    private Collection<Object> whereParams;
+    private Collection<Object> whereParams = new ArrayList<Object>();
 
-    private StringBuilder orderBy;
+    private StringBuilder orderBy = new StringBuilder();
 
-    private Collection<Object> orderByParams;
+    private Collection<Object> orderByParams = new ArrayList<Object>();
 
     /**
      * @param fs
@@ -242,6 +258,15 @@ class WhereBuilder {
                             throws FilterEvaluationException {
         switch ( op.getSubType() ) {
         case BBOX: {
+            BBOX bbox = (BBOX) op;
+            processGeometryArgument( bbox.getPropertyName() );
+            whereClause.append( " && " );
+            try {
+                processGeometryArgument( bbox.getBoundingBox() );
+            } catch ( SQLException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             break;
         }
         case BEYOND: {
@@ -277,14 +302,53 @@ class WhereBuilder {
         }
     }
 
+    private void processGeometryArgument( PropertyName propName )
+                            throws FilterEvaluationException {
+
+        PropertyMappingType mapping = null;
+        if ( propName == null ) {
+            GeometryPropertyType geoPt = ft.getDefaultGeometryPropertyDeclaration();
+            if ( geoPt == null ) {
+                String msg = "Cannot evaluate spatial predicate: Feature type '" + ft.getName()
+                             + "' does not define any spatial properties.";
+                throw new FilterEvaluationException( msg );
+            }
+            mapping = this.mapping.getPropertyHints( geoPt.getName() );
+        } else {
+            mapping = getMapping( propName );
+        }
+        if ( !( mapping instanceof GeometryPropertyMappingType ) ) {
+            String msg = "Cannot evaluate spatial operator on property name: '" + propName
+                         + "' -- not a spatial property.";
+            throw new FilterEvaluationException( msg );
+        }
+        GeometryPropertyMappingType geomMapping = (GeometryPropertyMappingType) mapping;
+        String dbColumn = geomMapping.getGeometryDBColumn().getName();
+        whereClause.append( "x2." + dbColumn );
+    }
+
+    private void processGeometryArgument( Geometry geometry ) throws SQLException {
+        whereClause.append ("GeomFromWKB(?,-1)");
+        whereParams.add( TypeMangler.toPostGIS( geometry ) );
+    }
+
     private void process( Expression expr, boolean lowerCase )
                             throws FilterEvaluationException {
         switch ( expr.getType() ) {
         case ADD: {
-            // TODO
+            whereClause.append( "(" );
+            process( expr.getParams()[0], false );
+            whereClause.append( "+" );
+            process( expr.getParams()[1], false );
+            whereClause.append( ")" );
             break;
         }
         case DIV: {
+            whereClause.append( "(" );
+            process( expr.getParams()[0], false );
+            whereClause.append( "/" );
+            process( expr.getParams()[1], false );
+            whereClause.append( ")" );
             break;
         }
         case FUNCTION: {
@@ -296,19 +360,119 @@ class WhereBuilder {
             } else {
                 whereClause.append( "?" );
             }
+            whereParams.add( ( (Literal<?>) expr ).getValue().toString() );
             break;
         }
         case MUL: {
+            whereClause.append( "(" );
+            process( expr.getParams()[0], false );
+            whereClause.append( "*" );
+            process( expr.getParams()[1], false );
+            whereClause.append( ")" );
             break;
         }
         case PROPERTY_NAME: {
-            PropertyName propName = (PropertyName) expr;
+            PropertyMappingType mapping = getMapping( (PropertyName) expr );
+            if ( mapping != null ) {
+                if ( mapping instanceof GeometryPropertyMappingType ) {
+                    GeometryPropertyMappingType geomMapping = (GeometryPropertyMappingType) mapping;
+                    String columnName = geomMapping.getGeometryDBColumn().getName();
+                    whereClause.append ("x2.");
+                    whereClause.append( columnName );
+                } else if ( mapping instanceof SimplePropertyMappingType ) {
+                    SimplePropertyMappingType simpleMapping = (SimplePropertyMappingType) mapping;
+                    String columnName = simpleMapping.getDBColumn().getName();
+                    whereClause.append ("x2.");
+                    whereClause.append( columnName );
+                } else {
+                    String msg = "Mapping for property '" + ( (PropertyName) expr ).getPropertyName()
+                                 + "' is not simple or a geometry -- not implemented, ignoring it.";
+                    LOG.debug( msg );
+                }
+            }
             break;
         }
         case SUB: {
+            whereClause.append( "(" );
+            process( expr.getParams()[0], false );
+            whereClause.append( "-" );
+            process( expr.getParams()[1], false );
+            whereClause.append( ")" );
             break;
         }
         }
+    }
+
+    /**
+     * Returns the {@link PropertyMappingType} for the given {@link PropertyName}.
+     * 
+     * @param propName
+     *            {@link PropertyName}, must not be <code>null</code>
+     * @return corresponding {@link PropertyMappingType} or <code>null</code> if no relational mapping is possible
+     * @throws FilterEvaluationException
+     *             if the {@link PropertyName} is invalid with respect to the queried feature type
+     */
+    private PropertyMappingType getMapping( PropertyName propName )
+                            throws FilterEvaluationException {
+
+        Expr xpath = propName.getAsXPath();
+        if ( !( xpath instanceof LocationPath ) ) {
+            LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                       + "': the root expression is not a LocationPath." );
+            return null;
+        }
+        List<QName> steps = new ArrayList<QName>();
+        for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
+            if ( !( step instanceof NameStep ) ) {
+                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                           + "': contains an expression that is not a NameStep." );
+                return null;
+            }
+            NameStep namestep = (NameStep) step;
+            if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
+                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                           + "': contains a NameStep with a predicate (needs implementation)." );
+                return null;
+            }
+            String prefix = namestep.getPrefix();
+            String localPart = namestep.getLocalName();
+            String namespace = propName.getNsContext().translateNamespacePrefixToUri( prefix );
+            steps.add( new QName( namespace, localPart, prefix ) );
+        }
+
+        if ( steps.size() < 1 || steps.size() > 2 ) {
+            LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                       + "': must contain one or two NameSteps (needs implementation)." );
+            return null;
+        }
+
+        QName requestedProperty = null;
+        if ( steps.size() == 1 ) {
+            // step must be equal to a property name of the queried feature
+            if ( ft.getPropertyDeclaration( steps.get( 0 ) ) == null ) {
+                String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+                             + "'. The queried feature type '" + ft.getName()
+                             + "' does not have a property with this name.";
+                throw new FilterEvaluationException( msg );
+            }
+            requestedProperty = steps.get( 0 );
+        } else {
+            // 1. step must be equal to the name or alias of the queried feature
+            if ( !ft.getName().equals( steps.get( 0 ) ) ) {
+                String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+                             + "'. The first step does not equal the queried feature type '" + ft.getName() + "'.";
+                throw new FilterEvaluationException( msg );
+            }
+            // 2. step must be equal to a property name of the queried feature
+            if ( ft.getPropertyDeclaration( steps.get( 1 ) ) == null ) {
+                String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+                             + "'. The second step does not equal any property of the queried feature type '"
+                             + ft.getName() + "'.";
+                throw new FilterEvaluationException( msg );
+            }
+            requestedProperty = steps.get( 1 );
+        }
+        return mapping.getPropertyHints( requestedProperty );
     }
 
     /**

@@ -37,8 +37,6 @@
 package org.deegree.feature.persistence.postgis;
 
 import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,7 +52,6 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.datetime.Date;
 import org.deegree.crs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -74,12 +71,9 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.deegree.geometry.io.WKBWriter;
 import org.deegree.gml.feature.FeatureReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link FeatureStoreTransaction} implementation used by the {@link PostGISFeatureStore}.
