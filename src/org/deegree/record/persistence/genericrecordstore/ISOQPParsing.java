@@ -35,12 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -54,6 +50,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.impl.llom.OMElementImpl;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -97,8 +94,6 @@ public class ISOQPParsing extends XMLAdapter {
 
     private OMElement elementFull;
 
-    private OMElement recordFull;
-
     private OMElement identifier = null;
 
     private OMElement hierarchyLevel = null;
@@ -129,7 +124,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     public ISOQPParsing( OMElement element, Connection connection ) {
         this.element = element;
-        this.elementFull = element;
+        this.elementFull = element.cloneOMElement();
         this.connection = connection;
 
         setRootElement( element );
@@ -161,7 +156,8 @@ public class ISOQPParsing extends XMLAdapter {
      */
     private void parseAPISO( OMElement element )
                             throws IOException {
-
+        qp.setAnyText( element.toString() );
+        
         // /*/self::node() => /*/self::* => /* -> Transaction
         // */MD_Metadata -> null
         // //MD_Metadata => ./gmd:MD_Metadata -> null
@@ -172,15 +168,13 @@ public class ISOQPParsing extends XMLAdapter {
         List<OMElement> recordElements = getElements( rootElement, new XPath( "*", nsContext ) );
         for ( OMElement elem : recordElements ) {
 
-            qp.setAnyText( elem.toString() );
-
             if ( elem.getLocalName().equals( "fileIdentifier" ) ) {
                 qp.setIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
 
                 identifier = elem;
                 OMNamespace namespace = identifier.getNamespace();
                 identifier.setNamespace( namespace );
-                elementFull.addChild( identifier );
+                
 
                 continue;
 
@@ -194,7 +188,7 @@ public class ISOQPParsing extends XMLAdapter {
                 hierarchyLevel = elem;
                 OMNamespace namespace = hierarchyLevel.getNamespace();
                 hierarchyLevel.setNamespace( namespace );
-                elementFull.addChild( hierarchyLevel );
+                
                 continue;
             }
 
@@ -203,7 +197,7 @@ public class ISOQPParsing extends XMLAdapter {
                 hierarchyLevelName = elem;
                 OMNamespace namespace = hierarchyLevelName.getNamespace();
                 hierarchyLevelName.setNamespace( namespace );
-                elementFull.addChild( hierarchyLevelName );
+                
                 continue;
             }
 
@@ -234,7 +228,6 @@ public class ISOQPParsing extends XMLAdapter {
                 // }
                 //
                 // qp.setModified( Arrays.asList( dates ) );
-
                 continue;
             }
 
@@ -260,7 +253,6 @@ public class ISOQPParsing extends XMLAdapter {
                 referenceSystemInfo = elem;
                 OMNamespace namespace = referenceSystemInfo.getNamespace();
                 referenceSystemInfo.setNamespace( namespace );
-                elementFull.addChild( referenceSystemInfo );
 
                 continue;
 
@@ -276,6 +268,7 @@ public class ISOQPParsing extends XMLAdapter {
             if ( elem.getLocalName().equals( "dataQualityInfo" ) ) {
 
                 dataQualityInfo = elem;
+
                 continue;
             }
 
@@ -463,7 +456,6 @@ public class ISOQPParsing extends XMLAdapter {
                 identificationInfo = elem;
                 OMNamespace namespace = identificationInfo.getNamespace();
                 identificationInfo.setNamespace( namespace );
-                elementFull.addChild( identificationInfo );
                 continue;
 
             }
@@ -515,29 +507,31 @@ public class ISOQPParsing extends XMLAdapter {
     public void executeInsertStatement()
                             throws IOException {
 
+        boolean isUpdate = false;
+
         generateMainDatabaseDataset();
         generateRecordBrief();
         generateRecordSummary();
         generateRecordFull();
         if ( qp.getTitle() != null ) {
-            generateISOQP_TitleStatement();
+            generateISOQP_TitleStatement( isUpdate );
         }
         if ( qp.getType() != null ) {
-            generateISOQP_TypeStatement();
+            generateISOQP_TypeStatement( isUpdate );
         }
-        if ( qp.getSubject() != null ) {
-            generateISOQP_KeywordStatement();
+        if ( qp.getKeywords() != null ) {
+            generateISOQP_KeywordStatement( isUpdate );
         }
         if ( qp.getFormat() != null ) {
-            generateISOQP_FormatStatement();
+            generateISOQP_FormatStatement( isUpdate );
         }
         // TODO relation
         if ( qp.get_abstract() != null ) {
-            generateISOQP_AbstractStatement();
+            generateISOQP_AbstractStatement( isUpdate );
         }
         // TODO spatial
         if ( qp.getBoundingBox() != null ) {
-            generateISOQP_BoundingBoxStatement();
+            generateISOQP_BoundingBoxStatement( isUpdate );
         }
 
     }
@@ -547,6 +541,7 @@ public class ISOQPParsing extends XMLAdapter {
      */
     public void executeUpdateStatement() {
         final String databaseTable = "datasets";
+        boolean isUpdate = true;
 
         StringWriter sqlStatementUpdate = new StringWriter( 500 );
         StringBuffer buf = new StringBuffer();
@@ -568,6 +563,7 @@ public class ISOQPParsing extends XMLAdapter {
                 rs.close();
             }
             if ( requestedId != 0 ) {
+                this.id = requestedId;
                 // TODO version
 
                 // TODO status
@@ -630,6 +626,19 @@ public class ISOQPParsing extends XMLAdapter {
 
                 // recordFull update
                 updateRecord( requestedId, "recordfull" );
+
+                generateISOQP_TitleStatement( isUpdate );
+
+                generateISOQP_TypeStatement( isUpdate );
+
+                generateISOQP_KeywordStatement( isUpdate );
+
+                generateISOQP_FormatStatement( isUpdate );
+
+                generateISOQP_AbstractStatement( isUpdate );
+
+                generateISOQP_BoundingBoxStatement( isUpdate );
+
             } else {
                 // TODO think about what response should be written if there is no such dataset in the backend??
                 String msg = "No dataset found for the identifier --> " + qp.getIdentifier() + " <--. ";
@@ -660,7 +669,7 @@ public class ISOQPParsing extends XMLAdapter {
         String modifiedAttribute = "";
         try {
             stm = connection.createStatement();
-            this.id = getLastDataset( connection, databaseTable );
+            this.id = getLastDatasetId( connection, databaseTable );
             this.id++;
             // sqlStatement = "INSERT INTO userdefinedqueryableproperties VALUES (" + id + ");";
 
@@ -674,8 +683,8 @@ public class ISOQPParsing extends XMLAdapter {
             sqlStatement += "INSERT INTO "
                             + databaseTable
                             + " (id, version, status, anyText, identifier, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
-                            + this.id + ",null,null,'','" + qp.getIdentifier() + "'," + modifiedAttribute
-                            + ",FALSE,'','','', null);";
+                            + this.id + ",null,null,'" + qp.getAnyText() + "','" + qp.getIdentifier() + "',"
+                            + modifiedAttribute + ",FALSE,'" + rp.getLanguage() + "','','', null);";
             System.out.println( sqlStatement );
             stm.executeUpdate( sqlStatement );
             stm.close();
@@ -691,24 +700,23 @@ public class ISOQPParsing extends XMLAdapter {
 
     private void updateRecord( int fk_datasets, String databaseTable )
                             throws IOException {
-        
+
         String elementName = "";
         String isoOMElement = "";
 
-        //final String databaseTable = "recordbrief";
-        if(databaseTable.equals( "recordbrief" )){
+        // final String databaseTable = "recordbrief";
+        if ( databaseTable.equals( "recordbrief" ) ) {
             elementName = "BriefRecord";
             isoOMElement = setISOBriefElements().toString();
-            
-        }else if(databaseTable.equals( "recordsummary" )){
+
+        } else if ( databaseTable.equals( "recordsummary" ) ) {
             elementName = "SummaryRecord";
             isoOMElement = setISOSummaryElements().toString();
-            
-        }else{
+
+        } else {
             elementName = "Record";
             isoOMElement = elementFull.toString();
         }
-        
 
         StringWriter sqlStatement = new StringWriter( 500 );
         StringBuffer buf = new StringBuffer();
@@ -721,7 +729,13 @@ public class ISOQPParsing extends XMLAdapter {
 
             omElement = factory.createOMElement( elementName, namespaceCSW );
 
-            setDCBriefElements( factory, omElement );
+            if ( elementName.equals( "BriefRecord" ) ) {
+                setDCBriefElements( factory, omElement );
+            } else if ( elementName.equals( "SummaryRecord" ) ) {
+                setDCSummaryElements( factory, omElement );
+            } else {
+                setDCFullElements( factory, omElement );
+            }
 
             setBoundingBoxElement( factory, omElement );
 
@@ -734,8 +748,8 @@ public class ISOQPParsing extends XMLAdapter {
             buf.setLength( 0 );
 
             // ISO-update
-            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + isoOMElement
-                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 2 );
+            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + isoOMElement + "' WHERE fk_datasets = "
+                                + fk_datasets + " AND format = " + 2 );
 
             buf = sqlStatement.getBuffer();
             System.out.println( sqlStatement.toString() );
@@ -760,7 +774,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         try {
             stm = connection.createStatement();
-            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable = getLastDatasetId( connection, databaseTable );
             idDatabaseTable++;
 
             // -------------------
@@ -778,97 +792,10 @@ public class ISOQPParsing extends XMLAdapter {
         }
 
     }
-
-//    private void updateRecordSummary( int fk_datasets )
-//                            throws IOException {
-//
-//        final String databaseTable = "recordsummary";
-//
-//        StringWriter sqlStatement = new StringWriter( 500 );
-//        StringBuffer buf = new StringBuffer();
-//        OMElement omElement = null;
-//
-//        try {
-//            // DC-update
-//            OMFactory factory = OMAbstractFactory.getOMFactory();
-//            OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
-//
-//            omElement = factory.createOMElement( "SummaryRecord", namespaceCSW );
-//
-//            setDCBriefElements( factory, omElement );
-//
-//            setBoundingBoxElement( factory, omElement );
-//
-//            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + omElement.toString()
-//                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 1 );
-//
-//            buf = sqlStatement.getBuffer();
-//            System.out.println( sqlStatement.toString() );
-//            stm.executeUpdate( sqlStatement.toString() );
-//            buf.setLength( 0 );
-//
-//            // ISO-update
-//            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + setISOSummaryElements().toString()
-//                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 2 );
-//
-//            buf = sqlStatement.getBuffer();
-//            System.out.println( sqlStatement.toString() );
-//            stm.executeUpdate( sqlStatement.toString() );
-//            buf.setLength( 0 );
-//
-//        } catch ( SQLException e ) {
-//
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-//    private void updateRecordFull( int fk_datasets )
-//                            throws IOException {
-//
-//        final String databaseTable = "recordfull";
-//
-//        StringWriter sqlStatement = new StringWriter( 500 );
-//        StringBuffer buf = new StringBuffer();
-//        OMElement omElement = null;
-//
-//        try {
-//            // DC-update
-//            OMFactory factory = OMAbstractFactory.getOMFactory();
-//            OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
-//
-//            omElement = factory.createOMElement( "Record", namespaceCSW );
-//
-//            setDCBriefElements( factory, omElement );
-//
-//            setBoundingBoxElement( factory, omElement );
-//
-//            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + omElement.toString()
-//                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 1 );
-//
-//            buf = sqlStatement.getBuffer();
-//            System.out.println( sqlStatement.toString() );
-//            stm.executeUpdate( sqlStatement.toString() );
-//            buf.setLength( 0 );
-//
-//            // ISO-update
-//            sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + elementFull.toString()
-//                                + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 2 );
-//
-//            buf = sqlStatement.getBuffer();
-//            System.out.println( sqlStatement.toString() );
-//            stm.executeUpdate( sqlStatement.toString() );
-//            buf.setLength( 0 );
-//
-//        } catch ( SQLException e ) {
-//
-//            e.printStackTrace();
-//        }
-//
-//    }
-
+    
+    
     /**
-     * TODO ISO Summary record
+     * 
      */
     private void generateRecordSummary() {
         final String databaseTable = "recordsummary";
@@ -878,7 +805,7 @@ public class ISOQPParsing extends XMLAdapter {
         int idDatabaseTable = 0;
         try {
             stm = connection.createStatement();
-            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable = getLastDatasetId( connection, databaseTable );
             idDatabaseTable++;
 
             // -------------------
@@ -905,11 +832,11 @@ public class ISOQPParsing extends XMLAdapter {
         int idDatabaseTable = 0;
         try {
             stm = connection.createStatement();
-            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable = getLastDatasetId( connection, databaseTable );
             idDatabaseTable++;
             sqlStatement = "INSERT INTO recordfull (id, fk_datasets, format, data) VALUES (" + idDatabaseTable + ","
                            + fk_datasets + ", 2, '" + elementFull.toString() + "');";
-
+            //System.out.println(element.getText());
             stm.executeUpdate( sqlStatement );
             stm.close();
 
@@ -931,7 +858,7 @@ public class ISOQPParsing extends XMLAdapter {
         try {
             recordInsertIDs = new ArrayList<Integer>();
             stm = connection.createStatement();
-            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable = getLastDatasetId( connection, databaseTable );
             idDatabaseTable++;
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -969,7 +896,7 @@ public class ISOQPParsing extends XMLAdapter {
         int idDatabaseTable = 0;
         try {
             stm = connection.createStatement();
-            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable = getLastDatasetId( connection, databaseTable );
             idDatabaseTable++;
 
             omElement = factory.createOMElement( "SummaryRecord", namespaceCSW );
@@ -1006,7 +933,7 @@ public class ISOQPParsing extends XMLAdapter {
         int idDatabaseTable = 0;
         try {
             stm = connection.createStatement();
-            idDatabaseTable = getLastDataset( connection, databaseTable );
+            idDatabaseTable = getLastDatasetId( connection, databaseTable );
             idDatabaseTable++;
 
             OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -1034,14 +961,18 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private void generateISOQP_TitleStatement() {
+    private void generateISOQP_TitleStatement( boolean isUpdate ) {
         final String databaseTable = "isoqp_title";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
         int id = 0;
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
+            }
+            id = getLastDatasetId( connection, databaseTable );
             for ( String title : qp.getTitle() ) {
                 id++;
                 sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, title) VALUES (" + id + ","
@@ -1058,18 +989,23 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private void generateISOQP_TypeStatement() {
+    private void generateISOQP_TypeStatement( boolean isUpdate ) {
         final String databaseTable = "isoqp_type";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
         int id = 0;
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            id++;
-            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, type) VALUES (" + id + ","
-                           + mainDatabaseTableID + ",'" + qp.getType() + "');";
-
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, type) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + qp.getType() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET type = '" + qp.getType() + "' WHERE fk_datasets = "
+                               + mainDatabaseTableID + ";";
+            }
+            System.out.println( sqlStatement );
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
@@ -1082,21 +1018,28 @@ public class ISOQPParsing extends XMLAdapter {
     /**
      * 
      */
-    private void generateISOQP_KeywordStatement() {
+    private void generateISOQP_KeywordStatement( boolean isUpdate ) {
         final String databaseTable = "isoqp_keyword";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
         int id = 0;
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
+            }
+
+            id = getLastDatasetId( connection, databaseTable );
             for ( Keyword keyword : qp.getKeywords() ) {
                 for ( String keywordString : keyword.getKeywords() ) {
+
                     id++;
                     sqlStatement = "INSERT INTO " + databaseTable
                                    + " (id, fk_datasets, keywordtype, keyword, thesaurus) VALUES (" + id + ","
                                    + mainDatabaseTableID + ",'" + keyword.getKeywordType() + "','" + keywordString
                                    + "','" + keyword.getThesaurus() + "');";
+
                     stm.executeUpdate( sqlStatement );
                 }
             }
@@ -1112,19 +1055,24 @@ public class ISOQPParsing extends XMLAdapter {
     /**
      * 
      */
-    private void generateISOQP_FormatStatement() {
+    private void generateISOQP_FormatStatement( boolean isUpdate ) {
         final String databaseTable = "isoqp_format";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
         int id = 0;
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
+            }
+            id = getLastDatasetId( connection, databaseTable );
             for ( Format format : qp.getFormat() ) {
                 id++;
                 sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, format) VALUES (" + id + ","
                                + mainDatabaseTableID + ",'" + format.getName() + "');";
             }
+
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
@@ -1137,18 +1085,56 @@ public class ISOQPParsing extends XMLAdapter {
     /**
      * 
      */
-    private void generateISOQP_AbstractStatement() {
+    private void generateISOQP_AbstractStatement( boolean isUpdate ) {
         final String databaseTable = "isoqp_abstract";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
         int id = 0;
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
+            }
+            id = getLastDatasetId( connection, databaseTable );
             for ( String _abstract : qp.get_abstract() ) {
                 id++;
                 sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, abstract) VALUES (" + id + ","
                                + mainDatabaseTableID + ",'" + _abstract + "');";
+            }
+
+            stm.executeUpdate( sqlStatement );
+            stm.close();
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    // TODO one record got one or more bboxes?
+    private void generateISOQP_BoundingBoxStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_boundingbox";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+            stm = connection.createStatement();
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, bbox) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",SetSRID('BOX3D(" + qp.getBoundingBox().getEastBoundLongitude()
+                               + " " + qp.getBoundingBox().getNorthBoundLatitude() + ","
+                               + qp.getBoundingBox().getWestBoundLongitude() + " "
+                               + qp.getBoundingBox().getSouthBoundLatitude() + ")'::box3d,4326));";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET bbox = " + "SetSRID('BOX3D("
+                               + qp.getBoundingBox().getEastBoundLongitude() + " "
+                               + qp.getBoundingBox().getNorthBoundLatitude() + ","
+                               + qp.getBoundingBox().getWestBoundLongitude() + " "
+                               + qp.getBoundingBox().getSouthBoundLatitude() + ")'::box3d,4326) WHERE fk_datasets = "
+                               + mainDatabaseTableID + ";";
             }
             stm.executeUpdate( sqlStatement );
             stm.close();
@@ -1159,43 +1145,24 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private void generateISOQP_BoundingBoxStatement() {
-        final String databaseTable = "isoqp_boundingbox";
-        String sqlStatement = "";
-        int mainDatabaseTableID = this.id;
-        int id = 0;
-        try {
-            stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            id++;
-            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, bbox) VALUES (" + id + ","
-                           + mainDatabaseTableID + ",SetSRID('BOX3D(" + qp.getBoundingBox().getEastBoundLongitude()
-                           + " " + qp.getBoundingBox().getNorthBoundLatitude() + ","
-                           + qp.getBoundingBox().getWestBoundLongitude() + " "
-                           + qp.getBoundingBox().getSouthBoundLatitude() + ")'::box3d,4326));";
-
-            stm.executeUpdate( sqlStatement );
-            stm.close();
-        } catch ( SQLException e ) {
-
-            e.printStackTrace();
-        }
-
-    }
-
-    private void generateISOQP_CRSStatement() {
+    // TODO think about one bbox has one crs? or not?
+    private void generateISOQP_CRSStatement( boolean isUpdate ) {
         final String databaseTable = "isoqp_crs";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
         int id = 0;
         try {
             stm = connection.createStatement();
-            id = getLastDataset( connection, databaseTable );
-            id++;
-            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, authority, id_crs, version) VALUES ("
-                           + id + "," + mainDatabaseTableID + "," + qp.getCrs().getName() + "," + qp.getCrs().getName()
-                           + "," + qp.getCrs().getName() + ");";
-
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable
+                               + " (id, fk_datasets, authority, id_crs, version) VALUES (" + id + ","
+                               + mainDatabaseTableID + "," + qp.getCrs().getName() + "," + qp.getCrs().getName() + ","
+                               + qp.getCrs().getName() + ");";
+            } else {
+                sqlStatement = "";
+            }
             stm.executeUpdate( sqlStatement );
             stm.close();
         } catch ( SQLException e ) {
@@ -1205,10 +1172,20 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
-    private int getLastDataset( Connection conn, String databaseTable )
+    /**
+     * Provides the last known id in the databaseTable. So it is possible to insert new datasets into this table come
+     * from this id.
+     * 
+     * @param conn
+     * @param databaseTable
+     * the databaseTable that is requested. 
+     * @return
+     * @throws SQLException
+     */
+    private int getLastDatasetId( Connection conn, String databaseTable )
                             throws SQLException {
         int result = 0;
-        String selectIDRows = "SELECT COUNT(*) from " + databaseTable;
+        String selectIDRows = "SELECT id from " + databaseTable + " ORDER BY id DESC LIMIT 1";
         ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
 
         while ( rsBrief.next() ) {
