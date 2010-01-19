@@ -230,6 +230,8 @@ public class OffsetStroke implements Stroke {
                 switch ( type.type ) {
                 case Edged:
                     if ( n2 == null ) {
+                        n1 = calcIntersection( pair.second[0], pair.second[1], n1, n2 );
+                        maybeLineTo( path, n1[0], n1[1] );
                         continue;
                     }
                     double[] n = new double[] { n1[0] + n2[0], n1[1] + n2[1] };
