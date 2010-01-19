@@ -176,7 +176,7 @@ public class IIORasterReader implements RasterReader {
         if ( result == null ) {
             result = RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, options );
         }
-
+        this.reader.dispose();
         return result;
         //
         // return new SimpleRaster( data, envelope, rasterReference );

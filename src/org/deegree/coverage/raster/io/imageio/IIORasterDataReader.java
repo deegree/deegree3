@@ -463,7 +463,7 @@ public class IIORasterDataReader implements RasterDataReader {
                         try {
                             ( (ImageInputStream) input ).close();
                         } catch ( IOException e ) {
-                            // just do nothing
+                            LOG.debug( "Error while disposing: ", e );
                         }
                     }
                 }
