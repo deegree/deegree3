@@ -38,13 +38,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- *
+ * 
  * The <code>PooledByteBuffer</code> defines the interface to a direct 'native' byte buffer which can be reused again.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author: rbezema $
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class PooledByteBuffer {
 
@@ -54,7 +54,7 @@ public class PooledByteBuffer {
 
     /**
      * Only intantiable from the {@link DirectByteBufferPool}.
-     *
+     * 
      * @param capacity
      * @param pool
      */
@@ -75,7 +75,7 @@ public class PooledByteBuffer {
 
     /**
      * Get the pooled direct, native buffer.
-     *
+     * 
      * @return the ByteBuffer wrapped by this class.
      */
     public ByteBuffer getBuffer() {
@@ -88,6 +88,91 @@ public class PooledByteBuffer {
     public void free() {
         if ( pool != null )
             pool.deallocate( this );
+    }
+
+    /**
+     * Just set the reference to null.
+     */
+    public void markAsFree() {
+        this.pool = null;
+        this.buffer = null;
+    }
+
+    /**
+     * call the {@link ByteBuffer#rewind()} method.
+     */
+    public void rewind() {
+        if ( this.buffer != null ) {
+            buffer.rewind();
+        }
+    }
+
+    /**
+     * call the {@link ByteBuffer#clear()} method.
+     */
+    public void clear() {
+        if ( this.buffer != null ) {
+            buffer.clear();
+        }
+    }
+
+    /**
+     * call the {@link ByteBuffer#limit(int)} method.
+     * 
+     * @param capacity
+     */
+    public void limit( int capacity ) {
+        if ( this.buffer != null ) {
+            buffer.limit( capacity );
+        }
+    }
+
+    /**
+     * call the {@link ByteBuffer#limit()} method.
+     * 
+     * @return the limit of the buffer.
+     */
+    public int limit() {
+        if ( this.buffer != null ) {
+            return buffer.limit();
+        }
+        return 0;
+    }
+
+    /**
+     * call the {@link ByteBuffer#capacity()} method.
+     * 
+     * @return the limit of the buffer.
+     */
+    public int capacity() {
+        if ( this.buffer != null ) {
+            return buffer.capacity();
+        }
+        return 0;
+    }
+
+    /**
+     * call the {@link ByteBuffer#position()} method.
+     * 
+     * @return the limit of the buffer.
+     */
+    public int position() {
+        if ( this.buffer != null ) {
+            return buffer.position();
+        }
+        return 0;
+    }
+
+    /**
+     * call the {@link ByteBuffer#position()} method.
+     * 
+     * @param position
+     *            of the buffer.
+     */
+    public void position( int position ) {
+        if ( this.buffer != null ) {
+            buffer.position( position );
+        }
     }
 
 }

@@ -36,10 +36,11 @@
 
 package org.deegree.commons.utils.nio;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,9 @@ public class DirectByteBufferPool {
 
     private final Set<PooledByteBuffer> allBuffers = new HashSet<PooledByteBuffer>();
 
-    private final Map<Integer, Set<PooledByteBuffer>> freeBuffers = new HashMap<Integer, Set<PooledByteBuffer>>();
+    private final SortedMap<Integer, Set<PooledByteBuffer>> freeBuffers = new TreeMap<Integer, Set<PooledByteBuffer>>();
+
+    private String name;
 
     /**
      * Construct a direct byte buffer which may allocate buffers with given capacity
@@ -75,10 +78,12 @@ public class DirectByteBufferPool {
      *            total capacity of this pool.
      * @param bufferLimit
      *            the number of buffers
+     * @param name
      */
-    public DirectByteBufferPool( int capacityLimit, int bufferLimit ) {
+    public DirectByteBufferPool( int capacityLimit, int bufferLimit, String name ) {
         this.MAX_MEMORY_CAPACITY = capacityLimit;
         this.MAX_NUM_OF_BUFFERS = bufferLimit;
+        this.name = name;
     }
 
     /**
@@ -95,21 +100,97 @@ public class DirectByteBufferPool {
         PooledByteBuffer buffer;
 
         Set<PooledByteBuffer> freeBuffers = this.freeBuffers.get( capacity );
+        StringBuilder sb = new StringBuilder( name );
+        sb.append( "| numBuffers: " ).append( numBuffers );
+        sb.append( "| requested: " ).append( capacity );
+        sb.append( "| tailMap: " ).append( freeBuffers );
+        sb.append( "| freebuffers: " ).append( this.freeBuffers.size() );
+        sb.append( "| allBuffers: " ).append( allBuffers.size() );
+        // System.out.println( sb.toString() );
         if ( freeBuffers != null && freeBuffers.size() > 0 ) {
+            // if ( name.startsWith( "static" ) && this.numBuffers > 202 ) {
+            // Thread.dumpStack();
+            // System.exit( 1 );
+            // }
+
             buffer = freeBuffers.iterator().next();
             buffer.getBuffer().rewind();
             freeBuffers.remove( buffer );
         } else {
             if ( numBuffers >= MAX_NUM_OF_BUFFERS ) {
-                String msg = "Maximum number of direct buffers (=" + MAX_NUM_OF_BUFFERS + ") exceeded";
+                String msg = name + "Maximum number of direct buffers (=" + MAX_NUM_OF_BUFFERS + ") exceeded";
                 throw new OutOfMemoryError( msg );
             }
             if ( totalCapacity + capacity > MAX_MEMORY_CAPACITY ) {
-                String msg = "Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY + ") exceeded";
+                String msg = name + "Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY + ") exceeded";
                 throw new OutOfMemoryError( msg );
             }
             buffer = new PooledByteBuffer( capacity, this );
 
+            numBuffers++;
+            totalCapacity += capacity;
+            allBuffers.add( buffer );
+            LOG.debug( "New buffer: " + buffer );
+        }
+        return buffer;
+    }
+
+    /**
+     * @param capacity
+     * @return the requested byte buffer
+     * 
+     * @throws OutOfMemoryError
+     *             if no PooledByteBuffer with the given capacity is available and allocating it from the system would
+     *             exceed the assigned resources
+     */
+    public synchronized PooledByteBuffer allocate_( int capacity )
+                            throws OutOfMemoryError {
+
+        PooledByteBuffer buffer = null;
+
+        // get all free byte buffers with at least the given capacity
+        SortedMap<Integer, Set<PooledByteBuffer>> tailMap = this.freeBuffers.tailMap( capacity );
+
+        StringBuilder sb = new StringBuilder( name );
+        sb.append( "| numBuffers: " ).append( numBuffers );
+        sb.append( "| requested: " ).append( capacity );
+        sb.append( "| tailMap: " ).append( tailMap );
+        sb.append( "| freebuffers: " ).append( freeBuffers.size() );
+        sb.append( "| allBuffers: " ).append( allBuffers.size() );
+
+        // System.out.println( sb.toString() );
+        // Set<PooledByteBuffer> freeBuffers = this.freeBuffers.get( capacity );
+        // if ( freeBuffers != null && freeBuffers.size() > 0 ) {
+        if ( tailMap != null && !tailMap.isEmpty() ) {
+            Iterator<Set<PooledByteBuffer>> tailIt = tailMap.values().iterator();
+            while ( tailIt.hasNext() && buffer == null ) {
+                Set<PooledByteBuffer> frBuffers = tailIt.next();
+                if ( frBuffers != null && !frBuffers.isEmpty() ) {
+                    Iterator<PooledByteBuffer> frBufIt = frBuffers.iterator();
+                    while ( frBufIt.hasNext() && buffer == null ) {
+                        buffer = frBufIt.next();
+                        if ( buffer != null ) {
+                            buffer.clear();
+                            // set the limit
+                            buffer.limit( capacity );
+                        }
+                    }
+                    if ( buffer != null ) {
+                        frBuffers.remove( buffer );
+                    }
+                }
+            }
+        }
+        if ( buffer == null ) {
+            if ( numBuffers >= MAX_NUM_OF_BUFFERS ) {
+                String msg = name + ": Maximum number of direct buffers (=" + MAX_NUM_OF_BUFFERS + ") exceeded";
+                throw new OutOfMemoryError( msg );
+            }
+            if ( totalCapacity + capacity > MAX_MEMORY_CAPACITY ) {
+                String msg = name + ":Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY + ") exceeded";
+                throw new OutOfMemoryError( msg );
+            }
+            buffer = new PooledByteBuffer( capacity, this );
             numBuffers++;
             totalCapacity += capacity;
             allBuffers.add( buffer );
@@ -125,17 +206,23 @@ public class DirectByteBufferPool {
      *            to be freed.
      */
     public synchronized void deallocate( PooledByteBuffer buffer ) {
-        if ( !allBuffers.contains( buffer ) ) {
-            String msg = "Buffer to be deallocated (" + buffer + ") has not been allocated using the pool.";
-            throw new IllegalArgumentException( msg );
+        // System.out.println( name + ":deallocate: " + buffer.capacity() );
+        if ( buffer != null ) {
+            if ( !allBuffers.contains( buffer ) ) {
+                String msg = name + ":Buffer to be deallocated (" + buffer + ") has not been allocated using the pool.";
+                LOG.warn( msg );
+                buffer.markAsFree();
+                // throw new IllegalArgumentException( msg );
+            } else {
+                int capacity = buffer.capacity();
+                Set<PooledByteBuffer> buffers = freeBuffers.get( capacity );
+                if ( buffers == null ) {
+                    buffers = new HashSet<PooledByteBuffer>();
+                    freeBuffers.put( capacity, buffers );
+                }
+                buffers.add( buffer );
+            }
         }
-        int capacity = buffer.getBuffer().capacity();
-        Set<PooledByteBuffer> buffers = freeBuffers.get( capacity );
-        if ( buffers == null ) {
-            buffers = new HashSet<PooledByteBuffer>();
-            freeBuffers.put( capacity, buffers );
-        }
-        buffers.add( buffer );
     }
 
     @Override
