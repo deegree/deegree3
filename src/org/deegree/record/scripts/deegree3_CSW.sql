@@ -518,6 +518,8 @@ ALTER TABLE UserDefinedQueryableProperties ADD CONSTRAINT PK_SelfQueryableProper
 -- Create Indexes 
 ALTER TABLE Datasets
 	ADD CONSTRAINT UQ_Datasets_ID UNIQUE (ID);
+ALTER TABLE Datasets 
+	ADD CONSTRAINT UQ_Datasets_Identifier UNIQUE (identifier);
 ALTER TABLE ISOQP_Abstract
 	ADD CONSTRAINT UQ_ISOQP_Abstract_ID UNIQUE (ID);
 ALTER TABLE ISOQP_AlternateTitle
