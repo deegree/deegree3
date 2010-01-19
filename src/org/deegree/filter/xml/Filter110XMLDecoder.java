@@ -713,14 +713,17 @@ public class Filter110XMLDecoder {
                             throws XMLStreamException {
 
         NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
-        String propName = xmlStream.getElementText().trim();
-        if ( !permitEmpty && propName.isEmpty() ) {
+        String xpath = xmlStream.getElementText().trim();
+        if ( !permitEmpty && xpath.isEmpty() ) {
             // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
             // GetObservation100XMLAdapter gets an exception from here as the compliance of the SOS hangs on it's thread
             throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_PROPERTY_NAME_EMPTY",
                                                                            new QName( OGC_NS, "PropertyName" ) ) );
         }
-        return new PropertyName( propName, nsc );
+        if ( xpath.isEmpty() ) {
+            return null;
+        }
+        return new PropertyName( xpath, nsc );
     }
 
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )

@@ -71,7 +71,7 @@ public class PropertyName implements Expression {
      * Creates a new {@link PropertyName} instance from an encoded XPath-expression and the namespace bindings.
      * 
      * @param text
-     *            XPath-expression, this may be the empty string, but never <code>null</code>
+     *            must be a valid XPath 1.0-expression, never <code>null</code>
      * @param nsContext
      *            binding of the namespaces used in the XPath expression
      */
@@ -107,7 +107,7 @@ public class PropertyName implements Expression {
      */
     public Expr getAsXPath()
                             throws FilterEvaluationException {
-        if ( xpath == null && !text.isEmpty() ) {
+        if ( xpath == null ) {
             try {
                 xpath = new BaseXPath( text, null ).getRootExpr();
             } catch ( JaxenException e ) {

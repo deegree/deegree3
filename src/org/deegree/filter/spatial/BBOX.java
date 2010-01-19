@@ -44,14 +44,16 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 
 /**
- * TODO add documentation here
+ * {@link SpatialOperator} that checks for the intersection of the two geometry operands' envelopes.
  * <p>
- * From the Filter Encoding Implementation Specification 1.1: <i>If the optional &lt;PropertyName&gt; element is not specified,
- * the calling service must determine which spatial property is the spatial key and apply the BBOX operator accordingly.
- * For feature types that has a single spatial property, this is a trivial matter. For feature types that have multiple
- * spatial properties, the calling service either knows which spatial property is the spatial key or the calling service
- * generates an exception indicating that the feature contains multiple spatial properties and the <propertyName>
- * element must be specified.</i>
+ * Note that the {@link PropertyName} argument may be <code>null</code>: <br/>
+ * <br/>
+ * From the Filter Encoding Implementation Specification 1.1: <i>If the optional &lt;PropertyName&gt; element is not
+ * specified, the calling service must determine which spatial property is the spatial key and apply the BBOX operator
+ * accordingly. For feature types that has a single spatial property, this is a trivial matter. For feature types that
+ * have multiple spatial properties, the calling service either knows which spatial property is the spatial key or the
+ * calling service generates an exception indicating that the feature contains multiple spatial properties and the
+ * <propertyName> element must be specified.</i>
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -66,12 +68,35 @@ public class BBOX extends SpatialOperator {
     private final Envelope bbox;
 
     /**
+     * Creates a new {@link BBOX} instance which uses the default geometry property and the specified bounding box.
+     * 
+     * @param bbox
+     *            bounding box argument for intersection testing, never <code>null</code>
+     */
+    public BBOX( Envelope bbox ) {
+        this( null, bbox );
+    }
+
+    /**
+     * Creates a new {@link BBOX} instance which uses the specified geometry property and bounding box.
+     * 
      * @param propName
      * @param bbox
+     *            bounding box argument for intersection testing, never <code>null</code>
      */
     public BBOX( PropertyName propName, Envelope bbox ) {
         this.propName = propName;
         this.bbox = bbox;
+    }
+
+    /**
+     * Returns the name of the property to be tested for intersection.
+     * 
+     * @return the name of the property, may be <code>null</code> (implies that the default geometry property of the
+     *         object should be used)
+     */
+    public PropertyName getPropertyName() {
+        return propName;
     }
 
     /**
@@ -89,7 +114,7 @@ public class BBOX extends SpatialOperator {
 
         // handle the BBOX-specific case that the property name can be empty
         PropertyName propName = this.propName;
-        if ( propName.getPropertyName().isEmpty() ) {
+        if ( propName == null ) {
             if ( object instanceof Feature ) {
                 GeometryPropertyType pt = ( (Feature) object ).getType().getDefaultGeometryPropertyDeclaration();
                 if ( pt != null ) {
