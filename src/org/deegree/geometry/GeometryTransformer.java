@@ -82,10 +82,10 @@ public class GeometryTransformer extends Transformer {
     private static final GeometryFactory geomFactory = new GeometryFactory();
 
     private static final CurveLinearizer linearizer = new CurveLinearizer( geomFactory );
-    
+
     // TODO make this configurable
     private static final NumPointsCriterion crit = new NumPointsCriterion( 100 );
-    
+
     /**
      * Creates a new GeometryTransformer object.
      * 
@@ -422,21 +422,25 @@ public class GeometryTransformer extends Transformer {
                 Ring exterior = ( (PolygonPatch) patch ).getExteriorRing();
                 LinearRing transformedExteriorRing = null;
                 if ( exterior != null ) {
-                    transformedExteriorRing = geomFactory.createLinearRing(
-                                                                            exterior.getId(),
+                    transformedExteriorRing = geomFactory.createLinearRing( exterior.getId(),
                                                                             exterior.getCoordinateSystem(),
-                                                                            transform(
-                                                                                       exterior.getAsLineString().getControlPoints(),
+                                                                            transform( exterior.getControlPoints(),
+                                                                            // TODO DefaultRing.getAsLineString
+                                                                            // currently returns an
+                                                                            // UnsupportedOpertionException
+                                                                                       // exterior.getAsLineString().getControlPoints(),
                                                                                        trans ) );
                 }
                 List<Ring> interiorRings = ( (PolygonPatch) patch ).getInteriorRings();
                 List<Ring> transformedInteriorRings = new ArrayList<Ring>( interiorRings.size() );
                 for ( Ring interior : interiorRings ) {
-                    transformedInteriorRings.add( geomFactory.createLinearRing(
-                                                                                interior.getId(),
+                    transformedInteriorRings.add( geomFactory.createLinearRing( interior.getId(),
                                                                                 interior.getCoordinateSystem(),
-                                                                                transform(
-                                                                                           interior.getAsLineString().getControlPoints(),
+                                                                                transform( interior.getControlPoints(),
+                                                                                // TODO DefaultRing.getAsLineString
+                                                                                // currently returns an
+                                                                                // UnsupportedOpertionException
+                                                                                           // interior.getAsLineString().getControlPoints(),
                                                                                            trans ) ) );
                 }
                 patches.add( geomFactory.createPolygonPatch( transformedExteriorRing, transformedInteriorRings ) );
