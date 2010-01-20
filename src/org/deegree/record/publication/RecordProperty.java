@@ -35,12 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.publication;
 
-import javax.xml.namespace.QName;
-
-import org.apache.axiom.om.OMElement;
-
 /**
- * To specify individual property values to be updated. 
+ * To specify individual property values to be updated.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -49,26 +45,36 @@ import org.apache.axiom.om.OMElement;
  */
 public class RecordProperty {
 
-    private QName propertyName;
+    private String propertyName;
 
-    private OMElement replacementValue;
+    private Object replacementValue;
 
-    public RecordProperty( QName propertyName, OMElement replacementValue ) {
+    /**
+     * To specify individual property values to be updated.
+     * 
+     * @param propertyName
+     *            can be a string or an XPath-expression [1..1]
+     * @param replacementValue
+     *            can be anyType [0..1]
+     */
+    public RecordProperty( String propertyName, Object replacementValue ) {
         this.propertyName = propertyName;
         this.replacementValue = replacementValue;
     }
 
     /**
-     * @return the propertyName
+     * 
+     * @return the propertyName element contains the name of a property to be updated. The name may be a path
+     *         expression.
      */
-    public QName getPropertyName() {
+    public String getPropertyName() {
         return propertyName;
     }
 
     /**
-     * @return the replacementValue
+     * @return the replacementValue element contains the replacement value for the named property.
      */
-    public OMElement getReplacementValue() {
+    public Object getReplacementValue() {
         return replacementValue;
     }
 

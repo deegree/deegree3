@@ -111,6 +111,13 @@ public class UpdateTransaction extends TransactionOperation {
     public QName getTypeName() {
         return typeName;
     }
+
+    /**
+     * @param typeName the typeName to set
+     */
+    public void setTypeName( QName typeName ) {
+        this.typeName = typeName;
+    }
     
     
 
