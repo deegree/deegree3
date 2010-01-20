@@ -454,22 +454,25 @@ public class IIORasterDataReader implements RasterDataReader {
      * 
      */
     public void dispose() {
-        synchronized ( LOCK ) {
-            if ( reader != null ) {
-                reader.dispose();
-                if ( reader.getInput() != null ) {
-                    Object input = reader.getInput();
-                    if ( input instanceof ImageInputStream ) {
-                        try {
-                            ( (ImageInputStream) input ).close();
-                        } catch ( IOException e ) {
-                            LOG.debug( "Error while disposing: ", e );
+        // only close the inputstream if it was read from a file.
+        if ( file != null ) {
+            synchronized ( LOCK ) {
+                if ( reader != null && file != null ) {
+                    reader.dispose();
+                    if ( reader.getInput() != null ) {
+                        Object input = reader.getInput();
+                        if ( input instanceof ImageInputStream ) {
+                            try {
+                                ( (ImageInputStream) input ).close();
+                            } catch ( IOException e ) {
+                                LOG.debug( "Error while disposing: ", e );
+                            }
                         }
                     }
                 }
+                // set the reader to null.
+                reader = null;
             }
-            // set the reader to null.
-            reader = null;
         }
 
     }
