@@ -43,6 +43,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.filter.Expression;
 import org.deegree.filter.Operator;
 import org.deegree.filter.expression.Literal;
@@ -65,23 +67,105 @@ public class ExpressionFilterHandling {
     
     private String expression;
     
+    private QName propName;
+    
     private static Map<String, MappingInfo> propToTableAndCol = new HashMap<String, MappingInfo>();
 
     static {
+        //----------------------------------------------------------------------------------------
+        //----------------------<common queryable properties>-------------------------------------
+        propToTableAndCol.put( "apiso:title", new MappingInfo( "isoqp_title", "title", STRING ) );
+        propToTableAndCol.put( "dc:title", new MappingInfo( "isoqp_title", "title", STRING ) );
         propToTableAndCol.put( "Title", new MappingInfo( "isoqp_title", "title", STRING ) );
+        
+        propToTableAndCol.put( "apiso:abstract", new MappingInfo( "isoqp_abstract", "abstract", STRING ) );
+        propToTableAndCol.put( "dct:abstract", new MappingInfo( "isoqp_abstract", "abstract", STRING ) );
         propToTableAndCol.put( "Abstract", new MappingInfo( "isoqp_abstract", "abstract", STRING ) );
-        propToTableAndCol.put( "BoundingBox", new MappingInfo( "isoqp_BoundingBox", "bbox", STRING ) );
+        
+        propToTableAndCol.put( "apiso:BoundingBox", new MappingInfo( "isoqp_BoundingBox", "bbox", STRING ) );
+        propToTableAndCol.put( "dc:coverage", new MappingInfo( "isoqp_BoundingBox", "bbox", STRING ) );
+        propToTableAndCol.put( "ows:BoundingBox", new MappingInfo( "isoqp_BoundingBox", "bbox", STRING ) );
+        
+        propToTableAndCol.put( "apiso:type", new MappingInfo( "isoqp_type", "type", STRING ) );
+        propToTableAndCol.put( "dc:type", new MappingInfo( "isoqp_type", "type", STRING ) );
         propToTableAndCol.put( "Type", new MappingInfo( "isoqp_type", "type", STRING ) );
+        
+        propToTableAndCol.put( "apiso:format", new MappingInfo( "isoqp_format", "format", STRING ) );
+        propToTableAndCol.put( "dc:format", new MappingInfo( "isoqp_format", "format", STRING ) );
         propToTableAndCol.put( "Format", new MappingInfo( "isoqp_format", "format", STRING ) );
-        // propToTableAndCol.put( "Language", new MappingInfo( "datasets", "language", STRING ) );
-        propToTableAndCol.put( "Subject", new MappingInfo( "isoqp_topiccategory", "topiccategory", STRING ) );
+        
+        propToTableAndCol.put( "apiso:subject", new MappingInfo( "isoqp_keyword", "keyword", STRING ) );
+        propToTableAndCol.put( "dc:subject", new MappingInfo( "isoqp_keyword", "keyword", STRING ) );
+        propToTableAndCol.put( "Subject", new MappingInfo( "isoqp_keyword", "keyword", STRING ) );
+        
+        propToTableAndCol.put( "apiso:anyText", new MappingInfo( "datasets", "anytext", STRING ) );
         propToTableAndCol.put( "AnyText", new MappingInfo( "datasets", "anytext", STRING ) );
-        propToTableAndCol.put( "Identifier", new MappingInfo( "datasets", "identifier", STRING ) );
+        
         propToTableAndCol.put( "apiso:identifier", new MappingInfo( "datasets", "identifier", STRING ) );
+        propToTableAndCol.put( "dc:identifier", new MappingInfo( "datasets", "identifier", STRING ) );
+        propToTableAndCol.put( "Identifier", new MappingInfo( "datasets", "identifier", STRING ) );
+        
+        propToTableAndCol.put( "apiso:modified", new MappingInfo( "datasets", "modified", DATE ) );
+        propToTableAndCol.put( "dct:modified", new MappingInfo( "datasets", "modified", DATE ) );
         propToTableAndCol.put( "Modified", new MappingInfo( "datasets", "modified", DATE ) );
+        
+        propToTableAndCol.put( "apiso:CRS", new MappingInfo( "isoqp_crs", "crs", STRING ) );
         propToTableAndCol.put( "CRS", new MappingInfo( "isoqp_crs", "crs", STRING ) );
+        propToTableAndCol.put( "dc:CRS", new MappingInfo( "isoqp_crs", "crs", STRING ) );
+        
+        propToTableAndCol.put( "apiso:association", new MappingInfo( "isoqp_association", "relation", STRING ) );
+        propToTableAndCol.put( "dc:relation", new MappingInfo( "isoqp_association", "relation", STRING ) );
         propToTableAndCol.put( "Association", new MappingInfo( "isoqp_association", "relation", STRING ) );
-        propToTableAndCol.put( "Source", new MappingInfo( "datasets", "source", STRING ) );
+        //----------------------</common queryable properties>------------------------------------
+        //----------------------------------------------------------------------------------------
+        
+        
+        //----------------------------------------------------------------------------------------
+        //----------------------<additional common queryable properties>--------------------------
+        propToTableAndCol.put( "apiso:language", new MappingInfo( "datasets", "language", STRING ) );
+        
+        propToTableAndCol.put( "apiso:revisiondate", new MappingInfo( "isoqp_revisiondate", "revisiondate", STRING ) );
+        
+        propToTableAndCol.put( "apiso:alternatetitle", new MappingInfo( "isoqp_alternatetitle", "alternatetitle", STRING ) );
+        
+        propToTableAndCol.put( "apiso:creationdate", new MappingInfo( "isoqp_creationdate", "creationdate", STRING ) );
+
+        propToTableAndCol.put( "apiso:publicationdate", new MappingInfo( "isoqp_publicationdate", "publicationdate", STRING ) );
+
+        propToTableAndCol.put( "apiso:organisationname", new MappingInfo( "isoqp_organisationname", "organisationname", STRING ) );
+
+        propToTableAndCol.put( "apiso:hassecurityconstraint", new MappingInfo( "datasets", "hassecurityconstraint", STRING ) );
+
+        propToTableAndCol.put( "apiso:resourceidentifier", new MappingInfo( "isoqp_resourceidentifier", "resourceidentifier", STRING ) );
+
+        propToTableAndCol.put( "apiso:parentidentifier", new MappingInfo( "datasets", "parentidentifier", STRING ) );
+
+        propToTableAndCol.put( "apiso:keywordtype", new MappingInfo( "isoqp_keyword", "keywordType", STRING ) );
+
+        propToTableAndCol.put( "apiso:topiccategory", new MappingInfo( "isoqp_topiccategory", "topiccategory", STRING ) );
+        
+        propToTableAndCol.put( "apiso:resourcelanguage", new MappingInfo( "datasets", "resourcelanguage", STRING ) );
+
+        propToTableAndCol.put( "apiso:geographicdescriptioncode", new MappingInfo( "isoqp_geographicdescriptioncode", "geographicdescriptioncode", STRING ) );
+
+        propToTableAndCol.put( "apiso:spatialresolution", new MappingInfo( "isoqp_spatialresolution", "id", STRING ) );
+
+        propToTableAndCol.put( "apiso:temporalextent", new MappingInfo( "isoqp_temporalextent", "id", STRING ) );
+        
+        propToTableAndCol.put( "apiso:servicetype", new MappingInfo( "isoqp_servicetype", "servicetype", STRING ) );
+
+        propToTableAndCol.put( "apiso:servicetypeversion", new MappingInfo( "isoqp_servicetypeversion", "servicetypeversion", STRING ) );
+
+        propToTableAndCol.put( "apiso:operation", new MappingInfo( "isoqp_operation", "operation", STRING ) );
+
+        propToTableAndCol.put( "apiso:operatesondata", new MappingInfo( "isoqp_operatesondata", "id", STRING ) );
+
+        propToTableAndCol.put( "apiso:couplingtype", new MappingInfo( "isoqp_couplingtype", "couplingtype", STRING ) );
+
+        //----------------------</additional common queryable properties>-------------------------
+        //----------------------------------------------------------------------------------------
+        
+        
 
     }
     
@@ -123,7 +207,7 @@ public class ExpressionFilterHandling {
             for ( String s : propToTableAndCol.keySet() ) {
                 if ( propertyName.getPropertyName().equals( s ) ) {
                     MappingInfo m = propToTableAndCol.get( s );
-
+                    propName = propertyName.getAsQName();
                     table.add( m.getTable() );
                     column.add( m.getColumn() );
                     expression = m.getTable() + "." + m.getColumn();
@@ -143,7 +227,7 @@ public class ExpressionFilterHandling {
             break;
 
         }
-        return new ExpressionFilterObject(expression, table, column);
+        return new ExpressionFilterObject(expression, table, column, propName);
         
     }
     

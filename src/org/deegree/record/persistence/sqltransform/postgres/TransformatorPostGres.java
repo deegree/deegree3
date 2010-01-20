@@ -41,6 +41,8 @@ import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
@@ -80,6 +82,8 @@ public class TransformatorPostGres {
     private Set<String> table = new HashSet<String>();
 
     private Set<String> column = new HashSet<String>();
+    
+    private QName propName;
 
     private ExpressionFilterHandling expressionFilterHandling = new ExpressionFilterHandling();
 
@@ -118,6 +122,15 @@ public class TransformatorPostGres {
      */
     public Set<String> getColumn() {
         return column;
+    }
+    
+    
+
+    /**
+     * @return the propName
+     */
+    public QName getPropName() {
+        return propName;
     }
 
     /**
@@ -346,11 +359,13 @@ public class TransformatorPostGres {
         expressObject = expressionFilterHandling.expressionFilterHandling( expression1.getType(), expression1 );
         table.addAll( expressObject.getTable() );
         column.addAll( expressObject.getColumn() );
+        propName = expressObject.getPropName();
         s += expressObject.getExpression();
         s += compOp;
         expressObject = expressionFilterHandling.expressionFilterHandling( expression2.getType(), expression2 );
         table.addAll( expressObject.getTable() );
         column.addAll( expressObject.getColumn() );
+        propName = expressObject.getPropName();
         s += expressObject.getExpression();
 
         return s;
@@ -370,11 +385,13 @@ public class TransformatorPostGres {
         expressObject = expressionFilterHandling.expressionFilterHandling( lowerBoundary.getType(), lowerBoundary );
         table.addAll( expressObject.getTable() );
         column.addAll( expressObject.getColumn() );
+        propName = expressObject.getPropName();
         s += expressObject.getExpression();
         s += " AND ";
         expressObject = expressionFilterHandling.expressionFilterHandling( upperBoundary.getType(), upperBoundary );
         table.addAll( expressObject.getTable() );
         column.addAll( expressObject.getColumn() );
+        propName = expressObject.getPropName();
         s += expressObject.getExpression();
 
         return s;
@@ -394,6 +411,7 @@ public class TransformatorPostGres {
             expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
             table.addAll( expressObject.getTable() );
             column.addAll( expressObject.getColumn() );
+            propName = expressObject.getPropName();
             if ( counter != compOp.length - 1 ) {
                 counter++;
 
@@ -421,6 +439,7 @@ public class TransformatorPostGres {
             expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
             table.addAll( expressObject.getTable() );
             column.addAll( expressObject.getColumn() );
+            propName = expressObject.getPropName();
             s += expressObject.getExpression();
             s += " IS NULL ";
 

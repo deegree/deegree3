@@ -37,6 +37,8 @@ package org.deegree.record.persistence.sqltransform.postgres;
 
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 /**
  * Object that encapsules methods for the expression of a filter
  * 
@@ -53,10 +55,13 @@ public class ExpressionFilterObject {
     
     private Set<String> column;
     
-    public ExpressionFilterObject(String expression, Set<String> table, Set<String> column){
+    private QName propName;
+    
+    public ExpressionFilterObject(String expression, Set<String> table, Set<String> column, QName propName){
         this.expression = expression;
         this.table = table;
         this.column = column;
+        this.propName = propName;
     }
 
     /**
@@ -100,6 +105,21 @@ public class ExpressionFilterObject {
     public void setColumn( Set<String> column ) {
         this.column = column;
     }
+
+    /**
+     * @return the propName
+     */
+    public QName getPropName() {
+        return propName;
+    }
+
+    /**
+     * @param propName the propName to set
+     */
+    public void setPropName( QName propName ) {
+        this.propName = propName;
+    }
+    
     
     
 
