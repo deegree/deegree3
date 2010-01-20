@@ -62,7 +62,12 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Equals;
+import org.deegree.filter.spatial.Intersects;
+import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.spatial.Touches;
+import org.deegree.filter.spatial.Within;
 import org.deegree.filter.sql.islike.IsLikeString;
 import org.deegree.geometry.Geometry;
 
@@ -288,7 +293,7 @@ public class PostGISWhereBuilder {
 
         IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
         // TODO lowerCasing?
-        String sqlEncoded = specialString.toSQL(!op.getMatchCase());
+        String sqlEncoded = specialString.toSQL( !op.getMatchCase() );
 
         // if isMatchCase == false surround first argument with LOWER (...) and convert characters
         // in second argument to lower case
@@ -346,12 +351,7 @@ public class PostGISWhereBuilder {
             BBOX bbox = (BBOX) op;
             buildWhere( bbox.getPropertyName() );
             whereClause.append( " && " );
-            try {
-                buildWhere( bbox.getBoundingBox() );
-            } catch ( SQLException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            buildWhere( bbox.getBoundingBox() );
             break;
         }
         case BEYOND: {
@@ -370,18 +370,48 @@ public class PostGISWhereBuilder {
             break;
         }
         case EQUALS: {
+            Equals equals = (Equals) op;
+            whereClause.append( "equals(" );
+            buildWhere( equals.getPropName() );
+            whereClause.append( ',' );
+            buildWhere( equals.getGeometry() );
+            whereClause.append( ')' );
             break;
         }
         case INTERSECTS: {
+            Intersects intersects = (Intersects) op;
+            whereClause.append( "intersects(" );
+            buildWhere( intersects.getPropName() );
+            whereClause.append( ',' );
+            buildWhere( intersects.getGeometry() );
+            whereClause.append( ')' );
             break;
         }
         case OVERLAPS: {
+            Overlaps overlaps = (Overlaps) op;
+            whereClause.append( "overlaps(" );
+            buildWhere( overlaps.getPropName() );
+            whereClause.append( ',' );
+            buildWhere( overlaps.getGeometry() );
+            whereClause.append( ')' );
             break;
         }
         case TOUCHES: {
+            Touches touches = (Touches) op;
+            whereClause.append( "touches(" );
+            buildWhere( touches.getPropName() );
+            whereClause.append( ',' );
+            buildWhere( touches.getGeometry() );
+            whereClause.append( ')' );            
             break;
         }
         case WITHIN: {
+            Within within = (Within) op;
+            whereClause.append( "within(" );
+            buildWhere( within.getPropName() );
+            whereClause.append( ',' );
+            buildWhere( within.getGeometry() );
+            whereClause.append( ')' );            
             break;
         }
         }
@@ -401,9 +431,13 @@ public class PostGISWhereBuilder {
     }
 
     private void buildWhere( Geometry geometry )
-                            throws SQLException {
+                            throws FilterEvaluationException {
         whereClause.append( "GeomFromWKB(?,-1)" );
-        whereParams.add( TypeMangler.toPostGIS( geometry ) );
+        try {
+            whereParams.add( TypeMangler.toPostGIS( geometry ) );
+        } catch ( SQLException e ) {
+            throw new FilterEvaluationException( e.getMessage() );
+        }
     }
 
     private void buildWhere( Expression expr, boolean lowerCase )
@@ -448,9 +482,17 @@ public class PostGISWhereBuilder {
         case PROPERTY_NAME: {
             PropertyNameMapping propMapping = mapping.getMapping( (PropertyName) expr );
             if ( propMapping != null ) {
-                whereClause.append( propMapping.getTable() );
-                whereClause.append( '.' );
-                whereClause.append( propMapping.getColumn() );
+                if ( lowerCase ) {
+                    whereClause.append( "LOWER(" );
+                    whereClause.append( propMapping.getTable() );
+                    whereClause.append( '.' );
+                    whereClause.append( propMapping.getColumn() );
+                    whereClause.append( ')' );
+                } else {
+                    whereClause.append( propMapping.getTable() );
+                    whereClause.append( '.' );
+                    whereClause.append( propMapping.getColumn() );
+                }
             }
             break;
         }
