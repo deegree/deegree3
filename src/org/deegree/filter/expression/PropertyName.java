@@ -142,7 +142,7 @@ public class PropertyName implements Expression {
                 String prefix = text.substring( 0, colonIdx );
                 String localPart = text.substring( colonIdx + 1 );
                 String namespace = nsContext.translateNamespacePrefixToUri( prefix );
-                simpleProp = new QName( namespace, localPart );
+                simpleProp = new QName( namespace, localPart, prefix );
             }
         }
         return simpleProp;
