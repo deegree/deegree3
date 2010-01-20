@@ -66,6 +66,7 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
+import org.deegree.coverage.raster.utils.Rasters;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
@@ -88,7 +89,7 @@ public class GridWriter implements RasterWriter {
 
     // private final static GeometryFactory geomFac = new GeometryFactory();
 
-    private final static int DEFAULT_RASTER_TILE_WIDTH = 512;
+    private final static int DEFAULT_RASTER_TILE_WIDTH = 500;
 
     private int columns;
 
@@ -173,12 +174,11 @@ public class GridWriter implements RasterWriter {
         this.geoRef = geoRef.createRelocatedReference( OriginLocation.OUTER );
         tileWidth = this.envelope.getSpan0() / columns;
         tileHeight = this.envelope.getSpan1() / rows;
-        double[] origin = geoRef.getOrigin();
 
-        int[] rasterCoordinate = geoRef.getRasterCoordinate( origin[0] + Math.ceil( tileWidth ),
-                                                             origin[1] - Math.ceil( tileHeight ) );
-        this.tileRasterWidth = rasterCoordinate[0];
-        this.tileRasterHeight = rasterCoordinate[1];
+        int[] rasterCoordinate = this.geoRef.getSize( this.envelope );
+
+        this.tileRasterWidth = Rasters.calcTileSize( rasterCoordinate[0], columns );
+        this.tileRasterHeight = Rasters.calcTileSize( rasterCoordinate[1], rows );
 
         this.gridFile = gridFile;
         if ( this.gridFile != null && !this.gridFile.exists() ) {
