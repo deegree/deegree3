@@ -673,16 +673,15 @@ public class CacheRasterReader extends GridFileReader {
      * 
      * @param column
      * @param row
-     * @return
      */
     private ByteBuffer getTileBuffer( int column, int row ) {
         ByteBuffer result = null;
         // allocation of the buffer should not be in the synchronized block, it may cause a dead lock with the raster
         // cache.
-        ByteBuffer tileBuffer = allocateTileBuffer( false, true );
         if ( row < tiles.length && column < tiles[row].length ) {
             synchronized ( tiles ) {
                 if ( tiles[row][column] == null || tilesInMemory[row][column] == 0 ) {
+                    ByteBuffer tileBuffer = allocateTileBuffer( false, true );
                     // check the cache file
                     if ( tilesOnFile != null && tilesOnFile[row][column] > 0 ) {
                         try {
@@ -757,7 +756,9 @@ public class CacheRasterReader extends GridFileReader {
             synchronized ( tiles ) {
                 gridWriter.leaveStreamOpen( true );
                 // synchronizing on the tiles is valid, because of re-entrance capabilities of the Thread.
-                cacheFileUpToDate();
+                if ( cacheFileUpToDate() == 0 ) {
+                    return 0;
+                }
                 // update the cachefile.
                 RasterRect tileRect = new RasterRect( 0, 0, tileWidth, tileHeight );
                 // don't use the byte buffer pool, it could initiate an endless loop.
@@ -771,8 +772,9 @@ public class CacheRasterReader extends GridFileReader {
                         boolean writeSuccessul = false;
                         if ( tilesOnFile[row][column] == 0 ) {
                             try {
-                                LOG.debug( "{}->{},{}) Writing: {},{}", new Object[] { file(), rows, columns, row,
-                                                                                      column } );
+                                LOG.debug( "{}->{},{}) Writing: {},{}, Tile: {}", new Object[] { file(), rows, columns,
+                                                                                                row, column,
+                                                                                                tiles[row][column] } );
                                 // tile is not valid on file
                                 if ( tiles[row][column] != null ) {
                                     // will be null if the tile was not valid.
