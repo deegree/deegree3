@@ -437,7 +437,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
 
                 Object value = prop.getValue();
-                LOG.debug( "Property '" + prop.getName() + "', colum: " + dbColumn + ", value: " + value );
+                LOG.debug( "Property '" + prop.getName() + "', colum: " + dbColumn );
                 columnsToValues.put( dbColumn, value );
             }
         }
