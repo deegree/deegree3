@@ -269,10 +269,10 @@ public class PostGISApplicationSchema {
                                                                                     + " (geometry id)" ) );
                     writer.print( ",\n    " + dbColumn.getName() + "_ID integer REFERENCES gml_objects" );
                     String create = "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "','" + tableName + "','"
-                                    + dbColumn.getName().toLowerCase() + "','" + dbColumn.getSrid() + "','"
+                                    + dbColumn.getName().toLowerCase() + "','-1','"
                                     + dbColumn.getSqlType() + "'," + dbColumn.getDimension() + ");\n";
-                    create += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + "_geochk" + i
-                              + " CHECK (isvalid(" + dbColumn.getName().toLowerCase() + "));\n";
+//                    create += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + "_geochk" + i
+//                              + " CHECK (isvalid(" + dbColumn.getName().toLowerCase() + "));\n";
                     create += "CREATE INDEX " + tableName + "_sidx" + i + " ON " + tableName + " USING GIST ( "
                               + dbColumn.getName().toLowerCase() + " GIST_GEOMETRY_OPS );\n";
                     additionalCreates.add( create );
@@ -394,7 +394,7 @@ public class PostGISApplicationSchema {
         // TODO srid
         s += "SELECT ADDGEOMETRYCOLUMN('" + dbSchema + "','" + tableName + "','geometry','" + "-1" + "','"
              + propTable.getSqlType() + "'," + propTable.getDimension() + ");\n";
-        s += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + "_geo_check CHECK (isvalid(geometry));\n";
+//        s += "ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + "_geo_check CHECK (isvalid(geometry));\n";
         s += "CREATE INDEX " + tableName + "_sidx ON " + tableName + " USING GIST ( geometry GIST_GEOMETRY_OPS );\n";
         return s;
     }

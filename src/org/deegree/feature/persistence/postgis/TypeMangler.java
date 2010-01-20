@@ -62,7 +62,7 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision$, $Date$
  */
-class TypeMangler {
+public class TypeMangler {
 
     /**
      * Converts the given {@link Property} value to an object suitable for PostgreSQL/PostGIS.
@@ -71,7 +71,7 @@ class TypeMangler {
      * @return
      * @throws SQLException
      */
-    static Object toPostGIS( Object value )
+    public static Object toPostGIS( Object value )
                             throws SQLException {
         Object pgObject = null;
         if ( value instanceof Geometry ) {

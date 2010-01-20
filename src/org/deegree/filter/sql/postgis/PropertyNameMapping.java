@@ -33,17 +33,37 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.postgis;
+package org.deegree.filter.sql.postgis;
+
+import org.deegree.filter.expression.PropertyName;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Encapsulates the database mapping for a {@link PropertyName}.
+ * <p>
+ * TODO type information, table alias, join path?
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PropertyPath {
+public class PropertyNameMapping {
 
-    
+    private final String dbTable;
+
+    private final String dbColumn;
+
+    public PropertyNameMapping (String dbTable, String dbColumn) {
+        this.dbTable = dbTable;
+        this.dbColumn = dbColumn;
+    }
+
+    public String getTable() {
+        return dbTable;
+    }
+
+    public String getColumn() {
+        return dbColumn;
+    }    
 }

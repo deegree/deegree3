@@ -75,6 +75,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -533,10 +534,12 @@ public class PostGISFeatureStore implements FeatureStore {
 
         FeatureType ft = schema.getFeatureType( ftName );
         FeatureTypeMapping mapping = getMapping( ftName );
-        WhereBuilder wb = null;
+        PostGISWhereBuilder wb = null;
         if ( filter != null && mapping != null ) {
-            wb = new WhereBuilder( this, ft, mapping, filter );
+            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping );
+            wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit );
             LOG.debug( "WHERE clause: " + wb.getWhereClause() );
+            LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
         }
 
         FeatureResultSet result = null;
@@ -559,6 +562,10 @@ public class PostGISFeatureStore implements FeatureStore {
             if ( wb != null && wb.getWhereClause().length() > 0 ) {
                 sql += " AND " + wb.getWhereClause();
             }
+            if ( wb != null && wb.getOrderBy().length() > 0 ) {
+                sql += " ORDER BY " + wb.getOrderBy();
+            }            
+
             stmt = conn.prepareStatement( sql );
             LOG.debug( "SQL: " + stmt );
 
@@ -583,14 +590,14 @@ public class PostGISFeatureStore implements FeatureStore {
             throw new FeatureStoreException( msg, e );
         }
 
-        if ( filter != null && wb != null && wb.needsPostFiltering() ) {
+        if ( wb != null && wb.getPostFilter() != null ) {
             LOG.debug( "Applying in-memory post-filtering." );
-            result = new FilteredFeatureResultSet( result, filter );
+            result = new FilteredFeatureResultSet( result, wb.getPostFilter() );
         }
 
-        if ( sortCrit != null && wb != null && wb.needsPostSorting() ) {
+        if ( sortCrit != null && wb.getPostSortCriteria() != null ) {
             LOG.debug( "Applying in-memory post-sorting." );
-            result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+            result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
         }
         return result;
     }

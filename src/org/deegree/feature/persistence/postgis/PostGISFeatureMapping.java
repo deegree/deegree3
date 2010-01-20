@@ -1,0 +1,155 @@
+//$HeadURL$
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+package org.deegree.feature.persistence.postgis;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappingType;
+import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;
+import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingType;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sql.postgis.PostGISMapping;
+import org.deegree.filter.sql.postgis.PropertyNameMapping;
+import org.jaxen.expr.Expr;
+import org.jaxen.expr.LocationPath;
+import org.jaxen.expr.NameStep;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * {@link PostGISMapping} for the {@link PostGISFeatureStore}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+class PostGISFeatureMapping implements PostGISMapping {
+
+    private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureMapping.class );
+
+    private final FeatureType ft;
+
+    private final FeatureTypeMapping ftMapping;
+    
+    PostGISFeatureMapping (FeatureType ft, FeatureTypeMapping ftMapping) {
+        this.ft = ft;
+        this.ftMapping = ftMapping;
+    }
+    
+    @Override
+    public PropertyNameMapping getMapping( PropertyName propName )
+                            throws FilterEvaluationException {
+        Expr xpath = propName.getAsXPath();
+        if ( !( xpath instanceof LocationPath ) ) {
+            LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                       + "': the root expression is not a LocationPath." );
+            return null;
+        }
+        List<QName> steps = new ArrayList<QName>();
+        for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
+            if ( !( step instanceof NameStep ) ) {
+                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                           + "': contains an expression that is not a NameStep." );
+                return null;
+            }
+            NameStep namestep = (NameStep) step;
+            if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
+                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                           + "': contains a NameStep with a predicate (needs implementation)." );
+                return null;
+            }
+            String prefix = namestep.getPrefix();
+            String localPart = namestep.getLocalName();
+            String namespace = propName.getNsContext().translateNamespacePrefixToUri( prefix );
+            steps.add( new QName( namespace, localPart, prefix ) );
+        }
+
+        if ( steps.size() < 1 || steps.size() > 2 ) {
+            LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                       + "': must contain one or two NameSteps (needs implementation)." );
+            return null;
+        }
+
+        QName requestedProperty = null;
+        if ( steps.size() == 1 ) {
+            // step must be equal to a property name of the queried feature
+            if ( ft.getPropertyDeclaration( steps.get( 0 ) ) == null ) {
+                String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+                             + "'. The queried feature type '" + ft.getName()
+                             + "' does not have a property with this name.";
+                throw new FilterEvaluationException( msg );
+            }
+            requestedProperty = steps.get( 0 );
+        } else {
+            // 1. step must be equal to the name or alias of the queried feature
+            if ( !ft.getName().equals( steps.get( 0 ) ) ) {
+                String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+                             + "'. The first step does not equal the queried feature type '" + ft.getName() + "'.";
+                throw new FilterEvaluationException( msg );
+            }
+            // 2. step must be equal to a property name of the queried feature
+            if ( ft.getPropertyDeclaration( steps.get( 1 ) ) == null ) {
+                String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+                             + "'. The second step does not equal any property of the queried feature type '"
+                             + ft.getName() + "'.";
+                throw new FilterEvaluationException( msg );
+            }
+            requestedProperty = steps.get( 1 );
+        }
+        PropertyMappingType ptMapping = ftMapping.getPropertyHints( requestedProperty );
+        if (ptMapping == null ) {
+            return null;
+        }
+        String dbColumn = null;
+        if (ptMapping instanceof GeometryPropertyMappingType) {
+            GeometryPropertyMappingType geomPropMapping = (GeometryPropertyMappingType) ptMapping;
+            dbColumn = geomPropMapping.getGeometryDBColumn().getName();
+        } else if (ptMapping instanceof SimplePropertyMappingType) {
+            SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) ptMapping;
+            dbColumn = simplePropMapping.getDBColumn().getName();
+        } else {
+            // not implemented yet
+            return null;
+        }
+        return new PropertyNameMapping( "x2", dbColumn );
+    }
+}
