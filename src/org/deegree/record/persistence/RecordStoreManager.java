@@ -45,7 +45,7 @@ import org.deegree.commons.datasource.configuration.DCRecordStoreType;
 import org.deegree.commons.datasource.configuration.ISORecordStoreType;
 import org.deegree.commons.datasource.configuration.RecordStoreType;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.record.persistence.genericrecordstore.GenericRecordStore;
+import org.deegree.record.persistence.genericrecordstore.ISORecordStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,18 +96,16 @@ public class RecordStoreManager {
         String id = config.getDataSourceName();
         
 
-        //TODO rename in GenericRecordStoreType
-        if ( config instanceof DCRecordStoreType ) {
+        
+        if ( config instanceof ISORecordStoreType ) {
 
-            DCRecordStoreType dcConfig = (DCRecordStoreType) config;
+            ISORecordStoreType isoConfig = (ISORecordStoreType) config;
            
             //XMLAdapter resolver = new XMLAdapter();
             //resolver.setSystemId( baseURL );
 
-            rs = new GenericRecordStore(dcConfig.getConnId());
+            rs = new ISORecordStore(isoConfig.getConnId());
             //rs.describeRecord();
-        }else if(config instanceof ISORecordStoreType){
-            //TODO falsch, ebRim müsste das heißen oder eben was anderes...
         }
         else {
             String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", config.getClass() );
