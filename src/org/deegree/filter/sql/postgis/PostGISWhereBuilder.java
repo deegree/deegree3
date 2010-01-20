@@ -63,7 +63,7 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
-import org.deegree.filter.sql.SpecialCharString;
+import org.deegree.filter.sql.islike.IsLikeString;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -286,7 +286,7 @@ public class PostGISWhereBuilder {
         String wildCard = "" + op.getWildCard();
         String singleChar = "" + op.getSingleChar();
 
-        SpecialCharString specialString = new SpecialCharString( literal, wildCard, singleChar, escape );
+        IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
         // TODO lowerCasing?
         String sqlEncoded = specialString.toSQL(!op.getMatchCase());
 

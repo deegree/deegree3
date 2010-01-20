@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,26 +32,28 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.filter.sql;
+ ----------------------------------------------------------------------------*/
+package org.deegree.filter.sql.islike;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.filter.comparison.PropertyIsLike;
+
 /**
- * Represents a <code>String</code> that may contain special symbols (wildCard, singleChar, escape) as a list of its
- * parts ({@link SpecialCharStringPart}).
+ * Used for an escape-free representation of a literal from a {@link PropertyIsLike} operation.
  * <p>
- * The internal representation needs no escape symbols.
- *
+ * May contain special symbols (wildCard, singleChar, escape) as a list of its parts ({@link IsLikeStringPart}).
+ * </p>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
-public class SpecialCharString {
+public class IsLikeString {
 
-    private List<SpecialCharStringPart> parts;
+    private List<IsLikeStringPart> parts;
 
     private String wildCard;
 
@@ -61,13 +63,13 @@ public class SpecialCharString {
 
     /**
      * Constructs a new <code>SpecialCharString</code> instance from the given parameters.
-     *
+     * 
      * @param encodedString
      * @param wildCard
      * @param singleChar
      * @param escape
      */
-    public SpecialCharString( String encodedString, String wildCard, String singleChar, String escape ) {
+    public IsLikeString( String encodedString, String wildCard, String singleChar, String escape ) {
         this.wildCard = wildCard;
         this.singleChar = singleChar;
         this.escape = escape;
@@ -77,14 +79,14 @@ public class SpecialCharString {
     /**
      * Decodes the given <code>String</code> to a representation that contains explicit objects to represent wildCard
      * and singleChar symbols and has no escape symbols.
-     *
+     * 
      * @param encodedString
      *            encoded <code>String</code>, may contain wildCard, singleChar and escape symbols
      * @return decoded representation that contains special objects for special characters
      */
-    private List<SpecialCharStringPart> decode( String encodedString ) {
+    private List<IsLikeStringPart> decode( String encodedString ) {
 
-        List<SpecialCharStringPart> parts = new ArrayList<SpecialCharStringPart>( encodedString.length() );
+        List<IsLikeStringPart> parts = new ArrayList<IsLikeStringPart>( encodedString.length() );
 
         boolean escapeMode = false;
         String decodedString = encodedString;
@@ -141,12 +143,12 @@ public class SpecialCharString {
      * <li>singleChar: encoded as the '_'-character</li>
      * <li>escape: encoded as the '\'-character</li>
      * </ul>
-     *
+     * 
      * @return encoded string
      */
     public String toSQL() {
         StringBuffer sb = new StringBuffer();
-        for ( SpecialCharStringPart part : parts ) {
+        for ( IsLikeStringPart part : parts ) {
             sb.append( part.toSQL() );
         }
         return sb.toString();
@@ -161,14 +163,14 @@ public class SpecialCharString {
      * <li>singleChar: encoded as the '_'-character</li>
      * <li>escape: encoded as the '\'-character</li>
      * </ul>
-     *
+     * 
      * @param toLowerCase
      *            true means: convert to lowercase letters
      * @return encoded string
      */
     public String toSQL( boolean toLowerCase ) {
         StringBuffer sb = new StringBuffer();
-        for ( SpecialCharStringPart part : parts ) {
+        for ( IsLikeStringPart part : parts ) {
             sb.append( part.toSQL( toLowerCase ) );
         }
         return sb.toString();
@@ -177,7 +179,7 @@ public class SpecialCharString {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        for ( SpecialCharStringPart part : parts ) {
+        for ( IsLikeStringPart part : parts ) {
             sb.append( part.toString() );
             sb.append( '\n' );
         }

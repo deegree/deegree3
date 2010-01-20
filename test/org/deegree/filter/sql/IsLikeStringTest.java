@@ -38,6 +38,7 @@ package org.deegree.filter.sql;
 
 import junit.framework.TestCase;
 
+import org.deegree.filter.sql.islike.IsLikeString;
 import org.junit.Test;
 
 /**
@@ -47,68 +48,68 @@ import org.junit.Test;
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class SpecialCharStringTest extends TestCase {
+public class IsLikeStringTest extends TestCase {
 
     @Test
-    public void testFilter1()
+    public void testLiteral1()
                             throws Exception {
         String wildCard = "*";
         String singleChar = "#";
         String escape = "!";
         String inputString = "*Sartre*";
-        SpecialCharString specialString = new SpecialCharString( inputString, wildCard, singleChar, escape );
+        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
         String output = specialString.toSQL();
         assertEquals( "%Sartre%", output );
     }
 
     @Test
-    public void testFilter2()
+    public void testLiteral2()
                             throws Exception {
         String wildCard = "%";
         String singleChar = "_";
         String escape = "\\";
         String inputString = "%Sar\\%\\_tre%";
-        SpecialCharString specialString = new SpecialCharString( inputString, wildCard, singleChar, escape );
+        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
         String output = specialString.toSQL();
         assertEquals( "%Sar\\%\\_tre%", output );
     }
 
     @Test
-    public void testFilter3()
+    public void testLiteral3()
                             throws Exception {
         String wildCard = "?";
         String singleChar = "_";
         String escape = "\\";
         String inputString = "%Sar\\tre_";
-        SpecialCharString specialString = new SpecialCharString( inputString, wildCard, singleChar, escape );
+        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
         String output = specialString.toSQL();
         assertEquals( "\\%Sartre_", output );
     }
 
     @Test
-    public void testFilter4()
+    public void testLiteral4()
                             throws Exception {
         String wildCard = "%";
         String singleChar = "*";
         String escape = "_";
         String inputString = "*Sartre%";
-        SpecialCharString specialString = new SpecialCharString( inputString, wildCard, singleChar, escape );
+        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
         String output = specialString.toSQL();
         assertEquals( "_Sartre%", output );
     }
 
     @Test
-    public void testFilter5()
+    public void testLiteral5()
                             throws Exception {
         String wildCard = "?";
         String singleChar = "*";
         String escape = "\\";
         String inputString = "*Paul_Sartre*";
-        SpecialCharString specialString = new SpecialCharString( inputString, wildCard, singleChar, escape );
+        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
         String output = specialString.toSQL();
         assertEquals( "_Paul\\_Sartre_", output );
     }

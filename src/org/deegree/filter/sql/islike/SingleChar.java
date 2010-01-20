@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
    Department of Geography, University of Bonn
  and
    lat/lon GmbH
@@ -33,17 +33,17 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql;
+package org.deegree.filter.sql.islike;
 
 /**
- * Part of a {@link SpecialCharString} -- represents any number of characters (in SQL: '%').
+ * Part of a {@link IsLikeString} -- represents an arbitrary character (in SQL: '_').
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
  *
  * @version $Revision$, $Date$
  */
-final class WildCard implements SpecialCharStringPart {
+final class SingleChar implements IsLikeStringPart {
 
     /**
      * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
@@ -58,7 +58,7 @@ final class WildCard implements SpecialCharStringPart {
      * @return encoded string
      */
     public String toSQL() {
-        return "%";
+        return "_";
     }
 
     /**
@@ -76,11 +76,11 @@ final class WildCard implements SpecialCharStringPart {
      * @return encoded string
      */
     public String toSQL( boolean toLowerCase ) {
-        return "%";
+        return "_";
     }
 
     @Override
     public String toString() {
-        return "WildCard";
+        return "SingleChar";
     }
 }

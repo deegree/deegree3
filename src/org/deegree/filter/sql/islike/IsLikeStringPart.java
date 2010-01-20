@@ -33,28 +33,17 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql;
+package org.deegree.filter.sql.islike;
 
 /**
- * Part of a {@link SpecialCharString} that contains standard characters only.
+ * Part of a {@link IsLikeString}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
  *
  * @version $Revision$, $Date$
  */
-final class PlainText implements SpecialCharStringPart {
-
-    private String text;
-
-    /**
-     * Creates a new instance of {@link PlainText}.
-     *
-     * @param text
-     */
-    PlainText( String text ) {
-        this.text = text;
-    }
+public interface IsLikeStringPart {
 
     /**
      * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
@@ -68,9 +57,7 @@ final class PlainText implements SpecialCharStringPart {
      *
      * @return encoded string
      */
-    public String toSQL() {
-        return toSQL( false );
-    }
+    public String toSQL();
 
     /**
      * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
@@ -86,37 +73,5 @@ final class PlainText implements SpecialCharStringPart {
      *            true means: convert to lowercase letters
      * @return encoded string
      */
-    public String toSQL( boolean toLowerCase ) {
-        StringBuffer sqlEscaped = new StringBuffer( text.length() );
-        String rest = text;
-        while ( rest.length() > 0 ) {
-            char currentChar = rest.charAt( 0 );
-            switch ( currentChar ) {
-            case '%':
-            case '_':
-            case '"':
-            case '\'':
-            case '\\': {
-                sqlEscaped.append( '\\' );
-                sqlEscaped.append( currentChar );
-                break;
-            }
-            default: {
-                if ( toLowerCase ) {
-                    sqlEscaped.append( Character.toLowerCase( currentChar ) );
-                } else {
-                    sqlEscaped.append( currentChar );
-                }
-                break;
-            }
-            }
-            rest = rest.substring( 1 );
-        }
-        return sqlEscaped.toString();
-    }
-
-    @Override
-    public String toString() {
-        return "Text: " + text;
-    }
+    public String toSQL( boolean toLowerCase );
 }
