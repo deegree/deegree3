@@ -121,6 +121,7 @@ public class RasterCache {
 
         }
         if ( mm == 0 ) {
+            mm = Runtime.getRuntime().maxMemory();
             if ( mm == Long.MAX_VALUE ) {
                 mm = Math.round( Runtime.getRuntime().totalMemory() * 0.5 );
             } else {
@@ -148,7 +149,7 @@ public class RasterCache {
      *            to add to the cache.
      * @return a new CachedReader which was added to the cache.
      */
-    public CacheRasterReader addReader( RasterReader reader ) {
+    public RasterReader addReader( RasterReader reader ) {
         CacheRasterReader result = null;
         if ( reader != null ) {
             if ( reader instanceof CacheRasterReader ) {
@@ -315,11 +316,13 @@ public class RasterCache {
      * @return the amount of currently used cache memory, which is only an approximation.
      */
     public static long freeMemory( long requiredMemory ) {
-        // LOG.info( "Currently used cache memory:{} MB, totalCacheMemory:{} MB", currentlyUsedMemory / ( 1024d * 1024
-        // ),
-        // maxCacheMem / ( 1024d * 1024 ) );
+        LOG.debug( "Currently used cache memory:{} MB, totalCacheMemory:{} MB", currentlyUsedMemory / ( 1024d * 1024 ),
+                   maxCacheMem / ( 1024d * 1024 ) );
         if ( currentlyUsedMemory + requiredMemory > maxCacheMem ) {
             disposeMemory( requiredMemory );
+        }
+        synchronized ( MEM_LOCK ) {
+            currentlyUsedMemory += requiredMemory;
         }
 
         return currentlyUsedMemory;
