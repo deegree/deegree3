@@ -119,7 +119,7 @@ public class PostGISFeatureStore implements FeatureStore {
 
     private final String dbSchema;
 
-    private final CRS storageSRS;
+    final CRS storageSRS;
 
     private PostGISFeatureStoreTransaction activeTransaction;
 
@@ -564,7 +564,7 @@ public class PostGISFeatureStore implements FeatureStore {
             }
             if ( wb != null && wb.getOrderBy().length() > 0 ) {
                 sql += " ORDER BY " + wb.getOrderBy();
-            }            
+            }
 
             stmt = conn.prepareStatement( sql );
             LOG.debug( "SQL: " + stmt );
@@ -793,7 +793,15 @@ public class PostGISFeatureStore implements FeatureStore {
         return query( queries ).toCollection().size();
     }
 
-    private Geometry getCompatibleGeometry( Geometry literal, CRS crs )
+    /**
+     * Returns a transformed version of the given {@link Geometry} in the specified CRS.
+     * 
+     * @param literal
+     * @param crs
+     * @return transformed version of the geometry, never <code>null</code>
+     * @throws FilterEvaluationException
+     */
+    protected Geometry getCompatibleGeometry( Geometry literal, CRS crs )
                             throws FilterEvaluationException {
 
         Geometry transformedLiteral = literal;

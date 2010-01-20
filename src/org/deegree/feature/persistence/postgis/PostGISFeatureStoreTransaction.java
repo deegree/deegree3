@@ -66,6 +66,7 @@ import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappin
 import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingType;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
@@ -385,7 +386,12 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private void insertFeatureRelational( int internalId, Feature feature, FeatureTypeMapping ftMapping )
                             throws SQLException {
 
-        LinkedHashMap<String, Object> columnsToValues = getInsertColumns( feature, ftMapping );
+        LinkedHashMap<String, Object> columnsToValues;
+        try {
+            columnsToValues = getInsertColumns( feature, ftMapping );
+        } catch ( FilterEvaluationException e ) {
+            throw new SQLException( e.getMessage(), e );
+        }
         String tableName = ftMapping.getFeatureTypeHints().getDBTable();
 
         // build SQL string
@@ -417,7 +423,8 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         stmt.close();
     }
 
-    private LinkedHashMap<String, Object> getInsertColumns( Feature feature, FeatureTypeMapping ftMapping ) {
+    private LinkedHashMap<String, Object> getInsertColumns( Feature feature, FeatureTypeMapping ftMapping )
+                            throws FilterEvaluationException {
         LinkedHashMap<String, Object> columnsToValues = new LinkedHashMap<String, Object>();
 
         for ( Property<?> prop : feature.getProperties() ) {
@@ -437,6 +444,10 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
 
                 Object value = prop.getValue();
+                if ( value instanceof Geometry ) {
+                    value = store.getCompatibleGeometry( ( (Geometry) value ), store.storageSRS );
+                }
+
                 LOG.debug( "Property '" + prop.getName() + "', colum: " + dbColumn );
                 columnsToValues.put( dbColumn, value );
             }
