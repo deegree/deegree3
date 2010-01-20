@@ -729,6 +729,9 @@ public class Filter110XMLDecoder {
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
+        // this is a deegree extension over Filter 1.1.0 spec.            
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );                
+        
         xmlStream.nextTag();
         Expression expression = parseExpression( xmlStream );
 
@@ -745,12 +748,15 @@ public class Filter110XMLDecoder {
         xmlStream.nextTag();
         xmlStream.nextTag();
 
-        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
+        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase );
     }
 
     private static PropertyIsLike parsePropertyIsLikeOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
+        // this is a deegree extension over Filter 1.1.0 spec.            
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );        
+        
         String wildCard = getRequiredAttributeValue( xmlStream, "wildCard" );
         String singleChar = getRequiredAttributeValue( xmlStream, "singleChar" );
         String escapeChar = getRequiredAttributeValue( xmlStream, "escapeChar" );
@@ -761,7 +767,7 @@ public class Filter110XMLDecoder {
         xmlStream.nextTag();
         Literal<?> literal = parseLiteral( xmlStream );
         xmlStream.nextTag();
-        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar );
+        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase );
     }
 
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )

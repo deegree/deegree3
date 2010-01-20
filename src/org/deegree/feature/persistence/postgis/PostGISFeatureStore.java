@@ -595,7 +595,7 @@ public class PostGISFeatureStore implements FeatureStore {
             result = new FilteredFeatureResultSet( result, wb.getPostFilter() );
         }
 
-        if ( sortCrit != null && wb.getPostSortCriteria() != null ) {
+        if ( wb != null && wb.getPostSortCriteria() != null ) {
             LOG.debug( "Applying in-memory post-sorting." );
             result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
         }

@@ -37,6 +37,7 @@ package org.deegree.filter.xml;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
 
@@ -634,6 +635,9 @@ public class Filter100XMLDecoder {
 
         BinaryComparisonOperator comparisonOperator = null;
 
+        // this is a deegree extension over Filter 1.0.0 spec.        
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );        
+        
         StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter1 = parseExpression( xmlStream );
         StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
@@ -642,22 +646,22 @@ public class Filter100XMLDecoder {
 
         switch ( type ) {
         case PROPERTY_IS_EQUAL_TO:
-            comparisonOperator = new PropertyIsEqualTo( parameter1, parameter2, true );
+            comparisonOperator = new PropertyIsEqualTo( parameter1, parameter2, matchCase );
             break;
         case PROPERTY_IS_NOT_EQUAL_TO:
-            comparisonOperator = new PropertyIsNotEqualTo( parameter1, parameter2, true );
+            comparisonOperator = new PropertyIsNotEqualTo( parameter1, parameter2, matchCase );
             break;
         case PROPERTY_IS_LESS_THAN:
-            comparisonOperator = new PropertyIsLessThan( parameter1, parameter2, true );
+            comparisonOperator = new PropertyIsLessThan( parameter1, parameter2, matchCase );
             break;
         case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
-            comparisonOperator = new PropertyIsLessThanOrEqualTo( parameter1, parameter2, true );
+            comparisonOperator = new PropertyIsLessThanOrEqualTo( parameter1, parameter2, matchCase );
             break;
         case PROPERTY_IS_GREATER_THAN:
-            comparisonOperator = new PropertyIsGreaterThan( parameter1, parameter2, true );
+            comparisonOperator = new PropertyIsGreaterThan( parameter1, parameter2, matchCase );
             break;
         case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
-            comparisonOperator = new PropertyIsGreaterThanOrEqualTo( parameter1, parameter2, true );
+            comparisonOperator = new PropertyIsGreaterThanOrEqualTo( parameter1, parameter2, matchCase );
             break;
         default:
             assert false;
@@ -698,6 +702,9 @@ public class Filter100XMLDecoder {
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
+        // this is a deegree extension over Filter 1.0.0 spec.        
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );        
+        
         xmlStream.nextTag();
         Expression expression = parseExpression( xmlStream );
 
@@ -715,12 +722,15 @@ public class Filter100XMLDecoder {
 
         xmlStream.nextTag(); // </ expression >
         xmlStream.nextTag(); // </UowerBoundary>
-        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
+        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary, matchCase );
     }
 
     private static PropertyIsLike parsePropertyIsLikeOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
+        // this is a deegree extension over Filter 1.0.0
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );        
+        
         String wildCard = getRequiredAttributeValue( xmlStream, "wildCard" );
         String singleChar = getRequiredAttributeValue( xmlStream, "singleChar" );
         String escapeChar = getRequiredAttributeValue( xmlStream, "escape" );
@@ -731,7 +741,7 @@ public class Filter100XMLDecoder {
         xmlStream.nextTag();
         Literal<?> literal = parseLiteral( xmlStream );
         xmlStream.nextTag();
-        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar );
+        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar, matchCase );
     }
 
     private static PropertyIsNull parsePropertyIsNullOperator( XMLStreamReader xmlStream )

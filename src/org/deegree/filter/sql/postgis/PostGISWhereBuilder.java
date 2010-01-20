@@ -54,6 +54,7 @@ import org.deegree.filter.comparison.PropertyIsGreaterThan;
 import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLessThan;
 import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
+import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Literal;
@@ -62,6 +63,7 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.sql.SpecialCharString;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -117,7 +119,7 @@ public class PostGISWhereBuilder {
         this.filter = filter;
         this.sortCrit = sortCrit;
         if ( filter != null ) {
-            process( filter.getOperator() );
+            buildWhere( filter.getOperator() );
         }
         if ( sortCrit != null ) {
             buildOrderBy( sortCrit );
@@ -182,134 +184,170 @@ public class PostGISWhereBuilder {
         return postSortCrit;
     }
 
-    private void process( Operator op )
+    private void buildWhere( Operator op )
                             throws FilterEvaluationException {
         switch ( op.getType() ) {
         case COMPARISON: {
-            process( (ComparisonOperator) op );
+            buildWhere( (ComparisonOperator) op );
             break;
         }
         case LOGICAL: {
-            process( (LogicalOperator) op );
+            buildWhere( (LogicalOperator) op );
             break;
         }
         case SPATIAL: {
-            process( (SpatialOperator) op );
+            buildWhere( (SpatialOperator) op );
             break;
         }
         }
     }
 
-    private void process( ComparisonOperator op )
+    private void buildWhere( ComparisonOperator op )
                             throws FilterEvaluationException {
         switch ( op.getSubType() ) {
         case PROPERTY_IS_BETWEEN: {
             PropertyIsBetween propIsBetween = (PropertyIsBetween) op;
-            process( propIsBetween.getUpperBoundary(), false );
+            buildWhere( propIsBetween.getUpperBoundary(), !propIsBetween.getMatchCase() );
             whereClause.append( ">=" );
-            process( propIsBetween.getExpression(), false );
+            buildWhere( propIsBetween.getExpression(), !propIsBetween.getMatchCase() );
             whereClause.append( "<=" );
-            process( propIsBetween.getLowerBoundary(), false );
+            buildWhere( propIsBetween.getLowerBoundary(), !propIsBetween.getMatchCase() );
             break;
         }
         case PROPERTY_IS_EQUAL_TO: {
             PropertyIsEqualTo propIsEqualTo = (PropertyIsEqualTo) op;
-            process( propIsEqualTo.getParameter1(), !propIsEqualTo.getMatchCase() );
+            buildWhere( propIsEqualTo.getParameter1(), !propIsEqualTo.getMatchCase() );
             whereClause.append( "=" );
-            process( propIsEqualTo.getParameter2(), !propIsEqualTo.getMatchCase() );
+            buildWhere( propIsEqualTo.getParameter2(), !propIsEqualTo.getMatchCase() );
             break;
         }
         case PROPERTY_IS_GREATER_THAN: {
             PropertyIsGreaterThan propIsGT = (PropertyIsGreaterThan) op;
-            process( propIsGT.getParameter1(), !propIsGT.getMatchCase() );
+            buildWhere( propIsGT.getParameter1(), !propIsGT.getMatchCase() );
             whereClause.append( ">" );
-            process( propIsGT.getParameter2(), !propIsGT.getMatchCase() );
+            buildWhere( propIsGT.getParameter2(), !propIsGT.getMatchCase() );
             break;
         }
         case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO: {
             PropertyIsGreaterThanOrEqualTo propIsGTOrEqualTo = (PropertyIsGreaterThanOrEqualTo) op;
-            process( propIsGTOrEqualTo.getParameter1(), !propIsGTOrEqualTo.getMatchCase() );
+            buildWhere( propIsGTOrEqualTo.getParameter1(), !propIsGTOrEqualTo.getMatchCase() );
             whereClause.append( ">=" );
-            process( propIsGTOrEqualTo.getParameter2(), !propIsGTOrEqualTo.getMatchCase() );
+            buildWhere( propIsGTOrEqualTo.getParameter2(), !propIsGTOrEqualTo.getMatchCase() );
             break;
         }
         case PROPERTY_IS_LESS_THAN: {
             PropertyIsLessThan propIsLT = (PropertyIsLessThan) op;
-            process( propIsLT.getParameter1(), !propIsLT.getMatchCase() );
+            buildWhere( propIsLT.getParameter1(), !propIsLT.getMatchCase() );
             whereClause.append( "<" );
-            process( propIsLT.getParameter2(), !propIsLT.getMatchCase() );
+            buildWhere( propIsLT.getParameter2(), !propIsLT.getMatchCase() );
             break;
         }
         case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO: {
             PropertyIsLessThanOrEqualTo propIsLTOrEqualTo = (PropertyIsLessThanOrEqualTo) op;
-            process( propIsLTOrEqualTo.getParameter1(), !propIsLTOrEqualTo.getMatchCase() );
+            buildWhere( propIsLTOrEqualTo.getParameter1(), !propIsLTOrEqualTo.getMatchCase() );
             whereClause.append( "<=" );
-            process( propIsLTOrEqualTo.getParameter2(), !propIsLTOrEqualTo.getMatchCase() );
+            buildWhere( propIsLTOrEqualTo.getParameter2(), !propIsLTOrEqualTo.getMatchCase() );
             break;
         }
         case PROPERTY_IS_LIKE: {
-            // TODO
+            buildWhere( (PropertyIsLike) op );
             break;
         }
         case PROPERTY_IS_NOT_EQUAL_TO: {
             PropertyIsNotEqualTo propIsNotEqualTo = (PropertyIsNotEqualTo) op;
-            process( propIsNotEqualTo.getParameter1(), !propIsNotEqualTo.getMatchCase() );
+            buildWhere( propIsNotEqualTo.getParameter1(), !propIsNotEqualTo.getMatchCase() );
             whereClause.append( "<>" );
-            process( propIsNotEqualTo.getParameter2(), !propIsNotEqualTo.getMatchCase() );
+            buildWhere( propIsNotEqualTo.getParameter2(), !propIsNotEqualTo.getMatchCase() );
             break;
         }
         case PROPERTY_IS_NULL: {
             PropertyIsNull propIsNull = (PropertyIsNull) op;
-            process( propIsNull.getPropertyName(), false );
+            buildWhere( propIsNull.getPropertyName(), false );
             whereClause.append( " IS NULL" );
             break;
         }
         }
     }
 
-    private void process( LogicalOperator op )
+    /**
+     * NOTE: Currently, this method appends the generated argument inline, i.e. not using a <code>?</code>. This is
+     * because of a problem that occurred in PostgreSQL; the execution of the inline version is *much* faster (at least
+     * with version 8.0).
+     * 
+     * @param op
+     * 
+     * @throws FilterEvaluationException
+     */
+    private void buildWhere( PropertyIsLike op )
+                            throws FilterEvaluationException {
+
+        String literal = op.getLiteral().getValue().toString();
+        String escape = "" + op.getEscapeChar();
+        String wildCard = "" + op.getWildCard();
+        String singleChar = "" + op.getSingleChar();
+
+        SpecialCharString specialString = new SpecialCharString( literal, wildCard, singleChar, escape );
+        // TODO lowerCasing?
+        String sqlEncoded = specialString.toSQL(!op.getMatchCase());
+
+        // if isMatchCase == false surround first argument with LOWER (...) and convert characters
+        // in second argument to lower case
+        if ( op.getMatchCase() ) {
+            buildWhere( op.getPropertyName() );
+        } else {
+            whereClause.append( "LOWER(" );
+            buildWhere( op.getPropertyName() );
+            whereClause.append( ')' );
+        }
+
+        whereClause.append( "::TEXT LIKE '" );
+        whereClause.append( sqlEncoded );
+        whereClause.append( "'" );
+    }
+
+    private void buildWhere( LogicalOperator op )
                             throws FilterEvaluationException {
         switch ( op.getSubType() ) {
         case AND: {
             whereClause.append( "(" );
-            process( op.getParams()[0] );
+            buildWhere( op.getParams()[0] );
             whereClause.append( ")" );
             for ( int i = 1; i < op.getParams().length; i++ ) {
                 whereClause.append( " AND (" );
-                process( op.getParams()[i] );
+                buildWhere( op.getParams()[i] );
                 whereClause.append( ")" );
             }
             break;
         }
         case OR: {
             whereClause.append( "(" );
-            process( op.getParams()[0] );
+            buildWhere( op.getParams()[0] );
             whereClause.append( ")" );
             for ( int i = 1; i < op.getParams().length; i++ ) {
                 whereClause.append( " OR (" );
-                process( op.getParams()[i] );
+                buildWhere( op.getParams()[i] );
                 whereClause.append( ")" );
             }
             break;
         }
         case NOT: {
             whereClause.append( "NOT (" );
-            process( op.getParams()[0] );
+            buildWhere( op.getParams()[0] );
             whereClause.append( ")" );
             break;
         }
         }
     }
 
-    private void process( SpatialOperator op )
+    private void buildWhere( SpatialOperator op )
                             throws FilterEvaluationException {
         switch ( op.getSubType() ) {
         case BBOX: {
             BBOX bbox = (BBOX) op;
-            processGeometryArgument( bbox.getPropertyName() );
+            buildWhere( bbox.getPropertyName() );
             whereClause.append( " && " );
             try {
-                processGeometryArgument( bbox.getBoundingBox() );
+                buildWhere( bbox.getBoundingBox() );
             } catch ( SQLException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -349,7 +387,7 @@ public class PostGISWhereBuilder {
         }
     }
 
-    private void processGeometryArgument( PropertyName propName )
+    private void buildWhere( PropertyName propName )
                             throws FilterEvaluationException {
 
         PropertyNameMapping propMapping = mapping.getMapping( propName );
@@ -362,28 +400,28 @@ public class PostGISWhereBuilder {
         }
     }
 
-    private void processGeometryArgument( Geometry geometry )
+    private void buildWhere( Geometry geometry )
                             throws SQLException {
         whereClause.append( "GeomFromWKB(?,-1)" );
         whereParams.add( TypeMangler.toPostGIS( geometry ) );
     }
 
-    private void process( Expression expr, boolean lowerCase )
+    private void buildWhere( Expression expr, boolean lowerCase )
                             throws FilterEvaluationException {
         switch ( expr.getType() ) {
         case ADD: {
             whereClause.append( "(" );
-            process( expr.getParams()[0], false );
+            buildWhere( expr.getParams()[0], false );
             whereClause.append( "+" );
-            process( expr.getParams()[1], false );
+            buildWhere( expr.getParams()[1], false );
             whereClause.append( ")" );
             break;
         }
         case DIV: {
             whereClause.append( "(" );
-            process( expr.getParams()[0], false );
+            buildWhere( expr.getParams()[0], false );
             whereClause.append( "/" );
-            process( expr.getParams()[1], false );
+            buildWhere( expr.getParams()[1], false );
             whereClause.append( ")" );
             break;
         }
@@ -401,9 +439,9 @@ public class PostGISWhereBuilder {
         }
         case MUL: {
             whereClause.append( "(" );
-            process( expr.getParams()[0], false );
+            buildWhere( expr.getParams()[0], false );
             whereClause.append( "*" );
-            process( expr.getParams()[1], false );
+            buildWhere( expr.getParams()[1], false );
             whereClause.append( ")" );
             break;
         }
@@ -418,9 +456,9 @@ public class PostGISWhereBuilder {
         }
         case SUB: {
             whereClause.append( "(" );
-            process( expr.getParams()[0], false );
+            buildWhere( expr.getParams()[0], false );
             whereClause.append( "-" );
-            process( expr.getParams()[1], false );
+            buildWhere( expr.getParams()[1], false );
             whereClause.append( ")" );
             break;
         }

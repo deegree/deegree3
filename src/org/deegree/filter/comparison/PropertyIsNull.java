@@ -53,6 +53,7 @@ public class PropertyIsNull extends ComparisonOperator {
     private final PropertyName propName;
 
     public PropertyIsNull( PropertyName propName ) {
+        super (true);
         this.propName = propName;
     }
 

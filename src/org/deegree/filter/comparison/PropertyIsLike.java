@@ -52,15 +52,17 @@ import org.deegree.geometry.Geometry;
  */
 public class PropertyIsLike extends ComparisonOperator {
 
-    private final char wildCard;
+    private final String wildCard;
 
-    private final char singleChar;
+    private final String singleChar;
 
-    private final char escapeChar;
+    private final String escapeChar;
 
     private final PropertyName propName;
 
     private final Literal literal;
+
+    private final boolean matchCase;
 
     /**
      * @param propName
@@ -68,17 +70,17 @@ public class PropertyIsLike extends ComparisonOperator {
      * @param wildCard
      * @param singleChar
      * @param escapeChar
+     * @param matchCase 
      */
-    public PropertyIsLike( PropertyName propName, Literal literal, String wildCard, String singleChar, String escapeChar ) {
+    public PropertyIsLike( PropertyName propName, Literal literal, String wildCard, String singleChar,
+                           String escapeChar, boolean matchCase ) {
+        super (matchCase);
         this.propName = propName;
         this.literal = literal;
-        if ( wildCard.length() != 1 || singleChar.length() != 1 || escapeChar.length() != 1 ) {
-            String msg = "At the moment, wildCard, singleChar and escapeChar must each be exactly one character.";
-            throw new UnsupportedOperationException( msg );
-        }
-        this.wildCard = wildCard.charAt( 0 );
-        this.singleChar = singleChar.charAt( 0 );
-        this.escapeChar = escapeChar.charAt( 0 );
+        this.wildCard = wildCard;
+        this.singleChar = singleChar;
+        this.escapeChar = escapeChar;
+        this.matchCase = matchCase;
     }
 
     public PropertyName getPropertyName() {
@@ -109,14 +111,14 @@ public class PropertyIsLike extends ComparisonOperator {
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        
+
         Object[] paramValues = propName.evaluate( object );
 
         for ( Object value : paramValues ) {
-            if (!(value instanceof Geometry)) {
+            if ( !( value instanceof Geometry ) ) {
                 if ( matches( literal.getValue().toString(), value.toString() ) ) {
                     return true;
-                }                
+                }
             }
         }
         return false;
@@ -135,8 +137,9 @@ public class PropertyIsLike extends ComparisonOperator {
      * @param buffer
      *            the <code>String</code> to test
      * @return true, if the <code>String</code> matches the pattern
+     * @throws FilterEvaluationException 
      */
-    private boolean matches( String pattern, String buffer ) {
+    private boolean matches( String pattern, String buffer ) throws FilterEvaluationException {
 
         // match must be successful if both the pattern and the buffer are empty
         if ( pattern.length() == 0 && buffer.length() == 0 ) {
@@ -150,6 +153,14 @@ public class PropertyIsLike extends ComparisonOperator {
         int length = pattern.length();
         char specialChar = '\0';
 
+        if ( wildCard.length() != 1 || singleChar.length() != 1 || escapeChar.length() != 1 ) {
+            String msg = "At the moment, wildCard, singleChar and escapeChar must each be exactly one character.";
+            throw new FilterEvaluationException( msg );
+        }        
+        char escapeChar = this.escapeChar.charAt( 0 );
+        char singleChar = this.singleChar.charAt( 0 );
+        char wildCard = this.wildCard.charAt( 0 );
+        
         for ( int i = 0; i < length; i++ ) {
             char c = pattern.charAt( i );
 
@@ -216,9 +227,9 @@ public class PropertyIsLike extends ComparisonOperator {
         s += literal.toString( indent + "  " );
         return s;
     }
-    
+
     @Override
-    public Expression[] getParams () {
-        return new Expression [] {propName, literal};
-    }    
+    public Expression[] getParams() {
+        return new Expression[] { propName, literal };
+    }
 }

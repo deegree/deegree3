@@ -56,7 +56,8 @@ public class PropertyIsBetween extends ComparisonOperator {
 
     private final Expression expression;
 
-    public PropertyIsBetween( Expression expression, Expression lowerBoundary, Expression upperBoundary ) {
+    public PropertyIsBetween( Expression expression, Expression lowerBoundary, Expression upperBoundary, boolean matchCase ) {
+        super (matchCase);
         this.expression = expression;
         this.lowerBoundary = lowerBoundary;
         this.upperBoundary = upperBoundary;
@@ -83,7 +84,7 @@ public class PropertyIsBetween extends ComparisonOperator {
     @Override
     public SubType getSubType() {
         return SubType.PROPERTY_IS_BETWEEN;
-    }
+    }      
 
     @SuppressWarnings("unchecked")
     @Override

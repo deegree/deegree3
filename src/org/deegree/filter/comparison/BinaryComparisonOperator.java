@@ -51,9 +51,8 @@ public abstract class BinaryComparisonOperator extends ComparisonOperator {
 
     protected Expression param2;
 
-    protected boolean matchCase;
-
     protected BinaryComparisonOperator( Expression param1, Expression param2, boolean matchCase ) {
+        super( matchCase );
         this.param1 = param1;
         this.param2 = param2;
         this.matchCase = matchCase;
@@ -67,12 +66,8 @@ public abstract class BinaryComparisonOperator extends ComparisonOperator {
         return param2;
     }
 
-    public boolean getMatchCase() {
-        return matchCase;
-    }
-    
     @Override
-    public Expression[] getParams () {
-        return new Expression [] {param1, param2};
+    public Expression[] getParams() {
+        return new Expression[] { param1, param2 };
     }
 }
