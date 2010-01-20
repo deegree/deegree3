@@ -40,8 +40,9 @@
   </element>
   <complexType name="ISORecordStoreType">
     <complexContent>
-      <extension base="ds:RecordStoreType"/>
-      
+      <extension base="ds:RecordStoreType">
+      <attribute name="connId" type="string" use="required"/>
+      </extension>
     </complexContent>
   </complexType>
 
