@@ -65,7 +65,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -73,9 +77,11 @@ import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.record.persistence.GenericDatabaseDS;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
+import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGres;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.TransactionOperation;
 import org.deegree.record.publication.UpdateTransaction;
@@ -88,7 +94,7 @@ import org.deegree.record.publication.UpdateTransaction;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GenericRecordStore implements RecordStore {
+public class ISORecordStore implements RecordStore {
 
     private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
@@ -118,11 +124,13 @@ public class GenericRecordStore implements RecordStore {
         // typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
 
         typeNames.put( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ), 1 );
+        typeNames.put( new QName( "http://purl.org/dc/elements/1.1/", "", "dc" ), 1 );
         typeNames.put( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" ), 2 );
-
+        typeNames.put( new QName( "http://www.opengis.net/cat/csw/apiso/1.0", "", "apiso" ), 2 );
+        
     }
 
-    public GenericRecordStore( String connectionId ) {
+    public ISORecordStore( String connectionId ) {
         this.connectionId = connectionId;
     }
 
@@ -139,11 +147,11 @@ public class GenericRecordStore implements RecordStore {
             if ( typeName.equals( name ) ) {
 
                 // in = new FileInputStream( "../dc/dc.xsd" );
-                url = GenericRecordStore.class.getResource( "dc.xsd" );
+                url = ISORecordStore.class.getResource( "dc.xsd" );
 
             } else {
                 // in = new FileInputStream( "../gmd/gmd.xsd" );
-                url = GenericRecordStore.class.getResource( "gmd_metadata.xsd" );
+                url = ISORecordStore.class.getResource( "gmd_metadata.xsd" );
             }
         }
 
@@ -529,8 +537,8 @@ public class GenericRecordStore implements RecordStore {
         
         XMLStreamReader xmlReader;
         try {
-            FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
-            XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
+            //FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
+            //XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
             
             xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
             
@@ -539,10 +547,10 @@ public class GenericRecordStore implements RecordStore {
             xmlReader.nextTag();
             
             
-            XMLAdapter.writeElement( out, xmlReader );
+            //XMLAdapter.writeElement( out, xmlReader );
 
-            //XMLAdapter.writeElement( xmlWriter, xmlReader );
-            fout.close();
+            XMLAdapter.writeElement( xmlWriter, xmlReader );
+            //fout.close();
             xmlReader.close();
 
         } catch ( XMLStreamException e ) {
@@ -550,13 +558,13 @@ public class GenericRecordStore implements RecordStore {
         } catch ( FactoryConfigurationError e ) {
             e.printStackTrace();
         }
-        catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        catch ( FileNotFoundException e ) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch ( IOException e ) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -638,9 +646,35 @@ public class GenericRecordStore implements RecordStore {
         case UPDATE:
             
             UpdateTransaction upd = (UpdateTransaction) operations;
+            if(upd.getElement() != null){
+                ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement(), conn );
+                elementParsing.executeUpdateStatement();
+            }else{
+                Writer stream = new StringWriter();
+                XMLStreamWriter xmlUpdateWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
+                try {
+                    TransformatorPostGres filterExpression = new TransformatorPostGres( upd.getConstraint() );
+                    GenericDatabaseDS gdds = new GenericDatabaseDS( stream, ResultType.results,
+                                                                    SetOfReturnableElements.full, 100, 1,
+                                                                    filterExpression.getTable(), filterExpression.getColumn() );
+                    
+                    getRecords(xmlUpdateWriter, upd.getTypeName(), URI.create( upd.getTypeName().getNamespaceURI()), connection, gdds);
+                    
+                    InputStream in = getClass().getResourceAsStream( xmlUpdateWriter.toString() );
+                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
+                    StAXOMBuilder builder = new StAXOMBuilder( reader );
+                    OMDocument doc = builder.getDocument();
+                    OMElement omElement = doc.getOMDocumentElement();
+                
+                
+                } catch ( IOException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
             
-            ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement(), conn );
-            elementParsing.executeUpdateStatement();
+            
+            
 
             break;
 
