@@ -318,8 +318,8 @@ public class RasterDataFactory {
         if ( createCacheFile ) {
             cacheFile = cache.createCacheFile( cacheId );
         }
-        CacheRasterReader inMem = new CacheRasterReader( byteBuffer, view.width, view.height, cacheFile,
-                                                         createCacheFile, rdi, geoRef, cache );
+        RasterReader inMem = new CacheRasterReader( byteBuffer, view.width, view.height, cacheFile, createCacheFile,
+                                                    rdi, geoRef, cache );
         if ( createCacheFile ) {
             inMem = cache.addReader( inMem );
         }
@@ -348,7 +348,6 @@ public class RasterDataFactory {
      * @param bands
      * @param dataType
      * @param interleaveType
-     * @return
      */
     private static RasterDataInfo createRDI( byte[] noData, BandType[] bands, DataType dataType,
                                              InterleaveType interleaveType ) {
