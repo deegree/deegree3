@@ -45,6 +45,8 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.LinearRing;
 
@@ -57,6 +59,8 @@ import com.vividsolutions.jts.geom.LinearRing;
  * @version $Revision: $, $Date: 9 May 2008 13:09:29$
  */
 public class SurfaceLinearizer {
+
+    private static final Logger LOG = LoggerFactory.getLogger( SurfaceLinearizer.class );
 
     private GeometryFactory geomFac;
 
@@ -97,7 +101,7 @@ public class SurfaceLinearizer {
                                                        linearizedExteriorRing, interiorRings );
             break;
         }
-        default: {
+        case PolyhedralSurface: {
             List<? extends SurfacePatch> patches = surface.getPatches();
             List<PolygonPatch> linearizedPatches = new ArrayList<PolygonPatch>( patches.size() );
             for ( SurfacePatch patch : surface.getPatches() ) {
@@ -109,6 +113,12 @@ public class SurfaceLinearizer {
             }
             linearizedSurface = geomFac.createPolyhedralSurface( surface.getId(), surface.getCoordinateSystem(),
                                                                  linearizedPatches );
+        }
+        default: {
+            // TODO
+            LOG.warn( "The surface type " + surface.getSurfaceType()
+                      + " currently cannot be linearized. It is returns as it is" );
+            linearizedSurface = surface;
         }
         }
         return linearizedSurface;
