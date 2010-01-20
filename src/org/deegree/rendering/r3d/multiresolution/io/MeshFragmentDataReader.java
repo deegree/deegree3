@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.io;
 
 import java.io.File;
@@ -53,10 +53,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class opens a channel to a file containing meshfragments.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class MeshFragmentDataReader {
@@ -64,13 +64,14 @@ public class MeshFragmentDataReader {
     private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentDataReader.class );
 
     // TODO not static
-    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool( 300 * 1024 * 1024, 500 );
+    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool( 1000 * 1024 * 1024, 2000,
+                                                                                     "static_mesh" );
 
     private final FileChannel channel;
 
     /**
      * Construct access to a file containing mesh fragments.
-     *
+     * 
      * @param meshFragments
      * @throws FileNotFoundException
      */
@@ -80,7 +81,7 @@ public class MeshFragmentDataReader {
 
     /**
      * Read meshdata from the file.
-     *
+     * 
      * @param fragmentId
      * @param offset
      * @param length
