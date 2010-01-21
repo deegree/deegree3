@@ -72,6 +72,8 @@ public class DirectByteBufferPool {
 
     private String name;
 
+    private int id = 0;
+
     /**
      * Construct a direct byte buffer which may allocate buffers with given capacity
      * 
@@ -98,29 +100,36 @@ public class DirectByteBufferPool {
         PooledByteBuffer buffer;
 
         Set<PooledByteBuffer> freeBuffers = this.freeBuffers.get( capacity );
-        StringBuilder sb = new StringBuilder( name );
-        sb.append( "| requested: " ).append( capacity );
-        sb.append( "| tailMap: " ).append( freeBuffers );
-        sb.append( "| freebuffers: " ).append( this.freeBuffers.size() );
-        sb.append( "| allBuffers: " ).append( allBuffers.size() );
         // System.out.println( sb.toString() );
-        if ( freeBuffers != null && freeBuffers.size() > 0 ) {
-            // if ( name.startsWith( "static" ) && this.numBuffers > 202 ) {
-            // Thread.dumpStack();
-            // System.exit( 1 );
-            // }
+        if ( freeBuffers != null && !freeBuffers.isEmpty() ) {
+            if ( LOG.isDebugEnabled() ) {
+                StringBuilder sb = new StringBuilder( name );
+                sb.append( "| Found a free Buffer!" );
+                sb.append( "| requested: " ).append( capacity );
+                sb.append( "| tailMap: " ).append( freeBuffers );
+                sb.append( "| freebuffers: " ).append( this.freeBuffers.size() );
+                sb.append( "| allBuffers: " ).append( allBuffers.size() );
+                LOG.debug( sb.toString() );
+            }
 
             buffer = freeBuffers.iterator().next();
             buffer.getBuffer().rewind();
             freeBuffers.remove( buffer );
         } else {
+            if ( LOG.isDebugEnabled() ) {
+                StringBuilder sb = new StringBuilder( name );
+                sb.append( "| requested: " ).append( capacity );
+                sb.append( "| freebuffers: " ).append( this.freeBuffers.size() );
+                sb.append( "| allBuffers: " ).append( allBuffers.size() );
+                LOG.debug( sb.toString() );
+            }
             if ( totalCapacity + capacity > MAX_MEMORY_CAPACITY ) {
                 String msg = name + ": Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY
                              + ") exceeded, requested: " + capacity + ", freebuffers: " + this.freeBuffers.size()
                              + " totalBuffers: " + allBuffers.size();
                 throw new OutOfMemoryError( msg );
             }
-            buffer = new PooledByteBuffer( capacity, this );
+            buffer = new PooledByteBuffer( capacity, this, id++ );
 
             totalCapacity += capacity;
             allBuffers.add( buffer );
@@ -143,25 +152,19 @@ public class DirectByteBufferPool {
         PooledByteBuffer buffer = null;
 
         // get all free byte buffers with at least the given capacity
-        // SortedMap<Integer, Set<PooledByteBuffer>> tailMap = this.freeBuffers.tailMap( capacity );
-        Map<Integer, Set<PooledByteBuffer>> tailMap = this.freeBuffers;
+        Map<Integer, Set<PooledByteBuffer>> tailMap = new HashMap<Integer, Set<PooledByteBuffer>>();// this.freeBuffers.tailMap(
+        // capacity );
+        // Map<Integer, Set<PooledByteBuffer>> tailMap = this.freeBuffers;
 
-        StringBuilder sb = new StringBuilder( name );
-        sb.append( "| requested: " ).append( capacity );
-        sb.append( "| tailMap: " ).append( tailMap );
-        sb.append( "| freebuffers: " ).append( freeBuffers.size() );
-        sb.append( "| allBuffers: " ).append( allBuffers.size() );
-
-        // System.out.println( sb.toString() );
         // Set<PooledByteBuffer> freeBuffers = this.freeBuffers.get( capacity );
         // if ( freeBuffers != null && freeBuffers.size() > 0 ) {
-        if ( tailMap != null && !tailMap.isEmpty() ) {
+        if ( /* tailMap != null && */!tailMap.isEmpty() ) {
             Iterator<Set<PooledByteBuffer>> tailIt = tailMap.values().iterator();
             while ( tailIt.hasNext() && buffer == null ) {
                 Set<PooledByteBuffer> frBuffers = tailIt.next();
                 if ( frBuffers != null && !frBuffers.isEmpty() ) {
                     Iterator<PooledByteBuffer> frBufIt = frBuffers.iterator();
-                    while ( frBufIt.hasNext() && buffer == null ) {
+                    while ( buffer == null && frBufIt.hasNext() ) {
                         buffer = frBufIt.next();
                         if ( buffer != null ) {
                             buffer.clear();
@@ -169,18 +172,36 @@ public class DirectByteBufferPool {
                             buffer.limit( capacity );
                         }
                     }
-                    if ( buffer != null ) {
-                        frBuffers.remove( buffer );
-                    }
                 }
+                if ( buffer != null && frBuffers != null ) {
+                    frBuffers.remove( buffer );
+                }
+            }
+            if ( LOG.isDebugEnabled() ) {
+                StringBuilder sb = new StringBuilder( name );
+                sb.append( "| Found a free Buffer!" );
+                sb.append( "| requested: " ).append( capacity );
+                sb.append( "| tailMap: " ).append( tailMap );
+                sb.append( "| freebuffers: " ).append( freeBuffers.size() );
+                sb.append( "| allBuffers: " ).append( allBuffers.size() );
+                LOG.debug( sb.toString() );
             }
         }
         if ( buffer == null ) {
+            if ( LOG.isDebugEnabled() ) {
+                StringBuilder sb = new StringBuilder( name );
+                sb.append( "| requested: " ).append( capacity );
+                sb.append( "| tailMap: " ).append( tailMap );
+                sb.append( "| freebuffers: " ).append( freeBuffers.size() );
+                sb.append( "| allBuffers: " ).append( allBuffers.size() );
+                LOG.debug( sb.toString() );
+            }
             if ( totalCapacity + capacity > MAX_MEMORY_CAPACITY ) {
                 String msg = name + ":Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY + ") exceeded";
                 throw new OutOfMemoryError( msg );
             }
-            buffer = new PooledByteBuffer( capacity, this );
+
+            buffer = new PooledByteBuffer( capacity, this, id++ );
             totalCapacity += capacity;
             allBuffers.add( buffer );
             LOG.debug( "New buffer: " + buffer );
@@ -218,5 +239,16 @@ public class DirectByteBufferPool {
     @Override
     public String toString() {
         return "Number of buffers: " + this.allBuffers.size() + ", total capacity: " + totalCapacity;
+    }
+
+    /**
+     * @param capacity
+     * @return true if the pool has more free space.
+     */
+    public boolean canAllocate( int capacity ) {
+        boolean result = false;
+        Set<PooledByteBuffer> capBuffers = freeBuffers.get( capacity );
+        result = capBuffers != null && !capBuffers.isEmpty();
+        return result || ( ( totalCapacity + capacity ) <= MAX_MEMORY_CAPACITY );
     }
 }

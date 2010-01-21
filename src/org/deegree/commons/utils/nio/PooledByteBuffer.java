@@ -52,16 +52,19 @@ public class PooledByteBuffer {
 
     private ByteBuffer buffer;
 
+    private long id;
+
     /**
      * Only intantiable from the {@link DirectByteBufferPool}.
      * 
      * @param capacity
      * @param pool
      */
-    PooledByteBuffer( int capacity, DirectByteBufferPool pool ) {
+    PooledByteBuffer( int capacity, DirectByteBufferPool pool, long id ) {
         this.buffer = ByteBuffer.allocateDirect( capacity );
         this.buffer.order( ByteOrder.nativeOrder() );
         this.pool = pool;
+        this.id = id;
     }
 
     /**
@@ -175,4 +178,41 @@ public class PooledByteBuffer {
         }
     }
 
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof PooledByteBuffer ) {
+            final PooledByteBuffer that = (PooledByteBuffer) other;
+            return this.id == that.id;
+        }
+        return false;
+    }
+
+    /**
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long code = 32452843;
+        long tmp = (int) ( id ^ ( id >>> 32 ) );
+        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+        return (int) ( code >>> 32 ) ^ (int) code;
+    }
 }
