@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,40 +32,48 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
+import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
-import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTile;
 
 /**
- * Implementations provide texture data for texturing of a 2D-domain made up of {@link RenderMeshFragment}
- * instances.
- *
+ * Implementations provide texture data for texturing of a 2D-domain made up of {@link RenderMeshFragment} instances.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public interface TextureTileProvider {
 
     /**
      * Returns the provided resolution (in world units per pixel).
-     *
+     * 
      * @return the provided resolution
      */
     public double getNativeResolution();
 
     /**
-     * Returns a {@link TextureTile} for the given area and resolution.
-     *
-     * @param minX
-     * @param minY
-     * @param maxX
-     * @param maxY
-     * @return matching texture tile
+     * Get a {@link TextureTile} best fitting the request.
+     * 
+     * @param request
+     *            information about the request.
+     * @return a texture tile.
      */
-    public TextureTile getTextureTile( float minX, float minY, float maxX, float maxY );
+    public TextureTile getTextureTile( TextureTileRequest request );
 
+    /**
+     * 
+     * @param unitsPerPixel
+     * @return true if a the provider could deliver a texture for the given resolution.
+     */
+    public boolean hasTextureForResolution( double unitsPerPixel );
+
+    /**
+     * @return the bounding box for this {@link TextureTileProvider}
+     */
+    public Envelope getEnvelope();
 }
