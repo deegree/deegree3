@@ -14,31 +14,31 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for RequestNamesType.
+ * <p>Java class for OriginLocation.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="RequestNamesType">
+ * &lt;simpleType name="OriginLocation">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="GetMap"/>
- *     &lt;enumeration value="GetFeatureInfo"/>
+ *     &lt;enumeration value="center"/>
+ *     &lt;enumeration value="outer"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "RequestNamesType")
+@XmlType(name = "OriginLocation")
 @XmlEnum
-public enum RequestNamesType {
+public enum OriginLocation {
 
-    @XmlEnumValue("GetMap")
-    GET_MAP("GetMap"),
-    @XmlEnumValue("GetFeatureInfo")
-    GET_FEATURE_INFO("GetFeatureInfo");
+    @XmlEnumValue("center")
+    CENTER("center"),
+    @XmlEnumValue("outer")
+    OUTER("outer");
     private final String value;
 
-    RequestNamesType(String v) {
+    OriginLocation(String v) {
         value = v;
     }
 
@@ -46,8 +46,8 @@ public enum RequestNamesType {
         return value;
     }
 
-    public static RequestNamesType fromValue(String v) {
-        for (RequestNamesType c: RequestNamesType.values()) {
+    public static OriginLocation fromValue(String v) {
+        for (OriginLocation c: OriginLocation.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

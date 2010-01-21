@@ -14,31 +14,43 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for RequestNamesType.
+ * <p>Java class for NoDataType.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="RequestNamesType">
+ * &lt;simpleType name="NoDataType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="GetMap"/>
- *     &lt;enumeration value="GetFeatureInfo"/>
+ *     &lt;enumeration value="double"/>
+ *     &lt;enumeration value="float"/>
+ *     &lt;enumeration value="int"/>
+ *     &lt;enumeration value="short"/>
+ *     &lt;enumeration value="ushort"/>
+ *     &lt;enumeration value="ubyte"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "RequestNamesType")
+@XmlType(name = "NoDataType")
 @XmlEnum
-public enum RequestNamesType {
+public enum NoDataType {
 
-    @XmlEnumValue("GetMap")
-    GET_MAP("GetMap"),
-    @XmlEnumValue("GetFeatureInfo")
-    GET_FEATURE_INFO("GetFeatureInfo");
+    @XmlEnumValue("double")
+    DOUBLE("double"),
+    @XmlEnumValue("float")
+    FLOAT("float"),
+    @XmlEnumValue("int")
+    INT("int"),
+    @XmlEnumValue("short")
+    SHORT("short"),
+    @XmlEnumValue("ushort")
+    USHORT("ushort"),
+    @XmlEnumValue("ubyte")
+    UBYTE("ubyte");
     private final String value;
 
-    RequestNamesType(String v) {
+    NoDataType(String v) {
         value = v;
     }
 
@@ -46,8 +58,8 @@ public enum RequestNamesType {
         return value;
     }
 
-    public static RequestNamesType fromValue(String v) {
-        for (RequestNamesType c: RequestNamesType.values()) {
+    public static NoDataType fromValue(String v) {
+        for (NoDataType c: NoDataType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }
