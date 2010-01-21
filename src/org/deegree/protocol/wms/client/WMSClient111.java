@@ -307,7 +307,7 @@ public class WMSClient111 {
 
         OMElement elem = capabilities.getElement( capabilities.getRootElement(), new XPath( "//Layer[Name = '" + layer
                                                                                             + "']", null ) );
-        while ( elem.getLocalName().equals( "Layer" ) ) {
+        while ( elem != null && elem.getLocalName().equals( "Layer" ) ) {
             OMElement bbox = capabilities.getElement( elem, new XPath( "BoundingBox[@SRS = '" + srs + "']", null ) );
             if ( bbox != null ) {
                 try {
