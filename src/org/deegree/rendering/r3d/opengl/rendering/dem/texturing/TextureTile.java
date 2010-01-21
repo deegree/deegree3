@@ -36,9 +36,14 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.nio.ByteBuffer;
 
 import javax.media.opengl.GL;
+
+import org.deegree.commons.utils.nio.PooledByteBuffer;
+import org.slf4j.Logger;
 
 /**
  * 
@@ -58,22 +63,24 @@ import javax.media.opengl.GL;
  */
 public class TextureTile {
 
+    private static final Logger LOG = getLogger( TextureTile.class );
+
     private int[] textureID;
 
-    private float minX, minY, maxX, maxY;
+    private double minX, minY, maxX, maxY;
 
-    private float metersPerPixel;
+    private double metersPerPixel;
 
-    private int pixelsX, pixelsY;
+    private int tWidth, tHeight;
 
     private ByteBuffer imageData;
-
-    private static int idsInUse = 0;
 
     // counts the number of references, if 0, data can be unloaded
     private int numReferences;
 
     private boolean hasAlpha;
+
+    private PooledByteBuffer pooledBuffer;
 
     /**
      * Construct a new texture tile.
@@ -82,13 +89,13 @@ public class TextureTile {
      * @param minY
      * @param maxX
      * @param maxY
-     * @param pixelsX
-     * @param pixelsY
+     * @param textureWidth
+     * @param textureHeight
      * @param imageData
      * @param hasAlpha
      */
-    public TextureTile( float minX, float minY, float maxX, float maxY, int pixelsX, int pixelsY, ByteBuffer imageData,
-                        boolean hasAlpha ) {
+    public TextureTile( double minX, double minY, double maxX, double maxY, int textureWidth, int textureHeight,
+                        ByteBuffer imageData, boolean hasAlpha ) {
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
@@ -96,15 +103,46 @@ public class TextureTile {
 
         // rb: what to do with lines?
         if ( maxX != minX ) {
-            metersPerPixel = ( maxX - minX ) / pixelsX;
+            metersPerPixel = ( maxX - minX ) / textureWidth;
         } else {
-            metersPerPixel = ( maxY - minY ) / pixelsY;
+            metersPerPixel = ( maxY - minY ) / textureWidth;
         }
 
-        this.pixelsX = pixelsX;
-        this.pixelsY = pixelsY;
+        this.tWidth = textureWidth;
+        this.tHeight = textureHeight;
         this.imageData = imageData;
         this.hasAlpha = hasAlpha;
+    }
+
+    /**
+     * Construct a new texture tile.
+     * 
+     * @param minX
+     * @param minY
+     * @param maxX
+     * @param maxY
+     * @param metersPerPixel
+     *            the resolution of a pixel in meters.
+     * @param textureWidth
+     * @param textureHeight
+     * @param pooledBuffer
+     * @param hasAlpha
+     */
+    public TextureTile( double minX, double minY, double maxX, double maxY, float metersPerPixel, int textureWidth,
+                        int textureHeight, PooledByteBuffer pooledBuffer, boolean hasAlpha ) {
+        this( minX, minY, maxX, maxY, textureWidth, textureHeight, pooledBuffer.getBuffer(), hasAlpha );
+        this.pooledBuffer = pooledBuffer;
+        this.metersPerPixel = metersPerPixel;
+    }
+
+    /**
+     * Clean up all reference to the byte buffer.
+     */
+    public void dispose() {
+        if ( this.pooledBuffer != null ) {
+            this.pooledBuffer.free();
+        }
+        this.imageData = null;
     }
 
     /**
@@ -117,35 +155,35 @@ public class TextureTile {
     /**
      * @return the min x position in world coordinates.
      */
-    public float getMinX() {
+    public double getMinX() {
         return minX;
     }
 
     /**
      * @return the min y position in world coordinates.
      */
-    public float getMinY() {
+    public double getMinY() {
         return minY;
     }
 
     /**
      * @return the max x position in world coordinates.
      */
-    public float getMaxX() {
+    public double getMaxX() {
         return maxX;
     }
 
     /**
      * @return the max Y position in world coordinates.
      */
-    public float getMaxY() {
+    public double getMaxY() {
         return maxY;
     }
 
     /**
      * @return the number of meters this texture projects onto one pixel.
      */
-    public float getMetersPerPixel() {
+    public double getMetersPerPixel() {
         return metersPerPixel;
     }
 
@@ -153,16 +191,16 @@ public class TextureTile {
      * 
      * @return the width of the image.
      */
-    public int getPixelsX() {
-        return pixelsX;
+    public int getWidth() {
+        return tWidth;
     }
 
     /**
      * 
      * @return the height of the image.
      */
-    public int getPixelsY() {
-        return pixelsY;
+    public int getHeight() {
+        return tHeight;
     }
 
     /**
@@ -171,6 +209,7 @@ public class TextureTile {
      * @return the opengl texture id.
      */
     public int enable( GL gl ) {
+        System.out.println( "Enabling textureTile: " + numReferences );
         numReferences++;
         loadToGPU( gl );
         return textureID[0];
@@ -187,9 +226,15 @@ public class TextureTile {
             throw new RuntimeException();
         }
         if ( numReferences == 0 ) {
+            LOG.debug( "disabling and freeing texture memory." );
             gl.glDeleteTextures( 1, textureID, 0 );
             textureID = null;
-            idsInUse--;
+            if ( pooledBuffer != null ) {
+                pooledBuffer.free();
+            }
+            if ( imageData != null ) {
+                imageData = null;
+            }
         }
     }
 
@@ -201,23 +246,26 @@ public class TextureTile {
     private void loadToGPU( GL gl ) {
         if ( textureID == null ) {
             textureID = new int[1];
-            idsInUse++;
             gl.glGenTextures( 1, textureID, 0 );
             gl.glBindTexture( GL.GL_TEXTURE_2D, textureID[0] );
             gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
             gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP );
             gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );
             gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );
-            imageData.rewind();
-
-            if ( hasAlpha ) {
-                gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, pixelsX, pixelsY, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
-                                 imageData );
+            if ( imageData != null && imageData.capacity() > 0 ) {
+                imageData.rewind();
+                if ( hasAlpha ) {
+                    gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tWidth, tHeight, 0, GL.GL_RGBA,
+                                     GL.GL_UNSIGNED_BYTE, imageData );
+                } else {
+                    gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, tWidth, tHeight, 0, GL.GL_RGB,
+                                     GL.GL_UNSIGNED_BYTE, imageData );
+                }
             } else {
-                gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, pixelsX, pixelsY, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE,
-                                 imageData );
+                LOG.warn( "The texture tile has no data set (anymore?) might their be a cache problem?" );
             }
         }
+
     }
 
     @Override

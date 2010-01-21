@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
 import java.io.IOException;
@@ -43,17 +43,17 @@ import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
 /**
  * Encapsulates the bounding box and approximation error for a fragment of a {@link MultiresolutionMesh} and provides
  * access to the actual geometry data.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class MeshFragment implements Comparable<MeshFragment> {
 
     /**
      * Size of binary representation (in bytes).
-     *
+     * 
      * NOTE: This is just the meta information of the patch, not the geometry data.
      */
     public static int SIZE = 40;
@@ -79,6 +79,8 @@ public class MeshFragment implements Comparable<MeshFragment> {
 
     private MeshFragmentDataReader patchReader;
 
+    private int vertices;
+
     MeshFragment( int id, ByteBuffer buffer, MeshFragmentDataReader patchReader ) {
         this.id = id;
         this.patchReader = patchReader;
@@ -91,6 +93,14 @@ public class MeshFragment implements Comparable<MeshFragment> {
         this.error = buffer.getFloat();
         this.blobPosition = buffer.getLong();
         this.length = buffer.getInt();
+        this.vertices = this.length / 3;
+    }
+
+    /**
+     * @return the number of vertices of this mesh fragment.
+     */
+    public int getVertices() {
+        return vertices;
     }
 
     /**
@@ -113,7 +123,7 @@ public class MeshFragment implements Comparable<MeshFragment> {
      * NOTE: Calling this method usually involves I/O and memory allocation operations and the caller should probably
      * incorporate caching mechanisms to reduce the number of calls.
      * </p>
-     *
+     * 
      * @return the actual geometry data of the fragment
      * @throws IOException
      */
@@ -124,7 +134,7 @@ public class MeshFragment implements Comparable<MeshFragment> {
 
     /**
      * Save this fragment to the given ByteBuffer.
-     *
+     * 
      * @param target
      * @param minX
      * @param minY
@@ -151,7 +161,7 @@ public class MeshFragment implements Comparable<MeshFragment> {
 
     /**
      * Save this fragment to the given byte buffer.
-     *
+     * 
      * @param target
      * @param bbox
      * @param error

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,27 +32,27 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
 /**
  * Represents the request for a {@link TextureTile}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class TextureTileRequest {
 
-    private float minX;
+    private double minX;
 
-    private float minY;
+    private double minY;
 
-    private float maxX;
+    private double maxX;
 
-    private float maxY;
+    private double maxY;
 
     private float metersPerPixel;
 
@@ -76,7 +76,7 @@ public class TextureTileRequest {
      * <li>the meters per pixel of the other request is less than or equal to the meters per pixel of this request</li>
      * </ul>
      * </p>
-     *
+     * 
      * @param that
      * @return true, if this request supersedes the given request, false otherwise
      */
@@ -94,7 +94,7 @@ public class TextureTileRequest {
      * <li>the meters per pixel of the other request is less than or equal to the meters per pixel of this request</li>
      * </ul>
      * </p>
-     *
+     * 
      * @param that
      * @return true, if this request supersedes the given request, false otherwise
      */
@@ -105,7 +105,7 @@ public class TextureTileRequest {
 
     /**
      * Merge two requests.
-     *
+     * 
      * @param otherRequest
      */
     public void merge( TextureTileRequest otherRequest ) {
@@ -129,28 +129,28 @@ public class TextureTileRequest {
     /**
      * @return min x position
      */
-    public float getMinX() {
+    public double getMinX() {
         return minX;
     }
 
     /**
      * @return min y position
      */
-    public float getMinY() {
+    public double getMinY() {
         return minY;
     }
 
     /**
      * @return max x position
      */
-    public float getMaxX() {
+    public double getMaxX() {
         return maxX;
     }
 
     /**
      * @return max y position
      */
-    public float getMaxY() {
+    public double getMaxY() {
         return maxY;
     }
 
@@ -167,7 +167,7 @@ public class TextureTileRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if two request share a corner.
      */
@@ -177,7 +177,7 @@ public class TextureTileRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if the two request share the North-West corner.
      */
@@ -186,7 +186,7 @@ public class TextureTileRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if the two request share the North-East corner.
      */
@@ -195,7 +195,7 @@ public class TextureTileRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if the two request share the South-West corner.
      */
@@ -204,7 +204,7 @@ public class TextureTileRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if the two request share the South-East corner.
      */

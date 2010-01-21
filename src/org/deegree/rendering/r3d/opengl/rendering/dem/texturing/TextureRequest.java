@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
@@ -40,23 +40,23 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 
 /**
  * Represents the request for a {@link FragmentTexture} for a {@link RenderMeshFragment}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class TextureRequest {
 
     private float MIN_METERS_PER_PIXEL = 0.09f;
 
-    float minX;
+    double minX;
 
-    float minY;
+    double minY;
 
-    float maxX;
+    double maxX;
 
-    float maxY;
+    double maxY;
 
     float metersPerPixel;
 
@@ -64,7 +64,7 @@ public class TextureRequest {
 
     /**
      * Init a request
-     *
+     * 
      * @param fragment
      * @param minX
      * @param minY
@@ -72,16 +72,16 @@ public class TextureRequest {
      * @param maxY
      * @param metersPerPixel
      */
-    public TextureRequest( RenderMeshFragment fragment, float minX, float minY, float maxX, float maxY,
+    public TextureRequest( RenderMeshFragment fragment, double minX, double minY, double maxX, double maxY,
                            float metersPerPixel ) {
         this.fragment = fragment;
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
-        if ( metersPerPixel < MIN_METERS_PER_PIXEL ) {
-            metersPerPixel = MIN_METERS_PER_PIXEL;
-        }
+        // if ( metersPerPixel < MIN_METERS_PER_PIXEL ) {
+        // metersPerPixel = MIN_METERS_PER_PIXEL;
+        // }
         this.metersPerPixel = metersPerPixel;
     }
 
@@ -101,7 +101,7 @@ public class TextureRequest {
      * <li>the meters per pixel of the other request is less than or equal to the meters per pixel of this request</li>
      * </ul>
      * </p>
-     *
+     * 
      * @param that
      * @return true, if this request supersedes the given request, false otherwise
      */
@@ -112,7 +112,7 @@ public class TextureRequest {
 
     /**
      * Merge two requests.
-     *
+     * 
      * @param otherRequest
      */
     public void merge( TextureRequest otherRequest ) {
@@ -136,28 +136,28 @@ public class TextureRequest {
     /**
      * @return min x position
      */
-    public float getMinX() {
+    public double getMinX() {
         return minX;
     }
 
     /**
      * @return min y position
      */
-    public float getMinY() {
+    public double getMinY() {
         return minY;
     }
 
     /**
      * @return max x position
      */
-    public float getMaxX() {
+    public double getMaxX() {
         return maxX;
     }
 
     /**
      * @return max y position
      */
-    public float getMaxY() {
+    public double getMaxY() {
         return maxY;
     }
 
@@ -174,7 +174,7 @@ public class TextureRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if two request share a border.
      */
@@ -184,7 +184,7 @@ public class TextureRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if the two request share the North-West corner.
      */
@@ -193,7 +193,7 @@ public class TextureRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if the two request share the North-East corner.
      */
@@ -202,7 +202,7 @@ public class TextureRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if the two request share the South-West corner.
      */
@@ -211,7 +211,7 @@ public class TextureRequest {
     }
 
     /**
-     *
+     * 
      * @param that
      * @return true if the two request share the South-East corner.
      */

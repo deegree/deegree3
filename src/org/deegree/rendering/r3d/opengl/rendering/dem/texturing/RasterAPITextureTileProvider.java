@@ -85,7 +85,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
         this.res = res;
     }
 
-    public TextureTile getTextureTile( float minX, float minY, float maxX, float maxY ) {
+    private TextureTile getTextureTile( double minX, double minY, double maxX, double maxY ) {
 
         Envelope subsetEnv = fac.createEnvelope( minX, minY, maxX, maxY, null );
 
@@ -110,6 +110,21 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
     @Override
     public double getNativeResolution() {
         return res;
+    }
+
+    @Override
+    public boolean hasTextureForResolution( double unitsPerPixel ) {
+        return unitsPerPixel >= res;
+    }
+
+    @Override
+    public TextureTile getTextureTile( TextureTileRequest request ) {
+        return getTextureTile( request.getMinX(), request.getMinY(), request.getMaxX(), request.getMaxY() );
+    }
+
+    @Override
+    public Envelope getEnvelope() {
+        return raster.getEnvelope();
     }
 
 }

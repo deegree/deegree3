@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.opengl.rendering.dem;
 
 import java.io.IOException;
@@ -59,14 +59,14 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
  * <li>Loaded to main memory and GPU</li>
  * </ul>
  * </p>
- *
+ * 
  * @see FragmentTexture
  * @see MultiresolutionMesh
  * @see MeshFragment
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
@@ -74,6 +74,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     private final MeshFragment fragment;
 
     private MeshFragmentData data;
+
+    private final String LOCK = "lock";
 
     // 0: vertex (coordinates) buffer
     // 1: normal buffer
@@ -86,6 +88,13 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
      */
     public RenderMeshFragment( MeshFragment fragment ) {
         this.fragment = fragment;
+    }
+    
+    /**
+     * @return the number of vertices of this mesh fragment.
+     */
+    public int getVertices() {
+        return fragment.getVertices();
     }
 
     /**
@@ -103,7 +112,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     }
 
     /**
-     *
+     * 
      * @return the geometric error of the MultiresolutionMesh fragment.
      */
     public float getGeometricError() {
@@ -111,7 +120,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     }
 
     /**
-     *
+     * 
      * @return the actual data of the MultiresolutionMesh fragment.
      */
     public MeshFragmentData getData() {
@@ -120,7 +129,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
     /**
      * Returns whether the geometry data is available in main memory.
-     *
+     * 
      * @return true, if the geometry data is available in main memory, false otherwise
      */
     public boolean isLoaded() {
@@ -129,13 +138,15 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
     /**
      * Loads the geometry data into main memory.
-     *
+     * 
      * @throws IOException
      */
     public void load()
                             throws IOException {
-        if ( data == null ) {
-            data = fragment.loadData();
+        synchronized ( LOCK ) {
+            if ( data == null ) {
+                data = fragment.loadData();
+            }
         }
     }
 
@@ -143,15 +154,17 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
      * Removes the geometry data from main memory (and disables it).
      */
     public void unload() {
-        if ( data != null ) {
-            data.freeBuffers();
-            data = null;
+        synchronized ( LOCK ) {
+            if ( data != null ) {
+                data.freeBuffers();
+                data = null;
+            }
         }
     }
 
     /**
      * Returns whether fragment is ready for rendering (prepared VBOs).
-     *
+     * 
      * @return true, if the fragment is ready to be rendered
      */
     public boolean isEnabled() {
@@ -160,7 +173,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
     /**
      * Enables the fragment in the given OpenGL context, so it can be rendered.
-     *
+     * 
      * @param gl
      * @throws IOException
      */
@@ -197,7 +210,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
     /**
      * Disables the fragment in the given OpenGL context and frees the associated VBOs and texture object.
-     *
+     * 
      * @param gl
      */
     public void disable( GL gl ) {
@@ -210,7 +223,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
     /**
      * Renders this fragment to the given OpenGL context with optional textures.
-     *
+     * 
      * @param gl
      * @param textures
      * @param shaderProgramId
@@ -224,7 +237,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
         }
 
         // render with or without texture
-        if ( textures != null && textures.size() > 0 ) {
+        if ( textures != null && textures.size() > 0 && textures.get( 0 ) != null ) {
 
             // first texture (uses always-available texture unit 0)
             gl.glClientActiveTexture( GL.GL_TEXTURE0 );
@@ -232,7 +245,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             gl.glEnable( GL.GL_TEXTURE_2D );
             gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
-            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
             gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
 
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( 0 ).getGLVertexCoordBufferId() );
@@ -242,19 +255,21 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
             // second to last texture
             for ( int i = 1; i < textures.size(); i++ ) {
-                int textureUnitId = JOGLUtils.getTextureUnitConst( i );
-                gl.glClientActiveTexture( textureUnitId );
-                gl.glActiveTexture( textureUnitId );
-                gl.glEnable( GL.GL_TEXTURE_2D );
-                gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+                if ( textures.get( i ) != null ) {
+                    int textureUnitId = JOGLUtils.getTextureUnitConst( i );
+                    gl.glClientActiveTexture( textureUnitId );
+                    gl.glActiveTexture( textureUnitId );
+                    gl.glEnable( GL.GL_TEXTURE_2D );
+                    gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
-                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
-                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
+                    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
+                    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
 
-                gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( i ).getGLVertexCoordBufferId() );
-                gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
+                    gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( i ).getGLVertexCoordBufferId() );
+                    gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
-                gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( i ).getGLTextureId() );
+                    gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( i ).getGLTextureId() );
+                }
             }
 
             // activate shader and set texSamplers

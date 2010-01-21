@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
@@ -53,10 +53,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link TextureTileProvider} that delegates tile requests to a WMS.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class WMSTextureTileProvider implements TextureTileProvider {
@@ -79,7 +79,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
     /**
      * Creates a new {@link WMSTextureTileProvider} instance.
-     *
+     * 
      * @param capabilitiesURL
      *            URL of the capabilities document (usually a GetCapabilities request)
      * @param requestedLayers
@@ -110,13 +110,12 @@ public class WMSTextureTileProvider implements TextureTileProvider {
         this.requestTimeout = requestTimeout;
     }
 
-    @Override
-    public TextureTile getTextureTile( float minX, float minY, float maxX, float maxY ) {
+    private TextureTile getTextureTile( double minX, double minY, double maxX, double maxY ) {
 
         int width = (int) ( ( maxX - minX ) / res );
         int height = (int) ( ( maxY - minY ) / res );
 
-        LOG.debug ("Fetching texture tile (" + width + "x" + height + ") via WMSClient.");
+        LOG.debug( "Fetching texture tile (" + width + "x" + height + ") via WMSClient." );
 
         Envelope bbox = fac.createEnvelope( minX, minY, maxX, maxY, requestedCRS );
         SimpleRaster raster = null;
@@ -124,9 +123,9 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
             raster = client.getMapAsSimpleRaster( layers, width, height, bbox, requestedCRS, requestedFormat, true,
                                                   true, requestTimeout, false, new ArrayList<String>() ).first;
-            LOG.debug ("Success");
+            LOG.debug( "Success" );
         } catch ( IOException e ) {
-            LOG.debug ("Failed: " + e.getMessage(), e);
+            LOG.debug( "Failed: " + e.getMessage(), e );
             // this must never happen, cause the above request uses errorsInImage=true
             throw new RuntimeException( e.getMessage() );
         }
@@ -139,4 +138,21 @@ public class WMSTextureTileProvider implements TextureTileProvider {
     public double getNativeResolution() {
         return res;
     }
+
+    @Override
+    public TextureTile getTextureTile( TextureTileRequest request ) {
+        return getTextureTile( request.getMinX(), request.getMinY(), request.getMaxX(), request.getMaxY() );
+    }
+
+    @Override
+    public boolean hasTextureForResolution( double unitsPerPixel ) {
+        return unitsPerPixel >= res;
+    }
+
+    @Override
+    public Envelope getEnvelope() {
+        // rb: getting envelopes from wms's are tricky, just return null
+        return null;
+    }
+
 }

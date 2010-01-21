@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,9 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.nio.FloatBuffer;
 
@@ -42,22 +44,25 @@ import javax.media.opengl.GL;
 
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
+import org.slf4j.Logger;
 
 /**
  * A {@link TextureTile} applied to a {@link RenderMeshFragment}, also wraps OpenGL resources (texture coordinates).
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class FragmentTexture {
+
+    private static final Logger LOG = getLogger( FragmentTexture.class );
 
     private final RenderMeshFragment fragment;
 
     private final TextureTile texture;
 
-    private final PooledByteBuffer buffer;
+    private final PooledByteBuffer texCoords;
 
     // just wrapped around buffer
     private final FloatBuffer texCoordsBuffer;
@@ -82,7 +87,7 @@ public class FragmentTexture {
                             PooledByteBuffer buffer ) {
         this.fragment = geometry;
         this.texture = texture;
-        this.buffer = buffer;
+        this.texCoords = buffer;
         // buffer.getBuffer().order( ByteOrder.nativeOrder() );
         this.texCoordsBuffer = generateTexCoordsBuffer( xOffset, yOffset );
         this.xOffset = xOffset;
@@ -100,32 +105,37 @@ public class FragmentTexture {
         float patchXMax = bbox[1][0];
         float patchYMax = bbox[1][1];
 
-        float tileXMin = texture.getMinX() - (float) minX;
-        float tileYMin = texture.getMinY() - (float) minY;
-        float tileXMax = texture.getMaxX() - (float) minX;
-        float tileYMax = texture.getMaxY() - (float) minY;
+        double tileXMin = texture.getMinX() -  minX;
+        double tileYMin = texture.getMinY() -  minY;
+        double tileXMax = texture.getMaxX() -  minX;
+        double tileYMax = texture.getMaxY() -  minY;
 
         if ( tileXMin > patchXMin || tileYMin > patchYMin || tileXMax < patchXMax || tileYMax < patchYMax ) {
             String msg = "Internal error. Returned texture tile is not suitable for the MeshFragment.";
             throw new IllegalArgumentException( msg );
         }
 
-        float tileWidth = texture.getMaxX() - texture.getMinX();
-        float tileHeight = texture.getMaxY() - texture.getMinY();
+        double tileWidth = texture.getMaxX() - texture.getMinX();
+        double tileHeight = texture.getMaxY() - texture.getMinY();
 
         // build texture coordinates buffer
         FloatBuffer vertexBuffer = fragment.getData().getVertices();
         vertexBuffer.rewind();
 
-        FloatBuffer texCoordsBuffer = buffer.getBuffer().asFloatBuffer();
-        for ( int i = 0; i < vertexBuffer.capacity() / 3; i++ ) {
+        FloatBuffer texCoordsBuffer = texCoords.getBuffer().asFloatBuffer();
+        texCoordsBuffer.rewind();
+        int vertices = vertexBuffer.capacity() / 3;
+        for ( int i = 0; i < vertices; i++ ) {
             float x = vertexBuffer.get();
             float y = vertexBuffer.get();
             // skip z value (not relevant for texture coordinate generation)
             vertexBuffer.get();
 
-            texCoordsBuffer.put( ( x - tileXMin ) / tileWidth );
-            texCoordsBuffer.put( 1.0f - ( y - tileYMin ) / tileHeight );
+            float texX = (float) ( ( x - tileXMin ) / tileWidth );
+            float texY = (float) ( 1 - ( y - tileYMin ) / tileHeight );
+
+            texCoordsBuffer.put( texX );
+            texCoordsBuffer.put( texY );
         }
         vertexBuffer.rewind();
         texCoordsBuffer.rewind();
@@ -134,10 +144,10 @@ public class FragmentTexture {
 
     /**
      * Returns the resolution of the texture (world units per pixel).
-     *
+     * 
      * @return the resolution of the texture
      */
-    public float getTextureResolution() {
+    public double getTextureResolution() {
         return texture.getMetersPerPixel();
     }
 
@@ -167,30 +177,34 @@ public class FragmentTexture {
 
     /**
      * Enable this Fragment texture by generating a buffer object in the given context.
-     *
+     * 
      * @param gl
      *            to generate the buffer object to.
      */
     public void enable( GL gl ) {
         if ( textureID == -1 ) {
+            // will return -1 if the texture was not loaded on the gpu
             textureID = texture.enable( gl );
         }
 
-        if ( glBufferObjectIds == null ) {
-            generateTexCoordsBuffer( xOffset, yOffset );
-            glBufferObjectIds = new int[1];
-            gl.glGenBuffersARB( 1, glBufferObjectIds, 0 );
+        if ( textureID != -1 ) {
 
-            // bind vertex buffer object (vertex coordinates)
-            gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
-            gl.glBufferDataARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, texCoordsBuffer.capacity() * 4, texCoordsBuffer,
-                                GL.GL_STATIC_DRAW_ARB );
+            if ( glBufferObjectIds == null ) {
+                generateTexCoordsBuffer( xOffset, yOffset );
+                glBufferObjectIds = new int[1];
+                gl.glGenBuffersARB( 1, glBufferObjectIds, 0 );
+
+                // bind vertex buffer object (vertex coordinates)
+                gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
+                gl.glBufferDataARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, texCoordsBuffer.capacity() * 4, texCoordsBuffer,
+                                    GL.GL_STATIC_DRAW_ARB );
+            }
         }
     }
 
     /**
      * Remove the buffer object from the gpu.
-     *
+     * 
      * @param gl
      */
     public void disable( GL gl ) {
@@ -209,11 +223,15 @@ public class FragmentTexture {
      * Unload
      */
     public void unload() {
-        buffer.free();
+        if ( glBufferObjectIds == null ) {
+            texCoords.free();
+        } else {
+            LOG.warn( "Trying to free a buffer which is still on the gpu, this may not be" );
+        }
     }
 
     /**
-     *
+     * 
      * @return true if this Fragment has a buffer object id and a texture id.
      */
     public boolean isEnabled() {
