@@ -129,17 +129,21 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         int coordinateDimension = getCoordinateDimension();
         double[] min = new double[coordinateDimension];
         double[] max = new double[coordinateDimension];
+
+        double[] tMin = this.min.getAsArray();
+        double[] oMin = other.getMin().getAsArray();
+
+        double[] tMax = this.max.getAsArray();
+        double[] oMax = other.getMax().getAsArray();
+
         for ( int i = 0; i < coordinateDimension; i++ ) {
-            if ( this.min.getAsArray()[i] < other.getMin().getAsArray()[i] ) {
-                min[i] = this.min.getAsArray()[i];
-            } else {
-                min[i] = other.getMin().getAsArray()[i];
-            }
-            if ( this.max.getAsArray()[i] > other.getMax().getAsArray()[i] ) {
-                max[i] = this.max.getAsArray()[i];
-            } else {
-                max[i] = other.getMax().getAsArray()[i];
-            }
+            min[i] = Math.min( tMin[i], oMin[i] );
+            max[i] = Math.max( tMax[i], oMax[i] );
+            // if ( this.max.getAsArray()[i] > other.getMax().getAsArray()[i] ) {
+            // max[i] = this.max.getAsArray()[i];
+            // } else {
+            // max[i] = other.getMax().getAsArray()[i];
+            // }
         }
         Point newMin = new DefaultPoint( null, getCoordinateSystem(), pm, min );
         Point newMax = new DefaultPoint( null, getCoordinateSystem(), pm, max );
