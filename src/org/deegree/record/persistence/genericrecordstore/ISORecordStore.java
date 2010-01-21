@@ -37,8 +37,6 @@ package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,15 +60,12 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.commons.configuration.PooledConnection;
@@ -77,8 +73,8 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
-import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
+import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.record.persistence.GenericDatabaseDS;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
@@ -90,9 +86,6 @@ import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.RecordProperty;
 import org.deegree.record.publication.TransactionOperation;
 import org.deegree.record.publication.UpdateTransaction;
-import org.deegree.filter.comparison.ComparisonOperator;
-import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.comparison.ComparisonOperator.SubType;
 
 /**
  * {@link RecordStore} implementation of Dublin Core and ISO Profile.
@@ -662,28 +655,14 @@ public class ISORecordStore implements RecordStore {
              */
             if ( upd.getElement() != null ) {
                 ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement(), conn );
-                elementParsing.executeUpdateStatement( null );
+                elementParsing.executeUpdateStatement();
             } else {
-
-                // List<String> recordPropertyNameList = new ArrayList<String>();
-                //                
-                // List<Object> recordPropertyValueList = new ArrayList<Object>();
-                //                
-                // for(RecordProperty recProp : upd.getRecordProperty()){
-                // recordPropertyNameList.add( recProp.getPropertyName());
-                //                    
-                // recordPropertyValueList.add( recProp.getReplacementValue());
-                // }
-
-                // Writer stream = new StringWriter();
-
                 try {
                     TransformatorPostGres filterExpression = new TransformatorPostGres( upd.getConstraint() );
                     GenericDatabaseDS gdds = new GenericDatabaseDS( filterExpression.getStringWriter(),
                                                                     ResultType.results, SetOfReturnableElements.full,
                                                                     -1, 1, filterExpression.getTable(),
                                                                     filterExpression.getColumn() );
-                    // XMLStreamWriter xmlUpdateWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
 
                     int formatNumber = 0;
                     String nsURI = filterExpression.getPropName().getNamespaceURI();
@@ -711,37 +690,48 @@ public class ISORecordStore implements RecordStore {
                                       + i;
                         ResultSet r = conn.createStatement().executeQuery( stri.toString() );
 
+                        StringWriter ex = new StringWriter();
+                        Set<String> table = null;
                         while ( r.next() ) {
-                            
-                            
-                            //creating an OMElement readed from the backend byteData
-                            InputStream in = r.getBinaryStream( 1 );
-                            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
-                            StAXOMBuilder builder = new StAXOMBuilder( reader );
-                            OMDocument doc = builder.getDocument();
-                            OMElement omElement = doc.getOMDocumentElement();
-                            ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
                             for ( RecordProperty recProp : upd.getRecordProperty() ) {
-                                elementParsing.executeUpdateStatement( recProp );
+                                ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
+                                ExpressionFilterObject expressObject;
+                                ExpressionFilterObject expressObject2;
+                                expressObject = filterHandle.expressionFilterHandling(
+                                                                                       org.deegree.filter.Expression.Type.PROPERTY_NAME,
+                                                                                       recProp.getPropertyName() );
+                                expressObject2 = filterHandle.expressionFilterHandling(
+                                                                                        org.deegree.filter.Expression.Type.LITERAL,
+                                                                                        recProp.getReplacementValue() );
+                                table = expressObject.getTable();
+                                // not important. There is just one name possible
+                                for ( String column : expressObject.getColumn() ) {
 
+                                    // creating an OMElement readed from the backend byteData
+                                    InputStream in = r.getBinaryStream( 1 );
+                                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
+                                    StAXOMBuilder builder = new StAXOMBuilder( reader );
+                                    OMDocument doc = builder.getDocument();
+                                    OMElement omElement = doc.getOMDocumentElement();
+                                    Iterator it = omElement.getChildrenWithLocalName( column );
+                                    while ( it.hasNext() ) {
+                                        OMElement elem = (OMElement) it.next();
+                                        System.out.println( elem.toString() );
+                                        elem.getFirstElement().setText(
+                                                                        expressObject2.getExpression().substring(
+                                                                                                                  1,
+                                                                                                                  expressObject2.getExpression().length() - 1 ) );
+
+                                        System.out.println( elem.toString() );
+                                    }
+                                    ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
+                                    elementParsing.executeUpdateStatement();
+                                }
                             }
                         }
                         r.close();
 
                     }
-                    // String idName;
-                    // for(int i : deletableDatasets){
-                    // for(String tablename : table){
-                    // if(tablename.equals( "datasets" )){
-                    // idName = "id";
-                    // }else{
-                    // idName = "fk_datasets";
-                    // }
-                    // String deleteDataset = "UPDATE " + tablename + " SET " + ex.toString() + " WHERE " + idName +
-                    // " = " + i;
-                    //                            
-                    // }
-                    // }
 
                 } catch ( IOException e ) {
                     // TODO Auto-generated catch block
