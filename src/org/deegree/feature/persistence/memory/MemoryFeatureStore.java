@@ -131,7 +131,7 @@ public class MemoryFeatureStore implements FeatureStore {
             ftNameToMd.put( ft.getName(), md );
         }
         // TODO
-        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
+        lockManager = new DefaultLockManager( this, "LOCK_DB" );
     }
 
     /**

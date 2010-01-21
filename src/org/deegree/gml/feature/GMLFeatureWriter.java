@@ -467,7 +467,7 @@ public class GMLFeatureWriter {
                 writer.writeAttribute( XLNNS, "href", ref.getURI() );
                 writer.writeComment( "Reference to remote feature '"
                                      + ref.getURI()
-                                     + "' (should have been inlined, but inlining of remote features is not implemented yet." );
+                                     + "' (should have been inlined, but inlining of remote features is not implemented yet)." );
                 writer.writeEndElement();
             } else {
                 // must be exported by reference

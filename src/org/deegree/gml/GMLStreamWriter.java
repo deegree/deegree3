@@ -286,6 +286,15 @@ public class GMLStreamWriter {
         xmlStream.close();
     }
 
+    /**
+     * Returns the underlying XML stream.
+     * 
+     * @return the underlying XML stream, never <code>null</code>
+     */
+    public XMLStreamWriter getXMLStream() {
+        return xmlStream;
+    }
+
     private GMLFeatureWriter getFeatureWriter() {
         if ( featureWriter == null ) {
             featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate, featureProps,
