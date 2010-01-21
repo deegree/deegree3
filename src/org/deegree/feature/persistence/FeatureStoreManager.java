@@ -243,9 +243,10 @@ public class FeatureStoreManager {
         XMLAdapter resolver = new XMLAdapter();
         resolver.setSystemId( baseURL );
         String srs = jaxbConfig.getStorageSRS();
-        if ( srs == null ) {
-            srs = "EPSG:4326";
-        } else {
+        if ( srs != null ) {
+            // rb: if it is null, the shape feature store will try to read the prj files.
+            // srs = "EPSG:4326";
+            // } else {
             srs = srs.trim();
         }
         CRS crs = new CRS( srs );
