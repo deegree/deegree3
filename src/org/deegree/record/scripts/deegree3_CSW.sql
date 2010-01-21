@@ -577,82 +577,82 @@ ALTER TABLE UserDefinedQueryableProperties
 --	FOREIGN KEY (ID) REFERENCES UserDefinedQueryableProperties (fk_datasets);
 
 ALTER TABLE ISOQP_Abstract ADD CONSTRAINT FK_ISOQP_Abstract_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_AlternateTitle ADD CONSTRAINT FK_ISOQP_AlternateTitle_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_BoundingBox ADD CONSTRAINT FK_ISOQP_BoundingBox_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_CouplingType ADD CONSTRAINT FK_ISOQP_CouplingType_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_CreationDate ADD CONSTRAINT FK_ISOQP_CreationDate_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_CRS ADD CONSTRAINT FK_ISOQP_CRS_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_Format ADD CONSTRAINT FK_ISOQP_Format_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_GeographicDescriptionCode ADD CONSTRAINT FK_ISOQP_GeographicDescriptionCode_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_Keyword ADD CONSTRAINT FK_ISOQP_KeywordType_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_OperatesOnData ADD CONSTRAINT FK_ISOQP_OperatesOnData_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_Operation ADD CONSTRAINT FK_ISOQP_Operation_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_OrganisationName ADD CONSTRAINT FK_ISOQP_OrganisationName_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_PublicationDate ADD CONSTRAINT FK_ISOQP_PublicationDate_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_ResourceIdentifier ADD CONSTRAINT FK_ISOQP_ResourceIdentifier_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_ResourceLanguage ADD CONSTRAINT FK_ISOQP_ResourceLanguage_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_RevisionDate ADD CONSTRAINT FK_ISOQP_RevisionDate_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_ServiceType ADD CONSTRAINT FK_ISOQP_ServiceType_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_ServiceTypeVersion ADD CONSTRAINT FK_ISOQP_ServiceTypeVersion_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_SpatialResolution ADD CONSTRAINT FK_ISOQP_SpatialResolution_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_TemporalExtent ADD CONSTRAINT FK_ISOQP_TemporalExtent_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_Title ADD CONSTRAINT FK_ISOQP_Title_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_TopicCategory ADD CONSTRAINT FK_ISOQP_TopicCategory_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE ISOQP_Type ADD CONSTRAINT FK_ISOQP_Type_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE RecordBrief ADD CONSTRAINT FK_RecordBrief_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE RecordSummary ADD CONSTRAINT FK_RecordSummary_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 
 ALTER TABLE RecordFull ADD CONSTRAINT FK_RecordFull_Datasets 
-	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
-
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
+	
 --ALTER TABLE DCQP_Rights ADD CONSTRAINT FK_DCQP_Rights_Datasets 
 --	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
