@@ -38,7 +38,6 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -144,7 +143,7 @@ public class TerrainRenderingManager {
     /**
      * @return the current lod
      */
-    public Collection<RenderMeshFragment> getCurrentLOD() {
+    public Set<RenderMeshFragment> getCurrentLOD() {
         return activeLOD;
     }
 
