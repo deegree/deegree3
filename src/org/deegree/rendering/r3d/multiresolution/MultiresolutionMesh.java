@@ -42,6 +42,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
+import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
 import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
@@ -92,7 +93,7 @@ public class MultiresolutionMesh {
 
     private static final int INDEX_HEADER_SIZE = 4 * 4;
 
-    private float[][] renderDomain;
+    private double[][] renderDomain;
 
     /**
      * Creates a new {@link MultiresolutionMesh} by reading the fragment ({@link #FRAGMENTS_FILE_NAME}) and index (
@@ -102,8 +103,8 @@ public class MultiresolutionMesh {
      *            directory that contains the fragment and index blobs to be read
      * @throws IOException
      */
-    public MultiresolutionMesh( File dir ) throws IOException {
-        this( new File( dir, INDEX_FILE_NAME ), new File( dir, FRAGMENTS_FILE_NAME ) );
+    public MultiresolutionMesh( File dir, DirectByteBufferPool directBufferPool ) throws IOException {
+        this( new File( dir, INDEX_FILE_NAME ), new File( dir, FRAGMENTS_FILE_NAME ), directBufferPool );
     }
 
     /**
@@ -116,7 +117,8 @@ public class MultiresolutionMesh {
      *            fragment blob
      * @throws IOException
      */
-    public MultiresolutionMesh( File mrIndex, File meshFragments ) throws IOException {
+    public MultiresolutionMesh( File mrIndex, File meshFragments, DirectByteBufferPool directBufferPool )
+                            throws IOException {
 
         long begin = System.currentTimeMillis();
 
@@ -161,11 +163,18 @@ public class MultiresolutionMesh {
 
         nodes = createNodes( nodesBuffer );
         arcs = createArcs( arcsBuffer );
-        fragments = createFragmentInfos( fragmentsInfoBuffer, new MeshFragmentDataReader( meshFragments ) );
+        fragments = createFragmentInfos( fragmentsInfoBuffer, new MeshFragmentDataReader( meshFragments,
+                                                                                          directBufferPool ) );
         if ( fragments != null && fragments[0] != null && fragments[0].bbox != null ) {
-            renderDomain = new float[2][3];
-            System.arraycopy( fragments[0].bbox[0], 0, renderDomain[0], 0, 3 );
-            System.arraycopy( fragments[0].bbox[1], 0, renderDomain[1], 0, 3 );
+            float[][] domain = new float[2][3];
+            this.renderDomain = new double[2][3];
+            System.arraycopy( fragments[0].bbox[0], 0, domain[0], 0, 3 );
+            System.arraycopy( fragments[0].bbox[1], 0, domain[1], 0, 3 );
+            for ( int m = 0; m < 2; ++m ) {
+                for ( int xyz = 0; xyz < 3; ++xyz ) {
+                    this.renderDomain[m][xyz] = domain[m][xyz];
+                }
+            }
         } else {
             LOG.error( "Could not load fragments, determination of valid rendering domain has failed." );
         }
@@ -174,7 +183,7 @@ public class MultiresolutionMesh {
     /**
      * @return the domain of this multiresolution mesh as read from the first macro triangle fragment.
      */
-    public final float[][] getBBox() {
+    public final double[][] getBBox() {
         return renderDomain;
     }
 
