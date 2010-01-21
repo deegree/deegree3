@@ -67,9 +67,21 @@ public class GenericDatabaseDS {
 
     private Set<String> column;
 
+    /**
+     * 
+     * @param expressionWriter
+     * @param resultType
+     * @param setOfReturnableElements
+     * @param maxRecords
+     * a negative number means that this attribute is not needed
+     * @param startPosition
+     * @param table
+     * @param column
+     */
     public GenericDatabaseDS( Writer expressionWriter, ResultType resultType,
                               SetOfReturnableElements setOfReturnableElements, int maxRecords, int startPosition, Set<String> table,
                               Set<String> column ) {
+        
         this.expressionWriter = expressionWriter;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
