@@ -89,7 +89,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     public RenderMeshFragment( MeshFragment fragment ) {
         this.fragment = fragment;
     }
-    
+
     /**
      * @return the number of vertices of this mesh fragment.
      */
@@ -309,5 +309,28 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     @Override
     public int compareTo( RenderMeshFragment o ) {
         return this.fragment.compareTo( o.fragment );
+    }
+
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof RenderMeshFragment ) {
+            final RenderMeshFragment that = (RenderMeshFragment) other;
+            return this.fragment.id == that.fragment.id;
+        }
+        return false;
+    }
+
+    /**
+     * @return size in bytes of this fragment.
+     */
+    public int size() {
+        return fragment.size();
+    }
+
+    /**
+     * @return true if the used direct buffer pool can allocate enough direct memory for the given data.
+     */
+    public boolean canAllocateEnoughMemory() {
+        return this.fragment.canAllocateEnoughMemory();
     }
 }

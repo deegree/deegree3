@@ -195,4 +195,18 @@ public class MeshFragment implements Comparable<MeshFragment> {
         }
         return 0;
     }
+
+    /**
+     * @return the size in bytes of this mesh fragment
+     */
+    public int size() {
+        return length;
+    }
+
+    /**
+     * @return true if the used direct buffer pool can allocate enough direct memory for the given data.
+     */
+    public boolean canAllocateEnoughMemory() {
+        return this.patchReader.getDirectBufferPool().canAllocate( length );
+    }
 }

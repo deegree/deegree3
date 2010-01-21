@@ -93,7 +93,6 @@ public class MeshFragmentDataReader {
      */
     public MeshFragmentData read( int fragmentId, long offset, int length )
                             throws IOException {
-
         PooledByteBuffer pooledByteBuffer = bufferPool.allocate( length );
         // PooledByteBuffer pooledByteBuffer = new PooledByteBuffer(length);
         ByteBuffer rawTileBuffer = pooledByteBuffer.getBuffer();
@@ -137,5 +136,12 @@ public class MeshFragmentDataReader {
             indexBuffer = indexSlice.asIntBuffer();
         }
         return new MeshFragmentData( pooledByteBuffer, vertexBuffer, normalsBuffer, indexBuffer );
+    }
+
+    /**
+     * @return the pool used to allocate direct buffers.
+     */
+    public DirectByteBufferPool getDirectBufferPool() {
+        return bufferPool;
     }
 }

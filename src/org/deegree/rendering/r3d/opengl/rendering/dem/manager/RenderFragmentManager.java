@@ -39,7 +39,10 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -61,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RenderFragmentManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( RenderFragmentManager.class );
+    static final Logger LOG = LoggerFactory.getLogger( RenderFragmentManager.class );
 
     // contains the corresponding RenderableMeshFragment object for each fragment id
     final RenderMeshFragment[] renderFragments;
@@ -99,14 +102,30 @@ public class RenderFragmentManager {
      * @param fragments
      * @throws IOException
      */
-    void require( Collection<RenderMeshFragment> fragments )
+    void require( Set<RenderMeshFragment> fragments )
                             throws IOException {
 
         long begin = System.currentTimeMillis();
+
         SortedSet<RenderMeshFragment> sortedFragments = new TreeSet<RenderMeshFragment>( fragments );
+        for ( RenderMeshFragment fragment : fragments ) {
+            RenderMeshFragment cachedFrag = memoryCache.get( fragment.getId() );
+            if ( cachedFrag != null ) {
+                if ( cachedFrag.isEnabled() || cachedFrag.isLoaded() ) {
+                    sortedFragments.remove( fragment );
+                }
+            }
+
+        }
+
         int loaded = 0;
         for ( RenderMeshFragment fragment : sortedFragments ) {
             if ( !( fragment.isLoaded() || fragment.isEnabled() ) ) {
+                if ( !fragment.canAllocateEnoughMemory() ) {
+                    // clear up least recently used cached memory.
+                    LOG.debug( "Could not allocate enough memory, try to free some frome the cache." );
+                    memoryCache.freeUp( fragment.size(), fragments );
+                }
                 fragment.load();
                 inMemory++;
                 loaded++;
@@ -114,12 +133,11 @@ public class RenderFragmentManager {
                 if ( inMemory > maxInMemory ) {
                     maxInMemory++;
                 }
-
-                memoryCache.put( fragment.getId(), fragment );
-            } else {
-                // mark that fragment has been required
-                memoryCache.get( fragment.getId() );
             }
+            // if ( !memoryCache.containsKey( fragment.getId() ) ) {
+            memoryCache.put( fragment.getId(), fragment );
+            // }
+            // memoryCache.put( fragment.getId(), fragment );
         }
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Preparing of " + fragments.size() + " fragments (" + loaded + " new): " + elapsed + " ms" );
@@ -208,6 +226,39 @@ public class RenderFragmentManager {
         Cache( int maxEntries ) {
             super( 16, 0.75f, true );
             this.maxEntries = maxEntries;
+        }
+
+        /**
+         * @param size
+         * @param fragments
+         */
+        public void freeUp( int size, Set<RenderMeshFragment> fragments ) {
+            List<Integer> toBeRemoved = new LinkedList<Integer>();
+            int freeMem = 0;
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Current fragments in cache: {} requested fragments: {}.", size(), fragments.size() );
+            }
+            for ( RenderMeshFragment fragment : values() ) {
+                if ( !fragments.contains( fragment ) ) {
+                    toBeRemoved.add( fragment.getId() );
+                    freeMem += fragment.size();
+                    if ( freeMem > size ) {
+                        break;
+                    }
+                }
+            }
+            if ( freeMem < size ) {
+                throw new OutOfMemoryError(
+                                            "Could not free up enough memory for all meshfragments, please configure more memory for the meshfragements (WPVS: DirectIOMemory and NumberOfDEMFragmentsCached)" );
+            }
+            if ( !toBeRemoved.isEmpty() ) {
+                for ( Integer i : toBeRemoved ) {
+                    RenderMeshFragment remove = remove( i );
+                    if ( remove != null ) {
+                        remove.unload();
+                    }
+                }
+            }
         }
 
         /**
