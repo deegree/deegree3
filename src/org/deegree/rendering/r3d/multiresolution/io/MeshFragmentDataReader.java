@@ -63,9 +63,9 @@ public class MeshFragmentDataReader {
 
     private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentDataReader.class );
 
-    // TODO not static
-    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool( 1000 * 1024 * 1024, 2000,
-                                                                                     "static_mesh" );
+    private final DirectByteBufferPool bufferPool;
+
+    // = new DirectByteBufferPool( 1000 * 1024 * 1024, 2000, "static_mesh" );
 
     private final FileChannel channel;
 
@@ -73,10 +73,13 @@ public class MeshFragmentDataReader {
      * Construct access to a file containing mesh fragments.
      * 
      * @param meshFragments
+     * @param directBufferPool
      * @throws FileNotFoundException
      */
-    public MeshFragmentDataReader( File meshFragments ) throws FileNotFoundException {
+    public MeshFragmentDataReader( File meshFragments, DirectByteBufferPool directBufferPool )
+                            throws FileNotFoundException {
         this.channel = new FileInputStream( meshFragments ).getChannel();
+        this.bufferPool = directBufferPool;
     }
 
     /**
