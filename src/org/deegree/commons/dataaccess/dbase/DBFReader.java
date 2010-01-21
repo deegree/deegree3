@@ -58,11 +58,11 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.types.PrimitiveType;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.slf4j.Logger;

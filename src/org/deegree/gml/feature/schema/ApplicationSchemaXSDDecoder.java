@@ -61,6 +61,8 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.types.PrimitiveType;
+import org.deegree.commons.types.XMLValueMangler;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -75,7 +77,6 @@ import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
-import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
@@ -749,99 +750,7 @@ public class ApplicationSchemaXSDDecoder {
         if ( typeDef.getName() != null ) {
             encounteredTypes.add( createQName( typeDef.getNamespace(), typeDef.getName() ) );
         }
-
-        switch ( typeDef.getBuiltInKind() ) {
-
-        // date and time types
-        case XSConstants.DATE_DT: {
-            pt = PrimitiveType.DATE;
-            break;
-        }
-        case XSConstants.DATETIME_DT: {
-            pt = PrimitiveType.DATE_TIME;
-            break;
-        }
-        case XSConstants.TIME_DT: {
-            pt = PrimitiveType.TIME;
-            break;
-        }
-
-            // numeric types
-            // -1.23, 0, 123.4, 1000.00
-        case XSConstants.DECIMAL_DT:
-            // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (equivalent to double-precision 64-bit floating point)
-        case XSConstants.DOUBLE_DT:
-            // -INF, -1E4, -0, 0, 12.78E-2, 12, INF, NaN (single-precision 32-bit floating point)
-        case XSConstants.FLOAT_DT: {
-            pt = PrimitiveType.DECIMAL;
-            break;
-        }
-
-            // integer types
-
-            // ...-1, 0, 1, ...
-        case XSConstants.INTEGER_DT:
-            // 1, 2, ...
-        case XSConstants.POSITIVEINTEGER_DT:
-            // ... -2, -1
-        case XSConstants.NEGATIVEINTEGER_DT:
-            // 0, 1, 2, ...
-        case XSConstants.NONNEGATIVEINTEGER_DT:
-            // ... -2, -1, 0
-        case XSConstants.NONPOSITIVEINTEGER_DT:
-            // -9223372036854775808, ... -1, 0, 1, ... 9223372036854775807
-        case XSConstants.LONG_DT:
-            // 0, 1, ... 18446744073709551615
-        case XSConstants.UNSIGNEDLONG_DT:
-            // -2147483648, ... -1, 0, 1, ... 2147483647
-        case XSConstants.INT_DT:
-            // 0, 1, ...4294967295
-        case XSConstants.UNSIGNEDINT_DT:
-            // -32768, ... -1, 0, 1, ... 32767
-        case XSConstants.SHORT_DT:
-            // 0, 1, ... 65535
-        case XSConstants.UNSIGNEDSHORT_DT:
-            // -128, ...-1, 0, 1, ... 127
-        case XSConstants.BYTE_DT:
-            // 0, 1, ... 255
-        case XSConstants.UNSIGNEDBYTE_DT: {
-            pt = PrimitiveType.INTEGER;
-            break;
-        }
-
-            // other types
-        case XSConstants.ANYSIMPLETYPE_DT:
-        case XSConstants.ANYURI_DT:
-        case XSConstants.BASE64BINARY_DT:
-        case XSConstants.BOOLEAN_DT:
-        case XSConstants.DURATION_DT:
-        case XSConstants.ENTITY_DT:
-        case XSConstants.GDAY_DT:
-        case XSConstants.GMONTH_DT:
-        case XSConstants.GMONTHDAY_DT:
-        case XSConstants.GYEAR_DT:
-        case XSConstants.GYEARMONTH_DT:
-        case XSConstants.HEXBINARY_DT:
-        case XSConstants.ID_DT:
-        case XSConstants.IDREF_DT:
-        case XSConstants.LANGUAGE_DT:
-        case XSConstants.LIST_DT:
-        case XSConstants.LISTOFUNION_DT:
-        case XSConstants.NAME_DT:
-        case XSConstants.NCNAME_DT:
-        case XSConstants.NORMALIZEDSTRING_DT:
-        case XSConstants.NOTATION_DT:
-        case XSConstants.QNAME_DT:
-        case XSConstants.STRING_DT:
-        case XSConstants.TOKEN_DT:
-        case XSConstants.UNAVAILABLE_DT: {
-            pt = PrimitiveType.STRING;
-            break;
-        }
-        default: {
-            throw new RuntimeException( "Unexpected simple type: " + typeDef.getBuiltInKind() );
-        }
-        }
+        pt = XMLValueMangler.getPrimitiveType( typeDef );
         LOG.trace( "Mapped '" + typeDef.getName() + "' (base type: '" + typeDef.getBaseType() + "') -> '" + pt + "'" );
         return pt;
     }

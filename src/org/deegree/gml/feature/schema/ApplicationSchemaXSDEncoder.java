@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.types.PrimitiveType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -57,7 +58,6 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
-import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;

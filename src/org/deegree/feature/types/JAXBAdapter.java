@@ -50,6 +50,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.types.PrimitiveType;
 import org.deegree.feature.types.jaxb.AbstractPropertyDecl;
 import org.deegree.feature.types.jaxb.ApplicationSchemaDecl;
 import org.deegree.feature.types.jaxb.FeaturePropertyDecl;
@@ -58,7 +59,6 @@ import org.deegree.feature.types.jaxb.GeometryPropertyDecl;
 import org.deegree.feature.types.jaxb.SimplePropertyDecl;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;

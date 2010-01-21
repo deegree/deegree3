@@ -39,6 +39,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.types.PrimitiveType;
+
 /**
  * A {@link PropertyType} that defines a property with a primitive value, i.e. the value can be expressed as a single
  * {@link String}.

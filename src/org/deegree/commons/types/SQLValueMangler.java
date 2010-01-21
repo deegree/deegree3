@@ -33,38 +33,32 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.sql.postgis;
+package org.deegree.commons.types;
 
-import org.deegree.filter.Filter;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Provides {@link PropertyName} to table/column mappings for the {@link PostGISWhereBuilder}.
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface PostGISMapping {
+public class SQLValueMangler {
 
-    /**
-     * Returns the {@link PropertyNameMapping} for the given {@link PropertyName}.
-     * 
-     * @param propName
-     *            property name (from {@link Filter}/sort criterion}, can be <code>null</code> (indicates that the
-     *            default geometry property of the root object is requested)
-     * @return relational mapping, may be <code>null</code> (if no mapping is possible)
-     * @throws FilterEvaluationException
-     *             thrown to indicate that the {@link PropertyName} is invalid
-     */
-    public PropertyNameMapping getMapping( PropertyName propName )
-                            throws FilterEvaluationException;
+    private static final Logger LOG = LoggerFactory.getLogger( SQLValueMangler.class );
+
+    public static Object internalToSQL( Object o ) {
+        return null;
+    }    
     
-    public Object getPostGISValue (PropertyName propName, Literal literal) throws FilterEvaluationException;
+    public static Object internalToSQL( Object o, int sqlTypeCode ) {
+        return null;
+    }
     
-    public Object getPostGISValue (PropertyName propName, Geometry literal);
+    public static Object sqlToInternal( Object o ) {
+        return null;
+    }    
 }

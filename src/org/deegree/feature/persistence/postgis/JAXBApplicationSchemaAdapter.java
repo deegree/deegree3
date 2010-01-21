@@ -49,6 +49,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.types.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.postgis.jaxbconfig.AbstractPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxbconfig.ApplicationSchemaDecl;
@@ -72,7 +73,6 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
-import org.deegree.feature.types.property.PrimitiveType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;

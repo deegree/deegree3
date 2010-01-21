@@ -40,14 +40,19 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingType;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.filter.sql.postgis.PropertyNameMapping;
+import org.deegree.geometry.Geometry;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -69,14 +74,70 @@ class PostGISFeatureMapping implements PostGISMapping {
     private final FeatureType ft;
 
     private final FeatureTypeMapping ftMapping;
-    
-    PostGISFeatureMapping (FeatureType ft, FeatureTypeMapping ftMapping) {
+
+    PostGISFeatureMapping( FeatureType ft, FeatureTypeMapping ftMapping ) {
         this.ft = ft;
         this.ftMapping = ftMapping;
     }
-    
+
     @Override
     public PropertyNameMapping getMapping( PropertyName propName )
+                            throws FilterEvaluationException {
+
+        Pair<PropertyType, PropertyMappingType> mapping = findMapping( propName );
+        if ( mapping == null ) {
+            return null;
+        }
+
+        PropertyMappingType ptMapping = mapping.second;
+        String dbColumn = null;
+        if ( ptMapping instanceof GeometryPropertyMappingType ) {
+            GeometryPropertyMappingType geomPropMapping = (GeometryPropertyMappingType) ptMapping;
+            dbColumn = geomPropMapping.getGeometryDBColumn().getName();
+        } else if ( ptMapping instanceof SimplePropertyMappingType ) {
+            SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) ptMapping;
+            dbColumn = simplePropMapping.getDBColumn().getName();
+        } else {
+            // not implemented yet
+            return null;
+        }
+        return new PropertyNameMapping( "x2", dbColumn );
+    }
+
+    @Override
+    public Object getPostGISValue( PropertyName propName, Literal literal )
+                            throws FilterEvaluationException {
+
+        Object pgValue = null;
+
+        if ( propName == null ) {
+            pgValue = literal.getValue().toString();
+        } else {
+            Pair<PropertyType, PropertyMappingType> mapping = findMapping( propName );
+            if ( mapping == null || mapping.second == null ) {
+                pgValue = literal.getValue().toString();
+            } else {
+                // TODO implement properly
+                PropertyType pt = mapping.first;
+                PropertyMappingType ptMapping = mapping.second;
+                if ( pt instanceof SimplePropertyType<?> ) {
+
+                } else {
+                    pgValue = literal.getValue().toString();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Object getPostGISValue( PropertyName propName, Geometry literal ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Pair<PropertyType, PropertyMappingType> findMapping( PropertyName propName )
                             throws FilterEvaluationException {
         Expr xpath = propName.getAsXPath();
         if ( !( xpath instanceof LocationPath ) ) {
@@ -136,20 +197,11 @@ class PostGISFeatureMapping implements PostGISMapping {
             requestedProperty = steps.get( 1 );
         }
         PropertyMappingType ptMapping = ftMapping.getPropertyHints( requestedProperty );
-        if (ptMapping == null ) {
+        if ( ptMapping == null ) {
             return null;
         }
-        String dbColumn = null;
-        if (ptMapping instanceof GeometryPropertyMappingType) {
-            GeometryPropertyMappingType geomPropMapping = (GeometryPropertyMappingType) ptMapping;
-            dbColumn = geomPropMapping.getGeometryDBColumn().getName();
-        } else if (ptMapping instanceof SimplePropertyMappingType) {
-            SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) ptMapping;
-            dbColumn = simplePropMapping.getDBColumn().getName();
-        } else {
-            // not implemented yet
-            return null;
-        }
-        return new PropertyNameMapping( "x2", dbColumn );
+
+        return new Pair<PropertyType, PropertyMappingType>( ft.getPropertyDeclaration( requestedProperty ), ptMapping );
+
     }
 }

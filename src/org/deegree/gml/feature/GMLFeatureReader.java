@@ -38,11 +38,8 @@ package org.deegree.gml.feature;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,9 +50,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.types.datetime.Date;
-import org.deegree.commons.types.datetime.DateTime;
-import org.deegree.commons.types.datetime.Time;
+import org.deegree.commons.types.XMLValueMangler;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Measure;
@@ -501,65 +496,12 @@ public class GMLFeatureReader extends XMLAdapter {
     private Property<?> createSimpleProperty( XMLStreamReader xmlStream, SimplePropertyType propDecl, String s )
                             throws XMLParsingException {
 
-        Object propValue = s;
-        switch ( propDecl.getPrimitiveType() ) {
-        case BOOLEAN: {
-            if ( s.equals( "true" ) || s.equals( "1" ) ) {
-                propValue = Boolean.TRUE;
-            } else if ( s.equals( "false" ) || s.equals( "0" ) ) {
-                propValue = Boolean.FALSE;
-            } else {
-                String msg = "Value ('" + s + "') for xs:boolean property '" + propDecl.getName()
-                             + "' is invalid. Valid values are 'true', 'false', '1' and '0'.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
-            break;
-        }
-        case DATE: {
-            try {
-                propValue = new Date( s );
-            } catch ( ParseException e ) {
-                String msg = "Value ('" + s + "') for xs:date property '" + propDecl.getName() + "' is invalid.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
-            break;
-        }
-        case DATE_TIME: {
-            try {
-                propValue = new DateTime( s );
-            } catch ( ParseException e ) {
-                String msg = "Value ('" + s + "') for xs:dateTime property '" + propDecl.getName() + "' is invalid.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
-            break;
-        }
-        case DECIMAL: {
-            propValue = new BigDecimal( s );
-            break;
-        }
-        case DOUBLE: {
-            propValue = new Double( s );
-            break;
-        }
-        case INTEGER: {
-            propValue = new BigInteger( s );
-            break;
-        }
-        case STRING: {
-            break;
-        }
-        case TIME: {
-            try {
-                propValue = new Time( s );
-            } catch ( ParseException e ) {
-                String msg = "Value ('" + s + "') for xs:time property '" + propDecl.getName() + "' is invalid.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
-            break;
-        }
-        default: {
-            LOG.warn( "Unhandled primitive type " + propDecl.getPrimitiveType() + " -- treating as string value." );
-        }
+        Object propValue = null;
+        try {
+            propValue = XMLValueMangler.xmlToInternal( s, propDecl.getPrimitiveType() );
+        } catch ( IllegalArgumentException e ) {
+            String msg = "Property '" + propDecl.getName() + "' is not valid: " + e.getMessage();
+            throw new XMLParsingException( xmlStream, msg );
         }
         return new GenericProperty<Object>( propDecl, null, propValue );
     }

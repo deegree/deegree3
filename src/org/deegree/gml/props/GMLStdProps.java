@@ -36,9 +36,9 @@
 
 package org.deegree.gml.props;
 
+import static org.deegree.commons.types.PrimitiveType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.feature.types.property.PrimitiveType.STRING;
 
 import javax.xml.namespace.QName;
 

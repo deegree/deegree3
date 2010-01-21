@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.types.property;
+package org.deegree.commons.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -41,10 +41,14 @@ import java.math.BigInteger;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.types.datetime.DateTime;
 import org.deegree.commons.types.datetime.Time;
+import org.deegree.feature.Feature;
 
 /**
- * Primitive type system. Based on XML schema types, but stripped down to leave out any distinctions
- * that are not necessary in the feature model.
+ * Primitive type system for object properties (e.g. for {@link Feature} instances).
+ * <p>
+ * Based on XML schema types, but stripped down to leave out any distinctions that are not necessary in the feature
+ * model.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -52,6 +56,7 @@ import org.deegree.commons.types.datetime.Time;
  * @version $Revision$, $Date$
  */
 public enum PrimitiveType {
+
     /** Property value is of class <code>String</code>. */
     STRING( String.class ),
     /** Property value is of class <code>Boolean</code>. */
@@ -85,5 +90,24 @@ public enum PrimitiveType {
      */
     public Class<?> getValueClass() {
         return valueClass;
+    }
+
+    /**
+     * Returns the {@link PrimitiveType} for the given value.
+     * 
+     * @param value
+     * @return corresponding {@link PrimitiveType}, never <code>null</code>
+     * @throws IllegalArgumentException
+     */
+    public static PrimitiveType determinePrimitiveType( Object value )
+                            throws IllegalArgumentException {
+        Class<?> oClass = value.getClass();
+        for ( PrimitiveType pt : values() ) {
+            if (pt.getValueClass() == oClass) {
+                return pt;
+            }
+        }
+        String msg = "Cannot determine PrimitiveType for object class: " + value.getClass();
+        throw new IllegalArgumentException( msg );
     }
 }

@@ -47,6 +47,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.types.XMLValueMangler;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
@@ -345,8 +346,9 @@ public class GMLFeatureWriter {
             exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, inlineLevels );
         } else if ( propertyType instanceof SimplePropertyType<?> ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            String xml = XMLValueMangler.internalToXML( value );
             if ( value != null ) {
-                writer.writeCharacters( value.toString() );
+                writer.writeCharacters( xml );
             }
             writer.writeEndElement();
         } else if ( propertyType instanceof GeometryPropertyType ) {
