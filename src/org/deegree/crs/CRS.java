@@ -69,7 +69,7 @@ import org.deegree.geometry.GeometryFactory;
 public class CRS {
 
     /** The commonly used 'EPSG:4326', with axis order X, Y. */
-    public static final CRS EPSG_4326 = new CRS( GeographicCRS.WGS84 );    
+    public static final CRS EPSG_4326 = new CRS( GeographicCRS.WGS84 );
 
     /**
      * The string used to identify the coordinate reference system.
@@ -104,7 +104,10 @@ public class CRS {
     }
 
     /**
+     * Try to read a crs from the given (prj) file which is supposed to define a WKT definition.
+     * 
      * @param prj
+     *            a file containing a wkt representation of the coordinate system.
      * @throws IOException
      */
     public CRS( File prj ) throws IOException {
