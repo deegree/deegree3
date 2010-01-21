@@ -56,7 +56,10 @@ public class DeleteTransaction extends TransactionOperation {
     private Filter constraint;
 
     /**
+     * 
      * @param handle
+     * @param typeName
+     * @param constraint
      */
     public DeleteTransaction( String handle, QName typeName, Filter constraint ) {
         super( handle );
