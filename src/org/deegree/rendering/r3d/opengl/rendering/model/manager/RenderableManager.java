@@ -62,11 +62,11 @@ import org.deegree.rendering.r3d.ViewParams;
  */
 public class RenderableManager<T extends PositionableModel> implements Collection<T> {
 
-    private final QTModelScene<T> root;
+    private QTModelScene<T> root;
 
     private final int numberOfObjectsInLeaf;
 
-    private final Envelope validDomain;
+    private Envelope validDomain;
 
     private int size;
 
@@ -234,6 +234,28 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
      */
     public final Envelope getValidDomain() {
         return validDomain;
+    }
+
+    /**
+     * (Re) set the valid domain of this renderer. Be careful, this will create a new quad tree.
+     * 
+     * @param newDomain
+     *            of this manager
+     */
+    public void setValidDomain( Envelope newDomain ) {
+        this.validDomain = newDomain;
+        QTModelScene<T> scene = new QTModelScene<T>( this.validDomain, numberOfObjectsInLeaf, root.getMaxPixelError() );
+
+        List<T> objects = root.getObjects();
+        if ( objects != null && !objects.isEmpty() ) {
+            for ( T obj : objects ) {
+                if ( obj != null ) {
+                    objects.add( obj );
+                }
+            }
+        }
+        root = scene;
+
     }
 
     /**

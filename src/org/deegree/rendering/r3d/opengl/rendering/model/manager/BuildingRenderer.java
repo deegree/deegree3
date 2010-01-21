@@ -70,7 +70,7 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
     private LODSwitcher switchLevels;
 
     /**
-     * @param validDomain
+     * @param sceneDomain
      * @param numberOfObjectsInLeaf
      * @param geometryBuffer
      *            wrapper holding all geometries in a single direct {@link FloatBuffer}
@@ -78,9 +78,9 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
      * @param levels
      *            configured values for switching between different lods of the buildings.
      */
-    public BuildingRenderer( Envelope validDomain, int numberOfObjectsInLeaf, DirectGeometryBuffer geometryBuffer,
+    public BuildingRenderer( Envelope sceneDomain, int numberOfObjectsInLeaf, DirectGeometryBuffer geometryBuffer,
                              double maxPixelError, LODSwitcher levels ) {
-        super( validDomain, numberOfObjectsInLeaf, maxPixelError );
+        super( sceneDomain, numberOfObjectsInLeaf, maxPixelError );
         this.geometryBuffer = geometryBuffer;
         this.switchLevels = levels;
     }
@@ -176,4 +176,5 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
     public DirectGeometryBuffer getGeometryBuffer() {
         return geometryBuffer;
     }
+
 }
