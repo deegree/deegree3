@@ -50,6 +50,7 @@ import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,10 +82,17 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.record.persistence.GenericDatabaseDS;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
+import org.deegree.record.persistence.sqltransform.postgres.ExpressionFilterHandling;
+import org.deegree.record.persistence.sqltransform.postgres.ExpressionFilterObject;
 import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGres;
+import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
+import org.deegree.record.publication.RecordProperty;
 import org.deegree.record.publication.TransactionOperation;
 import org.deegree.record.publication.UpdateTransaction;
+import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.comparison.ComparisonOperator.SubType;
 
 /**
  * {@link RecordStore} implementation of Dublin Core and ISO Profile.
@@ -123,11 +131,12 @@ public class ISORecordStore implements RecordStore {
         // typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
         // typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
 
+        typeNames.put( new QName( "", "", "" ), 1 );
         typeNames.put( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ), 1 );
         typeNames.put( new QName( "http://purl.org/dc/elements/1.1/", "", "dc" ), 1 );
         typeNames.put( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" ), 2 );
         typeNames.put( new QName( "http://www.opengis.net/cat/csw/apiso/1.0", "", "apiso" ), 2 );
-        
+
     }
 
     public ISORecordStore( String connectionId ) {
@@ -207,12 +216,6 @@ public class ISORecordStore implements RecordStore {
                             GenericDatabaseDS constraint )
                             throws SQLException, XMLStreamException, IOException {
 
-        if ( constraint.getTable() != null ) {
-            tableSet = constraint.getTable();
-        } else {
-            tableSet = new HashSet<String>();
-        }
-        correctTable( tableSet );
         int profileFormatNumberOutputSchema = 0;
 
         if ( typeName.getNamespaceURI().equals( outputSchema ) ) {
@@ -255,7 +258,7 @@ public class ISORecordStore implements RecordStore {
      * @param resultType
      * @throws SQLException
      * @throws XMLStreamException
-     * @throws IOException 
+     * @throws IOException
      */
     private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
                                     GenericDatabaseDS constraint, JDBCConnections con, String formatType,
@@ -265,7 +268,6 @@ public class ISORecordStore implements RecordStore {
         int countRows = 0;
         int nextRecord = 0;
         int returnedRecords = 0;
-
 
         Writer selectCountRows = generateSELECTStatement( formatType, constraint, profileFormatNumberOutputSchema, true );
 
@@ -329,7 +331,7 @@ public class ISORecordStore implements RecordStore {
      * @param con
      * @throws SQLException
      * @throws XMLStreamException
-     * @throws IOException 
+     * @throws IOException
      */
     private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
                                        GenericDatabaseDS constraint, JDBCConnections con )
@@ -377,20 +379,18 @@ public class ISORecordStore implements RecordStore {
                 while ( rs.next() ) {
 
                     BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
-                    //ByteArrayInputStream bais2 = new ByteArrayInputStream( rs.getBytes( 1 ) );
+                    // ByteArrayInputStream bais2 = new ByteArrayInputStream( rs.getBytes( 1 ) );
 
-                    //TODO remove hardcoding 
+                    // TODO remove hardcoding
                     Charset charset = Charset.forName( "UTF-8" );
                     InputStreamReader isr = null;
                     try {
                         isr = new InputStreamReader( bais, charset );
                     } catch ( Exception e ) {
-                        
+
                         e.printStackTrace();
                     }
-                    
-                    
-                    
+
                     readXMLFragment( isr, writer );
 
                 }
@@ -427,18 +427,28 @@ public class ISORecordStore implements RecordStore {
      * @param formatType
      * @param constraint
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     private Writer generateSELECTStatement( String formatType, GenericDatabaseDS constraint,
-                                            int profileFormatNumberOutputSchema, boolean setCount ) throws IOException {
+                                            int profileFormatNumberOutputSchema, boolean setCount )
+                            throws IOException {
+        if ( constraint.getTable() != null ) {
+            tableSet = constraint.getTable();
+        } else {
+            tableSet = new HashSet<String>();
+        }
+        correctTable( tableSet );
+
         Writer s = new StringWriter();
         Writer constraintExpression = new StringWriter();
         String COUNT_PRE;
         String COUNT_SUF;
-        if ( !constraint.getExpressionWriter().equals( null) ) {
-            constraintExpression.append( "AND (" + constraint.getExpressionWriter().toString() + ") ");
+        StringWriter stringWriter = (StringWriter) constraint.getExpressionWriter();
+
+        if ( stringWriter.getBuffer().length() != 0 ) {
+            constraintExpression.append( "AND (" + constraint.getExpressionWriter().toString() + ") " );
         } else {
-            constraintExpression.append( "");
+            constraintExpression.append( "" );
         }
 
         if ( setCount == true ) {
@@ -449,30 +459,34 @@ public class ISORecordStore implements RecordStore {
             COUNT_SUF = "";
         }
 
-        s.append( "SELECT " + COUNT_PRE + formatType + ".data" + COUNT_SUF + " FROM " + formatType + " ");
+        s.append( "SELECT " + COUNT_PRE + formatType + ".data" + COUNT_SUF + " FROM " + formatType + " " );
 
-        s.append( "WHERE " + formatType + ".format = " + profileFormatNumberOutputSchema + " ");
+        s.append( "WHERE " + formatType + ".format = " + profileFormatNumberOutputSchema + " " );
 
-        s.append( "AND " + formatType + ".data IN(");
+        s.append( "AND " + formatType + ".data IN(" );
 
-        s.append( "SELECT " + formatType + ".data FROM " + mainDatabaseTable + ", " + formatType);
-
-        if ( tableSet.size() == 0 ) {
-            s.append( ' ');
-        } else {
-            s.append( ", " + concatTableFROM( tableSet ));
-        }
-
-        s.append( "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + "."
-             + commonForeignkey + " >= " + constraint.getStartPosition());
+        s.append( "SELECT " + formatType + ".data FROM " + mainDatabaseTable + ", " + formatType );
 
         if ( tableSet.size() == 0 ) {
             s.append( ' ' );
         } else {
-            s.append( " AND " + concatTableWHERE( tableSet ));
+            s.append( ", " + concatTableFROM( tableSet ) );
         }
 
-        s.append( constraintExpression + ")" + " LIMIT " + constraint.getMaxRecords() );
+        s.append( "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
+                  + "." + commonForeignkey + " >= " + constraint.getStartPosition() );
+
+        if ( tableSet.size() == 0 ) {
+            s.append( ' ' );
+        } else {
+            s.append( " AND " + concatTableWHERE( tableSet ) );
+        }
+        s.append( constraintExpression + ")" );
+        if ( constraint.getMaxRecords() < 0 ) {
+
+        } else {
+            s.append( " LIMIT " + constraint.getMaxRecords() );
+        }
 
         System.out.println( s );
         return s;
@@ -483,18 +497,19 @@ public class ISORecordStore implements RecordStore {
      * 
      * @param table
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
-    private Writer concatTableWHERE( Set<String> table ) throws IOException {
+    private Writer concatTableWHERE( Set<String> table )
+                            throws IOException {
         Writer string = new StringWriter();
         int counter = 0;
 
         for ( String s : table ) {
             if ( table.size() - 1 != counter ) {
                 counter++;
-                string.append( s + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND ");
+                string.append( s + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " );
             } else {
-                string.append( s + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ");
+                string.append( s + "." + commonForeignkey + " = " + mainDatabaseTable + ".id " );
             }
         }
         return string;
@@ -503,54 +518,50 @@ public class ISORecordStore implements RecordStore {
     /**
      * @param table
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
-    private Writer concatTableFROM( Set<String> table ) throws IOException {
+    private Writer concatTableFROM( Set<String> table )
+                            throws IOException {
         Writer string = new StringWriter();
         int counter = 0;
 
         for ( String s : table ) {
             if ( table.size() - 1 != counter ) {
                 counter++;
-                string.append( s + ", ");
+                string.append( s + ", " );
             } else {
-                string.append( s + " ");
+                string.append( s + " " );
             }
         }
         return string;
     }
 
     /**
-     * Reads a valid XML fragment
-     * TODO change fileOutput back into streamWriter
+     * Reads a valid XML fragment TODO change fileOutput back into streamWriter
+     * 
      * @param
      * @param xmlWriter
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      */
     private void readXMLFragment( InputStreamReader isr, XMLStreamWriter xmlWriter ) {
-        
-       
-        
-        
-        //XMLStreamReader xmlReaderOut;
-        
+
+        // XMLStreamReader xmlReaderOut;
+
         XMLStreamReader xmlReader;
         try {
-            //FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
-            //XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
-            
+            // FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
+            // XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
+
             xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
-            
 
             // skip START_DOCUMENT
             xmlReader.nextTag();
-            
-            
-            //XMLAdapter.writeElement( out, xmlReader );
+
+            // XMLAdapter.writeElement( out, xmlReader );
 
             XMLAdapter.writeElement( xmlWriter, xmlReader );
-            //fout.close();
+            // fout.close();
             xmlReader.close();
 
         } catch ( XMLStreamException e ) {
@@ -558,13 +569,13 @@ public class ISORecordStore implements RecordStore {
         } catch ( FactoryConfigurationError e ) {
             e.printStackTrace();
         }
-//        catch ( FileNotFoundException e ) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        } catch ( IOException e ) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+        // catch ( FileNotFoundException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
     }
 
@@ -644,42 +655,142 @@ public class ISORecordStore implements RecordStore {
             break;
 
         case UPDATE:
-            
+
             UpdateTransaction upd = (UpdateTransaction) operations;
-            if(upd.getElement() != null){
+            /**
+             * if there should a complete record be updated or just some properties
+             */
+            if ( upd.getElement() != null ) {
                 ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement(), conn );
-                elementParsing.executeUpdateStatement();
-            }else{
-                Writer stream = new StringWriter();
-                XMLStreamWriter xmlUpdateWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
+                elementParsing.executeUpdateStatement( null );
+            } else {
+
+                // List<String> recordPropertyNameList = new ArrayList<String>();
+                //                
+                // List<Object> recordPropertyValueList = new ArrayList<Object>();
+                //                
+                // for(RecordProperty recProp : upd.getRecordProperty()){
+                // recordPropertyNameList.add( recProp.getPropertyName());
+                //                    
+                // recordPropertyValueList.add( recProp.getReplacementValue());
+                // }
+
+                // Writer stream = new StringWriter();
+
                 try {
                     TransformatorPostGres filterExpression = new TransformatorPostGres( upd.getConstraint() );
-                    GenericDatabaseDS gdds = new GenericDatabaseDS( stream, ResultType.results,
-                                                                    SetOfReturnableElements.full, 100, 1,
-                                                                    filterExpression.getTable(), filterExpression.getColumn() );
-                    
-                    getRecords(xmlUpdateWriter, upd.getTypeName(), URI.create( upd.getTypeName().getNamespaceURI()), connection, gdds);
-                    
-                    InputStream in = getClass().getResourceAsStream( xmlUpdateWriter.toString() );
-                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
-                    StAXOMBuilder builder = new StAXOMBuilder( reader );
-                    OMDocument doc = builder.getDocument();
-                    OMElement omElement = doc.getOMDocumentElement();
-                
-                
+                    GenericDatabaseDS gdds = new GenericDatabaseDS( filterExpression.getStringWriter(),
+                                                                    ResultType.results, SetOfReturnableElements.full,
+                                                                    -1, 1, filterExpression.getTable(),
+                                                                    filterExpression.getColumn() );
+                    // XMLStreamWriter xmlUpdateWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
+
+                    int formatNumber = 0;
+                    String nsURI = filterExpression.getPropName().getNamespaceURI();
+                    String prefix = filterExpression.getPropName().getPrefix();
+                    QName analysedQName = new QName( nsURI, "", prefix );
+                    for ( QName qName : typeNames.keySet() ) {
+                        if ( qName.equals( analysedQName ) ) {
+                            formatNumber = typeNames.get( qName );
+                        }
+                    }
+
+                    Writer str = getRequestedIDStatement( formatTypeInGenericRecordStore.get( "full" ), gdds,
+                                                          formatNumber );
+
+                    ResultSet rsDeletableDatasets = conn.createStatement().executeQuery( str.toString() );
+                    List<Integer> deletableDatasets = new ArrayList<Integer>();
+                    while ( rsDeletableDatasets.next() ) {
+                        deletableDatasets.add( rsDeletableDatasets.getInt( 1 ) );
+
+                    }
+                    rsDeletableDatasets.close();
+
+                    for ( int i : deletableDatasets ) {
+                        String stri = "SELECT recordfull.data FROM recordfull WHERE recordfull.format = 2 AND recordfull.fk_datasets = "
+                                      + i;
+                        ResultSet r = conn.createStatement().executeQuery( stri.toString() );
+
+                        while ( r.next() ) {
+                            
+                            
+                            //creating an OMElement readed from the backend byteData
+                            InputStream in = r.getBinaryStream( 1 );
+                            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
+                            StAXOMBuilder builder = new StAXOMBuilder( reader );
+                            OMDocument doc = builder.getDocument();
+                            OMElement omElement = doc.getOMDocumentElement();
+                            ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
+                            for ( RecordProperty recProp : upd.getRecordProperty() ) {
+                                elementParsing.executeUpdateStatement( recProp );
+
+                            }
+                        }
+                        r.close();
+
+                    }
+                    // String idName;
+                    // for(int i : deletableDatasets){
+                    // for(String tablename : table){
+                    // if(tablename.equals( "datasets" )){
+                    // idName = "id";
+                    // }else{
+                    // idName = "fk_datasets";
+                    // }
+                    // String deleteDataset = "UPDATE " + tablename + " SET " + ex.toString() + " WHERE " + idName +
+                    // " = " + i;
+                    //                            
+                    // }
+                    // }
+
                 } catch ( IOException e ) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
-            
-            
-            
 
             break;
 
         case DELETE:
-            
+
+            DeleteTransaction delete = (DeleteTransaction) operations;
+            TransformatorPostGres filterExpression = new TransformatorPostGres( delete.getConstraint() );
+            int formatNumber = 0;
+            String nsURI = filterExpression.getPropName().getNamespaceURI();
+            String prefix = filterExpression.getPropName().getPrefix();
+            QName analysedQName = new QName( nsURI, "", prefix );
+            for ( QName qName : typeNames.keySet() ) {
+                if ( qName.equals( analysedQName ) ) {
+                    formatNumber = typeNames.get( qName );
+                }
+            }
+
+            GenericDatabaseDS gdds = new GenericDatabaseDS( filterExpression.getStringWriter(), ResultType.results,
+                                                            SetOfReturnableElements.full, -1, 1,
+                                                            filterExpression.getTable(), filterExpression.getColumn() );
+            Writer str = new StringWriter();
+
+            try {
+                str = getRequestedIDStatement( formatTypeInGenericRecordStore.get( "full" ), gdds, formatNumber );
+            } catch ( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            ResultSet rsDeletableDatasets = conn.createStatement().executeQuery( str.toString() );
+            List<Integer> deletableDatasets = new ArrayList<Integer>();
+            while ( rsDeletableDatasets.next() ) {
+                deletableDatasets.add( rsDeletableDatasets.getInt( 1 ) );
+
+            }
+            rsDeletableDatasets.close();
+
+            for ( int i : deletableDatasets ) {
+                String deleteDataset = "DELETE FROM " + mainDatabaseTable + " WHERE id = " + i;
+                int deleteRS = conn.createStatement().executeUpdate( deleteDataset );
+
+            }
+
             break;
         }
         conn.close();
@@ -707,7 +818,7 @@ public class ISORecordStore implements RecordStore {
      * @param insertedIds
      *            the briefrecord datasets that have been inserted into the backend
      * @throws SQLException
-     * @throws IOException 
+     * @throws IOException
      */
     private void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, Connection conn,
                                                           List<Integer> insertedIds )
@@ -715,11 +826,11 @@ public class ISORecordStore implements RecordStore {
 
         for ( int i : insertedIds ) {
             Writer s = new StringWriter();
-            s.append( " SELECT " + "recordbrief" + ".data " + "FROM " + mainDatabaseTable + ", " + "recordbrief" + " ");
+            s.append( " SELECT " + "recordbrief" + ".data " + "FROM " + mainDatabaseTable + ", " + "recordbrief" + " " );
 
-            s.append(  " WHERE " + "recordbrief" + "." + commonForeignkey + " = " + mainDatabaseTable + ".id ");
+            s.append( " WHERE " + "recordbrief" + "." + commonForeignkey + " = " + mainDatabaseTable + ".id " );
 
-            s.append( " AND " + "recordbrief" + "." + "id" + " = " + i);
+            s.append( " AND " + "recordbrief" + "." + "id" + " = " + i );
             System.out.println( s );
 
             ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
@@ -729,9 +840,8 @@ public class ISORecordStore implements RecordStore {
 
                 Charset charset = Charset.forName( "UTF-8" );
                 InputStreamReader isr = null;
-                
-                    isr = new InputStreamReader( bais, charset );
-                
+
+                isr = new InputStreamReader( bais, charset );
 
                 readXMLFragment( isr, writer );
 
@@ -739,6 +849,56 @@ public class ISORecordStore implements RecordStore {
             rsInsertedDatasets.close();
         }
 
+    }
+
+    /**
+     * Prepares the statement to get all the central recordIDs for a statement.
+     * 
+     * @param formatType
+     * @param constraint
+     * @param formatNumber
+     * @return
+     * @throws IOException
+     */
+    private Writer getRequestedIDStatement( String formatType, GenericDatabaseDS constraint, int formatNumber )
+                            throws IOException {
+        if ( constraint.getTable() != null ) {
+            tableSet = constraint.getTable();
+        } else {
+            tableSet = new HashSet<String>();
+        }
+        correctTable( tableSet );
+        StringWriter s = new StringWriter();
+        Writer constraintExpression = new StringWriter();
+
+        StringWriter stringWriter = (StringWriter) constraint.getExpressionWriter();
+
+        if ( stringWriter.getBuffer().length() != 0 ) {
+            constraintExpression.append( "AND (" + constraint.getExpressionWriter().toString() + ") " );
+        } else {
+            constraintExpression.append( "" );
+        }
+
+        s.append( "SELECT " + formatType + "." + commonForeignkey + " FROM " + mainDatabaseTable + ", " + formatType );
+
+        if ( tableSet.size() == 0 ) {
+            s.append( ' ' );
+        } else {
+            s.append( ", " + concatTableFROM( tableSet ) );
+        }
+
+        s.append( "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
+                  + "." + commonForeignkey + " >= " + constraint.getStartPosition() + " AND " + formatType
+                  + ".format = " + formatNumber );
+
+        if ( tableSet.size() == 0 ) {
+            s.append( ' ' );
+        } else {
+            s.append( " AND " + concatTableWHERE( tableSet ) );
+        }
+        s.append( constraintExpression + "" );
+
+        return s;
     }
 
 }

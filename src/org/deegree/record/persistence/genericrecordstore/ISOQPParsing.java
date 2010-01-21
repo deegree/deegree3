@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -57,6 +58,9 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.crs.CRS;
 import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.record.persistence.sqltransform.postgres.ExpressionFilterHandling;
+import org.deegree.record.persistence.sqltransform.postgres.ExpressionFilterObject;
+import org.deegree.record.publication.RecordProperty;
 
 /**
  * The parsing for the ISO application profile.
@@ -628,10 +632,33 @@ public class ISOQPParsing extends XMLAdapter {
     /**
      * 
      */
-    public void executeUpdateStatement() {
+    public void executeUpdateStatement(RecordProperty recProps) {
         final String databaseTable = "datasets";
         boolean isUpdate = true;
-
+        StringWriter ex = new StringWriter();
+        Set<String> table = null;
+        
+        if(recProps == null){
+            
+        }
+        else{
+            ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
+            ExpressionFilterObject expressObject;
+            ExpressionFilterObject expressObject2;
+            expressObject = filterHandle.expressionFilterHandling( org.deegree.filter.Expression.Type.PROPERTY_NAME, recProps.getPropertyName() );
+            expressObject2 = filterHandle.expressionFilterHandling( org.deegree.filter.Expression.Type.LITERAL, recProps.getReplacementValue() );
+            table = expressObject.getTable();
+            //not important. There is just one name possible
+            for(String column : expressObject.getColumn()){
+                if(column.equals( "language" )){
+                    
+                    rp.setLanguage( (String) expressObject2.getExpression().subSequence( 1,  expressObject2.getExpression().length()-1 ) );
+                    System.out.println((String) expressObject2.getExpression().subSequence( 1,  expressObject2.getExpression().length()-1 ));
+                }
+            }
+            
+        }
+        
         StringWriter sqlStatementUpdate = new StringWriter( 500 );
         StringBuffer buf = new StringBuffer();
         int requestedId = 0;
