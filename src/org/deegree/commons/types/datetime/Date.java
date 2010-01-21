@@ -41,6 +41,12 @@ import org.deegree.commons.utils.time.DateUtils;
 
 /**
  * Represents an <code>xs:date</code> instance.
+ * <p>
+ * TODO: currently, syntax checking is performed by {@link DateUtils#parseISO8601Date(String)}, which does not exactly
+ * match the lexical space of the xs:date type.
+ * 
+ * Valid values include: 2001-10-26, 2001-10-26+02:00, 2001-10-26Z, 2001-10-26+00:00, -2001-10-26, or -20000-04-01.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -57,9 +63,9 @@ public class Date implements Comparable<Date> {
         this.isoDate = isoDate;
         date = DateUtils.parseISO8601Date( isoDate );
     }
-    
+
     // TODO name this properly
-    public java.util.Date getDate () {
+    public java.util.Date getDate() {
         return date;
     }
 

@@ -46,7 +46,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 
 /**
- * {@link ResultSet} that is based on a sequence of {@link ResultSet}s.
+ * {@link ResultSet} that encapsulates a sequence of {@link ResultSet}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -60,7 +60,7 @@ public class CombinedResultSet implements FeatureResultSet {
     FeatureResultSet currentResultSet;
 
     boolean lastClosed = false;
-    
+
     /**
      * Creates a new {@link CombinedResultSet} that is backed by the given {@link FeatureResultSet}.
      * 
@@ -72,8 +72,8 @@ public class CombinedResultSet implements FeatureResultSet {
     }
 
     @Override
-    public void close() {        
-        if ( currentResultSet != null && !lastClosed) {
+    public void close() {
+        if ( currentResultSet != null && !lastClosed ) {
             currentResultSet.close();
         }
     }
@@ -106,17 +106,18 @@ public class CombinedResultSet implements FeatureResultSet {
                     if ( !resultSetIter.hasNext() ) {
                         return false;
                     }
+                    // only happens for the first call of #hasNext()
                     currentResultSet = resultSetIter.next();
                     featureIter = currentResultSet.iterator();
                 }
 
-                while ( !featureIter.hasNext() ) {                  
+                while ( !featureIter.hasNext() ) {
                     if ( resultSetIter.hasNext() ) {
-                        currentResultSet.close();                        
+                        currentResultSet.close();
                         currentResultSet = resultSetIter.next();
                         featureIter = currentResultSet.iterator();
                     } else {
-                        lastClosed = true;
+                        // lastClosed = true;
                         break;
                     }
                 }

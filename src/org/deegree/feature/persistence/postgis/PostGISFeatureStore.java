@@ -441,7 +441,7 @@ public class PostGISFeatureStore implements FeatureStore {
     @Override
     public FeatureResultSet query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-
+        
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
             String msg = "Join queries between multiple feature types are currently not supported.";
             throw new UnsupportedOperationException( msg );
@@ -536,7 +536,7 @@ public class PostGISFeatureStore implements FeatureStore {
         FeatureTypeMapping mapping = getMapping( ftName );
         PostGISWhereBuilder wb = null;
         if ( filter != null && mapping != null ) {
-            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping );
+            PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping, this );
             wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit );
             LOG.debug( "WHERE clause: " + wb.getWhereClause() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
@@ -794,6 +794,18 @@ public class PostGISFeatureStore implements FeatureStore {
     }
 
     /**
+     * Returns a transformed version of the given {@link Geometry} in the storage CRS.
+     * 
+     * @param literal
+     * @return transformed version of the geometry, never <code>null</code>
+     * @throws FilterEvaluationException
+     */
+    Geometry getCompatibleGeometry( Geometry literal )
+                            throws FilterEvaluationException {
+        return getCompatibleGeometry( literal, storageSRS );
+    }    
+    
+    /**
      * Returns a transformed version of the given {@link Geometry} in the specified CRS.
      * 
      * @param literal
@@ -801,7 +813,7 @@ public class PostGISFeatureStore implements FeatureStore {
      * @return transformed version of the geometry, never <code>null</code>
      * @throws FilterEvaluationException
      */
-    protected Geometry getCompatibleGeometry( Geometry literal, CRS crs )
+    Geometry getCompatibleGeometry( Geometry literal, CRS crs )
                             throws FilterEvaluationException {
 
         Geometry transformedLiteral = literal;

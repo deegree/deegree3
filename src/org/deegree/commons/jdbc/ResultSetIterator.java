@@ -90,6 +90,7 @@ public abstract class ResultSetIterator<T> implements CloseableIterator<T> {
 
     @Override
     public void close() {
+        LOG.debug( "Closing JDBC ResultSet, Statement and Connection" );
         JDBCUtils.close( rs, stmt, conn, LOG );
     }
 

@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.postgis;
 
 import org.deegree.filter.expression.PropertyName;
@@ -54,7 +54,7 @@ public class PropertyNameMapping {
 
     private final String dbColumn;
 
-    public PropertyNameMapping (String dbTable, String dbColumn) {
+    public PropertyNameMapping( String dbTable, String dbColumn ) {
         this.dbTable = dbTable;
         this.dbColumn = dbColumn;
     }
@@ -65,5 +65,5 @@ public class PropertyNameMapping {
 
     public String getColumn() {
         return dbColumn;
-    }    
+    }
 }

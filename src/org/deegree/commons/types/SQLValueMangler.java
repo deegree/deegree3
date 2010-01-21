@@ -35,11 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.types;
 
+import java.math.BigDecimal;
+
+import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.utils.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Converts between internal object values and SQL objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -50,15 +54,43 @@ public class SQLValueMangler {
 
     private static final Logger LOG = LoggerFactory.getLogger( SQLValueMangler.class );
 
-    public static Object internalToSQL( Object o ) {
-        return null;
-    }    
-    
-    public static Object internalToSQL( Object o, int sqlTypeCode ) {
-        return null;
+    public static Object internalToSQL( Object value ) {
+        Object sqlValue = null;
+        if ( value != null ) {
+            PrimitiveType pt = PrimitiveType.determinePrimitiveType( value );
+            switch ( pt ) {
+            case BOOLEAN:
+                sqlValue = value;
+                break;
+            case DATE:
+                sqlValue = new java.sql.Date( ( (Date) value ).getDate().getTime() );
+                break;
+            case DATE_TIME:
+                throw new IllegalArgumentException( "SQL type conversion for '" + pt + "' is not implemented yet." );
+            case DECIMAL:
+                sqlValue = ( (BigDecimal) value ).doubleValue();
+                break;
+            case DOUBLE:
+                sqlValue = value;
+                break;
+            case INTEGER:
+                sqlValue = Integer.parseInt( value.toString() );
+                break;
+            case STRING:
+                sqlValue = value;
+                break;
+            case TIME:
+                throw new IllegalArgumentException( "SQL type conversion for '" + pt + "' is not implemented yet." );
+            }
+        }
+        return sqlValue;
     }
-    
-    public static Object sqlToInternal( Object o ) {
-        return null;
-    }    
+
+    public static Object internalToSQL( Object o, int sqlTypeCode ) {
+        throw new UnsupportedOperationException( "Not implemented yet" );
+    }
+
+    public static Pair<Object, Integer> sqlToInternal( Object o, PrimitiveType pt ) {
+        throw new UnsupportedOperationException( "Not implemented yet" );
+    }
 }

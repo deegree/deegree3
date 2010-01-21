@@ -64,6 +64,7 @@ public class CachedFeatureResultSet implements FeatureResultSet {
 
     @Override
     public void close() {
+        // noting to do
     }
 
     @Override

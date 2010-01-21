@@ -52,6 +52,7 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.types.SQLValueMangler;
 import org.deegree.crs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -72,9 +73,12 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.WKBWriter;
 import org.deegree.gml.feature.FeatureReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link FeatureStoreTransaction} implementation used by the {@link PostGISFeatureStore}.
@@ -416,7 +420,16 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         stmt.setInt( 1, internalId );
         int columnId = 2;
         for ( Entry<String, Object> entry : columnsToValues.entrySet() ) {
-            Object pgValue = TypeMangler.toPostGIS( entry.getValue() );
+            Object pgValue = null;
+            if (pgValue instanceof Geometry) {
+                try {
+                    pgValue = WKBWriter.write( (Geometry) entry.getValue() );
+                } catch ( ParseException e ) {
+                    throw new SQLException( e.getMessage(), e );
+                }
+            } else {
+                pgValue = SQLValueMangler.internalToSQL( entry.getValue() );
+            }
             stmt.setObject( columnId++, pgValue );
         }
         stmt.executeUpdate();

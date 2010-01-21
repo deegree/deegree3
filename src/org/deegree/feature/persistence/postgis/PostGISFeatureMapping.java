@@ -40,11 +40,14 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.types.SQLValueMangler;
+import org.deegree.commons.types.XMLValueMangler;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingType;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.FilterEvaluationException;
@@ -53,11 +56,14 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.WKBWriter;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * {@link PostGISMapping} for the {@link PostGISFeatureStore}.
@@ -75,9 +81,12 @@ class PostGISFeatureMapping implements PostGISMapping {
 
     private final FeatureTypeMapping ftMapping;
 
-    PostGISFeatureMapping( FeatureType ft, FeatureTypeMapping ftMapping ) {
+    private final PostGISFeatureStore fs ;
+
+    PostGISFeatureMapping( FeatureType ft, FeatureTypeMapping ftMapping, PostGISFeatureStore fs ) {
         this.ft = ft;
         this.ftMapping = ftMapping;
+        this.fs = fs;
     }
 
     @Override
@@ -105,7 +114,7 @@ class PostGISFeatureMapping implements PostGISMapping {
     }
 
     @Override
-    public Object getPostGISValue( PropertyName propName, Literal literal )
+    public Object getPostGISValue( Literal literal, PropertyName propName )
                             throws FilterEvaluationException {
 
         Object pgValue = null;
@@ -119,22 +128,38 @@ class PostGISFeatureMapping implements PostGISMapping {
             } else {
                 // TODO implement properly
                 PropertyType pt = mapping.first;
-                PropertyMappingType ptMapping = mapping.second;
                 if ( pt instanceof SimplePropertyType<?> ) {
-
+                    Object internalValue = XMLValueMangler.xmlToInternal(
+                                                                          literal.getValue().toString(),
+                                                                          ( (SimplePropertyType<?>) pt ).getPrimitiveType() );
+                    pgValue = SQLValueMangler.internalToSQL( internalValue );
                 } else {
                     pgValue = literal.getValue().toString();
                 }
             }
         }
 
-        return null;
+        return pgValue;
     }
 
     @Override
-    public Object getPostGISValue( PropertyName propName, Geometry literal ) {
-        // TODO Auto-generated method stub
-        return null;
+    public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+                            throws FilterEvaluationException {
+
+        byte[] pgValue = null;
+        Pair<PropertyType, PropertyMappingType> mapping = findMapping( propName );
+        if ( mapping.first == null || !( mapping.first instanceof GeometryPropertyType ) ) {
+            throw new FilterEvaluationException( "Property '" + propName + "' is not known or not a geometry property." );
+        }
+
+        // TODO srs conversion?
+        GeometryPropertyType pt = (GeometryPropertyType) mapping.first;
+        try {
+            pgValue = WKBWriter.write( fs.getCompatibleGeometry( literal) );
+        } catch ( ParseException e ) {
+            throw new FilterEvaluationException( e.getMessage() );
+        }
+        return pgValue;
     }
 
     private Pair<PropertyType, PropertyMappingType> findMapping( PropertyName propName )

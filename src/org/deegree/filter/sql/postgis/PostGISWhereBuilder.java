@@ -37,12 +37,10 @@ package org.deegree.filter.sql.postgis;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.deegree.feature.persistence.postgis.TypeMangler;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -216,54 +214,54 @@ public class PostGISWhereBuilder {
         for ( Expression expr : op.getParams() ) {
             determineInvolvedProps( expr, involvedProps );
         }
-        PropertyName inferringProp = null;
+        PropertyName correspondingProp = null;
         if ( !involvedProps.isEmpty() ) {
-            inferringProp = involvedProps.get( 0 );
+            correspondingProp = involvedProps.get( 0 );
         }
 
         switch ( op.getSubType() ) {
         case PROPERTY_IS_BETWEEN: {
             PropertyIsBetween propIsBetween = (PropertyIsBetween) op;
-            buildWhere( propIsBetween.getUpperBoundary(), !propIsBetween.getMatchCase(), inferringProp );
+            buildWhere( propIsBetween.getUpperBoundary(), !propIsBetween.getMatchCase(), correspondingProp );
             whereClause.append( ">=" );
-            buildWhere( propIsBetween.getExpression(), !propIsBetween.getMatchCase(), inferringProp );
+            buildWhere( propIsBetween.getExpression(), !propIsBetween.getMatchCase(), correspondingProp );
             whereClause.append( "<=" );
-            buildWhere( propIsBetween.getLowerBoundary(), !propIsBetween.getMatchCase(), inferringProp );
+            buildWhere( propIsBetween.getLowerBoundary(), !propIsBetween.getMatchCase(), correspondingProp );
             break;
         }
         case PROPERTY_IS_EQUAL_TO: {
             PropertyIsEqualTo propIsEqualTo = (PropertyIsEqualTo) op;
-            buildWhere( propIsEqualTo.getParameter1(), !propIsEqualTo.getMatchCase(), inferringProp );
+            buildWhere( propIsEqualTo.getParameter1(), !propIsEqualTo.getMatchCase(), correspondingProp );
             whereClause.append( "=" );
-            buildWhere( propIsEqualTo.getParameter2(), !propIsEqualTo.getMatchCase(), inferringProp );
+            buildWhere( propIsEqualTo.getParameter2(), !propIsEqualTo.getMatchCase(), correspondingProp );
             break;
         }
         case PROPERTY_IS_GREATER_THAN: {
             PropertyIsGreaterThan propIsGT = (PropertyIsGreaterThan) op;
-            buildWhere( propIsGT.getParameter1(), !propIsGT.getMatchCase(), inferringProp );
+            buildWhere( propIsGT.getParameter1(), !propIsGT.getMatchCase(), correspondingProp );
             whereClause.append( ">" );
-            buildWhere( propIsGT.getParameter2(), !propIsGT.getMatchCase(), inferringProp );
+            buildWhere( propIsGT.getParameter2(), !propIsGT.getMatchCase(), correspondingProp );
             break;
         }
         case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO: {
             PropertyIsGreaterThanOrEqualTo propIsGTOrEqualTo = (PropertyIsGreaterThanOrEqualTo) op;
-            buildWhere( propIsGTOrEqualTo.getParameter1(), !propIsGTOrEqualTo.getMatchCase(), inferringProp );
+            buildWhere( propIsGTOrEqualTo.getParameter1(), !propIsGTOrEqualTo.getMatchCase(), correspondingProp );
             whereClause.append( ">=" );
-            buildWhere( propIsGTOrEqualTo.getParameter2(), !propIsGTOrEqualTo.getMatchCase(), inferringProp );
+            buildWhere( propIsGTOrEqualTo.getParameter2(), !propIsGTOrEqualTo.getMatchCase(), correspondingProp );
             break;
         }
         case PROPERTY_IS_LESS_THAN: {
             PropertyIsLessThan propIsLT = (PropertyIsLessThan) op;
-            buildWhere( propIsLT.getParameter1(), !propIsLT.getMatchCase(), inferringProp );
+            buildWhere( propIsLT.getParameter1(), !propIsLT.getMatchCase(), correspondingProp );
             whereClause.append( "<" );
-            buildWhere( propIsLT.getParameter2(), !propIsLT.getMatchCase(), inferringProp );
+            buildWhere( propIsLT.getParameter2(), !propIsLT.getMatchCase(), correspondingProp );
             break;
         }
         case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO: {
             PropertyIsLessThanOrEqualTo propIsLTOrEqualTo = (PropertyIsLessThanOrEqualTo) op;
-            buildWhere( propIsLTOrEqualTo.getParameter1(), !propIsLTOrEqualTo.getMatchCase(), inferringProp );
+            buildWhere( propIsLTOrEqualTo.getParameter1(), !propIsLTOrEqualTo.getMatchCase(), correspondingProp );
             whereClause.append( "<=" );
-            buildWhere( propIsLTOrEqualTo.getParameter2(), !propIsLTOrEqualTo.getMatchCase(), inferringProp );
+            buildWhere( propIsLTOrEqualTo.getParameter2(), !propIsLTOrEqualTo.getMatchCase(), correspondingProp );
             break;
         }
         case PROPERTY_IS_LIKE: {
@@ -272,14 +270,14 @@ public class PostGISWhereBuilder {
         }
         case PROPERTY_IS_NOT_EQUAL_TO: {
             PropertyIsNotEqualTo propIsNotEqualTo = (PropertyIsNotEqualTo) op;
-            buildWhere( propIsNotEqualTo.getParameter1(), !propIsNotEqualTo.getMatchCase(), inferringProp );
+            buildWhere( propIsNotEqualTo.getParameter1(), !propIsNotEqualTo.getMatchCase(), correspondingProp );
             whereClause.append( "<>" );
-            buildWhere( propIsNotEqualTo.getParameter2(), !propIsNotEqualTo.getMatchCase(), inferringProp );
+            buildWhere( propIsNotEqualTo.getParameter2(), !propIsNotEqualTo.getMatchCase(), correspondingProp );
             break;
         }
         case PROPERTY_IS_NULL: {
             PropertyIsNull propIsNull = (PropertyIsNull) op;
-            buildWhere( propIsNull.getPropertyName(), false, inferringProp );
+            buildWhere( propIsNull.getPropertyName(), false, correspondingProp );
             whereClause.append( " IS NULL" );
             break;
         }
@@ -374,9 +372,10 @@ public class PostGISWhereBuilder {
         switch ( op.getSubType() ) {
         case BBOX: {
             BBOX bbox = (BBOX) op;
-            buildWhere( bbox.getPropertyName() );
+            PropertyName propName = bbox.getPropertyName();
+            buildWhere( propName );
             whereClause.append( " && " );
-            buildWhere( bbox.getBoundingBox() );
+            buildWhere( bbox.getBoundingBox(), propName );
             break;
         }
         case BEYOND: {
@@ -397,45 +396,50 @@ public class PostGISWhereBuilder {
         case EQUALS: {
             Equals equals = (Equals) op;
             whereClause.append( "equals(" );
-            buildWhere( equals.getPropName() );
+            PropertyName propName = equals.getPropName();
+            buildWhere( propName );
             whereClause.append( ',' );
-            buildWhere( equals.getGeometry() );
+            buildWhere( equals.getGeometry(), propName );
             whereClause.append( ')' );
             break;
         }
         case INTERSECTS: {
             Intersects intersects = (Intersects) op;
             whereClause.append( "intersects(" );
-            buildWhere( intersects.getPropName() );
+            PropertyName propName = intersects.getPropName();
+            buildWhere( propName );
             whereClause.append( ',' );
-            buildWhere( intersects.getGeometry() );
+            buildWhere( intersects.getGeometry(), propName );
             whereClause.append( ')' );
             break;
         }
         case OVERLAPS: {
             Overlaps overlaps = (Overlaps) op;
             whereClause.append( "overlaps(" );
-            buildWhere( overlaps.getPropName() );
+            PropertyName propName = overlaps.getPropName();
+            buildWhere( propName );
             whereClause.append( ',' );
-            buildWhere( overlaps.getGeometry() );
+            buildWhere( overlaps.getGeometry(), propName );
             whereClause.append( ')' );
             break;
         }
         case TOUCHES: {
             Touches touches = (Touches) op;
             whereClause.append( "touches(" );
-            buildWhere( touches.getPropName() );
+            PropertyName propName = touches.getPropName();
+            buildWhere( propName );
             whereClause.append( ',' );
-            buildWhere( touches.getGeometry() );
+            buildWhere( touches.getGeometry(), propName );
             whereClause.append( ')' );
             break;
         }
         case WITHIN: {
             Within within = (Within) op;
             whereClause.append( "within(" );
-            buildWhere( within.getPropName() );
+            PropertyName propName = within.getPropName();
+            buildWhere( propName );
             whereClause.append( ',' );
-            buildWhere( within.getGeometry() );
+            buildWhere( within.getGeometry(), propName );
             whereClause.append( ')' );
             break;
         }
@@ -455,32 +459,29 @@ public class PostGISWhereBuilder {
         }
     }
 
-    private void buildWhere( Geometry geometry )
+    private void buildWhere( Geometry geometry, PropertyName correspondingProp )
                             throws FilterEvaluationException {
+        // TODO srs
         whereClause.append( "GeomFromWKB(?,-1)" );
-        try {
-            whereParams.add( TypeMangler.toPostGIS( geometry ) );
-        } catch ( SQLException e ) {
-            throw new FilterEvaluationException( e.getMessage() );
-        }
+        whereParams.add( mapping.getPostGISValue( geometry, correspondingProp ) );
     }
 
-    private void buildWhere( Expression expr, boolean lowerCase, PropertyName inferringType )
+    private void buildWhere( Expression expr, boolean lowerCase, PropertyName correspondingProp )
                             throws FilterEvaluationException {
         switch ( expr.getType() ) {
         case ADD: {
             whereClause.append( "(" );
-            buildWhere( expr.getParams()[0], false, inferringType );
+            buildWhere( expr.getParams()[0], false, correspondingProp );
             whereClause.append( "+" );
-            buildWhere( expr.getParams()[1], false, inferringType );
+            buildWhere( expr.getParams()[1], false, correspondingProp );
             whereClause.append( ")" );
             break;
         }
         case DIV: {
             whereClause.append( "(" );
-            buildWhere( expr.getParams()[0], false, inferringType );
+            buildWhere( expr.getParams()[0], false, correspondingProp );
             whereClause.append( "/" );
-            buildWhere( expr.getParams()[1], false, inferringType );
+            buildWhere( expr.getParams()[1], false, correspondingProp );
             whereClause.append( ")" );
             break;
         }
@@ -494,15 +495,15 @@ public class PostGISWhereBuilder {
                 whereClause.append( "?" );
             }
             // convert the literal to the appropriate SQL type
-            Object pgObject = mapping.getPostGISValue( inferringType, (Literal<?>) expr );
+            Object pgObject = mapping.getPostGISValue( (Literal<?>) expr, correspondingProp );
             whereParams.add( pgObject );
             break;
         }
         case MUL: {
             whereClause.append( "(" );
-            buildWhere( expr.getParams()[0], false, inferringType );
+            buildWhere( expr.getParams()[0], false, correspondingProp );
             whereClause.append( "*" );
-            buildWhere( expr.getParams()[1], false, inferringType );
+            buildWhere( expr.getParams()[1], false, correspondingProp );
             whereClause.append( ")" );
             break;
         }
@@ -525,9 +526,9 @@ public class PostGISWhereBuilder {
         }
         case SUB: {
             whereClause.append( "(" );
-            buildWhere( expr.getParams()[0], false, inferringType );
+            buildWhere( expr.getParams()[0], false, correspondingProp );
             whereClause.append( "-" );
-            buildWhere( expr.getParams()[1], false, inferringType );
+            buildWhere( expr.getParams()[1], false, correspondingProp );
             whereClause.append( ")" );
             break;
         }

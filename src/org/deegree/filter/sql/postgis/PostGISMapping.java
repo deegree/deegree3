@@ -63,8 +63,25 @@ public interface PostGISMapping {
      */
     public PropertyNameMapping getMapping( PropertyName propName )
                             throws FilterEvaluationException;
-    
-    public Object getPostGISValue (PropertyName propName, Literal literal) throws FilterEvaluationException;
-    
-    public Object getPostGISValue (PropertyName propName, Geometry literal);
+
+    /**
+     * @param literal
+     * @param propName
+     * @return
+     * @throws FilterEvaluationException
+     */
+    public Object getPostGISValue( Literal literal, PropertyName propName )
+                            throws FilterEvaluationException;
+
+    /**
+     * Returns the WKB for the given {@link Geometry}, transformed to the CRS of the specified {@link PropertyName}, if
+     * necessary.
+     * 
+     * @param literal
+     * @param propName 
+     * @return
+     * @throws FilterEvaluationException
+     */
+    public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+                            throws FilterEvaluationException;
 }
