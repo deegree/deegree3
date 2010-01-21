@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
@@ -53,10 +53,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Manages the loading, unloading and caching of {@link RenderMeshFragment} data and the enabling/disabling in a certain
  * GL context.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class RenderFragmentManager {
@@ -78,7 +78,7 @@ public class RenderFragmentManager {
 
     /**
      * Initialize the Manager with a multiresolution model.
-     *
+     * 
      * @param mrModel
      * @param maxCached
      */
@@ -95,7 +95,7 @@ public class RenderFragmentManager {
 
     /**
      * Ensures that the data of the specified fragments is available in main memory or in GPU memory.
-     *
+     * 
      * @param fragments
      * @throws IOException
      */
@@ -116,9 +116,10 @@ public class RenderFragmentManager {
                 }
 
                 memoryCache.put( fragment.getId(), fragment );
+            } else {
+                // mark that fragment has been required
+                memoryCache.get( fragment.getId() );
             }
-            // mark that fragment has been required
-            memoryCache.get( fragment.getId() );
         }
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Preparing of " + fragments.size() + " fragments (" + loaded + " new): " + elapsed + " ms" );
@@ -126,7 +127,7 @@ public class RenderFragmentManager {
 
     /**
      * Ensures that the data of the specified fragments is available in GPU memory (ready for rendering).
-     *
+     * 
      * @param fragments
      * @param gl
      * @throws IOException
@@ -156,7 +157,7 @@ public class RenderFragmentManager {
      * <p>
      * It's up to the manager to decide to unload them from GPU and/or memory or to keep them cached.
      * </p>
-     *
+     * 
      * @param fragments
      * @param gl
      */
@@ -187,13 +188,13 @@ public class RenderFragmentManager {
     }
 
     /**
-     *
+     * 
      * The <code>Cache</code> is a Map containing renderfragments mapped to their GLBuffer ids.
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
      * @author last edited by: $Author: rbezema $
      * @version $Revision: $, $Date: $
-     *
+     * 
      */
     private class Cache extends LinkedHashMap<Integer, RenderMeshFragment> {
 
@@ -211,7 +212,7 @@ public class RenderFragmentManager {
 
         /**
          * Overrides to the needs of a cache.
-         *
+         * 
          * @param eldest
          * @return true as defined by the contract in {@link LinkedHashMap}.
          */

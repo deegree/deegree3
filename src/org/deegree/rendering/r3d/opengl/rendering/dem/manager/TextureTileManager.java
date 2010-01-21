@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,12 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTile;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileProvider;
@@ -45,15 +44,15 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileReque
 
 /**
  * Manages the fetching (and caching) of {@link TextureTile} instances from {@link TextureTileProvider}s.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class TextureTileManager {
 
-    private final Set<TextureTile> cachedTiles = new LinkedHashSet<TextureTile>();
+    private final LinkedHashSet<TextureTile> cachedTiles = new LinkedHashSet<TextureTile>();
 
     private final TextureTileProvider[] providers;
 
@@ -61,7 +60,7 @@ public class TextureTileManager {
 
     /**
      * Construct a tile manager for the given providers.
-     *
+     * 
      * @param providers
      * @param maxCached
      */
@@ -72,7 +71,7 @@ public class TextureTileManager {
 
     /**
      * Return the bestfitting tile matching the given request
-     *
+     * 
      * @param request
      * @return the Texturetile which fits the given request best.
      */
@@ -89,17 +88,16 @@ public class TextureTileManager {
         }
 
         if ( tile == null ) {
-            tile = getMatchingProvider( request.getMetersPerPixel() ).getTextureTile( request.getMinX(),
-                                                                                      request.getMinY(),
-                                                                                      request.getMaxX(),
-                                                                                      request.getMaxY() );
-            addToCache( tile );
-
+            tile = getMatchingProvider( request.getMetersPerPixel() ).getTextureTile( request );
+            if ( tile != null ) {
+                addToCache( tile );
+            }
         }
         return tile;
     }
 
     private void addToCache( TextureTile tile ) {
+        // tile will not be null
         if ( cachedTiles.size() == maxCached ) {
             TextureTile cacheDrop = cachedTiles.iterator().next();
             cachedTiles.remove( cacheDrop );
@@ -110,7 +108,8 @@ public class TextureTileManager {
     private TextureTileProvider getMatchingProvider( double unitsPerPixel ) {
         TextureTileProvider provider = providers[0];
         for ( int i = 0; i < providers.length; i++ ) {
-            if ( providers[i].getNativeResolution() > unitsPerPixel ) {
+            // double provRes = providers[i].getNativeResolution();
+            if ( !providers[i].hasTextureForResolution( unitsPerPixel ) ) {
                 break;
             }
             provider = providers[i];
@@ -119,12 +118,23 @@ public class TextureTileManager {
     }
 
     /**
-     *
+     * 
      * @param unitsPerPixel
      * @return the native resolution of the configured TextureProvider, based on the meters per pixel.
      */
     public double getMatchingResolution( double unitsPerPixel ) {
-        return getMatchingProvider( unitsPerPixel ).getNativeResolution();
+        TextureTileProvider match = getMatchingProvider( unitsPerPixel );
+        if ( match != null ) {
+            // System.out.println( "The match: " + match + " requested upp: " + unitsPerPixel );
+            if ( Double.isNaN( match.getNativeResolution() ) && match.hasTextureForResolution( unitsPerPixel ) ) {
+                // we have a texture but it is not limited to a minimal units per pixel.
+                return unitsPerPixel;
+            }
+            return match.getNativeResolution();
+        }
+
+        // match was null or the provider does not supply a texture for the given resolution.
+        return Double.NaN;
     }
 
     @Override

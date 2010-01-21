@@ -212,7 +212,7 @@ public class TerrainRenderingManager {
                 } catch ( CancellationException e ) {
                     LOG.warn( "Timeout occured fetching textures." );
                 } catch ( Throwable e ) {
-                    LOG.debug( e.getMessage(), e );
+                    LOG.error( e.getMessage(), e );
                 }
             }
             LOG.debug( "Fetching of textures: " + ( System.currentTimeMillis() - begin ) + " milliseconds." );
@@ -250,11 +250,22 @@ public class TerrainRenderingManager {
             if ( textures != null && textures.size() > 0 ) {
                 int i = 0;
                 for ( FragmentTexture texture : textures ) {
-                    textureManagers[i++].enable( Collections.singletonList( texture ), gl );
+                    if ( texture != null ) {
+                        textureManagers[i++].enable( Collections.singletonList( texture ), gl );
+                    }
                 }
                 fragment.render( gl, textures, glRenderContext.getShaderProgramIds()[textures.size() - 1] );
             } else {
                 fragment.render( gl, null, 0 );
+            }
+        }
+
+        // rb: clean up the textures etc.
+        if ( textureManagers.length > 0 ) {
+            for ( TextureManager manager : textureManagers ) {
+                if ( manager != null ) {
+                    manager.cleanUp( gl );
+                }
             }
         }
 
@@ -300,7 +311,7 @@ public class TerrainRenderingManager {
         // }
         long numTexels = 0;
         for ( TextureTile textureTile : usedTextures ) {
-            numTexels += textureTile.getPixelsX() * textureTile.getPixelsY();
+            numTexels += textureTile.getWidth() * textureTile.getHeight();
         }
 
         ViewParams vp = glRenderContext.getViewParams();
