@@ -71,6 +71,8 @@ public class Recode extends Function {
 
     private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
 
+    private String fallbackValue;
+
     /***/
     public Recode() {
         super( "Recode", null );
@@ -83,7 +85,11 @@ public class Recode extends Function {
             contn.evaluate( sb, f );
         }
 
-        double val = parseDouble( sb.toString() );
+        String s = sb.toString();
+        if ( s.isEmpty() ) {
+            return new Object[] { fallbackValue };
+        }
+        double val = parseDouble( s );
 
         Iterator<Double> data = datas.iterator();
         Iterator<StringBuffer> vals = values.iterator();
@@ -101,7 +107,7 @@ public class Recode extends Function {
             }
         }
 
-        return new Object[] { "" + val };
+        return new Object[] { fallbackValue };
     }
 
     /**
@@ -111,6 +117,8 @@ public class Recode extends Function {
     public void parse( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Recode" );
+
+        fallbackValue = in.getAttributeValue( null, "fallbackValue" );
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "Recode" ) ) ) {
             in.nextTag();
