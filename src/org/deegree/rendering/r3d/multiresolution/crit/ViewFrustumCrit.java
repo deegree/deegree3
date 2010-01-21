@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.crit;
 
 import org.deegree.commons.utils.math.VectorUtils;
@@ -44,10 +44,10 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 
 /**
  * {@link LODCriterion} for specifying LODs that are optimized for perspective rendering.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
  */
 public class ViewFrustumCrit implements LODCriterion {
@@ -57,10 +57,6 @@ public class ViewFrustumCrit implements LODCriterion {
     private final float maxPixelError;
 
     private final ViewParams viewParams;
-
-    private final int screenX;
-
-    private final int screenY;
 
     private final ViewFrustum viewRegion;
 
@@ -74,7 +70,7 @@ public class ViewFrustumCrit implements LODCriterion {
 
     /**
      * Creates a new {@link ViewFrustumCrit} instance.
-     *
+     * 
      * @param viewParams
      *            specifies the visible space volume (viewer position, view direction, etc.)
      * @param maxPixelError
@@ -92,8 +88,6 @@ public class ViewFrustumCrit implements LODCriterion {
                             TextureManager[] textureManagers, float maxProjectedTexelSize ) {
         this.maxPixelError = maxPixelError;
         this.viewParams = viewParams;
-        this.screenX = viewParams.getScreenPixelsX();
-        this.screenY = viewParams.getScreenPixelsY();
         this.viewRegion = viewParams.getViewFrustum();
         this.zScale = zScale;
         this.maxTextureSize = maxTextureSize;
@@ -104,7 +98,7 @@ public class ViewFrustumCrit implements LODCriterion {
     /**
      * Returns true, iff the region associated with the arc is inside the view frustum volume and the estimated screen
      * projection error is greater than the maximum tolerable error.
-     *
+     * 
      * @param arc
      *            arc to be checked
      * @return true, iff the arc's region is inside the view frustum and the estimated screen projection error is
@@ -130,7 +124,7 @@ public class ViewFrustumCrit implements LODCriterion {
     /**
      * Checks whether all fragments denoted by the given {@link Arc} are texturable with respect to the max texture size
      * and texture resolutions.
-     *
+     * 
      * @param arc
      * @return true, if all are texturable, false otherwise (at least one is not texturable)
      */
@@ -166,6 +160,9 @@ public class ViewFrustumCrit implements LODCriterion {
         double pixelSize = viewParams.estimatePixelSizeForSpaceUnit( dist );
         double metersPerPixel = maxProjectedTexelSize / pixelSize;
         double resolution = getFinestTextureResolution( metersPerPixel );
+        if ( resolution <= 0.00001 ) {
+            resolution = 0.00001;
+        }
         double textureSize = getMaxSideLen( fragment ) / resolution;
         LOG.debug( "Side len: " + getMaxSideLen( fragment ) + ", resolution: " + resolution + ", texture size: "
                    + textureSize );
@@ -177,10 +174,11 @@ public class ViewFrustumCrit implements LODCriterion {
         double res = Double.MAX_VALUE;
         for ( TextureManager texManager : textureManagers ) {
             double matchingRes = texManager.getMatchingResolution( requiredResolution );
-            if ( matchingRes < res ) {
+            if ( !Double.isNaN( matchingRes ) && matchingRes < res ) {
                 res = matchingRes;
             }
         }
+        // System.out.println( "Crit, finest res: " + res );
         return res;
     }
 
@@ -200,7 +198,7 @@ public class ViewFrustumCrit implements LODCriterion {
     /**
      * Checks whether the screen-space error (after perspective projection) introduced by the fragments of the
      * {@link Arc} is acceptable.
-     *
+     * 
      * @param arc
      * @return true, if all fragments are fine
      */
@@ -216,28 +214,15 @@ public class ViewFrustumCrit implements LODCriterion {
         eyePos[2] = (float) viewRegion.getEyePos().z;
 
         float dist = VectorUtils.getDistance( scaledBBox, eyePos );
-        float projectionFactor = estimatePixelSizeForSpaceUnit( dist );
-        float screenError = projectionFactor * arc.geometricError;
+        double projectionFactor = viewParams.estimatePixelSizeForSpaceUnit( dist );
+        double screenError = projectionFactor * arc.geometricError;
         // System.out.println ("error: " + arc.geometryError);
         // System.out.println ("screen error: " + screenError);
         return screenError <= maxPixelError;
     }
 
-    /**
-     * Returns a guaranteed upper bound for the size that a world-space unit (e.g. a line with length 1) has in pixels
-     * after perspective projection, i.e. in pixels on the screen.
-     *
-     * @param dist
-     *            distance of the object (from the point-of-view)
-     * @return maximum number of pixels that an object of size 1 will cover
-     */
-    private float estimatePixelSizeForSpaceUnit( float dist ) {
-        float h = 2.0f * dist * (float) Math.tan( Math.toRadians( viewRegion.getFOVY() * 0.5f ) );
-        return screenY / h;
-    }
-
     @Override
     public String toString() {
-        return "frustum=" + viewRegion + ",pixelsX=" + screenX + ",pixelsY=" + screenY + ",maxError=" + maxPixelError;
+        return "frustum=" + viewRegion + ",maxError=" + maxPixelError;
     }
 }
