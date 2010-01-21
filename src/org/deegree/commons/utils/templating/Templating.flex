@@ -10,6 +10,7 @@ import java_cup.runtime.*;
  *
  * @version $Revision: 18644 $, $Date: 2009-07-23 13:50:17 +0200 (Thu, 23 Jul 2009) $
  */
+@SuppressWarnings("all")
 %%
 
 %class TemplatingLexer
@@ -19,7 +20,7 @@ import java_cup.runtime.*;
 %line
 %column
 %public
-%states TEMPLATE MAP_KEY MAP_VALUE CALL TEMPLATE_NAME
+%states TEMPLATE MAP_KEY MAP_VALUE CALL TEMPLATE_NAME LINK
 
 %{
 %}
@@ -70,8 +71,9 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
               { String s = yytext().trim().substring(5);
                 return new Symbol(TemplatingSymbols.EVEN_CALL_TOKEN, yyline, yycolumn, s); }
 
-  value[:]link
-              { return new Symbol(TemplatingSymbols.LINK_CALL_TOKEN, yyline, yycolumn); }
+  link
+              { yybegin(LINK);
+                return new Symbol(TemplatingSymbols.LINK_CALL_TOKEN, yyline, yycolumn); }
 
   index
               { return new Symbol(TemplatingSymbols.INDEX_CALL_TOKEN, yyline, yycolumn); }
@@ -92,6 +94,13 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
 
   [>]
               { yybegin(YYINITIAL); }
+}
+
+<LINK> {
+  [:]         {}
+  [:letter:]+[:][/][/]{LetterOrDigit}+([.]{LetterOrDigit}+)*([:][0-9]+)?([^>]*)
+              { return new Symbol(TemplatingSymbols.LINK_PREFIX_TOKEN, yyline, yycolumn, yytext()); }
+  [>]         { yybegin(YYINITIAL); }
 }
 
 <MAP_KEY> {

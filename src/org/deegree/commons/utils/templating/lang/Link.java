@@ -54,6 +54,15 @@ public class Link {
 
     private static final Logger LOG = getLogger( Link.class );
 
+    private String prefix;
+
+    /**
+     * @param prefix
+     */
+    public Link( String prefix ) {
+        this.prefix = prefix;
+    }
+
     /**
      * @param sb
      * @param o
@@ -67,7 +76,9 @@ public class Link {
         if ( isWellFormedAddress( val ) ) {
             sb.append( val );
         } else {
-            // TODO make proper link
+            if ( prefix != null ) {
+                sb.append( prefix );
+            }
             sb.append( val );
         }
     }
