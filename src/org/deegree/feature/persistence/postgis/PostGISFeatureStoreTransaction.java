@@ -421,9 +421,9 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         int columnId = 2;
         for ( Entry<String, Object> entry : columnsToValues.entrySet() ) {
             Object pgValue = null;
-            if ( pgValue == null ) {
+            if ( entry.getValue() == null ) {
                 // nothing
-            } else if ( pgValue instanceof Geometry ) {
+            } else if ( entry.getValue() instanceof Geometry ) {
                 try {
                     pgValue = WKBWriter.write( (Geometry) entry.getValue() );
                 } catch ( ParseException e ) {
@@ -459,11 +459,12 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
 
                 Object value = prop.getValue();
+
                 if ( value instanceof Geometry ) {
                     value = store.getCompatibleGeometry( ( (Geometry) value ), store.storageSRS );
                 }
-
                 LOG.debug( "Property '" + prop.getName() + "', colum: " + dbColumn );
+
                 columnsToValues.put( dbColumn, value );
             }
         }
