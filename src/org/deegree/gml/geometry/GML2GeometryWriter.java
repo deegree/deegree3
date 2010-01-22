@@ -71,7 +71,7 @@ import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.gml.geometry.refs.GeometryReference;
 
 /**
- * Exports a Geometry bean (that belongs to GML 2.1.*) via a {@link XMLStreamWriter}.
+ * Generates GML 2.1 representations from {@link Geometry} objects.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
@@ -227,7 +227,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
             writer.writeAttribute( "srsName", polygon.getCoordinateSystem().getName() );
         }
 
-        LinearRing outerRing = (LinearRing) polygon.getExteriorRing();
+        Ring outerRing = polygon.getExteriorRing();
         if ( outerRing.getId() != null && exportedIds.contains( outerRing.getId() ) ) {
             writer.writeEmptyElement( "gml", "outerBoundaryIs", GML21NS );
             writer.writeAttribute( "xlink", XLNNS, "href", "#" + outerRing.getId() );
@@ -247,7 +247,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
                     writer.writeAttribute( "xlink", XLNNS, "href", "#" + ring.getId() );
 
                 } else {
-                    exportLinearRing( (LinearRing) ring ); // in GML 2.1 the interior rings are linear rings
+                    exportLinearRing( ring ); // in GML 2.1 the interior rings are linear rings
                 }
                 writer.writeEndElement(); // </gml:innerBoundaryIs>
             }
@@ -259,7 +259,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      * @param linearRing
      * @throws XMLStreamException
      */
-    public void exportLinearRing( LinearRing linearRing )
+    public void exportLinearRing( Ring linearRing )
                             throws XMLStreamException {
         writer.writeStartElement( "gml", "LinearRing", GML21NS );
 
@@ -313,7 +313,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
             writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getName() );
         }
 
-        exportCoordinates( new PointsArray( envelope.getMin(), envelope.getMax()) );
+        exportCoordinates( new PointsArray( envelope.getMin(), envelope.getMax() ) );
 
         writer.writeEndElement(); // </gml:Box>
     }

@@ -40,6 +40,7 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.types.ows.Version;
@@ -124,14 +125,31 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
 
         // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
         QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs:TypeName", nsContext ) );
+        String[] typeNames2 = getNodesAsStrings( rootElement, new XPath( "wfs:TypeName", nsContext ) );
         // TODO remove null namespace hack
         for ( int i = 0; i < typeNames.length; i++ ) {
-            if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
+            if ( typeNames[i] == null ) {                
+                typeNames[i] = mangleTypeName ( typeNames2[i] );
+            } else if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
                 typeNames[i] = new QName( typeNames[i].getLocalPart() );
             }
         }
 
         return new DescribeFeatureType( VERSION_100, null, outputFormat, typeNames );
+    }
+
+    private QName mangleTypeName( String s ) {
+        String localPart = s;
+        String prefix = XMLConstants.DEFAULT_NS_PREFIX;
+        String namespace = XMLConstants.NULL_NS_URI;
+
+        int colonIdx = s.indexOf( ':' );
+        if (colonIdx >= 0 ){
+            prefix = s.substring( 0, colonIdx );
+            localPart = s.substring( colonIdx + 1);
+        }
+
+        return new QName (namespace, localPart, prefix);
     }
 
     /**
@@ -154,10 +172,12 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
 
         // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
         QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs:TypeName", nsContext ) );
-
+        String[] typeNames2 = getNodesAsStrings( rootElement, new XPath( "wfs:TypeName", nsContext ) );
         // TODO remove null namespace hack
         for ( int i = 0; i < typeNames.length; i++ ) {
-            if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
+            if ( typeNames[i] == null ) {
+                typeNames[i] = mangleTypeName ( typeNames2[i] );
+            } else if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
                 typeNames[i] = new QName( typeNames[i].getLocalPart() );
             }
         }
