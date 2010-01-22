@@ -18341,6 +18341,7 @@
   <crs:id>URN:OGC:DEF:CRS:EPSG::31466</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31466</crs:id>
   <crs:id>URN:OPENGIS:DEF:CRS:EPSG::31466</crs:id>
+  <crs:id>URN:X-OGC-DEF:CRS:EPSG:31466</crs:id>
   <crs:name>DHDN / Gauss-Kruger zone 2</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
   <crs:Axis>
@@ -36519,6 +36520,7 @@
   <crs:id>URN:OGC:DEF:CRS:EPSG::31468</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31468</crs:id>
   <crs:id>URN:OPENGIS:DEF:CRS:EPSG::31468</crs:id>
+  <crs:id>URN:X-OGC-DEF:CRS:EPSG:31468</crs:id>
   <crs:name>DHDN / Gauss-Kruger zone 4</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
   <crs:Axis>
@@ -47850,6 +47852,7 @@
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#25832</crs:id>
   <crs:id>URN:OPENGIS:DEF:CRS:EPSG::25832</crs:id>
   <crs:id>URN:X-OGC:DEF:CRS:EPSG:25832</crs:id>
+  <crs:id>URN:ADV:CRS:ETRS89_UTM32</crs:id>
   <crs:name>ETRS89 / UTM zone 32N</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
   <crs:Axis>
@@ -50557,6 +50560,7 @@
   <crs:id>URN:OGC:DEF:CRS:EPSG::31467</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#31467</crs:id>
   <crs:id>URN:OPENGIS:DEF:CRS:EPSG::31467</crs:id>
+  <crs:id>URN:X-OGC-DEF:CRS:EPSG:31467</crs:id>
   <crs:name>DHDN / Gauss-Kruger zone 3</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
   <crs:Axis>
@@ -80865,6 +80869,7 @@
   <crs:id>URN:OGC:DEF:CRS:EPSG::25833</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#25833</crs:id>
   <crs:id>URN:OPENGIS:DEF:CRS:EPSG::25833</crs:id>
+  <crs:id>URN:X-OGC-DEF:CRS:EPSG:25833</crs:id>
   <crs:name>ETRS89 / UTM zone 33N</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
   <crs:Axis>
@@ -80895,6 +80900,7 @@
   <crs:id>URN:OGC:DEF:CRS:EPSG::325833</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#325833</crs:id>
   <crs:id>URN:OPENGIS:DEF:CRS:EPSG::325833</crs:id>
+  <crs:id>URN:X-OGC-DEF:CRS:EPSG:325833</crs:id>
   <crs:name>ETRS89 / UTM zone 33N</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
   <crs:Axis>
@@ -88050,7 +88056,7 @@
   <crs:axisOrder>longitude, latitude</crs:axisOrder>
   <crs:usedDatum>EPSG:6326</crs:usedDatum>
  </crs:geographicCRS>
-<crs:geographicCRS>
+ <crs:geographicCRS>
   <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11:4326</crs:id>
   <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326</crs:id>
   <crs:id>URN:X-OGC:DEF:CRS:EPSG:4326</crs:id>

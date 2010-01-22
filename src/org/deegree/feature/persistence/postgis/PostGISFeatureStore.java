@@ -441,7 +441,7 @@ public class PostGISFeatureStore implements FeatureStore {
     @Override
     public FeatureResultSet query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        
+
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
             String msg = "Join queries between multiple feature types are currently not supported.";
             throw new UnsupportedOperationException( msg );
@@ -590,14 +590,22 @@ public class PostGISFeatureStore implements FeatureStore {
             throw new FeatureStoreException( msg, e );
         }
 
-        if ( wb != null && wb.getPostFilter() != null ) {
-            LOG.debug( "Applying in-memory post-filtering." );
-            result = new FilteredFeatureResultSet( result, wb.getPostFilter() );
-        }
-
-        if ( wb != null && wb.getPostSortCriteria() != null ) {
-            LOG.debug( "Applying in-memory post-sorting." );
-            result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
+        if ( mapping == null ) {
+            if ( filter != null ) {
+                result = new FilteredFeatureResultSet( result, filter );
+            }
+            if ( sortCrit != null ) {
+                result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), sortCrit ) );
+            }
+        } else {
+            if ( wb != null && wb.getPostFilter() != null ) {
+                LOG.debug( "Applying in-memory post-filtering." );
+                result = new FilteredFeatureResultSet( result, wb.getPostFilter() );
+            }
+            if ( wb != null && wb.getPostSortCriteria() != null ) {
+                LOG.debug( "Applying in-memory post-sorting." );
+                result = new CachedFeatureResultSet( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
+            }
         }
         return result;
     }
@@ -803,8 +811,8 @@ public class PostGISFeatureStore implements FeatureStore {
     Geometry getCompatibleGeometry( Geometry literal )
                             throws FilterEvaluationException {
         return getCompatibleGeometry( literal, storageSRS );
-    }    
-    
+    }
+
     /**
      * Returns a transformed version of the given {@link Geometry} in the specified CRS.
      * 
