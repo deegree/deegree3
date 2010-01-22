@@ -421,7 +421,9 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
         int columnId = 2;
         for ( Entry<String, Object> entry : columnsToValues.entrySet() ) {
             Object pgValue = null;
-            if (pgValue instanceof Geometry) {
+            if ( pgValue == null ) {
+                // nothing
+            } else if ( pgValue instanceof Geometry ) {
                 try {
                     pgValue = WKBWriter.write( (Geometry) entry.getValue() );
                 } catch ( ParseException e ) {
