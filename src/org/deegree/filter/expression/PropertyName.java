@@ -80,6 +80,15 @@ public class PropertyName implements Expression {
         this.nsContext = nsContext;
     }
 
+    // TODO check if this should stay here
+    public void set( String text, NamespaceContext nsContext ) {
+        this.text = text;
+        this.nsContext = nsContext;
+        this.xpath = null;
+        this.simpleProp = null;
+        this.isSimple = null;
+    }
+
     /**
      * Creates a new {@link PropertyName} instance that select a property of a {@link MatchableObject}.
      * 

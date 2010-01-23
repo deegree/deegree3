@@ -222,7 +222,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             queries = new Query[1];
             queries[0] = new BBoxQuery( null, typeNames, featureVersion, srs, propertyNames, null, null, bbox );
 
-            return new GetFeature( VERSION_110, null, null, null, maxFeatures, null, null, queries );
+            return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
         }
 
         if ( filterStr != null || typeNames != null ) {
