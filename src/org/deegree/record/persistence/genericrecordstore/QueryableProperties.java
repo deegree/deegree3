@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
 import java.util.List;
@@ -42,7 +42,7 @@ import org.deegree.commons.types.datetime.Date;
 import org.deegree.crs.CRS;
 
 /**
- * Properties that are queryable by applicationprofiles such as ISO 
+ * Properties that are queryable by applicationprofiles such as ISO
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -50,90 +50,101 @@ import org.deegree.crs.CRS;
  * @version $Revision: $, $Date: $
  */
 public class QueryableProperties {
-    
-    //---<common queryable properties>
-    //dc:subject
-    private List<Keyword> keywords;
-    
-    private List<String> title;
-    
-    private List<String> _abstract;
-    
-    private String anyText;
-    
-    private List<Format> format;
-    
-    private String identifier;
-    
-    private Date modified;
-    
-    private String type;
-    
-    private BoundingBox boundingBox;
-    
-    private CRS crs;
-    
-  //---</common queryable properties>
-    
-    //---<additional common queryable properties>
-    
-    private Date revisionDate;
-    
-    private List<String> alternateTitle;
-    
-    private Date creationDate;
-    
-    private Date publicationDate;
-    
-    private String organisationName;
-    
-    private boolean hasSecurityConstraints;
-    
-    private String language;
-    
-    private String resourceIdentifier;
-    
-    private String parentIdentifier;
-    
-    private List<String> topicCategory;
-    
-  //---</additional common queryable properties>
-    
-    
-    
-    private String resourceLanguage;
-    
-    
-    
-    private OMElement serviceType;
-    
-    private OMElement serviceTypeVersion;
-    
-    
-    
-    public QueryableProperties(){
-        
-    }
-    
-    /*public QueryableProperties(List<String> subject, List<OMElement> title, OMElement language, List<String> abridgement, String anyText, 
-                               List<String> format, OMElement identifier, List<Date> modified, String type, 
-                               BoundingBox boundingBox, CRS crs){
-        this.subject = subject;
-        this.title = title;
-        this.language = language;
-        this.abridgement = abridgement;
-        this.anyText = anyText;
-        this.format = format;
-        this.identifier = identifier;
-        this.modified = modified;
-        this.type = type;
-        this.boundingBox = boundingBox;
-        this.crs = crs;
-        
-    }*/
 
+    // ---<common queryable properties>
+    // dc:subject
+    private List<Keyword> keywords;
+
+    private List<String> title;
+
+    private List<String> _abstract;
+
+    private String anyText;
+
+    private List<Format> format;
+
+    private String identifier;
+
+    private Date modified;
+
+    private String type;
+
+    private BoundingBox boundingBox;
+
+    private CRS crs;
+
+    // ---</common queryable properties>
+
+    // ---<additional common queryable properties>
+
+    private Date revisionDate;
+
+    private List<String> alternateTitle;
+
+    private Date creationDate;
+
+    private Date publicationDate;
+
+    private String organisationName;
+
+    private boolean hasSecurityConstraints;
+
+    private String language;
+
+    private String resourceIdentifier;
+
+    private String parentIdentifier;
+
+    private String resourceLanguage;
+
+    private List<String> topicCategory;
+
+    private String operatesOn;
+
+    private String operatesOnIdentifier;
+
+    private String operatesOnName;
+
+    private int denominator;
+
+    private float distanceValue;
+
+    private String distanceUOM;
     
+    private Date temporalExtentBegin;
     
+    private Date temporalExtentEnd;
+
+    // ---</additional common queryable properties>
+
+    // ---<additional common queryable properties for SERVICE>
+
+    private String serviceType;
+
+    private String serviceTypeVersion;
+
+    private String geographicDescriptionCode_service;
+
+    private String operation;
+
+    private String couplingType;
+
+    // ---</additional common queryable properties for SERVICE>
+
+    public QueryableProperties() {
+
+    }
+
+    /*
+     * public QueryableProperties(List<String> subject, List<OMElement> title, OMElement language, List<String>
+     * abridgement, String anyText, List<String> format, OMElement identifier, List<Date> modified, String type,
+     * BoundingBox boundingBox, CRS crs){ this.subject = subject; this.title = title; this.language = language;
+     * this.abridgement = abridgement; this.anyText = anyText; this.format = format; this.identifier = identifier;
+     * this.modified = modified; this.type = type; this.boundingBox = boundingBox; this.crs = crs;
+     * 
+     * }
+     */
+
     /**
      * @return the abridgement
      */
@@ -142,7 +153,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param abridgement the abridgement to set
+     * @param abridgement
+     *            the abridgement to set
      */
     public void set_abstract( List<String> _abstract ) {
         this._abstract = _abstract;
@@ -156,7 +168,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param anyText the anyText to set
+     * @param anyText
+     *            the anyText to set
      */
     public void setAnyText( String anyText ) {
         this.anyText = anyText;
@@ -170,7 +183,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param format the format to set
+     * @param format
+     *            the format to set
      */
     public void setFormat( List<Format> format ) {
         this.format = format;
@@ -184,7 +198,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param identifier the identifier to set
+     * @param identifier
+     *            the identifier to set
      */
     public void setIdentifier( String identifier ) {
         this.identifier = identifier;
@@ -198,7 +213,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param modified the modified to set
+     * @param modified
+     *            the modified to set
      */
     public void setModified( Date modified ) {
         this.modified = modified;
@@ -212,13 +228,12 @@ public class QueryableProperties {
     }
 
     /**
-     * @param type the type to set
+     * @param type
+     *            the type to set
      */
     public void setType( String type ) {
         this.type = type;
     }
-
-    
 
     /**
      * @return the crs
@@ -228,41 +243,11 @@ public class QueryableProperties {
     }
 
     /**
-     * @param crs the crs to set
+     * @param crs
+     *            the crs to set
      */
     public void setCrs( CRS crs ) {
         this.crs = crs;
-    }
-
-   
-
-    
-    /**
-     * @return the serviceType
-     */
-    public OMElement getServiceType() {
-        return serviceType;
-    }
-
-    /**
-     * @param serviceType the serviceType to set
-     */
-    public void setServiceType( OMElement serviceType ) {
-        this.serviceType = serviceType;
-    }
-
-    /**
-     * @return the serviceTypeVersion
-     */
-    public OMElement getServiceTypeVersion() {
-        return serviceTypeVersion;
-    }
-
-    /**
-     * @param serviceTypeVersion the serviceTypeVersion to set
-     */
-    public void setServiceTypeVersion( OMElement serviceTypeVersion ) {
-        this.serviceTypeVersion = serviceTypeVersion;
     }
 
     /**
@@ -273,7 +258,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param title the title to set
+     * @param title
+     *            the title to set
      */
     public void setTitle( List<String> title ) {
         this.title = title;
@@ -287,7 +273,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param boundingBox the boundingBox to set
+     * @param boundingBox
+     *            the boundingBox to set
      */
     public void setBoundingBox( BoundingBox boundingBox ) {
         this.boundingBox = boundingBox;
@@ -301,7 +288,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param keywords the keywords to set
+     * @param keywords
+     *            the keywords to set
      */
     public void setKeywords( List<Keyword> keywords ) {
         this.keywords = keywords;
@@ -315,7 +303,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param alternateTitle the alternateTitle to set
+     * @param alternateTitle
+     *            the alternateTitle to set
      */
     public void setAlternateTitle( List<String> alternateTitle ) {
         this.alternateTitle = alternateTitle;
@@ -329,7 +318,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param resourceLanguage the resourceLanguage to set
+     * @param resourceLanguage
+     *            the resourceLanguage to set
      */
     public void setResourceLanguage( String resourceLanguage ) {
         this.resourceLanguage = resourceLanguage;
@@ -343,7 +333,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param revisionDate the revisionDate to set
+     * @param revisionDate
+     *            the revisionDate to set
      */
     public void setRevisionDate( Date revisionDate ) {
         this.revisionDate = revisionDate;
@@ -357,7 +348,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param creationDate the creationDate to set
+     * @param creationDate
+     *            the creationDate to set
      */
     public void setCreationDate( Date creationDate ) {
         this.creationDate = creationDate;
@@ -371,7 +363,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param publicationDate the publicationDate to set
+     * @param publicationDate
+     *            the publicationDate to set
      */
     public void setPublicationDate( Date publicationDate ) {
         this.publicationDate = publicationDate;
@@ -385,7 +378,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param organisationName the organisationName to set
+     * @param organisationName
+     *            the organisationName to set
      */
     public void setOrganisationName( String organisationName ) {
         this.organisationName = organisationName;
@@ -399,7 +393,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param hasSecurityConstraints the hasSecurityConstraints to set
+     * @param hasSecurityConstraints
+     *            the hasSecurityConstraints to set
      */
     public void setHasSecurityConstraints( boolean hasSecurityConstraints ) {
         this.hasSecurityConstraints = hasSecurityConstraints;
@@ -413,7 +408,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param language the language to set
+     * @param language
+     *            the language to set
      */
     public void setLanguage( String language ) {
         this.language = language;
@@ -427,7 +423,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param resourceIdentifier the resourceIdentifier to set
+     * @param resourceIdentifier
+     *            the resourceIdentifier to set
      */
     public void setResourceIdentifier( String resourceIdentifier ) {
         this.resourceIdentifier = resourceIdentifier;
@@ -441,7 +438,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param parentIdentifier the parentIdentifier to set
+     * @param parentIdentifier
+     *            the parentIdentifier to set
      */
     public void setParentIdentifier( String parentIdentifier ) {
         this.parentIdentifier = parentIdentifier;
@@ -455,12 +453,206 @@ public class QueryableProperties {
     }
 
     /**
-     * @param topicCategory the topicCategory to set
+     * @param topicCategory
+     *            the topicCategory to set
      */
     public void setTopicCategory( List<String> topicCategory ) {
         this.topicCategory = topicCategory;
     }
 
-   
+    /**
+     * @return the serviceType
+     */
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    /**
+     * @param serviceType
+     *            the serviceType to set
+     */
+    public void setServiceType( String serviceType ) {
+        this.serviceType = serviceType;
+    }
+
+    /**
+     * @return the serviceTypeVersion
+     */
+    public String getServiceTypeVersion() {
+        return serviceTypeVersion;
+    }
+
+    /**
+     * @param serviceTypeVersion
+     *            the serviceTypeVersion to set
+     */
+    public void setServiceTypeVersion( String serviceTypeVersion ) {
+        this.serviceTypeVersion = serviceTypeVersion;
+    }
+
+    /**
+     * @return the geographicDescriptionCode_service
+     */
+    public String getGeographicDescriptionCode_service() {
+        return geographicDescriptionCode_service;
+    }
+
+    /**
+     * @param geographicDescriptionCodeService
+     *            the geographicDescriptionCode_service to set
+     */
+    public void setGeographicDescriptionCode_service( String geographicDescriptionCodeService ) {
+        geographicDescriptionCode_service = geographicDescriptionCodeService;
+    }
+
+    /**
+     * @return the operation
+     */
+    public String getOperation() {
+        return operation;
+    }
+
+    /**
+     * @param operation
+     *            the operation to set
+     */
+    public void setOperation( String operation ) {
+        this.operation = operation;
+    }
+
+    /**
+     * @return the couplingType
+     */
+    public String getCouplingType() {
+        return couplingType;
+    }
+
+    /**
+     * @param couplingType
+     *            the couplingType to set
+     */
+    public void setCouplingType( String couplingType ) {
+        this.couplingType = couplingType;
+    }
+
+    /**
+     * @return the operatesOn
+     */
+    public String getOperatesOn() {
+        return operatesOn;
+    }
+
+    /**
+     * @param operatesOn
+     *            the operatesOn to set
+     */
+    public void setOperatesOn( String operatesOn ) {
+        this.operatesOn = operatesOn;
+    }
+
+    /**
+     * @return the operatesOnIdentifier
+     */
+    public String getOperatesOnIdentifier() {
+        return operatesOnIdentifier;
+    }
+
+    /**
+     * @param operatesOnIdentifier
+     *            the operatesOnIdentifier to set
+     */
+    public void setOperatesOnIdentifier( String operatesOnIdentifier ) {
+        this.operatesOnIdentifier = operatesOnIdentifier;
+    }
+
+    /**
+     * @return the operatesOnName
+     */
+    public String getOperatesOnName() {
+        return operatesOnName;
+    }
+
+    /**
+     * @param operatesOnName
+     *            the operatesOnName to set
+     */
+    public void setOperatesOnName( String operatesOnName ) {
+        this.operatesOnName = operatesOnName;
+    }
+
+    /**
+     * @return the denominator
+     */
+    public int getDenominator() {
+        return denominator;
+    }
+
+    /**
+     * @param denominator
+     *            the denominator to set
+     */
+    public void setDenominator( int denominator ) {
+        this.denominator = denominator;
+    }
+
+    /**
+     * @return the distanceValue
+     */
+    public float getDistanceValue() {
+        return distanceValue;
+    }
+
+    /**
+     * @param distanceValue
+     *            the distanceValue to set
+     */
+    public void setDistanceValue( float distanceValue ) {
+        this.distanceValue = distanceValue;
+    }
+
+    /**
+     * @return the distanceUOM
+     */
+    public String getDistanceUOM() {
+        return distanceUOM;
+    }
+
+    /**
+     * @param distanceUOM
+     *            the distanceUOM to set
+     */
+    public void setDistanceUOM( String distanceUOM ) {
+        this.distanceUOM = distanceUOM;
+    }
+
+    /**
+     * @return the temporalExtentBegin
+     */
+    public Date getTemporalExtentBegin() {
+        return temporalExtentBegin;
+    }
+
+    /**
+     * @param temporalExtentBegin the temporalExtentBegin to set
+     */
+    public void setTemporalExtentBegin( Date temporalExtentBegin ) {
+        this.temporalExtentBegin = temporalExtentBegin;
+    }
+
+    /**
+     * @return the temporalExtentEnd
+     */
+    public Date getTemporalExtentEnd() {
+        return temporalExtentEnd;
+    }
+
+    /**
+     * @param temporalExtentEnd the temporalExtentEnd to set
+     */
+    public void setTemporalExtentEnd( Date temporalExtentEnd ) {
+        this.temporalExtentEnd = temporalExtentEnd;
+    }
+    
+    
 
 }

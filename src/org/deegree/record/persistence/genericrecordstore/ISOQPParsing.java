@@ -363,6 +363,111 @@ public class ISOQPParsing extends XMLAdapter {
                                                             new XPath( "./gmd:pointOfContact/gmd:CI_ResponsibleParty",
                                                                        nsContext ) );
 
+                OMElement sv_serviceIdentification = getElement( elem, new XPath( "./srv:SV_ServiceIdentification",
+                                                                                  nsContext ) );
+
+                OMElement spatialResolution = getElement( md_dataIdentification, new XPath( "./gmd:spatialResolution",
+                                                                                            nsContext ) );
+
+                String temporalExtentBegin = getNodeAsString(
+                                                              md_dataIdentification,
+                                                              new XPath(
+                                                                         "./gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
+                                                                         nsContext ), "0000-00-00" );
+                Date dateTempBeg = null;
+                try {
+                    dateTempBeg = new Date( temporalExtentBegin );
+                } catch ( ParseException e ) {
+
+                    e.printStackTrace();
+                }
+
+                qp.setTemporalExtentBegin( dateTempBeg );
+
+                String temporalExtentEnd = getNodeAsString(
+                                                            md_dataIdentification,
+                                                            new XPath(
+                                                                       "./gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
+                                                                       nsContext ), "0000-00-00" );
+                Date dateTempEnd = null;
+                try {
+                    dateTempEnd = new Date( temporalExtentEnd );
+                } catch ( ParseException e ) {
+
+                    e.printStackTrace();
+                }
+
+                qp.setTemporalExtentEnd( dateTempEnd );
+
+                int denominator = getNodeAsInt(
+                                                spatialResolution,
+                                                new XPath(
+                                                           "./gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator",
+                                                           nsContext ), 0 );
+                qp.setDenominator( denominator );
+
+                // TODO put here the constraint that there can a denominator be available iff distanceValue and
+                // distanceUOM are not set and vice versa!!
+                float distanceValue = getNodeAsFloat( spatialResolution,
+                                                      new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance",
+                                                                 nsContext ), 0 );
+                qp.setDistanceValue( distanceValue );
+
+                String distanceUOM = getNodeAsString( spatialResolution,
+                                                      new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance/@uom",
+                                                                 nsContext ), null );
+                qp.setDistanceUOM( distanceUOM );
+
+                String serviceType = getNodeAsString( sv_serviceIdentification, new XPath( "./srv:serviceType",
+                                                                                           nsContext ), null );
+                qp.setServiceType( serviceType );
+
+                String serviceTypeVersion = getNodeAsString( sv_serviceIdentification,
+                                                             new XPath( "./srv:serviceTypeVersion", nsContext ), null );
+                qp.setServiceTypeVersion( serviceTypeVersion );
+
+                String operation = getNodeAsString(
+                                                    sv_serviceIdentification,
+                                                    new XPath(
+                                                               "./srv:containsOperations/srv:SV_OperationMetadata/srv:operationName",
+                                                               nsContext ), null );
+                qp.setOperation( operation );
+
+                String geographicDescriptionCode_service = getNodeAsString(
+                                                                            sv_serviceIdentification,
+                                                                            new XPath(
+                                                                                       "./srv:extent/srv:EX_Extent/srv:geographicElement/srv:EX_GeopraphicDescription/srv:geographicIdentifier/srv:MD_Identifier/srv:code",
+                                                                                       nsContext ), null );
+                qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
+
+                String operatesOn = getNodeAsString(
+                                                     sv_serviceIdentification,
+                                                     new XPath(
+                                                                "./srv:operatesOn/srv:MD_DataIdentification/srv:citation/srv:CI_Citation/srv:identifier",
+                                                                nsContext ), null );
+                qp.setOperatesOn( operatesOn );
+
+                String operatesOnIdentifier = getNodeAsString(
+                                                               sv_serviceIdentification,
+                                                               new XPath(
+                                                                          "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier",
+                                                                          nsContext ), null );
+                qp.setOperatesOnIdentifier( operatesOnIdentifier );
+
+                String operatesOnName = getNodeAsString(
+                                                         sv_serviceIdentification,
+                                                         new XPath(
+                                                                    "./srv:coupledResource/srv:SV_CoupledResource/srv:operationName",
+                                                                    nsContext ), null );
+                qp.setOperatesOnName( operatesOnName );
+
+                String couplingType = getNodeAsString(
+                                                       sv_serviceIdentification,
+                                                       new XPath(
+                                                                  "./srv:couplingType/srv:SV_CouplingType/srv:code/@codeListValue",
+                                                                  nsContext ), null );
+                qp.setCouplingType( couplingType );
+
                 String resourceLanguage = getNodeAsString(
                                                            md_dataIdentification,
                                                            new XPath( "./gmd:language/gco:CharacterString", nsContext ),
@@ -637,38 +742,7 @@ public class ISOQPParsing extends XMLAdapter {
             generateMainDatabaseDataset();
             generateISO();
 
-            if ( qp.getTitle() != null ) {
-                generateISOQP_TitleStatement( isUpdate );
-            }
-            if ( qp.getType() != null ) {
-                generateISOQP_TypeStatement( isUpdate );
-            }
-            if ( qp.getKeywords() != null ) {
-                generateISOQP_KeywordStatement( isUpdate );
-            }
-            if ( qp.getTopicCategory() != null ) {
-                generateISOQP_TopicCategoryStatement( isUpdate );
-            }
-            if ( qp.getFormat() != null ) {
-                generateISOQP_FormatStatement( isUpdate );
-            }
-            // TODO relation
-            if ( qp.get_abstract() != null ) {
-                generateISOQP_AbstractStatement( isUpdate );
-            }
-            if ( qp.getAlternateTitle() != null ) {
-                generateISOQP_AlternateTitleStatement( isUpdate );
-            }
-            if ( qp.getResourceIdentifier() != null ) {
-                generateISOQP_ResourceIdentifierStatement( isUpdate );
-            }
-            if ( qp.getOrganisationName() != null ) {
-                generateISOQP_OrganisationNameStatement( isUpdate );
-            }
-            // TODO spatial
-            if ( qp.getBoundingBox() != null ) {
-                generateISOQP_BoundingBoxStatement( isUpdate );
-            }
+            executeQueryableProperties( isUpdate );
 
             stm.close();
         } catch ( SQLException e ) {
@@ -788,36 +862,8 @@ public class ISOQPParsing extends XMLAdapter {
                 // recordBrief, recordSummary, recordFull update
                 updateRecord( requestedId );
 
-                if ( qp.getTitle() != null ) {
-                    generateISOQP_TitleStatement( isUpdate );
-                }
-                if ( qp.getType() != null ) {
-                    generateISOQP_TypeStatement( isUpdate );
-                }
-                if ( qp.getKeywords() != null ) {
-                    generateISOQP_KeywordStatement( isUpdate );
-                }
-                if(qp.getTopicCategory() != null){
-                    generateISOQP_TopicCategoryStatement( isUpdate );
-                }
-                if ( qp.getFormat() != null ) {
-                    generateISOQP_FormatStatement( isUpdate );
-                }
-                if ( qp.get_abstract() != null ) {
-                    generateISOQP_AbstractStatement( isUpdate );
-                }
-                if ( qp.getAlternateTitle() != null ) {
-                    generateISOQP_AlternateTitleStatement( isUpdate );
-                }
-                if ( qp.getResourceIdentifier() != null ) {
-                    generateISOQP_ResourceIdentifierStatement( isUpdate );
-                }
-                if ( qp.getOrganisationName() != null ) {
-                    generateISOQP_OrganisationNameStatement( isUpdate );
-                }
-                if ( qp.getBoundingBox() != null ) {
-                    generateISOQP_BoundingBoxStatement( isUpdate );
-                }
+                executeQueryableProperties( isUpdate );
+
             } else {
                 // TODO think about what response should be written if there is no such dataset in the backend??
                 String msg = "No dataset found for the identifier --> " + qp.getIdentifier() + " <--. ";
@@ -835,6 +881,84 @@ public class ISOQPParsing extends XMLAdapter {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Method that encapsulates the generating for all the queryable properties.
+     * 
+     * @param isUpdate
+     */
+    private void executeQueryableProperties( boolean isUpdate ) {
+
+        if ( qp.getTitle() != null ) {
+            generateISOQP_TitleStatement( isUpdate );
+        }
+        if ( qp.getType() != null ) {
+            generateISOQP_TypeStatement( isUpdate );
+        }
+        if ( qp.getKeywords() != null ) {
+            generateISOQP_KeywordStatement( isUpdate );
+        }
+        if ( qp.getTopicCategory() != null ) {
+            generateISOQP_TopicCategoryStatement( isUpdate );
+        }
+        if ( qp.getFormat() != null ) {
+            generateISOQP_FormatStatement( isUpdate );
+        }
+        // TODO relation
+        if ( qp.get_abstract() != null ) {
+            generateISOQP_AbstractStatement( isUpdate );
+        }
+        if ( qp.getAlternateTitle() != null ) {
+            generateISOQP_AlternateTitleStatement( isUpdate );
+        }
+        if ( qp.getCreationDate() != null ) {
+            generateISOQP_CreationDateStatement( isUpdate );
+        }
+        if ( qp.getPublicationDate() != null ) {
+            generateISOQP_PublicationDateStatement( isUpdate );
+        }
+        if ( qp.getRevisionDate() != null ) {
+            generateISOQP_RevisionDateStatement( isUpdate );
+        }
+        if ( qp.getResourceIdentifier() != null ) {
+            generateISOQP_ResourceIdentifierStatement( isUpdate );
+        }
+        if ( qp.getServiceType() != null ) {
+            generateISOQP_ServiceTypeStatement( isUpdate );
+        }
+        if ( qp.getServiceTypeVersion() != null ) {
+            generateISOQP_ServiceTypeVersionStatement( isUpdate );
+        }
+        if ( qp.getGeographicDescriptionCode_service() != null ) {
+            generateISOQP_GeographicDescriptionCode_ServiceStatement( isUpdate );
+        }
+        if ( qp.getOperation() != null ) {
+            generateISOQP_OperationStatement( isUpdate );
+        }
+        if ( qp.getDenominator() != 0 || ( qp.getDistanceValue() != 0 && qp.getDistanceUOM() != null ) ) {
+            generateISOQP_SpatialResolutionStatement( isUpdate );
+        }
+        if ( qp.getOrganisationName() != null ) {
+            generateISOQP_OrganisationNameStatement( isUpdate );
+        }
+        if ( qp.getResourceLanguage() != null ) {
+            generateISOQP_ResourceLanguageStatement( isUpdate );
+        }
+//        if ( qp.getTemporalExtentBegin() != null && qp.getTemporalExtentEnd() != null ) {
+//            generateISOQP_TemporalExtentStatement( isUpdate );
+//        }
+        if ( qp.getOperatesOn() != null && qp.getOperatesOnIdentifier() != null && qp.getOperatesOnName() != null ) {
+            generateISOQP_OperatesOnStatement( isUpdate );
+        }
+        if ( qp.getCouplingType() != null ) {
+            generateISOQP_CouplingTypeStatement( isUpdate );
+        }
+        // TODO spatial
+        if ( qp.getBoundingBox() != null ) {
+            generateISOQP_BoundingBoxStatement( isUpdate );
+        }
+
     }
 
     /**
@@ -1038,6 +1162,293 @@ public class ISOQPParsing extends XMLAdapter {
                                + "," + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
             } else {
                 sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '" + qp.getResourceIdentifier()
+                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Generates the temporalExtent for this dataset.
+     * TODO be aware about the datehandling
+     * @param isUpdate
+     */
+    private void generateISOQP_TemporalExtentStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_temporalextent";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, tempextent_begin, tempextent_end) VALUES (" + id
+                               + "," + mainDatabaseTableID + ",'" + qp.getTemporalExtentBegin() + "','" + qp.getTemporalExtentEnd() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET tempextent_begin = '" + qp.getTemporalExtentBegin() + "', tempextent_end = '" + qp.getTemporalExtentEnd() 
+                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+    
+    /**
+     * Generates the spatialResolution for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_SpatialResolutionStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_spatialresolution";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable
+                               + " (id, fk_datasets, denominator, distancevalue, distanceuom) VALUES (" + id + ","
+                               + mainDatabaseTableID + "," + qp.getDenominator() + "," + qp.getDistanceValue() + ",'"
+                               + qp.getDistanceUOM() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET denominator = " + qp.getDenominator()
+                               + ", distancevalue = " + qp.getDistanceValue() + ", distanceuom = '"
+                               + qp.getDistanceUOM() + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Generates the couplingType for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_CouplingTypeStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_couplingtype";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, couplingtype) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + qp.getCouplingType() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET couplingtype = '" + qp.getCouplingType()
+                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Generates the operatesOn for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_OperatesOnStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_operateson";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable
+                               + " (id, fk_datasets, operateson, operatesonidentifier, operatesonname) VALUES (" + id
+                               + "," + mainDatabaseTableID + ",'" + qp.getOperatesOn() + "','"
+                               + qp.getOperatesOnIdentifier() + "','" + qp.getOperatesOnName() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET operateson = '" + qp.getOperatesOn()
+                               + "', operatesonidentifier = '" + qp.getOperatesOnIdentifier() + "', operatesonname = '"
+                               + qp.getOperatesOnName() + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Generates the operation for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_OperationStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_operation";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, operation) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + qp.getOperation() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '" + qp.getOperation()
+                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Generates the geographicDescriptionCode for the type "service" for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_GeographicDescriptionCode_ServiceStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_geographicdescriptioncode";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable
+                               + " (id, fk_datasets, geographicdescriptioncode) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + qp.getGeographicDescriptionCode_service() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '"
+                               + qp.getGeographicDescriptionCode_service() + "' WHERE fk_datasets = "
+                               + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Generates the serviceTypeVersion for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_ServiceTypeVersionStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_servicetypeversion";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, servicetypeversion) VALUES (" + id
+                               + "," + mainDatabaseTableID + ",'" + qp.getServiceTypeVersion() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '" + qp.getServiceTypeVersion()
+                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Generates the serviceType for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_ServiceTypeStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_servicetype";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, servicetype) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + qp.getServiceType() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '" + qp.getServiceType()
+                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Generates the resourceLanguage for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_ResourceLanguageStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_resourcelanguage";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, resourcelanguage) VALUES (" + id
+                               + "," + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET resourcelanguage = '" + qp.getResourceLanguage()
                                + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
             }
 
@@ -1571,19 +1982,17 @@ public class ISOQPParsing extends XMLAdapter {
      */
     private void setDCSummaryElements( OMElement omElement ) {
         setDCBriefElements( omElement );
-        
-        
+
         OMElement omSubject = factory.createOMElement( "subject", namespaceDC );
         // dc:subject
         for ( Keyword subjects : qp.getKeywords() ) {
             for ( String subject : subjects.getKeywords() ) {
 
-                
                 omSubject.setText( subject );
                 omElement.addChild( omSubject );
             }
         }
-        for(String subject : qp.getTopicCategory()){
+        for ( String subject : qp.getTopicCategory() ) {
             omSubject.setText( subject );
             omElement.addChild( omSubject );
         }
