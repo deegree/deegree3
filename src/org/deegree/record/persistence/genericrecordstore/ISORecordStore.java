@@ -677,21 +677,19 @@ public class ISORecordStore implements RecordStore {
                     Writer str = getRequestedIDStatement( formatTypeInGenericRecordStore.get( "full" ), gdds,
                                                           formatNumber );
 
-                    ResultSet rsDeletableDatasets = conn.createStatement().executeQuery( str.toString() );
+                    ResultSet rsUpdatableDatasets = conn.createStatement().executeQuery( str.toString() );
                     List<Integer> deletableDatasets = new ArrayList<Integer>();
-                    while ( rsDeletableDatasets.next() ) {
-                        deletableDatasets.add( rsDeletableDatasets.getInt( 1 ) );
+                    while ( rsUpdatableDatasets.next() ) {
+                        deletableDatasets.add( rsUpdatableDatasets.getInt( 1 ) );
 
                     }
-                    rsDeletableDatasets.close();
+                    rsUpdatableDatasets.close();
 
                     for ( int i : deletableDatasets ) {
                         String stri = "SELECT recordfull.data FROM recordfull WHERE recordfull.format = 2 AND recordfull.fk_datasets = "
                                       + i;
                         ResultSet r = conn.createStatement().executeQuery( stri.toString() );
 
-                        StringWriter ex = new StringWriter();
-                        Set<String> table = null;
                         while ( r.next() ) {
                             for ( RecordProperty recProp : upd.getRecordProperty() ) {
                                 ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
@@ -703,7 +701,7 @@ public class ISORecordStore implements RecordStore {
                                 expressObject2 = filterHandle.expressionFilterHandling(
                                                                                         org.deegree.filter.Expression.Type.LITERAL,
                                                                                         recProp.getReplacementValue() );
-                                table = expressObject.getTable();
+
                                 // not important. There is just one name possible
                                 for ( String column : expressObject.getColumn() ) {
 
@@ -712,18 +710,12 @@ public class ISORecordStore implements RecordStore {
                                     XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
                                     StAXOMBuilder builder = new StAXOMBuilder( reader );
                                     OMDocument doc = builder.getDocument();
-                                    OMElement omElement = doc.getOMDocumentElement();
-                                    Iterator it = omElement.getChildrenWithLocalName( column );
-                                    while ( it.hasNext() ) {
-                                        OMElement elem = (OMElement) it.next();
-                                        System.out.println( elem.toString() );
-                                        elem.getFirstElement().setText(
-                                                                        expressObject2.getExpression().substring(
-                                                                                                                  1,
-                                                                                                                  expressObject2.getExpression().length() - 1 ) );
+                                    OMElement elementBuiltFromDB = doc.getOMDocumentElement();
 
-                                        System.out.println( elem.toString() );
-                                    }
+                                    OMElement omElement = recurse( elementBuiltFromDB,
+                                                                   elementBuiltFromDB.getChildElements(), column,
+                                                                   expressObject2.getExpression() );
+
                                     ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
                                     elementParsing.executeUpdateStatement();
                                 }
@@ -784,6 +776,49 @@ public class ISORecordStore implements RecordStore {
             break;
         }
         conn.close();
+
+    }
+
+    /**
+     * This method replaces the text content of an elementknot.
+     * 
+     * @param element
+     *            where to start in the OMTree
+     * @param childElements
+     *            as an Iterator above all the childElements of the element
+     * @param searchForLocalName
+     *            is the name that is searched for. This is the elementknot thats content should be updated.
+     * @param newContent
+     *            is the new content that should be updated
+     * @return OMElement
+     */
+    private OMElement recurse( OMElement element, Iterator childElements, String searchForLocalName, String newContent ) {
+
+        Iterator it = element.getChildrenWithLocalName( searchForLocalName );
+
+        if ( it.hasNext() ) {
+            OMElement u = null;
+            while ( it.hasNext() ) {
+                u = (OMElement) it.next();
+                System.out.println( u.toString() );
+                u.getFirstElement().setText( newContent.substring( 1, newContent.length() - 1 ) );
+
+                System.out.println( u.toString() );
+            }
+            return u;
+
+        } else {
+
+            while ( childElements.hasNext() ) {
+                OMElement eleme = (OMElement) childElements.next();
+
+                recurse( eleme, eleme.getChildElements(), searchForLocalName, newContent );
+
+            }
+
+        }
+
+        return element;
 
     }
 
