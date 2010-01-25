@@ -95,6 +95,8 @@ public class QueryableProperties {
     
     private String parentIdentifier;
     
+    private List<String> topicCategory;
+    
   //---</additional common queryable properties>
     
     
@@ -445,9 +447,20 @@ public class QueryableProperties {
         this.parentIdentifier = parentIdentifier;
     }
 
+    /**
+     * @return the topicCategory
+     */
+    public List<String> getTopicCategory() {
+        return topicCategory;
+    }
+
+    /**
+     * @param topicCategory the topicCategory to set
+     */
+    public void setTopicCategory( List<String> topicCategory ) {
+        this.topicCategory = topicCategory;
+    }
+
    
-    
-    
-    
 
 }

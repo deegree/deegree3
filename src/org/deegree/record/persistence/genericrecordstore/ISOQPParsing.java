@@ -131,7 +131,7 @@ public class ISOQPParsing extends XMLAdapter {
     private int id;
 
     private Connection connection;
-    
+
     private OMElement elementFull;
 
     private OMElement identifier = null;
@@ -226,7 +226,7 @@ public class ISOQPParsing extends XMLAdapter {
             }
             if ( elem.getLocalName().equals( "hierarchyLevel" ) ) {
                 String type = getNodeAsString( elem, new XPath( "./gmd:MD_ScopeCode/@codeListValue", nsContext ),
-                                               "Datasets" );
+                                               "dataset" );
 
                 qp.setType( type );
 
@@ -416,8 +416,11 @@ public class ISOQPParsing extends XMLAdapter {
                 List<OMElement> descriptiveKeywords = getElements( md_dataIdentification,
                                                                    new XPath( "./gmd:descriptiveKeywords", nsContext ) );
 
-                List<OMElement> topicCategories = getElements( md_dataIdentification, new XPath( "./gmd:topicCategory",
-                                                                                                 nsContext ) );
+                String[] topicCategories = getNodesAsStrings(
+                                                              md_dataIdentification,
+                                                              new XPath(
+                                                                         "./gmd:topicCategory/gmd:MD_TopicCategoryCode",
+                                                                         nsContext ) );
 
                 String graphicOverview = getNodeAsString( md_dataIdentification,
                                                           new XPath( "./gmd:graphicOverview/gmd:MD_BrowseGraphic",
@@ -494,15 +497,8 @@ public class ISOQPParsing extends XMLAdapter {
 
                 }
 
-                for ( OMElement topicCategoriesElement : topicCategories ) {
-                    keywordClass = new Keyword();
-                    String[] topicCategory = getNodesAsStrings( topicCategoriesElement,
-                                                                new XPath( "./gmd:MD_TopicCategoryCode", nsContext ) );
-                    keywordClass.setKeywords( Arrays.asList( topicCategory ) );
-                    listOfKeywords.add( keywordClass );
-                }
-
                 qp.setKeywords( listOfKeywords );
+                qp.setTopicCategory( Arrays.asList( topicCategories ) );
 
                 // TODO be aware of Dateincompatibilities and read them from the right knot revisionDate
                 String revisionDateString = getNodeAsString( elem, new XPath( "./gco:Date", nsContext ), "0000-00-00" );
@@ -649,6 +645,9 @@ public class ISOQPParsing extends XMLAdapter {
             }
             if ( qp.getKeywords() != null ) {
                 generateISOQP_KeywordStatement( isUpdate );
+            }
+            if ( qp.getTopicCategory() != null ) {
+                generateISOQP_TopicCategoryStatement( isUpdate );
             }
             if ( qp.getFormat() != null ) {
                 generateISOQP_FormatStatement( isUpdate );
@@ -797,6 +796,9 @@ public class ISOQPParsing extends XMLAdapter {
                 }
                 if ( qp.getKeywords() != null ) {
                     generateISOQP_KeywordStatement( isUpdate );
+                }
+                if(qp.getTopicCategory() != null){
+                    generateISOQP_TopicCategoryStatement( isUpdate );
                 }
                 if ( qp.getFormat() != null ) {
                     generateISOQP_FormatStatement( isUpdate );
@@ -1333,6 +1335,41 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
+     * Generates the topicCategory for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateISOQP_TopicCategoryStatement( boolean isUpdate ) {
+        final String databaseTable = "isoqp_topiccategory";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
+            }
+
+            id = getLastDatasetId( connection, databaseTable );
+            for ( String topicCategory : qp.getTopicCategory() ) {
+
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, topiccategory) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + topicCategory + "');";
+
+                stm.executeUpdate( sqlStatement );
+
+            }
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
      * Generates the format for this dataset.
      * 
      * @param isUpdate
@@ -1534,15 +1571,21 @@ public class ISOQPParsing extends XMLAdapter {
      */
     private void setDCSummaryElements( OMElement omElement ) {
         setDCBriefElements( omElement );
-
+        
+        
+        OMElement omSubject = factory.createOMElement( "subject", namespaceDC );
         // dc:subject
         for ( Keyword subjects : qp.getKeywords() ) {
             for ( String subject : subjects.getKeywords() ) {
 
-                OMElement omSubject = factory.createOMElement( "subject", namespaceDC );
+                
                 omSubject.setText( subject );
                 omElement.addChild( omSubject );
             }
+        }
+        for(String subject : qp.getTopicCategory()){
+            omSubject.setText( subject );
+            omElement.addChild( omSubject );
         }
 
         // dc:format

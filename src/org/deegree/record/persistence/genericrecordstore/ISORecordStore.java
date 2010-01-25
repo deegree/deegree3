@@ -121,9 +121,6 @@ public class ISORecordStore implements RecordStore {
         formatTypeInGenericRecordStore.put( "summary", "recordsummary" );
         formatTypeInGenericRecordStore.put( "full", "recordfull" );
 
-        // typeNames[0] = new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" );
-        // typeNames[1] = new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" );
-
         typeNames.put( new QName( "", "", "" ), 1 );
         typeNames.put( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ), 1 );
         typeNames.put( new QName( "http://purl.org/dc/elements/1.1/", "", "dc" ), 1 );
@@ -331,6 +328,7 @@ public class ISORecordStore implements RecordStore {
                             throws SQLException, XMLStreamException, IOException {
 
         for ( PooledConnection pool : con.getPooledConnection() ) {
+
             Connection conn = ConnectionManager.getConnection( connectionId );
 
             ResultSet rs = null;
@@ -622,7 +620,7 @@ public class ISORecordStore implements RecordStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public void transaction( XMLStreamWriter writer, JDBCConnections connection, TransactionOperation operations )
+    public void transaction( XMLStreamWriter writer, TransactionOperation operations )
                             throws SQLException, XMLStreamException {
 
         Connection conn = ConnectionManager.getConnection( connectionId );
@@ -686,24 +684,26 @@ public class ISORecordStore implements RecordStore {
                     rsUpdatableDatasets.close();
 
                     for ( int i : deletableDatasets ) {
-                        String stri = "SELECT recordfull.data FROM recordfull WHERE recordfull.format = 2 AND recordfull.fk_datasets = "
-                                      + i;
+                        String stri = "SELECT " + formatTypeInGenericRecordStore.get( "full" ) + ".data FROM "
+                                      + formatTypeInGenericRecordStore.get( "full" ) + " WHERE "
+                                      + formatTypeInGenericRecordStore.get( "full" ) + ".format = 2 AND "
+                                      + formatTypeInGenericRecordStore.get( "full" ) + "." + commonForeignkey + " = " + i;
                         ResultSet r = conn.createStatement().executeQuery( stri.toString() );
 
                         while ( r.next() ) {
                             for ( RecordProperty recProp : upd.getRecordProperty() ) {
                                 ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
-                                ExpressionFilterObject expressObject;
-                                ExpressionFilterObject expressObject2;
-                                expressObject = filterHandle.expressionFilterHandling(
-                                                                                       org.deegree.filter.Expression.Type.PROPERTY_NAME,
-                                                                                       recProp.getPropertyName() );
-                                expressObject2 = filterHandle.expressionFilterHandling(
-                                                                                        org.deegree.filter.Expression.Type.LITERAL,
-                                                                                        recProp.getReplacementValue() );
+                                ExpressionFilterObject recordPropertyName;
+                                ExpressionFilterObject recordPropertyValue;
+                                recordPropertyName = filterHandle.expressionFilterHandling(
+                                                                                            org.deegree.filter.Expression.Type.PROPERTY_NAME,
+                                                                                            recProp.getPropertyName() );
+                                recordPropertyValue = filterHandle.expressionFilterHandling(
+                                                                                             org.deegree.filter.Expression.Type.LITERAL,
+                                                                                             recProp.getReplacementValue() );
 
                                 // not important. There is just one name possible
-                                for ( String column : expressObject.getColumn() ) {
+                                for ( String column : recordPropertyName.getColumn() ) {
 
                                     // creating an OMElement readed from the backend byteData
                                     InputStream in = r.getBinaryStream( 1 );
@@ -712,9 +712,9 @@ public class ISORecordStore implements RecordStore {
                                     OMDocument doc = builder.getDocument();
                                     OMElement elementBuiltFromDB = doc.getOMDocumentElement();
 
-                                    OMElement omElement = recurse( elementBuiltFromDB,
+                                    OMElement omElement = recursiveElementKnotUpdate( elementBuiltFromDB,
                                                                    elementBuiltFromDB.getChildElements(), column,
-                                                                   expressObject2.getExpression() );
+                                                                   recordPropertyValue.getExpression() );
 
                                     ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
                                     elementParsing.executeUpdateStatement();
@@ -792,7 +792,7 @@ public class ISORecordStore implements RecordStore {
      *            is the new content that should be updated
      * @return OMElement
      */
-    private OMElement recurse( OMElement element, Iterator childElements, String searchForLocalName, String newContent ) {
+    private OMElement recursiveElementKnotUpdate( OMElement element, Iterator childElements, String searchForLocalName, String newContent ) {
 
         Iterator it = element.getChildrenWithLocalName( searchForLocalName );
 
@@ -812,7 +812,7 @@ public class ISORecordStore implements RecordStore {
             while ( childElements.hasNext() ) {
                 OMElement eleme = (OMElement) childElements.next();
 
-                recurse( eleme, eleme.getChildElements(), searchForLocalName, newContent );
+                recursiveElementKnotUpdate( eleme, eleme.getChildElements(), searchForLocalName, newContent );
 
             }
 
