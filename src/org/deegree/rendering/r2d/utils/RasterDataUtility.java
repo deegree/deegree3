@@ -199,7 +199,7 @@ public class RasterDataUtility {
             }
             switch ( bands ) {
             case 1: /* Gray-scale */
-                return pixel[0];
+                return 0xffff & pixel[0];
             case 2: /* Gray-scale + alpha: ignore alpha */
                 return pixel[bands - alphaIndex - 1];
             case 3: /* RGB bands: use gray-pixel intensity */
