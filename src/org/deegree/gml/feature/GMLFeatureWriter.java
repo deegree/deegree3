@@ -116,7 +116,8 @@ public class GMLFeatureWriter {
 
     private final String referenceTemplate;
 
-    private final Set<PropertyName> propNames = new HashSet<PropertyName>();
+    // TODO handle properties that are more complex XPath-expressions
+    private final Set<QName> propNames = new HashSet<QName>();
 
     // export all levels by default
     private int traverseXlinkDepth = -1;
@@ -163,7 +164,11 @@ public class GMLFeatureWriter {
         this.referenceTemplate = referenceTemplate;
         if ( requestedProps != null ) {
             for ( PropertyName propertyName : requestedProps ) {
-                this.propNames.add( propertyName );
+                // TODO what about non-simple properties
+                QName qName = propertyName.getAsQName();                
+                if (qName != null) {
+                    this.propNames.add( qName );
+                }
             }
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
