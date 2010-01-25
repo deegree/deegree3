@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -197,6 +196,7 @@ public class ApplicationSchema {
      * Retrieves the direct subtypes for the given feature type.
      * 
      * @param ft
+     *            feature type, must not be <code>null</code>
      * @return the direct subtypes of the given feature type (abstract and non-abstract)
      */
     public FeatureType[] getDirectSubtypes( FeatureType ft ) {
@@ -210,9 +210,10 @@ public class ApplicationSchema {
     }
 
     /**
-     * Retrieves the parent feature type in the hierarchy.
+     * Retrieves the parent feature type for the specified feature type.
      * 
      * @param ft
+     *            feature type, must not be <code>null</code>
      * @return parent feature type, can be <code>null</code>
      */
     public FeatureType getParentFt( FeatureType ft ) {
@@ -223,6 +224,7 @@ public class ApplicationSchema {
      * Retrieves all substitutions (abstract and non-abstract ones) for the given feature type.
      * 
      * @param ft
+     *            feature type, must not be <code>null</code>
      * @return all substitutions for the given feature type
      */
     public FeatureType getSubtypes( FeatureType ft ) {
@@ -233,6 +235,7 @@ public class ApplicationSchema {
      * Retrieves all concrete substitutions for the given feature type.
      * 
      * @param ft
+     *            feature type, must not be <code>null</code>
      * @return all concrete substitutions for the given feature type
      */
     public FeatureType getConcreteSubtypes( FeatureType ft ) {
@@ -276,11 +279,12 @@ public class ApplicationSchema {
     }
 
     /**
-     * Returns the {@link PropertyTypes} defined in the given {@link FeatureType} which are *not* present in the parent
-     * {@link FeatureType}.
+     * Returns the {@link PropertyType}s from the specified {@link FeatureType} declaration that are *not* present in
+     * the parent {@link FeatureType} or its ancestors.
      * 
      * @param ft
-     * @return
+     *            feature type, must not be <code>null</code>
+     * @return list of property declarations, may be empty, but never <code>null</code>
      */
     public List<PropertyType<?>> getNewPropertyDeclarations( FeatureType ft ) {
 

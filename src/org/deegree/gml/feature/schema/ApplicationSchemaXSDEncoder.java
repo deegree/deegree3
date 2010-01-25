@@ -68,7 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Generates GML application schemas from {@link ApplicationSchema} instances.
+ * Stream-based writer for GML application schemas.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -79,13 +79,13 @@ public class ApplicationSchemaXSDEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );
 
-    private static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
+    public static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
 
-    private static final String GML_30_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.0.1/base/gml.xsd";
+    public static final String GML_30_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.0.1/base/gml.xsd";
 
-    private static final String GML_31_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+    public static final String GML_31_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
 
-    private static final String GML_32_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
+    public static final String GML_32_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
 
     private final GMLVersion version;
 
@@ -105,9 +105,10 @@ public class ApplicationSchemaXSDEncoder {
      * Creates a new {@link ApplicationSchemaXSDEncoder} for the given GML version and optional import URL.
      * 
      * @param version
-     *            gml version that exported schemas will comply to
+     *            gml version that exported schemas will comply to, must not be <code>null</code>
      * @param importURLs
-     *            to be imported in the generated schema document, this may also contain a URL for the gml namespace
+     *            to be imported in the generated schema document, this may also contain a URL for the gml namespace,
+     *            may be <code>null</code>
      */
     public ApplicationSchemaXSDEncoder( GMLVersion version, Map<String, String> importURLs ) {
 
@@ -203,7 +204,7 @@ public class ApplicationSchemaXSDEncoder {
             LOG.debug( "Exporting ft " + ft.getName() );
         }
 
-        // TODO prefix handling
+        // TODO better prefix handling
         final String ns = fts.get( 0 ).getName().getNamespaceURI();
         if ( ns != null && !ns.isEmpty() ) {
             writer.setPrefix( "app", ns );
@@ -269,10 +270,16 @@ public class ApplicationSchemaXSDEncoder {
             export( writer, parentFt );
         }
 
+        boolean hasSubTypes = ft.getSchema().getDirectSubtypes( ft ).length > 0;
+
         writer.writeStartElement( XSNS, "element" );
         // TODO (what about features in other namespaces???)
         writer.writeAttribute( "name", ft.getName().getLocalPart() );
-        writer.writeAttribute( "type", "app:" + ft.getName().getLocalPart() + "Type" );        
+
+        if ( hasSubTypes ) {
+            writer.writeAttribute( "type", "app:" + ft.getName().getLocalPart() + "Type" );
+        }
+
         if ( ft.isAbstract() ) {
             writer.writeAttribute( "abstract", "true" );
         }
@@ -282,13 +289,17 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeAttribute( "substitutionGroup", abstractGMLFeatureElement );
         }
         // end 'xs:element'
-        writer.writeEndElement();
+        if ( hasSubTypes ) {
+            writer.writeEndElement();
+        }
 
         writer.writeStartElement( XSNS, "complexType" );
-        writer.writeAttribute( "name", ft.getName().getLocalPart() + "Type" );
+        if ( hasSubTypes ) {
+            writer.writeAttribute( "name", ft.getName().getLocalPart() + "Type" );
+        }
         if ( ft.isAbstract() ) {
             writer.writeAttribute( "abstract", "true" );
-        }        
+        }
         writer.writeStartElement( XSNS, "complexContent" );
         writer.writeStartElement( XSNS, "extension" );
 
@@ -316,6 +327,10 @@ public class ApplicationSchemaXSDEncoder {
         // end 'xs:complexType'
         writer.writeEndElement();
 
+        if ( !hasSubTypes ) {
+            // end 'xs:element'
+            writer.writeEndElement();
+        }
 
         exportedFts.add( ft.getName() );
     }
