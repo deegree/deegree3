@@ -51,6 +51,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -59,6 +60,8 @@ import java.util.LinkedList;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.types.PrimitiveType;
+import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.GenericFeatureType;
@@ -315,13 +318,20 @@ public class DBFReader {
                 in.readFully( bs );
                 String val = new String( bs, 0, 4 ).trim();
                 if ( val.isEmpty() ) {
-                    property = new GenericProperty<Calendar>( field.propertyType, null );
+                    property = new GenericProperty<Date>( field.propertyType, null );
                 } else {
                     int year = Integer.valueOf( val );
                     int month = Integer.valueOf( new String( bs, 4, 2 ) );
                     int day = Integer.valueOf( new String( bs, 6, 2 ) );
                     Calendar cal = new GregorianCalendar( year, month, day );
-                    property = new GenericProperty<Calendar>( field.propertyType, cal );
+                    Date date = null;
+                    try {
+                        date = new Date( DateUtils.formatISO8601Date( cal ) );
+                    } catch ( ParseException e ) {
+                        LOG.warn( "Internal problem when handling date fields. Please report this as a bug." );
+                        LOG.debug( "Stack trace: ", e );
+                    }
+                    property = new GenericProperty<Date>( field.propertyType, date );
                 }
                 break;
             }
