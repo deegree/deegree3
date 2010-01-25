@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.interpolation;
 
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
@@ -43,18 +43,18 @@ import org.deegree.coverage.raster.data.info.DataType;
 
 /**
  * Factory for {@link Interpolation}s.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class InterpolationFactory {
 
     /**
      * Creates a new interpolation of the given type and for the given raster.
-     *
+     * 
      * @param type
      *            the interpolation type
      * @param rasterData
@@ -71,7 +71,9 @@ public class InterpolationFactory {
             } else if ( rasterData.getDataType() == DataType.FLOAT ) {
                 return new BiLinearFloatInterpolation( rasterData );
             } else if ( rasterData.getDataType() == DataType.SHORT ) {
-                return new BiLinearShortInterpolation( rasterData );
+                return new BiLinearShortInterpolation( rasterData, false );
+            } else if ( rasterData.getDataType() == DataType.USHORT ) {
+                return new BiLinearShortInterpolation( rasterData, true );
             } else {
                 throw new UnsupportedOperationException( "no bilinear interpolation implementation for "
                                                          + rasterData.getDataType() + " found." );

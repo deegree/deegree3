@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,23 +32,25 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.interpolation;
+
+import static org.deegree.coverage.raster.data.info.DataType.SHORT;
+import static org.deegree.coverage.raster.data.info.DataType.USHORT;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.info.DataType;
 
 /**
  * This class implements a bilinear interpolation for short raster.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class BiLinearShortInterpolation implements Interpolation {
     private RasterData raster;
@@ -57,17 +59,23 @@ public class BiLinearShortInterpolation implements Interpolation {
 
     private short[] window = new short[4];
 
+    private final boolean unsigned;
+
     /**
      * Create a new bilinear interpolation for given short {@link RasterData}.
-     *
+     * 
      * @param rasterData
+     * @param unsigned
+     *            whether to treat the shorts as unsigned
      */
-    public BiLinearShortInterpolation( RasterData rasterData ) {
-        if ( rasterData.getDataType() != DataType.SHORT ) {
-            throw new IllegalArgumentException( this.getClass().getName() + " only supports short raster" );
+    public BiLinearShortInterpolation( RasterData rasterData, boolean unsigned ) {
+        // as: I hope the unsigned support is actually what's desired
+        this.unsigned = unsigned;
+        if ( ( rasterData.getDataType() != SHORT && !unsigned ) || ( rasterData.getDataType() != USHORT && unsigned ) ) {
+            throw new IllegalArgumentException( this.getClass().getName() + " only supports short and ushort rasters" );
         }
         raster = rasterData;
-        tmp = ByteBuffer.allocate( DataType.SHORT.getSize() * raster.getBands() );
+        tmp = ByteBuffer.allocate( ( unsigned ? USHORT.getSize() : SHORT.getSize() ) * raster.getBands() );
 
     }
 
@@ -78,9 +86,15 @@ public class BiLinearShortInterpolation implements Interpolation {
             float yfrac = Math.abs( y - (int) y );
             for ( int b = 0; b < raster.getBands(); b++ ) {
                 raster.getShorts( (int) x, (int) y, 2, 2, b, window );
-                float h1 = window[0] + ( window[1] - window[0] ) * xfrac;
-                float h2 = window[2] + ( window[3] - window[2] ) * xfrac;
-                tmp.putShort( (short) ( h1 + ( h2 - h1 ) * yfrac ) );
+                if ( unsigned ) {
+                    float h1 = ( 0xffff & window[0] ) + ( ( 0xffff & window[1] ) - ( 0xffff & window[0] ) ) * xfrac;
+                    float h2 = ( 0xffff & window[2] ) + ( ( 0xffff & window[3] ) - ( 0xffff & window[2] ) ) * xfrac;
+                    tmp.putShort( (short) ( h1 + ( h2 - h1 ) * yfrac ) );
+                } else {
+                    float h1 = window[0] + ( window[1] - window[0] ) * xfrac;
+                    float h2 = window[2] + ( window[3] - window[2] ) * xfrac;
+                    tmp.putShort( (short) ( h1 + ( h2 - h1 ) * yfrac ) );
+                }
             }
             tmp.position( 0 );
             tmp.get( result );
