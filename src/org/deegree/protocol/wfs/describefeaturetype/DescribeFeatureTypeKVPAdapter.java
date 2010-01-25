@@ -188,7 +188,8 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
     public static String export( DescribeFeatureType request, Version version ) {
 
         StringBuffer sb = new StringBuffer();
-        appendFirstKVP( sb, "VERSION", version.toString() );
+        appendFirstKVP( sb, "SERVICE", "WFS" );
+        appendKVP( sb, "VERSION", version.toString() );
         appendKVP( sb, "REQUEST", "DescribeFeatureType" );
         if ( request.getOutputFormat() != null ) {
             appendKVP( sb, "OUTPUTFORMAT", request.getOutputFormat() );

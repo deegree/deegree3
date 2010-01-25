@@ -40,10 +40,13 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
+import static org.deegree.gml.GMLVersion.GML_2;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -95,6 +98,8 @@ public class ApplicationSchemaXSDEncoder {
 
     // set to "gml:FeatureAssociationType" (GML 2) or "gml:FeaturePropertyType" (GML 3.1 / GML 3.2)
     private String featurePropertyType;
+
+    private Set<QName> exportedFts = new HashSet<QName>();
 
     /**
      * Creates a new {@link ApplicationSchemaXSDEncoder} for the given GML version and optional import URL.
@@ -255,22 +260,50 @@ public class ApplicationSchemaXSDEncoder {
     private void export( XMLStreamWriter writer, FeatureType ft )
                             throws XMLStreamException {
 
+        if ( exportedFts.contains( ft.getName() ) ) {
+            return;
+        }
+
+        FeatureType parentFt = ft.getSchema().getParentFt( ft );
+        if ( parentFt != null ) {
+            export( writer, parentFt );
+        }
+
         writer.writeStartElement( XSNS, "element" );
         // TODO (what about features in other namespaces???)
         writer.writeAttribute( "name", ft.getName().getLocalPart() );
-        writer.writeAttribute( "substitutionGroup", abstractGMLFeatureElement );
+        writer.writeAttribute( "type", "app:" + ft.getName().getLocalPart() + "Type" );        
+        if ( ft.isAbstract() ) {
+            writer.writeAttribute( "abstract", "true" );
+        }
+        if ( parentFt != null ) {
+            writer.writeAttribute( "substitutionGroup", "app:" + parentFt.getName().getLocalPart() );
+        } else {
+            writer.writeAttribute( "substitutionGroup", abstractGMLFeatureElement );
+        }
+        // end 'xs:element'
+        writer.writeEndElement();
 
         writer.writeStartElement( XSNS, "complexType" );
+        writer.writeAttribute( "name", ft.getName().getLocalPart() + "Type" );
+        if ( ft.isAbstract() ) {
+            writer.writeAttribute( "abstract", "true" );
+        }        
         writer.writeStartElement( XSNS, "complexContent" );
         writer.writeStartElement( XSNS, "extension" );
-        // TODO handle derived feature types
-        writer.writeAttribute( "base", "gml:AbstractFeatureType" );
+
+        if ( parentFt != null ) {
+            writer.writeAttribute( "base", "app:" + parentFt.getName().getLocalPart() + "Type" );
+        } else {
+            writer.writeAttribute( "base", "gml:AbstractFeatureType" );
+        }
+
         writer.writeStartElement( XSNS, "sequence" );
 
         // TODO check for GML 2 properties (gml:pointProperty, ...) and export as "app:gml2PointProperty" for GML 3
 
         // export property definitions (only for non-GML ones)
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+        for ( PropertyType pt : ft.getSchema().getNewPropertyDeclarations( ft ) ) {
             export( writer, pt, version );
         }
 
@@ -282,8 +315,9 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeEndElement();
         // end 'xs:complexType'
         writer.writeEndElement();
-        // end 'xs:element'
-        writer.writeEndElement();
+
+
+        exportedFts.add( ft.getName() );
     }
 
     private void export( XMLStreamWriter writer, PropertyType pt, GMLVersion version )
@@ -305,8 +339,8 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         if ( pt instanceof SimplePropertyType ) {
-            PrimitiveType type = ((SimplePropertyType) pt ).getPrimitiveType();          
-            switch (type) {
+            PrimitiveType type = ( (SimplePropertyType) pt ).getPrimitiveType();
+            switch ( type ) {
             case BOOLEAN:
                 writer.writeAttribute( "type", "xs:boolean" );
                 break;
@@ -354,9 +388,19 @@ public class ApplicationSchemaXSDEncoder {
                 writer.writeAttribute( "type", featurePropertyType );
             }
         } else if ( pt instanceof CodePropertyType ) {
-            writer.writeAttribute( "type", "gml:CodeType" );
+            if ( version.equals( GML_2 ) ) {
+                LOG.warn( "Exporting CodePropertyType as GML2 schema: narrowing down to xs:string." );
+                writer.writeAttribute( "type", "xs:string" );
+            } else {
+                writer.writeAttribute( "type", "gml:CodeType" );
+            }
         } else if ( pt instanceof MeasurePropertyType ) {
-            writer.writeAttribute( "type", "gml:MeasureType" );
+            if ( version.equals( GML_2 ) ) {
+                LOG.warn( "Exporting MeasurePropertyType as GML2 schema: narrowing to xs:string." );
+                writer.writeAttribute( "type", "xs:string" );
+            } else {
+                writer.writeAttribute( "type", "gml:MeasureType" );
+            }
         } else if ( pt instanceof CustomPropertyType ) {
             writer.writeComment( "TODO: export custom property type information" );
             writer.writeStartElement( XSNS, "complexType" );

@@ -39,6 +39,7 @@ package org.deegree.gml.feature;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.gml.GMLVersion.GML_2;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -369,8 +370,11 @@ public class GMLFeatureWriter {
         } else if ( propertyType instanceof CodePropertyType ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             CodeType codeType = (CodeType) value;
-            if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 )
-                writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
+            if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 ) {
+                if (GML_2 != version) {
+                    writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );                
+                }                
+            }
             writer.writeCharacters( codeType.getCode() );
             writer.writeEndElement();
         } else if ( propertyType instanceof EnvelopePropertyType ) {
@@ -386,13 +390,17 @@ public class GMLFeatureWriter {
         } else if ( propertyType instanceof LengthPropertyType ) {
             Length length = (Length) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            writer.writeAttribute( "uom", length.getUomUri() );
+            if (GML_2 != version) {
+                writer.writeAttribute( "uom", length.getUomUri() );                
+            }
             writer.writeCharacters( String.valueOf( length.getValue() ) );
             writer.writeEndElement();
         } else if ( propertyType instanceof MeasurePropertyType ) {
             Measure measure = (Measure) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            writer.writeAttribute( "uom", measure.getUomUri() );
+            if (GML_2 != version) {
+                writer.writeAttribute( "uom", measure.getUomUri() );                
+            }
             writer.writeCharacters( String.valueOf( measure.getValue() ) );
             writer.writeEndElement();
         } else if ( propertyType instanceof StringOrRefPropertyType ) {

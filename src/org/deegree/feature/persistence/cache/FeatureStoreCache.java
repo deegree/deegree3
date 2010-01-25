@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.cache;
 
+import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,7 +44,8 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.gml.GMLObject;
 
 /**
- * Cache for persistent {@link GMLObject} instances stored in a {@link FeatureStore}.
+ * Cache for persistent {@link GMLObject} instances stored in a {@link FeatureStore} based on Java's
+ * {@link SoftReference}.
  * 
  * @see FeatureStore
  * 
@@ -54,7 +56,7 @@ import org.deegree.gml.GMLObject;
  */
 public class FeatureStoreCache {
 
-    private final Map<String, GMLObject> idToObject;
+    private final Map<String, SoftReference<GMLObject>> idToObject;
 
     /**
      * @param maxEntries
@@ -72,7 +74,11 @@ public class FeatureStoreCache {
      * @return the object with the specified id, or <code>null</code> if it is not present in the cache
      */
     public GMLObject get( String id ) {
-        return idToObject.get( id );
+        SoftReference<GMLObject> ref = idToObject.get( id );
+        if ( ref == null ) {
+            return null;
+        }
+        return ref.get();
     }
 
     /**
@@ -82,7 +88,7 @@ public class FeatureStoreCache {
      *            object, must not be <code>null</code>
      */
     public void add( GMLObject obj ) {
-        idToObject.put( obj.getId(), obj );
+        idToObject.put( obj.getId(), new SoftReference<GMLObject>( obj ) );
     }
 
     /**
@@ -102,7 +108,7 @@ public class FeatureStoreCache {
         idToObject.clear();
     }
 
-    private class CacheMap extends LinkedHashMap<String, GMLObject> {
+    private class CacheMap extends LinkedHashMap<String, SoftReference<GMLObject>> {
 
         private static final long serialVersionUID = 6368164113834314158L;
 
@@ -113,7 +119,7 @@ public class FeatureStoreCache {
         }
 
         @Override
-        protected boolean removeEldestEntry( Map.Entry<String, GMLObject> eldest ) {
+        protected boolean removeEldestEntry( Map.Entry<String, SoftReference<GMLObject>> eldest ) {
             return size() > maxEntries;
         }
     }

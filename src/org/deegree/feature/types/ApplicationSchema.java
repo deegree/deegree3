@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -209,6 +210,16 @@ public class ApplicationSchema {
     }
 
     /**
+     * Retrieves the parent feature type in the hierarchy.
+     * 
+     * @param ft
+     * @return parent feature type, can be <code>null</code>
+     */
+    public FeatureType getParentFt( FeatureType ft ) {
+        return ftToSuperFt.get( ft );
+    }
+
+    /**
      * Retrieves all substitutions (abstract and non-abstract ones) for the given feature type.
      * 
      * @param ft
@@ -262,5 +273,30 @@ public class ApplicationSchema {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the {@link PropertyTypes} defined in the given {@link FeatureType} which are *not* present in the parent
+     * {@link FeatureType}.
+     * 
+     * @param ft
+     * @return
+     */
+    public List<PropertyType<?>> getNewPropertyDeclarations( FeatureType ft ) {
+
+        List<PropertyType<?>> propDecls = ft.getPropertyDeclarations();
+        FeatureType parentFt = getParentFt( ft );
+        int firstNewIdx = 0;
+        if ( parentFt != null ) {
+            for ( PropertyType<?> parentPropDecl : parentFt.getPropertyDeclarations() ) {
+                if ( parentPropDecl.getName().equals( propDecls.get( firstNewIdx ).getName() ) ) {
+                    firstNewIdx++;
+                } else {
+                    throw new RuntimeException( "Content model of feature type '" + ft.getName()
+                                                + "' is not compatible with parent type '" + parentFt.getName() + "'." );
+                }
+            }
+        }
+        return propDecls.subList( firstNewIdx, propDecls.size() );
     }
 }
