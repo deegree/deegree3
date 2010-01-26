@@ -36,12 +36,15 @@
 package org.deegree.commons.utils.templating.lang;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.feature.Feature;
+import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
+import org.deegree.feature.types.property.PropertyType;
 
 /**
  * <code>Util</code>
@@ -59,20 +62,77 @@ public class Util {
         }
         LinkedList<T> list = new LinkedList<T>();
         for ( T o : os ) {
-            String nm = o instanceof Property<?> ? ( (Property<?>) o ).getName().getLocalPart()
-                                                : ( (Feature) o ).getName().getLocalPart();
-            inner: for ( String p : patterns ) {
-                if ( negate ) {
-                    list.add( o );
-                }
-                if ( p.endsWith( "*" ) && nm.startsWith( p.substring( 0, p.length() - 1 ) ) || p.startsWith( "*" )
-                     && nm.endsWith( p.substring( 1 ) ) || nm.equals( p ) ) {
-                    if ( negate ) {
-                        list.removeLast();
+            // hack to split pseudo multiple properties into actual multiple properties...
+            // yes, it's ugly, thanks a bunch for noticing
+            List<T> tmp;
+            if ( o instanceof Property<?> ) {
+                Property<?> p = (Property<?>) o;
+                if ( p.getValue() instanceof String ) {
+                    String s = (String) p.getValue();
+                    PropertyType<?> pt = p.getType();
+                    // this is some great parsing really, maybe GML 4 does not need multiple properties at all and can
+                    // revert to this?
+                    if ( s.startsWith( "[" ) && s.endsWith( "]" ) ) {
+                        tmp = new LinkedList<T>();
+                        StringBuffer sb = new StringBuffer( s.substring( 1, s.length() - 1 ) );
+                        StringBuilder next = new StringBuilder();
+                        int cnt = 0;
+                        while ( sb.length() != 0 ) {
+                            if ( sb.length() > 1 && sb.charAt( 0 ) == ']' && sb.charAt( 1 ) == '[' ) {
+                                ++cnt;
+                                sb.delete( 0, 2 );
+                                continue;
+                            }
+                            if ( cnt == 0 ) {
+                                next.append( sb.charAt( 0 ) );
+                                sb.delete( 0, 1 );
+                                continue;
+                            }
+                            if ( cnt == 1 ) {
+                                tmp.add( (T) new GenericProperty( pt, next.toString() ) );
+                                next = new StringBuilder();
+                                cnt = 0;
+                                continue;
+                            }
+                            if ( cnt % 2 == 0 ) {
+                                for ( int i = 0; i < cnt / 2; ++i ) {
+                                    next.append( "][" );
+                                }
+                                cnt = 0;
+                                continue;
+                            }
+                            for ( int i = 0; i < cnt / 2; ++i ) {
+                                next.append( "][" );
+                            }
+                            tmp.add( (T) new GenericProperty( pt, next.toString() ) );
+                            next = new StringBuilder();
+                            cnt = 0;
+                        }
                     } else {
-                        list.add( o );
+                        tmp = singletonList( o );
                     }
-                    break inner;
+                } else {
+                    tmp = singletonList( o );
+                }
+            } else {
+                tmp = singletonList( o );
+            }
+            for ( T o2 : tmp ) {
+                String nm = o2 instanceof Property<?> ? ( (Property<?>) o2 ).getName().getLocalPart()
+                                                     : ( (Feature) o2 ).getName().getLocalPart();
+                inner: for ( String p : patterns ) {
+                    if ( negate ) {
+                        list.add( o2 );
+                    }
+                    if ( p.endsWith( "*" ) && nm.startsWith( p.substring( 0, p.length() - 1 ) ) || p.startsWith( "*" )
+                         && nm.endsWith( p.substring( 1 ) ) || nm.equals( p ) ) {
+                        if ( negate ) {
+                            list.removeLast();
+                        } else {
+                            list.add( o2 );
+                        }
+                        break inner;
+                    }
                 }
             }
         }
