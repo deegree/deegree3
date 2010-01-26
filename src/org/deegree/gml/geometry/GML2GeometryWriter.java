@@ -1,3 +1,4 @@
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,15 +37,20 @@ package org.deegree.gml.geometry;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.crs.CRS;
+import org.deegree.crs.CoordinateTransformer;
+import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -69,6 +75,8 @@ import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.gml.geometry.refs.GeometryReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generates GML 2.1 representations from {@link Geometry} objects.
@@ -80,6 +88,8 @@ import org.deegree.gml.geometry.refs.GeometryReference;
  */
 public class GML2GeometryWriter implements GMLGeometryWriter {
 
+    private static final Logger LOG = LoggerFactory.getLogger( GML2GeometryWriter.class );
+
     private static final String GML21NS = "http://www.opengis.net/gml";
 
     private final XMLStreamWriter writer;
@@ -88,24 +98,44 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
 
     private final CoordinateFormatter formatter;
 
-    /**
-     * @param writer
-     */
-    public GML2GeometryWriter( XMLStreamWriter writer ) {
-        this( writer, null, new HashSet<String>() );
-    }
+    private CoordinateTransformer transformer;
+
+    private double[] transformedOrdinates;
+
+    private GeometryTransformer geoTransformer;
+
+    private CRS outputCRS;
 
     /**
+     * Creates a new {@link GML2GeometryWriter} instance.
+     * 
      * @param writer
+     *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
+     * @param outputCrs
+     *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
+     *            used)
      * @param formatter
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
      *            <code>null</code> (use 5 decimal places)
      * @param exportedIds
      *            must not be null
      */
-    public GML2GeometryWriter( XMLStreamWriter writer, CoordinateFormatter formatter, Set<String> exportedIds ) {
+    public GML2GeometryWriter( XMLStreamWriter writer, CRS outputCrs, CoordinateFormatter formatter,
+                               Set<String> exportedIds ) {
         this.writer = writer;
+        this.outputCRS = outputCrs;
         this.exportedIds = exportedIds;
+        if ( outputCrs != null ) {
+            try {
+                CoordinateSystem crs = outputCrs.getWrappedCRS();
+                transformer = new CoordinateTransformer( crs );
+                transformedOrdinates = new double[crs.getDimension()];
+                geoTransformer = new GeometryTransformer( crs );
+            } catch ( Exception e ) {
+                LOG.debug( "Could not create transformer for CRS '" + outputCrs + "': " + e.getMessage()
+                           + ". Encoding will fail if a transformation is actually necessary." );
+            }
+        }
         if ( formatter == null ) {
             this.formatter = new DecimalCoordinateFormatter( 5 );
         } else {
@@ -116,10 +146,12 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param geometry
      * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     @Override
     public void export( Geometry geometry )
-                            throws XMLStreamException {
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
         if ( geometry instanceof Point ) {
             exportPoint( (Point) geometry );
@@ -140,45 +172,39 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
         } else if ( geometry instanceof MultiGeometry<?> ) {
             exportMultiGeometry( (MultiGeometry<?>) geometry );
         }
-
     }
 
     /**
      * @param point
      * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     @Override
     public void exportPoint( Point point )
-                            throws XMLStreamException {
-        writer.writeStartElement( "gml", "Point", GML21NS );
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        if ( point.getId() != null ) {
-            exportedIds.add( point.getId() );
-            writer.writeAttribute( "gid", point.getId() );
-        }
-        if ( point.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", point.getCoordinateSystem().getName() );
-        }
-
+        startGeometry( "Point", point );
         exportCoord( point );
         writer.writeEndElement(); // </gml:Point>
     }
 
     private void exportCoord( Point point )
-                            throws XMLStreamException {
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
+
+        double[] ords = getTransformedCoordinate( point.getCoordinateSystem(), point.getAsArray() );
+
         writer.writeStartElement( "gml", "coord", GML21NS );
         writer.writeStartElement( "gml", "X", GML21NS );
-        writer.writeCharacters( formatter.format( point.get0() ) );
+        writer.writeCharacters( formatter.format( ords[0] ) );
         writer.writeEndElement();
-        if ( point.getCoordinateDimension() > 1 ) {
-
+        if ( ords.length > 1 ) {
             writer.writeStartElement( "gml", "Y", GML21NS );
-            writer.writeCharacters( formatter.format( point.get1() ) );
+            writer.writeCharacters( formatter.format( ords[1] ) );
             writer.writeEndElement();
-            if ( point.getCoordinateDimension() > 2 ) {
-
+            if ( ords.length > 2 ) {
                 writer.writeStartElement( "gml", "Z", GML21NS );
-                writer.writeCharacters( formatter.format( point.get2() ) );
+                writer.writeCharacters( formatter.format( ords[2] ) );
                 writer.writeEndElement();
             }
         }
@@ -186,7 +212,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     }
 
     private void exportCoordinates( Points points )
-                            throws XMLStreamException {
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
         writer.writeStartElement( "gml", "coordinates", GML21NS );
         writer.writeAttribute( "decimal", "." );
@@ -198,7 +224,7 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
             if ( !first ) {
                 sb.append( " " );
             }
-            double[] ords = point.getAsArray();
+            double[] ords = getTransformedCoordinate( point.getCoordinateSystem(), point.getAsArray() );
             sb.append( formatter.format( ords[0] ) );
             for ( int i = 1; i < ords.length; i++ ) {
                 sb.append( "," );
@@ -213,19 +239,13 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param polygon
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws TransformationException 
      */
     public void exportPolygon( Polygon polygon )
-                            throws XMLStreamException {
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        writer.writeStartElement( "gml", "Polygon", GML21NS );
-
-        if ( polygon.getId() != null ) {
-            exportedIds.add( polygon.getId() );
-            writer.writeAttribute( "gid", polygon.getId() );
-        }
-        if ( polygon.getCoordinateSystem() != null && polygon.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", polygon.getCoordinateSystem().getName() );
-        }
+        startGeometry( "Polygon", polygon );
 
         Ring outerRing = polygon.getExteriorRing();
         if ( outerRing.getId() != null && exportedIds.contains( outerRing.getId() ) ) {
@@ -240,12 +260,10 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
 
         List<Ring> rings = polygon.getInteriorRings();
         if ( rings != null ) {
-
             for ( Ring ring : rings ) {
                 writer.writeStartElement( "gml", "innerBoundaryIs", GML21NS );
                 if ( exportedIds.contains( ring.getId() ) ) {
                     writer.writeAttribute( "xlink", XLNNS, "href", "#" + ring.getId() );
-
                 } else {
                     exportLinearRing( ring ); // in GML 2.1 the interior rings are linear rings
                 }
@@ -258,82 +276,60 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param linearRing
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws TransformationException 
      */
     public void exportLinearRing( Ring linearRing )
-                            throws XMLStreamException {
-        writer.writeStartElement( "gml", "LinearRing", GML21NS );
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        if ( linearRing.getId() != null ) {
-            exportedIds.add( linearRing.getId() );
-            writer.writeAttribute( "gid", linearRing.getId() );
-        }
-        if ( linearRing.getCoordinateSystem() != null && linearRing.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", linearRing.getCoordinateSystem().getName() );
-        }
-
+        startGeometry( "LinearRing", linearRing );
         exportCoordinates( linearRing.getControlPoints() );
-
         writer.writeEndElement(); // </gml:LinearRing>
     }
 
     /**
-     * @param lineString
+     * @param curve
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws TransformationException 
      */
-    public void exportLineString( LineString lineString )
-                            throws XMLStreamException {
-        writer.writeStartElement( "gml", "LineString", GML21NS );
+    public void exportLineString( Curve curve )
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        if ( lineString.getId() != null ) {
-            exportedIds.add( lineString.getId() );
-            writer.writeAttribute( "gid", lineString.getId() );
-        }
-        if ( lineString.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", lineString.getCoordinateSystem().getName() );
-        }
-
-        exportCoordinates( lineString.getControlPoints() );
+        startGeometry( "LineString", curve );
+        exportCoordinates( curve.getControlPoints() );
         writer.writeEndElement(); // </gml:LineString>
     }
 
     /**
      * @param envelope
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws TransformationException 
      */
     @Override
     public void exportEnvelope( Envelope envelope )
-                            throws XMLStreamException {
-        writer.writeStartElement( "gml", "Box", GML21NS );
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        if ( envelope.getId() != null ) {
-            exportedIds.add( envelope.getId() );
-            writer.writeAttribute( "gid", envelope.getId() );
-        }
+        writer.writeStartElement( "gml", "Box", GML21NS );
         if ( envelope.getCoordinateSystem().getName() != null ) {
             writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getName() );
         }
-
         exportCoordinates( new PointsArray( envelope.getMin(), envelope.getMax() ) );
-
         writer.writeEndElement(); // </gml:Box>
     }
 
     /**
      * @param multiGeometry
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws TransformationException 
      */
     @Override
     public void exportMultiGeometry( MultiGeometry<? extends Geometry> multiGeometry )
-                            throws XMLStreamException {
-        writer.writeStartElement( "gml", "MultiGeometry", GML21NS );
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        if ( multiGeometry.getId() != null ) {
-            writer.writeAttribute( "gid", multiGeometry.getId() );
-        }
-        if ( multiGeometry.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", multiGeometry.getCoordinateSystem().getName() );
-        }
-
+        startGeometry( "MultiGeometry", multiGeometry );
         for ( Geometry geom : multiGeometry ) {
             if ( exportedIds.contains( geom.getId() ) ) {
                 writer.writeEmptyElement( "gml", "geometryMember", GML21NS );
@@ -350,38 +346,36 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param multiPoint
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws TransformationException 
      */
     public void exportMultiPoint( MultiPoint multiPoint )
-                            throws XMLStreamException {
-        writer.writeStartElement( "gml", "MultiPoint", GML21NS );
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
 
-        if ( multiPoint.getId() != null ) {
-            writer.writeAttribute( "gid", multiPoint.getId() );
-        }
-        if ( multiPoint.getCoordinateSystem().getName() != null ) {
-            writer.writeAttribute( "srsName", multiPoint.getCoordinateSystem().getName() );
-        }
+        startGeometry( "MultiPoint", multiPoint );
 
         for ( Point point : multiPoint ) {
             if ( exportedIds.contains( point.getId() ) ) {
                 writer.writeEmptyElement( "gml", "pointMember", GML21NS );
                 writer.writeAttribute( "xlink", XLNNS, "href", "#" + point.getId() );
-
             } else {
                 writer.writeStartElement( "gml", "pointMember", GML21NS );
                 exportPoint( point );
                 writer.writeEndElement();
             }
         }
+
         writer.writeEndElement(); // </gml:MultiPoint>
     }
 
     /**
      * @param multiLineString
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws TransformationException 
      */
     public void exportMultiLineString( MultiLineString multiLineString )
-                            throws XMLStreamException {
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
         writer.writeStartElement( "gml", "MultiLineString", GML21NS );
 
         if ( multiLineString.getId() != null ) {
@@ -408,9 +402,11 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param multiPolygon
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws TransformationException 
      */
     public void exportMultiPolygon( MultiPolygon multiPolygon )
-                            throws XMLStreamException {
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
         writer.writeStartElement( "gml", "MultiPolygon", GML21NS );
 
         if ( multiPolygon.getId() != null ) {
@@ -496,5 +492,46 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     public void exportTriangulatedSurface( TriangulatedSurface triangSurface ) {
         throw new UnsupportedOperationException(
                                                  "Cannot export TriangulatedSurface in GML2.1 as this geometry is not supported in this version of GML." );
+    }
+
+    private double[] getTransformedCoordinate( CRS inputCRS, double[] inputCoordinate )
+                            throws TransformationException, UnknownCRSException {
+        if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
+            if ( transformer == null ) {
+                throw new UnknownCRSException( outputCRS.getName() );
+            }
+            double[] out = transformer.transform( inputCRS.getWrappedCRS(), inputCoordinate, transformedOrdinates );
+            return out;
+        }
+        return inputCoordinate;
+    }
+
+    private Envelope getTransformedEnvelope( Envelope env )
+                            throws TransformationException, UnknownCRSException {
+        CRS inputCRS = env.getCoordinateSystem();
+        if ( inputCRS != null && outputCRS != null && !inputCRS.equals( outputCRS ) ) {
+            if ( transformer == null ) {
+                throw new UnknownCRSException( outputCRS.getName() );
+            }
+            return (Envelope) geoTransformer.transform( env );
+        }
+        return env;
+    }
+
+    private void startGeometry( String localName, Geometry geometry )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( "gml", localName, GML21NS );
+
+        if ( geometry.getId() != null ) {
+            exportedIds.add( geometry.getId() );
+            writer.writeAttribute( "gid", geometry.getId() );
+        }
+
+        if ( outputCRS != null ) {
+            writer.writeAttribute( "srsName", outputCRS.getName() );
+        } else if ( geometry.getCoordinateSystem() != null ) {
+            writer.writeAttribute( "srsName", geometry.getCoordinateSystem().getName() );
+        }
     }
 }

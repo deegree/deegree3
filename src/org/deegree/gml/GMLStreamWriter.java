@@ -95,7 +95,7 @@ public class GMLStreamWriter {
     private GMLGeometryWriter geometryWriter;
 
     private GMLFeatureWriter featureWriter;
-    
+
     private GMLDictionaryWriter dictionaryWriter;
 
     private PropertyName[] featureProps;
@@ -273,7 +273,7 @@ public class GMLStreamWriter {
      */
     public void write( Definition definition )
                             throws XMLStreamException {
-        getDictionaryWriter().write (definition);
+        getDictionaryWriter().write( definition );
     }
 
     /**
@@ -308,7 +308,7 @@ public class GMLStreamWriter {
             switch ( version ) {
             case GML_2: {
                 // TODO
-                geometryWriter = new GML2GeometryWriter( xmlStream );
+                geometryWriter = new GML2GeometryWriter( xmlStream, crs, formatter, new HashSet<String>() );
                 break;
             }
             case GML_30:
@@ -323,11 +323,11 @@ public class GMLStreamWriter {
         }
         return geometryWriter;
     }
-    
+
     private GMLDictionaryWriter getDictionaryWriter() {
         if ( dictionaryWriter == null ) {
-            dictionaryWriter = new GMLDictionaryWriter( version, xmlStream);
+            dictionaryWriter = new GMLDictionaryWriter( version, xmlStream );
         }
         return dictionaryWriter;
-    }    
+    }
 }

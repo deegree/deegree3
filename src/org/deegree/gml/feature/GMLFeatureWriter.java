@@ -166,8 +166,8 @@ public class GMLFeatureWriter {
         if ( requestedProps != null ) {
             for ( PropertyName propertyName : requestedProps ) {
                 // TODO what about non-simple properties
-                QName qName = propertyName.getAsQName();                
-                if (qName != null) {
+                QName qName = propertyName.getAsQName();
+                if ( qName != null ) {
                     this.propNames.add( qName );
                 }
             }
@@ -182,7 +182,7 @@ public class GMLFeatureWriter {
             fidAttr = new QName( gmlNs, "id" );
             gmlNull = "Null";
         } else {
-            geometryWriter = new GML2GeometryWriter( writer, formatter, exportedIds );
+            geometryWriter = new GML2GeometryWriter( writer, outputCRS, formatter, exportedIds );
             fidAttr = new QName( NULL_NS_URI, "fid" );
             gmlNull = "null";
         }
@@ -371,9 +371,9 @@ public class GMLFeatureWriter {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             CodeType codeType = (CodeType) value;
             if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 ) {
-                if (GML_2 != version) {
-                    writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );                
-                }                
+                if ( GML_2 != version ) {
+                    writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
+                }
             }
             writer.writeCharacters( codeType.getCode() );
             writer.writeEndElement();
@@ -390,16 +390,16 @@ public class GMLFeatureWriter {
         } else if ( propertyType instanceof LengthPropertyType ) {
             Length length = (Length) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            if (GML_2 != version) {
-                writer.writeAttribute( "uom", length.getUomUri() );                
+            if ( GML_2 != version ) {
+                writer.writeAttribute( "uom", length.getUomUri() );
             }
             writer.writeCharacters( String.valueOf( length.getValue() ) );
             writer.writeEndElement();
         } else if ( propertyType instanceof MeasurePropertyType ) {
             Measure measure = (Measure) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            if (GML_2 != version) {
-                writer.writeAttribute( "uom", measure.getUomUri() );                
+            if ( GML_2 != version ) {
+                writer.writeAttribute( "uom", measure.getUomUri() );
             }
             writer.writeCharacters( String.valueOf( measure.getValue() ) );
             writer.writeEndElement();
