@@ -63,7 +63,6 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
@@ -101,8 +100,6 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private final ApplicationSchema schema;
 
-    private final Map<QName, StoredFeatureTypeMetadata> ftNameToMd = new HashMap<QName, StoredFeatureTypeMetadata>();
-
     private final Map<String, GMLObject> idToObject = new HashMap<String, GMLObject>();
 
     private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
@@ -125,10 +122,6 @@ public class MemoryFeatureStore implements FeatureStore {
         CRS nativeCRS = new CRS( "EPSG:4326" );
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             ftToFeatures.put( ft, new GenericFeatureCollection() );
-            String title = ft.getName().toString();
-            String desc = ft.getName().toString() + ", served by the GMLMemoryStore";
-            StoredFeatureTypeMetadata md = new StoredFeatureTypeMetadata( ft, this, title, desc, nativeCRS );
-            ftNameToMd.put( ft.getName(), md );
         }
         // TODO
         lockManager = new DefaultLockManager( this, "LOCK_DB" );
@@ -423,7 +416,8 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public StoredFeatureTypeMetadata getMetadata( QName ftName ) {
-        return ftNameToMd.get( ftName );
+    public CRS getStorageSRS() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

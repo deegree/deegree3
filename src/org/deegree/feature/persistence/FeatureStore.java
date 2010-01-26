@@ -38,6 +38,7 @@ package org.deegree.feature.persistence;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.crs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.FeatureResultSet;
@@ -95,13 +96,11 @@ public interface FeatureStore {
     public ApplicationSchema getSchema();
 
     /**
-     * Returns metadata on the specified feature type.
+     * Returns the native CRS used for storing geometries.
      * 
-     * @param ftName
-     *            name of the feature type, must not be <code>null</code> and must be served by this store
-     * @return metadata for the feature type, or <code>null</code> if the feature type is not known
+     * @return the native CRS used for storing geometries, can be <code>null</code>
      */
-    public StoredFeatureTypeMetadata getMetadata( QName ftName );
+    public CRS getStorageSRS();
 
     /**
      * Returns the envelope for all stored features of the given type.

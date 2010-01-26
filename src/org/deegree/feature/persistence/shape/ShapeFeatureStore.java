@@ -71,7 +71,6 @@ import org.deegree.feature.Property;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
 import org.deegree.feature.persistence.query.CombinedResultSet;
@@ -125,8 +124,6 @@ public class ShapeFeatureStore implements FeatureStore {
     private GeometryTransformer transformer;
 
     private FeatureType ft;
-
-    private StoredFeatureTypeMetadata ftMetadata;
 
     private ApplicationSchema schema;
 
@@ -229,7 +226,6 @@ public class ShapeFeatureStore implements FeatureStore {
             ft = new GenericFeatureType( new QName( new File( name ).getName() ),
                                          Collections.<PropertyType> singletonList( geomProp ), false );
         }
-        ftMetadata = new StoredFeatureTypeMetadata( ft, this, "" + ft.getName(), "" + ft.getName(), crs );
         schema = new ApplicationSchema( new FeatureType[] { ft }, null );
     }
 
@@ -524,11 +520,6 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
-    public StoredFeatureTypeMetadata getMetadata( QName ftName ) {
-        return ftMetadata;
-    }
-
-    @Override
     public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
         // TODO
@@ -540,4 +531,8 @@ public class ShapeFeatureStore implements FeatureStore {
         return schema;
     }
 
+    @Override
+    public CRS getStorageSRS() {
+        return crs;
+    }
 }

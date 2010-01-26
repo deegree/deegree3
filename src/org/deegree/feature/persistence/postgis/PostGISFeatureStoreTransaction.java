@@ -61,7 +61,6 @@ import org.deegree.feature.persistence.FeatureCoder;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;
@@ -314,12 +313,11 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     private int insertFeature( PreparedStatement stmt, Feature feature )
                             throws SQLException, FeatureStoreException {
 
-        StoredFeatureTypeMetadata md = store.getMetadata( feature.getName() );
-        if ( md == null ) {
+        if ( store.getSchema().getFeatureType( feature.getName() ) == null ) {
             throw new FeatureStoreException( "Cannot insert feature '" + feature.getName()
                                              + "': feature is not served by this feature store." );
         }
-        CRS storageCRS = md.getDefaultCRS();
+        CRS storageCRS = store.getStorageSRS();
 
         stmt.setString( 1, feature.getId() );
         stmt.setString( 2, "TODO: gml_description" );

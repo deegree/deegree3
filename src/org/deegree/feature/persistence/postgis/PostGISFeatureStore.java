@@ -58,7 +58,6 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CachedFeatureResultSet;
@@ -104,8 +103,6 @@ public class PostGISFeatureStore implements FeatureStore {
     private static final Logger LOG = LoggerFactory.getLogger( PostGISFeatureStore.class );
 
     private final ApplicationSchema schema;
-
-    private final Map<QName, StoredFeatureTypeMetadata> ftNameToMd = new HashMap<QName, StoredFeatureTypeMetadata>();
 
     private final Map<QName, Short> ftNameToFtId = new HashMap<QName, Short>();
 
@@ -268,11 +265,6 @@ public class PostGISFeatureStore implements FeatureStore {
     }
 
     @Override
-    public StoredFeatureTypeMetadata getMetadata( QName ftName ) {
-        return ftNameToMd.get( ftName );
-    }
-
-    @Override
     public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
 
@@ -311,6 +303,11 @@ public class PostGISFeatureStore implements FeatureStore {
     }
 
     @Override
+    public CRS getStorageSRS() {
+        return storageSRS;
+    }
+
+    @Override
     public void init()
                             throws FeatureStoreException {
         LOG.debug( "init" );
@@ -342,10 +339,6 @@ public class PostGISFeatureStore implements FeatureStore {
                                  + "' is abstract according to the application schemas of the feature store.";
                     throw new FeatureStoreException( msg );
                 }
-                String title = ftName.toString() + " served by PostGISFeatureStore";
-                String desc = ftName.toString() + " served by PostGISFeatureStore";
-                StoredFeatureTypeMetadata ftMd = new StoredFeatureTypeMetadata( ft, this, title, desc, storageSRS );
-                ftNameToMd.put( ftName, ftMd );
                 ftNameToFtId.put( ftName, ftId );
 
                 if ( pgGeom != null ) {

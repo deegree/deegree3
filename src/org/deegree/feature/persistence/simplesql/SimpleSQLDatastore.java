@@ -83,7 +83,6 @@ import org.deegree.feature.Property;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
-import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.CombinedResultSet;
 import org.deegree.feature.persistence.query.FeatureResultSet;
@@ -127,8 +126,6 @@ public class SimpleSQLDatastore implements FeatureStore {
     private String connId;
 
     Connection conn;
-
-    private StoredFeatureTypeMetadata metadata;
 
     CRS crs;
 
@@ -247,10 +244,6 @@ public class SimpleSQLDatastore implements FeatureStore {
         throw new FeatureStoreException( "Transactions are not implemented for the simple SQL datastore." );
     }
 
-    public StoredFeatureTypeMetadata getMetadata( QName ftName ) {
-        return metadata;
-    }
-
     public GMLObject getObjectById( String id )
                             throws FeatureStoreException {
         throw new FeatureStoreException( "Getting objects by id is not implemented for the simple SQL datastore." );
@@ -309,7 +302,6 @@ public class SimpleSQLDatastore implements FeatureStore {
 
             featureType = new GenericFeatureType( new QName( namespace, featureName ), (List) ps, false );
 
-            metadata = new StoredFeatureTypeMetadata( featureType, this, null, null, crs );
             schema = new ApplicationSchema( new FeatureType[] { featureType }, null );
         } catch ( SQLException e ) {
             LOG.warn( "Data store could not be initialized: '{}'.", e.getLocalizedMessage() );
@@ -523,4 +515,8 @@ public class SimpleSQLDatastore implements FeatureStore {
         return query( queries ).toCollection().size();
     }
 
+    @Override
+    public CRS getStorageSRS() {
+        return crs;
+    }
 }
