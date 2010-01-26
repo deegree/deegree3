@@ -67,14 +67,12 @@ import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
 
 /**
- * The class tests both the GML21GeometryDecoder and the GML21GeometryEncoder.
+ * The class tests both the {@link GML2GeometryWriter} and the {@link GML2GeometryReader}.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class GML2GeometryTest extends TestCase {
 
@@ -138,7 +136,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         // writer.setPrefix( "app", "http://www.deegree.org" );
         // writer.setPrefix( "app", "http://www.deegree.org/app" );
@@ -159,9 +157,11 @@ public class GML2GeometryTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void testPoint()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource(
                                                                                                     BASE_DIR
@@ -184,7 +184,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
 
@@ -198,9 +198,12 @@ public class GML2GeometryTest extends TestCase {
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void testPoint2()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource(
                                                                                                     BASE_DIR
@@ -216,7 +219,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
 
@@ -231,9 +234,11 @@ public class GML2GeometryTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void testPolygon()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource(
                                                                                                     BASE_DIR
@@ -277,7 +282,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -293,9 +298,11 @@ public class GML2GeometryTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void testLineString()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource(
                                                                                                     BASE_DIR
@@ -322,7 +329,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -337,9 +344,12 @@ public class GML2GeometryTest extends TestCase {
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void testMultiGeometry()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource(
                                                                                                     BASE_DIR
@@ -379,7 +389,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -394,9 +404,12 @@ public class GML2GeometryTest extends TestCase {
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void testMultiLineString()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource(
                                                                                                     BASE_DIR
@@ -431,7 +444,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -446,9 +459,12 @@ public class GML2GeometryTest extends TestCase {
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void testMultiPoint()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource(
                                                                                                     BASE_DIR
@@ -472,7 +488,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -488,9 +504,11 @@ public class GML2GeometryTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void testMultiPolygon()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource(
                                                                                                     BASE_DIR
@@ -541,7 +559,7 @@ public class GML2GeometryTest extends TestCase {
 
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
-        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, new HashSet<String>() );
+        GML2GeometryWriter exporter = new GML2GeometryWriter( writer, null, null, new HashSet<String>() );
 
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
