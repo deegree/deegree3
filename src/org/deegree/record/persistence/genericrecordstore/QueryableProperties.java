@@ -37,7 +37,6 @@ package org.deegree.record.persistence.genericrecordstore;
 
 import java.util.List;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.crs.CRS;
 
@@ -110,9 +109,9 @@ public class QueryableProperties {
     private float distanceValue;
 
     private String distanceUOM;
-    
+
     private Date temporalExtentBegin;
-    
+
     private Date temporalExtentEnd;
 
     // ---</additional common queryable properties>
@@ -633,7 +632,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param temporalExtentBegin the temporalExtentBegin to set
+     * @param temporalExtentBegin
+     *            the temporalExtentBegin to set
      */
     public void setTemporalExtentBegin( Date temporalExtentBegin ) {
         this.temporalExtentBegin = temporalExtentBegin;
@@ -647,12 +647,11 @@ public class QueryableProperties {
     }
 
     /**
-     * @param temporalExtentEnd the temporalExtentEnd to set
+     * @param temporalExtentEnd
+     *            the temporalExtentEnd to set
      */
     public void setTemporalExtentEnd( Date temporalExtentEnd ) {
         this.temporalExtentEnd = temporalExtentEnd;
     }
-    
-    
 
 }

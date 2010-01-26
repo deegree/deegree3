@@ -36,14 +36,19 @@
 package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -140,24 +145,48 @@ public class ISORecordStore implements RecordStore {
      */
     @Override
     public void describeRecord( XMLStreamWriter writer, QName typeName ) {
+        try {
+            URL dc = null;
+            URL url_identification = null;
+            URL url_service_metadata = null;
+            BufferedInputStream bais;
+            URLConnection urlConn = null;
 
-        URL url = null;
-        for ( QName name : typeNames.keySet() ) {
-            if ( typeName.equals( name ) ) {
+            if ( typeName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ) ) ) {
 
-                // in = new FileInputStream( "../dc/dc.xsd" );
-                url = ISORecordStore.class.getResource( "dc.xsd" );
+                dc = new URL( "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
 
-            } else {
-                // in = new FileInputStream( "../gmd/gmd.xsd" );
-                url = ISORecordStore.class.getResource( "gmd_metadata.xsd" );
+                urlConn = dc.openConnection();
+
+            } else if ( typeName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" ) ) ) {
+
+                url_identification = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" );
+
+                urlConn = url_identification.openConnection();
+
             }
+
+            urlConn.setDoInput( true );
+            bais = new BufferedInputStream( urlConn.getInputStream() );
+
+            // TODO remove hardcoding
+            Charset charset = Charset.forName( "UTF-8" );
+            InputStreamReader isr = null;
+
+            isr = new InputStreamReader( bais, charset );
+
+            readXMLFragment( isr, writer );
+        } catch ( MalformedURLException e ) {
+
+            e.printStackTrace();
+        } catch ( IOException e ) {
+
+            e.printStackTrace();
+        } catch ( Exception e ) {
+
+            e.printStackTrace();
         }
 
-        XMLAdapter ada = new XMLAdapter( url );
-
-        System.out.println( ada.toString() );
-        // readXMLFragment( ada.toString(), writer );
     }
 
     /*
@@ -649,7 +678,7 @@ public class ISORecordStore implements RecordStore {
 
             UpdateTransaction upd = (UpdateTransaction) operations;
             /**
-             * if there should a complete record be updated or just some properties
+             * if there should a complete record be updated or some properties
              */
             if ( upd.getElement() != null ) {
                 ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement(), conn );
@@ -687,10 +716,11 @@ public class ISORecordStore implements RecordStore {
                         String stri = "SELECT " + formatTypeInGenericRecordStore.get( "full" ) + ".data FROM "
                                       + formatTypeInGenericRecordStore.get( "full" ) + " WHERE "
                                       + formatTypeInGenericRecordStore.get( "full" ) + ".format = 2 AND "
-                                      + formatTypeInGenericRecordStore.get( "full" ) + "." + commonForeignkey + " = " + i;
-                        ResultSet r = conn.createStatement().executeQuery( stri.toString() );
+                                      + formatTypeInGenericRecordStore.get( "full" ) + "." + commonForeignkey + " = "
+                                      + i;
+                        ResultSet rsGetStoredFullRecordXML = conn.createStatement().executeQuery( stri.toString() );
 
-                        while ( r.next() ) {
+                        while ( rsGetStoredFullRecordXML.next() ) {
                             for ( RecordProperty recProp : upd.getRecordProperty() ) {
                                 ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
                                 ExpressionFilterObject recordPropertyName;
@@ -706,22 +736,24 @@ public class ISORecordStore implements RecordStore {
                                 for ( String column : recordPropertyName.getColumn() ) {
 
                                     // creating an OMElement readed from the backend byteData
-                                    InputStream in = r.getBinaryStream( 1 );
+                                    InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
                                     XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
                                     StAXOMBuilder builder = new StAXOMBuilder( reader );
                                     OMDocument doc = builder.getDocument();
                                     OMElement elementBuiltFromDB = doc.getOMDocumentElement();
 
-                                    OMElement omElement = recursiveElementKnotUpdate( elementBuiltFromDB,
-                                                                   elementBuiltFromDB.getChildElements(), column,
-                                                                   recordPropertyValue.getExpression() );
+                                    OMElement omElement = recursiveElementKnotUpdate(
+                                                                                      elementBuiltFromDB,
+                                                                                      elementBuiltFromDB.getChildElements(),
+                                                                                      column,
+                                                                                      recordPropertyValue.getExpression() );
 
                                     ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
                                     elementParsing.executeUpdateStatement();
                                 }
                             }
                         }
-                        r.close();
+                        rsGetStoredFullRecordXML.close();
 
                     }
 
@@ -792,7 +824,8 @@ public class ISORecordStore implements RecordStore {
      *            is the new content that should be updated
      * @return OMElement
      */
-    private OMElement recursiveElementKnotUpdate( OMElement element, Iterator childElements, String searchForLocalName, String newContent ) {
+    private OMElement recursiveElementKnotUpdate( OMElement element, Iterator childElements, String searchForLocalName,
+                                                  String newContent ) {
 
         Iterator it = element.getChildrenWithLocalName( searchForLocalName );
 
