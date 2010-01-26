@@ -48,18 +48,21 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
  */
 public enum GMLVersion {
     /** GML 2 versions (any in the range from 2.0.0 to 2.1.2) */
-    GML_2( GMLNS ),
+    GML_2( GMLNS, "text/xml; subtype=gml/2.1.2" ),
     /** GML 3.0 versions (either 3.0.0 or 3.0.1) */
-    GML_30( GMLNS ),
+    GML_30( GMLNS, "text/xml; subtype=gml/3.0.1" ),
     /** GML 3.1 versions (either 3.1.0 or 3.1.1) */
-    GML_31( GMLNS ),
+    GML_31( GMLNS, "text/xml; subtype=gml/3.1.1" ),
     /** GML 3.2 versions (3.2.1) */
-    GML_32( GML3_2_NS );
+    GML_32( GML3_2_NS, "text/xml; subtype=gml/3.2.1" );
+      
+    private final String ns;
 
-    private String ns;
+    private final String mimeType;
 
-    private GMLVersion( String ns ) {
+    private GMLVersion( String ns, String mimeType ) {
         this.ns = ns;
+        this.mimeType = mimeType;
     }
 
     /**
@@ -69,5 +72,14 @@ public enum GMLVersion {
      */
     public String getNamespace() {
         return ns;
+    }
+
+    /**
+     * Returns the mime type for this GML version.
+     * 
+     * @return the mime type, never <code>null</code>
+     */
+    public String getMimeType() {
+        return mimeType;
     }
 }

@@ -36,12 +36,13 @@
 
 package org.deegree.gml.geometry;
 
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_30;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -110,8 +111,8 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.geometry.refs.GeometryReference;
-import org.deegree.gml.props.GMLStdPropsWriter;
 import org.deegree.gml.props.GMLStdProps;
+import org.deegree.gml.props.GMLStdPropsWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,6 +133,8 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryWriter.class );
 
     private final GMLVersion version;
+
+    private final String gmlNs;
 
     private final XMLStreamWriter writer;
 
@@ -173,6 +176,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCrs,
                                CoordinateFormatter formatter, boolean exportSf, Set<String> exportedIds ) {
         this.version = version;
+        this.gmlNs = version.getNamespace();
         this.writer = writer;
         this.outputCRS = outputCrs;
         // TODO
@@ -272,7 +276,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             MultiCurve multiCurve = (MultiCurve) geometry;
             startGeometry( "MultiCurve", geometry );
             for ( Curve curve : multiCurve ) {
-                writer.writeStartElement( "gml", "curveMember", GMLNS );
+                writer.writeStartElement( "gml", "curveMember", gmlNs );
                 if ( !exportSf && curve.getId() != null && exportedIds.contains( curve.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + curve.getId() );
                 } else if ( curve instanceof CompositeCurve ) {
@@ -288,7 +292,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             MultiLineString multiLineString = (MultiLineString) geometry;
             startGeometry( "MultiLineString", geometry );
             for ( LineString ls : multiLineString ) {
-                writer.writeStartElement( GMLNS, "lineStringMember" );
+                writer.writeStartElement( gmlNs, "lineStringMember" );
                 if ( !exportSf && ls.getId() != null && exportedIds.contains( ls.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + ls.getId() );
                 } else {
@@ -302,7 +306,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             MultiPoint multiPoint = (MultiPoint) geometry;
             startGeometry( "MultiPoint", geometry );
             for ( Point point : multiPoint ) {
-                writer.writeStartElement( GMLNS, "pointMember" );
+                writer.writeStartElement( gmlNs, "pointMember" );
                 if ( !exportSf && point.getId() != null && exportedIds.contains( point.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
                 } else {
@@ -317,7 +321,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             MultiPolygon multiPolygon = (MultiPolygon) geometry;
             startGeometry( "MultiPolygon", geometry );
             for ( Polygon pol : multiPolygon ) {
-                writer.writeStartElement( GMLNS, "polygonMember" );
+                writer.writeStartElement( gmlNs, "polygonMember" );
                 if ( !exportSf && pol.getId() != null && exportedIds.contains( pol.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + pol.getId() );
                 } else {
@@ -332,7 +336,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             MultiSolid multiSolid = (MultiSolid) geometry;
             startGeometry( "MultiSolid", geometry );
             for ( Solid solid : multiSolid ) {
-                writer.writeStartElement( GMLNS, "solidMember" );
+                writer.writeStartElement( gmlNs, "solidMember" );
                 if ( !exportSf && solid.getId() != null && exportedIds.contains( solid.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + solid.getId() );
                 } else if ( solid instanceof CompositeSolid ) {
@@ -348,7 +352,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             MultiSurface multiSurface = (MultiSurface) geometry;
             startGeometry( "MultiSurface", geometry );
             for ( Surface surface : multiSurface ) {
-                writer.writeStartElement( GMLNS, "surfaceMember" );
+                writer.writeStartElement( gmlNs, "surfaceMember" );
                 if ( !exportSf && surface.getId() != null && exportedIds.contains( surface.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + surface.getId() );
                 } else if ( surface instanceof CompositeSurface ) {
@@ -365,7 +369,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             // it is the case that we export a general MultiGeometry
             startGeometry( "MultiGeometry", geometry );
             for ( Geometry geometryMember : geometry ) {
-                writer.writeStartElement( GMLNS, "geometryMember" );
+                writer.writeStartElement( gmlNs, "geometryMember" );
                 if ( !exportSf && geometryMember.getId() != null && exportedIds.contains( geometryMember.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + geometryMember.getId() );
                 } else {
@@ -400,7 +404,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private void exportAsPos( Point point )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
-        writer.writeStartElement( GMLNS, "pos" );
+        writer.writeStartElement( gmlNs, "pos" );
         double[] ordinates = getTransformedCoordinate( point.getCoordinateSystem(), point.getAsArray() );
         writer.writeCharacters( formatter.format( ordinates[0] ) );
         for ( int i = 1; i < ordinates.length; i++ ) {
@@ -431,7 +435,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         case Curve:
             startGeometry( "Curve", curve );
 
-            writer.writeStartElement( GMLNS, "segments" );
+            writer.writeStartElement( gmlNs, "segments" );
             for ( CurveSegment curveSeg : curve.getCurveSegments() ) {
                 exportCurveSegment( curveSeg );
             }
@@ -457,11 +461,11 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
             Curve baseCurve = orientableCurve.getBaseCurve();
             if ( baseCurve.getId() != null && exportedIds.contains( baseCurve.getId() ) ) {
-                writer.writeEmptyElement( GMLNS, "baseCurve" );
+                writer.writeEmptyElement( gmlNs, "baseCurve" );
                 writer.writeAttribute( XLNNS, "href", "#" + baseCurve.getId() );
                 writer.writeEndElement();
             } else {
-                writer.writeStartElement( GMLNS, "baseCurve" );
+                writer.writeStartElement( gmlNs, "baseCurve" );
                 exportCurve( baseCurve );
                 writer.writeEndElement();
             }
@@ -508,7 +512,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         case Surface:
             startGeometry( "Surface", surface );
 
-            writer.writeStartElement( GMLNS, "patches" );
+            writer.writeStartElement( gmlNs, "patches" );
             for ( SurfacePatch surfacePatch : surface.getPatches() ) {
                 exportSurfacePatch( surfacePatch );
             }
@@ -540,15 +544,15 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     @Override
     public void exportTriangulatedSurface( TriangulatedSurface triangSurface )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( GMLNS, "TriangulatedSurface" );
+        writer.writeStartElement( gmlNs, "TriangulatedSurface" );
 
         if ( triangSurface.getId() != null && exportedIds.contains( triangSurface.getId() ) ) {
-            writer.writeEmptyElement( GMLNS, "trianglePatches" );
+            writer.writeEmptyElement( gmlNs, "trianglePatches" );
             writer.writeAttribute( XLNNS, "href", "#" + triangSurface.getId() );
         } else {
             exportedIds.add( triangSurface.getId() );
 
-            writer.writeStartElement( GMLNS, "trianglePatches" );
+            writer.writeStartElement( gmlNs, "trianglePatches" );
             for ( SurfacePatch surfacePatch : triangSurface.getPatches() )
                 exportSurfacePatch( surfacePatch );
             writer.writeEndElement();
@@ -571,14 +575,14 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         startGeometry( "Tin", tin );
 
-        writer.writeStartElement( GMLNS, "trianglePatches" );
+        writer.writeStartElement( gmlNs, "trianglePatches" );
         for ( SurfacePatch sp : tin.getPatches() ) {
             exportSurfacePatch( sp );
         }
         writer.writeEndElement();
 
         for ( List<LineStringSegment> lsSegments : tin.getStopLines() ) {
-            writer.writeStartElement( GMLNS, "stopLines" );
+            writer.writeStartElement( gmlNs, "stopLines" );
             for ( LineStringSegment lsSeg : lsSegments ) {
                 exportLineStringSegment( lsSeg );
             }
@@ -586,19 +590,19 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         }
 
         for ( List<LineStringSegment> lsSegments : tin.getBreakLines() ) {
-            writer.writeStartElement( GMLNS, "breakLines" );
+            writer.writeStartElement( gmlNs, "breakLines" );
             for ( LineStringSegment lsSeg : lsSegments ) {
                 exportLineStringSegment( lsSeg );
             }
             writer.writeEndElement();
         }
 
-        writer.writeStartElement( GMLNS, "maxLength" );
+        writer.writeStartElement( gmlNs, "maxLength" );
         writer.writeAttribute( "uom", tin.getMaxLength( null ).getUomUri() );
         writer.writeCharacters( String.valueOf( tin.getMaxLength( null ).getValue() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( GMLNS, "controlPoint" );
+        writer.writeStartElement( gmlNs, "controlPoint" );
         int dim = tin.getCoordinateDimension();
         export( tin.getControlPoints(), dim );
         writer.writeEndElement();
@@ -609,13 +613,13 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private void exportPolyhedralSurface( PolyhedralSurface polyhSurf )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( polyhSurf.getId() != null && exportedIds.contains( polyhSurf.getId() ) ) {
-            writer.writeEmptyElement( GMLNS, "PolyhedralSurface" );
+            writer.writeEmptyElement( gmlNs, "PolyhedralSurface" );
             writer.writeAttribute( XLNNS, "href", "#" + polyhSurf.getId() );
 
         } else {
             exportedIds.add( polyhSurf.getId() );
-            writer.writeStartElement( GMLNS, "PolyhedralSurface" );
-            writer.writeStartElement( GMLNS, "polygonPatches" );
+            writer.writeStartElement( gmlNs, "PolyhedralSurface" );
+            writer.writeStartElement( gmlNs, "polygonPatches" );
             for ( SurfacePatch surfacePatch : polyhSurf.getPatches() )
                 exportSurfacePatch( surfacePatch );
             writer.writeEndElement();
@@ -629,11 +633,11 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
         Ring exteriorRing = polygon.getExteriorRing();
         if ( exteriorRing.getId() != null && exportedIds.contains( exteriorRing.getId() ) ) {
-            writer.writeEmptyElement( GMLNS, "exterior" );
+            writer.writeEmptyElement( gmlNs, "exterior" );
             writer.writeAttribute( XLNNS, "href", "#" + exteriorRing.getId() );
         } else {
             exportedIds.add( exteriorRing.getId() );
-            writer.writeStartElement( GMLNS, "exterior" );
+            writer.writeStartElement( gmlNs, "exterior" );
             exportRing( exteriorRing );
             writer.writeEndElement();
         }
@@ -641,11 +645,11 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         if ( polygon.getInteriorRings() != null ) {
             for ( Ring ring : polygon.getInteriorRings() ) {
                 if ( ring.getId() != null && exportedIds.contains( ring.getId() ) ) {
-                    writer.writeEmptyElement( GMLNS, "interior" );
+                    writer.writeEmptyElement( gmlNs, "interior" );
                     writer.writeAttribute( XLNNS, "href", "#" + ring.getId() );
                 } else {
                     exportedIds.add( ring.getId() );
-                    writer.writeStartElement( GMLNS, "interior" );
+                    writer.writeStartElement( gmlNs, "interior" );
                     exportRing( ring );
                     writer.writeEndElement();
                 }
@@ -660,11 +664,11 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
         Surface baseSurface = orientableSurface.getBaseSurface();
         if ( baseSurface.getId() != null && exportedIds.contains( baseSurface.getId() ) ) {
-            writer.writeEmptyElement( GMLNS, "baseSurface" );
+            writer.writeEmptyElement( gmlNs, "baseSurface" );
             writer.writeAttribute( XLNNS, "href", "#" + baseSurface.getId() );
         } else {
             exportedIds.add( baseSurface.getId() );
-            writer.writeStartElement( GMLNS, "baseSurface" );
+            writer.writeStartElement( gmlNs, "baseSurface" );
             exportSurface( orientableSurface.getBaseSurface() );
             writer.writeEndElement();
         }
@@ -690,12 +694,12 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             startGeometry( "Solid", solid );
 
             Surface exSurface = solid.getExteriorSurface();
-            writer.writeStartElement( GMLNS, "exterior" );
+            writer.writeStartElement( gmlNs, "exterior" );
             exportSurface( exSurface );
             writer.writeEndElement();
 
             for ( Surface inSurface : solid.getInteriorSurfaces() ) {
-                writer.writeStartElement( GMLNS, "interior" );
+                writer.writeStartElement( gmlNs, "interior" );
                 exportSurface( inSurface );
                 writer.writeEndElement();
             }
@@ -724,10 +728,15 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         switch ( ring.getRingType() ) {
 
         case Ring:
-            startGeometry( "Ring", ring );
+            if ( GML_32 != version ) {
+                startGeometry( "Ring", ring );
+            } else {
+                // in GML 3.2, a Ring is not a Geometry object
+                writer.writeStartElement( "gml", "Ring", gmlNs );
+            }
 
             for ( Curve c : ring.getMembers() ) {
-                writer.writeStartElement( GMLNS, "curveMember" );
+                writer.writeStartElement( gmlNs, "curveMember" );
                 exportCurve( c );
                 writer.writeEndElement();
             }
@@ -737,7 +746,12 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         case LinearRing:
             LinearRing linearRing = (LinearRing) ring;
 
-            startGeometry( "LinearRing", linearRing );
+            if ( GML_32 != version ) {
+                startGeometry( "LinearRing", linearRing );
+            } else {
+                // in GML 3.2, a LinearRing is not a Geometry object
+                writer.writeStartElement( "gml", "LinearRing", gmlNs );
+            }
 
             int dim = linearRing.getCoordinateDimension();
             export( linearRing.getControlPoints(), dim );
@@ -765,7 +779,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         startGeometry( "CompositeCurve", compositeCurve );
 
         for ( Curve curve : compositeCurve ) {
-            writer.writeStartElement( "gml", "curveMember", GMLNS );
+            writer.writeStartElement( "gml", "curveMember", gmlNs );
             exportCurve( curve );
             writer.writeEndElement();
         }
@@ -788,7 +802,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         startGeometry( "CompositeSurface", compositeSurface );
 
         for ( Surface surface : compositeSurface ) {
-            writer.writeStartElement( "gml", "surfaceMember", GMLNS );
+            writer.writeStartElement( "gml", "surfaceMember", gmlNs );
             exportSurface( surface );
             writer.writeEndElement();
         }
@@ -813,11 +827,11 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
         for ( Solid solidMember : compositeSolid ) {
             if ( solidMember.getId() != null && exportedIds.contains( solidMember.getId() ) ) {
-                writer.writeEmptyElement( GMLNS, "solidMember" );
+                writer.writeEmptyElement( gmlNs, "solidMember" );
                 writer.writeAttribute( XLNNS, "href", "#" + solidMember.getId() );
             } else {
                 exportedIds.add( solidMember.getId() );
-                writer.writeStartElement( GMLNS, "solidMember" );
+                writer.writeStartElement( gmlNs, "solidMember" );
                 exportSolid( solidMember );
                 writer.writeEndElement();
             }
@@ -844,9 +858,9 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         startGeometry( "Envelope", env );
 
         if ( version == GML_30 ) {
-            writer.writeStartElement( "gml", "pos", GMLNS );
+            writer.writeStartElement( "gml", "pos", gmlNs );
         } else {
-            writer.writeStartElement( "gml", "lowerCorner", GMLNS );
+            writer.writeStartElement( "gml", "lowerCorner", gmlNs );
         }
         double[] ordinates = env.getMin().getAsArray();
         writer.writeCharacters( formatter.format( ordinates[0] ) );
@@ -856,9 +870,9 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         writer.writeEndElement();
 
         if ( version == GML_30 ) {
-            writer.writeStartElement( "gml", "pos", GMLNS );
+            writer.writeStartElement( "gml", "pos", gmlNs );
         } else {
-            writer.writeStartElement( "gml", "upperCorner", GMLNS );
+            writer.writeStartElement( "gml", "upperCorner", gmlNs );
         }
         ordinates = env.getMax().getAsArray();
         writer.writeCharacters( formatter.format( ordinates[0] ) );
@@ -871,7 +885,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportLineStringSegment( LineStringSegment lineStringSeg )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( GMLNS, "LineStringSegment" );
+        writer.writeStartElement( gmlNs, "LineStringSegment" );
 
         writer.writeAttribute( "interpolation", "linear" );
         int dim = lineStringSeg.getCoordinateDimension();
@@ -932,9 +946,9 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportTriangle( Triangle triangle )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( GMLNS, "Triangle" );
+        writer.writeStartElement( gmlNs, "Triangle" );
 
-        writer.writeStartElement( GMLNS, "exterior" );
+        writer.writeStartElement( gmlNs, "exterior" );
         exportRing( triangle.getExteriorRing() );
         writer.writeEndElement();
 
@@ -943,9 +957,9 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportRectangle( Rectangle rectangle )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( GMLNS, "Rectangle" );
+        writer.writeStartElement( gmlNs, "Rectangle" );
 
-        writer.writeStartElement( GMLNS, "exterior" );
+        writer.writeStartElement( gmlNs, "exterior" );
         exportRing( rectangle.getExteriorRing() );
         writer.writeEndElement();
 
@@ -954,14 +968,14 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportPolygonPatch( PolygonPatch polygonPatch )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( GMLNS, "PolygonPatch" );
+        writer.writeStartElement( gmlNs, "PolygonPatch" );
 
-        writer.writeStartElement( GMLNS, "exterior" );
+        writer.writeStartElement( gmlNs, "exterior" );
         exportRing( polygonPatch.getExteriorRing() );
         writer.writeEndElement();
 
         for ( Ring ring : polygonPatch.getInteriorRings() ) {
-            writer.writeStartElement( GMLNS, "interior" );
+            writer.writeStartElement( gmlNs, "interior" );
             exportRing( ring );
             writer.writeEndElement();
         }
@@ -970,21 +984,21 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportSphere( Sphere sphere )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( GMLNS, "Sphere" );
+        writer.writeStartElement( gmlNs, "Sphere" );
         writer.writeAttribute( "horizontalCurveType", "circularArc3Points" );
         writer.writeAttribute( "verticalCurveType", "circularArc3Points" );
 
         for ( int i = 0; i < sphere.getNumRows(); i++ ) {
-            writer.writeStartElement( GMLNS, "row" );
+            writer.writeStartElement( gmlNs, "row" );
             export( sphere.getRow( i ), 3 ); // srsDimension attribute in posList set to 3
             writer.writeEndElement();
         }
 
-        writer.writeStartElement( GMLNS, "rows" );
+        writer.writeStartElement( gmlNs, "rows" );
         writer.writeCharacters( String.valueOf( sphere.getNumRows() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( GMLNS, "columns" );
+        writer.writeStartElement( gmlNs, "columns" );
         writer.writeCharacters( String.valueOf( sphere.getNumColumns() ) );
         writer.writeEndElement();
 
@@ -993,21 +1007,21 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportCylinder( Cylinder cylinder )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( GMLNS, "Cylinder" );
+        writer.writeStartElement( gmlNs, "Cylinder" );
         writer.writeAttribute( "horizontalCurveType", "circularArc3Points" );
         writer.writeAttribute( "verticalCurveType", "linear" );
 
         for ( int i = 0; i < cylinder.getNumRows(); i++ ) {
-            writer.writeStartElement( GMLNS, "row" );
+            writer.writeStartElement( gmlNs, "row" );
             export( cylinder.getRow( i ), 3 ); // srsDimension attribute in posList set to 3
             writer.writeEndElement();
         }
 
-        writer.writeStartElement( GMLNS, "rows" );
+        writer.writeStartElement( gmlNs, "rows" );
         writer.writeCharacters( String.valueOf( cylinder.getNumRows() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( GMLNS, "columns" );
+        writer.writeStartElement( gmlNs, "columns" );
         writer.writeCharacters( String.valueOf( cylinder.getNumColumns() ) );
         writer.writeEndElement();
 
@@ -1016,21 +1030,21 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportCone( Cone cone )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( GMLNS, "Cone" );
+        writer.writeStartElement( gmlNs, "Cone" );
         writer.writeAttribute( "horizontalCurveType", "circularArc3Points" );
         writer.writeAttribute( "verticalCurveType", "linear" );
 
         for ( int i = 0; i < cone.getNumRows(); i++ ) {
-            writer.writeStartElement( GMLNS, "row" );
+            writer.writeStartElement( gmlNs, "row" );
             export( cone.getRow( i ), 3 ); // srsDimension attribute in posList set to 3
             writer.writeEndElement();
         }
 
-        writer.writeStartElement( GMLNS, "rows" );
+        writer.writeStartElement( gmlNs, "rows" );
         writer.writeCharacters( String.valueOf( cone.getNumRows() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( GMLNS, "columns" );
+        writer.writeStartElement( gmlNs, "columns" );
         writer.writeCharacters( String.valueOf( cone.getNumColumns() ) );
         writer.writeEndElement();
 
@@ -1053,7 +1067,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         startGeometry( "GeometricComplex", geometryComplex );
 
         for ( GeometricPrimitive gp : geometryComplex ) {
-            writer.writeStartElement( "gml", "element", GMLNS );
+            writer.writeStartElement( "gml", "element", gmlNs );
             export( gp );
             writer.writeEndElement();
         }
@@ -1138,24 +1152,24 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportOffsetCurve( OffsetCurve offsetCurve )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "OffsetCurve", GMLNS );
+        writer.writeStartElement( "gml", "OffsetCurve", gmlNs );
 
         Curve baseCurve = offsetCurve.getBaseCurve();
         if ( baseCurve.getId() != null && exportedIds.contains( baseCurve.getId() ) ) {
-            writer.writeEmptyElement( GMLNS, "offsetBase" );
-            writer.writeAttribute( "gml", GMLNS, "href", "#" + baseCurve.getId() );
+            writer.writeEmptyElement( gmlNs, "offsetBase" );
+            writer.writeAttribute( "gml", gmlNs, "href", "#" + baseCurve.getId() );
         } else {
-            writer.writeStartElement( "gml", "offsetBase", GMLNS );
+            writer.writeStartElement( "gml", "offsetBase", gmlNs );
             exportCurve( baseCurve );
             writer.writeEndElement();
         }
 
-        writer.writeStartElement( "gml", "distance", GMLNS );
+        writer.writeStartElement( "gml", "distance", gmlNs );
         writer.writeAttribute( "uom", offsetCurve.getDistance( null ).getUomUri() );
         writer.writeCharacters( String.valueOf( offsetCurve.getDistance( null ).getValue() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "refDirection", GMLNS );
+        writer.writeStartElement( "gml", "refDirection", gmlNs );
         exportAsPos( offsetCurve.getDirection() );
         writer.writeEndElement();
 
@@ -1164,7 +1178,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportGeodesicString( GeodesicString geodesicString )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "GeodesicString", GMLNS );
+        writer.writeStartElement( "gml", "GeodesicString", gmlNs );
         writer.writeAttribute( "interpolation", "geodesic" );
 
         int dim = geodesicString.getCoordinateDimension();
@@ -1174,7 +1188,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportGeodesic( Geodesic geodesic )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "Geodesic", GMLNS );
+        writer.writeStartElement( "gml", "Geodesic", gmlNs );
         writer.writeAttribute( "interpolation", "geodesic" );
 
         int geodesicDim = geodesic.getCoordinateDimension();
@@ -1184,19 +1198,19 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportCubicSpline( CubicSpline cubicSpline )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "CubicSpline", GMLNS );
+        writer.writeStartElement( "gml", "CubicSpline", gmlNs );
         writer.writeAttribute( "interpolation", "cubicSpline" );
         int dim = cubicSpline.getCoordinateDimension();
         export( cubicSpline.getControlPoints(), dim );
 
-        writer.writeStartElement( "gml", "vectorAtStart", GMLNS );
+        writer.writeStartElement( "gml", "vectorAtStart", gmlNs );
         double[] array = cubicSpline.getVectorAtStart().getAsArray();
         for ( int i = 0; i < array.length; i++ ) {
             writer.writeCharacters( String.valueOf( array[i] ) + " " );
         }
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "vectorAtEnd", GMLNS );
+        writer.writeStartElement( "gml", "vectorAtEnd", gmlNs );
         array = cubicSpline.getVectorAtEnd().getAsArray();
         for ( int i = 0; i < array.length; i++ )
             writer.writeCharacters( String.valueOf( array[i] ) + " " );
@@ -1208,12 +1222,12 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private void exportClothoid( Clothoid clothoid )
                             throws XMLStreamException {
 
-        writer.writeStartElement( "gml", "Clothoid", GMLNS );
-        writer.writeStartElement( "gml", "refLocation", GMLNS );
-        writer.writeStartElement( "gml", "AffinePlacement", GMLNS );
+        writer.writeStartElement( "gml", "Clothoid", gmlNs );
+        writer.writeStartElement( "gml", "refLocation", gmlNs );
+        writer.writeStartElement( "gml", "AffinePlacement", gmlNs );
 
         AffinePlacement affinePlace = clothoid.getReferenceLocation();
-        writer.writeStartElement( "gml", "location", GMLNS );
+        writer.writeStartElement( "gml", "location", gmlNs );
         double[] array = affinePlace.getLocation().getAsArray();
         for ( int i = 0; i < array.length; i++ ) {
             writer.writeCharacters( String.valueOf( array[i] ) + " " );
@@ -1221,33 +1235,33 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         writer.writeEndElement();
 
         for ( Point p : affinePlace.getRefDirections() ) {
-            writer.writeStartElement( "gml", "refDirection", GMLNS );
+            writer.writeStartElement( "gml", "refDirection", gmlNs );
             array = p.getAsArray();
             for ( int i = 0; i < array.length; i++ )
                 writer.writeCharacters( String.valueOf( array[i] ) + " " );
             writer.writeEndElement();
         }
 
-        writer.writeStartElement( "gml", "inDimension", GMLNS );
+        writer.writeStartElement( "gml", "inDimension", gmlNs );
         writer.writeCharacters( String.valueOf( affinePlace.getInDimension() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "outDimension", GMLNS );
+        writer.writeStartElement( "gml", "outDimension", gmlNs );
         writer.writeCharacters( String.valueOf( affinePlace.getOutDimension() ) );
         writer.writeEndElement();
 
         writer.writeEndElement(); // AffinePlacement
         writer.writeEndElement(); // refLocation
 
-        writer.writeStartElement( "gml", "scaleFactor", GMLNS );
+        writer.writeStartElement( "gml", "scaleFactor", gmlNs );
         writer.writeCharacters( String.valueOf( clothoid.getScaleFactor() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "startParameter", GMLNS );
+        writer.writeStartElement( "gml", "startParameter", gmlNs );
         writer.writeCharacters( String.valueOf( clothoid.getStartParameter() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "endParameter", GMLNS );
+        writer.writeStartElement( "gml", "endParameter", gmlNs );
         writer.writeCharacters( String.valueOf( clothoid.getEndParameter() ) );
         writer.writeEndElement();
 
@@ -1256,24 +1270,24 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportCircleByCenterPoint( CircleByCenterPoint circleCenterP )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "CircleByCenterPoint", GMLNS );
+        writer.writeStartElement( "gml", "CircleByCenterPoint", gmlNs );
 
         writer.writeAttribute( "interpolation", "circularArcCenterPointWithRadius" );
         writer.writeAttribute( "numArc", "1" );
 
         exportAsPos( circleCenterP.getMidPoint() );
 
-        writer.writeStartElement( "gml", "radius", GMLNS );
+        writer.writeStartElement( "gml", "radius", gmlNs );
         writer.writeAttribute( "uom", circleCenterP.getRadius( null ).getUomUri() );
         writer.writeCharacters( String.valueOf( circleCenterP.getRadius( null ).getValue() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "startAngle", GMLNS );
+        writer.writeStartElement( "gml", "startAngle", gmlNs );
         writer.writeAttribute( "uom", circleCenterP.getStartAngle().getUomUri() );
         writer.writeCharacters( String.valueOf( circleCenterP.getStartAngle().getValue() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "endAngle", GMLNS );
+        writer.writeStartElement( "gml", "endAngle", gmlNs );
         writer.writeAttribute( "uom", circleCenterP.getEndAngle().getUomUri() );
         writer.writeCharacters( String.valueOf( circleCenterP.getEndAngle().getValue() ) );
         writer.writeEndElement();
@@ -1283,7 +1297,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportCircle( Circle circle )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "Circle", GMLNS );
+        writer.writeStartElement( "gml", "Circle", gmlNs );
 
         writer.writeAttribute( "interpolation", "circularArc3Points" );
 
@@ -1294,14 +1308,14 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportBSpline( BSpline bSpline )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "BSpline", GMLNS );
+        writer.writeStartElement( "gml", "BSpline", gmlNs );
 
         writer.writeAttribute( "interpolation", "polynomialSpline" );
 
         int dim = bSpline.getCoordinateDimension();
         export( bSpline.getControlPoints(), dim );
 
-        writer.writeStartElement( "gml", "degree", GMLNS );
+        writer.writeStartElement( "gml", "degree", gmlNs );
         writer.writeCharacters( String.valueOf( bSpline.getPolynomialDegree() ) );
         writer.writeEndElement();
 
@@ -1313,14 +1327,14 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportBezier( Bezier bezier )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "Bezier", GMLNS );
+        writer.writeStartElement( "gml", "Bezier", gmlNs );
 
         writer.writeAttribute( "interpolation", "polynomialSpline" );
 
         int dim = bezier.getCoordinateDimension();
         export( bezier.getControlPoints(), dim );
 
-        writer.writeStartElement( "gml", "degree", GMLNS );
+        writer.writeStartElement( "gml", "degree", gmlNs );
         writer.writeCharacters( String.valueOf( bezier.getPolynomialDegree() ) );
         writer.writeEndElement();
 
@@ -1331,7 +1345,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportArcStringByBulge( ArcStringByBulge arcStringBulge )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "ArcStringByBulge", GMLNS );
+        writer.writeStartElement( "gml", "ArcStringByBulge", gmlNs );
 
         writer.writeAttribute( "interpolation", "circularArc2PointWithBulge" );
         writer.writeAttribute( "numArc", String.valueOf( arcStringBulge.getNumArcs() ) );
@@ -1340,13 +1354,13 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         export( arcStringBulge.getControlPoints(), dim );
 
         for ( double d : arcStringBulge.getBulges() ) {
-            writer.writeStartElement( "gml", "bulge", GMLNS );
+            writer.writeStartElement( "gml", "bulge", gmlNs );
             writer.writeCharacters( String.valueOf( d ) );
             writer.writeEndElement();
         }
 
         for ( Point p : arcStringBulge.getNormals() ) {
-            writer.writeStartElement( "gml", "normal", GMLNS );
+            writer.writeStartElement( "gml", "normal", gmlNs );
             double[] array = p.getAsArray();
             int curveSegDim = arcStringBulge.getCoordinateDimension();
             for ( int i = 0; i < curveSegDim - 1; i++ )
@@ -1358,7 +1372,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportArcString( ArcString arcString )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "ArcString", GMLNS );
+        writer.writeStartElement( "gml", "ArcString", gmlNs );
 
         writer.writeAttribute( "interpolation", "circularArc3Points" );
         writer.writeAttribute( "numArc", String.valueOf( arcString.getNumArcs() ) );
@@ -1371,23 +1385,23 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportArcByCenterPoint( ArcByCenterPoint arcCenterP )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "ArcByCenterPoint", GMLNS );
+        writer.writeStartElement( "gml", "ArcByCenterPoint", gmlNs );
         writer.writeAttribute( "interpolation", "circularArcCenterPointWithRadius" );
         writer.writeAttribute( "numArc", "1" ); // TODO have a getNumArcs() method in ArcByCenterPoint ???
 
         exportAsPos( arcCenterP.getMidPoint() );
 
-        writer.writeStartElement( "gml", "radius", GMLNS );
+        writer.writeStartElement( "gml", "radius", gmlNs );
         writer.writeAttribute( "uom", arcCenterP.getRadius( null ).getUomUri() );
         writer.writeCharacters( String.valueOf( arcCenterP.getRadius( null ).getValue() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "startAngle", GMLNS );
+        writer.writeStartElement( "gml", "startAngle", gmlNs );
         writer.writeAttribute( "uom", arcCenterP.getStartAngle().getUomUri() );
         writer.writeCharacters( String.valueOf( arcCenterP.getStartAngle().getValue() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "endAngle", GMLNS );
+        writer.writeStartElement( "gml", "endAngle", gmlNs );
         writer.writeAttribute( "uom", arcCenterP.getEndAngle().getUomUri() );
         writer.writeCharacters( String.valueOf( arcCenterP.getEndAngle().getValue() ) );
         writer.writeEndElement();
@@ -1397,15 +1411,15 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportArcByBulge( ArcByBulge arcBulge )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "ArcByBulge", GMLNS );
+        writer.writeStartElement( "gml", "ArcByBulge", gmlNs );
         exportAsPos( arcBulge.getPoint1() );
         exportAsPos( arcBulge.getPoint2() );
 
-        writer.writeStartElement( "gml", "bulge", GMLNS );
+        writer.writeStartElement( "gml", "bulge", gmlNs );
         writer.writeCharacters( String.valueOf( arcBulge.getBulge() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "normal", GMLNS );
+        writer.writeStartElement( "gml", "normal", gmlNs );
         writer.writeCharacters( String.valueOf( arcBulge.getNormal().get0() ) );
         writer.writeEndElement();
 
@@ -1414,7 +1428,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportArc( Arc arc )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( "gml", "Arc", GMLNS );
+        writer.writeStartElement( "gml", "Arc", gmlNs );
         exportAsPos( arc.getPoint1() );
         exportAsPos( arc.getPoint2() );
         exportAsPos( arc.getPoint3() );
@@ -1423,19 +1437,19 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportKnot( Knot knot )
                             throws XMLStreamException {
-        writer.writeStartElement( "gml", "knot", GMLNS );
+        writer.writeStartElement( "gml", "knot", gmlNs );
 
-        writer.writeStartElement( "gml", "Knot", GMLNS );
+        writer.writeStartElement( "gml", "Knot", gmlNs );
 
-        writer.writeStartElement( "gml", "value", GMLNS );
+        writer.writeStartElement( "gml", "value", gmlNs );
         writer.writeCharacters( String.valueOf( knot.getValue() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "multiplicity", GMLNS );
+        writer.writeStartElement( "gml", "multiplicity", gmlNs );
         writer.writeCharacters( String.valueOf( knot.getMultiplicity() ) );
         writer.writeEndElement();
 
-        writer.writeStartElement( "gml", "weight", GMLNS );
+        writer.writeStartElement( "gml", "weight", gmlNs );
         writer.writeCharacters( String.valueOf( knot.getWeight() ) );
         writer.writeEndElement();
 
@@ -1455,7 +1469,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         }
         if ( !hasID ) { // if not then use the <posList> element to export the points
             if ( version != GML_30 ) {
-                writer.writeStartElement( "gml", "posList", GMLNS );
+                writer.writeStartElement( "gml", "posList", gmlNs );
 
                 // TODO CITE
                 // writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
@@ -1479,7 +1493,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             }
         } else { // if there are points with IDs, see whether an ID was already encountered
             for ( Point point : points ) {
-                writer.writeStartElement( "gml", "pointProperty", GMLNS );
+                writer.writeStartElement( "gml", "pointProperty", gmlNs );
                 if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
                 } else {
@@ -1493,11 +1507,14 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private void startGeometry( String localName, Geometry geometry )
                             throws XMLStreamException {
 
-        writer.writeStartElement( "gml", localName, GMLNS );
+        writer.writeStartElement( "gml", localName, gmlNs );
 
         if ( !exportSf && geometry.getId() != null ) {
             exportedIds.add( geometry.getId() );
-            writer.writeAttribute( "gml", GMLNS, "id", geometry.getId() );
+            writer.writeAttribute( "gml", gmlNs, "id", geometry.getId() );
+        } else if ( version == GML_32 && geometry.getId() == null ) {
+            // in GML 3.2, a gml:id is required for every geometry
+            writer.writeAttribute( "gml", gmlNs, "id", "GEOMETRY_" + generateNewId() );
         }
 
         if ( outputCRS != null ) {
@@ -1510,6 +1527,10 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         if ( props != null ) {
             stdPropsWriter.write( props );
         }
+    }
+
+    private String generateNewId() {
+        return UUID.randomUUID().toString();
     }
 
     private double[] getTransformedCoordinate( CRS inputCRS, double[] inputCoordinate )

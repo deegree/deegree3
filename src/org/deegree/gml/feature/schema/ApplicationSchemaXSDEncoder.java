@@ -297,7 +297,7 @@ public class ApplicationSchemaXSDEncoder {
         if ( hasSubTypes ) {
             writer.writeAttribute( "name", ft.getName().getLocalPart() + "Type" );
         }
-        if ( ft.isAbstract() ) {
+        if ( ft.isAbstract() && hasSubTypes ) {
             writer.writeAttribute( "abstract", "true" );
         }
         writer.writeStartElement( XSNS, "complexContent" );
