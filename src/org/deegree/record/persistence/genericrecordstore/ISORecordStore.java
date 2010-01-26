@@ -826,6 +826,7 @@ public class ISORecordStore implements RecordStore {
      */
     private OMElement recursiveElementKnotUpdate( OMElement element, Iterator childElements, String searchForLocalName,
                                                   String newContent ) {
+        
 
         Iterator it = element.getChildrenWithLocalName( searchForLocalName );
 
@@ -838,14 +839,14 @@ public class ISORecordStore implements RecordStore {
 
                 System.out.println( u.toString() );
             }
-            return u;
+            return element;
 
         } else {
 
             while ( childElements.hasNext() ) {
                 OMElement eleme = (OMElement) childElements.next();
 
-                recursiveElementKnotUpdate( eleme, eleme.getChildElements(), searchForLocalName, newContent );
+                 recursiveElementKnotUpdate( eleme, eleme.getChildElements(), searchForLocalName, newContent );
 
             }
 

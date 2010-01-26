@@ -642,7 +642,7 @@ public class ISOQPParsing extends XMLAdapter {
                 qp.setTopicCategory( Arrays.asList( topicCategories ) );
 
                 // TODO be aware of Dateincompatibilities and read them from the right knot revisionDate
-                String revisionDateString = getNodeAsString( elem, new XPath( "./gco:Date", nsContext ), "0000-00-00" );
+                String revisionDateString = getNodeAsString( sv_service_OR_md_dataIdentification, new XPath( "./gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date", nsContext ), "0000-00-00" );
                 Date date = null;
                 try {
                     date = new Date( revisionDateString );
@@ -654,7 +654,7 @@ public class ISOQPParsing extends XMLAdapter {
                 qp.setRevisionDate( date );
 
                 // TODO be aware of Dateincompatibilities and read them from the right knot creationDate
-                String creationDateString = getNodeAsString( elem, new XPath( "./gco:Date", nsContext ), "0000-00-00" );
+                String creationDateString = getNodeAsString( sv_service_OR_md_dataIdentification, new XPath( "././gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date", nsContext ), "0000-00-00" );
 
                 try {
                     date = new Date( creationDateString );
@@ -666,7 +666,7 @@ public class ISOQPParsing extends XMLAdapter {
                 qp.setCreationDate( date );
 
                 // TODO be aware of Dateincompatibilities and read them from the right knot publicationDate
-                String publicationDateString = getNodeAsString( elem, new XPath( "./gco:Date", nsContext ),
+                String publicationDateString = getNodeAsString( sv_service_OR_md_dataIdentification, new XPath( "././gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date", nsContext ),
                                                                 "0000-00-00" );
 
                 try {
@@ -1511,23 +1511,23 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( qp.getModified() == null || qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
+            if ( qp.getRevisionDate() == null || qp.getRevisionDate().equals( new Date( "0000-00-00" ) ) ) {
             } else {
                 revisionDateAttribute = "'" + qp.getRevisionDate() + "'";
-            }
+            
 
             if ( isUpdate == false ) {
                 id = getLastDatasetId( connection, databaseTable );
                 id++;
                 sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, revisiondate) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + revisionDateAttribute + "');";
+                               + mainDatabaseTableID + "," + revisionDateAttribute + ");";
             } else {
                 sqlStatement = "UPDATE " + databaseTable + " SET revisiondate = " + revisionDateAttribute
                                + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
             }
-
+            System.out.println(sqlStatement);
             stm.executeUpdate( sqlStatement );
-
+            }
         } catch ( SQLException e ) {
 
             e.printStackTrace();
@@ -1551,23 +1551,23 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( qp.getModified() == null || qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
+            if ( qp.getCreationDate() == null || qp.getCreationDate().equals( new Date( "0000-00-00" ) ) ) {
             } else {
                 creationDateAttribute = "'" + qp.getCreationDate() + "'";
-            }
+            
 
             if ( isUpdate == false ) {
                 id = getLastDatasetId( connection, databaseTable );
                 id++;
                 sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, creationdate) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + creationDateAttribute + "');";
+                               + mainDatabaseTableID + "," + creationDateAttribute + ");";
             } else {
                 sqlStatement = "UPDATE " + databaseTable + " SET creationdate = " + creationDateAttribute
                                + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
             }
 
             stm.executeUpdate( sqlStatement );
-
+            }
         } catch ( SQLException e ) {
 
             e.printStackTrace();
@@ -1591,10 +1591,10 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( qp.getModified() == null || qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
+            if ( qp.getPublicationDate() == null || qp.getPublicationDate().equals( new Date( "0000-00-00" ) ) ) {
             } else {
                 publicationDateAttribute = "'" + qp.getPublicationDate() + "'";
-            }
+            
 
             if ( isUpdate == false ) {
                 id = getLastDatasetId( connection, databaseTable );
@@ -1607,7 +1607,7 @@ public class ISOQPParsing extends XMLAdapter {
             }
 
             stm.executeUpdate( sqlStatement );
-
+            }
         } catch ( SQLException e ) {
 
             e.printStackTrace();
