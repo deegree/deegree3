@@ -69,6 +69,10 @@ public class Util {
                 Property<?> p = (Property<?>) o;
                 if ( p.getValue() instanceof String ) {
                     String s = (String) p.getValue();
+                    // skip empty string properties completely
+                    if ( s.isEmpty() ) {
+                        continue;
+                    }
                     PropertyType<?> pt = p.getType();
                     // this is some great parsing really, maybe GML 4 does not need multiple properties at all and can
                     // revert to this?

@@ -160,7 +160,7 @@ public class PropertyTemplateCall {
         }
 
         List<Property<?>> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate );
-        for ( Property<?> p : ( (Feature) obj ).getProperties() ) {
+        for ( Property<?> p : props ) {
             eval( sb, t, p, defs, props );
         }
     }
