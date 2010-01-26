@@ -128,7 +128,8 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
 <CALL> {
   not                    { return new Symbol(TemplatingSymbols.NOT_TOKEN, yyline, yycolumn); }
   [*]                    { return new Symbol(TemplatingSymbols.STAR_TOKEN, yyline, yycolumn); }
-  [^*:,()]+              { return new Symbol(TemplatingSymbols.SELECTION_TOKEN, yyline, yycolumn, yytext().trim()); }
+  [^*:,()]+[*]?          { return new Symbol(TemplatingSymbols.SELECTION_TOKEN, yyline, yycolumn, yytext().trim()); }
+  [*][^*:,()]+           { return new Symbol(TemplatingSymbols.SELECTION_TOKEN, yyline, yycolumn, yytext().trim()); }
   [,]                    {}
   [(]                    { return new Symbol(TemplatingSymbols.LPAREN_TOKEN, yyline, yycolumn); }
   [)]                    { return new Symbol(TemplatingSymbols.RPAREN_TOKEN, yyline, yycolumn); }

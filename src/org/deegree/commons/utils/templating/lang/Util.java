@@ -61,17 +61,18 @@ public class Util {
         for ( T o : os ) {
             String nm = o instanceof Property<?> ? ( (Property<?>) o ).getName().getLocalPart()
                                                 : ( (Feature) o ).getName().getLocalPart();
-            if ( patterns.contains( nm ) ^ negate ) {
-                list.add( o );
-            } else {
-                inner: for ( String p : patterns ) {
-                    if ( p.endsWith( "*" ) && nm.startsWith( p.substring( 0, p.length() - 1 ) ) ) {
-                        list.add( o );
-                        break inner;
-                    }
-                }
+            inner: for ( String p : patterns ) {
                 if ( negate ) {
-                    list.remove( o );
+                    list.add( o );
+                }
+                if ( p.endsWith( "*" ) && nm.startsWith( p.substring( 0, p.length() - 1 ) ) || p.startsWith( "*" )
+                     && nm.endsWith( p.substring( 1 ) ) || nm.equals( p ) ) {
+                    if ( negate ) {
+                        list.removeLast();
+                    } else {
+                        list.add( o );
+                    }
+                    break inner;
                 }
             }
         }
