@@ -94,19 +94,26 @@ public class Util {
                                 cnt = 0;
                                 continue;
                             }
-                            if ( cnt % 2 == 0 ) {
-                                for ( int i = 0; i < cnt / 2; ++i ) {
-                                    next.append( "][" );
-                                }
-                                cnt = 0;
-                                continue;
-                            }
                             for ( int i = 0; i < cnt / 2; ++i ) {
                                 next.append( "][" );
+                            }
+                            if ( cnt % 2 == 0 ) {
+                                cnt = 0;
+                                continue;
                             }
                             tmp.add( (T) new GenericProperty( pt, next.toString() ) );
                             next = new StringBuilder();
                             cnt = 0;
+                        }
+                        // add trailing escaped ][
+                        if ( cnt > 0 ) {
+                            for ( int i = 0; i < cnt / 2; ++i ) {
+                                next.append( "][" );
+                            }
+                        }
+                        // add last piece if not empty
+                        if ( next.length() != 0 ) {
+                            tmp.add( (T) new GenericProperty( pt, next.toString() ) );
                         }
                     } else {
                         tmp = singletonList( o );
