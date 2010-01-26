@@ -56,11 +56,22 @@ public class Link {
 
     private String prefix;
 
+    private String text;
+
     /**
      * @param prefix
      */
     public Link( String prefix ) {
         this.prefix = prefix;
+    }
+
+    /**
+     * @param prefix
+     * @param text
+     */
+    public Link( String prefix, String text ) {
+        this.prefix = prefix;
+        this.text = text;
     }
 
     /**
@@ -73,14 +84,15 @@ public class Link {
             return;
         }
         String val = ( (Property<?>) o ).getValue().toString();
-        if ( isWellFormedAddress( val ) ) {
-            sb.append( val );
-        } else {
-            if ( prefix != null ) {
-                sb.append( prefix );
-            }
-            sb.append( val );
+        if ( val == null || val.isEmpty() ) {
+            return;
         }
+        if ( !isWellFormedAddress( val ) ) {
+            val = prefix == null ? val : ( prefix + val );
+        }
+        sb.append( "<a href='" ).append( val ).append( "'>" );
+        sb.append( text == null ? val : text );
+        sb.append( "</a>" );
     }
 
     @Override

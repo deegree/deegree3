@@ -7,7 +7,7 @@ import java_cup.runtime.*;
 import org.deegree.commons.utils.*;
 import org.deegree.commons.utils.templating.lang.*;
 
-terminal String    TEXT_TOKEN, TEMPLATE_DEFINITION_TOKEN, MAP_DEFINITION_TOKEN, LINK_PREFIX_TOKEN,
+terminal String    TEXT_TOKEN, TEMPLATE_DEFINITION_TOKEN, MAP_DEFINITION_TOKEN, LINK_PREFIX_TOKEN, LINK_TEXT_TOKEN,
                    EVEN_CALL_TOKEN, ODD_CALL_TOKEN, INDEX_CALL_TOKEN, VALUE_TOKEN, NAME_TOKEN,
                    LINK_CALL_TOKEN, MAP_KEY_TOKEN, MAP_VALUE_TOKEN, GMLID_TOKEN, END_DEFINITION_TOKEN,
                    TEMPLATE_NAME_TOKEN, SELECTION_TOKEN, STAR_TOKEN, NOT_TOKEN, LPAREN_TOKEN, RPAREN_TOKEN;
@@ -58,6 +58,9 @@ templatebody ::= TEXT_TOKEN:text                {: RESULT = text; :}
          | INDEX_CALL_TOKEN                     {: RESULT = new Index(); :}
          | NAME_TOKEN                           {: RESULT = new Name(); :}
          | VALUE_TOKEN                          {: RESULT = new Value(); :}
+         | LINK_CALL_TOKEN LINK_PREFIX_TOKEN:pre LINK_TEXT_TOKEN:text
+                                                {: RESULT = new Link(pre, text); :}
+         | LINK_CALL_TOKEN LINK_TEXT_TOKEN:text {: RESULT = new Link(null, text); :}
          | LINK_CALL_TOKEN LINK_PREFIX_TOKEN:pre{: RESULT = new Link(pre); :}
          | LINK_CALL_TOKEN                      {: RESULT = new Link(null); :}
          | GMLID_TOKEN                          {: RESULT = new GMLId(); :};
