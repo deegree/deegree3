@@ -73,12 +73,12 @@ public class OddEven {
      * @param idx
      */
     public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, int idx ) {
-        if ( idx % 2 == 0 && odd || idx % 2 == 1 && !odd ) {
+        if ( idx % 2 == 0 ^ odd ) {
             return;
         }
 
         if ( obj instanceof Feature ) {
-            new FeatureTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, idx );
+            new FeatureTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj );
         }
         if ( obj instanceof Property<?> ) {
             new PropertyTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj );

@@ -60,6 +60,8 @@ templatebody ::= TEXT_TOKEN:text                {: RESULT = text; :}
          | VALUE_TOKEN                          {: RESULT = new Value(); :}
          | LINK_CALL_TOKEN LINK_PREFIX_TOKEN:pre LINK_TEXT_TOKEN:text
                                                 {: RESULT = new Link(pre, text); :}
+         | LINK_CALL_TOKEN LINK_TEXT_TOKEN:text LINK_PREFIX_TOKEN:pre
+                                                {: RESULT = new Link(pre, text); :}
          | LINK_CALL_TOKEN LINK_TEXT_TOKEN:text {: RESULT = new Link(null, text); :}
          | LINK_CALL_TOKEN LINK_PREFIX_TOKEN:pre{: RESULT = new Link(pre); :}
          | LINK_CALL_TOKEN                      {: RESULT = new Link(null); :}

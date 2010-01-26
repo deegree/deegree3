@@ -36,6 +36,7 @@
 package org.deegree.commons.utils.templating.lang;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.commons.utils.templating.lang.Util.getMatchingObjects;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
@@ -77,11 +78,13 @@ public class FeatureTemplateCall {
         this.negate = negate;
     }
 
-    private void eval( StringBuilder sb, HashMap<String, Object> defs, Feature f, TemplateDefinition t, int idx ) {
+    private void eval( StringBuilder sb, HashMap<String, Object> defs, Feature f, TemplateDefinition t,
+                       List<Feature> list ) {
         if ( visited.contains( f ) ) {
             // TODO add link?
             return;
         }
+        visited.add( f );
         for ( Object o : t.body ) {
             if ( o instanceof String ) {
                 sb.append( o );
@@ -90,12 +93,7 @@ public class FeatureTemplateCall {
                 ( (MapCall) o ).eval( sb, defs, f );
             }
             if ( o instanceof FeatureTemplateCall ) {
-                int nextIdx = 1;
-                if ( f instanceof FeatureCollection ) {
-                    for ( Feature feat : (FeatureCollection) f ) {
-                        ( (FeatureTemplateCall) o ).eval( sb, defs, feat, nextIdx++ );
-                    }
-                }
+                ( (FeatureTemplateCall) o ).eval( sb, defs, f );
             }
             if ( o instanceof PropertyTemplateCall ) {
                 ( (PropertyTemplateCall) o ).eval( sb, defs, f );
@@ -110,10 +108,10 @@ public class FeatureTemplateCall {
                 ( (Link) o ).eval( sb, f );
             }
             if ( o instanceof Index ) {
-                sb.append( idx );
+                ( (Index) o ).eval( sb, f, list );
             }
             if ( o instanceof OddEven ) {
-                ( (OddEven) o ).eval( sb, defs, f, idx );
+                ( (OddEven) o ).eval( sb, defs, f, 1 + list.indexOf( f ) );
             }
             if ( o instanceof GMLId ) {
                 ( (GMLId) o ).eval( sb, f );
@@ -125,9 +123,8 @@ public class FeatureTemplateCall {
      * @param sb
      * @param defs
      * @param obj
-     * @param idx
      */
-    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, int idx ) {
+    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj ) {
         Object def = defs.get( name );
         if ( def == null ) {
             LOG.warn( "No template definition with name '{}'.", name );
@@ -135,10 +132,18 @@ public class FeatureTemplateCall {
         }
         TemplateDefinition t = (TemplateDefinition) def;
 
+        if ( obj instanceof FeatureCollection ) {
+            Feature[] fs = new Feature[( (FeatureCollection) obj ).size()];
+            List<Feature> list = getMatchingObjects( ( (FeatureCollection) obj ).toArray( fs ), patterns, negate );
+            for ( Feature feat : list ) {
+                eval( sb, defs, feat, t, list );
+            }
+            return;
+        }
         if ( obj instanceof Feature ) {
-            String nm = ( (Feature) obj ).getName().getLocalPart();
-            if ( patterns.get( 0 ).equals( "*" ) || ( patterns.contains( nm ) ^ negate ) ) {
-                eval( sb, defs, (Feature) obj, t, idx );
+            List<Feature> feats = getMatchingObjects( new Feature[] { (Feature) obj }, patterns, negate );
+            for ( Feature f : feats ) {
+                eval( sb, defs, f, t, feats );
             }
         }
     }

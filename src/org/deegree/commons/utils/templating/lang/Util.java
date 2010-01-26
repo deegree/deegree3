@@ -35,36 +35,47 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.templating.lang;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import static java.util.Arrays.asList;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import org.deegree.feature.Feature;
-import org.slf4j.Logger;
+import org.deegree.feature.Property;
 
 /**
- * <code>GMLId</code>
+ * <code>Util</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GMLId {
+public class Util {
 
-    private static final Logger LOG = getLogger( GMLId.class );
-
-    /**
-     * @param sb
-     * @param o
-     */
-    public void eval( StringBuilder sb, Object o ) {
-        if ( o instanceof Feature ) {
-            String id = ( (Feature) o ).getId();
-            if ( id != null && !id.isEmpty() ) {
-                sb.append( id );
-            }
-        } else {
-            LOG.warn( "Trying to get GML id from property." );
+    static <T> List<T> getMatchingObjects( T[] os, List<String> patterns, boolean negate ) {
+        if ( !negate && patterns.contains( "*" ) ) {
+            return asList( os );
         }
+        LinkedList<T> list = new LinkedList<T>();
+        for ( T o : os ) {
+            String nm = o instanceof Property<?> ? ( (Property<?>) o ).getName().getLocalPart()
+                                                : ( (Feature) o ).getName().getLocalPart();
+            if ( patterns.contains( nm ) ^ negate ) {
+                list.add( o );
+            } else {
+                inner: for ( String p : patterns ) {
+                    if ( p.endsWith( "*" ) && nm.startsWith( p.substring( 0, p.length() - 1 ) ) ) {
+                        list.add( o );
+                        break inner;
+                    }
+                }
+                if ( negate ) {
+                    list.remove( o );
+                }
+            }
+        }
+        return list;
     }
 
 }

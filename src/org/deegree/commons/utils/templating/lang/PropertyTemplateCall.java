@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.templating.lang;
 
-import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.commons.utils.templating.lang.Util.getMatchingObjects;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collections;
@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
 import org.slf4j.Logger;
 
@@ -79,24 +80,37 @@ public class PropertyTemplateCall {
         this.negate = negate;
     }
 
-    private void eval( StringBuilder sb, TemplateDefinition t, Property<?> p, HashMap<String, Object> defs,
+    private void eval( StringBuilder sb, TemplateDefinition t, Object obj, HashMap<String, Object> defs,
                        List<Property<?>> list ) {
-        if ( visited.contains( p ) ) {
-            // TODO add link?
-            return;
+        Property<?> p = null;
+        if ( obj instanceof Property<?> ) {
+            p = (Property<?>) obj;
         }
-        int idx = 1;
+        if ( p != null ) {
+            if ( visited.contains( p ) ) {
+                // TODO add link?
+                return;
+            }
+            visited.add( p );
+        }
+
         for ( Object o : t.body ) {
+            if ( o instanceof FeatureTemplateCall ) {
+                if ( p != null && ( p.getValue() instanceof Feature ) ) {
+                    ( (FeatureTemplateCall) o ).eval( sb, defs, p.getValue() );
+                }
+                if ( p == null && obj instanceof FeatureCollection ) {
+                    ( (FeatureTemplateCall) o ).eval( sb, defs, obj );
+                }
+            }
             if ( o instanceof String ) {
                 sb.append( o );
             }
+            if ( p == null ) {
+                continue;
+            }
             if ( o instanceof MapCall ) {
                 ( (MapCall) o ).eval( sb, defs, p );
-            }
-            if ( o instanceof FeatureTemplateCall ) {
-                if ( ( p.getValue() instanceof Feature ) ) {
-                    ( (FeatureTemplateCall) o ).eval( sb, defs, p.getValue(), idx++ );
-                }
             }
             if ( o instanceof PropertyTemplateCall ) {
                 LOG.warn( "Trying to call template '{}' as property template while current object is property.",
@@ -137,16 +151,17 @@ public class PropertyTemplateCall {
         TemplateDefinition t = (TemplateDefinition) def;
 
         if ( obj instanceof Property<?> ) {
-            eval( sb, t, (Property<?>) obj, defs, Collections.<Property<?>> singletonList( (Property<?>) obj ) );
+            eval( sb, t, obj, defs, Collections.<Property<?>> singletonList( (Property<?>) obj ) );
+            return;
+        }
+        if ( obj instanceof FeatureCollection ) {
+            eval( sb, t, obj, defs, null );
             return;
         }
 
+        List<Property<?>> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate );
         for ( Property<?> p : ( (Feature) obj ).getProperties() ) {
-            String nm = p.getName().getLocalPart();
-            if ( !patterns.get( 0 ).equals( "*" ) && !( patterns.contains( nm ) ^ negate ) ) {
-                continue;
-            }
-            eval( sb, t, p, defs, asList( ( (Feature) obj ).getProperties() ) );
+            eval( sb, t, p, defs, props );
         }
     }
 
