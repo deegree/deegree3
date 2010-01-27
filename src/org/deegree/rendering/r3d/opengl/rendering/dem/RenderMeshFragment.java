@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.opengl.rendering.dem;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
@@ -47,6 +49,7 @@ import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
+import org.slf4j.Logger;
 
 /**
  * Encapsulates a {@link MeshFragment} of a {@link MultiresolutionMesh} that can be rendered via JOGL.
@@ -70,6 +73,7 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
  * @version $Revision$
  */
 public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
+    private static final Logger LOG = getLogger( RenderMeshFragment.class );
 
     private final MeshFragment fragment;
 
@@ -88,13 +92,6 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
      */
     public RenderMeshFragment( MeshFragment fragment ) {
         this.fragment = fragment;
-    }
-
-    /**
-     * @return the number of vertices of this mesh fragment.
-     */
-    public int getVertices() {
-        return fragment.getVertices();
     }
 
     /**
@@ -239,45 +236,60 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
         // render with or without texture
         if ( textures != null && textures.size() > 0 && textures.get( 0 ) != null ) {
 
-            // first texture (uses always-available texture unit 0)
-            gl.glClientActiveTexture( GL.GL_TEXTURE0 );
-            gl.glActiveTexture( GL.GL_TEXTURE0 );
-            gl.glEnable( GL.GL_TEXTURE_2D );
-            gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+            int glVCB = textures.get( 0 ).getGLVertexCoordBufferId();
+            int tId = textures.get( 0 ).getGLTextureId();
+            if ( glVCB != -1 && tId != -1 ) {
+                // first texture (uses always-available texture unit 0)
+                gl.glClientActiveTexture( GL.GL_TEXTURE0 );
+                gl.glActiveTexture( GL.GL_TEXTURE0 );
+                gl.glEnable( GL.GL_TEXTURE_2D );
+                gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
-            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
-            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
+                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
+                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
 
-            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( 0 ).getGLVertexCoordBufferId() );
-            gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
+                gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glVCB );
+                gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
-            gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( 0 ).getGLTextureId() );
+                gl.glBindTexture( GL.GL_TEXTURE_2D, tId );
+                // second to last texture
+                for ( int i = 1; i < textures.size(); i++ ) {
+                    if ( textures.get( i ) != null ) {
+                        glVCB = textures.get( i ).getGLVertexCoordBufferId();
+                        tId = textures.get( i ).getGLTextureId();
+                        if ( glVCB != -1 && tId != -1 ) {
+                            int textureUnitId = JOGLUtils.getTextureUnitConst( i );
+                            gl.glClientActiveTexture( textureUnitId );
+                            gl.glActiveTexture( textureUnitId );
+                            gl.glEnable( GL.GL_TEXTURE_2D );
+                            gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
-            // second to last texture
-            for ( int i = 1; i < textures.size(); i++ ) {
-                if ( textures.get( i ) != null ) {
-                    int textureUnitId = JOGLUtils.getTextureUnitConst( i );
-                    gl.glClientActiveTexture( textureUnitId );
-                    gl.glActiveTexture( textureUnitId );
-                    gl.glEnable( GL.GL_TEXTURE_2D );
-                    gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+                            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
+                            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
 
-                    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
-                    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
+                            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glVCB );
+                            gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
-                    gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( i ).getGLVertexCoordBufferId() );
-                    gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
+                            gl.glBindTexture( GL.GL_TEXTURE_2D, tId );
+                        } else {
+                            LOG.warn( "No texture id or no texture coordinates for texture(" + i
+                                      + "), ignoring this texture." );
+                        }
+                    }
 
-                    gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( i ).getGLTextureId() );
                 }
+                // activate shader and set texSamplers
+                gl.glUseProgram( shaderProgramId );
+                for ( int i = 0; i < textures.size(); i++ ) {
+                    if ( textures.get( i ) != null ) {
+                        int texSampler = gl.glGetUniformLocation( shaderProgramId, "tex" + i );
+                        gl.glUniform1i( texSampler, i );
+                    }
+                }
+            } else {
+                LOG.warn( "No texture id or no texture coordinates for texture(0), this fragments textures." );
             }
 
-            // activate shader and set texSamplers
-            gl.glUseProgram( shaderProgramId );
-            for ( int i = 0; i < textures.size(); i++ ) {
-                int texSampler = gl.glGetUniformLocation( shaderProgramId, "tex" + i );
-                gl.glUniform1i( texSampler, i );
-            }
         }
 
         gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
@@ -318,6 +330,34 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             return this.fragment.id == that.fragment.id;
         }
         return false;
+    }
+
+    /**
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long code = 32452843;
+        code = code * 37 + this.fragment.id;
+        return (int) ( code >>> 32 ) ^ (int) code;
     }
 
     /**
