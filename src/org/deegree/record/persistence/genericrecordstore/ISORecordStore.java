@@ -127,8 +127,10 @@ public class ISORecordStore implements RecordStore {
         formatTypeInGenericRecordStore.put( "full", "recordfull" );
 
         typeNames.put( new QName( "", "", "" ), 1 );
+        typeNames.put( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "" ), 1 );
         typeNames.put( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ), 1 );
         typeNames.put( new QName( "http://purl.org/dc/elements/1.1/", "", "dc" ), 1 );
+        typeNames.put( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "" ), 2 );
         typeNames.put( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata", "gmd" ), 2 );
         typeNames.put( new QName( "http://www.opengis.net/cat/csw/apiso/1.0", "", "apiso" ), 2 );
 
@@ -163,6 +165,8 @@ public class ISORecordStore implements RecordStore {
                 url_identification = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" );
 
                 urlConn = url_identification.openConnection();
+                
+                writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
 
             }
 
@@ -236,7 +240,12 @@ public class ISORecordStore implements RecordStore {
                             throws SQLException, XMLStreamException, IOException {
 
         int profileFormatNumberOutputSchema = 0;
-
+        int typeNameFormatNumber = 0;
+        
+        if(typeNames.containsKey( typeName )){
+            typeNameFormatNumber = typeNames.get( typeName );
+        }
+        
         if ( typeName.getNamespaceURI().equals( outputSchema ) ) {
 
         } else {
@@ -254,7 +263,7 @@ public class ISORecordStore implements RecordStore {
             break;
         case hits:
 
-            doHitsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con,
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
                                formatTypeInGenericRecordStore.get( constraint.getSetOfReturnableElements().name() ),
                                "hits" );
             break;
@@ -279,7 +288,7 @@ public class ISORecordStore implements RecordStore {
      * @throws XMLStreamException
      * @throws IOException
      */
-    private void doHitsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
+    private void doHitsOnGetRecord( XMLStreamWriter writer, int typeNameFormatNumber, int profileFormatNumberOutputSchema,
                                     GenericDatabaseDS constraint, JDBCConnections con, String formatType,
                                     String resultType )
                             throws SQLException, XMLStreamException, IOException {
@@ -288,7 +297,7 @@ public class ISORecordStore implements RecordStore {
         int nextRecord = 0;
         int returnedRecords = 0;
 
-        Writer selectCountRows = generateSELECTStatement( formatType, constraint, profileFormatNumberOutputSchema, true );
+        Writer selectCountRows = generateSELECTStatement( formatType, constraint, typeNameFormatNumber, profileFormatNumberOutputSchema, true );
 
         // ConnectionManager.addConnections( con );
         for ( PooledConnection pool : con.getPooledConnection() ) {
@@ -355,7 +364,12 @@ public class ISORecordStore implements RecordStore {
     private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
                                        GenericDatabaseDS constraint, JDBCConnections con )
                             throws SQLException, XMLStreamException, IOException {
-
+        int typeNameFormatNumber = 0;
+        if(typeNames.containsKey( typeName )){
+            typeNameFormatNumber = typeNames.get( typeName );
+        }
+        
+        
         for ( PooledConnection pool : con.getPooledConnection() ) {
 
             Connection conn = ConnectionManager.getConnection( connectionId );
@@ -366,30 +380,30 @@ public class ISORecordStore implements RecordStore {
             case brief:
 
                 Writer selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ),
-                                                              constraint, profileFormatNumberOutputSchema, false );
+                                                              constraint, typeNameFormatNumber, profileFormatNumberOutputSchema, false );
                 rs = conn.createStatement().executeQuery( selectBrief.toString() );
 
-                doHitsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con,
+                doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
                                    formatTypeInGenericRecordStore.get( "brief" ), "results" );
 
                 break;
             case summary:
 
                 Writer selectSummary = generateSELECTStatement( formatTypeInGenericRecordStore.get( "summary" ),
-                                                                constraint, profileFormatNumberOutputSchema, false );
+                                                                constraint, typeNameFormatNumber, profileFormatNumberOutputSchema, false );
                 rs = conn.createStatement().executeQuery( selectSummary.toString() );
 
-                doHitsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con,
+                doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
                                    formatTypeInGenericRecordStore.get( "summary" ), "results" );
 
                 break;
             case full:
 
-                Writer selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint,
+                Writer selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint, typeNameFormatNumber,
                                                              profileFormatNumberOutputSchema, false );
                 rs = conn.createStatement().executeQuery( selectFull.toString() );
 
-                doHitsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con,
+                doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
                                    formatTypeInGenericRecordStore.get( "full" ), "results" );
 
                 break;
@@ -450,7 +464,7 @@ public class ISORecordStore implements RecordStore {
      * @throws IOException
      */
     private Writer generateSELECTStatement( String formatType, GenericDatabaseDS constraint,
-                                            int profileFormatNumberOutputSchema, boolean setCount )
+                                            int typeNameFormatNumber, int profileFormatNumberOutputSchema, boolean setCount )
                             throws IOException {
         if ( constraint.getTable() != null ) {
             tableSet = constraint.getTable();
@@ -493,7 +507,7 @@ public class ISORecordStore implements RecordStore {
             s.append( ", " + concatTableFROM( tableSet ) );
         }
 
-        s.append( "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
+        s.append( "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + ".format = "+ typeNameFormatNumber +" AND " + formatType
                   + "." + commonForeignkey + " >= " + constraint.getStartPosition() );
 
         if ( tableSet.size() == 0 ) {
@@ -659,13 +673,21 @@ public class ISORecordStore implements RecordStore {
             InsertTransaction ins = (InsertTransaction) operations;
 
             for ( OMElement element : ins.getElement() ) {
-
+                QName localName = element.getQName();
+                boolean isDC = true;
                 try {
-
                     ISOQPParsing elementParsing = new ISOQPParsing( element, conn );
-                    elementParsing.executeInsertStatement();
+                    if(localName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ))|| localName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "" ))){
+                        elementParsing.parseAPDC( );
+                        
+                    }else{
+                        elementParsing.parseAPISO( );
+                        isDC = false;
+                    }
+                    elementParsing.executeInsertStatement(isDC);
                     getRecordsForTransactionInsertStatement( writer, conn, elementParsing.getRecordInsertIDs() );
-                } catch ( IOException e ) {
+                    
+                    } catch ( IOException e ) {
 
                     e.printStackTrace();
                 }
@@ -731,25 +753,34 @@ public class ISORecordStore implements RecordStore {
                                 recordPropertyValue = filterHandle.expressionFilterHandling(
                                                                                              org.deegree.filter.Expression.Type.LITERAL,
                                                                                              recProp.getReplacementValue() );
+                                if ( recordPropertyName.isMatching() == true ) {
 
-                                // not important. There is just one name possible
-                                for ( String column : recordPropertyName.getColumn() ) {
+                                    // not important. There is just one name possible
+                                    for ( String column : recordPropertyName.getColumn() ) {
 
-                                    // creating an OMElement readed from the backend byteData
-                                    InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
-                                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
-                                    StAXOMBuilder builder = new StAXOMBuilder( reader );
-                                    OMDocument doc = builder.getDocument();
-                                    OMElement elementBuiltFromDB = doc.getOMDocumentElement();
+                                        // creating an OMElement readed from the backend byteData
+                                        InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
+                                        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
+                                                                                                                      in );
+                                        StAXOMBuilder builder = new StAXOMBuilder( reader );
+                                        OMDocument doc = builder.getDocument();
+                                        OMElement elementBuiltFromDB = doc.getOMDocumentElement();
 
-                                    OMElement omElement = recursiveElementKnotUpdate(
-                                                                                      elementBuiltFromDB,
-                                                                                      elementBuiltFromDB.getChildElements(),
-                                                                                      column,
-                                                                                      recordPropertyValue.getExpression() );
+                                        OMElement omElement = recursiveElementKnotUpdate(
+                                                                                          elementBuiltFromDB,
+                                                                                          elementBuiltFromDB.getChildElements(),
+                                                                                          column,
+                                                                                          recordPropertyValue.getExpression() );
 
-                                    ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
-                                    elementParsing.executeUpdateStatement();
+                                        ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
+                                        elementParsing.executeUpdateStatement();
+
+                                    }
+
+                                } else {
+
+                                    String msg = "No matching found between backend and " + recProp.getPropertyName();
+                                    throw new IllegalArgumentException( msg );
                                 }
                             }
                         }
@@ -813,6 +844,9 @@ public class ISORecordStore implements RecordStore {
 
     /**
      * This method replaces the text content of an elementknot.
+     * <p>
+     * TODO this is suitable for updates which affect an elementknot that has just one child. <br>
+     * BUG - if there a more childs like in the "keyword"-elementknot.
      * 
      * @param element
      *            where to start in the OMTree
@@ -826,7 +860,6 @@ public class ISORecordStore implements RecordStore {
      */
     private OMElement recursiveElementKnotUpdate( OMElement element, Iterator childElements, String searchForLocalName,
                                                   String newContent ) {
-        
 
         Iterator it = element.getChildrenWithLocalName( searchForLocalName );
 
@@ -836,7 +869,6 @@ public class ISORecordStore implements RecordStore {
                 u = (OMElement) it.next();
                 System.out.println( u.toString() );
                 u.getFirstElement().setText( newContent.substring( 1, newContent.length() - 1 ) );
-
                 System.out.println( u.toString() );
             }
             return element;
@@ -844,9 +876,9 @@ public class ISORecordStore implements RecordStore {
         } else {
 
             while ( childElements.hasNext() ) {
-                OMElement eleme = (OMElement) childElements.next();
+                OMElement elem = (OMElement) childElements.next();
 
-                 recursiveElementKnotUpdate( eleme, eleme.getChildElements(), searchForLocalName, newContent );
+                recursiveElementKnotUpdate( elem, elem.getChildElements(), searchForLocalName, newContent );
 
             }
 
@@ -873,6 +905,7 @@ public class ISORecordStore implements RecordStore {
      * the response.
      * 
      * @param writer
+     *            to be updated with a brief representation of the inserted records
      * @param conn
      * @param insertedIds
      *            the briefrecord datasets that have been inserted into the backend
