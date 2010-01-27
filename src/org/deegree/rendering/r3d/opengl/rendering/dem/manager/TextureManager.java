@@ -37,8 +37,10 @@
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TextureManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TextureManager.class );
+    static final Logger LOG = LoggerFactory.getLogger( TextureManager.class );
 
     private final DirectByteBufferPool bufferPool;
 
@@ -80,12 +82,12 @@ public class TextureManager {
 
     private final double[] translationToLocalCRS;
 
-    private final MemoryCache memCache;
-
     private final GPUCache gpuCache;
 
+    private final int requestTimeout;
+
     /**
-     * Number of bytes to be allocated, (Normals+Vertices) * numberOfBytePerFloat
+     * Number of bytes to be allocated, two floating points texture coordinates
      */
     private static final int NUMBER_OF_BYTES = 2 * 4;
 
@@ -96,18 +98,17 @@ public class TextureManager {
      *            managing all tiles
      * @param translationToLocalCRS
      *            the translation vector
-     * @param maxFragmentTexturesInMemory
-     *            the number of texturetiles
      * @param maxFragmentTexturesInGPUMemory
+     * @param requestTimeout
+     *            in miliseconds
      */
     public TextureManager( DirectByteBufferPool directByteBufferPool, TextureTileManager tileManager,
-                           double[] translationToLocalCRS, int maxFragmentTexturesInMemory,
-                           int maxFragmentTexturesInGPUMemory ) {
+                           double[] translationToLocalCRS, int maxFragmentTexturesInGPUMemory, int requestTimeout ) {
         bufferPool = directByteBufferPool;
-        memCache = new MemoryCache( maxFragmentTexturesInMemory );
         this.tileManager = tileManager;
         this.translationToLocalCRS = translationToLocalCRS;
         this.gpuCache = new GPUCache( maxFragmentTexturesInGPUMemory );
+        this.requestTimeout = requestTimeout;
     }
 
     /**
@@ -130,31 +131,15 @@ public class TextureManager {
     public Map<RenderMeshFragment, FragmentTexture> getTextures( RenderContext glRenderContext,
                                                                  float maxProjectedTexelSize,
                                                                  Set<RenderMeshFragment> fragments ) {
-
         LOG.debug( "Texturizing " + fragments.size() + " fragments" );
-        Map<RenderMeshFragment, FragmentTexture> meshFragmentToTexture = new HashMap<RenderMeshFragment, FragmentTexture>();
+        Map<RenderMeshFragment, FragmentTexture> result = new HashMap<RenderMeshFragment, FragmentTexture>();
 
         // create texture requests for each fragment
         List<TextureRequest> requests = createTextureRequests( glRenderContext, maxProjectedTexelSize, fragments );
 
-        // check which texture requests can be fullfilled from cache
-        List<TextureRequest> fromCache = new ArrayList<TextureRequest>();
-        for ( TextureRequest request : requests ) {
-            // get marks the entry as accessed
-            FragmentTexture texture = memCache.get( request );
-            if ( texture != null ) {
-                meshFragmentToTexture.put( request.getFragment(), texture );
-                fromCache.add( request );
-            }
-        }
-        LOG.debug( "From cache: " + meshFragmentToTexture.size() );
-
-        // determine remaining texture requests
-        requests.removeAll( fromCache );
-        LOG.debug( "To be processed: " + requests.size() );
-
         // produce tile requests (multiple fragments may share a tile)
         List<TextureTileRequest> tileRequests = createTileRequests( requests );
+
         LOG.debug( tileRequests.size() + " tile requests" );
 
         // fetch texture tiles and assign textures to fragments
@@ -169,26 +154,36 @@ public class TextureManager {
                 }
             }
 
-            TextureTile tile = tileManager.getMachingTile( tileRequest );
-            if ( tile != null ) {
-                // PooledByteBuffer buffer = bufferPool.allocate(
-                // request.getFragment().getData().getVertices().capacity()
-                // * NUMBER_OF_BYTES / 3 );
+            if ( tileRequest != null ) {
 
-                PooledByteBuffer buffer = bufferPool.allocate( request.getFragment().getVertices() * NUMBER_OF_BYTES
-                                                               / 3 );
+                TextureTile tile = tileManager.getMachingTile( tileRequest );
+                if ( tile != null ) {
+                    FragmentTexture texture = new FragmentTexture( request.getFragment(), tile );
 
-                FragmentTexture texture = new FragmentTexture( request.getFragment(), tile, translationToLocalCRS[0],
-                                                               translationToLocalCRS[1], buffer );
+                    int id = texture.getId();
+                    FragmentTexture gpuTex = gpuCache.get( id );
+                    if ( gpuTex != null && tileRequest.isFullfilled( gpuTex.getTextureTile() ) ) {
+                        LOG.debug( "Using gpu cached texture." );
+                        texture = gpuTex;
+                    } else {
+                        if ( gpuTex != null ) {
+                            LOG.debug( "Found a gpu cached texture, but is was not fullfilled." );
+                        }
+                        int cap = ( request.getFragment().getData().getVertices().capacity() / 3 ) * NUMBER_OF_BYTES;
 
-                memCache.put( request, texture );
-                // mark it.
-                 memCache.get( request );
+                        PooledByteBuffer buffer = bufferPool.allocate( cap );
 
-                meshFragmentToTexture.put( request.getFragment(), texture );
+                        // create the texture coordinates.
+                        texture.generateTextureCoordinates( buffer, translationToLocalCRS );
+                    }
+                    result.put( request.getFragment(), texture );
+
+                }
+            } else {
+                LOG.warn( "Found no matching tile request for request: " + request );
             }
         }
-        return meshFragmentToTexture;
+        return result;
     }
 
     /**
@@ -199,17 +194,21 @@ public class TextureManager {
      */
     public void enable( Collection<FragmentTexture> textures, GL gl ) {
         if ( textures != null && !textures.isEmpty() ) {
-            gpuCache.setContext( gl );
+            // gpuCache.setContext( gl );
             for ( FragmentTexture fragmentTexture : textures ) {
-                gpuCache.enable( fragmentTexture );
+                gpuCache.enable( fragmentTexture, gl );
             }
         }
     }
 
+    /**
+     * Cleans up all cached textures from this managers, which were marked as least recently used.
+     * 
+     * @param gl
+     *            the context to which the textures were bound.
+     */
     public void cleanUp( GL gl ) {
-        memCache.cleanUp();
-        gpuCache.setContext( gl );
-        gpuCache.cleanUp();
+        gpuCache.cleanUp( gl );
     }
 
     private List<TextureRequest> createTextureRequests( RenderContext glRenderContext, float maxProjectedTexelSize,
@@ -229,25 +228,25 @@ public class TextureManager {
             float[][] fragmentBBox = fragment.getBBox();
 
             float[][] scaledBBox = new float[2][3];
-            scaledBBox[0][0] = fragmentBBox[0][0];
-            scaledBBox[0][1] = fragmentBBox[0][1];
-            scaledBBox[0][2] = fragmentBBox[0][2] * zScale;
-            scaledBBox[1][0] = fragmentBBox[1][0];
-            scaledBBox[1][1] = fragmentBBox[1][1];
-            scaledBBox[1][2] = fragmentBBox[1][2] * zScale;
+            scaledBBox[0] = Arrays.copyOf( fragmentBBox[0], 3 );
+            scaledBBox[1] = Arrays.copyOf( fragmentBBox[1], 3 );
+            scaledBBox[0][2] *= zScale;
+            scaledBBox[1][2] *= zScale;
 
             double dist = VectorUtils.getDistance( scaledBBox, eyePos );
             double pixelSize = params.estimatePixelSizeForSpaceUnit( dist );
-            double metersPerPixel = maxProjectedTexelSize / pixelSize;
-            double providerRes = tileManager.getMatchingResolution( metersPerPixel );
+            double unitsPerPixel = maxProjectedTexelSize / pixelSize;
+            double providerRes = tileManager.getMatchingResolution( unitsPerPixel );
             // System.out.println( "ProviderRes: " + providerRes );
             if ( !( Double.isNaN( providerRes ) || Double.isInfinite( providerRes ) ) ) {
                 // System.out.println( "Setting ProviderRes: " + providerRes );
-                metersPerPixel = providerRes;
+                unitsPerPixel = providerRes;
             }
+            // rb: no 0 values, TODO configuration?
+            unitsPerPixel = Math.max( unitsPerPixel, 0.00001 );
 
             // check if the texture gets too large with respect to the maximum texture size
-            metersPerPixel = clipResolution( metersPerPixel, fragmentBBox, glRenderContext.getMaxTextureSize() );
+            unitsPerPixel = clipResolution( unitsPerPixel, fragmentBBox, glRenderContext.getMaxTextureSize() );
             // System.out.println( "clipped metersPerPixel: " + metersPerPixel );
 
             // rb: note the following values are still in center.
@@ -260,8 +259,8 @@ public class TextureManager {
             double worldWidth = maxX - minX;
             double worldHeight = maxY - minY;
 
-            double iWidth = worldWidth / metersPerPixel;
-            double iHeight = worldHeight / metersPerPixel;
+            double iWidth = worldWidth / unitsPerPixel;
+            double iHeight = worldHeight / unitsPerPixel;
             int imageWidth = (int) Math.ceil( iWidth );
             int imageHeight = (int) Math.ceil( iHeight );
 
@@ -271,25 +270,16 @@ public class TextureManager {
 
             // rb: create an image which is even (needed for opengl).
             if ( imageWidth % 2 != 0 ) {
-                double dW = ( metersPerPixel + ( metersPerPixel * ( imageWidth - iWidth ) ) ) * 0.5;
-
-                // System.out.println( "Texturewidth " + imageWidth + " is not even with resolution: " + metersPerPixel
-                // + ", updating world width : " + worldWidth + " to " + ( worldWidth + ( 2 * dW ) )
-                // + " new width: " + Math.round( ( worldWidth + ( 2 * dW ) ) / metersPerPixel ) );
-
-                // imageWidth++;
-                // minX -= dW;
-                // maxX += dW;
+                double dW = ( unitsPerPixel + ( unitsPerPixel * ( imageWidth - iWidth ) ) ) * 0.5;
+                imageWidth++;
+                minX -= dW;
+                maxX += dW;
             }
             if ( imageHeight % 2 != 0 ) {
-                double dH = ( metersPerPixel + ( metersPerPixel * ( imageHeight - iHeight ) ) ) * 0.5;
-                // System.out.println( "TextureHeight " + imageHeight + " is not even with resolution: " +
-                // metersPerPixel
-                // + ", updating world height: " + worldHeight + " to " + ( worldHeight + ( 2 * dH ) )
-                // + " new height: " + Math.round( ( worldHeight + ( 2 * dH ) ) / metersPerPixel ) );
-                // imageHeight++;
-                // minY -= dH;
-                // maxY += dH;
+                double dH = ( unitsPerPixel + ( unitsPerPixel * ( imageHeight - iHeight ) ) ) * 0.5;
+                imageHeight++;
+                minY -= dH;
+                maxY += dH;
             }
 
             if ( LOG.isTraceEnabled() ) {
@@ -298,24 +288,24 @@ public class TextureManager {
                 LOG.trace( "requ bbox: " + minX + "," + minY + " | " + maxX + "," + maxY );
             }
 
-            requests.add( new TextureRequest( fragment, minX, minY, maxX, maxY, (float) metersPerPixel ) );
+            requests.add( new TextureRequest( fragment, minX, minY, maxX, maxY, (float) unitsPerPixel ) );
         }
 
         return requests;
     }
 
-    private double clipResolution( double metersPerPixel, float[][] tilebbox, int maxTextureSize ) {
+    private double clipResolution( double unitsPerPixel, float[][] tilebbox, int maxTextureSize ) {
         // LOG.warn( "The maxTextureSize in the TextureManager is hardcoded to 1024." );
         float width = tilebbox[1][0] - tilebbox[0][0];
         float height = tilebbox[1][1] - tilebbox[0][1];
         float maxLen = Math.max( width, height );
-        int textureSize = (int) Math.ceil( maxLen / metersPerPixel );
+        int textureSize = (int) Math.ceil( maxLen / unitsPerPixel );
         if ( textureSize > maxTextureSize ) {
-            LOG.warn( "Texture size (=" + textureSize + ") exceeds maximum texture size (=" + maxTextureSize
-                      + "). Meters/Pixel: " + metersPerPixel );
-            metersPerPixel = maxLen / maxTextureSize;
+            LOG.debug( "Texture size (={}) exceeds maximum texture size (={}). Setting units/Pixel: {}, to: {}",
+                       new Object[] { textureSize, maxTextureSize, unitsPerPixel, ( maxLen / maxTextureSize ) } );
+            unitsPerPixel = maxLen / maxTextureSize;
         }
-        return metersPerPixel;
+        return unitsPerPixel;
     }
 
     private List<TextureTileRequest> createTileRequests( Collection<TextureRequest> origRequests ) {
@@ -329,12 +319,13 @@ public class TextureManager {
         for ( TextureTileRequest request : requests ) {
             boolean needed = true;
             List<TextureTileRequest> superseededRequests = new ArrayList<TextureTileRequest>();
+
             for ( TextureTileRequest request2 : minimizedRequests ) {
                 if ( request2.supersedes( request ) ) {
                     needed = false;
                     break;
                 } else if ( request.shareCorner( request2 )
-                            && request.getMetersPerPixel() == request2.getMetersPerPixel() ) {
+                            && Math.abs( request.getUnitsPerPixel() - request2.getUnitsPerPixel() ) < 1E-8 ) {
                     superseededRequests.add( request2 );
                     request.merge( request2 );
                 }
@@ -353,67 +344,15 @@ public class TextureManager {
 
     @Override
     public String toString() {
-        return "in memory: " + memCache.size() + ", in GPU: " + gpuCache.size();
+        return "TextureManager with tileManager: " + this.tileManager.toString() + "in memory: "/* + memCache.size() */
+               + ", in GPU: " + gpuCache.size();
     }
 
     /**
-     * 
-     * The <code>MemoryCache</code> maps texture request to their in memory counter part
-     * 
-     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * @author last edited by: $Author: rbezema $
-     * @version $Revision: $, $Date: $
-     * 
+     * @return the requestTimeout
      */
-    private class MemoryCache extends LinkedHashMap<TextureRequest, FragmentTexture> {
-
-        /**
-         * 
-         */
-        private static final long serialVersionUID = -2046226967090513718L;
-
-        private final int maxEntries;
-
-        private ArrayList<TextureRequest> markedAsRemoved;
-
-        MemoryCache( int maxEntries ) {
-            super( 16, 0.75f, true );
-            this.maxEntries = maxEntries;
-            this.markedAsRemoved = new ArrayList<TextureRequest>();
-        }
-
-        /**
-         * 
-         */
-        void cleanUp() {
-            // should only be called after a render cycle.
-            for ( TextureRequest tr : markedAsRemoved ) {
-                FragmentTexture ft = remove( tr );
-                if ( ft != null ) {
-                    ft.unload();
-                }
-            }
-            markedAsRemoved.clear();
-
-        }
-
-        /**
-         * Overrides to the needs of a cache.
-         * 
-         * @param eldest
-         * @return true as defined by the contract in {@link LinkedHashMap}.
-         */
-        @Override
-        protected boolean removeEldestEntry( Map.Entry<TextureRequest, FragmentTexture> eldest ) {
-            if ( size() > maxEntries ) {
-                if ( !eldest.getValue().isEnabled() ) {
-                    eldest.getValue().unload();
-                    return true;
-                }
-                markedAsRemoved.add( eldest.getKey() );
-            }
-            return false;
-        }
+    public int getRequestTimeout() {
+        return requestTimeout;
     }
 
     /**
@@ -424,7 +363,7 @@ public class TextureManager {
      * @version $Revision: $, $Date: $
      * 
      */
-    private class GPUCache extends LinkedHashMap<FragmentTexture, FragmentTexture> {
+    private class GPUCache extends LinkedHashMap<Integer, FragmentTexture> {
 
         /**
          * 
@@ -433,43 +372,57 @@ public class TextureManager {
 
         private final int maxEntries;
 
-        // used to communicate the GL context to #removeEldestEntry()
-        private GL gl;
+        // // used to communicate the GL context to #removeEldestEntry()
+        // private GL gl;
 
-        private ArrayList<FragmentTexture> markedAsRemoved;
+        private Set<FragmentTexture> markedAsRemoved;
 
         GPUCache( int maxEntries ) {
-            super( 16, 0.75f, false );
+            super( maxEntries, 0.75f, false );
             this.maxEntries = maxEntries;
-            this.markedAsRemoved = new ArrayList<FragmentTexture>( maxEntries );
+            this.markedAsRemoved = new HashSet<FragmentTexture>();
         }
 
         /**
+         * @param gl
+         *            context to which the textures were bound.
          * 
          */
-        public void cleanUp() {
+        public void cleanUp( GL gl ) {
             // should only be called after a render cycle.
+            LOG.debug( "Cleaning up {} number of LRU marked textures from gpu. Cache currently holds: {} textures ",
+                       markedAsRemoved.size(), this.size() );
             for ( FragmentTexture ft : markedAsRemoved ) {
+
                 if ( ft != null ) {
-                    System.out.println( "clean up from gpu." );
+                    remove( ft.getId() );
+                    if ( values().contains( ft ) ) {
+                        LOG.warn( "Although removed, the give texture ({}) is still in the cache, this is strange.", ft );
+                    }
                     ft.disable( gl );
-                    remove( ft );
+                    ft.unload();
+                    // remove( ft );
                 }
             }
             markedAsRemoved.clear();
-        }
-
-        void setContext( GL gl ) {
-            this.gl = gl;
+            LOG.debug( "After clean up, gpu cache still holds: {} textures ", this.size() );
         }
 
         /**
          * Enable the given fragment texture.
          * 
          * @param fragmentTexture
+         * @param gl
+         *            context to which the given textures are bound.
          */
-        public void enable( FragmentTexture fragmentTexture ) {
-            this.put( fragmentTexture, fragmentTexture );
+        public void enable( FragmentTexture fragmentTexture, GL gl ) {
+            if ( fragmentTexture.cachingEnabled() ) {
+                FragmentTexture inCache = get( fragmentTexture.getId() );
+                if ( inCache == null ) {
+                    this.put( fragmentTexture.getId(), fragmentTexture );
+                }
+
+            }
             if ( !fragmentTexture.isEnabled() ) {
                 fragmentTexture.enable( gl );
             }
@@ -482,13 +435,10 @@ public class TextureManager {
          * @return true as defined by the contract in {@link LinkedHashMap}.
          */
         @Override
-        protected boolean removeEldestEntry( Map.Entry<FragmentTexture, FragmentTexture> eldest ) {
+        protected boolean removeEldestEntry( Map.Entry<Integer, FragmentTexture> eldest ) {
             if ( size() > maxEntries ) {
-                if ( !eldest.getKey().isEnabled() ) {
-                    eldest.getKey().disable( gl );
-                    return true;
-                }
-                markedAsRemoved.add( eldest.getKey() );
+                markedAsRemoved.add( eldest.getValue() );
+                return true;
             }
             return false;
         }
