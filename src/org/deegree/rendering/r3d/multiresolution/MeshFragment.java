@@ -93,14 +93,6 @@ public class MeshFragment implements Comparable<MeshFragment> {
         this.error = buffer.getFloat();
         this.blobPosition = buffer.getLong();
         this.length = buffer.getInt();
-        this.vertices = this.length / 3;
-    }
-
-    /**
-     * @return the number of vertices of this mesh fragment.
-     */
-    public int getVertices() {
-        return vertices;
     }
 
     /**

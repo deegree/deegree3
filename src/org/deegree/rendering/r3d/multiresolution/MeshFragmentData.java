@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.multiresolution;
 
@@ -43,10 +43,10 @@ import org.deegree.commons.utils.nio.PooledByteBuffer;
 
 /**
  * The <code>MeshFragmentData</code> holds the fragment data.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class MeshFragmentData {
@@ -63,7 +63,7 @@ public class MeshFragmentData {
 
     /**
      * Construct from the given rawbuffer.
-     *
+     * 
      * @param rawBuffer
      * @param vertexBuffer
      * @param normalsBuffer
@@ -86,8 +86,8 @@ public class MeshFragmentData {
     }
 
     /**
-     *
-     * @return the number of vertices.
+     * 
+     * @return the vertices.
      */
     public FloatBuffer getVertices() {
         return vertexBuffer;
@@ -102,7 +102,7 @@ public class MeshFragmentData {
      * <li>a <code>ShortBuffer</code></li>
      * <li>an <code>IntBuffer</code></li>
      * </ul>
-     *
+     * 
      * @return buffer the contains the triangles (as vertex indexes)
      */
     public Buffer getTriangles() {
