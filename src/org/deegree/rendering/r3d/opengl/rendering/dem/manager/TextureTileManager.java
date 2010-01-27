@@ -78,9 +78,11 @@ public class TextureTileManager {
     public TextureTile getMachingTile( TextureTileRequest request ) {
 
         TextureTile tile = null;
+        // System.out.println( "Cached tiles: " + cachedTiles.size() );
         for ( TextureTile candidate : cachedTiles ) {
             if ( request.isFullfilled( candidate ) ) {
                 tile = candidate;
+                // System.out.println( "using from cache tile: " + tile.hashCode() );
                 cachedTiles.remove( candidate );
                 cachedTiles.add( candidate );
                 break;
@@ -88,8 +90,8 @@ public class TextureTileManager {
         }
 
         if ( tile == null ) {
-            tile = getMatchingProvider( request.getMetersPerPixel() ).getTextureTile( request );
-            if ( tile != null ) {
+            tile = getMatchingProvider( request.getUnitsPerPixel() ).getTextureTile( request );
+            if ( tile != null && tile.enableCaching() ) {
                 addToCache( tile );
             }
         }
@@ -100,7 +102,10 @@ public class TextureTileManager {
         // tile will not be null
         if ( cachedTiles.size() == maxCached ) {
             TextureTile cacheDrop = cachedTiles.iterator().next();
-            cachedTiles.remove( cacheDrop );
+            if ( cacheDrop != null ) {
+                cachedTiles.remove( cacheDrop );
+                cacheDrop.dispose();
+            }
         }
         cachedTiles.add( tile );
     }
@@ -139,6 +144,8 @@ public class TextureTileManager {
 
     @Override
     public String toString() {
-        return "cached: " + cachedTiles.size();
+        return "Number of providers: " + providers.length
+               + ( ( providers[0] == null ) ? " " : " of type: " + providers[0].getClass() ) + ", cached tiles: ";
+        // + cachedTiles.size();
     }
 }
