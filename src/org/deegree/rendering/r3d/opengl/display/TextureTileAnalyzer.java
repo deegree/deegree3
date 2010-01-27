@@ -155,23 +155,23 @@ public class TextureTileAnalyzer extends GLCanvas implements GLEventListener {
     }
 
     private void setColor( GL gl, TextureTileRequest request ) {
-        if ( request.getMetersPerPixel() <= 0.1 ) {
+        if ( request.getUnitsPerPixel() <= 0.1 ) {
             gl.glColor4f( 1.0f, 0.0f, 0.0f, 0.2f );
-        } else if ( request.getMetersPerPixel() <= 0.2 ) {
+        } else if ( request.getUnitsPerPixel() <= 0.2 ) {
             gl.glColor4f( 1.0f, 0.5f, 0.0f, 0.2f );
-        } else if ( request.getMetersPerPixel() <= 0.4 ) {
+        } else if ( request.getUnitsPerPixel() <= 0.4 ) {
             gl.glColor4f( 1.0f, 1.0f, 0.0f, 0.2f );
-        } else if ( request.getMetersPerPixel() <= 0.8 ) {
+        } else if ( request.getUnitsPerPixel() <= 0.8 ) {
             gl.glColor4f( 0.5f, 1.0f, 0.0f, 0.2f );
-        } else if ( request.getMetersPerPixel() <= 1.6 ) {
+        } else if ( request.getUnitsPerPixel() <= 1.6 ) {
             gl.glColor4f( 0.0f, 1.0f, 0.0f, 0.2f );
-        } else if ( request.getMetersPerPixel() <= 3.2 ) {
+        } else if ( request.getUnitsPerPixel() <= 3.2 ) {
             gl.glColor4f( 0.0f, 1.0f, 0.5f, 0.2f );
-        } else if ( request.getMetersPerPixel() <= 6.4 ) {
+        } else if ( request.getUnitsPerPixel() <= 6.4 ) {
             gl.glColor4f( 0.0f, 1.0f, 1.0f, 0.2f );
-        } else if ( request.getMetersPerPixel() <= 12.8 ) {
+        } else if ( request.getUnitsPerPixel() <= 12.8 ) {
             gl.glColor4f( 0.0f, 0.5f, 1.0f, 0.2f );
-        } else if ( request.getMetersPerPixel() <= 25.6 ) {
+        } else if ( request.getUnitsPerPixel() <= 25.6 ) {
             gl.glColor4f( 0.0f, 0.0f, 1.0f, 0.2f );
         } else {
             gl.glColor4f( 0.0f, 0.0f, 0.9f, 0.2f );
