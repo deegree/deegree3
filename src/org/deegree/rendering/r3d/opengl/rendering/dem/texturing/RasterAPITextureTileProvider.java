@@ -103,7 +103,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
         ByteBuffer pixelBuffer = rasterData.getByteBuffer();
 
         TextureTile tile = new TextureTile( minX, minY, maxX, maxY, subset.getColumns(), subset.getRows(), pixelBuffer,
-                                            false );
+                                            false, true );
         return tile;
     }
 

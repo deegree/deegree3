@@ -131,7 +131,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
         }
         PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) raster.getRasterData();
         return new TextureTile( minX, minY, maxX, maxY, rasterData.getWidth(), rasterData.getHeight(),
-                                rasterData.getByteBuffer(), true );
+                                rasterData.getByteBuffer(), true, true );
     }
 
     @Override
