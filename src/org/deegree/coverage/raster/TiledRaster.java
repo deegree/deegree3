@@ -51,7 +51,6 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.slf4j.Logger;
@@ -72,8 +71,6 @@ public class TiledRaster extends AbstractRaster {
     private static final Logger LOG = getLogger( TiledRaster.class );
 
     private TileContainer tileContainer;
-
-    private RasterDataInfo rasterDataInfo;
 
     /**
      * Creates a new TiledRaster with tiles from the given TileContainer
@@ -152,19 +149,17 @@ public class TiledRaster extends AbstractRaster {
         // ref = RasterGeoReference.merger( getRasterReference(), ref );
 
         // use the default tile container.
-        MemoryTileContainer resultTC = new MemoryTileContainer( ref, env );
+        MemoryTileContainer resultTC = new MemoryTileContainer( ref, env, getRasterDataInfo() );
         TiledRaster result = new TiledRaster( resultTC );
         List<AbstractRaster> tiles = getTileContainer().getTiles( env );
         if ( tiles == null || tiles.isEmpty() ) {
             // a tiledraster with no simple rasters should return the a simple raster with no data values. To do this we
             // need the raster data info. If it is present supply the result with it. If not we can only throw an
             // exception.
-            RasterDataInfo dataInfo = getRasterDataInfo();
-            if ( dataInfo == null ) {
+            if ( getRasterDataInfo() == null ) {
                 throw new NullPointerException(
                                                 "The given tile container does not contain any tiles and no raster data information is available. " );
             }
-            result.setRasterDataInfo( dataInfo );
             return result;
         }
         for ( AbstractRaster r : tiles ) {
@@ -189,13 +184,6 @@ public class TiledRaster extends AbstractRaster {
         // throw new IndexOutOfBoundsException( "no intersection between TiledRaster and requested subset" );
         // }
         return result;
-    }
-
-    /**
-     * @param dataInfo
-     */
-    private void setRasterDataInfo( RasterDataInfo dataInfo ) {
-        this.rasterDataInfo = dataInfo;
     }
 
     @Override
@@ -301,24 +289,7 @@ public class TiledRaster extends AbstractRaster {
 
     @Override
     public RasterDataInfo getRasterDataInfo() {
-        if ( rasterDataInfo == null ) {
-            Envelope env = getEnvelope();
-            double[] min = env.getMin().getAsArray();
-            double[] max = new double[min.length];
-
-            for ( int i = 0; i < min.length; ++i ) {
-                max[i] = min[i] + 0.01;
-            }
-
-            Envelope tEnv = new GeometryFactory().createEnvelope( min, max, env.getCoordinateSystem() );
-
-            List<AbstractRaster> tiles = getTileContainer().getTiles( tEnv );
-            if ( tiles != null && !tiles.isEmpty() ) {
-                SimpleRaster originalSimpleRaster = tiles.get( 0 ).getAsSimpleRaster();
-                rasterDataInfo = originalSimpleRaster.getRasterDataInfo();
-            }
-        }
-        return rasterDataInfo;
+        return this.tileContainer.getRasterDataInfo();
     }
 
 }
