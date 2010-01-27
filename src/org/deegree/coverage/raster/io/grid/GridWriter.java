@@ -99,12 +99,6 @@ public class GridWriter implements RasterWriter {
 
     private RasterGeoReference geoRef;
 
-    /* world coordinates */
-    private double tileWidth;
-
-    /* world coordinates */
-    private double tileHeight;
-
     private int tileRasterWidth;
 
     private int tileRasterHeight;
@@ -160,8 +154,7 @@ public class GridWriter implements RasterWriter {
     }
 
     private synchronized void instantiate( int targetColumns, int targetRows, Envelope rasterEnvelope,
-                                           RasterGeoReference geoRef, File gridFile, RasterDataInfo dataInfo )
-                            throws IOException {
+                                           RasterGeoReference geoRef, File gridFile, RasterDataInfo dataInfo ) {
         if ( rasterEnvelope == null ) {
             throw new NullPointerException( "The grid writer needs an envelope to work with." );
         }
@@ -172,24 +165,59 @@ public class GridWriter implements RasterWriter {
         this.columns = targetColumns;
         this.rows = targetRows;
         this.geoRef = geoRef.createRelocatedReference( OriginLocation.OUTER );
-        tileWidth = this.envelope.getSpan0() / columns;
-        tileHeight = this.envelope.getSpan1() / rows;
 
         int[] rasterCoordinate = this.geoRef.getSize( this.envelope );
 
+        this.gridFile = gridFile;
+        // if ( this.gridFile != null && !this.gridFile.exists() ) {
+        // this.gridFile.createNewFile();
+        // }
+        this.dataInfo = dataInfo;
+        this.tilesInFile = columns * rows;
+
         this.tileRasterWidth = Rasters.calcTileSize( rasterCoordinate[0], columns );
         this.tileRasterHeight = Rasters.calcTileSize( rasterCoordinate[1], rows );
-
-        this.gridFile = gridFile;
-        if ( this.gridFile != null && !this.gridFile.exists() ) {
-            this.gridFile.createNewFile();
-        }
-        this.dataInfo = dataInfo;
         // this tile data does not need to be cached.
+        updateForRasterSize();
+
+    }
+
+    private void updateForRasterSize() {
         this.tileData = RasterDataFactory.createRasterData( tileRasterWidth, tileRasterHeight, dataInfo.bandInfo,
                                                             dataInfo.dataType, dataInfo.interleaveType, false );
         this.bytesPerTile = this.tileRasterWidth * this.tileRasterHeight * dataInfo.bands * dataInfo.dataSize;
-        this.tilesInFile = columns * rows;
+    }
+
+    /**
+     * @return the tileRasterWidth
+     */
+    public final int getTileRasterWidth() {
+        return tileRasterWidth;
+    }
+
+    /**
+     * @param tileRasterWidth
+     *            the tileRasterWidth to set
+     */
+    public final void setTileRasterWidth( int tileRasterWidth ) {
+        this.tileRasterWidth = tileRasterWidth;
+        updateForRasterSize();
+    }
+
+    /**
+     * @return the tileRasterHeight
+     */
+    public final int getTileRasterHeight() {
+        return tileRasterHeight;
+    }
+
+    /**
+     * @param tileRasterHeight
+     *            the tileRasterHeight to set
+     */
+    public final void setTileRasterHeight( int tileRasterHeight ) {
+        this.tileRasterHeight = tileRasterHeight;
+        updateForRasterSize();
     }
 
     /**
@@ -329,9 +357,10 @@ public class GridWriter implements RasterWriter {
      * Writes the metadata file for this grid file.
      * 
      * @param options
+     * @return the file containing the metainfo
      * @throws IOException
      */
-    public void writeMetadataFile( RasterIOOptions options )
+    public File writeMetadataFile( RasterIOOptions options )
                             throws IOException {
         File metaInfo = null;
         if ( gridFile != null ) {
@@ -343,6 +372,7 @@ public class GridWriter implements RasterWriter {
         GridMetaInfoFile.writeToFile( metaInfo, new GridMetaInfoFile( this.geoRef, this.rows, this.columns,
                                                                       this.tileRasterWidth, this.tileRasterHeight,
                                                                       this.dataInfo ), options );
+        return metaInfo;
     }
 
     private final FileChannel getReadChannel()
@@ -527,9 +557,8 @@ public class GridWriter implements RasterWriter {
      */
     public void writeEntireFile( ByteBuffer newBytes )
                             throws IOException {
-        if ( newBytes.capacity() != ( dataInfo.bands * dataInfo.dataSize * columns * rows ) ) {
-            throw new IllegalArgumentException( "byte buffer is to small, required bytes:"
-                                                + ( dataInfo.bands * dataInfo.dataSize * columns * rows )
+        if ( newBytes.capacity() != this.bytesPerTile ) {
+            throw new IllegalArgumentException( "byte buffer is to small, required bytes:" + ( this.bytesPerTile )
                                                 + ", provided bytes: " + newBytes.capacity() );
         }
         synchronized ( tileData ) {
