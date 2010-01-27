@@ -125,6 +125,12 @@ public class FeatureTemplateCall {
      * @param obj
      */
     public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj ) {
+        if ( obj instanceof Feature ) {
+            LOG.debug( "Feature template call '{}' with featureid '{}'", name, ( (Feature) obj ).getId() );
+        } else {
+            LOG.debug( "Feature template call '{}' with '{}'", name, obj );
+        }
+
         Object def = defs.get( name );
         if ( def == null ) {
             LOG.warn( "No template definition with name '{}'.", name );
