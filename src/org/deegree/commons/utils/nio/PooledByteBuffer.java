@@ -52,7 +52,7 @@ public class PooledByteBuffer {
 
     private ByteBuffer buffer;
 
-    private long id;
+    private final long id;
 
     /**
      * Only intantiable from the {@link DirectByteBufferPool}.
@@ -74,6 +74,7 @@ public class PooledByteBuffer {
     public PooledByteBuffer( int capacity ) {
         this.buffer = ByteBuffer.allocateDirect( capacity );
         this.buffer.order( ByteOrder.nativeOrder() );
+        this.id = 0;
     }
 
     /**
@@ -182,7 +183,7 @@ public class PooledByteBuffer {
     public boolean equals( Object other ) {
         if ( other != null && other instanceof PooledByteBuffer ) {
             final PooledByteBuffer that = (PooledByteBuffer) other;
-            return this.id == that.id;
+            return this.getId() == that.getId();
         }
         return false;
     }
@@ -211,8 +212,15 @@ public class PooledByteBuffer {
     public int hashCode() {
         // the 2nd millionth prime, :-)
         long code = 32452843;
-        long tmp = (int) ( id ^ ( id >>> 32 ) );
+        long tmp = (int) ( getId() ^ ( getId() >>> 32 ) );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
         return (int) ( code >>> 32 ) ^ (int) code;
+    }
+
+    /**
+     * @return the id
+     */
+    public long getId() {
+        return id;
     }
 }

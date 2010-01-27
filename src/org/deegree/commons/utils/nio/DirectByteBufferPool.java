@@ -97,43 +97,61 @@ public class DirectByteBufferPool {
     public synchronized PooledByteBuffer allocate( int capacity )
                             throws OutOfMemoryError {
 
-        PooledByteBuffer buffer;
+        PooledByteBuffer buffer = null;
 
-        Set<PooledByteBuffer> freeBuffers = this.freeBuffers.get( capacity );
+        Set<PooledByteBuffer> availableBuffers = this.freeBuffers.get( capacity );
         // System.out.println( sb.toString() );
-        if ( freeBuffers != null && !freeBuffers.isEmpty() ) {
+        if ( availableBuffers != null && !availableBuffers.isEmpty() ) {
             if ( LOG.isDebugEnabled() ) {
                 StringBuilder sb = new StringBuilder( name );
-                sb.append( "| Found a free Buffer!" );
-                sb.append( "| requested: " ).append( capacity );
-                sb.append( "| tailMap: " ).append( freeBuffers );
-                sb.append( "| freebuffers: " ).append( this.freeBuffers.size() );
-                sb.append( "| allBuffers: " ).append( allBuffers.size() );
+                sb.append( ":(" ).append( allBuffers.size() ).append( ")| found a freebuffer entry for capacity: " );
+                sb.append( capacity ).append( ", buffer has size(): " + availableBuffers.size() );
                 LOG.debug( sb.toString() );
             }
-
-            buffer = freeBuffers.iterator().next();
-            buffer.getBuffer().rewind();
-            freeBuffers.remove( buffer );
+            buffer = availableBuffers.iterator().next();
+            buffer.clear();
+            availableBuffers.remove( buffer );
         } else {
-            if ( LOG.isDebugEnabled() ) {
-                StringBuilder sb = new StringBuilder( name );
-                sb.append( "| requested: " ).append( capacity );
-                sb.append( "| freebuffers: " ).append( this.freeBuffers.size() );
-                sb.append( "| allBuffers: " ).append( allBuffers.size() );
-                LOG.debug( sb.toString() );
+            // test if a larger buffer is free and retrieve that.
+            if ( !freeBuffers.isEmpty() ) {
+                for ( Integer cap : freeBuffers.keySet() ) {
+                    if ( cap != null && cap >= capacity ) {
+                        availableBuffers = freeBuffers.get( cap );
+                        if ( !availableBuffers.isEmpty() ) {
+                            if ( LOG.isDebugEnabled() ) {
+                                StringBuilder sb = new StringBuilder( name );
+                                sb.append( ":(" ).append( allBuffers.size() ).append( ")| found a larger (" );
+                                sb.append( cap ).append( ") freebuffer entry for capacity: " );
+                                sb.append( capacity ).append( ", buffer has size(): " + availableBuffers.size() );
+                                LOG.debug( sb.toString() );
+                            }
+                            buffer = availableBuffers.iterator().next();
+                            buffer.clear();
+                            buffer.limit( capacity );
+                            availableBuffers.remove( buffer );
+                            break;
+                        }
+                    }
+                }
             }
-            if ( totalCapacity + capacity > MAX_MEMORY_CAPACITY ) {
-                String msg = name + ": Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY
-                             + ") exceeded, requested: " + capacity + ", freebuffers: " + this.freeBuffers.size()
-                             + " totalBuffers: " + allBuffers.size();
-                throw new OutOfMemoryError( msg );
-            }
-            buffer = new PooledByteBuffer( capacity, this, id++ );
+            if ( buffer == null ) {
+                if ( LOG.isDebugEnabled() ) {
+                    StringBuilder sb = new StringBuilder( name );
+                    sb.append( ":(" ).append( allBuffers.size() ).append( ")| no freebuffer entry for capacity: " );
+                    sb.append( capacity ).append( ", creating new direct buffer." );
+                    LOG.debug( sb.toString() );
+                }
+                if ( totalCapacity + capacity > MAX_MEMORY_CAPACITY ) {
+                    String msg = name + ": Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY
+                                 + ") exceeded, requested: " + capacity + ", freebuffers: " + this.freeBuffers.size()
+                                 + " totalBuffers: " + allBuffers.size();
+                    throw new OutOfMemoryError( msg );
+                }
+                buffer = new PooledByteBuffer( capacity, this, id++ );
 
-            totalCapacity += capacity;
-            allBuffers.add( buffer );
-            LOG.debug( "New buffer: " + buffer );
+                totalCapacity += capacity;
+                allBuffers.add( buffer );
+            }
         }
         return buffer;
     }
@@ -217,7 +235,6 @@ public class DirectByteBufferPool {
      */
     public synchronized void deallocate( PooledByteBuffer buffer ) {
         if ( buffer != null ) {
-            // System.out.println( name + ":deallocate: " + buffer.capacity() );
 
             if ( !allBuffers.contains( buffer ) ) {
                 String msg = name + ":Buffer to be deallocated (" + buffer + ") has not been allocated using the pool.";
@@ -231,7 +248,14 @@ public class DirectByteBufferPool {
                     buffers = new HashSet<PooledByteBuffer>();
                     freeBuffers.put( capacity, buffers );
                 }
+                // System.out.println( name + ":deallocate: freebuffer capas after: " + freeBuffers.size()
+                // + ", number of freebuffers for capa: " + capacity + ", "
+                // + freeBuffers.get( capacity ).size() );
                 buffers.add( buffer );
+                // System.out.println( name + ":deallocate: freebuffer capas before: " + freeBuffers.size()
+                // + ", number of freebuffers for capa: " + capacity + ", "
+                // + freeBuffers.get( capacity ).size() );
+
             }
         }
     }
