@@ -37,6 +37,7 @@ package org.deegree.commons.utils.templating.lang;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,8 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
 
 /**
  * <code>Util</code>
@@ -55,6 +58,8 @@ import org.deegree.feature.types.property.PropertyType;
  * @version $Revision$, $Date$
  */
 public class Util {
+
+    private static final Logger LOG = getLogger( Util.class );
 
     static <T> List<T> getMatchingObjects( T[] os, List<String> patterns, boolean negate ) {
         if ( !negate && patterns.contains( "*" ) ) {
@@ -67,6 +72,11 @@ public class Util {
             List<T> tmp;
             if ( o instanceof Property<?> ) {
                 Property<?> p = (Property<?>) o;
+
+                if ( p.getValue() instanceof Geometry && !LOG.isDebugEnabled() ) {
+                    continue;
+                }
+
                 if ( p.getValue() instanceof String ) {
                     String s = (String) p.getValue();
                     // skip empty string properties completely
