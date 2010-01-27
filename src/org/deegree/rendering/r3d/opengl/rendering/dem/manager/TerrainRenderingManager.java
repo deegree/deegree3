@@ -38,6 +38,7 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -173,19 +174,24 @@ public class TerrainRenderingManager {
                                                                         TextureManager[] textureManagers ) {
 
         long begin = System.currentTimeMillis();
-        LOG.debug( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
+            LOG.debug( " Requested texture managers: {}", Arrays.toString( textureManagers ) );
+        }
 
         // fetch textures in parallel threads (with timeout)
+        int maxRequestTime = 1;
         List<Callable<Map<RenderMeshFragment, FragmentTexture>>> workers = new ArrayList<Callable<Map<RenderMeshFragment, FragmentTexture>>>(
                                                                                                                                               textureManagers.length );
         for ( TextureManager manager : textureManagers ) {
             workers.add( new TextureWorker( glRenderContext, fragments, manager, (float) maxProjectedTexelSize ) );
+            maxRequestTime = Math.max( maxRequestTime, manager.getRequestTimeout() );
         }
         Executor exec = Executor.getInstance();
         List<ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>>> results = null;
         try {
             // TODO get timeout from configuration
-            results = exec.performSynchronously( workers, (long) 30 * 1000 );
+            results = exec.performSynchronously( workers, (long) maxRequestTime * 1000 );
         } catch ( InterruptedException e ) {
             LOG.error( e.getMessage(), e );
         }
@@ -201,12 +207,14 @@ public class TerrainRenderingManager {
 
                     for ( RenderMeshFragment fragment : fragments ) {
                         FragmentTexture texture = fragmentToTexture.get( fragment );
-                        List<FragmentTexture> textures = meshFragmentToTexture.get( fragment );
-                        if ( textures == null ) {
-                            textures = new ArrayList<FragmentTexture>();
-                            meshFragmentToTexture.put( fragment, textures );
+                        if ( texture != null ) {
+                            List<FragmentTexture> textures = meshFragmentToTexture.get( fragment );
+                            if ( textures == null ) {
+                                textures = new ArrayList<FragmentTexture>();
+                                meshFragmentToTexture.put( fragment, textures );
+                            }
+                            textures.add( texture );
                         }
-                        textures.add( texture );
                     }
                 } catch ( CancellationException e ) {
                     LOG.warn( "Timeout occured fetching textures." );
@@ -253,7 +261,11 @@ public class TerrainRenderingManager {
                         textureManagers[i++].enable( Collections.singletonList( texture ), gl );
                     }
                 }
-                fragment.render( gl, textures, glRenderContext.getShaderProgramIds()[textures.size() - 1] );
+                if ( i == 0 ) {
+                    fragment.render( gl, null, 0 );
+                } else {
+                    fragment.render( gl, textures, glRenderContext.getShaderProgramIds()[i - 1] );
+                }
             } else {
                 fragment.render( gl, null, 0 );
             }
@@ -266,6 +278,26 @@ public class TerrainRenderingManager {
                     manager.cleanUp( gl );
                 }
             }
+        }
+
+        for ( RenderMeshFragment fragment : activeLOD ) {
+            List<FragmentTexture> textures = fragmentToTextures.get( fragment );
+            if ( textures != null && textures.size() > 0 ) {
+                for ( FragmentTexture texture : textures ) {
+                    if ( texture != null ) {
+                        if ( !texture.cachingEnabled() ) {
+                            texture.clearAll( gl );
+                        }
+                        // else {
+                        // // free up texture coordinates memory.
+                        // if ( !texture.isEnabled() ) {
+                        // texture.unload();
+                        // }
+                        // }
+                    }
+                }
+            }
+
         }
 
         // reset z-scale
