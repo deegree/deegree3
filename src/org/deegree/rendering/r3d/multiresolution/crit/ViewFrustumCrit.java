@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.crit;
 
+import java.util.Arrays;
+
 import org.deegree.commons.utils.math.VectorUtils;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
@@ -107,18 +109,17 @@ public class ViewFrustumCrit implements LODCriterion {
     @Override
     public boolean needsRefinement( Arc arc ) {
 
-        // step 1: refine, if fragment size is not suitable for texturing (too large)
-        if ( !isTexturable( arc ) ) {
+        // step 1: only refine if region is inside the view volume
+        if ( !isInViewVolume( arc ) ) {
+            return true;
+        }
+        if ( !isScreenSpaceErrorAcceptable( arc ) ) {
+            // step 2: only refine if the region currently violates the screen-space constraint
             return true;
         }
 
-        // step 2: only refine if region is inside the view volume
-        if ( !isInViewVolume( arc ) ) {
-            return false;
-        }
-
-        // step 3: only refine if the region currently violates the screen-space constraint
-        return !isScreenSpaceErrorAcceptable( arc );
+        // step 3: refine, if fragment size is not suitable for texturing (too large)
+        return !isTexturable( arc );
     }
 
     /**
@@ -142,14 +143,10 @@ public class ViewFrustumCrit implements LODCriterion {
 
     private boolean isTexturable( MeshFragment fragment ) {
         float[][] scaledBBox = new float[2][3];
-        scaledBBox[0] = new float[3];
-        scaledBBox[1] = new float[3];
-        scaledBBox[0][0] = fragment.bbox[0][0];
-        scaledBBox[0][1] = fragment.bbox[0][1];
-        scaledBBox[0][2] = fragment.bbox[0][2] * zScale;
-        scaledBBox[1][0] = fragment.bbox[1][0];
-        scaledBBox[1][1] = fragment.bbox[1][1];
-        scaledBBox[1][2] = fragment.bbox[1][2] * zScale;
+        scaledBBox[0] = Arrays.copyOf( fragment.bbox[0], 3 );
+        scaledBBox[1] = Arrays.copyOf( fragment.bbox[1], 3 );
+        scaledBBox[0][2] *= zScale;
+        scaledBBox[1][2] *= zScale;
 
         float[] eyePos = new float[3];
         eyePos[0] = (float) viewRegion.getEyePos().x;
@@ -166,6 +163,13 @@ public class ViewFrustumCrit implements LODCriterion {
         double textureSize = getMaxSideLen( fragment ) / resolution;
         LOG.debug( "Side len: " + getMaxSideLen( fragment ) + ", resolution: " + resolution + ", texture size: "
                    + textureSize );
+        if ( textureSize > maxTextureSize ) {
+            LOG.debug( "Side len: " + getMaxSideLen( fragment ) + ", resolution: " + resolution + ", texture size: "
+                       + textureSize );
+        } else {
+            LOG.debug( "No refinement needed, Side len: " + getMaxSideLen( fragment ) + ", resolution: " + resolution
+                       + ", texture size: " + textureSize );
+        }
 
         return textureSize <= maxTextureSize;
     }
