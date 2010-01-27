@@ -160,6 +160,9 @@ public class PropertyTemplateCall {
         }
 
         List<Property<?>> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate );
+
+        LOG.debug( "Property template call '{}' matches objects '{}'.", name, props );
+
         for ( Property<?> p : props ) {
             eval( sb, t, p, defs, props );
         }

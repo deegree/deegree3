@@ -128,13 +128,14 @@ public class Util {
             } else {
                 tmp = singletonList( o );
             }
+
             for ( T o2 : tmp ) {
                 String nm = o2 instanceof Property<?> ? ( (Property<?>) o2 ).getName().getLocalPart()
                                                      : ( (Feature) o2 ).getName().getLocalPart();
+                if ( negate ) {
+                    list.add( o2 );
+                }
                 inner: for ( String p : patterns ) {
-                    if ( negate ) {
-                        list.add( o2 );
-                    }
                     if ( p.endsWith( "*" ) && nm.startsWith( p.substring( 0, p.length() - 1 ) ) || p.startsWith( "*" )
                          && nm.endsWith( p.substring( 1 ) ) || nm.equals( p ) ) {
                         if ( negate ) {
