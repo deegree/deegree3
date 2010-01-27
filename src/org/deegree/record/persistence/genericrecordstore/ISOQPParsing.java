@@ -771,7 +771,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * This method parses the OMElement in Dublin Core. 
+     * This method parses the OMElement in Dublin Core.
      * 
      * @throws IOException
      */
@@ -2318,9 +2318,6 @@ public class ISOQPParsing extends XMLAdapter {
             omElement.addChild( hierarchyLevel );
         }
         // BoundingBox, GraphicOverview, ServiceType, ServiceTypeVersion
-        // in Summary additional:
-        // Abstract, Creator, Contributor, CouplingType, Publisher, ResourceIdentifier, ResourceLanguage, RevisionDate,
-        // Rights, ServiceOperation, SpatialResolution, SpatialRepresentationType, TopicCategory
         if ( identificationInfo != null ) {
             omElement.addChild( identificationInfo );
         }
@@ -2337,27 +2334,32 @@ public class ISOQPParsing extends XMLAdapter {
 
         OMElement omElement;
 
-        omElement = setISOBriefElements();
-
-        // Format, FormatVersion, OnlineResource
-        if ( distributionInfo != null ) {
-            omElement.addChild( distributionInfo );
+        omElement = factory.createOMElement( "MD_Metadata", namespaceGMD );
+        // identifier
+        omElement.addChild( identifier );
+        // Language
+        if ( language != null ) {
+            omElement.addChild( language );
+        }
+        // MetadataCharacterSet
+        if ( characterSet != null ) {
+            omElement.addChild( characterSet );
+        }
+        // ParentIdentifier
+        if ( parentIdentifier != null ) {
+            omElement.addChild( parentIdentifier );
+        }
+        // type
+        if ( hierarchyLevel != null ) {
+            omElement.addChild( hierarchyLevel );
         }
         // HierarchieLevelName
         if ( hierarchyLevelName != null ) {
             omElement.addChild( hierarchyLevelName );
         }
-        // Language
-        if ( language != null ) {
-            omElement.addChild( language );
-        }
-        // Lineage
-        if ( dataQualityInfo != null ) {
-            omElement.addChild( dataQualityInfo );
-        }
-        // MetadataCharacterSet
-        if ( characterSet != null ) {
-            omElement.addChild( characterSet );
+        // Modified
+        if ( dateStamp != null ) {
+            omElement.addChild( dateStamp );
         }
         // MetadataStandardName
         if ( metadataStandardName != null ) {
@@ -2367,21 +2369,23 @@ public class ISOQPParsing extends XMLAdapter {
         if ( metadataStandardVersion != null ) {
             omElement.addChild( metadataStandardVersion );
         }
-        // ParentIdentifier
-        if ( parentIdentifier != null ) {
-            omElement.addChild( parentIdentifier );
-        }
         // ReferenceInfoSystem
         if ( referenceSystemInfo != null ) {
             omElement.addChild( referenceSystemInfo );
         }
-        // Modified
-        if ( dateStamp != null ) {
-            omElement.addChild( dateStamp );
+        // BoundingBox, GraphicOverview, ServiceType, ServiceTypeVersion, Abstract, Creator, Contributor, CouplingType,
+        // Publisher, ResourceIdentifier, ResourceLanguage, RevisionDate,
+        // Rights, ServiceOperation, SpatialResolution, SpatialRepresentationType, TopicCategory
+        if ( identificationInfo != null ) {
+            omElement.addChild( identificationInfo );
         }
-        // CharacterSet
-        if ( characterSet != null ) {
-            omElement.addChild( characterSet );
+        // Format, FormatVersion, OnlineResource
+        if ( distributionInfo != null ) {
+            omElement.addChild( distributionInfo );
+        }
+        // Lineage
+        if ( dataQualityInfo != null ) {
+            omElement.addChild( dataQualityInfo );
         }
 
         return omElement;
