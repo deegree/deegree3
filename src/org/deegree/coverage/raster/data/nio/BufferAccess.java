@@ -309,7 +309,9 @@ public class BufferAccess {
     void setByteBuffer( ByteBuffer newData, RasterRect dataRect ) {
         synchronized ( LOCK ) {
             if ( newData != null ) {
-                createMaxView( dataRect );
+                if ( dataRect != null ) {
+                    createMaxView( dataRect );
+                }
                 if ( newData.capacity() < requiredBufferSize() ) {
                     LOG.error( "The given byteBuffer does not contain enough space for the current view." );
                     return;
