@@ -57,11 +57,14 @@ public class ExpressionFilterObject {
     
     private QName propName;
     
-    public ExpressionFilterObject(String expression, Set<String> table, Set<String> column, QName propName){
+    private boolean isMatching;
+    
+    public ExpressionFilterObject(String expression, Set<String> table, Set<String> column, QName propName, boolean isMatching){
         this.expression = expression;
         this.table = table;
         this.column = column;
         this.propName = propName;
+        this.isMatching = isMatching;
     }
 
     /**
@@ -118,6 +121,20 @@ public class ExpressionFilterObject {
      */
     public void setPropName( QName propName ) {
         this.propName = propName;
+    }
+
+    /**
+     * @return the isMatching
+     */
+    public boolean isMatching() {
+        return isMatching;
+    }
+
+    /**
+     * @param isMatching the isMatching to set
+     */
+    public void setMatching( boolean isMatching ) {
+        this.isMatching = isMatching;
     }
     
     

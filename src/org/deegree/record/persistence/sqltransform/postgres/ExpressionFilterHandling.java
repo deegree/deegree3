@@ -183,6 +183,8 @@ public class ExpressionFilterHandling {
 
         column = new HashSet<String>();
         
+        boolean isMatching = false;
+        
         switch ( typeExpression ) {
 
         case ADD:
@@ -211,7 +213,7 @@ public class ExpressionFilterHandling {
                     table.add( m.getTable() );
                     column.add( m.getColumn() );
                     expression = m.getTable() + "." + m.getColumn();
-
+                    isMatching = true;
                 }
             }
             
@@ -227,7 +229,7 @@ public class ExpressionFilterHandling {
             break;
 
         }
-        return new ExpressionFilterObject(expression, table, column, propName);
+        return new ExpressionFilterObject(expression, table, column, propName, isMatching);
         
     }
     
