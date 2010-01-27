@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
@@ -56,8 +57,8 @@ import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.crs.CRS;
 import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.crs.CRS;
 
 /**
  * The parsing for the ISO application profile.
@@ -154,7 +155,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     private OMElement identificationInfo = null;
 
-    private OMElement referenceSystemInfo = null;
+    private List<OMElement> referenceSystemInfo = null;
 
     private OMElement distributionInfo = null;
 
@@ -163,6 +164,8 @@ public class ISOQPParsing extends XMLAdapter {
     private Statement stm;
 
     private List<Integer> recordInsertIDs;
+
+    List<CRS> crsList = new ArrayList<CRS>();
 
     /**
      * 
@@ -305,28 +308,34 @@ public class ISOQPParsing extends XMLAdapter {
                 continue;
             }
 
-            // TODO there are more than one refSysInfo!!
             if ( elem.getLocalName().equals( "referenceSystemInfo" ) ) {
-                OMElement crsElement = getElement(
-                                                   elem,
-                                                   new XPath(
-                                                              "./gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
-                                                              nsContext ) );
-                String crsIdentification = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
-                                                                                   nsContext ), "" );
+                List<OMElement> crsElements = getElements(
+                                                           elem,
+                                                           new XPath(
+                                                                      "./gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
+                                                                      nsContext ) );
 
-                String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
-                                                                              nsContext ), "" );
+                for ( OMElement crsElement : crsElements ) {
+                    String crsIdentification = getNodeAsString(
+                                                                crsElement,
+                                                                new XPath( "./gmd:code/gco:CharacterString", nsContext ),
+                                                                "" );
 
-                String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
-                                                                            nsContext ), "" );
+                    String crsAuthority = getNodeAsString(
+                                                           crsElement,
+                                                           new XPath( "./gmd:codeSpace/gco:CharacterString", nsContext ),
+                                                           "" );
 
-                // CRS crs = new CRS( crsAuthority, crsIdentification, crsVersion );
-                CRS crs = new CRS( crsIdentification );
-                qp.setCrs( crs );
-                referenceSystemInfo = elem;
-                OMNamespace namespace = referenceSystemInfo.getNamespace();
-                referenceSystemInfo.setNamespace( namespace );
+                    String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
+                                                                                nsContext ), "" );
+                    // CRS crs = new CRS( crsAuthority, crsIdentification, crsVersion );
+
+                    CRS crs = new CRS( crsIdentification );
+
+                    crsList.add( crs );
+                }
+
+                referenceSystemInfo.add( elem );
 
                 continue;
 
@@ -383,10 +392,6 @@ public class ISOQPParsing extends XMLAdapter {
                 OMElement ci_responsibleParty = getElement( sv_service_OR_md_dataIdentification,
                                                             new XPath( "./gmd:pointOfContact/gmd:CI_ResponsibleParty",
                                                                        nsContext ) );
-
-                // OMElement sv_service_OR_md_dataIdentification = getElement( elem, new XPath(
-                // "./srv:SV_ServiceIdentification",
-                // nsContext ) );
 
                 OMElement spatialResolution = getElement( sv_service_OR_md_dataIdentification,
                                                           new XPath( "./gmd:spatialResolution", nsContext ) );
@@ -548,11 +553,11 @@ public class ISOQPParsing extends XMLAdapter {
                 OMElement _abstract = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:abstract",
                                                                                                   nsContext ) );
 
-                OMElement bbox = getElement(
-                                             sv_service_OR_md_dataIdentification,
-                                             new XPath(
-                                                        "./gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
-                                                        nsContext ) );
+                OMElement bbox = getRequiredElement(
+                                                     sv_service_OR_md_dataIdentification,
+                                                     new XPath(
+                                                                "./gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
+                                                                nsContext ) );
 
                 List<OMElement> descriptiveKeywords = getElements( sv_service_OR_md_dataIdentification,
                                                                    new XPath( "./gmd:descriptiveKeywords", nsContext ) );
@@ -598,19 +603,22 @@ public class ISOQPParsing extends XMLAdapter {
                 qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxEastLongitude,
                                                     boundingBoxSouthLatitude, boundingBoxNorthLatitude ) );
 
+                // TODO
+                CRS crs = new CRS( "EPSG:4326" );
+                crsList.add( crs );
+
                 qp.setTitle( Arrays.asList( titleElements ) );
 
                 qp.setAlternateTitle( Arrays.asList( alternateTitleElements ) );
 
-                // not necessary actually...
                 rp.setGraphicOverview( graphicOverview );
-                // TODO same with serviceType and serviceTypeVersion
+
                 Keyword keywordClass;
 
                 List<Keyword> listOfKeywords = new ArrayList<Keyword>();
                 for ( OMElement md_keywords : descriptiveKeywords ) {
                     keywordClass = new Keyword();
-                    // keywordClass =
+
                     String keywordType = getNodeAsString(
                                                           md_keywords,
                                                           new XPath(
@@ -641,7 +649,6 @@ public class ISOQPParsing extends XMLAdapter {
                 qp.setKeywords( listOfKeywords );
                 qp.setTopicCategory( Arrays.asList( topicCategories ) );
 
-                // TODO be aware of Dateincompatibilities and read them from the right knot revisionDate
                 String revisionDateString = getNodeAsString(
                                                              sv_service_OR_md_dataIdentification,
                                                              new XPath(
@@ -657,7 +664,6 @@ public class ISOQPParsing extends XMLAdapter {
 
                 qp.setRevisionDate( date );
 
-                // TODO be aware of Dateincompatibilities and read them from the right knot creationDate
                 String creationDateString = getNodeAsString(
                                                              sv_service_OR_md_dataIdentification,
                                                              new XPath(
@@ -673,7 +679,6 @@ public class ISOQPParsing extends XMLAdapter {
 
                 qp.setCreationDate( date );
 
-                // TODO be aware of Dateincompatibilities and read them from the right knot publicationDate
                 String publicationDateString = getNodeAsString(
                                                                 sv_service_OR_md_dataIdentification,
                                                                 new XPath(
@@ -767,6 +772,7 @@ public class ISOQPParsing extends XMLAdapter {
             }
 
         }
+        qp.setCrs( crsList );
 
     }
 
@@ -1140,6 +1146,9 @@ public class ISOQPParsing extends XMLAdapter {
         // TODO spatial
         if ( qp.getBoundingBox() != null ) {
             generateISOQP_BoundingBoxStatement( isUpdate );
+        }
+        if ( qp.getCrs() != null || qp.getCrs().size() != 0 ) {
+            generateISOQP_CRSStatement( isUpdate );
         }
 
     }
@@ -2070,11 +2079,11 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Creation of the CRS element.
+     * Creation of the CRS element. <br>
+     * TODO its not clear where to get all the elements...
      * 
      * @param isUpdate
      */
-    // TODO think about one bbox has one crs? or not?
     private void generateISOQP_CRSStatement( boolean isUpdate ) {
         final String databaseTable = "isoqp_crs";
         String sqlStatement = "";
@@ -2084,15 +2093,17 @@ public class ISOQPParsing extends XMLAdapter {
 
             if ( isUpdate == false ) {
                 id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable
-                               + " (id, fk_datasets, authority, id_crs, version) VALUES (" + id + ","
-                               + mainDatabaseTableID + "," + qp.getCrs().getName() + "," + qp.getCrs().getName() + ","
-                               + qp.getCrs().getName() + ");";
+                for ( CRS crs : qp.getCrs() ) {
+                    id++;
+                    sqlStatement = "INSERT INTO " + databaseTable
+                                   + " (id, fk_datasets, authority, id_crs, version) VALUES (" + id + ","
+                                   + mainDatabaseTableID + "," + crs.getName() + "," + crs.EPSG_4326 + ","
+                                   + crs.getName() + ");";
+                    stm.executeUpdate( sqlStatement );
+                }
             } else {
                 sqlStatement = "";
             }
-            stm.executeUpdate( sqlStatement );
 
         } catch ( SQLException e ) {
 
@@ -2275,7 +2286,8 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Creation of the boundingBox element. Specifies which points has to be at which corner.
+     * Creation of the boundingBox element. Specifies which points has to be at which corner. The CRS is set to
+     * EPSG:4326 because EX_GeographicBoundingBox is in this code implicitly.
      * 
      * @param omElement
      */
@@ -2284,7 +2296,7 @@ public class ISOQPParsing extends XMLAdapter {
         OMElement omBoundingBox = factory.createOMElement( "BoundingBox", namespaceOWS );
         OMElement omLowerCorner = factory.createOMElement( "LowerCorner", namespaceOWS );
         OMElement omUpperCorner = factory.createOMElement( "UpperCorner", namespaceOWS );
-        // OMAttribute omCrs = factory.createOMAttribute( "crs", namespaceOWS, qp.getCrs() );
+        OMAttribute omCrs = factory.createOMAttribute( "crs", namespaceOWS, "EPSG:4326" );
         System.out.println( "CRS: " + qp.getCrs() );
 
         omUpperCorner.setText( qp.getBoundingBox().getEastBoundLongitude() + " "
@@ -2293,9 +2305,7 @@ public class ISOQPParsing extends XMLAdapter {
                                + qp.getBoundingBox().getNorthBoundLatitude() );
         omBoundingBox.addChild( omLowerCorner );
         omBoundingBox.addChild( omUpperCorner );
-        if ( qp.getCrs() != null ) {
-            // omBoundingBox.addAttribute( omCrs );
-        }
+        omBoundingBox.addAttribute( omCrs );
 
         omElement.addChild( omBoundingBox );
 
@@ -2370,8 +2380,10 @@ public class ISOQPParsing extends XMLAdapter {
             omElement.addChild( metadataStandardVersion );
         }
         // ReferenceInfoSystem
-        if ( referenceSystemInfo != null ) {
-            omElement.addChild( referenceSystemInfo );
+        if ( referenceSystemInfo != null || referenceSystemInfo.size() != 0 ) {
+            for ( OMElement refSysInfoElem : referenceSystemInfo ) {
+                omElement.addChild( refSysInfoElem );
+            }
         }
         // BoundingBox, GraphicOverview, ServiceType, ServiceTypeVersion, Abstract, Creator, Contributor, CouplingType,
         // Publisher, ResourceIdentifier, ResourceLanguage, RevisionDate,

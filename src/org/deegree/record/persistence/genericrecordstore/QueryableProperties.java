@@ -70,7 +70,7 @@ public class QueryableProperties {
 
     private BoundingBox boundingBox;
 
-    private CRS crs;
+    private List<CRS> crs;
 
     // ---</common queryable properties>
 
@@ -237,7 +237,7 @@ public class QueryableProperties {
     /**
      * @return the crs
      */
-    public CRS getCrs() {
+    public List<CRS> getCrs() {
         return crs;
     }
 
@@ -245,7 +245,7 @@ public class QueryableProperties {
      * @param crs
      *            the crs to set
      */
-    public void setCrs( CRS crs ) {
+    public void setCrs( List<CRS> crs ) {
         this.crs = crs;
     }
 
