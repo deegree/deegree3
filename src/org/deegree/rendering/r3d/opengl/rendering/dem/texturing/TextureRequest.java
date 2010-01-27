@@ -46,19 +46,7 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
  * 
  * @version $Revision: $, $Date: $
  */
-public class TextureRequest {
-
-    private float MIN_METERS_PER_PIXEL = 0.09f;
-
-    double minX;
-
-    double minY;
-
-    double maxX;
-
-    double maxY;
-
-    float metersPerPixel;
+public class TextureRequest extends TextureTileRequest {
 
     private RenderMeshFragment fragment;
 
@@ -74,15 +62,8 @@ public class TextureRequest {
      */
     public TextureRequest( RenderMeshFragment fragment, double minX, double minY, double maxX, double maxY,
                            float metersPerPixel ) {
+        super( minX, minY, maxX, maxY, metersPerPixel );
         this.fragment = fragment;
-        this.minX = minX;
-        this.minY = minY;
-        this.maxX = maxX;
-        this.maxY = maxY;
-        // if ( metersPerPixel < MIN_METERS_PER_PIXEL ) {
-        // metersPerPixel = MIN_METERS_PER_PIXEL;
-        // }
-        this.metersPerPixel = metersPerPixel;
     }
 
     /**
@@ -92,153 +73,43 @@ public class TextureRequest {
         return fragment;
     }
 
-    /**
-     * Returns whether this {@link TextureRequest} supersedes another {@link TextureRequest}.
-     * <p>
-     * This is true iff:
-     * <ul>
-     * <li>the bbox of the other request lies completely inside the bbox of this request (or coincides with it)</li>
-     * <li>the meters per pixel of the other request is less than or equal to the meters per pixel of this request</li>
-     * </ul>
-     * </p>
-     * 
-     * @param that
-     * @return true, if this request supersedes the given request, false otherwise
-     */
-    public boolean supersedes( TextureRequest that ) {
-        return this.minX <= that.minX && this.minY <= that.minY && this.maxX >= that.maxX && this.maxY >= that.maxY
-               && this.metersPerPixel == that.metersPerPixel;
-    }
-
-    /**
-     * Merge two requests.
-     * 
-     * @param otherRequest
-     */
-    public void merge( TextureRequest otherRequest ) {
-        if ( this.metersPerPixel > otherRequest.metersPerPixel ) {
-            this.metersPerPixel = otherRequest.metersPerPixel;
-        }
-        if ( this.minX > otherRequest.minX ) {
-            this.minX = otherRequest.minX;
-        }
-        if ( this.maxX < otherRequest.maxX ) {
-            this.maxX = otherRequest.maxX;
-        }
-        if ( this.minY > otherRequest.minY ) {
-            this.minY = otherRequest.minY;
-        }
-        if ( this.maxY < otherRequest.maxY ) {
-            this.maxY = otherRequest.maxY;
-        }
-    }
-
-    /**
-     * @return min x position
-     */
-    public double getMinX() {
-        return minX;
-    }
-
-    /**
-     * @return min y position
-     */
-    public double getMinY() {
-        return minY;
-    }
-
-    /**
-     * @return max x position
-     */
-    public double getMaxX() {
-        return maxX;
-    }
-
-    /**
-     * @return max y position
-     */
-    public double getMaxY() {
-        return maxY;
-    }
-
-    /**
-     * @return number of meters per pixel (a scale).
-     */
-    public float getMetersPerPixel() {
-        return metersPerPixel;
-    }
-
-    @Override
-    public int hashCode() {
-        return fragment.getId();
-    }
-
-    /**
-     * 
-     * @param that
-     * @return true if two request share a border.
-     */
-    public boolean shareCorner( TextureRequest that ) {
-        return this.shareCornerNE( that ) || this.shareCornerNW( that ) || this.shareCornerSE( that )
-               || this.shareCornerSW( that );
-    }
-
-    /**
-     * 
-     * @param that
-     * @return true if the two request share the North-West corner.
-     */
-    public boolean shareCornerNW( TextureRequest that ) {
-        return this.minX == that.minX && this.maxY == that.maxY;
-    }
-
-    /**
-     * 
-     * @param that
-     * @return true if the two request share the North-East corner.
-     */
-    public boolean shareCornerNE( TextureRequest that ) {
-        return this.maxX == that.maxX && this.maxY == that.maxY;
-    }
-
-    /**
-     * 
-     * @param that
-     * @return true if the two request share the South-West corner.
-     */
-    public boolean shareCornerSW( TextureRequest that ) {
-        return this.minX == that.minX && this.minY == that.minY;
-    }
-
-    /**
-     * 
-     * @param that
-     * @return true if the two request share the South-East corner.
-     */
-    public boolean shareCornerSE( TextureRequest that ) {
-        return this.maxX == that.maxX && this.minY == that.minY;
-    }
-
     @Override
     public boolean equals( Object o ) {
         if ( !( o instanceof TextureRequest ) ) {
             return false;
         }
         TextureRequest that = (TextureRequest) o;
-        return this.fragment.getId() == that.fragment.getId() && ( this.metersPerPixel - that.metersPerPixel ) < 0.001f;
-    }
-
-    @Override
-    public String toString() {
-        return "(" + minX + "," + minY + "," + maxX + "," + maxY + "), meter/pixel: " + metersPerPixel;
+        return this.fragment.getId() == that.fragment.getId()
+               && ( getUnitsPerPixel() - that.getUnitsPerPixel() ) < 0.001f;
     }
 
     /**
-     * @param candidate
-     * @return true if this request covers the total area of the given 'candiate'.
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
      */
-    public boolean isFullfilled( TextureTile candidate ) {
-        return this.minX >= candidate.getMinX() && this.minY >= candidate.getMinY() && this.maxX <= candidate.getMaxX()
-               && this.maxY <= candidate.getMaxY() && this.metersPerPixel >= candidate.getMetersPerPixel();
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long code = 32452843;
+        code = code * 37 + this.fragment.getId();
+        code = code * 37 + Float.floatToIntBits( getUnitsPerPixel() );
+        return (int) ( code >>> 32 ) ^ (int) code;
     }
+
 }

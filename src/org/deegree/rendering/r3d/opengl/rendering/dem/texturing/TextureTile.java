@@ -39,10 +39,14 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.media.opengl.GL;
 
 import org.deegree.commons.utils.nio.PooledByteBuffer;
+import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
+import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureTileManager;
 import org.slf4j.Logger;
 
 /**
@@ -65,6 +69,8 @@ public class TextureTile {
 
     private static final Logger LOG = getLogger( TextureTile.class );
 
+    private static final double EPS = 1E-8;
+
     private int[] textureID;
 
     private double minX, minY, maxX, maxY;
@@ -76,11 +82,17 @@ public class TextureTile {
     private ByteBuffer imageData;
 
     // counts the number of references, if 0, data can be unloaded
-    private int numReferences;
+    // private int numReferences;
 
     private boolean hasAlpha;
 
     private PooledByteBuffer pooledBuffer;
+
+    private boolean enableCaching;
+
+    private final String LOCK = "LOCK";
+
+    private final Set<Integer> referencedRenderFragments = new HashSet<Integer>();
 
     /**
      * Construct a new texture tile.
@@ -93,9 +105,10 @@ public class TextureTile {
      * @param textureHeight
      * @param imageData
      * @param hasAlpha
+     * @param enableCaching
      */
     public TextureTile( double minX, double minY, double maxX, double maxY, int textureWidth, int textureHeight,
-                        ByteBuffer imageData, boolean hasAlpha ) {
+                        ByteBuffer imageData, boolean hasAlpha, boolean enableCaching ) {
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
@@ -112,6 +125,7 @@ public class TextureTile {
         this.tHeight = textureHeight;
         this.imageData = imageData;
         this.hasAlpha = hasAlpha;
+        this.enableCaching = enableCaching;
     }
 
     /**
@@ -127,10 +141,13 @@ public class TextureTile {
      * @param textureHeight
      * @param pooledBuffer
      * @param hasAlpha
+     * @param enableCaching
+     *            true if the gpu cache of the {@link TextureManager} and / or the memory cache of the
+     *            {@link TextureTileManager} should be used.
      */
     public TextureTile( double minX, double minY, double maxX, double maxY, float metersPerPixel, int textureWidth,
-                        int textureHeight, PooledByteBuffer pooledBuffer, boolean hasAlpha ) {
-        this( minX, minY, maxX, maxY, textureWidth, textureHeight, pooledBuffer.getBuffer(), hasAlpha );
+                        int textureHeight, PooledByteBuffer pooledBuffer, boolean hasAlpha, boolean enableCaching ) {
+        this( minX, minY, maxX, maxY, textureWidth, textureHeight, pooledBuffer.getBuffer(), hasAlpha, enableCaching );
         this.pooledBuffer = pooledBuffer;
         this.metersPerPixel = metersPerPixel;
     }
@@ -142,7 +159,20 @@ public class TextureTile {
         if ( this.pooledBuffer != null ) {
             this.pooledBuffer.free();
         }
+        LOG.debug( "Texture tile (holding image data)  disposing the data." );
+        if ( !referencedRenderFragments.isEmpty() ) {
+            LOG.warn( "Some references remain, while disposing a texture tile, this may not be!!!" );
+            return;
+        }
+
         this.imageData = null;
+    }
+
+    /**
+     * @return true if the given texture tile should be cached.
+     */
+    public boolean enableCaching() {
+        return enableCaching;
     }
 
     /**
@@ -206,34 +236,51 @@ public class TextureTile {
     /**
      * @param gl
      *            context to load this texture to.
+     * @param refID
+     *            of the enabling fragment.
      * @return the opengl texture id.
      */
-    public int enable( GL gl ) {
-        System.out.println( "Enabling textureTile: " + numReferences );
-        numReferences++;
-        loadToGPU( gl );
-        return textureID[0];
+    public int enable( GL gl, int refID ) {
+        synchronized ( LOCK ) {
+            if ( referencedRenderFragments.contains( refID ) ) {
+                LOG.debug( "Given reference was already registered: {}", refID );
+            }
+            referencedRenderFragments.add( refID );
+            // numReferences++;
+            // System.out.println( "--------------Enabling textureTile " + toString() + " numrefs: "
+            // + referencedRenderFragments.size() );
+            // Thread.dumpStack();
+            loadToGPU( gl );
+        }
+        return textureID == null ? -1 : textureID[0];
     }
 
     /**
      * Remove the texture from the context.
      * 
      * @param gl
+     * @param refID
+     *            of the fragment which needed this texture tile.
      */
-    public void disable( GL gl ) {
-        numReferences--;
-        if ( numReferences < 0 ) {
-            throw new RuntimeException();
-        }
-        if ( numReferences == 0 ) {
-            LOG.debug( "disabling and freeing texture memory." );
-            gl.glDeleteTextures( 1, textureID, 0 );
-            textureID = null;
-            if ( pooledBuffer != null ) {
-                pooledBuffer.free();
+    public void disable( GL gl, int refID ) {
+        synchronized ( LOCK ) {
+            if ( !referencedRenderFragments.contains( refID ) ) {
+                LOG.warn( "Trying to remove a reference, which was not registered, this is strange: " + textureID );
+                if ( textureID == null ) {
+                    return;
+                }
             }
-            if ( imageData != null ) {
-                imageData = null;
+            referencedRenderFragments.remove( refID );
+            // numReferences--;
+            // if ( numReferences < 0 ) {
+            // throw new RuntimeException();
+            // }
+            if ( textureID != null ) {
+                if ( referencedRenderFragments.isEmpty() /* || numReferences == 0 */) {
+                    LOG.debug( "disabling and freeing texture memory." );
+                    gl.glDeleteTextures( 1, textureID, 0 );
+                    textureID = null;
+                }
             }
         }
     }
@@ -245,14 +292,24 @@ public class TextureTile {
      */
     private void loadToGPU( GL gl ) {
         if ( textureID == null ) {
-            textureID = new int[1];
-            gl.glGenTextures( 1, textureID, 0 );
-            gl.glBindTexture( GL.GL_TEXTURE_2D, textureID[0] );
-            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
-            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP );
-            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );
-            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );
             if ( imageData != null && imageData.capacity() > 0 ) {
+                textureID = new int[1];
+                gl.glGenTextures( 1, textureID, 0 );
+                gl.glBindTexture( GL.GL_TEXTURE_2D, textureID[0] );
+                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
+                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP );
+                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );
+                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );
+                // imageData.rewind();
+                // int pos = 0;
+                // int cap = imageData.capacity();
+                // byte[] color = new byte[] { (byte) ( 255 * Math.random() ), (byte) ( 255 * Math.random() ),
+                // (byte) ( 255 * Math.random() ) };
+                // while ( pos < cap ) {
+                // imageData.put( color );
+                // pos = imageData.position();
+                // }
+
                 imageData.rewind();
                 if ( hasAlpha ) {
                     gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tWidth, tHeight, 0, GL.GL_RGBA,
@@ -262,7 +319,7 @@ public class TextureTile {
                                      GL.GL_UNSIGNED_BYTE, imageData );
                 }
             } else {
-                LOG.warn( "The texture tile has no data set (anymore?) might their be a cache problem?" );
+                LOG.warn( "The texture tile has no data set (anymore?) might there be a cache problem?" );
             }
         }
 
@@ -281,5 +338,60 @@ public class TextureTile {
      */
     public int getId() {
         return textureID[0];
+    }
+
+    /**
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long code = 32452843;
+        long tmp = Double.doubleToLongBits( this.minX );
+        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+        tmp = Double.doubleToLongBits( this.minY );
+        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+        tmp = Double.doubleToLongBits( this.maxX );
+        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+        tmp = Double.doubleToLongBits( this.maxY );
+        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+        tmp = Double.doubleToLongBits( metersPerPixel );
+        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+
+        code = code * 37 + this.tWidth;
+        code = code * 37 + this.tHeight;
+
+        code = code * 37 + ( enableCaching ? 1 : 0 );
+
+        return (int) ( code >>> 32 ) ^ (int) code;
+    }
+
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof TextureTile ) {
+            final TextureTile that = (TextureTile) other;
+            return Math.abs( this.minX - that.minX ) < EPS && Math.abs( this.maxX - that.maxX ) < EPS
+                   && Math.abs( this.minY - that.minY ) < EPS && Math.abs( this.maxY - that.maxY ) < EPS
+                   && Math.abs( this.metersPerPixel - that.metersPerPixel ) < EPS && this.tWidth == that.tWidth
+                   && this.tHeight == that.tHeight && this.enableCaching == that.enableCaching;
+        }
+        return false;
     }
 }

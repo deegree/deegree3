@@ -62,42 +62,62 @@ public class FragmentTexture {
 
     private final TextureTile texture;
 
-    private final PooledByteBuffer texCoords;
+    private PooledByteBuffer texCoords;
 
     // just wrapped around buffer
-    private final FloatBuffer texCoordsBuffer;
+    private FloatBuffer texCoordsBuffer;
 
     private int textureID = -1;
 
     // 0: texture coordinates buffer
     private int[] glBufferObjectIds;
 
-    private double xOffset;
-
-    private double yOffset;
+    // private double xOffset;
+    //
+    // private double yOffset;
 
     /**
-     * @param geometry
+     * @param fragment
      * @param texture
-     * @param xOffset
-     * @param yOffset
-     * @param buffer
      */
-    public FragmentTexture( RenderMeshFragment geometry, TextureTile texture, double xOffset, double yOffset,
-                            PooledByteBuffer buffer ) {
-        this.fragment = geometry;
+    public FragmentTexture( RenderMeshFragment fragment, TextureTile texture ) {
+        this.fragment = fragment;
         this.texture = texture;
-        this.texCoords = buffer;
-        // buffer.getBuffer().order( ByteOrder.nativeOrder() );
-        this.texCoordsBuffer = generateTexCoordsBuffer( xOffset, yOffset );
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
     }
 
-    private FloatBuffer generateTexCoordsBuffer( double xOffset, double yOffset ) {
+    /**
+     * @param fragment
+     *            needed to generate the texture coordinates
+     * @param texture
+     * @param translationVector
+     * @param buffer
+     */
+    public FragmentTexture( RenderMeshFragment fragment, TextureTile texture, double[] translationVector,
+                            PooledByteBuffer buffer ) {
+        this( fragment, texture );
+        this.texCoords = buffer;
+        // buffer.getBuffer().order( ByteOrder.nativeOrder() );
+        this.texCoordsBuffer = generateTexCoordsBuffer( translationVector );
+        // this.xOffset = xOffset;
+        // this.yOffset = yOffset;
+    }
 
-        double minX = -xOffset;
-        double minY = -yOffset;
+    /**
+     * Generate the texture coordinates for the current fragment and the current texture. The texture coordinates will
+     * be put into the given direct buffer.
+     * 
+     * @param directTexCoordBuffer
+     * @param translationVector
+     */
+    public void generateTextureCoordinates( PooledByteBuffer directTexCoordBuffer, double[] translationVector ) {
+        this.texCoords = directTexCoordBuffer;
+        this.texCoordsBuffer = generateTexCoordsBuffer( translationVector );
+    }
+
+    private FloatBuffer generateTexCoordsBuffer( double[] translationVector ) {
+
+        double minX = -translationVector[0];
+        double minY = -translationVector[1];
 
         float[][] bbox = fragment.getBBox();
         float patchXMin = bbox[0][0];
@@ -105,10 +125,10 @@ public class FragmentTexture {
         float patchXMax = bbox[1][0];
         float patchYMax = bbox[1][1];
 
-        double tileXMin = texture.getMinX() -  minX;
-        double tileYMin = texture.getMinY() -  minY;
-        double tileXMax = texture.getMaxX() -  minX;
-        double tileYMax = texture.getMaxY() -  minY;
+        double tileXMin = texture.getMinX() - minX;
+        double tileYMin = texture.getMinY() - minY;
+        double tileXMax = texture.getMaxX() - minX;
+        double tileYMax = texture.getMaxY() - minY;
 
         if ( tileXMin > patchXMin || tileYMin > patchYMin || tileXMax < patchXMax || tileYMax < patchYMax ) {
             String msg = "Internal error. Returned texture tile is not suitable for the MeshFragment.";
@@ -162,9 +182,9 @@ public class FragmentTexture {
      * @return the opengl texture id.
      */
     public int getGLTextureId() {
-        if ( textureID == -1 ) {
-            throw new RuntimeException();
-        }
+        // if ( textureID == -1 ) {
+        // throw new RuntimeException();
+        // }
         return textureID;
     }
 
@@ -172,7 +192,7 @@ public class FragmentTexture {
      * @return the GL-id of the buffer object
      */
     public int getGLVertexCoordBufferId() {
-        return glBufferObjectIds[0];
+        return glBufferObjectIds == null ? -1 : glBufferObjectIds[0];
     }
 
     /**
@@ -184,13 +204,14 @@ public class FragmentTexture {
     public void enable( GL gl ) {
         if ( textureID == -1 ) {
             // will return -1 if the texture was not loaded on the gpu
-            textureID = texture.enable( gl );
+            textureID = texture.enable( gl, this.fragment.getId() );
         }
+        // System.out.println( "Fragment bound to: " + fragment.getId() + "| gl texture id: " + textureID );
 
         if ( textureID != -1 ) {
 
             if ( glBufferObjectIds == null ) {
-                generateTexCoordsBuffer( xOffset, yOffset );
+                // generateTexCoordsBuffer( xOffset, yOffset );
                 glBufferObjectIds = new int[1];
                 gl.glGenBuffersARB( 1, glBufferObjectIds, 0 );
 
@@ -209,10 +230,12 @@ public class FragmentTexture {
      */
     public void disable( GL gl ) {
         if ( textureID != -1 ) {
-            texture.disable( gl );
+            // mark the texture as not needed.
+            texture.disable( gl, this.fragment.getId() );
             textureID = -1;
         }
         if ( glBufferObjectIds != null ) {
+            // remove the buffer objects from the context.
             int[] bufferObjectIds = this.glBufferObjectIds;
             this.glBufferObjectIds = null;
             gl.glDeleteBuffersARB( bufferObjectIds.length, bufferObjectIds, 0 );
@@ -223,11 +246,37 @@ public class FragmentTexture {
      * Unload
      */
     public void unload() {
-        if ( glBufferObjectIds == null ) {
+        if ( glBufferObjectIds == null && textureID == -1 ) {
             texCoords.free();
         } else {
-            LOG.warn( "Trying to free a buffer which is still on the gpu, this may not be" );
+            LOG.warn( "Trying to free a buffer which is still on the gpu, this should not happen, because no texture coordinates would be left, ignoring request, and hope for the best. " );
+            if ( LOG.isDebugEnabled() ) {
+                Thread.dumpStack();
+            }
         }
+    }
+
+    /**
+     * Clears up all data in this fragment texture, this disables the texture and frees up all OpenGL references, as
+     * well as releasing the direct texture coordinates buffer.
+     * 
+     * @param gl
+     *            openGL context to which the texture was bounded to.
+     */
+    public void clearAll( GL gl ) {
+        LOG.debug( "Cleaning up all data in this Fragmenttexture. " );
+        texture.disable( gl, this.fragment.getId() );
+        texture.dispose();
+        textureID = -1;
+
+        if ( glBufferObjectIds != null ) {
+            int[] bufferObjectIds = this.glBufferObjectIds;
+            this.glBufferObjectIds = null;
+            gl.glDeleteBuffersARB( bufferObjectIds.length, bufferObjectIds, 0 );
+        }
+
+        texCoords.free();
+
     }
 
     /**
@@ -236,5 +285,58 @@ public class FragmentTexture {
      */
     public boolean isEnabled() {
         return glBufferObjectIds != null && textureID != -1;
+    }
+
+    /**
+     * @return true if caching was enabled for this texture.
+     */
+    public boolean cachingEnabled() {
+        return this.texture.enableCaching();
+    }
+
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof FragmentTexture ) {
+            final FragmentTexture that = (FragmentTexture) other;
+            return this.fragment.getId() == that.fragment.getId() && this.texture.equals( that.texture );
+        }
+        return false;
+    }
+
+    /**
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long code = 32452843;
+        code = code * 37 + this.fragment.getId();
+        long tmp = texture.hashCode();
+        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+        return (int) ( code >>> 32 ) ^ (int) code;
+    }
+
+    /**
+     * @return the id of the fragment
+     */
+    public Integer getId() {
+        return hashCode();
     }
 }
