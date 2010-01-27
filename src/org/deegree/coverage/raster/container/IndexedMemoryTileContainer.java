@@ -38,14 +38,11 @@
 
 package org.deegree.coverage.raster.container;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 
 import org.deegree.commons.index.QTree;
-import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.geometry.Envelope;
 
@@ -64,6 +61,8 @@ public class IndexedMemoryTileContainer implements TileContainer {
     private Envelope domain;
 
     private final RasterGeoReference rasterReference;
+
+    private RasterDataInfo rdi;
 
     /**
      * Uses a QTree as a spatial index.
@@ -100,7 +99,12 @@ public class IndexedMemoryTileContainer implements TileContainer {
      *            new tile
      */
     public void addTile( AbstractRaster raster ) {
-        index.insert( raster.getEnvelope(), raster );
+        if ( raster != null ) {
+            if ( this.rdi == null ) {
+                this.rdi = raster.getRasterDataInfo();
+            }
+            index.insert( raster.getEnvelope(), raster );
+        }
     }
 
     /**
@@ -110,16 +114,21 @@ public class IndexedMemoryTileContainer implements TileContainer {
         for ( AbstractRaster raster : rasters ) {
             addTile( raster );
         }
-        try {
-            FileWriter fw = new FileWriter( new File( "/tmp/out_tree.dot" ) );
-            GraphvizDot.startDiGraph( fw );
-            index.outputAsDot( fw, "", 0, -1 );
-            GraphvizDot.endGraph( fw );
-            fw.close();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
+        // try {
+        // FileWriter fw = new FileWriter( new File( "/tmp/out_tree.dot" ) );
+        // GraphvizDot.startDiGraph( fw );
+        // index.outputAsDot( fw, "", 0, -1 );
+        // GraphvizDot.endGraph( fw );
+        // fw.close();
+        // } catch ( IOException e ) {
+        // e.printStackTrace();
+        // }
 
+    }
+
+    @Override
+    public RasterDataInfo getRasterDataInfo() {
+        return rdi;
     }
 
 }

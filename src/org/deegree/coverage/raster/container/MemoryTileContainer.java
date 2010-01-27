@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
@@ -62,6 +63,21 @@ public class MemoryTileContainer implements TileContainer {
 
     private Envelope envelope;
 
+    private RasterDataInfo rdi;
+
+    /**
+     * @param geoRasterRef
+     *            of this tile container
+     * @param envelope
+     *            of this tile container.
+     * @param rasterDataInfo
+     */
+    public MemoryTileContainer( RasterGeoReference geoRasterRef, Envelope envelope, RasterDataInfo rasterDataInfo ) {
+        this.envelope = envelope;
+        this.rasterReference = geoRasterRef;
+        this.rdi = rasterDataInfo;
+    }
+
     /**
      * Creates a MemoryTileContainer with no tiles.
      * 
@@ -71,8 +87,8 @@ public class MemoryTileContainer implements TileContainer {
      *            of this tile container.
      */
     public MemoryTileContainer( RasterGeoReference geoRasterRef, Envelope envelope ) {
-        this.envelope = envelope;
-        this.rasterReference = geoRasterRef;
+        this( geoRasterRef, envelope, null );
+
     }
 
     /**
@@ -123,6 +139,9 @@ public class MemoryTileContainer implements TileContainer {
             } else {
                 this.rasterReference = RasterGeoReference.merger( this.rasterReference, raster.getRasterReference() );
             }
+            if ( this.rdi == null ) {
+                this.rdi = raster.getRasterDataInfo();
+            }
             tiles.add( raster );
         }
     }
@@ -166,6 +185,11 @@ public class MemoryTileContainer implements TileContainer {
             result.delete( result.length() - 3, result.length() );
         }
         return result.toString();
+    }
+
+    @Override
+    public RasterDataInfo getRasterDataInfo() {
+        return rdi;
     }
 
 }

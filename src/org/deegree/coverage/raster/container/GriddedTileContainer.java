@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
@@ -88,6 +89,8 @@ public abstract class GriddedTileContainer implements TileContainer {
     /** Number of samples of each raster tile in y-direction. */
     protected final int tileSamplesY;
 
+    private RasterDataInfo rdi;
+
     /**
      * Creates a new {@link GriddedTileContainer} instances.
      * 
@@ -96,6 +99,7 @@ public abstract class GriddedTileContainer implements TileContainer {
      * 
      */
     protected GriddedTileContainer( GridMetaInfoFile infoFile ) {
+        this.rdi = infoFile.getDataInfo();
         this.envelope = infoFile.getEnvelope( OriginLocation.OUTER );
         this.envelopeWidth = envelope.getMax().get0() - envelope.getMin().get0();
         this.envelopeHeight = envelope.getMax().get1() - envelope.getMin().get1();
@@ -313,5 +317,10 @@ public abstract class GriddedTileContainer implements TileContainer {
         // return rows;
         // }
         // return rowIdx;
+    }
+
+    @Override
+    public RasterDataInfo getRasterDataInfo() {
+        return rdi;
     }
 }
