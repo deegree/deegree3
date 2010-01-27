@@ -474,4 +474,11 @@ public class RasterCache {
         }
     }
 
+    /**
+     * @return the directory used for caching.
+     */
+    public File getCacheDirectory() {
+        return cacheDir;
+    }
+
 }
