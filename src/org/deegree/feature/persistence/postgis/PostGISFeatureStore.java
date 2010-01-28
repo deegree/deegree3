@@ -127,6 +127,9 @@ public class PostGISFeatureStore implements FeatureStore {
     // TODO make this configurable
     private FeatureStoreCache cache = new FeatureStoreCache( 10000 );
 
+    // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
+    private boolean useLegacyPredicates;
+
     /**
      * Creates a new {@link PostGISFeatureStore} for the given {@link ApplicationSchema}.
      * 
@@ -318,6 +321,16 @@ public class PostGISFeatureStore implements FeatureStore {
         ResultSet rs = null;
         try {
             conn = ConnectionManager.getConnection( jdbcConnId );
+
+            String version = determinePostGISVersion( conn );
+            if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
+                 || version.startsWith( "1.2" ) ) {
+                LOG.info( "PostGIS version is " + version + " -- using legacy (SQL-MM) predicates." );
+                useLegacyPredicates = true;
+            } else {
+                LOG.info( "PostGIS version is " + version + " -- using modern (pre-SQL-MM) predicates." );
+            }
+
             stmt = conn.createStatement();
             rs = stmt.executeQuery( "SELECT id,qname,tablename,wgs84bbox FROM " + qualifyTableName( "feature_types" ) );
             while ( rs.next() ) {
@@ -386,6 +399,24 @@ public class PostGISFeatureStore implements FeatureStore {
         } finally {
             closeSafely( conn, stmt, null );
         }
+    }
+
+    private String determinePostGISVersion( Connection conn ) {
+        String version = "1.0";
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT postgis_version()" );
+            rs.next();
+            String postGISVersion = rs.getString( 1 );
+            version = postGISVersion.split( " " )[0];
+            LOG.debug( "PostGIS version: " + version );
+        } catch ( Exception e ) {
+            LOG.warn( "Could not determine PostGIS version: " + e.getMessage() + " -- defaulting to 1.0.0" );
+            closeSafely( null, stmt, rs );
+        }
+        return version;
     }
 
     /**
@@ -528,9 +559,9 @@ public class PostGISFeatureStore implements FeatureStore {
         FeatureType ft = schema.getFeatureType( ftName );
         FeatureTypeMapping mapping = getMapping( ftName );
         PostGISWhereBuilder wb = null;
-        if ( filter != null && mapping != null ) {
+        if ( ( sortCrit != null || filter != null ) && mapping != null ) {
             PostGISFeatureMapping pgMapping = new PostGISFeatureMapping( ft, mapping, this );
-            wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit );
+            wb = new PostGISWhereBuilder( pgMapping, filter, sortCrit, useLegacyPredicates );
             LOG.debug( "WHERE clause: " + wb.getWhereClause() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
         }

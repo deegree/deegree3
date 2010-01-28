@@ -863,8 +863,9 @@ public class Filter110XMLDecoder {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
                 PropertyName param1 = parsePropertyName( xmlStream, false );
                 xmlStream.nextTag();
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parse( wrapper );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                // NOTE: 1.1.0 spec. actually disallows Envelope here !?
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 // third parameter: 'ogc:Distance'
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
@@ -917,10 +918,12 @@ public class Filter110XMLDecoder {
                 PropertyName param1 = parsePropertyName( xmlStream, false );
                 xmlStream.nextTag();
                 // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parse( wrapper );
+                // NOTE: 1.1.0 spec. actually disallows Envelope here !?
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 // third parameter: 'ogc:Distance'
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
+                
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
                 // In Filter 1.1.0 (with distinction to 1.0.0) the <Distance> element DOES NOT contain text
                 // and the value is in the "units" attribute. The UOM is taken from the enclosing CRS.

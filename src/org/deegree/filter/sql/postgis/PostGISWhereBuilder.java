@@ -61,6 +61,11 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Beyond;
+import org.deegree.filter.spatial.Contains;
+import org.deegree.filter.spatial.Crosses;
+import org.deegree.filter.spatial.DWithin;
+import org.deegree.filter.spatial.Disjoint;
 import org.deegree.filter.spatial.Equals;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.spatial.Overlaps;
@@ -95,6 +100,8 @@ public class PostGISWhereBuilder {
 
     private final SortProperty[] sortCrit;
 
+    private final boolean useLegacyPredicates;
+
     private OperatorFilter postFilter;
 
     private SortProperty[] postSortCrit;
@@ -114,14 +121,18 @@ public class PostGISWhereBuilder {
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
      *            criteria to use generating the ORDER BY clause, can be <code>null</code>
+     * @param useLegacyPredicates
+     *            if true, legacy PostGIS spatial predicates are used (e.g <code>Intersects</code> instead of
+     *            <code>ST_Intersects</code>)
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link PropertyName}s
      */
-    public PostGISWhereBuilder( PostGISMapping mapping, OperatorFilter filter, SortProperty[] sortCrit )
-                            throws FilterEvaluationException {
+    public PostGISWhereBuilder( PostGISMapping mapping, OperatorFilter filter, SortProperty[] sortCrit,
+                                boolean useLegacyPredicates ) throws FilterEvaluationException {
         this.mapping = mapping;
         this.filter = filter;
         this.sortCrit = sortCrit;
+        this.useLegacyPredicates = useLegacyPredicates;
         if ( filter != null ) {
             buildWhere( filter.getOperator() );
         }
@@ -379,23 +390,89 @@ public class PostGISWhereBuilder {
             break;
         }
         case BEYOND: {
+            Beyond beyond = (Beyond) op;
+            if ( useLegacyPredicates ) {
+                whereClause.append( "NOT dwithin(" );
+            } else {
+                whereClause.append( "NOT ST_DWithin(" );
+            }
+            PropertyName propName = beyond.getPropName();
+            buildWhere( propName );
+            whereClause.append( ',' );
+            buildWhere( beyond.getGeometry(), propName );
+            whereClause.append( ',' );
+            // TODO uom handling
+            whereClause.append (beyond.getDistance().getValue().toPlainString());            
+            whereClause.append( ')' );
             break;
         }
         case CONTAINS: {
+            Contains contains = (Contains) op;
+            if ( useLegacyPredicates ) {
+                whereClause.append( "contains(" );
+            } else {
+                whereClause.append( "ST_Contains(" );
+            }
+            PropertyName propName = contains.getPropName();
+            buildWhere( propName );
+            whereClause.append( ',' );
+            buildWhere( contains.getGeometry(), propName );
+            whereClause.append( ')' );
             break;
         }
         case CROSSES: {
+            Crosses crosses = (Crosses) op;
+            if ( useLegacyPredicates ) {
+                whereClause.append( "crosses(" );
+            } else {
+                whereClause.append( "ST_Crosses(" );
+            }
+            PropertyName propName = crosses.getPropName();
+            buildWhere( propName );
+            whereClause.append( ',' );
+            buildWhere( crosses.getGeometry(), propName );
+            
+            whereClause.append( ')' );
             break;
         }
         case DISJOINT: {
+            Disjoint disjoint = (Disjoint) op;
+            if ( useLegacyPredicates ) {
+                whereClause.append( "disjoint(" );
+            } else {
+                whereClause.append( "ST_Disjoint(" );
+            }
+            PropertyName propName = disjoint.getPropName();
+            buildWhere( propName );
+            whereClause.append( ',' );
+            buildWhere( disjoint.getGeometry(), propName );
+            whereClause.append( ')' );
             break;
         }
         case DWITHIN: {
+            DWithin dWithin = (DWithin) op;
+            if ( useLegacyPredicates ) {
+                whereClause.append( "dwithin(" );
+            } else {
+                whereClause.append( "ST_DWithin(" );
+            }
+            PropertyName propName = dWithin.getPropName();
+            buildWhere( propName );
+            whereClause.append( ',' );
+            buildWhere( dWithin.getGeometry(), propName );
+            whereClause.append( ',' );
+            // TODO uom handling
+            whereClause.append (dWithin.getDistance().getValue().toPlainString());
+            whereClause.append( ')' );            
             break;
         }
         case EQUALS: {
             Equals equals = (Equals) op;
-            whereClause.append( "equals(" );
+            if ( useLegacyPredicates ) {
+                whereClause.append( "equals(" );
+            } else {
+                whereClause.append( "ST_Equals(" );
+            }
             PropertyName propName = equals.getPropName();
             buildWhere( propName );
             whereClause.append( ',' );
@@ -405,7 +482,11 @@ public class PostGISWhereBuilder {
         }
         case INTERSECTS: {
             Intersects intersects = (Intersects) op;
-            whereClause.append( "intersects(" );
+            if ( useLegacyPredicates ) {
+                whereClause.append( "intersects(" );
+            } else {
+                whereClause.append( "ST_Intersects(" );
+            }
             PropertyName propName = intersects.getPropName();
             buildWhere( propName );
             whereClause.append( ',' );
@@ -415,7 +496,11 @@ public class PostGISWhereBuilder {
         }
         case OVERLAPS: {
             Overlaps overlaps = (Overlaps) op;
-            whereClause.append( "overlaps(" );
+            if ( useLegacyPredicates ) {
+                whereClause.append( "overlaps(" );
+            } else {
+                whereClause.append( "ST_Overlaps(" );
+            }
             PropertyName propName = overlaps.getPropName();
             buildWhere( propName );
             whereClause.append( ',' );
@@ -425,7 +510,11 @@ public class PostGISWhereBuilder {
         }
         case TOUCHES: {
             Touches touches = (Touches) op;
-            whereClause.append( "touches(" );
+            if ( useLegacyPredicates ) {
+                whereClause.append( "touches(" );
+            } else {
+                whereClause.append( "ST_Touches(" );
+            }
             PropertyName propName = touches.getPropName();
             buildWhere( propName );
             whereClause.append( ',' );
@@ -435,7 +524,11 @@ public class PostGISWhereBuilder {
         }
         case WITHIN: {
             Within within = (Within) op;
-            whereClause.append( "within(" );
+            if ( useLegacyPredicates ) {
+                whereClause.append( "within(" );
+            } else {
+                whereClause.append( "ST_Within(" );
+            }
             PropertyName propName = within.getPropName();
             buildWhere( propName );
             whereClause.append( ',' );

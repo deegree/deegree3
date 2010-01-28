@@ -71,6 +71,13 @@ public class Disjoint extends SpatialOperator {
         }
         return false;
     }
+
+    /**
+     * @return the propName
+     */
+    public PropertyName getPropName() {
+        return propName;
+    }  
     
     /**
      * @return the geometry
