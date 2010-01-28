@@ -190,14 +190,6 @@ public class ISOQPParsing extends XMLAdapter {
         nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
         nsContext.addNamespace( "ows", "http://www.opengis.net/ows" );
 
-        // try {
-        //
-        // parseAPISO( element );
-        //
-        // } catch ( IOException e ) {
-        //
-        // e.printStackTrace();
-        // }
     }
 
     private List<String> validate( OMElement elem ) {
@@ -205,7 +197,6 @@ public class ISOQPParsing extends XMLAdapter {
         try {
             elem.serialize( s );
         } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         StringReader reader = new StringReader( s.toString() );
@@ -224,576 +215,453 @@ public class ISOQPParsing extends XMLAdapter {
      */
     public void parseAPISO( boolean isInspire )
                             throws IOException {
-        // qp.setAnyText( element.toString() );
 
-        // /*/self::node() => /*/self::* => /* -> Transaction
-        // */MD_Metadata -> null
-        // //MD_Metadata => ./gmd:MD_Metadata -> null
-        // */self::* => * => ./* => ./child::*-> fileIdentifier, identificationInfo
-        // ./. => ./self::node() -> MD_Metadata
-        // //. -> jedes element...alles also
-        // /*/*/gmd:MD_Metadata -> MD_Metadata
-        List<OMElement> recordElements = getElements( rootElement, new XPath( "*", nsContext ) );
-        for ( OMElement elem : recordElements ) {
+        for ( String error : validate( rootElement ) ) {
+            System.out.println( "VALIDATION-ERROR: " + error );
+        }
 
-            if ( elem.getLocalName().equals( "fileIdentifier" ) ) {
-                qp.setIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
+        qp.setIdentifier( getNodeAsString( rootElement, new XPath( "./gmd:fileIdentifier/gco:CharacterString",
+                                                                   nsContext ), null ) );
+        identifier = getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContext ) );
 
-                identifier = elem;
-                OMNamespace namespace = identifier.getNamespace();
-                identifier.setNamespace( namespace );
+        /**
+         * if provided data is a dataset: type = dataset (default)
+         * <p>
+         * if provided data is a datasetCollection: type = series
+         * <p>
+         * if provided data is an application: type = application
+         * <p>
+         * if provided data is a service: type = service
+         */
+        qp.setType( getNodeAsString( rootElement, new XPath( "./gmd:MD_ScopeCode/@codeListValue", nsContext ),
+                                     "dataset" ) );
+        hierarchyLevel = getElement( rootElement, new XPath( "./gmd:hierarchyLevel", nsContext ) );
 
-                continue;
+        hierarchyLevelName = getElement( rootElement, new XPath( "./gmd:hierarchyLevelName", nsContext ) );
 
-            }
+        String dateString = getNodeAsString( rootElement, new XPath( "./gmd:dateStamp/gco:Date", nsContext ),
+                                             "0000-00-00" );
+        Date date = null;
+        try {
+            date = new Date( dateString );
+        } catch ( ParseException e ) {
 
-            /**
-             * if provided data is a dataset: type = dataset (default)
-             * <p>
-             * if provided data is a datasetCollection: type = series
-             * <p>
-             * if provided data is an application: type = application
-             * <p>
-             * if provided data is a service: type = service
-             */
-            if ( elem.getLocalName().equals( "hierarchyLevel" ) ) {
+            e.printStackTrace();
+        }
 
-                String type = getNodeAsString( elem, new XPath( "./gmd:MD_ScopeCode/@codeListValue", nsContext ),
-                                               "dataset" );
+        qp.setModified( date );
+        dateStamp = getElement( rootElement, new XPath( "./gmd:dateStamp", nsContext ) );
 
-                qp.setType( type );
+        List<OMElement> crsElements = getElements(
+                                                   rootElement,
+                                                   new XPath(
+                                                              "./gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
+                                                              nsContext ) );
 
-                hierarchyLevel = elem;
-                OMNamespace namespace = hierarchyLevel.getNamespace();
-                hierarchyLevel.setNamespace( namespace );
+        for ( OMElement crsElement : crsElements ) {
+            String crsIdentification = getNodeAsString( crsElement, new XPath( "./gmd:code/gco:CharacterString",
+                                                                               nsContext ), "" );
 
-                continue;
-            }
+            String crsAuthority = getNodeAsString( crsElement, new XPath( "./gmd:codeSpace/gco:CharacterString",
+                                                                          nsContext ), "" );
 
-            if ( elem.getLocalName().equals( "hierarchyLevelName" ) ) {
+            String crsVersion = getNodeAsString( crsElement,
+                                                 new XPath( "./gmd:version/gco:CharacterString", nsContext ), "" );
+            // CRS crs = new CRS( crsAuthority, crsIdentification, crsVersion );
 
-                hierarchyLevelName = elem;
-                OMNamespace namespace = hierarchyLevelName.getNamespace();
-                hierarchyLevelName.setNamespace( namespace );
+            CRS crs = new CRS( crsIdentification );
 
-                continue;
-            }
+            crsList.add( crs );
+        }
 
-            if ( elem.getLocalName().equals( "dateStamp" ) ) {
+        referenceSystemInfo = getElements( rootElement, new XPath( "./gmd:referenceSystemInfo", nsContext ) );
 
-                String dateString = getNodeAsString( elem, new XPath( "./gco:Date", nsContext ), "0000-00-00" );
-                Date date = null;
-                try {
-                    date = new Date( dateString );
-                } catch ( ParseException e ) {
+        rp.setLanguage( getNodeAsString( rootElement, new XPath( "./gmd:language/gco:CharacterString", nsContext ),
+                                         null ) );
 
-                    e.printStackTrace();
-                }
+        dataQualityInfo = getElement( rootElement, new XPath( "./gmd:dataQualityInfo", nsContext ) );
 
-                qp.setModified( date );
-                // String[] dateStrings = getNodesAsStrings( elem, new XPath( "./gco:Date", nsContext ) );
-                // Date[] dates = new Date[dateStrings.length];
-                // Date date = null;
-                // for ( int i = 0; i < dateStrings.length; i++ ) {
-                // try {
-                // date = new Date( dateStrings[i] );
-                // } catch ( ParseException e ) {
-                //
-                // e.printStackTrace();
-                // }
-                // dates[i] = date;
-                //
-                // }
-                //
-                // qp.setModified( Arrays.asList( dates ) );
+        characterSet = getElement( rootElement, new XPath( "./gmd:characterSet", nsContext ) );
 
-                dateStamp = elem;
-                OMNamespace namespace = dateStamp.getNamespace();
-                dateStamp.setNamespace( namespace );
+        metadataStandardName = getElement( rootElement, new XPath( "./gmd:metadataStandardName", nsContext ) );
 
-                continue;
-            }
+        metadataStandardVersion = getElement( rootElement, new XPath( "./gmd:metadataStandardVersion", nsContext ) );
 
-            if ( elem.getLocalName().equals( "referenceSystemInfo" ) ) {
-                List<OMElement> crsElements = getElements(
-                                                           elem,
-                                                           new XPath(
-                                                                      "./gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier",
-                                                                      nsContext ) );
+        qp.setParentIdentifier( getNodeAsString( rootElement, new XPath( "./gmd:parentIdentifier/gco:CharacterString",
+                                                                         nsContext ), null ) );
 
-                for ( OMElement crsElement : crsElements ) {
-                    String crsIdentification = getNodeAsString(
-                                                                crsElement,
-                                                                new XPath( "./gmd:code/gco:CharacterString", nsContext ),
-                                                                "" );
+        OMElement md_identification = getElement( rootElement,
+                                                  new XPath( "./gmd:identificationInfo/gmd:MD_Identification",
+                                                             nsContext ) );
 
-                    String crsAuthority = getNodeAsString(
-                                                           crsElement,
-                                                           new XPath( "./gmd:codeSpace/gco:CharacterString", nsContext ),
-                                                           "" );
+        OMElement sv_service_OR_md_dataIdentification = getElement(
+                                                                    rootElement,
+                                                                    new XPath(
+                                                                               "./srv:SV_ServiceIdentification | gmd:MD_DataIdentification",
+                                                                               nsContext ) );
 
-                    String crsVersion = getNodeAsString( crsElement, new XPath( "./gmd:version/gco:CharacterString",
-                                                                                nsContext ), "" );
-                    // CRS crs = new CRS( crsAuthority, crsIdentification, crsVersion );
+        OMElement ci_responsibleParty = getElement( sv_service_OR_md_dataIdentification,
+                                                    new XPath( "./gmd:pointOfContact/gmd:CI_ResponsibleParty",
+                                                               nsContext ) );
 
-                    CRS crs = new CRS( crsIdentification );
+        OMElement spatialResolution = getElement( sv_service_OR_md_dataIdentification,
+                                                  new XPath( "./gmd:spatialResolution", nsContext ) );
 
-                    crsList.add( crs );
-                }
+        String temporalExtentBegin = getNodeAsString(
+                                                      sv_service_OR_md_dataIdentification,
+                                                      new XPath(
+                                                                 "./gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
+                                                                 nsContext ), "0000-00-00" );
 
-                referenceSystemInfo.add( elem );
+        Date dateTempBeg = null;
+        try {
+            dateTempBeg = new Date( temporalExtentBegin );
+        } catch ( ParseException e ) {
 
-                continue;
+            e.printStackTrace();
+        }
 
-            }
+        qp.setTemporalExtentBegin( dateTempBeg );
 
-            if ( elem.getLocalName().equals( "language" ) ) {
-
-                rp.setLanguage( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
-                language = elem;
-                continue;
-            }
-
-            if ( elem.getLocalName().equals( "dataQualityInfo" ) ) {
-
-                dataQualityInfo = elem;
-
-                continue;
-            }
-
-            if ( elem.getLocalName().equals( "characterSet" ) ) {
-
-                characterSet = elem;
-                continue;
-            }
-
-            if ( elem.getLocalName().equals( "metadataStandardName" ) ) {
-
-                metadataStandardName = elem;
-                continue;
-            }
-
-            if ( elem.getLocalName().equals( "metadataStandardVersion" ) ) {
-
-                metadataStandardVersion = elem;
-                continue;
-            }
-            if ( elem.getLocalName().equals( "parentIdentifier" ) ) {
-                qp.setParentIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
-
-                parentIdentifier = elem;
-                OMNamespace namespace = parentIdentifier.getNamespace();
-                parentIdentifier.setNamespace( namespace );
-
-                continue;
-
-            }
-
-            if ( elem.getLocalName().equals( "identificationInfo" ) ) {
-
-                OMElement md_identification = getElement( elem, new XPath( "./gmd:MD_Identification", nsContext ) );
-
-                OMElement sv_service_OR_md_dataIdentification = getElement(
-                                                                            elem,
-                                                                            new XPath(
-                                                                                       "./srv:SV_ServiceIdentification | gmd:MD_DataIdentification",
-                                                                                       nsContext ) );
-
-                OMElement ci_responsibleParty = getElement( sv_service_OR_md_dataIdentification,
-                                                            new XPath( "./gmd:pointOfContact/gmd:CI_ResponsibleParty",
-                                                                       nsContext ) );
-
-                OMElement spatialResolution = getElement( sv_service_OR_md_dataIdentification,
-                                                          new XPath( "./gmd:spatialResolution", nsContext ) );
-
-                String temporalExtentBegin = getNodeAsString(
-                                                              sv_service_OR_md_dataIdentification,
-                                                              new XPath(
-                                                                         "./gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
-                                                                         nsContext ), "0000-00-00" );
-                Date dateTempBeg = null;
-                try {
-                    dateTempBeg = new Date( temporalExtentBegin );
-                } catch ( ParseException e ) {
-
-                    e.printStackTrace();
-                }
-
-                qp.setTemporalExtentBegin( dateTempBeg );
-
-                String temporalExtentEnd = getNodeAsString(
-                                                            sv_service_OR_md_dataIdentification,
-                                                            new XPath(
-                                                                       "./gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
-                                                                       nsContext ), "0000-00-00" );
-                Date dateTempEnd = null;
-                try {
-                    dateTempEnd = new Date( temporalExtentEnd );
-                } catch ( ParseException e ) {
-
-                    e.printStackTrace();
-                }
-
-                qp.setTemporalExtentEnd( dateTempEnd );
-
-                int denominator = getNodeAsInt(
-                                                spatialResolution,
-                                                new XPath(
-                                                           "./gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer",
-                                                           nsContext ), -1 );
-                qp.setDenominator( denominator );
-
-                // TODO put here the constraint that there can a denominator be available iff distanceValue and
-                // distanceUOM are not set and vice versa!!
-                float distanceValue = getNodeAsFloat( spatialResolution,
-                                                      new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance",
-                                                                 nsContext ), -1 );
-                qp.setDistanceValue( distanceValue );
-
-                String distanceUOM = getNodeAsString( spatialResolution,
-                                                      new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance/@uom",
-                                                                 nsContext ), null );
-                qp.setDistanceUOM( distanceUOM );
-
-                String serviceType = getNodeAsString( sv_service_OR_md_dataIdentification,
-                                                      new XPath( "./srv:serviceType", nsContext ), null );
-                qp.setServiceType( serviceType );
-
-                String serviceTypeVersion = getNodeAsString( sv_service_OR_md_dataIdentification,
-                                                             new XPath( "./srv:serviceTypeVersion", nsContext ), null );
-                qp.setServiceTypeVersion( serviceTypeVersion );
-
-                String operation = getNodeAsString(
+        String temporalExtentEnd = getNodeAsString(
                                                     sv_service_OR_md_dataIdentification,
                                                     new XPath(
-                                                               "./srv:containsOperations/srv:SV_OperationMetadata/srv:operationName",
+                                                               "./gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
+                                                               nsContext ), "0000-00-00" );
+        Date dateTempEnd = null;
+        try {
+            dateTempEnd = new Date( temporalExtentEnd );
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        }
+
+        qp.setTemporalExtentEnd( dateTempEnd );
+
+        int denominator = getNodeAsInt(
+                                        spatialResolution,
+                                        new XPath(
+                                                   "./gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer",
+                                                   nsContext ), -1 );
+        qp.setDenominator( denominator );
+
+        // TODO put here the constraint that there can a denominator be available iff distanceValue and
+        // distanceUOM are not set and vice versa!!
+        float distanceValue = getNodeAsFloat( spatialResolution,
+                                              new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance", nsContext ),
+                                              -1 );
+        qp.setDistanceValue( distanceValue );
+
+        String distanceUOM = getNodeAsString( spatialResolution,
+                                              new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance/@uom",
+                                                         nsContext ), null );
+        qp.setDistanceUOM( distanceUOM );
+
+        String serviceType = getNodeAsString( sv_service_OR_md_dataIdentification, new XPath( "./srv:serviceType",
+                                                                                              nsContext ), null );
+        qp.setServiceType( serviceType );
+
+        String serviceTypeVersion = getNodeAsString( sv_service_OR_md_dataIdentification,
+                                                     new XPath( "./srv:serviceTypeVersion", nsContext ), null );
+        qp.setServiceTypeVersion( serviceTypeVersion );
+
+        String operation = getNodeAsString(
+                                            sv_service_OR_md_dataIdentification,
+                                            new XPath(
+                                                       "./srv:containsOperations/srv:SV_OperationMetadata/srv:operationName",
+                                                       nsContext ), null );
+
+        String operation_dcp = getNodeAsString( sv_service_OR_md_dataIdentification,
+                                                new XPath( "./srv:containsOperations/srv:SV_OperationMetadata/srv:DCP",
+                                                           nsContext ), null );
+
+        String operation_linkage = getNodeAsString(
+                                                    sv_service_OR_md_dataIdentification,
+                                                    new XPath(
+                                                               "./srv:containsOperations/srv:SV_OperationMetadata/srv:connectPoint/srv:CI_OnlineResource/srv:linkage/srv:URL",
                                                                nsContext ), null );
 
-                String operation_dcp = getNodeAsString(
-                                                        sv_service_OR_md_dataIdentification,
-                                                        new XPath(
-                                                                   "./srv:containsOperations/srv:SV_OperationMetadata/srv:DCP",
-                                                                   nsContext ), null );
+        qp.setOperation( operation );
 
-                String operation_linkage = getNodeAsString(
-                                                            sv_service_OR_md_dataIdentification,
-                                                            new XPath(
-                                                                       "./srv:containsOperations/srv:SV_OperationMetadata/srv:connectPoint/srv:CI_OnlineResource/srv:linkage/srv:URL",
-                                                                       nsContext ), null );
+        String geographicDescriptionCode_service = getNodeAsString(
+                                                                    sv_service_OR_md_dataIdentification,
+                                                                    new XPath(
+                                                                               "./srv:extent/srv:EX_Extent/srv:geographicElement/srv:EX_GeopraphicDescription/srv:geographicIdentifier/srv:MD_Identifier/srv:code",
+                                                                               nsContext ), null );
+        qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
 
-                qp.setOperation( operation );
+        String[] resourceIdentifierList = getNodesAsStrings(
+                                                             sv_service_OR_md_dataIdentification,
+                                                             new XPath(
+                                                                        "./gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
+                                                                        nsContext ) );
 
-                String geographicDescriptionCode_service = getNodeAsString(
-                                                                            sv_service_OR_md_dataIdentification,
-                                                                            new XPath(
-                                                                                       "./srv:extent/srv:EX_Extent/srv:geographicElement/srv:EX_GeopraphicDescription/srv:geographicIdentifier/srv:MD_Identifier/srv:code",
-                                                                                       nsContext ), null );
-                qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
+        for ( int i = 0; i < resourceIdentifierList.length; i++ ) {
+            String at = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
+            System.out.println( at );
+        }
 
-                String[] resourceIdentifierList = getNodesAsStrings(
-                                                                     sv_service_OR_md_dataIdentification,
-                                                                     new XPath(
-                                                                                "./gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
-                                                                                nsContext ) );
+        String operatesOn = getNodeAsString(
+                                             sv_service_OR_md_dataIdentification,
+                                             new XPath(
+                                                        "./srv:operatesOn/srv:MD_DataIdentification/srv:citation/srv:CI_Citation/srv:identifier",
+                                                        nsContext ), null );
+        qp.setOperatesOn( operatesOn );
 
-                for ( int i = 0; i < resourceIdentifierList.length; i++ ) {
-                    String at = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
-                    System.out.println( at );
-                }
-
-                String operatesOn = getNodeAsString(
-                                                     sv_service_OR_md_dataIdentification,
-                                                     new XPath(
-                                                                "./srv:operatesOn/srv:MD_DataIdentification/srv:citation/srv:CI_Citation/srv:identifier",
-                                                                nsContext ), null );
-                qp.setOperatesOn( operatesOn );
-
-                String operatesOnIdentifier = getNodeAsString(
-                                                               sv_service_OR_md_dataIdentification,
-                                                               new XPath(
-                                                                          "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier",
-                                                                          nsContext ), null );
-                qp.setOperatesOnIdentifier( operatesOnIdentifier );
-
-                String operatesOnName = getNodeAsString(
-                                                         sv_service_OR_md_dataIdentification,
-                                                         new XPath(
-                                                                    "./srv:coupledResource/srv:SV_CoupledResource/srv:operationName",
-                                                                    nsContext ), null );
-                qp.setOperatesOnName( operatesOnName );
-
-                String couplingType = getNodeAsString(
+        String operatesOnIdentifier = getNodeAsString(
                                                        sv_service_OR_md_dataIdentification,
                                                        new XPath(
-                                                                  "./srv:couplingType/srv:SV_CouplingType/srv:code/@codeListValue",
+                                                                  "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier",
                                                                   nsContext ), null );
-                qp.setCouplingType( couplingType );
+        qp.setOperatesOnIdentifier( operatesOnIdentifier );
 
-                String resourceLanguage = getNodeAsString(
-                                                           sv_service_OR_md_dataIdentification,
-                                                           new XPath( "./gmd:language/gco:CharacterString", nsContext ),
-                                                           null );
-                qp.setResourceLanguage( resourceLanguage );
+        String operatesOnName = getNodeAsString(
+                                                 sv_service_OR_md_dataIdentification,
+                                                 new XPath(
+                                                            "./srv:coupledResource/srv:SV_CoupledResource/srv:operationName",
+                                                            nsContext ), null );
+        qp.setOperatesOnName( operatesOnName );
 
-                String creator = getNodeAsString(
-                                                  ci_responsibleParty,
-                                                  new XPath(
-                                                             "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='originator']/gco:CharacterString",
-                                                             nsContext ), null );
+        String couplingType = getNodeAsString(
+                                               sv_service_OR_md_dataIdentification,
+                                               new XPath(
+                                                          "./srv:couplingType/srv:SV_CouplingType/srv:code/@codeListValue",
+                                                          nsContext ), null );
+        qp.setCouplingType( couplingType );
 
-                rp.setCreator( creator );
+        String resourceLanguage = getNodeAsString( sv_service_OR_md_dataIdentification,
+                                                   new XPath( "./gmd:language/gco:CharacterString", nsContext ), null );
+        qp.setResourceLanguage( resourceLanguage );
 
-                String publisher = getNodeAsString(
-                                                    ci_responsibleParty,
-                                                    new XPath(
-                                                               "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='publisher']/gco:CharacterString",
-                                                               nsContext ), null );
+        String creator = getNodeAsString(
+                                          ci_responsibleParty,
+                                          new XPath(
+                                                     "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='originator']/gco:CharacterString",
+                                                     nsContext ), null );
 
-                rp.setPublisher( publisher );
+        rp.setCreator( creator );
 
-                String contributor = getNodeAsString(
-                                                      ci_responsibleParty,
-                                                      new XPath(
-                                                                 "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='author']/gco:CharacterString",
-                                                                 nsContext ), null );
-                rp.setContributor( contributor );
+        String publisher = getNodeAsString(
+                                            ci_responsibleParty,
+                                            new XPath(
+                                                       "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='publisher']/gco:CharacterString",
+                                                       nsContext ), null );
 
-                String[] rightsElements = getNodesAsStrings(
-                                                             sv_service_OR_md_dataIdentification,
-                                                             new XPath(
-                                                                        "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue",
-                                                                        nsContext ) );
-                rp.setRights( Arrays.asList( rightsElements ) );
+        rp.setPublisher( publisher );
 
-                // OMElement sv_serviceIdentification = getElement( elem, new XPath( "./srv:SV_ServiceIdentification",
-                // nsContext ) );
+        String contributor = getNodeAsString(
+                                              ci_responsibleParty,
+                                              new XPath(
+                                                         "./gmd:organisationName[../gmd:role/gmd:CI_RoleCode/@codeListValue='author']/gco:CharacterString",
+                                                         nsContext ), null );
+        rp.setContributor( contributor );
 
-                // String couplingType = getNodeAsString( sv_serviceIdentification, new XPath(
-                // "./srv:couplingType/srv:SV_CouplingType/@codeListValue", nsContext ), null );
-
-                OMElement _abstract = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:abstract",
-                                                                                                  nsContext ) );
-
-                OMElement bbox = getRequiredElement(
+        String[] rightsElements = getNodesAsStrings(
                                                      sv_service_OR_md_dataIdentification,
                                                      new XPath(
-                                                                "./gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
+                                                                "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue",
                                                                 nsContext ) );
+        rp.setRights( Arrays.asList( rightsElements ) );
 
-                List<OMElement> descriptiveKeywords = getElements( sv_service_OR_md_dataIdentification,
-                                                                   new XPath( "./gmd:descriptiveKeywords", nsContext ) );
+        OMElement _abstract = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:abstract", nsContext ) );
 
-                String[] topicCategories = getNodesAsStrings(
-                                                              sv_service_OR_md_dataIdentification,
-                                                              new XPath(
-                                                                         "./gmd:topicCategory/gmd:MD_TopicCategoryCode",
-                                                                         nsContext ) );
+        OMElement bbox = getRequiredElement(
+                                             sv_service_OR_md_dataIdentification,
+                                             new XPath(
+                                                        "./gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
+                                                        nsContext ) );
 
-                String graphicOverview = getNodeAsString( sv_service_OR_md_dataIdentification,
-                                                          new XPath( "./gmd:graphicOverview/gmd:MD_BrowseGraphic",
-                                                                     nsContext ), null );
+        List<OMElement> descriptiveKeywords = getElements( sv_service_OR_md_dataIdentification,
+                                                           new XPath( "./gmd:descriptiveKeywords", nsContext ) );
 
-                String[] titleElements = getNodesAsStrings(
-                                                            sv_service_OR_md_dataIdentification,
-                                                            new XPath(
-                                                                       "./gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString",
-                                                                       nsContext ) );
+        String[] topicCategories = getNodesAsStrings( sv_service_OR_md_dataIdentification,
+                                                      new XPath( "./gmd:topicCategory/gmd:MD_TopicCategoryCode",
+                                                                 nsContext ) );
 
-                String[] alternateTitleElements = getNodesAsStrings(
-                                                                     sv_service_OR_md_dataIdentification,
-                                                                     new XPath(
-                                                                                "./gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString",
-                                                                                nsContext ) );
+        String graphicOverview = getNodeAsString( sv_service_OR_md_dataIdentification,
+                                                  new XPath( "./gmd:graphicOverview/gmd:MD_BrowseGraphic", nsContext ),
+                                                  null );
 
-                double boundingBoxWestLongitude = getNodeAsDouble( bbox,
-                                                                   new XPath( "./gmd:westBoundLongitude/gco:Decimal",
-                                                                              nsContext ), 0.0 );
+        String[] titleElements = getNodesAsStrings(
+                                                    sv_service_OR_md_dataIdentification,
+                                                    new XPath(
+                                                               "./gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                                                               nsContext ) );
 
-                double boundingBoxEastLongitude = getNodeAsDouble( bbox,
-                                                                   new XPath( "./gmd:eastBoundLongitude/gco:Decimal",
-                                                                              nsContext ), 0.0 );
-
-                double boundingBoxSouthLatitude = getNodeAsDouble( bbox,
-                                                                   new XPath( "./gmd:southBoundLatitude/gco:Decimal",
-                                                                              nsContext ), 0.0 );
-
-                double boundingBoxNorthLatitude = getNodeAsDouble( bbox,
-                                                                   new XPath( "./gmd:northBoundLatitude/gco:Decimal",
-                                                                              nsContext ), 0.0 );
-
-                qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxEastLongitude,
-                                                    boundingBoxSouthLatitude, boundingBoxNorthLatitude ) );
-
-                // TODO
-                CRS crs = new CRS( "EPSG:4326" );
-                crsList.add( crs );
-
-                qp.setTitle( Arrays.asList( titleElements ) );
-
-                qp.setAlternateTitle( Arrays.asList( alternateTitleElements ) );
-
-                rp.setGraphicOverview( graphicOverview );
-
-                Keyword keywordClass;
-
-                List<Keyword> listOfKeywords = new ArrayList<Keyword>();
-                for ( OMElement md_keywords : descriptiveKeywords ) {
-                    keywordClass = new Keyword();
-
-                    String keywordType = getNodeAsString(
-                                                          md_keywords,
-                                                          new XPath(
-                                                                     "./gmd:MD_Keywords/gmd:type/gmd:MD_KeywordTypeCode/@codeListValue",
-                                                                     nsContext ), null );
-
-                    String[] keywords = getNodesAsStrings(
-                                                           md_keywords,
-                                                           new XPath(
-                                                                      "./gmd:MD_Keywords/gmd:keyword/gco:CharacterString",
-                                                                      nsContext ) );
-
-                    String thesaurus = getNodeAsString(
-                                                        md_keywords,
-                                                        new XPath(
-                                                                   "./gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString",
-                                                                   nsContext ), null );
-
-                    keywordClass.setKeywordType( keywordType );
-
-                    keywordClass.setKeywords( Arrays.asList( keywords ) );
-
-                    keywordClass.setThesaurus( thesaurus );
-                    listOfKeywords.add( keywordClass );
-
-                }
-
-                qp.setKeywords( listOfKeywords );
-                qp.setTopicCategory( Arrays.asList( topicCategories ) );
-
-                String revisionDateString = getNodeAsString(
+        String[] alternateTitleElements = getNodesAsStrings(
                                                              sv_service_OR_md_dataIdentification,
                                                              new XPath(
-                                                                        "./gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date",
-                                                                        nsContext ), "0000-00-00" );
-                Date date = null;
-                try {
-                    date = new Date( revisionDateString );
-                } catch ( ParseException e ) {
+                                                                        "./gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString",
+                                                                        nsContext ) );
 
-                    e.printStackTrace();
-                }
+        double boundingBoxWestLongitude = getNodeAsDouble( bbox, new XPath( "./gmd:westBoundLongitude/gco:Decimal",
+                                                                            nsContext ), 0.0 );
 
-                qp.setRevisionDate( date );
+        double boundingBoxEastLongitude = getNodeAsDouble( bbox, new XPath( "./gmd:eastBoundLongitude/gco:Decimal",
+                                                                            nsContext ), 0.0 );
 
-                String creationDateString = getNodeAsString(
-                                                             sv_service_OR_md_dataIdentification,
-                                                             new XPath(
-                                                                        "././gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date",
-                                                                        nsContext ), "0000-00-00" );
+        double boundingBoxSouthLatitude = getNodeAsDouble( bbox, new XPath( "./gmd:southBoundLatitude/gco:Decimal",
+                                                                            nsContext ), 0.0 );
 
-                try {
-                    date = new Date( creationDateString );
-                } catch ( ParseException e ) {
+        double boundingBoxNorthLatitude = getNodeAsDouble( bbox, new XPath( "./gmd:northBoundLatitude/gco:Decimal",
+                                                                            nsContext ), 0.0 );
 
-                    e.printStackTrace();
-                }
+        qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxEastLongitude,
+                                            boundingBoxSouthLatitude, boundingBoxNorthLatitude ) );
 
-                qp.setCreationDate( date );
+        CRS crs = new CRS( "EPSG:4326" );
+        crsList.add( crs );
+        qp.setCrs( crsList );
 
-                String publicationDateString = getNodeAsString(
-                                                                sv_service_OR_md_dataIdentification,
-                                                                new XPath(
-                                                                           "././gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date",
-                                                                           nsContext ), "0000-00-00" );
+        qp.setTitle( Arrays.asList( titleElements ) );
 
-                try {
-                    date = new Date( publicationDateString );
-                } catch ( ParseException e ) {
+        qp.setAlternateTitle( Arrays.asList( alternateTitleElements ) );
 
-                    e.printStackTrace();
-                }
+        rp.setGraphicOverview( graphicOverview );
 
-                qp.setPublicationDate( date );
+        Keyword keywordClass;
 
-                String relation = getNodeAsString( md_identification,
-                                                   new XPath( "./gmd:aggreationInfo/gco:CharacterString", nsContext ),
-                                                   null );
-                rp.setRelation( relation );
+        List<Keyword> listOfKeywords = new ArrayList<Keyword>();
+        for ( OMElement md_keywords : descriptiveKeywords ) {
+            keywordClass = new Keyword();
 
-                String[] rightsStrings = getNodesAsStrings(
-                                                            md_identification,
-                                                            new XPath(
-                                                                       "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue",
-                                                                       nsContext ) );
+            String keywordType = getNodeAsString(
+                                                  md_keywords,
+                                                  new XPath(
+                                                             "./gmd:MD_Keywords/gmd:type/gmd:MD_KeywordTypeCode/@codeListValue",
+                                                             nsContext ), null );
 
-                rp.setRights( Arrays.asList( rightsStrings ) );
+            String[] keywords = getNodesAsStrings( md_keywords,
+                                                   new XPath( "./gmd:MD_Keywords/gmd:keyword/gco:CharacterString",
+                                                              nsContext ) );
 
-                String organisationName = getNodeAsString(
-                                                           md_identification,
-                                                           new XPath(
-                                                                      "./gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString",
-                                                                      nsContext ), null );
+            String thesaurus = getNodeAsString(
+                                                md_keywords,
+                                                new XPath(
+                                                           "./gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                                                           nsContext ), null );
 
-                qp.setOrganisationName( organisationName );
+            keywordClass.setKeywordType( keywordType );
 
-                boolean hasSecurityConstraint = getNodeAsBoolean(
-                                                                  md_identification,
-                                                                  new XPath(
-                                                                             "./gmd:MD_Identification/gmd:resourceConstraints/gmd:MD_SecurityConstraints",
-                                                                             nsContext ), false );
-                qp.setHasSecurityConstraints( hasSecurityConstraint );
+            keywordClass.setKeywords( Arrays.asList( keywords ) );
 
-                String[] _abstractStrings = getNodesAsStrings( _abstract,
-                                                               new XPath( "./gco:CharacterString", nsContext ) );
-
-                qp.set_abstract( Arrays.asList( _abstractStrings ) );
-
-                identificationInfo = elem;
-                OMNamespace namespace = identificationInfo.getNamespace();
-                identificationInfo.setNamespace( namespace );
-                continue;
-
-            }
-
-            if ( elem.getLocalName().equals( "distributionInfo" ) ) {
-                List<OMElement> formats = getElements(
-                                                       elem,
-                                                       new XPath(
-                                                                  "./gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format",
-                                                                  nsContext ) );
-
-                String onlineResource = getNodeAsString(
-                                                         elem,
-                                                         new XPath(
-                                                                    "./gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL",
-                                                                    nsContext ), null );
-
-                Format formatClass = null;
-                List<Format> listOfFormats = new ArrayList<Format>();
-                for ( OMElement md_format : formats ) {
-                    formatClass = new Format();
-                    String formatName = getNodeAsString( md_format, new XPath( "./gmd:name/gco:CharacterString",
-                                                                               nsContext ), null );
-
-                    String formatVersion = getNodeAsString( md_format, new XPath( "./gmd:version/gco:CharacterString",
-                                                                                  nsContext ), null );
-
-                    formatClass.setName( formatName );
-                    formatClass.setVersion( formatVersion );
-
-                    listOfFormats.add( formatClass );
-
-                }
-
-                qp.setFormat( listOfFormats );
-                distributionInfo = elem;
-                OMNamespace namespace = distributionInfo.getNamespace();
-                distributionInfo.setNamespace( namespace );
-                continue;
-            }
+            keywordClass.setThesaurus( thesaurus );
+            listOfKeywords.add( keywordClass );
 
         }
-        qp.setCrs( crsList );
+
+        qp.setKeywords( listOfKeywords );
+        qp.setTopicCategory( Arrays.asList( topicCategories ) );
+
+        String revisionDateString = getNodeAsString(
+                                                     sv_service_OR_md_dataIdentification,
+                                                     new XPath(
+                                                                "./gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date",
+                                                                nsContext ), "0000-00-00" );
+        date = null;
+        try {
+            date = new Date( revisionDateString );
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        }
+
+        qp.setRevisionDate( date );
+
+        String creationDateString = getNodeAsString(
+                                                     sv_service_OR_md_dataIdentification,
+                                                     new XPath(
+                                                                "././gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date",
+                                                                nsContext ), "0000-00-00" );
+
+        try {
+            date = new Date( creationDateString );
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        }
+
+        qp.setCreationDate( date );
+
+        String publicationDateString = getNodeAsString(
+                                                        sv_service_OR_md_dataIdentification,
+                                                        new XPath(
+                                                                   "././gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date",
+                                                                   nsContext ), "0000-00-00" );
+
+        try {
+            date = new Date( publicationDateString );
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        }
+
+        qp.setPublicationDate( date );
+
+        String relation = getNodeAsString( md_identification, new XPath( "./gmd:aggreationInfo/gco:CharacterString",
+                                                                         nsContext ), null );
+        rp.setRelation( relation );
+
+        String[] rightsStrings = getNodesAsStrings(
+                                                    md_identification,
+                                                    new XPath(
+                                                               "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/@codeListValue",
+                                                               nsContext ) );
+
+        rp.setRights( Arrays.asList( rightsStrings ) );
+
+        String organisationName = getNodeAsString(
+                                                   md_identification,
+                                                   new XPath(
+                                                              "./gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString",
+                                                              nsContext ), null );
+
+        qp.setOrganisationName( organisationName );
+
+        boolean hasSecurityConstraint = getNodeAsBoolean(
+                                                          md_identification,
+                                                          new XPath(
+                                                                     "./gmd:MD_Identification/gmd:resourceConstraints/gmd:MD_SecurityConstraints",
+                                                                     nsContext ), false );
+        qp.setHasSecurityConstraints( hasSecurityConstraint );
+
+        String[] _abstractStrings = getNodesAsStrings( _abstract, new XPath( "./gco:CharacterString", nsContext ) );
+
+        qp.set_abstract( Arrays.asList( _abstractStrings ) );
+
+        identificationInfo = getElement( rootElement, new XPath( "./gmd:identificationInfo", nsContext ) );
+
+        List<OMElement> formats = getElements(
+                                               rootElement,
+                                               new XPath(
+                                                          "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format",
+                                                          nsContext ) );
+
+        String onlineResource = getNodeAsString(
+                                                 rootElement,
+                                                 new XPath(
+                                                            "./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL",
+                                                            nsContext ), null );
+
+        Format formatClass = null;
+        List<Format> listOfFormats = new ArrayList<Format>();
+        for ( OMElement md_format : formats ) {
+            formatClass = new Format();
+            String formatName = getNodeAsString( md_format, new XPath( "./gmd:name/gco:CharacterString", nsContext ),
+                                                 null );
+
+            String formatVersion = getNodeAsString( md_format, new XPath( "./gmd:version/gco:CharacterString",
+                                                                          nsContext ), null );
+
+            formatClass.setName( formatName );
+            formatClass.setVersion( formatVersion );
+
+            listOfFormats.add( formatClass );
+
+        }
+
+        qp.setFormat( listOfFormats );
+        distributionInfo = getElement( rootElement, new XPath( "./gmd:distributionInfo", nsContext ) );
 
     }
 
@@ -805,128 +673,78 @@ public class ISOQPParsing extends XMLAdapter {
     public void parseAPDC()
                             throws IOException {
 
-        // /*/self::node() => /*/self::* => /* -> Transaction
-        // */MD_Metadata -> null
-        // //MD_Metadata => ./gmd:MD_Metadata -> null
-        // */self::* => * => ./* => ./child::*-> fileIdentifier, identificationInfo
-        // ./. => ./self::node() -> MD_Metadata
-        // //. -> jedes element...alles also
-        // /*/*/gmd:MD_Metadata -> MD_Metadata
-        List<OMElement> recordElements = getElements( rootElement, new XPath( "*", nsContext ) );
         List<Keyword> keywordList = new ArrayList<Keyword>();
-        List<String> title = new ArrayList<String>();
-        List<String> _abstract = new ArrayList<String>();
+
         List<Format> formatList = new ArrayList<Format>();
         StringWriter anyText = new StringWriter();
+        Keyword keyword = new Keyword();
+        Format format = new Format();
 
-        for ( OMElement elem : recordElements ) {
-            anyText.append( elem.toString() );
-            if ( elem.getLocalName().equals( "identifier" ) ) {
-                qp.setIdentifier( getNodeAsString( elem, new XPath( ".", nsContext ), null ) );
+        anyText.append( rootElement.toString() );
 
-                continue;
+        qp.setIdentifier( getNodeAsString( rootElement, new XPath( "./dc:identifier", nsContext ), null ) );
 
-            }
-            if ( elem.getLocalName().equals( "creator" ) ) {
-                rp.setCreator( getNodeAsString( elem, new XPath( ".", nsContext ), null ) );
-                continue;
+        rp.setCreator( getNodeAsString( rootElement, new XPath( "./dc:creator", nsContext ), null ) );
 
-            }
-            Keyword keyword = new Keyword();
-
-            if ( elem.getLocalName().equals( "subject" ) ) {
-                List<String> keywordStringList = new ArrayList<String>();
-                keywordStringList.add( getNodeAsString( elem, new XPath( ".", nsContext ), null ) );
-                keyword.setKeywords( keywordStringList );
-                keywordList.add( keyword );
-                continue;
-
-            }
-            if ( elem.getLocalName().equals( "title" ) ) {
-                String titleString = getNodeAsString( elem, new XPath( ".", nsContext ), null );
-                title.add( titleString );
-                continue;
-
-            }
-            if ( elem.getLocalName().equals( "abstract" ) ) {
-                String _abstractString = getNodeAsString( elem, new XPath( ".", nsContext ), null );
-                _abstract.add( _abstractString );
-                continue;
-
-            }
-            Format format = new Format();
-            if ( elem.getLocalName().equals( "format" ) ) {
-                String formatString = getNodeAsString( elem, new XPath( ".", nsContext ), null );
-                format.setName( formatString );
-                continue;
-
-            }
-            if ( elem.getLocalName().equals( "modified" ) ) {
-                String modifiedString = getNodeAsString( elem, new XPath( ".", nsContext ), null );
-                Date modified = null;
-                try {
-                    modified = new Date( modifiedString );
-                } catch ( ParseException e ) {
-
-                    e.printStackTrace();
-                }
-                qp.setModified( modified );
-                continue;
-
-            }
-            if ( elem.getLocalName().equals( "type" ) ) {
-                String type = getNodeAsString( elem, new XPath( ".", nsContext ), null );
-                qp.setType( type );
-                continue;
-
-            }
-            if ( elem.getLocalName().equals( "BoundingBox" ) || elem.getLocalName().equals( "WGS84BoundingBox" ) ) {
-                String bbox_lowerCorner = getNodeAsString( elem, new XPath( "./ows:LowerCorner", nsContext ), null );
-                String bbox_upperCorner = getNodeAsString( elem, new XPath( "./ows:UpperCorner", nsContext ), null );
-
-                String[] lowerCornerSplitting = bbox_lowerCorner.split( " " );
-                String[] upperCornerSplitting = bbox_upperCorner.split( " " );
-
-                double boundingBoxWestLongitude = Double.parseDouble( lowerCornerSplitting[0] );
-
-                double boundingBoxEastLongitude = Double.parseDouble( lowerCornerSplitting[1] );
-
-                double boundingBoxSouthLatitude = Double.parseDouble( upperCornerSplitting[0] );
-
-                double boundingBoxNorthLatitude = Double.parseDouble( upperCornerSplitting[1] );
-
-                qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxEastLongitude,
-                                                    boundingBoxSouthLatitude, boundingBoxNorthLatitude ) );
-
-                continue;
-
-            }
-
-            if ( elem.getLocalName().equals( "publisher" ) ) {
-                String publisher = getNodeAsString( elem, new XPath( ".", nsContext ), null );
-                rp.setPublisher( publisher );
-                continue;
-
-            }
-            if ( elem.getLocalName().equals( "contributor" ) ) {
-                String contributor = getNodeAsString( elem, new XPath( ".", nsContext ), null );
-                rp.setContributor( contributor );
-                continue;
-
-            }
-            if ( elem.getLocalName().equals( "source" ) ) {
-                String source = getNodeAsString( elem, new XPath( ".", nsContext ), null );
-                rp.setSource( source );
-                continue;
-
-            }
-
-        }
-        qp.set_abstract( _abstract );
-        qp.setTitle( title );
+        keyword.setKeywords( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dc:subject", nsContext ) ) ) );
+        keywordList.add( keyword );
         qp.setKeywords( keywordList );
-        qp.setAnyText( anyText.toString() );
+
+        qp.setTitle( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dc:title", nsContext ) ) ) );
+
+        qp.set_abstract( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dct:abstract", nsContext ) ) ) );
+
+        String[] formatStrings = getNodesAsStrings( rootElement, new XPath( "./dc:format", nsContext ) );
+
+        for ( String s : formatStrings ) {
+            format.setName( s );
+            formatList.add( format );
+        }
+
         qp.setFormat( formatList );
+
+        Date modified = null;
+        try {
+            modified = new Date( getNodeAsString( rootElement, new XPath( "./dct:modified", nsContext ), null ) );
+        } catch ( ParseException e ) {
+
+            e.printStackTrace();
+        }
+        qp.setModified( modified );
+
+        qp.setType( getNodeAsString( rootElement, new XPath( "./dc:type", nsContext ), null ) );
+
+        String bbox_lowerCorner = getNodeAsString(
+                                                   rootElement,
+                                                   new XPath(
+                                                              "./ows:BoundingBox | ows:WGS84BoundingBox/ows:LowerCorner",
+                                                              nsContext ), null );
+        String bbox_upperCorner = getNodeAsString(
+                                                   rootElement,
+                                                   new XPath(
+                                                              "./ows:BoundingBox | ows:WGS84BoundingBox/ows:UpperCorner",
+                                                              nsContext ), null );
+
+        String[] lowerCornerSplitting = bbox_lowerCorner.split( " " );
+        String[] upperCornerSplitting = bbox_upperCorner.split( " " );
+
+        double boundingBoxWestLongitude = Double.parseDouble( lowerCornerSplitting[0] );
+
+        double boundingBoxEastLongitude = Double.parseDouble( lowerCornerSplitting[1] );
+
+        double boundingBoxSouthLatitude = Double.parseDouble( upperCornerSplitting[0] );
+
+        double boundingBoxNorthLatitude = Double.parseDouble( upperCornerSplitting[1] );
+
+        qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxEastLongitude,
+                                            boundingBoxSouthLatitude, boundingBoxNorthLatitude ) );
+
+        rp.setPublisher( getNodeAsString( rootElement, new XPath( "./dc:publisher", nsContext ), null ) );
+
+        rp.setContributor( getNodeAsString( rootElement, new XPath( "./dc:contributor", nsContext ), null ) );
+
+        rp.setSource( getNodeAsString( rootElement, new XPath( "./dc:source", nsContext ), null ) );
+
     }
 
     /**
