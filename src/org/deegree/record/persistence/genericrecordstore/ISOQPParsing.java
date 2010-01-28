@@ -49,6 +49,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
@@ -157,7 +160,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     private OMElement identificationInfo = null;
 
-    private List<OMElement> referenceSystemInfo = null;
+    private List<OMElement> referenceSystemInfo = new ArrayList<OMElement>();
 
     private OMElement distributionInfo = null;
 
@@ -167,7 +170,7 @@ public class ISOQPParsing extends XMLAdapter {
 
     private List<Integer> recordInsertIDs;
 
-    List<CRS> crsList = new ArrayList<CRS>();
+    private List<CRS> crsList = new ArrayList<CRS>();
 
     /**
      * 
@@ -198,10 +201,15 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     private List<String> validate( OMElement elem ) {
-        String s = elem.toString();
-        StringReader reader = new StringReader( s );
-        return SchemaValidator.validate( reader,
-                                                        "http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd" );
+        StringWriter s = new StringWriter();
+        try {
+            elem.serialize( s );
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        StringReader reader = new StringReader( s.toString() );
+        return SchemaValidator.validate( reader, "http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd" );
     }
 
     /**
@@ -214,7 +222,7 @@ public class ISOQPParsing extends XMLAdapter {
      * 
      * @throws IOException
      */
-    public void parseAPISO()
+    public void parseAPISO( boolean isInspire )
                             throws IOException {
         // qp.setAnyText( element.toString() );
 
@@ -225,7 +233,6 @@ public class ISOQPParsing extends XMLAdapter {
         // ./. => ./self::node() -> MD_Metadata
         // //. -> jedes element...alles also
         // /*/*/gmd:MD_Metadata -> MD_Metadata
-
         List<OMElement> recordElements = getElements( rootElement, new XPath( "*", nsContext ) );
         for ( OMElement elem : recordElements ) {
 
@@ -270,17 +277,6 @@ public class ISOQPParsing extends XMLAdapter {
                 hierarchyLevelName.setNamespace( namespace );
 
                 continue;
-            }
-
-            if ( elem.getLocalName().equals( "parentIdentifier" ) ) {
-                qp.setParentIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
-
-                parentIdentifier = elem;
-                OMNamespace namespace = parentIdentifier.getNamespace();
-                parentIdentifier.setNamespace( namespace );
-
-                continue;
-
             }
 
             if ( elem.getLocalName().equals( "dateStamp" ) ) {
@@ -383,10 +379,14 @@ public class ISOQPParsing extends XMLAdapter {
                 continue;
             }
             if ( elem.getLocalName().equals( "parentIdentifier" ) ) {
+                qp.setParentIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
 
                 parentIdentifier = elem;
-                qp.setParentIdentifier( getNodeAsString( elem, new XPath( "./gco:CharacterString", nsContext ), null ) );
+                OMNamespace namespace = parentIdentifier.getNamespace();
+                parentIdentifier.setNamespace( namespace );
+
                 continue;
+
             }
 
             if ( elem.getLocalName().equals( "identificationInfo" ) ) {
@@ -439,15 +439,15 @@ public class ISOQPParsing extends XMLAdapter {
                 int denominator = getNodeAsInt(
                                                 spatialResolution,
                                                 new XPath(
-                                                           "./gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator",
-                                                           nsContext ), 0 );
+                                                           "./gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer",
+                                                           nsContext ), -1 );
                 qp.setDenominator( denominator );
 
                 // TODO put here the constraint that there can a denominator be available iff distanceValue and
                 // distanceUOM are not set and vice versa!!
                 float distanceValue = getNodeAsFloat( spatialResolution,
                                                       new XPath( "./gmd:MD_Resolution/gmd:distance/gco:Distance",
-                                                                 nsContext ), 0 );
+                                                                 nsContext ), -1 );
                 qp.setDistanceValue( distanceValue );
 
                 String distanceUOM = getNodeAsString( spatialResolution,
@@ -489,6 +489,17 @@ public class ISOQPParsing extends XMLAdapter {
                                                                                        "./srv:extent/srv:EX_Extent/srv:geographicElement/srv:EX_GeopraphicDescription/srv:geographicIdentifier/srv:MD_Identifier/srv:code",
                                                                                        nsContext ), null );
                 qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
+
+                String[] resourceIdentifierList = getNodesAsStrings(
+                                                                     sv_service_OR_md_dataIdentification,
+                                                                     new XPath(
+                                                                                "./gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
+                                                                                nsContext ) );
+
+                for ( int i = 0; i < resourceIdentifierList.length; i++ ) {
+                    String at = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
+                    System.out.println( at );
+                }
 
                 String operatesOn = getNodeAsString(
                                                      sv_service_OR_md_dataIdentification,
@@ -1655,7 +1666,7 @@ public class ISOQPParsing extends XMLAdapter {
                 id = getLastDatasetId( connection, databaseTable );
                 id++;
                 sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, resourcelanguage) VALUES (" + id
-                               + "," + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
+                               + "," + mainDatabaseTableID + ",'" + qp.getResourceLanguage() + "');";
             } else {
                 sqlStatement = "UPDATE " + databaseTable + " SET resourcelanguage = '" + qp.getResourceLanguage()
                                + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
@@ -2307,7 +2318,6 @@ public class ISOQPParsing extends XMLAdapter {
         OMElement omLowerCorner = factory.createOMElement( "LowerCorner", namespaceOWS );
         OMElement omUpperCorner = factory.createOMElement( "UpperCorner", namespaceOWS );
         OMAttribute omCrs = factory.createOMAttribute( "crs", namespaceOWS, "EPSG:4326" );
-        System.out.println( "CRS: " + qp.getCrs() );
 
         omUpperCorner.setText( qp.getBoundingBox().getEastBoundLongitude() + " "
                                + qp.getBoundingBox().getSouthBoundLatitude() );
