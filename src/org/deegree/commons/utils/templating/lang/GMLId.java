@@ -55,15 +55,21 @@ public class GMLId {
     /**
      * @param sb
      * @param o
+     * @param parent
      */
-    public void eval( StringBuilder sb, Object o ) {
+    public void eval( StringBuilder sb, Object o, Feature parent ) {
         if ( o instanceof Feature ) {
             String id = ( (Feature) o ).getId();
             if ( id != null && !id.isEmpty() ) {
                 sb.append( id );
             }
+        } else if ( parent != null ) {
+            String id = parent.getId();
+            if ( id != null && !id.isEmpty() ) {
+                sb.append( id );
+            }
         } else {
-            LOG.warn( "Trying to get GML id from property." );
+            LOG.warn( "Trying to get GML id from property without parent information." );
         }
     }
 

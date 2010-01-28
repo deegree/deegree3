@@ -114,7 +114,7 @@ public class FeatureTemplateCall {
                 ( (OddEven) o ).eval( sb, defs, f, 1 + list.indexOf( f ) );
             }
             if ( o instanceof GMLId ) {
-                ( (GMLId) o ).eval( sb, f );
+                ( (GMLId) o ).eval( sb, f, null );
             }
         }
     }
