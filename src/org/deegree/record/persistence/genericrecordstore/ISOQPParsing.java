@@ -36,6 +36,7 @@
 package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -57,8 +58,9 @@ import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.crs.CRS;
+import org.deegree.protocol.csw.CSWConstants;
 
 /**
  * The parsing for the ISO application profile.
@@ -195,6 +197,13 @@ public class ISOQPParsing extends XMLAdapter {
         // }
     }
 
+    private List<String> validate( OMElement elem ) {
+        String s = elem.toString();
+        StringReader reader = new StringReader( s );
+        return SchemaValidator.validate( reader,
+                                                        "http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd" );
+    }
+
     /**
      * Parses the recordelement that should be inserted into the backend. Every elementknot is put into an OMElement and
      * its atomic representation:
@@ -216,6 +225,7 @@ public class ISOQPParsing extends XMLAdapter {
         // ./. => ./self::node() -> MD_Metadata
         // //. -> jedes element...alles also
         // /*/*/gmd:MD_Metadata -> MD_Metadata
+
         List<OMElement> recordElements = getElements( rootElement, new XPath( "*", nsContext ) );
         for ( OMElement elem : recordElements ) {
 
