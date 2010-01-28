@@ -132,7 +132,7 @@ public interface RecordStore {
      * The transactionType that is requested
      * 
      */
-    public void transaction(XMLStreamWriter writer, TransactionOperation operations) throws SQLException, XMLStreamException ;
+    public void transaction(XMLStreamWriter writer, TransactionOperation operations, boolean isInspire) throws SQLException, XMLStreamException ;
 
     /**
      * Returns the typeNames that are known in the backend. <br/>
