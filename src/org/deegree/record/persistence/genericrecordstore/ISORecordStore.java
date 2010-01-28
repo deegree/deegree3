@@ -663,7 +663,7 @@ public class ISORecordStore implements RecordStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public void transaction( XMLStreamWriter writer, TransactionOperation operations )
+    public void transaction( XMLStreamWriter writer, TransactionOperation operations, boolean isInspire )
                             throws SQLException, XMLStreamException {
 
         Connection conn = ConnectionManager.getConnection( connectionId );
@@ -681,7 +681,7 @@ public class ISORecordStore implements RecordStore {
                         elementParsing.parseAPDC( );
                         
                     }else{
-                        elementParsing.parseAPISO( );
+                        elementParsing.parseAPISO( isInspire );
                         isDC = false;
                     }
                     elementParsing.executeInsertStatement(isDC);
