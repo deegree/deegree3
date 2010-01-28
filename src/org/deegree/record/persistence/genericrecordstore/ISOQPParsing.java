@@ -49,11 +49,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
@@ -192,6 +192,15 @@ public class ISOQPParsing extends XMLAdapter {
 
     }
 
+    /**
+     * Before any transaction operation is possible there should be an evaluation of the record. The response of the
+     * full ISO record has to be valid. With this method this is guaranteed.
+     * 
+     * @param elem
+     *            that has to be evaluated before there is any transaction operation possible.
+     * @return
+     * a list of error-strings
+     */
     private List<String> validate( OMElement elem ) {
         StringWriter s = new StringWriter();
         try {
@@ -200,7 +209,13 @@ public class ISOQPParsing extends XMLAdapter {
             e.printStackTrace();
         }
         StringReader reader = new StringReader( s.toString() );
-        return SchemaValidator.validate( reader, "http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd" );
+        if ( elem.getLocalName().equals( "MD_Metadata" ) ) {
+            return SchemaValidator.validate( reader, "http://www.isotc211.org/2005/gmd/metadataEntity.xsd" );
+
+        } else {
+            return SchemaValidator.validate( reader, "http://schemas.opengis.net/csw/2.0.2/record.xsd" );
+
+        }
     }
 
     /**
@@ -212,12 +227,13 @@ public class ISOQPParsing extends XMLAdapter {
      * 
      * 
      * @throws IOException
+     * @throws ValidationException
      */
     public void parseAPISO( boolean isInspire )
                             throws IOException {
 
         for ( String error : validate( rootElement ) ) {
-            System.out.println( "VALIDATION-ERROR: " + error );
+            throw new IOException( "VALIDATION-ERROR: " + error );
         }
 
         qp.setIdentifier( getNodeAsString( rootElement, new XPath( "./gmd:fileIdentifier/gco:CharacterString",
@@ -233,8 +249,8 @@ public class ISOQPParsing extends XMLAdapter {
          * <p>
          * if provided data is a service: type = service
          */
-        qp.setType( getNodeAsString( rootElement, new XPath( "./gmd:MD_ScopeCode/@codeListValue", nsContext ),
-                                     "dataset" ) );
+        qp.setType( getNodeAsString( rootElement, new XPath( "./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
+                                                             nsContext ), "dataset" ) );
         hierarchyLevel = getElement( rootElement, new XPath( "./gmd:hierarchyLevel", nsContext ) );
 
         hierarchyLevelName = getElement( rootElement, new XPath( "./gmd:hierarchyLevelName", nsContext ) );
@@ -297,7 +313,7 @@ public class ISOQPParsing extends XMLAdapter {
         OMElement sv_service_OR_md_dataIdentification = getElement(
                                                                     rootElement,
                                                                     new XPath(
-                                                                               "./srv:SV_ServiceIdentification | gmd:MD_DataIdentification",
+                                                                               "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification",
                                                                                nsContext ) );
 
         OMElement ci_responsibleParty = getElement( sv_service_OR_md_dataIdentification,
@@ -673,6 +689,10 @@ public class ISOQPParsing extends XMLAdapter {
     public void parseAPDC()
                             throws IOException {
 
+        for ( String error : validate( rootElement ) ) {
+            System.out.println( "VALIDATION-ERROR: " + error );
+        }
+
         List<Keyword> keywordList = new ArrayList<Keyword>();
 
         List<Format> formatList = new ArrayList<Format>();
@@ -717,12 +737,12 @@ public class ISOQPParsing extends XMLAdapter {
         String bbox_lowerCorner = getNodeAsString(
                                                    rootElement,
                                                    new XPath(
-                                                              "./ows:BoundingBox | ows:WGS84BoundingBox/ows:LowerCorner",
+                                                              "./ows:BoundingBox | ./ows:WGS84BoundingBox/ows:LowerCorner",
                                                               nsContext ), null );
         String bbox_upperCorner = getNodeAsString(
                                                    rootElement,
                                                    new XPath(
-                                                              "./ows:BoundingBox | ows:WGS84BoundingBox/ows:UpperCorner",
+                                                              "./ows:BoundingBox | ./ows:WGS84BoundingBox/ows:UpperCorner",
                                                               nsContext ), null );
 
         String[] lowerCornerSplitting = bbox_lowerCorner.split( " " );
@@ -986,9 +1006,9 @@ public class ISOQPParsing extends XMLAdapter {
         if ( qp.getBoundingBox() != null ) {
             generateISOQP_BoundingBoxStatement( isUpdate );
         }
-        if ( qp.getCrs() != null || qp.getCrs().size() != 0 ) {
-            generateISOQP_CRSStatement( isUpdate );
-        }
+        // if ( qp.getCrs() != null || qp.getCrs().size() != 0 ) {
+        // generateISOQP_CRSStatement( isUpdate );
+        // }
 
     }
 
@@ -2135,7 +2155,7 @@ public class ISOQPParsing extends XMLAdapter {
         OMElement omBoundingBox = factory.createOMElement( "BoundingBox", namespaceOWS );
         OMElement omLowerCorner = factory.createOMElement( "LowerCorner", namespaceOWS );
         OMElement omUpperCorner = factory.createOMElement( "UpperCorner", namespaceOWS );
-        OMAttribute omCrs = factory.createOMAttribute( "crs", namespaceOWS, "EPSG:4326" );
+        // OMAttribute omCrs = factory.createOMAttribute( "crs", namespaceOWS, "EPSG:4326" );
 
         omUpperCorner.setText( qp.getBoundingBox().getEastBoundLongitude() + " "
                                + qp.getBoundingBox().getSouthBoundLatitude() );
@@ -2143,7 +2163,7 @@ public class ISOQPParsing extends XMLAdapter {
                                + qp.getBoundingBox().getNorthBoundLatitude() );
         omBoundingBox.addChild( omLowerCorner );
         omBoundingBox.addChild( omUpperCorner );
-        omBoundingBox.addAttribute( omCrs );
+        // omBoundingBox.addAttribute( omCrs );
 
         omElement.addChild( omBoundingBox );
 

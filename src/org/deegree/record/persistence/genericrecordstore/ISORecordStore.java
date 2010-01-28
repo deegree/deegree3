@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -105,6 +106,8 @@ public class ISORecordStore implements RecordStore {
     private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
     private String connectionId;
+
+    private List<Integer> insertedIds = new ArrayList<Integer>();
 
     /**
      * datasets
@@ -165,7 +168,7 @@ public class ISORecordStore implements RecordStore {
                 url_identification = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" );
 
                 urlConn = url_identification.openConnection();
-                
+
                 writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
 
             }
@@ -241,11 +244,11 @@ public class ISORecordStore implements RecordStore {
 
         int profileFormatNumberOutputSchema = 0;
         int typeNameFormatNumber = 0;
-        
-        if(typeNames.containsKey( typeName )){
+
+        if ( typeNames.containsKey( typeName ) ) {
             typeNameFormatNumber = typeNames.get( typeName );
         }
-        
+
         if ( typeName.getNamespaceURI().equals( outputSchema ) ) {
 
         } else {
@@ -288,16 +291,17 @@ public class ISORecordStore implements RecordStore {
      * @throws XMLStreamException
      * @throws IOException
      */
-    private void doHitsOnGetRecord( XMLStreamWriter writer, int typeNameFormatNumber, int profileFormatNumberOutputSchema,
-                                    GenericDatabaseDS constraint, JDBCConnections con, String formatType,
-                                    String resultType )
+    private void doHitsOnGetRecord( XMLStreamWriter writer, int typeNameFormatNumber,
+                                    int profileFormatNumberOutputSchema, GenericDatabaseDS constraint,
+                                    JDBCConnections con, String formatType, String resultType )
                             throws SQLException, XMLStreamException, IOException {
 
         int countRows = 0;
         int nextRecord = 0;
         int returnedRecords = 0;
 
-        Writer selectCountRows = generateSELECTStatement( formatType, constraint, typeNameFormatNumber, profileFormatNumberOutputSchema, true );
+        Writer selectCountRows = generateSELECTStatement( formatType, constraint, typeNameFormatNumber,
+                                                          profileFormatNumberOutputSchema, true );
 
         // ConnectionManager.addConnections( con );
         for ( PooledConnection pool : con.getPooledConnection() ) {
@@ -365,11 +369,10 @@ public class ISORecordStore implements RecordStore {
                                        GenericDatabaseDS constraint, JDBCConnections con )
                             throws SQLException, XMLStreamException, IOException {
         int typeNameFormatNumber = 0;
-        if(typeNames.containsKey( typeName )){
+        if ( typeNames.containsKey( typeName ) ) {
             typeNameFormatNumber = typeNames.get( typeName );
         }
-        
-        
+
         for ( PooledConnection pool : con.getPooledConnection() ) {
 
             Connection conn = ConnectionManager.getConnection( connectionId );
@@ -380,7 +383,8 @@ public class ISORecordStore implements RecordStore {
             case brief:
 
                 Writer selectBrief = generateSELECTStatement( formatTypeInGenericRecordStore.get( "brief" ),
-                                                              constraint, typeNameFormatNumber, profileFormatNumberOutputSchema, false );
+                                                              constraint, typeNameFormatNumber,
+                                                              profileFormatNumberOutputSchema, false );
                 rs = conn.createStatement().executeQuery( selectBrief.toString() );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
@@ -390,7 +394,8 @@ public class ISORecordStore implements RecordStore {
             case summary:
 
                 Writer selectSummary = generateSELECTStatement( formatTypeInGenericRecordStore.get( "summary" ),
-                                                                constraint, typeNameFormatNumber, profileFormatNumberOutputSchema, false );
+                                                                constraint, typeNameFormatNumber,
+                                                                profileFormatNumberOutputSchema, false );
                 rs = conn.createStatement().executeQuery( selectSummary.toString() );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
@@ -399,8 +404,9 @@ public class ISORecordStore implements RecordStore {
                 break;
             case full:
 
-                Writer selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint, typeNameFormatNumber,
-                                                             profileFormatNumberOutputSchema, false );
+                Writer selectFull = generateSELECTStatement( formatTypeInGenericRecordStore.get( "full" ), constraint,
+                                                             typeNameFormatNumber, profileFormatNumberOutputSchema,
+                                                             false );
                 rs = conn.createStatement().executeQuery( selectFull.toString() );
 
                 doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
@@ -463,8 +469,8 @@ public class ISORecordStore implements RecordStore {
      * @return
      * @throws IOException
      */
-    private Writer generateSELECTStatement( String formatType, GenericDatabaseDS constraint,
-                                            int typeNameFormatNumber, int profileFormatNumberOutputSchema, boolean setCount )
+    private Writer generateSELECTStatement( String formatType, GenericDatabaseDS constraint, int typeNameFormatNumber,
+                                            int profileFormatNumberOutputSchema, boolean setCount )
                             throws IOException {
         if ( constraint.getTable() != null ) {
             tableSet = constraint.getTable();
@@ -507,8 +513,9 @@ public class ISORecordStore implements RecordStore {
             s.append( ", " + concatTableFROM( tableSet ) );
         }
 
-        s.append( "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType + ".format = "+ typeNameFormatNumber +" AND " + formatType
-                  + "." + commonForeignkey + " >= " + constraint.getStartPosition() );
+        s.append( "WHERE " + formatType + "." + commonForeignkey + " = " + mainDatabaseTable + ".id AND " + formatType
+                  + ".format = " + typeNameFormatNumber + " AND " + formatType + "." + commonForeignkey + " >= "
+                  + constraint.getStartPosition() );
 
         if ( tableSet.size() == 0 ) {
             s.append( ' ' );
@@ -663,9 +670,10 @@ public class ISORecordStore implements RecordStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public void transaction( XMLStreamWriter writer, TransactionOperation operations, boolean isInspire )
+    public int transaction( XMLStreamWriter writer, TransactionOperation operations, boolean isInspire )
                             throws SQLException, XMLStreamException {
 
+        int successfullTransaction = 0;
         Connection conn = ConnectionManager.getConnection( connectionId );
 
         switch ( operations.getType() ) {
@@ -677,18 +685,19 @@ public class ISORecordStore implements RecordStore {
                 boolean isDC = true;
                 try {
                     ISOQPParsing elementParsing = new ISOQPParsing( element, conn );
-                    if(localName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ))|| localName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "" ))){
-                        elementParsing.parseAPDC( );
-                        
-                    }else{
+                    if ( localName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "csw" ) )
+                         || localName.equals( new QName( "http://www.opengis.net/cat/csw/2.0.2", "Record", "" ) ) ) {
+                        elementParsing.parseAPDC();
+
+                    } else {
                         elementParsing.parseAPISO( isInspire );
                         isDC = false;
                     }
-                    elementParsing.executeInsertStatement(isDC);
-                    getRecordsForTransactionInsertStatement( writer, conn, elementParsing.getRecordInsertIDs() );
-                    
-                    } catch ( IOException e ) {
-
+                    elementParsing.executeInsertStatement( isDC );
+                    insertedIds = elementParsing.getRecordInsertIDs();
+                    successfullTransaction++;
+                } catch ( IOException e ) {
+                    successfullTransaction--;
                     e.printStackTrace();
                 }
 
@@ -705,6 +714,7 @@ public class ISORecordStore implements RecordStore {
             if ( upd.getElement() != null ) {
                 ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement(), conn );
                 elementParsing.executeUpdateStatement();
+                successfullTransaction++;
             } else {
                 try {
                     TransformatorPostGres filterExpression = new TransformatorPostGres( upd.getConstraint() );
@@ -787,9 +797,9 @@ public class ISORecordStore implements RecordStore {
                         rsGetStoredFullRecordXML.close();
 
                     }
-
+                    successfullTransaction++;
                 } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
+                    successfullTransaction--;
                     e.printStackTrace();
                 }
             }
@@ -833,13 +843,14 @@ public class ISORecordStore implements RecordStore {
             for ( int i : deletableDatasets ) {
                 String deleteDataset = "DELETE FROM " + mainDatabaseTable + " WHERE id = " + i;
                 int deleteRS = conn.createStatement().executeUpdate( deleteDataset );
-
+                successfullTransaction++;
             }
 
             break;
         }
         conn.close();
 
+        return successfullTransaction;
     }
 
     /**
@@ -899,23 +910,10 @@ public class ISORecordStore implements RecordStore {
 
     }
 
-    /**
-     * Gets the records in dublin core representation for the insert transaction operation. If there is an INSERT
-     * statement in the transaction operation there must be a brief representation of this inserted record presented in
-     * the response.
-     * 
-     * @param writer
-     *            to be updated with a brief representation of the inserted records
-     * @param conn
-     * @param insertedIds
-     *            the briefrecord datasets that have been inserted into the backend
-     * @throws SQLException
-     * @throws IOException
-     */
-    private void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, Connection conn,
-                                                          List<Integer> insertedIds )
+    @Override
+    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer )
                             throws SQLException, IOException {
-
+        Connection conn = ConnectionManager.getConnection( connectionId );
         for ( int i : insertedIds ) {
             Writer s = new StringWriter();
             s.append( " SELECT " + "recordbrief" + ".data " + "FROM " + mainDatabaseTable + ", " + "recordbrief" + " " );

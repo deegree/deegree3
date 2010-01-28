@@ -37,6 +37,7 @@ package org.deegree.record.persistence;
 
 import java.io.IOException;
 import java.net.URI;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -104,12 +105,12 @@ public interface RecordStore {
      *            PostGresFilterTransformator that transforms the filterexpression into an SQL compatible fragment
      * @throws SQLException
      * @throws XMLStreamException
-     * @throws IOException 
+     * @throws IOException
      */
     public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, JDBCConnections connection,
-                            GenericDatabaseDS genericDatabaseDS ) 
+                            GenericDatabaseDS genericDatabaseDS )
                             throws SQLException, XMLStreamException, IOException;
-    
+
     /**
      * Exports the XML for the requested records.
      * 
@@ -117,22 +118,43 @@ public interface RecordStore {
      * @param connection
      * @param idList
      */
-    public void getRecordsById(XMLStreamWriter writer, JDBCConnections connection, List<String> idList);
-    
-    
-    
+    public void getRecordsById( XMLStreamWriter writer, JDBCConnections connection, List<String> idList );
+
     /**
-     * Exports the XML fragment to the recordstore
+     * 
+     * Exports the XML fragment to the recordstore.
+     * <p>
+     * INSERT-action: inserts one or more records to the backend. <br>
+     * UPDATE-action: updates one or more complete records OR individual properties. <br>
+     * DELETE-action: deletes one or more records by one filter expression.
+     * <p>
+     * 
      * 
      * @param writer
-     * writer to export to, must not be <code>null</code>
-     * @param connection
-     * JDBC connection attributes
-     * @param transactionType
-     * The transactionType that is requested
-     * 
+     *            writer to export to, must not be <code>null</code>
+     * @param operations
+     *            that are hold by this container
+     * @param isInspire
+     *            if there exists an INSPIRE constraint
+     * @return
+     * @throws SQLException
+     * @throws XMLStreamException
      */
-    public void transaction(XMLStreamWriter writer, TransactionOperation operations, boolean isInspire) throws SQLException, XMLStreamException ;
+    public int transaction( XMLStreamWriter writer, TransactionOperation operations, boolean isInspire )
+                            throws SQLException, XMLStreamException;
+
+    /**
+     * Gets the records in dublin core representation for the insert action of the transaction operation. If there is an
+     * INSERT statement in the transaction operation there has to be a brief representation (because of the validity) of
+     * this inserted record presented in the response.
+     * 
+     * @param writer
+     *            to be updated with a brief representation of the inserted records
+     * @throws SQLException
+     * @throws IOException
+     */
+    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer )
+                            throws SQLException, IOException;
 
     /**
      * Returns the typeNames that are known in the backend. <br/>
