@@ -36,7 +36,7 @@
 package org.deegree.record.persistence;
 
 /**
- * TODO add class documentation here
+ * Defines the mapping information from a profile specific propertyname to the database table.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
