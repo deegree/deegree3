@@ -98,8 +98,6 @@ public class PostGISWhereBuilder {
 
     private final OperatorFilter filter;
 
-    private final SortProperty[] sortCrit;
-
     private final boolean useLegacyPredicates;
 
     private OperatorFilter postFilter;
@@ -131,7 +129,6 @@ public class PostGISWhereBuilder {
                                 boolean useLegacyPredicates ) throws FilterEvaluationException {
         this.mapping = mapping;
         this.filter = filter;
-        this.sortCrit = sortCrit;
         this.useLegacyPredicates = useLegacyPredicates;
         if ( filter != null ) {
             buildWhere( filter.getOperator() );
@@ -147,6 +144,9 @@ public class PostGISWhereBuilder {
      * @return the WHERE clause, can be empty, but never <code>null</code>
      */
     public StringBuilder getWhereClause() {
+        if ( postFilter != null ) {
+            return new StringBuilder();
+        }
         return whereClause;
     }
 
@@ -165,6 +165,9 @@ public class PostGISWhereBuilder {
      * @return the ORDER BY clause, can be empty, but never <code>null</code>
      */
     public StringBuilder getOrderBy() {
+        if ( postSortCrit != null ) {
+            return new StringBuilder();
+        }
         return orderBy;
     }
 
@@ -402,7 +405,7 @@ public class PostGISWhereBuilder {
             buildWhere( beyond.getGeometry(), propName );
             whereClause.append( ',' );
             // TODO uom handling
-            whereClause.append (beyond.getDistance().getValue().toPlainString());            
+            whereClause.append( beyond.getDistance().getValue().toPlainString() );
             whereClause.append( ')' );
             break;
         }
@@ -431,7 +434,7 @@ public class PostGISWhereBuilder {
             buildWhere( propName );
             whereClause.append( ',' );
             buildWhere( crosses.getGeometry(), propName );
-            
+
             whereClause.append( ')' );
             break;
         }
@@ -462,8 +465,8 @@ public class PostGISWhereBuilder {
             buildWhere( dWithin.getGeometry(), propName );
             whereClause.append( ',' );
             // TODO uom handling
-            whereClause.append (dWithin.getDistance().getValue().toPlainString());
-            whereClause.append( ')' );            
+            whereClause.append( dWithin.getDistance().getValue().toPlainString() );
+            whereClause.append( ')' );
             break;
         }
         case EQUALS: {
@@ -548,7 +551,7 @@ public class PostGISWhereBuilder {
             whereClause.append( '.' );
             whereClause.append( propMapping.getColumn() );
         } else {
-            // TODO propagate information that no mapping is possible
+            postFilter = filter;
         }
     }
 
