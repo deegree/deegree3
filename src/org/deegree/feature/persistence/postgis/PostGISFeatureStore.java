@@ -325,10 +325,10 @@ public class PostGISFeatureStore implements FeatureStore {
             String version = determinePostGISVersion( conn );
             if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
                  || version.startsWith( "1.2" ) ) {
-                LOG.info( "PostGIS version is " + version + " -- using legacy (SQL-MM) predicates." );
+                LOG.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
                 useLegacyPredicates = true;
             } else {
-                LOG.info( "PostGIS version is " + version + " -- using modern (pre-SQL-MM) predicates." );
+                LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
             }
 
             stmt = conn.createStatement();
