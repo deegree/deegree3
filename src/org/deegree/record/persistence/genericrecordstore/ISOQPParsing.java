@@ -737,12 +737,12 @@ public class ISOQPParsing extends XMLAdapter {
         String bbox_lowerCorner = getNodeAsString(
                                                    rootElement,
                                                    new XPath(
-                                                              "./ows:BoundingBox | ./ows:WGS84BoundingBox/ows:LowerCorner",
+                                                              "./ows:BoundingBox/ows:LowerCorner | ./ows:WGS84BoundingBox/ows:LowerCorner",
                                                               nsContext ), null );
         String bbox_upperCorner = getNodeAsString(
                                                    rootElement,
                                                    new XPath(
-                                                              "./ows:BoundingBox | ./ows:WGS84BoundingBox/ows:UpperCorner",
+                                                              "./ows:BoundingBox/ows:UpperCorner | ./ows:WGS84BoundingBox/ows:UpperCorner",
                                                               nsContext ), null );
 
         String[] lowerCornerSplitting = bbox_lowerCorner.split( " " );
