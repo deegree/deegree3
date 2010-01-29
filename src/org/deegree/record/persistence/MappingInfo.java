@@ -67,7 +67,7 @@ public class MappingInfo {
     }
 
     public enum ColumnType {
-        STRING, INTEGER, DATE, ENVELOPE
+        STRING, INTEGER, DATE, ENVELOPE, FLOAT 
     }
 
     /**

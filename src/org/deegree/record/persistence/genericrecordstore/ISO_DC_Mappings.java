@@ -37,6 +37,9 @@ package org.deegree.record.persistence.genericrecordstore;
 
 import static org.deegree.record.persistence.MappingInfo.ColumnType.DATE;
 import static org.deegree.record.persistence.MappingInfo.ColumnType.STRING;
+import static org.deegree.record.persistence.MappingInfo.ColumnType.INTEGER;
+import static org.deegree.record.persistence.MappingInfo.ColumnType.ENVELOPE;
+import static org.deegree.record.persistence.MappingInfo.ColumnType.FLOAT;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -108,45 +111,55 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings{
         
         //----------------------------------------------------------------------------------------
         //----------------------<additional common queryable properties>--------------------------
-        propToTableAndCol.put( "apiso:language", new MappingInfo( "datasets", "language", STRING ) );
+        propToTableAndCol.put( "apiso:Language", new MappingInfo( "datasets", "language", STRING ) );
         
-        propToTableAndCol.put( "apiso:revisiondate", new MappingInfo( "isoqp_revisiondate", "revisiondate", STRING ) );
+        propToTableAndCol.put( "apiso:RevisionDate", new MappingInfo( "isoqp_revisiondate", "revisiondate", DATE ) );
         
-        propToTableAndCol.put( "apiso:alternatetitle", new MappingInfo( "isoqp_alternatetitle", "alternatetitle", STRING ) );
+        propToTableAndCol.put( "apiso:AlternateTitle", new MappingInfo( "isoqp_alternatetitle", "alternatetitle", STRING ) );
         
-        propToTableAndCol.put( "apiso:creationdate", new MappingInfo( "isoqp_creationdate", "creationdate", STRING ) );
+        propToTableAndCol.put( "apiso:CreationDate", new MappingInfo( "isoqp_creationdate", "creationdate", DATE ) );
 
-        propToTableAndCol.put( "apiso:publicationdate", new MappingInfo( "isoqp_publicationdate", "publicationdate", STRING ) );
+        propToTableAndCol.put( "apiso:PublicationDate", new MappingInfo( "isoqp_publicationdate", "publicationdate", DATE ) );
 
-        propToTableAndCol.put( "apiso:organisationname", new MappingInfo( "isoqp_organisationname", "organisationname", STRING ) );
+        propToTableAndCol.put( "apiso:OrganisationName", new MappingInfo( "isoqp_organisationname", "organisationname", STRING ) );
 
-        propToTableAndCol.put( "apiso:hassecurityconstraint", new MappingInfo( "datasets", "hassecurityconstraint", STRING ) );
+        propToTableAndCol.put( "apiso:HasSecurityConstraint", new MappingInfo( "datasets", "hassecurityconstraint", STRING ) );
 
-        propToTableAndCol.put( "apiso:resourceidentifier", new MappingInfo( "isoqp_resourceidentifier", "resourceidentifier", STRING ) );
+        propToTableAndCol.put( "apiso:ResourceIdentifier", new MappingInfo( "isoqp_resourceidentifier", "resourceidentifier", STRING ) );
 
-        propToTableAndCol.put( "apiso:parentidentifier", new MappingInfo( "datasets", "parentidentifier", STRING ) );
+        propToTableAndCol.put( "apiso:ParentIdentifier", new MappingInfo( "datasets", "parentidentifier", STRING ) );
 
-        propToTableAndCol.put( "apiso:keywordtype", new MappingInfo( "isoqp_keyword", "keywordType", STRING ) );
+        propToTableAndCol.put( "apiso:KeywordType", new MappingInfo( "isoqp_keyword", "keywordType", STRING ) );
 
-        propToTableAndCol.put( "apiso:topiccategory", new MappingInfo( "isoqp_topiccategory", "topiccategory", STRING ) );
+        propToTableAndCol.put( "apiso:TopicCategory", new MappingInfo( "isoqp_topiccategory", "topiccategory", STRING ) );
         
-        propToTableAndCol.put( "apiso:resourcelanguage", new MappingInfo( "datasets", "resourcelanguage", STRING ) );
+        propToTableAndCol.put( "apiso:ResourceLanguage", new MappingInfo( "datasets", "resourcelanguage", STRING ) );
 
-        propToTableAndCol.put( "apiso:geographicdescriptioncode", new MappingInfo( "isoqp_geographicdescriptioncode", "geographicdescriptioncode", STRING ) );
+        propToTableAndCol.put( "apiso:GeographicDescriptionCode", new MappingInfo( "isoqp_geographicdescriptioncode", "geographicdescriptioncode", STRING ) );
 
-        propToTableAndCol.put( "apiso:spatialresolution", new MappingInfo( "isoqp_spatialresolution", "id", STRING ) );
-
-        propToTableAndCol.put( "apiso:temporalextent", new MappingInfo( "isoqp_temporalextent", "id", STRING ) );
+        propToTableAndCol.put( "apiso:Denominator", new MappingInfo( "isoqp_spatialresolution", "denominator", INTEGER ) );
         
-        propToTableAndCol.put( "apiso:servicetype", new MappingInfo( "isoqp_servicetype", "servicetype", STRING ) );
+        propToTableAndCol.put( "apiso:DistanceValue", new MappingInfo( "isoqp_spatialresolution", "distancevalue", FLOAT ) );
+        
+        propToTableAndCol.put( "apiso:DistanceUOM", new MappingInfo( "isoqp_spatialresolution", "distanceuom", STRING ) );
 
-        propToTableAndCol.put( "apiso:servicetypeversion", new MappingInfo( "isoqp_servicetypeversion", "servicetypeversion", STRING ) );
+        propToTableAndCol.put( "apiso:TempExtent_begin", new MappingInfo( "isoqp_temporalextent", "tempextent_begin", DATE ) );
+        
+        propToTableAndCol.put( "apiso:TempExtent_end", new MappingInfo( "isoqp_temporalextent", "tempextent_end", DATE ) );
+        
+        propToTableAndCol.put( "apiso:ServiceType", new MappingInfo( "isoqp_servicetype", "servicetype", STRING ) );
 
-        propToTableAndCol.put( "apiso:operation", new MappingInfo( "isoqp_operation", "operation", STRING ) );
+        propToTableAndCol.put( "apiso:ServiceTypeVersion", new MappingInfo( "isoqp_servicetypeversion", "servicetypeversion", STRING ) );
 
-        propToTableAndCol.put( "apiso:operatesondata", new MappingInfo( "isoqp_operatesondata", "id", STRING ) );
+        propToTableAndCol.put( "apiso:Operation", new MappingInfo( "isoqp_operation", "operation", STRING ) );
 
-        propToTableAndCol.put( "apiso:couplingtype", new MappingInfo( "isoqp_couplingtype", "couplingtype", STRING ) );
+        propToTableAndCol.put( "apiso:OperatesOn", new MappingInfo( "isoqp_operatesondata", "operateson", STRING ) );
+        
+        propToTableAndCol.put( "apiso:OperatesOnIdentifier", new MappingInfo( "isoqp_operatesondata", "operatesonidentifier", STRING ) );
+        
+        propToTableAndCol.put( "apiso:OperatesOnName", new MappingInfo( "isoqp_operatesondata", "operatesonname", STRING ) );
+
+        propToTableAndCol.put( "apiso:CouplingType", new MappingInfo( "isoqp_couplingtype", "couplingtype", STRING ) );
 
         //----------------------</additional common queryable properties>-------------------------
         //----------------------------------------------------------------------------------------
