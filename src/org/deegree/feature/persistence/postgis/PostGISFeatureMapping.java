@@ -81,7 +81,7 @@ class PostGISFeatureMapping implements PostGISMapping {
 
     private final FeatureTypeMapping ftMapping;
 
-    private final PostGISFeatureStore fs ;
+    private final PostGISFeatureStore fs;
 
     PostGISFeatureMapping( FeatureType ft, FeatureTypeMapping ftMapping, PostGISFeatureStore fs ) {
         this.ft = ft;
@@ -155,7 +155,7 @@ class PostGISFeatureMapping implements PostGISMapping {
         // TODO srs conversion?
         GeometryPropertyType pt = (GeometryPropertyType) mapping.first;
         try {
-            pgValue = WKBWriter.write( fs.getCompatibleGeometry( literal) );
+            pgValue = WKBWriter.write( fs.getCompatibleGeometry( literal ) );
         } catch ( ParseException e ) {
             throw new FilterEvaluationException( e.getMessage() );
         }
@@ -164,6 +164,19 @@ class PostGISFeatureMapping implements PostGISMapping {
 
     private Pair<PropertyType, PropertyMappingType> findMapping( PropertyName propName )
                             throws FilterEvaluationException {
+        if ( propName == null ) {
+            // for BBOX queries, this may be null
+            GeometryPropertyType pt = ft.getDefaultGeometryPropertyDeclaration();
+            if ( pt == null ) {
+                throw new FilterEvaluationException(
+                                                     "Cannot evaluate BBOX: FeatureType does not have a geometry property." );
+            }
+            PropertyMappingType ptMapping = ftMapping.getPropertyHints( pt.getName() );
+            if ( ptMapping == null ) {
+                return null;
+            }
+            return new Pair<PropertyType, PropertyMappingType>( pt, ptMapping );
+        }
         Expr xpath = propName.getAsXPath();
         if ( !( xpath instanceof LocationPath ) ) {
             LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
