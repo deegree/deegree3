@@ -90,9 +90,9 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings{
         propToTableAndCol.put( "apiso:anyText", new MappingInfo( "datasets", "anytext", STRING ) );
         propToTableAndCol.put( "AnyText", new MappingInfo( "datasets", "anytext", STRING ) );
         
-        propToTableAndCol.put( "apiso:identifier", new MappingInfo( "datasets", "identifier", STRING ) );
-        propToTableAndCol.put( "dc:identifier", new MappingInfo( "datasets", "identifier", STRING ) );
-        propToTableAndCol.put( "Identifier", new MappingInfo( "datasets", "identifier", STRING ) );
+        propToTableAndCol.put( "apiso:identifier", new MappingInfo( "qp_identifier", "identifier", STRING ) );
+        propToTableAndCol.put( "dc:identifier", new MappingInfo( "qp_identifier", "identifier", STRING ) );
+        propToTableAndCol.put( "Identifier", new MappingInfo( "qp_identifier", "identifier", STRING ) );
         
         propToTableAndCol.put( "apiso:modified", new MappingInfo( "datasets", "modified", DATE ) );
         propToTableAndCol.put( "dct:modified", new MappingInfo( "datasets", "modified", DATE ) );

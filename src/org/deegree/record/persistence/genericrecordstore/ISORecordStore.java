@@ -36,10 +36,7 @@
 package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -62,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.ValidationException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -91,6 +87,7 @@ import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.RecordProperty;
 import org.deegree.record.publication.TransactionOperation;
+import org.deegree.record.publication.TransactionOptions;
 import org.deegree.record.publication.UpdateTransaction;
 
 /**
@@ -670,8 +667,8 @@ public class ISORecordStore implements RecordStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public int transaction( XMLStreamWriter writer, TransactionOperation operations, boolean isInspire )
-                            throws SQLException, XMLStreamException {
+    public int transaction( XMLStreamWriter writer, TransactionOperation operations, TransactionOptions options )
+                            throws SQLException, XMLStreamException { 
 
         int successfullTransaction = 0;
         Connection conn = ConnectionManager.getConnection( connectionId );
@@ -690,7 +687,7 @@ public class ISORecordStore implements RecordStore {
                         elementParsing.parseAPDC();
 
                     } else {
-                        elementParsing.parseAPISO( isInspire );
+                        elementParsing.parseAPISO( options.isInspire() );
                         isDC = false;
                     }
                     elementParsing.executeInsertStatement( isDC );
@@ -910,37 +907,6 @@ public class ISORecordStore implements RecordStore {
 
     }
 
-    @Override
-    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer )
-                            throws SQLException, IOException {
-        Connection conn = ConnectionManager.getConnection( connectionId );
-        for ( int i : insertedIds ) {
-            Writer s = new StringWriter();
-            s.append( " SELECT " + "recordbrief" + ".data " + "FROM " + mainDatabaseTable + ", " + "recordbrief" + " " );
-
-            s.append( " WHERE " + "recordbrief" + "." + commonForeignkey + " = " + mainDatabaseTable + ".id " );
-
-            s.append( " AND " + "recordbrief" + "." + "id" + " = " + i );
-            System.out.println( s );
-
-            ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
-
-            while ( rsInsertedDatasets.next() ) {
-                ByteArrayInputStream bais = new ByteArrayInputStream( rsInsertedDatasets.getBytes( 1 ) );
-
-                Charset charset = Charset.forName( "UTF-8" );
-                InputStreamReader isr = null;
-
-                isr = new InputStreamReader( bais, charset );
-
-                readXMLFragment( isr, writer );
-
-            }
-            rsInsertedDatasets.close();
-        }
-
-    }
-
     /**
      * Prepares the statement to get all the central recordIDs for a statement.
      * 
@@ -989,6 +955,44 @@ public class ISORecordStore implements RecordStore {
         s.append( constraintExpression + "" );
 
         return s;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.deegree.record.persistence.RecordStore#getRecordsForTransactionInsertStatement(javax.xml.stream.XMLStreamWriter
+     * )
+     */
+    @Override
+    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer )
+                            throws SQLException, IOException {
+        Connection conn = ConnectionManager.getConnection( connectionId );
+        for ( int i : insertedIds ) {
+            Writer s = new StringWriter();
+            s.append( " SELECT " + "recordbrief" + ".data " + "FROM " + mainDatabaseTable + ", " + "recordbrief" + " " );
+
+            s.append( " WHERE " + "recordbrief" + "." + commonForeignkey + " = " + mainDatabaseTable + ".id " );
+
+            s.append( " AND " + "recordbrief" + "." + "id" + " = " + i );
+            System.out.println( s );
+
+            ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
+
+            while ( rsInsertedDatasets.next() ) {
+                ByteArrayInputStream bais = new ByteArrayInputStream( rsInsertedDatasets.getBytes( 1 ) );
+
+                Charset charset = Charset.forName( "UTF-8" );
+                InputStreamReader isr = null;
+
+                isr = new InputStreamReader( bais, charset );
+
+                readXMLFragment( isr, writer );
+
+            }
+            rsInsertedDatasets.close();
+        }
+
     }
 
 }

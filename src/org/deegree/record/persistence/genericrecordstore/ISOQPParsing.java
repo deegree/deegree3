@@ -48,6 +48,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.ValidationException;
 import javax.xml.namespace.QName;
@@ -57,6 +60,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.OMNode;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -134,6 +138,8 @@ public class ISOQPParsing extends XMLAdapter {
 
     private OMNamespace namespaceOWS = factory.createOMNamespace( "http://www.opengis.net/ows", "ows" );
 
+    private OMNamespace namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
+
     private int id;
 
     private Connection connection;
@@ -198,8 +204,7 @@ public class ISOQPParsing extends XMLAdapter {
      * 
      * @param elem
      *            that has to be evaluated before there is any transaction operation possible.
-     * @return
-     * a list of error-strings
+     * @return a list of error-strings
      */
     private List<String> validate( OMElement elem ) {
         StringWriter s = new StringWriter();
@@ -236,9 +241,33 @@ public class ISOQPParsing extends XMLAdapter {
             throw new IOException( "VALIDATION-ERROR: " + error );
         }
 
-        qp.setIdentifier( getNodeAsString( rootElement, new XPath( "./gmd:fileIdentifier/gco:CharacterString",
-                                                                   nsContext ), null ) );
-        identifier = getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContext ) );
+        String fileIdentifierString = getNodeAsString(
+                                                       rootElement,
+                                                       new XPath( "./gmd:fileIdentifier/gco:CharacterString", nsContext ),
+                                                       null );
+        if ( fileIdentifierString == null ) {
+            qp.setIdentifier( generateUUID() );
+
+            OMElement omFileIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
+            OMElement omFileCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
+            omFileIdentifier.addChild( omFileCharacterString );
+            omFileCharacterString.setText( qp.getIdentifier() );
+            identifier = omFileIdentifier;
+
+            OMElement newElementFull = factory.createOMElement( "MD_Metadata", namespaceGMD );
+            newElementFull.addChild( omFileIdentifier );
+            while ( rootElement.getChildElements().hasNext() ) {
+                newElementFull.addChild( (OMNode) rootElement.getChildElements().next() );
+            }
+
+            this.elementFull = newElementFull.cloneOMElement();
+            this.rootElement = newElementFull.cloneOMElement();
+            qp.setAnyText( newElementFull.toString() );
+        } else {
+            qp.setIdentifier( fileIdentifierString );
+            identifier = getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContext ) );
+            qp.setAnyText( rootElement.toString() );
+        }
 
         /**
          * if provided data is a dataset: type = dataset (default)
@@ -255,7 +284,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         hierarchyLevelName = getElement( rootElement, new XPath( "./gmd:hierarchyLevelName", nsContext ) );
 
-        String dateString = getNodeAsString( rootElement, new XPath( "./gmd:dateStamp/gco:Date", nsContext ),
+        String dateString = getNodeAsString( rootElement, new XPath( "./gmd:dateStamp/gco:DateTime", nsContext ),
                                              "0000-00-00" );
         Date date = null;
         try {
@@ -373,22 +402,25 @@ public class ISOQPParsing extends XMLAdapter {
                                                          nsContext ), null );
         qp.setDistanceUOM( distanceUOM );
 
-        String serviceType = getNodeAsString( sv_service_OR_md_dataIdentification, new XPath( "./srv:serviceType",
-                                                                                              nsContext ), null );
+        String serviceType = getNodeAsString( sv_service_OR_md_dataIdentification,
+                                              new XPath( "./srv:serviceType/gco:LocalName", nsContext ), null );
         qp.setServiceType( serviceType );
 
         String serviceTypeVersion = getNodeAsString( sv_service_OR_md_dataIdentification,
-                                                     new XPath( "./srv:serviceTypeVersion", nsContext ), null );
+                                                     new XPath( "./srv:serviceTypeVersion/gco:CharacterString",
+                                                                nsContext ), null );
         qp.setServiceTypeVersion( serviceTypeVersion );
 
         String operation = getNodeAsString(
                                             sv_service_OR_md_dataIdentification,
                                             new XPath(
-                                                       "./srv:containsOperations/srv:SV_OperationMetadata/srv:operationName",
+                                                       "./srv:containsOperations/srv:SV_OperationMetadata/srv:operationName/gco:CharacterString",
                                                        nsContext ), null );
 
-        String operation_dcp = getNodeAsString( sv_service_OR_md_dataIdentification,
-                                                new XPath( "./srv:containsOperations/srv:SV_OperationMetadata/srv:DCP",
+        String operation_dcp = getNodeAsString(
+                                                sv_service_OR_md_dataIdentification,
+                                                new XPath(
+                                                           "./srv:containsOperations/srv:SV_OperationMetadata/srv:DCP/srv:DCPList",
                                                            nsContext ), null );
 
         String operation_linkage = getNodeAsString(
@@ -420,21 +452,21 @@ public class ISOQPParsing extends XMLAdapter {
         String operatesOn = getNodeAsString(
                                              sv_service_OR_md_dataIdentification,
                                              new XPath(
-                                                        "./srv:operatesOn/srv:MD_DataIdentification/srv:citation/srv:CI_Citation/srv:identifier",
+                                                        "./srv:operatesOn/srv:MD_DataIdentification/srv:citation/srv:CI_Citation/srv:identifier/gco:CharacterString",
                                                         nsContext ), null );
         qp.setOperatesOn( operatesOn );
 
         String operatesOnIdentifier = getNodeAsString(
                                                        sv_service_OR_md_dataIdentification,
                                                        new XPath(
-                                                                  "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier",
+                                                                  "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier/gco:CharacterString",
                                                                   nsContext ), null );
         qp.setOperatesOnIdentifier( operatesOnIdentifier );
 
         String operatesOnName = getNodeAsString(
                                                  sv_service_OR_md_dataIdentification,
                                                  new XPath(
-                                                            "./srv:coupledResource/srv:SV_CoupledResource/srv:operationName",
+                                                            "./srv:coupledResource/srv:SV_CoupledResource/srv:operationName/gco:CharacterString",
                                                             nsContext ), null );
         qp.setOperatesOnName( operatesOnName );
 
@@ -479,13 +511,11 @@ public class ISOQPParsing extends XMLAdapter {
                                                                 nsContext ) );
         rp.setRights( Arrays.asList( rightsElements ) );
 
-        OMElement _abstract = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:abstract", nsContext ) );
-
-        OMElement bbox = getRequiredElement(
-                                             sv_service_OR_md_dataIdentification,
-                                             new XPath(
-                                                        "./gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
-                                                        nsContext ) );
+        OMElement bbox = getElement(
+                                     sv_service_OR_md_dataIdentification,
+                                     new XPath(
+                                                "./gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
+                                                nsContext ) );
 
         List<OMElement> descriptiveKeywords = getElements( sv_service_OR_md_dataIdentification,
                                                            new XPath( "./gmd:descriptiveKeywords", nsContext ) );
@@ -494,9 +524,11 @@ public class ISOQPParsing extends XMLAdapter {
                                                       new XPath( "./gmd:topicCategory/gmd:MD_TopicCategoryCode",
                                                                  nsContext ) );
 
-        String graphicOverview = getNodeAsString( sv_service_OR_md_dataIdentification,
-                                                  new XPath( "./gmd:graphicOverview/gmd:MD_BrowseGraphic", nsContext ),
-                                                  null );
+        String graphicOverview = getNodeAsString(
+                                                  sv_service_OR_md_dataIdentification,
+                                                  new XPath(
+                                                             "./gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gco:CharacterString",
+                                                             nsContext ), null );
 
         String[] titleElements = getNodesAsStrings(
                                                     sv_service_OR_md_dataIdentification,
@@ -634,12 +666,19 @@ public class ISOQPParsing extends XMLAdapter {
 
         qp.setOrganisationName( organisationName );
 
-        boolean hasSecurityConstraint = getNodeAsBoolean(
-                                                          md_identification,
-                                                          new XPath(
-                                                                     "./gmd:MD_Identification/gmd:resourceConstraints/gmd:MD_SecurityConstraints",
-                                                                     nsContext ), false );
+        OMElement hasSecurityConstraintsElement = getElement(
+                                                              md_identification,
+                                                              new XPath(
+                                                                         "./gmd:MD_Identification/gmd:resourceConstraints/gmd:MD_SecurityConstraints",
+                                                                         nsContext ) );
+
+        boolean hasSecurityConstraint = false;
+        if ( hasSecurityConstraintsElement != null ) {
+            hasSecurityConstraint = true;
+        }
         qp.setHasSecurityConstraints( hasSecurityConstraint );
+
+        OMElement _abstract = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:abstract", nsContext ) );
 
         String[] _abstractStrings = getNodesAsStrings( _abstract, new XPath( "./gco:CharacterString", nsContext ) );
 
@@ -702,7 +741,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         anyText.append( rootElement.toString() );
 
-        qp.setIdentifier( getNodeAsString( rootElement, new XPath( "./dc:identifier", nsContext ), null ) );
+        qp.setIdentifier( getRequiredNodeAsString( rootElement, new XPath( "./dc:identifier", nsContext ) ) );
 
         rp.setCreator( getNodeAsString( rootElement, new XPath( "./dc:creator", nsContext ), null ) );
 
@@ -852,17 +891,7 @@ public class ISOQPParsing extends XMLAdapter {
                     buf.setLength( 0 );
 
                 }
-                // identifier
-                if ( qp.getIdentifier() != null ) {
 
-                    sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET identifier = '" + qp.getIdentifier()
-                                              + "' WHERE id = " + requestedId );
-
-                    buf = sqlStatementUpdate.getBuffer();
-                    System.out.println( sqlStatementUpdate.toString() );
-                    stm.executeUpdate( sqlStatementUpdate.toString() );
-                    buf.setLength( 0 );
-                }
                 // modified
                 if ( qp.getModified() != null || !qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
                     sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET modified = " + modifiedAttribute
@@ -938,6 +967,9 @@ public class ISOQPParsing extends XMLAdapter {
      */
     private void executeQueryableProperties( boolean isUpdate ) {
 
+        if ( qp.getIdentifier() != null ) {
+            generateQP_IdentifierStatement( isUpdate );
+        }
         if ( qp.getTitle() != null ) {
             generateISOQP_TitleStatement( isUpdate );
         }
@@ -1033,9 +1065,9 @@ public class ISOQPParsing extends XMLAdapter {
 
             sqlStatement += "INSERT INTO "
                             + databaseTable
-                            + " (id, version, status, anyText, identifier, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
-                            + this.id + ",null,null,'" + qp.getAnyText() + "','" + qp.getIdentifier() + "',"
-                            + modifiedAttribute + "," + qp.isHasSecurityConstraints() + ",'" + rp.getLanguage() + "','"
+                            + " (id, version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
+                            + this.id + ",null,null,'" + qp.getAnyText() + "'," + modifiedAttribute + ","
+                            + qp.isHasSecurityConstraints() + ",'" + rp.getLanguage() + "','"
                             + qp.getParentIdentifier() + "','', null);";
             System.out.println( sqlStatement );
             stm.executeUpdate( sqlStatement );
@@ -1194,6 +1226,37 @@ public class ISOQPParsing extends XMLAdapter {
 
                 e.printStackTrace();
             }
+        }
+
+    }
+
+    /**
+     * Generates the identifier for this dataset.
+     * 
+     * @param isUpdate
+     */
+    private void generateQP_IdentifierStatement( boolean isUpdate ) {
+        final String databaseTable = "qp_identifier";
+        String sqlStatement = "";
+        int mainDatabaseTableID = this.id;
+        int id = 0;
+        try {
+
+            if ( isUpdate == false ) {
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, identifier) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + qp.getIdentifier() + "');";
+            } else {
+                sqlStatement = "UPDATE " + databaseTable + " SET identifier = '" + qp.getIdentifier()
+                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            }
+
+            stm.executeUpdate( sqlStatement );
+
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
         }
 
     }
@@ -2259,6 +2322,56 @@ public class ISOQPParsing extends XMLAdapter {
         }
 
         return omElement;
+
+    }
+
+    /**
+     * Method to generate via the Java UUID-API a UUID if there is no identifier available.<br>
+     * If the generated ID begins with a number then this is replaced with a random letter from the ASCII table. This
+     * has to be done because the id attribute in the xml does not support any number at the beginning of an uuid. The
+     * uppercase letters are in range from 65 to 90 whereas the lowercase letters are from 97 to 122. After the
+     * generation there is a check if (in spite of the nearly impossibility) this uuid exists in the database already.
+     * 
+     * 
+     * @return a uuid that is unique in the backend.
+     */
+    private String generateUUID() {
+
+        String uuid = UUID.randomUUID().toString();
+        char firstChar = uuid.charAt( 0 );
+        Pattern p = Pattern.compile( "[0-9]" );
+        Matcher m = p.matcher( "" + firstChar );
+        if ( m.matches() ) {
+            int i;
+            double ma = Math.random();
+            if ( ma < 0.5 ) {
+                i = 65;
+
+            } else {
+                i = 97;
+            }
+
+            firstChar = (char) ( (int) ( i + ma * 26 ) );
+            uuid = uuid.replaceFirst( "[0-9]", String.valueOf( firstChar ) );
+        }
+        boolean uuidIsEqual = false;
+        ResultSet rs;
+        String compareIdentifier = "SELECT identifier FROM qp_identifier WHERE identifier = '" + uuid + "'";
+        try {
+            rs = connection.createStatement().executeQuery( compareIdentifier );
+            while ( rs.next() ) {
+                uuidIsEqual = true;
+            }
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+        if ( uuidIsEqual == true ) {
+            return generateUUID();
+        } else {
+            return uuid;
+        }
 
     }
 

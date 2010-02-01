@@ -37,7 +37,6 @@ package org.deegree.record.persistence;
 
 import java.io.IOException;
 import java.net.URI;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +47,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.protocol.csw.CSWConstants.TransactionType;
 import org.deegree.record.publication.TransactionOperation;
+import org.deegree.record.publication.TransactionOptions;
 
 /**
  * Base interface of the {@link Record} persistence layer, provides access to stored {@link Record} instances and their
@@ -140,7 +139,7 @@ public interface RecordStore {
      * @throws SQLException
      * @throws XMLStreamException
      */
-    public int transaction( XMLStreamWriter writer, TransactionOperation operations, boolean isInspire )
+    public int transaction( XMLStreamWriter writer, TransactionOperation operations, TransactionOptions opations )
                             throws SQLException, XMLStreamException;
 
     /**
