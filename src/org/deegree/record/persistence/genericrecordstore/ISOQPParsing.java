@@ -438,15 +438,49 @@ public class ISOQPParsing extends XMLAdapter {
                                                                                nsContext ), null );
         qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
 
-        String[] resourceIdentifierList = getNodesAsStrings(
-                                                             sv_service_OR_md_dataIdentification,
-                                                             new XPath(
-                                                                        "./gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
-                                                                        nsContext ) );
+        List<OMElement> resourceIdentifierElementList = getElements(
+                                                                     sv_service_OR_md_dataIdentification,
+                                                                     new XPath(
+                                                                                "./gmd:citation/gmd:CI_Citation/gmd:identifier",
+                                                                                nsContext ) );
+        List<String> resourceIdentifierList = new ArrayList<String>();
 
-        for ( int i = 0; i < resourceIdentifierList.length; i++ ) {
-            String at = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
-            System.out.println( at );
+        if ( isInspire == false ) {
+
+            for ( OMElement resourceElement : resourceIdentifierElementList ) {
+                String resourceIdentifier = getNodeAsString(
+                                                             resourceElement,
+                                                             new XPath(
+                                                                        "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
+                                                                        nsContext ), null );
+                resourceIdentifierList.add( resourceIdentifier );
+            }
+            qp.setResourceIdentifier( resourceIdentifierList );
+
+        } else {
+            for ( OMElement resourceElement : resourceIdentifierElementList ) {
+                String resourceIdentifier = getNodeAsString(
+                                                             resourceElement,
+                                                             new XPath(
+                                                                        "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
+                                                                        nsContext ), null );
+                resourceIdentifierList.add( resourceIdentifier );
+            }
+            String firstResourceId = "";
+            // gets the first identifier in the list
+            if ( resourceIdentifierList.size() != 0 ) {
+                for ( int i = 0; i < 1; i++ ) {
+                    firstResourceId = resourceIdentifierList.get( i );
+                }
+            }
+            String dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
+            if ( firstResourceId.equals( dataIdentificationId ) ) {
+            } else {
+                
+            }
+
+            qp.setResourceIdentifier( resourceIdentifierList );
+
         }
 
         String operatesOn = getNodeAsString(
@@ -1700,28 +1734,32 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the resourceidentifier for this dataset.
+     * Generates the resourceIdentifier for this dataset.
      * 
      * @param isUpdate
      */
     private void generateISOQP_ResourceIdentifierStatement( boolean isUpdate ) {
-        final String databaseTable = "isoqp_resourceidentifier";
+        final String databaseTable = "isoqp_resourceIdentifier";
         String sqlStatement = "";
         int mainDatabaseTableID = this.id;
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, resourceidentifier) VALUES (" + id
-                               + "," + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET resourceidentifier = '" + qp.getResourceIdentifier()
-                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
 
-            stm.executeUpdate( sqlStatement );
+            id = getLastDatasetId( connection, databaseTable );
+            for ( String resourceId : qp.getResourceIdentifier() ) {
+
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, resourceidentifier) VALUES (" + id
+                               + "," + mainDatabaseTableID + ",'" + resourceId + "');";
+
+                stm.executeUpdate( sqlStatement );
+
+            }
 
         } catch ( SQLException e ) {
 

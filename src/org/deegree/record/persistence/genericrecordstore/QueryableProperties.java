@@ -90,7 +90,7 @@ public class QueryableProperties {
 
     private String language;
 
-    private String resourceIdentifier;
+    private List<String> resourceIdentifier;
 
     private String parentIdentifier;
 
@@ -417,7 +417,7 @@ public class QueryableProperties {
     /**
      * @return the resourceIdentifier
      */
-    public String getResourceIdentifier() {
+    public List<String> getResourceIdentifier() {
         return resourceIdentifier;
     }
 
@@ -425,7 +425,7 @@ public class QueryableProperties {
      * @param resourceIdentifier
      *            the resourceIdentifier to set
      */
-    public void setResourceIdentifier( String resourceIdentifier ) {
+    public void setResourceIdentifier( List<String> resourceIdentifier ) {
         this.resourceIdentifier = resourceIdentifier;
     }
 
