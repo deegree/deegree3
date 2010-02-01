@@ -71,6 +71,10 @@ public class Link {
      */
     public Link( String prefix, String text ) {
         this.prefix = prefix;
+        if ( text != null ) {
+            // TODO price question: what's the Java Way to sgml-quote?
+            text = text.replace( "&", "&amp;" );
+        }
         this.text = text;
     }
 
@@ -90,6 +94,8 @@ public class Link {
         if ( !isWellFormedAddress( val ) ) {
             val = prefix == null ? val : ( prefix + val );
         }
+        // TODO price question: what's the Java Way to sgml-quote?
+        val = val.replace( "&", "&amp;" );
         sb.append( "<a href='" ).append( val ).append( "'>" );
         sb.append( text == null ? val : text );
         sb.append( "</a>" );
