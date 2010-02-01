@@ -384,6 +384,16 @@ CREATE TABLE UserDefinedQueryableProperties (
 );
 COMMENT ON TABLE UserDefinedQueryableProperties
     IS 'Collection of user defined queryable properties';
+    
+CREATE TABLE QP_Identifier ( 
+ID integer NOT NULL,
+fk_datasets integer NOT NULL,
+identifier varchar(50) NOT NULL    -- MD_Metadata.fileIdentifier
+);
+COMMENT ON TABLE QP_Identifier
+    IS 'common queryable property (ISO AP 1.0)';
+COMMENT ON COLUMN ISOQP_Abstract.Abstract
+    IS 'MD_Metadata.fileIdentifier';
 
 
 --CREATE TABLE DCQP_RIGHTS ( 
@@ -399,6 +409,9 @@ COMMENT ON TABLE UserDefinedQueryableProperties
 
 -- Create Primary Key Constraints 
 ALTER TABLE Datasets ADD CONSTRAINT PK_Datasets 
+	PRIMARY KEY (ID);
+	
+ALTER TABLE QP_Identifier ADD CONSTRAINT PK_QP_Identifier 
 	PRIMARY KEY (ID);
 
 
@@ -518,8 +531,10 @@ ALTER TABLE UserDefinedQueryableProperties ADD CONSTRAINT PK_SelfQueryableProper
 -- Create Indexes 
 ALTER TABLE Datasets
 	ADD CONSTRAINT UQ_Datasets_ID UNIQUE (ID);
-ALTER TABLE Datasets 
-	ADD CONSTRAINT UQ_Datasets_Identifier UNIQUE (identifier);
+--ALTER TABLE Datasets 
+--ADD CONSTRAINT UQ_Datasets_Identifier UNIQUE (identifier);
+ALTER TABLE QP_Identifier
+	ADD CONSTRAINT UQ_QP_Identifier_ID UNIQUE (ID);
 ALTER TABLE ISOQP_Abstract
 	ADD CONSTRAINT UQ_ISOQP_Abstract_ID UNIQUE (ID);
 ALTER TABLE ISOQP_AlternateTitle
@@ -575,7 +590,9 @@ ALTER TABLE UserDefinedQueryableProperties
 -- Create Foreign Key Constraints 
 --ALTER TABLE Datasets ADD CONSTRAINT FK_Datasets_SelfQueryableProperties 
 --	FOREIGN KEY (ID) REFERENCES UserDefinedQueryableProperties (fk_datasets);
-
+ALTER TABLE QP_Identifier ADD CONSTRAINT FK_QP_Identifier_Datasets 
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
+	
 ALTER TABLE ISOQP_Abstract ADD CONSTRAINT FK_ISOQP_Abstract_Datasets 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 

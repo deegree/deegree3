@@ -75,18 +75,24 @@ INSERT INTO userdefinedqueryableproperties VALUES (6);
 
 
 
-INSERT INTO datasets VALUES (1,null,null,'','e4076086-cfe6-42ae-a6f7-b4d9ead9cbf5',null,FALSE,'eng','', 'The linework of the map is obtained by --delineating drainage basin boundaries from an hydrologically corrected digital elevation model with a resolution of 1 * 1 km.', null);
+INSERT INTO datasets VALUES (1,null,null,'',null,FALSE,'eng','', 'The linework of the map is obtained by --delineating drainage basin boundaries from an hydrologically corrected digital elevation model with a resolution of 1 * 1 km.', null);
 
-INSERT INTO datasets VALUES (2,null,null,'','a5b42291-8425-40c5-a09c-26152fe2af22',null,FALSE,null,'', null, null);
+INSERT INTO datasets VALUES (2,null,null,'',null,FALSE,null,'', null, null);
 
-INSERT INTO datasets VALUES (3,null,null,'','ddc55084-d67f-45a9-8665-0b63f8aaf1b0',null,FALSE,'en','', 'None.', null);
+INSERT INTO datasets VALUES (3,null,null,'',null,FALSE,'en','', 'None.', null);
 
-INSERT INTO datasets VALUES (4,null,null,'','6387e01d-bb6d-4876-96d5-f5f0e07dc345','2005-03-31T19:13:30'::timestamp,FALSE,'en','', 'Compiled from published vegetation maps of the 8 circumpolar countries.', 'Unknown');
+INSERT INTO datasets VALUES (4,null,null,'','2005-03-31T19:13:30'::timestamp,FALSE,'en','', 'Compiled from published vegetation maps of the 8 circumpolar countries.', 'Unknown');
 
-INSERT INTO datasets VALUES (5,null,null,'','','20011220'::timestamp,FALSE,null,'', null, null);
+INSERT INTO datasets VALUES (5,null,null,'','20011220'::timestamp,FALSE,null,'', null, null);
 
-INSERT INTO datasets VALUES (6,null,null,'','9b41ce80-1cfe-403e-8514-a072a8c8394e','2009-10-06T09:44:50'::timestamp,FALSE,'german','', 'should be the source', null);
+INSERT INTO datasets VALUES (6,null,null,'','2009-10-06T09:44:50'::timestamp,FALSE,'german','', 'should be the source', null);
 
+insert into qp_identifier VALUES(1,1,'e4076086-cfe6-42ae-a6f7-b4d9ead9cbf5');
+insert into qp_identifier VALUES(2,2,'a5b42291-8425-40c5-a09c-26152fe2af22');
+insert into qp_identifier VALUES(3,3,'ddc55084-d67f-45a9-8665-0b63f8aaf1b0');
+insert into qp_identifier VALUES(4,4,'6387e01d-bb6d-4876-96d5-f5f0e07dc345');
+insert into qp_identifier VALUES(5,5,'');
+insert into qp_identifier VALUES(6,6,'9b41ce80-1cfe-403e-8514-a072a8c8394e');
 
 --title
 INSERT INTO isoqp_title VALUES (1,1,'Hydrological Basins in Africa (Sample record, please remove!)');
