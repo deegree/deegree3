@@ -37,8 +37,10 @@ package org.deegree.filter.function.se;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.toHexString;
+import static java.util.Arrays.binarySearch;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
@@ -97,7 +99,7 @@ public class Interpolate extends Function {
 
     private boolean linear = true, cosine, cubic;
 
-    private byte mode = 1; /* Values in range 1..3, for linear, cosine, cubic. Default is linear. */
+    private Mode mode = Mode.Linear;
 
     /***/
     public Interpolate() {
@@ -152,15 +154,16 @@ public class Interpolate extends Function {
     }
 
     private final Color interpolateColor( final int pos1, final int pos2, final double f ) {
-        if ( color == false )
+        if ( !color ) {
             return null;
+        }
 
         switch ( mode ) {
-        case 1:
+        case Linear:
             return interpolateColorLinear( colorArray[pos1], colorArray[pos2], f );
-        case 2:
+        case Cosine:
             return interpolateColorCosine( colorArray[pos1], colorArray[pos2], f );
-        case 3:
+        case Cubic:
             // Cubic interpolation needs 4 points.
             // Create extra 2 points with the same slope on both sides of the input points
             double r,
@@ -222,7 +225,7 @@ public class Interpolate extends Function {
     }
 
     /* Adapt an input value <i>r</i> to an interval [<i>low</i>,<i>high</i>] */
-    private double fixRange( double r, double low, double high ) {
+    private final double fixRange( double r, final double low, final double high ) {
         r = r < low ? low : r;
         r = r > high ? high : r;
         return r;
@@ -230,11 +233,11 @@ public class Interpolate extends Function {
 
     private final double interpolate( final int pos1, final int pos2, final double f ) {
         switch ( mode ) {
-        case 1:
+        case Linear:
             return interpolateLinear( valuesArray[pos1], valuesArray[pos2], f );
-        case 2:
+        case Cosine:
             return interpolateCosine( valuesArray[pos1], valuesArray[pos2], f );
-        case 3:
+        case Cubic:
             if ( pos1 == 0 || pos2 == valuesArray.length - 1 ) {
                 // Cubic interpolation needs 4 points, not just two.
                 // If we are at the first/last intervals, create 2 new points by interpolating linearly, on both sides
@@ -255,8 +258,6 @@ public class Interpolate extends Function {
 
     @Override
     public Object[] evaluate( MatchableObject f ) {
-        buildLookupArrays();
-
         StringBuffer sb = new StringBuffer( value.toString().trim() );
         if ( contn != null ) {
             contn.evaluate( sb, f );
@@ -318,15 +319,15 @@ public class Interpolate extends Function {
         LOG.trace( "Parsing SE XML document for Interpolate... " );
         String mode = in.getAttributeValue( null, "mode" );
         if ( mode != null ) {
-            linear = mode.equals( "linear" );
-            cosine = mode.equals( "cosine" );
-            cubic = mode.equals( "cubic" );
+            linear = mode.equalsIgnoreCase( "linear" );
+            cosine = mode.equalsIgnoreCase( "cosine" );
+            cubic = mode.equalsIgnoreCase( "cubic" );
             if ( linear )
-                this.mode = 1;
+                this.mode = Mode.Linear;
             if ( cosine )
-                this.mode = 2;
+                this.mode = Mode.Cosine;
             if ( cubic )
-                this.mode = 3;
+                this.mode = Mode.Cubic;
         }
 
         String method = in.getAttributeValue( null, "method" );
@@ -361,6 +362,8 @@ public class Interpolate extends Function {
         }
 
         in.require( END_ELEMENT, null, "Interpolate" );
+
+        buildLookupArrays();
     }
 
     /**
@@ -388,12 +391,14 @@ public class Interpolate extends Function {
                 in.nextTag();
             }
         }
+
+        buildLookupArrays();
     }
 
     /** Create the sorted lookup arrays from the linked lists, so that we can perform binary search. */
-    public void buildLookupArrays() {
+    void buildLookupArrays() {
         LOG.debug( "Building look-up arrays, for binary search... " );
-        if ( color == true && colorArray == null ) {
+        if ( color && colorArray == null ) {
             colorArray = new Color[values.size()];
             List<Color> list = new ArrayList<Color>( values.size() );
             Iterator<StringBuffer> i = values.iterator();
@@ -402,7 +407,7 @@ public class Interpolate extends Function {
             }
             colorArray = list.toArray( colorArray );
         }
-        if ( color == false && valuesArray == null ) {
+        if ( !color && valuesArray == null ) {
             valuesArray = new Double[values.size()];
             List<Double> list = new ArrayList<Double>( values.size() );
             Iterator<StringBuffer> i = values.iterator();
@@ -416,8 +421,9 @@ public class Interpolate extends Function {
             dataArray = new Double[datas.size()];
             List<Double> list = new ArrayList<Double>( datas.size() );
             Iterator<Double> i = datas.iterator();
-            while ( i.hasNext() )
+            while ( i.hasNext() ){
                 list.add( Double.parseDouble( i.next().toString() ) );
+            }
             dataArray = list.toArray( dataArray );
         }
     }
@@ -433,31 +439,20 @@ public class Interpolate extends Function {
      */
     public BufferedImage evaluateRaster( AbstractRaster raster, RasterStyling style ) {
         BufferedImage img = null;
-        long start = System.nanoTime();
         int col = -1, row = -1;
         int rgb = 0;
         RasterData data = raster.getAsSimpleRaster().getRasterData();
 
-        buildLookupArrays();
+        RasterDataUtility rawData = new RasterDataUtility( raster );
 
-        try {
-            RasterDataUtility rawData = new RasterDataUtility( raster );
-
-            img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
-            LOG.debug( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
-            for ( row = 0; row < img.getHeight(); row++ )
-                for ( col = 0; col < img.getWidth(); col++ ) {
-                    float val = rawData.get( col, row );
-                    rgb = lookup2Color( val ).getRGB();
-                    img.setRGB( col, row, rgb );
-                }
-        } catch ( Exception e ) {
-            LOG.error( "Error while building image, @ row={}, col={}: " + e.getMessage(), row, col );
-            // e.printStackTrace();
-        } finally {
-            long end = System.nanoTime();
-            LOG.debug( "Built interpolated ColorMap with total time {} ms", ( end - start ) / 1000000 );
-        }
+        img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
+        LOG.debug( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
+        for ( row = 0; row < img.getHeight(); row++ )
+            for ( col = 0; col < img.getWidth(); col++ ) {
+                float val = rawData.get( col, row );
+                rgb = lookup2Color( val ).getRGB();
+                img.setRGB( col, row, rgb );
+            }
         return img;
     }
 
@@ -474,13 +469,13 @@ public class Interpolate extends Function {
 
         int l = dataArray.length - 1;
         if ( value <= dataArray[0] || value >= dataArray[l] ) {
-            if ( this.color == true ) {
+            if ( this.color ) {
                 if ( value <= dataArray[0] )
                     return colorArray[0];
                 if ( value >= dataArray[l] ) {
                     return colorArray[l];
                 }
-            } else if ( this.color == false ) {
+            } else if ( !this.color ) {
                 if ( value <= dataArray[0] ) {
                     int val = valuesArray[0].intValue();
                     return new Color( val, val, val );
@@ -492,7 +487,7 @@ public class Interpolate extends Function {
             }
         }
 
-        int pos = Arrays.binarySearch( dataArray, value );
+        int pos = binarySearch( dataArray, value );
         if ( pos < 0 ) {
             pos = pos * ( -1 ) - 1;
         }
@@ -514,7 +509,7 @@ public class Interpolate extends Function {
      * @param value
      * @return the interpolated value
      */
-    public double lookup2( double value ) {
+    public final double lookup2( final double value ) {
         int l = dataArray.length - 1;
         if ( value <= dataArray[0] || value >= dataArray[l] ) {
             if ( this.color == true ) {
@@ -545,30 +540,11 @@ public class Interpolate extends Function {
 
     @Override
     public String toString() {
-        String r = "\nCategorize [ ";
-        r += "\nDatas: " + datas.toString();
-        r += "\nValues: " + values.toString();
-        if ( dataArray != null )
-            r += "\nData Array: " + printArray( dataArray );
-        if ( valuesArray != null )
-            r += "\nValues Array: " + printArray( valuesArray );
-        if ( colorArray != null )
-            r += "\nColor Array: " + printArray( colorArray );
-        r += "\n Color mode: " + color;
-        r += "\n Interpolation type: " + mode + " (1=linear, 2=cosine, 3=cubic)";
-        r += "\n ]";
-        return r;
+        return generateToString( this );
     }
 
-    /**
-     * @param a
-     * @return a string
-     */
-    public String printArray( Object[] a ) {
-        String result = a[0].toString();
-        for ( int i = 1; i < a.length; i++ )
-            result += ", " + a[i].toString();
-        result = "{" + result + "}";
-        return result;
+    private static enum Mode {
+        Linear, Cosine, Cubic
     }
+
 }

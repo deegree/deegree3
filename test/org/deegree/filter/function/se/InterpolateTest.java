@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.filter.function;
+package org.deegree.filter.function.se;
 
 import static org.slf4j.LoggerFactory.getLogger;
 

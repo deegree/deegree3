@@ -76,9 +76,6 @@ public class RasterDataUtility {
     /* Channel mappings */
     private boolean channelMappings = false;
 
-    /* Indexes of channels, if applicable */
-    private int gray = -1, red = -1, green = -1, blue = -1;
-
     /* Overall Contrast Enhancement */
     private ContrastEnhancement contrast = new ContrastEnhancement();
 
@@ -102,6 +99,8 @@ public class RasterDataUtility {
 
     private int[] histogramTable = new int[256];
 
+    private int[] indexes;
+
     /**
      * 
      * @param raster
@@ -123,10 +122,7 @@ public class RasterDataUtility {
             style.evaluate( raster.getRasterDataInfo().bandInfo );
             if ( style.getMode() == ChannelSelectionMode.RGB || style.getMode() == ChannelSelectionMode.GRAY ) {
                 channelMappings = true;
-                red = style.getRedChannelIndex();
-                blue = style.getBlueChannelIndex();
-                green = style.getGreenChannelIndex();
-                gray = style.getGrayChannelIndex();
+                indexes = style.evaluate( raster.getRasterDataInfo().bandInfo );
             }
         }
     }
@@ -165,11 +161,11 @@ public class RasterDataUtility {
     private float combineFloats( float[] pixel ) {
         try {
             if ( channelMappings == true ) {
-                if ( gray != -1 ) {
-                    return pixel[gray];
+                if ( indexes[3] != -1 ) {
+                    return pixel[indexes[3]];
                 }
 
-                return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+                return ( pixel[indexes[0]] + pixel[indexes[1]] + pixel[indexes[2]] ) / 3;
             }
             switch ( bands ) {
             case 1: /* Gray-scale */
@@ -191,11 +187,11 @@ public class RasterDataUtility {
     private float combineShorts( short[] pixel ) {
         try {
             if ( channelMappings == true ) {
-                if ( gray != -1 ) {
-                    return pixel[gray];
+                if ( indexes[3] != -1 ) {
+                    return pixel[indexes[3]];
                 }
 
-                return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+                return ( pixel[indexes[0]] + pixel[indexes[1]] + pixel[indexes[2]] ) / 3;
             }
             switch ( bands ) {
             case 1: /* Gray-scale */
@@ -217,11 +213,11 @@ public class RasterDataUtility {
     private float combineInts( int[] pixel ) {
         try {
             if ( channelMappings == true ) {
-                if ( gray != -1 ) {
-                    return pixel[gray];
+                if ( indexes[3] != -1 ) {
+                    return pixel[indexes[3]];
                 }
 
-                return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+                return ( pixel[indexes[0]] + pixel[indexes[1]] + pixel[indexes[2]] ) / 3;
             }
             switch ( bands ) {
             case 1: /* Gray-scale */
@@ -243,9 +239,9 @@ public class RasterDataUtility {
     private float combineBytes( byte[] pixel ) {
         try {
             if ( channelMappings == true ) {
-                if ( gray != -1 )
-                    return pixel[gray];
-                return ( pixel[red] + pixel[green] + pixel[blue] ) / 3;
+                if ( indexes[3] != -1 )
+                    return pixel[indexes[3]];
+                return ( pixel[indexes[0]] + pixel[indexes[1]] + pixel[indexes[2]] ) / 3;
             }
             switch ( bands ) {
             case 1: /* Gray-scale */

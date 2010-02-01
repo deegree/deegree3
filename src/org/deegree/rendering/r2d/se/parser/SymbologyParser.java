@@ -965,7 +965,7 @@ public class SymbologyParser {
                         baseOrEvaluated.shaded.azimuthAngle = parseDouble( in.getElementText() );
                     }
                     if ( in.getLocalName().equals( "IlluminationAngle" ) ) {
-                        baseOrEvaluated.shaded.Alt = parseDouble( in.getElementText() );
+                        baseOrEvaluated.shaded.alt = parseDouble( in.getElementText() );
                     }
                 }
             }

@@ -8,11 +8,11 @@
           <LookupValue>Rasterdata</LookupValue>
           <InterpolationPoint>
             <Data>0</Data>
-            <Value>#000000</Value>
+            <Value>10.9</Value>
           </InterpolationPoint>
           <InterpolationPoint>
             <Data>255</Data>
-            <Value>#ffffff</Value>
+            <Value>1000.245</Value>
           </InterpolationPoint>
         </Interpolate>
       </Label>

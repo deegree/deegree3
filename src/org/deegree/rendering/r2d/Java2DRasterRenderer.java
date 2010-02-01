@@ -132,17 +132,20 @@ public class Java2DRasterRenderer implements RasterRenderer {
             styling.channelSelection.evaluate( raster.getRasterDataInfo().bandInfo );
         }
 
-        if ( styling.categorize != null || styling.interpolate != null || styling.shaded != null ) {
+        if ( styling.categorize != null || styling.interpolate != null ) {
             LOG.trace( "Creating raster ColorMap..." );
             if ( styling.categorize != null ) {
                 img = styling.categorize.evaluateRaster( raster, styling );
-            } else if ( styling.interpolate != null )
+            } else if ( styling.interpolate != null ) {
                 img = styling.interpolate.evaluateRaster( raster, styling );
-
-            if ( styling.shaded != null ) {
-                raster = performHillShading( raster, styling );
             }
-        } else if ( styling.channelSelection.isEnabled() ) {
+        }
+
+        if ( styling.shaded != null ) {
+            raster = performHillShading( raster, styling );
+        }
+
+        if ( styling.channelSelection != null ) {
             raster = evaluateChannelSelections( styling.channelSelection, raster );
         }
 
@@ -151,7 +154,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         }
 
         if ( styling.opacity != 1 ) {
-            LOG.trace( "Using opacity: " + styling.opacity );
+            LOG.trace( "Using opacity: {}", styling.opacity );
             graphics.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, (float) styling.opacity ) );
         }
 
@@ -211,13 +214,15 @@ public class Java2DRasterRenderer implements RasterRenderer {
         if ( channels.getMode() == ChannelSelectionMode.NONE )
             return raster;
         LOG.trace( "Evaluating channel selections ..." );
-        long start = System.nanoTime();
-        RasterData data = raster.getAsSimpleRaster().getRasterData();
+
+        SimpleRaster simpleRaster = raster.getAsSimpleRaster();
+        RasterData data = simpleRaster.getRasterData();
         int cols = data.getWidth(), rows = data.getHeight();
-        int redIndex = channels.getRedChannelIndex(), greenIndex = channels.getGreenChannelIndex();
-        int blueIndex = channels.getBlueChannelIndex(), grayIndex = channels.getGrayChannelIndex();
+        int[] idx = channels.evaluate( simpleRaster.getBandTypes() );
+        int redIndex = idx[0], greenIndex = idx[1];
+        int blueIndex = idx[2], grayIndex = idx[3];
         RasterDataUtility rasutil = new RasterDataUtility( raster, channels );
-        RasterData newData = raster.getAsSimpleRaster().getRasterData();
+        RasterData newData = simpleRaster.getRasterData();
         BandType[] bandTypes = null;
         if ( channels.getMode() == ChannelSelectionMode.RGB && data.getBands() > 1 ) {
             bandTypes = new BandType[] { BandType.RED, BandType.GREEN, BandType.BLUE };
@@ -245,8 +250,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
 
         }
         AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference() );
-        long end = System.nanoTime();
-        LOG.trace( "Output channels successfully created in {} miliseconds", ( end - start ) / 1000000 );
         return newRaster;
     }
 
@@ -304,7 +307,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         RasterData shadeData = RasterDataFactory.createRasterData( cols - 2, rows - 2, DataType.BYTE, false );
         SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), raster.getRasterReference() );
 
-        final double Zenith_rad = Math.toRadians( 90 - style.shaded.Alt );
+        final double Zenith_rad = Math.toRadians( 90 - style.shaded.alt );
         final double Azimuth_rad = Math.toRadians( 90 - style.shaded.azimuthAngle );
         final double sinZenith = Math.sin( Zenith_rad );
         final double cosZenith = Math.cos( Zenith_rad );

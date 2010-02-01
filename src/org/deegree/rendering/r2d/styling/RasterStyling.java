@@ -79,7 +79,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
     public Interpolate interpolate;
 
     /** Default is no channel selections. */
-    public RasterChannelSelection channelSelection = new RasterChannelSelection();
+    public RasterChannelSelection channelSelection;
 
     /** Default is no contrast enhancement. */
     public ContrastEnhancement contrastEnhancement;
@@ -112,7 +112,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
         public double azimuthAngle = 315;
 
         /** Vertical angle of illumination source. Default is 45 degrees. */
-        public double Alt = 45;
+        public double alt = 45;
 
         public ShadedRelief copy() {
             ShadedRelief copy = new ShadedRelief();
@@ -120,7 +120,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
             copy.brightnessOnly = brightnessOnly;
             copy.reliefFactor = reliefFactor;
             copy.azimuthAngle = azimuthAngle;
-            copy.Alt = Alt;
+            copy.alt = alt;
 
             return copy;
         }
@@ -200,7 +200,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
         copy.contrastEnhancement = contrastEnhancement == null ? null : contrastEnhancement.copy();
         copy.shaded = shaded == null ? null : shaded.copy();
         // select the same channels
-        copy.channelSelection = channelSelection;
+        copy.channelSelection = channelSelection == null ? null : channelSelection.copy();
         // should be able to share the symbolizers:
         copy.imageOutline = imageOutline;
         // ... and the functions

@@ -142,27 +142,20 @@ public class Categorize extends Function {
      */
     public BufferedImage evaluateRaster( AbstractRaster raster, RasterStyling style ) {
         BufferedImage img = null;
-        long start = System.nanoTime();
         int col = -1, row = -1;
         RasterData data = raster.getAsSimpleRaster().getRasterData();
 
-        try {
-            RasterDataUtility converter = new RasterDataUtility( raster, style.channelSelection );
+        RasterDataUtility converter = new RasterDataUtility( raster, style.channelSelection );
 
-            img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
-            LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
-            for ( row = 0; row < img.getHeight(); row++ )
-                for ( col = 0; col < img.getWidth(); col++ ) {
-                    Color c = lookup2( converter.get( col, row ) );
-                    img.setRGB( col, row, c.getRGB() );
-                }
-        } catch ( Exception e ) {
-            // e.printStackTrace();
-            LOG.error( "Error while building image, on row={}, col={}: " + e.getMessage(), row, col );
-        } finally {
-            long end = System.nanoTime();
-            LOG.debug( "Built image with total time {} ms", ( end - start ) / 1000000 );
+        img = new BufferedImage( data.getWidth(), data.getHeight(), BufferedImage.TYPE_INT_ARGB );
+        LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
+        for ( row = 0; row < img.getHeight(); row++ ) {
+            for ( col = 0; col < img.getWidth(); col++ ) {
+                Color c = lookup2( converter.get( col, row ) );
+                img.setRGB( col, row, c.getRGB() );
+            }
         }
+
         return img;
     }
 
@@ -173,12 +166,13 @@ public class Categorize extends Function {
      *            value
      * @return Category value
      */
-    public Color lookup2( double value ) {
+    public final Color lookup2( final double value ) {
         int pos = Arrays.binarySearch( thresholdsArray, new Float( value ) );
         if ( pos >= 0 ) {
             // found exact value in the thresholds array
-            if ( precedingBelongs == false )
+            if ( precedingBelongs == false ) {
                 pos++;
+            }
         } else {
             pos = pos * ( -1 ) - 1;
         }
@@ -193,7 +187,7 @@ public class Categorize extends Function {
      *            double value
      * @return rgb int value, for storing in a BufferedImage
      */
-    public Color lookup( double val ) {
+    public final Color lookup( final double val ) {
         Iterator<StringBuffer> ts = thresholds.iterator();
         Iterator<StringBuffer> vs = values.iterator();
 
@@ -258,14 +252,15 @@ public class Categorize extends Function {
     }
 
     /** Create the sorted lookup arrays from the StringBuffer lists */
-    public void buildLookupArrays() {
+    void buildLookupArrays() {
         LOG.debug( "Building look-up arrays, for binary search... " );
         if ( valuesArray == null ) {
             valuesArray = new Color[values.size()];
             List<Color> list = new ArrayList<Color>( values.size() );
             Iterator<StringBuffer> i = values.iterator();
-            while ( i.hasNext() )
+            while ( i.hasNext() ) {
                 list.add( decodeWithAlpha( i.next().toString() ) );
+            }
             valuesArray = list.toArray( valuesArray );
         }
 
@@ -273,13 +268,14 @@ public class Categorize extends Function {
             thresholdsArray = new Float[thresholds.size()];
             List<Float> list = new ArrayList<Float>( thresholds.size() );
             Iterator<StringBuffer> i = thresholds.iterator();
-            while ( i.hasNext() )
+            while ( i.hasNext() ) {
                 list.add( Float.parseFloat( i.next().toString() ) );
+            }
             thresholdsArray = list.toArray( thresholdsArray );
         }
     }
 
-    private static Color decodeWithAlpha( String s ) {
+    private static final Color decodeWithAlpha( final String s ) {
         return new Color( Integer.decode( s ), s.length() > 7 );
     }
 

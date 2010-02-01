@@ -60,15 +60,12 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
     /** Output channel names. */
     private String redChannel, greenChannel, blueChannel, grayChannel;
 
-    /** Channel indexes */
-    private int redIndex = -1, greenIndex = -1, blueIndex = -1, grayIndex = -1;
-
     /** Band information used to derive indexes */
     private BandType[] bands;
 
     /** Contrast Enhancements for all channels. */
     public HashMap<String, ContrastEnhancement> channelContrastEnhancements = new HashMap<String, ContrastEnhancement>();
-    
+
     /**
      * 
      * <code>ChannelSelectionMode</code>
@@ -79,10 +76,22 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
      * @version $Revision$, $Date$
      */
     public static enum ChannelSelectionMode {
-        RGB, GRAY, INVALID, NONE
-    };
+        /***/
+        RGB, /***/
+        GRAY, /***/
+        INVALID, /***/
+        NONE
+    }
 
-    public RasterChannelSelection( String redChannel, String greenChannel, String blueChannel, String grayChannel, HashMap<String, ContrastEnhancement> enhancements ) {
+    /**
+     * @param redChannel
+     * @param greenChannel
+     * @param blueChannel
+     * @param grayChannel
+     * @param enhancements
+     */
+    public RasterChannelSelection( String redChannel, String greenChannel, String blueChannel, String grayChannel,
+                                   HashMap<String, ContrastEnhancement> enhancements ) {
         this.redChannel = redChannel;
         this.greenChannel = greenChannel;
         this.blueChannel = blueChannel;
@@ -90,40 +99,23 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
         this.channelContrastEnhancements = enhancements;
     }
 
-    public RasterChannelSelection() {
-    }
-
     public RasterChannelSelection copy() {
-        RasterChannelSelection copy = new RasterChannelSelection( redChannel, greenChannel, blueChannel, grayChannel, channelContrastEnhancements );
+        RasterChannelSelection copy = new RasterChannelSelection( redChannel, greenChannel, blueChannel, grayChannel,
+                                                                  channelContrastEnhancements );
         copy.evaluate( bands );
         return copy;
     }
-    
-    public boolean isEnabled()
-    {
-        return (redIndex > -1 && greenIndex > -1 && blueIndex > -1 && grayIndex == -1) ||
-            (grayIndex > -1 && redIndex == -1 && greenIndex == -1 && blueIndex == -1);
-    }
 
-    public ChannelSelectionMode getMode() {
-        if ( redIndex > -1 && greenIndex > -1 && blueIndex > -1 && grayIndex == -1 )
-            return ChannelSelectionMode.RGB;
-        if ( grayIndex > -1 && redIndex == -1 && greenIndex == -1 && blueIndex == -1 )
-            return ChannelSelectionMode.GRAY;
-        if ( redIndex == -1 && greenIndex == -1 && blueIndex == -1 && grayIndex == -1 )
-            return ChannelSelectionMode.NONE;
-        return ChannelSelectionMode.INVALID;
-    }
-
-    /** Compute the indexes of selected channel for a particular raster (given its channels)
+    /**
+     * Compute the indexes of selected channel for a particular raster (given its channels)
      * 
-     * @param bands array of information about each band
+     * @param bands
+     *            array of information about each band
+     * @return index information for all bands
      */
-    public void evaluate( BandType[] bands ) {
-        redIndex = findChannelIndex( redChannel, bands );
-        greenIndex = findChannelIndex( greenChannel, bands );
-        blueIndex = findChannelIndex( blueChannel, bands );
-        grayIndex = findChannelIndex( grayChannel, bands );
+    public int[] evaluate( BandType[] bands ) {
+        return new int[] { findChannelIndex( redChannel, bands ), findChannelIndex( greenChannel, bands ),
+                          findChannelIndex( blueChannel, bands ), findChannelIndex( grayChannel, bands ) };
     }
 
     /**
@@ -140,8 +132,9 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
     private int findChannelIndex( String cName, BandType[] bands )
                             throws RasterRenderingException {
         int i = -1;
-        if ( cName == null )
+        if ( cName == null ) {
             return -1;
+        }
         try {
             i = Integer.parseInt( cName ) - 1;
             if ( i < 0 || i >= bands.length ) {
@@ -151,28 +144,31 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
             }
             return i;
         } catch ( NumberFormatException e ) {
-            for ( i = 0; i < bands.length; i++ )
-                if ( bands[i].name().equals( cName ) )
+            for ( i = 0; i < bands.length; i++ ) {
+                if ( bands[i].name().equals( cName ) ) {
                     return i;
+                }
+            }
         }
 
         LOG.error( "Could not evaluate band with name '{}'", cName );
         throw new RasterRenderingException( "Could not evaluate band with name '" + cName + "'" );
     }
 
-    public int getRedChannelIndex() {
-        return redIndex;
+    /**
+     * @return the mode of selection
+     */
+    public ChannelSelectionMode getMode() {
+        if ( redChannel != null && greenChannel != null && blueChannel != null && grayChannel == null ) {
+            return ChannelSelectionMode.RGB;
+        }
+        if ( grayChannel != null && redChannel == null && greenChannel == null && blueChannel == null ) {
+            return ChannelSelectionMode.GRAY;
+        }
+        if ( redChannel == null && greenChannel == null && blueChannel == null && grayChannel == null ) {
+            return ChannelSelectionMode.NONE;
+        }
+        return ChannelSelectionMode.INVALID;
     }
 
-    public int getGreenChannelIndex() {
-        return greenIndex;
-    }
-
-    public int getBlueChannelIndex() {
-        return blueIndex;
-    }
-
-    public int getGrayChannelIndex() {
-        return grayIndex;
-    }
 }
