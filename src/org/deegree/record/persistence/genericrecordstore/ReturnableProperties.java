@@ -61,7 +61,7 @@ public class ReturnableProperties {
     
     private String language;
     
-    private String relation;
+    private List<String> relation;
     
 
     /**
@@ -167,14 +167,14 @@ public class ReturnableProperties {
     /**
      * @return the relation
      */
-    public String getRelation() {
+    public List<String> getRelation() {
         return relation;
     }
 
     /**
      * @param relation the relation to set
      */
-    public void setRelation( String relation ) {
+    public void setRelation( List<String> relation ) {
         this.relation = relation;
     }
 

@@ -63,6 +63,8 @@ public class QueryableProperties {
     private List<Format> format;
 
     private String identifier;
+    
+    private List<String> identifierDC;
 
     private Date modified;
 
@@ -94,7 +96,7 @@ public class QueryableProperties {
 
     private String parentIdentifier;
 
-    private String resourceLanguage;
+    private List<String> resourceLanguage;
 
     private List<String> topicCategory;
 
@@ -312,7 +314,7 @@ public class QueryableProperties {
     /**
      * @return the resourceLanguage
      */
-    public String getResourceLanguage() {
+    public List<String> getResourceLanguage() {
         return resourceLanguage;
     }
 
@@ -320,7 +322,7 @@ public class QueryableProperties {
      * @param resourceLanguage
      *            the resourceLanguage to set
      */
-    public void setResourceLanguage( String resourceLanguage ) {
+    public void setResourceLanguage( List<String> resourceLanguage ) {
         this.resourceLanguage = resourceLanguage;
     }
 
@@ -653,5 +655,21 @@ public class QueryableProperties {
     public void setTemporalExtentEnd( Date temporalExtentEnd ) {
         this.temporalExtentEnd = temporalExtentEnd;
     }
+
+    /**
+     * @return the identifierDC
+     */
+    public List<String> getIdentifierDC() {
+        return identifierDC;
+    }
+
+    /**
+     * @param identifierDC the identifierDC to set
+     */
+    public void setIdentifierDC( List<String> identifierDC ) {
+        this.identifierDC = identifierDC;
+    }
+    
+    
 
 }
