@@ -36,6 +36,9 @@
 
 package org.deegree.rendering.r2d;
 
+import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.rendering.r2d.styling.RasterStyling;
+
 /**
  * <code>TestingRasterRenderer interface</code>
  * 
@@ -48,8 +51,8 @@ public interface RasterRenderer {
 
     /**
      * @param styling
-     * @param geom
+     * @param raster
      */
-//    public void render( RasterStyling styling, AbstractRaster raster );
+    public void render( RasterStyling styling, AbstractRaster raster );
 
 }

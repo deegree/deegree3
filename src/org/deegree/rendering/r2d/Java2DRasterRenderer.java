@@ -49,6 +49,7 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -108,12 +109,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
         this.graphics = graphics;
     }
 
-    /**
-     * Render a raster with a styling.
-     * 
-     * @param styling
-     * @param raster
-     */
     public void render( RasterStyling styling, AbstractRaster raster ) {
         LOG.trace( "Rendering raster with style '{}'.", styling );
         BufferedImage img = null;
@@ -130,15 +125,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
         if ( styling.channelSelection != null ) {
             // Compute channel selection indexes on current raster
             styling.channelSelection.evaluate( raster.getRasterDataInfo().bandInfo );
-        }
-
-        if ( styling.categorize != null || styling.interpolate != null ) {
-            LOG.trace( "Creating raster ColorMap..." );
-            if ( styling.categorize != null ) {
-                img = styling.categorize.evaluateRaster( raster, styling );
-            } else if ( styling.interpolate != null ) {
-                img = styling.interpolate.evaluateRaster( raster, styling );
-            }
         }
 
         if ( styling.shaded != null ) {
@@ -158,13 +144,24 @@ public class Java2DRasterRenderer implements RasterRenderer {
             graphics.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, (float) styling.opacity ) );
         }
 
+        if ( styling.categorize != null || styling.interpolate != null ) {
+            LOG.trace( "Creating raster ColorMap..." );
+            if ( styling.categorize != null ) {
+                img = styling.categorize.evaluateRaster( raster, styling );
+            } else if ( styling.interpolate != null ) {
+                img = styling.interpolate.evaluateRaster( raster, styling );
+            }
+        }
+
         LOG.trace( "Rendering raster..." );
-        if ( img != null )
+        if ( img != null ) {
             render( img );
-        else
+        } else {
             render( raster );
+        }
         LOG.trace( "Done rendering raster." );
 
+        // TODO cleanup outline stuff
         if ( styling.imageOutline != null ) {
             LOG.trace( "Rendering image outline..." );
             Geometry geom = Raster2Feature.createPolygonGeometry( raster );
@@ -188,7 +185,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
         if ( contrastEnhancement == null )
             return raster;
 
-        long start = System.nanoTime();
         LOG.trace( "Enhancing contrast for overall raster..." );
         RasterData data = raster.getAsSimpleRaster().getRasterData(), newData = data;
         RasterDataUtility rasutil = new RasterDataUtility( raster );
@@ -198,8 +194,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
             newData = setEnhancedChannelData( newData, rasutil, band, band, contrastEnhancement );
 
         AbstractRaster newRaster = new SimpleRaster( newData, raster.getEnvelope(), raster.getRasterReference() );
-        long end = System.nanoTime();
-        LOG.trace( "Enhancing contrast for overall raster done. ({} ms)", ( end - start ) / 1000000 );
         return newRaster;
     }
 
@@ -273,8 +267,10 @@ public class Java2DRasterRenderer implements RasterRenderer {
         int i = 0, j = 0, val = 0, cols = newData.getWidth(), rows = newData.getHeight();
 
         rasutil.setContrastEnhancement( enhancement );
-        if ( enhancement != null )
+        if ( enhancement != null ) {
             LOG.trace( "Using gamma {} for channel '{}'...", enhancement.gamma, inIndex );
+        }
+
         for ( i = 0; i < cols; i++ )
             for ( j = 0; j < rows; j++ ) {
                 val = (int) rasutil.getEnhanced( i, j, inIndex );
@@ -285,8 +281,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
     }
 
     private static final byte int2byte( final int val ) {
-        // if ( val < 0 )
-        // return int2byte( val - 2 * Byte.MIN_VALUE );
         return ( val < 128 ? (byte) val : (byte) ( val + 2 * Byte.MIN_VALUE ) );
     }
 
@@ -300,12 +294,16 @@ public class Java2DRasterRenderer implements RasterRenderer {
      * @return a gray-scale raster (with bytes), with R-2 rows and C-2 columns
      */
     public AbstractRaster performHillShading( AbstractRaster raster, RasterStyling style ) {
-        LOG.trace( "Performing Hill-Shading ... " );
-        long start = System.nanoTime();
+        LOG.debug( "Performing Hill-Shading '{}'.", style.shaded );
+
         int cols = raster.getColumns(), rows = raster.getRows();
         RasterDataUtility data = new RasterDataUtility( raster, style.channelSelection );
         RasterData shadeData = RasterDataFactory.createRasterData( cols - 2, rows - 2, DataType.BYTE, false );
-        SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), raster.getRasterReference() );
+        RasterGeoReference ref = raster.getRasterReference();
+        double resx = cols * ref.getResolutionX() / ( cols - 2 );
+        double resy = rows * ref.getResolutionY() / ( rows - 2 );
+        ref = new RasterGeoReference( ref.getOriginLocation(), resx, resy, ref.getOrigin()[0], ref.getOrigin()[1] );
+        SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), ref );
 
         final double Zenith_rad = Math.toRadians( 90 - style.shaded.alt );
         final double Azimuth_rad = Math.toRadians( 90 - style.shaded.azimuthAngle );
@@ -356,17 +354,15 @@ public class Java2DRasterRenderer implements RasterRenderer {
                 shadeData.setByteSample( col - 1, row - 1, 0, shade );
             }
         }
-        long end = System.nanoTime();
 
-        LOG.trace( "Performed Hill shading in {} ms ", ( end - start ) / 1000000 );
         return hillShade;
     }
 
-    private void render( AbstractRaster raster ) {
+    private void render( final AbstractRaster raster ) {
         render( RasterFactory.imageFromRaster( raster ) );
     }
 
-    private void render( BufferedImage img ) {
+    private void render( final BufferedImage img ) {
         graphics.drawImage( img, worldToScreen, null );
     }
 }

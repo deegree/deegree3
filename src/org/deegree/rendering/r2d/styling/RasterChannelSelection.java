@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
  * 
  * <code>ChannelSelection</code>
  * 
+ * TODO: move the evaluation code somewhere else
+ * 
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
  * 
@@ -59,9 +61,6 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
 
     /** Output channel names. */
     private String redChannel, greenChannel, blueChannel, grayChannel;
-
-    /** Band information used to derive indexes */
-    private BandType[] bands;
 
     /** Contrast Enhancements for all channels. */
     public HashMap<String, ContrastEnhancement> channelContrastEnhancements = new HashMap<String, ContrastEnhancement>();
@@ -102,7 +101,6 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
     public RasterChannelSelection copy() {
         RasterChannelSelection copy = new RasterChannelSelection( redChannel, greenChannel, blueChannel, grayChannel,
                                                                   channelContrastEnhancements );
-        copy.evaluate( bands );
         return copy;
     }
 
