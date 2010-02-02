@@ -305,12 +305,12 @@ public class Java2DRasterRenderer implements RasterRenderer {
         ref = new RasterGeoReference( ref.getOriginLocation(), resx, resy, ref.getOrigin()[0], ref.getOrigin()[1] );
         SimpleRaster hillShade = new SimpleRaster( shadeData, raster.getEnvelope(), ref );
 
-        final double Zenith_rad = Math.toRadians( 90 - style.shaded.alt );
-        final double Azimuth_rad = Math.toRadians( 90 - style.shaded.azimuthAngle );
-        final double sinZenith = Math.sin( Zenith_rad );
-        final double cosZenith = Math.cos( Zenith_rad );
-        double Slope_rad;
-        double Aspect_rad = 0;
+        final double zenith_rad = Math.toRadians( 90 - style.shaded.alt );
+        final double azimuth_rad = Math.toRadians( 90 - style.shaded.azimuthAngle );
+        final double sinZenith = Math.sin( zenith_rad );
+        final double cosZenith = Math.cos( zenith_rad );
+        double slope_rad;
+        double aspect_rad = 0;
         byte shade = 0;
         double dx, dy;
         float m[][] = new float[3][3];
@@ -329,24 +329,24 @@ public class Java2DRasterRenderer implements RasterRenderer {
 
                 dx = ( ( m[0][2] + 2 * m[1][2] + m[2][2] ) - ( m[0][0] + 2 * m[1][0] + m[2][0] ) ) / 8;
                 dy = ( ( m[2][0] + 2 * m[2][1] + m[2][2] ) - ( m[0][0] + 2 * m[0][1] + m[0][2] ) ) / 8;
-                Slope_rad = Math.atan( style.shaded.reliefFactor * Math.sqrt( dx * dx + dy * dy ) );
+                slope_rad = Math.atan( style.shaded.reliefFactor * Math.sqrt( dx * dx + dy * dy ) );
                 if ( dx != 0 ) {
-                    Aspect_rad = Math.atan2( dy, -dx );
-                    if ( Aspect_rad < 0 )
-                        Aspect_rad += Math.PI * 2;
+                    aspect_rad = Math.atan2( dy, -dx );
+                    if ( aspect_rad < 0 )
+                        aspect_rad += Math.PI * 2;
                 }
                 if ( dx == 0 ) {
                     if ( dy > 0 )
-                        Aspect_rad = Math.PI / 2;
+                        aspect_rad = Math.PI / 2;
                     else if ( dy < 0 )
-                        Aspect_rad = 2 * Math.PI - Math.PI / 2;
+                        aspect_rad = 2 * Math.PI - Math.PI / 2;
                     else
-                        Aspect_rad = 0;
+                        aspect_rad = 0;
                 }
 
-                long val = Math.round( 255.0 * ( ( cosZenith * Math.cos( Slope_rad ) ) + ( sinZenith
-                                                                                           * Math.sin( Slope_rad ) * Math.cos( Azimuth_rad
-                                                                                                                               - Aspect_rad ) ) ) );
+                long val = Math.round( 255.0 * ( ( cosZenith * Math.cos( slope_rad ) ) + ( sinZenith
+                                                                                           * Math.sin( slope_rad ) * Math.cos( azimuth_rad
+                                                                                                                               - aspect_rad ) ) ) );
                 if ( val < 0 )
                     val = 0;
                 shade = (byte) val;
