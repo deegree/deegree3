@@ -127,6 +127,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
             styling.channelSelection.evaluate( raster.getRasterDataInfo().bandInfo );
         }
 
+        // TODO maybe reorder this a bit
         if ( styling.shaded != null ) {
             raster = performHillShading( raster, styling );
         }
