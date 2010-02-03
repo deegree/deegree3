@@ -100,11 +100,11 @@ public class QueryableProperties {
 
     private List<String> topicCategory;
 
-    private String operatesOn;
+    private List<String> operatesOn;
 
-    private String operatesOnIdentifier;
+    private List<String> operatesOnIdentifier;
 
-    private String operatesOnName;
+    private List<String> operatesOnName;
 
     private int denominator;
 
@@ -122,11 +122,11 @@ public class QueryableProperties {
 
     private String serviceType;
 
-    private String serviceTypeVersion;
+    private List<String> serviceTypeVersion;
 
     private String geographicDescriptionCode_service;
 
-    private String operation;
+    private List<String> operation;
 
     private String couplingType;
 
@@ -479,7 +479,7 @@ public class QueryableProperties {
     /**
      * @return the serviceTypeVersion
      */
-    public String getServiceTypeVersion() {
+    public List<String> getServiceTypeVersion() {
         return serviceTypeVersion;
     }
 
@@ -487,7 +487,7 @@ public class QueryableProperties {
      * @param serviceTypeVersion
      *            the serviceTypeVersion to set
      */
-    public void setServiceTypeVersion( String serviceTypeVersion ) {
+    public void setServiceTypeVersion( List<String> serviceTypeVersion ) {
         this.serviceTypeVersion = serviceTypeVersion;
     }
 
@@ -509,7 +509,7 @@ public class QueryableProperties {
     /**
      * @return the operation
      */
-    public String getOperation() {
+    public List<String> getOperation() {
         return operation;
     }
 
@@ -517,7 +517,7 @@ public class QueryableProperties {
      * @param operation
      *            the operation to set
      */
-    public void setOperation( String operation ) {
+    public void setOperation( List<String> operation ) {
         this.operation = operation;
     }
 
@@ -539,7 +539,7 @@ public class QueryableProperties {
     /**
      * @return the operatesOn
      */
-    public String getOperatesOn() {
+    public List<String> getOperatesOn() {
         return operatesOn;
     }
 
@@ -547,14 +547,14 @@ public class QueryableProperties {
      * @param operatesOn
      *            the operatesOn to set
      */
-    public void setOperatesOn( String operatesOn ) {
+    public void setOperatesOn( List<String> operatesOn ) {
         this.operatesOn = operatesOn;
     }
 
     /**
      * @return the operatesOnIdentifier
      */
-    public String getOperatesOnIdentifier() {
+    public List<String> getOperatesOnIdentifier() {
         return operatesOnIdentifier;
     }
 
@@ -562,14 +562,14 @@ public class QueryableProperties {
      * @param operatesOnIdentifier
      *            the operatesOnIdentifier to set
      */
-    public void setOperatesOnIdentifier( String operatesOnIdentifier ) {
+    public void setOperatesOnIdentifier( List<String> operatesOnIdentifier ) {
         this.operatesOnIdentifier = operatesOnIdentifier;
     }
 
     /**
      * @return the operatesOnName
      */
-    public String getOperatesOnName() {
+    public List<String> getOperatesOnName() {
         return operatesOnName;
     }
 
@@ -577,7 +577,7 @@ public class QueryableProperties {
      * @param operatesOnName
      *            the operatesOnName to set
      */
-    public void setOperatesOnName( String operatesOnName ) {
+    public void setOperatesOnName( List<String> operatesOnName ) {
         this.operatesOnName = operatesOnName;
     }
 

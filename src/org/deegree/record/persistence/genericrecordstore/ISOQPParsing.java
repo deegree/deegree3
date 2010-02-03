@@ -161,8 +161,10 @@ public class ISOQPParsing extends XMLAdapter {
         this.connection = connection;
 
         setRootElement( element );
-        nsContext.addNamespace( rootElement.getDefaultNamespace().getPrefix(),
-                                rootElement.getDefaultNamespace().getNamespaceURI() );
+        if ( element.getDefaultNamespace() != null ) {
+            nsContext.addNamespace( rootElement.getDefaultNamespace().getPrefix(),
+                                    rootElement.getDefaultNamespace().getNamespaceURI() );
+        }
         nsContext.addNamespace( CSW_PREFIX, CSWConstants.CSW_202_NS );
         nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
         nsContext.addNamespace( "ows", "http://www.opengis.net/ows" );
@@ -208,18 +210,24 @@ public class ISOQPParsing extends XMLAdapter {
     public void parseAPISO( boolean isInspire )
                             throws IOException {
 
-        for ( String error : validate( rootElement ) ) {
-            throw new IOException( "VALIDATION-ERROR: " + error );
-        }
+        // for ( String error : validate( rootElement ) ) {
+        // throw new IOException( "VALIDATION-ERROR: " + error );
+        // }
 
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * FileIdentifier
+         * 
+         * 
+         *---------------------------------------------------------------*/
         String fileIdentifierString = getNodeAsString(
                                                        rootElement,
                                                        new XPath( "./gmd:fileIdentifier/gco:CharacterString", nsContext ),
                                                        null );
-        
+
         if ( fileIdentifierString == null ) {
             qp.setIdentifier( generateUUID() );
-            
 
             OMElement omFileIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
             OMElement omFileCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
@@ -229,18 +237,56 @@ public class ISOQPParsing extends XMLAdapter {
 
         } else {
             qp.setIdentifier( fileIdentifierString );
-           
-            
-            //TODO hack
+
+            // TODO hack
             List<String> idList = new ArrayList<String>();
             idList.add( fileIdentifierString );
             qp.setIdentifierDC( idList );
-            
-            
+
             gr.setIdentifier( getElement( rootElement, new XPath( "./gmd:fileIdentifier", nsContext ) ) );
 
         }
 
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * (default) Language
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        rp.setLanguage( getNodeAsString( rootElement, new XPath( "./gmd:language/gco:CharacterString", nsContext ),
+                                         null ) );
+
+        gr.setLanguage( getElement( rootElement, new XPath( "./gmd:language", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * CharacterSet
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setCharacterSet( getElement( rootElement, new XPath( "./gmd:characterSet", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * ParentIdentifier
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        qp.setParentIdentifier( getNodeAsString( rootElement, new XPath( "./gmd:parentIdentifier/gco:CharacterString",
+                                                                         nsContext ), null ) );
+
+        gr.setParentIdentifier( getElement( rootElement, new XPath( "./gmd:parentIdentifier", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * Type
+         * HierarchieLevel
+         * 
+         *---------------------------------------------------------------*/
         /**
          * if provided data is a dataset: type = dataset (default)
          * <p>
@@ -252,12 +298,34 @@ public class ISOQPParsing extends XMLAdapter {
          */
         qp.setType( getNodeAsString( rootElement, new XPath( "./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
                                                              nsContext ), "dataset" ) );
+
         gr.setHierarchyLevel( getElements( rootElement, new XPath( "./gmd:hierarchyLevel", nsContext ) ) );
 
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * HierarchieLevelName
+         * 
+         * 
+         *---------------------------------------------------------------*/
         gr.setHierarchyLevelName( getElements( rootElement, new XPath( "./gmd:hierarchyLevelName", nsContext ) ) );
 
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * Contact
+         * 
+         * 
+         *---------------------------------------------------------------*/
         gr.setContact( getElements( rootElement, new XPath( "./gmd:contact", nsContext ) ) );
 
+        /*---------------------------------------------------------------
+         * 
+         * DateStamp
+         * Modified
+         * 
+         * 
+         *---------------------------------------------------------------*/
         String dateString = getNodeAsString( rootElement, new XPath( "./gmd:dateStamp/gco:DateTime", nsContext ),
                                              "0000-00-00" );
         Date date = null;
@@ -271,6 +339,59 @@ public class ISOQPParsing extends XMLAdapter {
         qp.setModified( date );
         gr.setDateStamp( getElement( rootElement, new XPath( "./gmd:dateStamp", nsContext ) ) );
 
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * MetadataStandardName
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setMetadataStandardName( getElement( rootElement, new XPath( "./gmd:metadataStandardName", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * MetadataStandardVersion
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setMetadataStandardVersion( getElement( rootElement, new XPath( "./gmd:metadataStandardVersion", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * DataSetURI
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setDataSetURI( getElement( rootElement, new XPath( "./gmd:dataSetURI", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * Locale (for multilinguarity)
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setLocale( getElements( rootElement, new XPath( "./gmd:locale", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * SpatialRepresentationInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setSpatialRepresentationInfo( getElements( rootElement, new XPath( "./gmd:spatialRepresentationInfo",
+                                                                              nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * ReferenceSystemInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
         List<OMElement> crsElements = getElements(
                                                    rootElement,
                                                    new XPath(
@@ -295,62 +416,27 @@ public class ISOQPParsing extends XMLAdapter {
 
         gr.setReferenceSystemInfo( getElements( rootElement, new XPath( "./gmd:referenceSystemInfo", nsContext ) ) );
 
-        rp.setLanguage( getNodeAsString( rootElement, new XPath( "./gmd:language/gco:CharacterString", nsContext ),
-                                         null ) );
-
-        gr.setLanguage( getElement( rootElement, new XPath( "./gmd:language", nsContext ) ) );
-
-        gr.setDataQualityInfo( getElements( rootElement, new XPath( "./gmd:dataQualityInfo", nsContext ) ) );
-
-        gr.setCharacterSet( getElement( rootElement, new XPath( "./gmd:characterSet", nsContext ) ) );
-
-        gr.setMetadataStandardName( getElement( rootElement, new XPath( "./gmd:metadataStandardName", nsContext ) ) );
-
-        gr.setMetadataStandardVersion( getElement( rootElement, new XPath( "./gmd:metadataStandardVersion", nsContext ) ) );
-
-        qp.setParentIdentifier( getNodeAsString( rootElement, new XPath( "./gmd:parentIdentifier/gco:CharacterString",
-                                                                         nsContext ), null ) );
-
-        gr.setParentIdentifier( getElement( rootElement, new XPath( "./gmd:parentIdentifier", nsContext ) ) );
-
-        gr.setDataSetURI( getElement( rootElement, new XPath( "./gmd:dataSetURI", nsContext ) ) );
-
-        gr.setLocale( getElements( rootElement, new XPath( "./gmd:locale", nsContext ) ) );
-
-        gr.setSpatialRepresentationInfo( getElements( rootElement, new XPath( "./gmd:spatialRepresentationInfo",
-                                                                              nsContext ) ) );
-
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * MetadataExtensionInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
         gr.setMetadataExtensionInfo( getElements( rootElement, new XPath( "./gmd:metadataExtensionInfo", nsContext ) ) );
 
-        gr.setContentInfo( getElements( rootElement, new XPath( "./gmd:contentInfo", nsContext ) ) );
-
-        gr.setPortrayalCatalogueInfo( getElements( rootElement, new XPath( "./gmd:portrayalCatalogueInfo", nsContext ) ) );
-
-        gr.setMetadataConstraints( getElements( rootElement, new XPath( "./gmd:metadataConstraints", nsContext ) ) );
-
-        gr.setApplicationSchemaInfo( getElements( rootElement, new XPath( "./gmd:applicationSchemaInfo", nsContext ) ) );
-
-        gr.setMetadataMaintenance( getElement( rootElement, new XPath( "./gmd:metadataMaintenance", nsContext ) ) );
-
-        gr.setSeries( getElements( rootElement, new XPath( "./gmd:series", nsContext ) ) );
-
-        gr.setDescribes( getElements( rootElement, new XPath( "./gmd:describes", nsContext ) ) );
-
-        gr.setPropertyType( getElements( rootElement, new XPath( "./gmd:propertyType", nsContext ) ) );
-
-        gr.setFeatureType( getElements( rootElement, new XPath( "./gmd:featureType", nsContext ) ) );
-
-        gr.setFeatureAttribute( getElements( rootElement, new XPath( "./gmd:featureAttribute", nsContext ) ) );
-
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * IdentificationInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
         List<OMElement> identificationInfo = getElements( rootElement,
                                                           new XPath( "./gmd:identificationInfo", nsContext ) );
 
         List<OMElement> identificationInfo_Update = new ArrayList<OMElement>();
 
-        /*
-         * 
-         * IdentificationInfo
-         */
         for ( OMElement root_identInfo : identificationInfo ) {
 
             OMElement root_identInfo_Update = factory.createOMElement( "identifier", namespaceGMD );
@@ -367,6 +453,11 @@ public class ISOQPParsing extends XMLAdapter {
                                                                                    "./srv:SV_ServiceIdentification | ./gmd:MD_DataIdentification",
                                                                                    nsContext ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * Citation
+             * 
+             *---------------------------------------------------------------*/
             OMElement citation = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:citation",
                                                                                              nsContext ) );
 
@@ -451,10 +542,11 @@ public class ISOQPParsing extends XMLAdapter {
                 omCitation = citation;
 
                 for ( OMElement resourceElement : identifier ) {
+                    // maybe additional this?? : | ./gmd:RS_Identifier/gmd:code/gco:CharacterString
                     String resourceIdentifier = getNodeAsString(
                                                                  resourceElement,
                                                                  new XPath(
-                                                                            "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
+                                                                            "./gmd:MD_Identifier/gmd:code/gco:CharacterString",
                                                                             nsContext ), null );
                     resourceIdentifierList.add( resourceIdentifier );
                 }
@@ -462,10 +554,11 @@ public class ISOQPParsing extends XMLAdapter {
 
             } else {
                 for ( OMElement resourceElement : identifier ) {
+                    // maybe additional this?? : | ./gmd:RS_Identifier/gmd:code/gco:CharacterString
                     String resourceIdentifier = getNodeAsString(
                                                                  resourceElement,
                                                                  new XPath(
-                                                                            "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
+                                                                            "./gmd:MD_Identifier/gmd:code/gco:CharacterString",
                                                                             nsContext ), null );
                     resourceIdentifierList.add( resourceIdentifier );
                 }
@@ -557,6 +650,11 @@ public class ISOQPParsing extends XMLAdapter {
                 omCitation.addChild( omCI_Citation );
             }
 
+            /*---------------------------------------------------------------
+             * 
+             * Abstract
+             * 
+             *---------------------------------------------------------------*/
             OMElement _abstract = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:abstract",
                                                                                               nsContext ) );
 
@@ -564,20 +662,50 @@ public class ISOQPParsing extends XMLAdapter {
 
             qp.set_abstract( Arrays.asList( _abstractStrings ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * Purpose
+             * 
+             *---------------------------------------------------------------*/
             OMElement purpose = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:purpose", nsContext ) );
 
+            /*---------------------------------------------------------------
+             *  
+             * Credit
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> credit = getElements( sv_service_OR_md_dataIdentification, new XPath( "./gmd:credit",
                                                                                                   nsContext ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * Status
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> status = getElements( sv_service_OR_md_dataIdentification, new XPath( "./gmd:status",
                                                                                                   nsContext ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * PointOfContact
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> pointOfContact = getElements( sv_service_OR_md_dataIdentification,
                                                           new XPath( "./gmd:pointOfContact", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * ResourceMaintenance
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> resourceMaintenance = getElements( sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:resourceMaintenance", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * GraphicOverview
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> graphicOverview = getElements( sv_service_OR_md_dataIdentification,
                                                            new XPath( "./gmd:graphicOverview", nsContext ) );
 
@@ -588,9 +716,19 @@ public class ISOQPParsing extends XMLAdapter {
                                                                        nsContext ), null );
             rp.setGraphicOverview( graphicOverviewString );
 
+            /*---------------------------------------------------------------
+             * 
+             * ResourceFormat
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> resourceFormat = getElements( sv_service_OR_md_dataIdentification,
                                                           new XPath( "./gmd:resourceFormat", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * DescriptiveKeywords
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> descriptiveKeywords = getElements( sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:descriptiveKeywords", nsContext ) );
 
@@ -602,37 +740,91 @@ public class ISOQPParsing extends XMLAdapter {
 
             List<Keyword> listOfKeywords = new ArrayList<Keyword>();
 
+            /*---------------------------------------------------------------
+             * 
+             * ResourceSpecificUsage
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> resourceSpecificUsage = getElements( sv_service_OR_md_dataIdentification,
                                                                  new XPath( "./gmd:resourceSpecificUsage", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * ResourceConstraints
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> resourceConstraints = getElements( sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:resourceConstraints", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * 
+             * AggregationInfo
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> aggregationInfo = getElements( sv_service_OR_md_dataIdentification,
                                                            new XPath( "./gmd:aggregationInfo", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * MD_DataIdentification
+             * SpatialRepresentationType
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> spatialRepresentationType = getElements( md_dataIdentification,
                                                                      new XPath( "./gmd:spatialRepresentationType",
                                                                                 nsContext ) );
+            /*---------------------------------------------------------------
+             * MD_DataIdentification
+             * SpatialResolution
+             * 
+             *---------------------------------------------------------------*/
+            List<OMElement> spatialResolution = getElements( md_dataIdentification,
+                                                             new XPath( "./gmd:spatialResolution", nsContext ) );
 
-            List<OMElement> spatialResolution = getElements( md_dataIdentification, new XPath( "./gmd:MD_Resolution",
-                                                                                               nsContext ) );
-
+            /*---------------------------------------------------------------
+             * MD_DataIdentification
+             * Language
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> language_md_dataIdent = getElements( md_dataIdentification, new XPath( "./gmd:language",
                                                                                                    nsContext ) );
 
+            /*---------------------------------------------------------------
+             * MD_DataIdentification
+             * CharacterSet
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> characterSet_md_dataIdent = getElements( md_dataIdentification,
-                                                                     new XPath( "./gmd:spatialResolution", nsContext ) );
+                                                                     new XPath( "./gmd:characterSet", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * MD_DataIdentification
+             * TopicCategory
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> topicCategory = getElements( md_dataIdentification, new XPath( "./gmd:topicCategory",
                                                                                            nsContext ) );
 
+            /*---------------------------------------------------------------
+             * MD_DataIdentification
+             * EnvironmentDescription
+             * 
+             *---------------------------------------------------------------*/
             OMElement environmentDescription = getElement( md_dataIdentification,
                                                            new XPath( "./gmd:environmentDescription", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * MD_DataIdentification
+             * Extent
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> extent_md_dataIdent = getElements( md_dataIdentification, new XPath( "./gmd:extent",
                                                                                                  nsContext ) );
 
+            /*---------------------------------------------------------------
+             * MD_DataIdentification
+             * SupplementalInformation
+             * 
+             *---------------------------------------------------------------*/
             OMElement supplementalInformation = getElement( md_dataIdentification,
                                                             new XPath( "./gmd:supplementalInformation", nsContext ) );
             List<String> relationList = new ArrayList<String>();
@@ -714,6 +906,11 @@ public class ISOQPParsing extends XMLAdapter {
 
             }
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * ServiceType
+             * 
+             *---------------------------------------------------------------*/
             String serviceType = getNodeAsString( sv_serviceIdentification,
                                                   new XPath( "./srv:serviceType/gco:LocalName", nsContext ), null );
             qp.setServiceType( serviceType );
@@ -721,36 +918,105 @@ public class ISOQPParsing extends XMLAdapter {
             OMElement serviceTypeElem = getElement( sv_serviceIdentification,
                                                     new XPath( "./srv:serviceType", nsContext ) );
 
-            String serviceTypeVersion = getNodeAsString( sv_serviceIdentification,
-                                                         new XPath( "./srv:serviceTypeVersion/gco:CharacterString",
-                                                                    nsContext ), null );
-            qp.setServiceTypeVersion( serviceTypeVersion );
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * ServiceTypeVersion
+             * 
+             *---------------------------------------------------------------*/
+            String[] serviceTypeVersion = getNodesAsStrings( sv_serviceIdentification,
+                                                             new XPath( "./srv:serviceTypeVersion/gco:CharacterString",
+                                                                        nsContext ) );
+            qp.setServiceTypeVersion( Arrays.asList( serviceTypeVersion ) );
 
             List<OMElement> serviceTypeVersionElem = getElements( sv_serviceIdentification,
                                                                   new XPath( "./srv:serviceTypeVersion", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * AccessProperties
+             * 
+             *---------------------------------------------------------------*/
             OMElement accessProperties = getElement( sv_serviceIdentification, new XPath( "./srv:accessProperties",
                                                                                           nsContext ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * Restrictions
+             * 
+             *---------------------------------------------------------------*/
             OMElement restrictions = getElement( sv_serviceIdentification, new XPath( "./srv:restrictions", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * Keywords
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> keywords_service = getElements( sv_serviceIdentification, new XPath( "./srv:keywords",
                                                                                                  nsContext ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * Extent
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> extent_service = getElements( sv_serviceIdentification, new XPath( "./srv:extent",
                                                                                                nsContext ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * CoupledResource
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> coupledResource = getElements( sv_serviceIdentification,
                                                            new XPath( "./srv:coupledResource", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * CouplingType
+             * 
+             *---------------------------------------------------------------*/
             OMElement couplingType = getElement( sv_serviceIdentification, new XPath( "./srv:couplingType", nsContext ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * ContainsOperations
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> containsOperations = getElements( sv_serviceIdentification,
                                                               new XPath( "./srv:containsOperations", nsContext ) );
+            String[] operation = getNodesAsStrings(
+                                                    sv_serviceIdentification,
+                                                    new XPath(
+                                                               "./srv:containsOperations/srv:SV_OperationMetadata/srv:operationName/gco:CharacterString",
+                                                               nsContext ) );
+            for ( OMElement containsOpElem : containsOperations ) {
 
+                String operation_dcp = getNodeAsString( containsOpElem,
+                                                        new XPath( "./srv:SV_OperationMetadata/srv:DCP/srv:DCPList",
+                                                                   nsContext ), null );
+
+                String operation_linkage = getNodeAsString(
+                                                            containsOpElem,
+                                                            new XPath(
+                                                                       "./srv:SV_OperationMetadata/srv:connectPoint/srv:CI_OnlineResource/srv:linkage/srv:URL",
+                                                                       nsContext ), null );
+
+            }
+            qp.setOperation( Arrays.asList( operation ) );
+
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * OperatesOn
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> operatesOn = getElements( sv_serviceIdentification, new XPath( "./srv:operatesOn",
                                                                                            nsContext ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification or MD_DataIdentification
+             * Setting the EXTENT for one of the metadatatypes (service or data)
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> extent = (List<OMElement>) ( extent_md_dataIdent.size() != 0 ? extent_md_dataIdent
                                                                                         : extent_service );
             String temporalExtentBegin = "0000-00-00";
@@ -762,10 +1028,8 @@ public class ISOQPParsing extends XMLAdapter {
                 e.printStackTrace();
             }
 
-            qp.setTemporalExtentBegin( dateTempBeg );
-            
             String temporalExtentEnd = "0000-00-00";
-            
+
             Date dateTempEnd = null;
             try {
                 dateTempEnd = new Date( temporalExtentEnd );
@@ -774,34 +1038,31 @@ public class ISOQPParsing extends XMLAdapter {
                 e.printStackTrace();
             }
 
-            
-            
             double boundingBoxWestLongitude = 0.0;
             double boundingBoxEastLongitude = 0.0;
             double boundingBoxSouthLatitude = 0.0;
             double boundingBoxNorthLatitude = 0.0;
-            
 
-            CRS crs = new CRS( "EPSG:4326" );
-            crsList.add( crs );
-            qp.setCrs( crsList );
-            
+            CRS crs = null;
+
+            String geographicDescriptionCode_service = null;
+
             for ( OMElement extentElem : extent ) {
 
-                if(temporalExtentBegin.equals( "0000-00-00" ) ){
-                temporalExtentBegin = getNodeAsString(
-                                                              extentElem,
-                                                              new XPath(
-                                                                         "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
-                                                                         nsContext ), "0000-00-00" );
+                if ( temporalExtentBegin.equals( "0000-00-00" ) ) {
+                    temporalExtentBegin = getNodeAsString(
+                                                           extentElem,
+                                                           new XPath(
+                                                                      "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:beginPosition",
+                                                                      nsContext ), "0000-00-00" );
                 }
-                
-                if(temporalExtentEnd.equals( "0000-00-00" ) ){
-                temporalExtentEnd = getNodeAsString(
-                                                            extentElem,
-                                                            new XPath(
-                                                                       "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
-                                                                       nsContext ), "0000-00-00" );
+
+                if ( temporalExtentEnd.equals( "0000-00-00" ) ) {
+                    temporalExtentEnd = getNodeAsString(
+                                                         extentElem,
+                                                         new XPath(
+                                                                    "./gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gmd:TimePeriod/gmd:endPosition",
+                                                                    nsContext ), "0000-00-00" );
                 }
 
                 OMElement bbox = getElement(
@@ -809,34 +1070,55 @@ public class ISOQPParsing extends XMLAdapter {
                                              new XPath(
                                                         "./gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
                                                         nsContext ) );
-                if(boundingBoxWestLongitude == 0.0){
-                boundingBoxWestLongitude = getNodeAsDouble( bbox,
-                                                                   new XPath( "./gmd:westBoundLongitude/gco:Decimal",
-                                                                              nsContext ), 0.0 );
+                if ( boundingBoxWestLongitude == 0.0 ) {
+                    boundingBoxWestLongitude = getNodeAsDouble( bbox,
+                                                                new XPath( "./gmd:westBoundLongitude/gco:Decimal",
+                                                                           nsContext ), 0.0 );
                 }
-                if(boundingBoxEastLongitude == 0.0){
-                boundingBoxEastLongitude = getNodeAsDouble( bbox,
-                                                                   new XPath( "./gmd:eastBoundLongitude/gco:Decimal",
-                                                                              nsContext ), 0.0 );
+                if ( boundingBoxEastLongitude == 0.0 ) {
+                    boundingBoxEastLongitude = getNodeAsDouble( bbox,
+                                                                new XPath( "./gmd:eastBoundLongitude/gco:Decimal",
+                                                                           nsContext ), 0.0 );
                 }
-                if(boundingBoxSouthLatitude == 0.0){
-                boundingBoxSouthLatitude = getNodeAsDouble( bbox,
-                                                                   new XPath( "./gmd:southBoundLatitude/gco:Decimal",
-                                                                              nsContext ), 0.0 );
+                if ( boundingBoxSouthLatitude == 0.0 ) {
+                    boundingBoxSouthLatitude = getNodeAsDouble( bbox,
+                                                                new XPath( "./gmd:southBoundLatitude/gco:Decimal",
+                                                                           nsContext ), 0.0 );
                 }
-                if(boundingBoxNorthLatitude == 0.0){
-                boundingBoxNorthLatitude = getNodeAsDouble( bbox,
-                                                                   new XPath( "./gmd:northBoundLatitude/gco:Decimal",
-                                                                              nsContext ), 0.0 );
+                if ( boundingBoxNorthLatitude == 0.0 ) {
+                    boundingBoxNorthLatitude = getNodeAsDouble( bbox,
+                                                                new XPath( "./gmd:northBoundLatitude/gco:Decimal",
+                                                                           nsContext ), 0.0 );
                 }
-                
+
+                if ( bbox != null ) {
+                    crs = new CRS( "EPSG:4326" );
+                    crsList.add( crs );
+
+                }
+
+                if ( geographicDescriptionCode_service == null ) {
+                    geographicDescriptionCode_service = getNodeAsString(
+                                                                         extentElem,
+                                                                         new XPath(
+                                                                                    "./gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
+                                                                                    nsContext ), null );
+                }
 
             }
-            
+
+            qp.setTemporalExtentBegin( dateTempBeg );
             qp.setTemporalExtentEnd( dateTempEnd );
             qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxEastLongitude,
                                                 boundingBoxSouthLatitude, boundingBoxNorthLatitude ) );
+            qp.setCrs( crsList );
+            qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification and IdentificationInfo
+             * Setting all the KEYWORDS found in the record 
+             * 
+             *---------------------------------------------------------------*/
             List<OMElement> commonKeywords = new ArrayList<OMElement>();
             commonKeywords.addAll( descriptiveKeywords );
             commonKeywords.addAll( keywords_service );
@@ -872,70 +1154,100 @@ public class ISOQPParsing extends XMLAdapter {
             qp.setKeywords( listOfKeywords );
             qp.setTopicCategory( Arrays.asList( topicCategories ) );
 
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * Setting the COUPLINGTYPE
+             * 
+             *---------------------------------------------------------------*/
+            List<String> operatesOnList = new ArrayList<String>();
             for ( OMElement operatesOnElem : operatesOn ) {
-
+                // ./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier(/gmd:RS_Identifier |
+                // /gmd:MD_Identifier)/gmd:code/gco:CharacterString
                 String operatesOnString = getNodeAsString(
                                                            operatesOnElem,
                                                            new XPath(
-                                                                      "./srv:MD_DataIdentification/srv:citation/srv:CI_Citation/srv:identifier/gco:CharacterString",
+                                                                      "./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
                                                                       nsContext ), null );
-                qp.setOperatesOn( operatesOnString );
-
-                String operatesOnIdentifier = getNodeAsString(
-                                                               operatesOnElem,
-                                                               new XPath(
-                                                                          "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier/gco:CharacterString",
-                                                                          nsContext ), null );
-                qp.setOperatesOnIdentifier( operatesOnIdentifier );
-
-                String operatesOnName = getNodeAsString(
-                                                         operatesOnElem,
-                                                         new XPath(
-                                                                    "./srv:coupledResource/srv:SV_CoupledResource/srv:operationName/gco:CharacterString",
-                                                                    nsContext ), null );
-                qp.setOperatesOnName( operatesOnName );
+                operatesOnList.add( operatesOnString );
 
             }
+            qp.setOperatesOn( operatesOnList );
 
-            for ( OMElement extent_serviceElem : extent_service ) {
+            String[] operatesOnIdentifierList = getNodesAsStrings(
+                                                                   sv_serviceIdentification,
+                                                                   new XPath(
+                                                                              "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier/gco:CharacterString",
+                                                                              nsContext ) );
 
-                String geographicDescriptionCode_service = getNodeAsString(
-                                                                            extent_serviceElem,
-                                                                            new XPath(
-                                                                                       "./gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
-                                                                                       nsContext ), null );
-                qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
+            String[] operatesOnNameList = getNodesAsStrings(
+                                                             sv_serviceIdentification,
+                                                             new XPath(
+                                                                        "./srv:coupledResource/srv:SV_CoupledResource/srv:operationName/gco:CharacterString",
+                                                                        nsContext ) );
 
-            }
-
-            for ( OMElement containsOpElem : containsOperations ) {
-
-                String operation = getNodeAsString(
-                                                    containsOpElem,
-                                                    new XPath(
-                                                               "./srv:SV_OperationMetadata/srv:operationName/gco:CharacterString",
-                                                               nsContext ), null );
-
-                String operation_dcp = getNodeAsString( containsOpElem,
-                                                        new XPath( "./srv:SV_OperationMetadata/srv:DCP/srv:DCPList",
-                                                                   nsContext ), null );
-
-                String operation_linkage = getNodeAsString(
-                                                            containsOpElem,
-                                                            new XPath(
-                                                                       "./srv:SV_OperationMetadata/srv:connectPoint/srv:CI_OnlineResource/srv:linkage/srv:URL",
-                                                                       nsContext ), null );
-
-                qp.setOperation( operation );
-
-            }
+            qp.setOperatesOnIdentifier( Arrays.asList( operatesOnIdentifierList ) );
+            qp.setOperatesOnName( Arrays.asList( operatesOnNameList ) );
 
             String couplingTypeString = getNodeAsString(
-                                                         sv_service_OR_md_dataIdentification,
+                                                         sv_serviceIdentification,
                                                          new XPath(
-                                                                    "./srv:couplingType/srv:SV_CouplingType/srv:code/@codeListValue",
+                                                                    "./srv:couplingType/srv:SV_CouplingType/@codeListValue",
                                                                     nsContext ), null );
             qp.setCouplingType( couplingTypeString );
+
+            /*---------------------------------------------------------------
+             * SV_ServiceIdentification
+             * Check for consistency in the coupling.
+             * 
+             *---------------------------------------------------------------*/
+            
+            for ( String operatesOnString : operatesOnList ) {
+                if ( !getCoupledDataMetadatasets( operatesOnString ) ) {
+                    String msg = "No resourceIdentifier " + operatesOnString
+                                 + " found in the data metadata. So there is no coupling possible.";
+                    throw new IOException( msg ); 
+                }
+            }
+            if ( couplingTypeString.equals( "loose" ) ) {
+                // TODO    
+                
+            } else if ( couplingTypeString.equals( "tight" )|| couplingTypeString.equals( "mixed" ) ) {
+                boolean isTightlyCoupledOK = false;
+                for ( String operatesOnString : operatesOnList ) {
+
+                    for ( String operatesOnIdentifierString : operatesOnIdentifierList ) {
+
+                        if ( operatesOnString.equals( operatesOnIdentifierString ) ) {
+                            isTightlyCoupledOK = true;
+                            break;
+                        } else {
+                            isTightlyCoupledOK = false;
+                        }
+
+                    }
+                    // OperatesOnList [a,b,c] - OperatesOnIdList [b,c,d] -> a not in OperatesOnIdList -> inconsistency
+                    if ( isTightlyCoupledOK == false ) {
+
+                        String msg = "Missmatch between OperatesOn '" + operatesOnString
+                                     + "' and its tightly coupled resource OperatesOnIdentifier. ";
+                        throw new IOException( msg );
+                    }
+
+                }
+                // OperatesOnList [] - OperatesOnIdList [a,b,c] -> inconsistency
+                if ( isTightlyCoupledOK == false && operatesOnIdentifierList.length != 0 ) {
+
+                    String msg = "Missmatch between OperatesOn and its tightly coupled resource OperatesOnIdentifier. ";
+                    throw new IOException( msg );
+                } 
+            }
+            
+            
+            
+            
+            
+            
+            
 
             OMElement hasSecurityConstraintsElement = null;
             String[] rightsElements = null;
@@ -959,106 +1271,124 @@ public class ISOQPParsing extends XMLAdapter {
                 hasSecurityConstraint = true;
             }
             qp.setHasSecurityConstraints( hasSecurityConstraint );
-            if(isInspire == true){
-            if ( omCitation != null ) {
-                root_identInfo_Update.addChild( omCitation );
-            }
-            if ( _abstract != null ) {
-                root_identInfo_Update.addChild( _abstract );
-            }
-            if ( purpose != null ) {
-                root_identInfo_Update.addChild( purpose );
-            }
-            for ( OMElement elem : credit ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : status ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : pointOfContact ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : resourceMaintenance ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : graphicOverview ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : resourceFormat ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : descriptiveKeywords ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : resourceSpecificUsage ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : resourceConstraints ) {
-                root_identInfo_Update.addChild( elem );
-            }
-            for ( OMElement elem : aggregationInfo ) {
-                root_identInfo_Update.addChild( elem );
-            }
 
-            // if MD_DataIdentification or SV_ServiceIdentification
-            if ( md_dataIdentification != null ) {
-                for ( OMElement elem : spatialRepresentationType ) {
+            if ( isInspire == true ) {
+                if ( omCitation != null ) {
+                    root_identInfo_Update.addChild( omCitation );
+                }
+                if ( _abstract != null ) {
+                    root_identInfo_Update.addChild( _abstract );
+                }
+                if ( purpose != null ) {
+                    root_identInfo_Update.addChild( purpose );
+                }
+                for ( OMElement elem : credit ) {
                     root_identInfo_Update.addChild( elem );
                 }
-                for ( OMElement elem : spatialResolution ) {
+                for ( OMElement elem : status ) {
                     root_identInfo_Update.addChild( elem );
                 }
-                for ( OMElement elem : language_md_dataIdent ) {
+                for ( OMElement elem : pointOfContact ) {
                     root_identInfo_Update.addChild( elem );
                 }
-                for ( OMElement elem : characterSet_md_dataIdent ) {
+                for ( OMElement elem : resourceMaintenance ) {
                     root_identInfo_Update.addChild( elem );
                 }
-                for ( OMElement elem : topicCategory ) {
+                for ( OMElement elem : graphicOverview ) {
                     root_identInfo_Update.addChild( elem );
                 }
-                if ( environmentDescription != null ) {
-                    root_identInfo_Update.addChild( environmentDescription );
-                }
-                for ( OMElement elem : extent ) {
+                for ( OMElement elem : resourceFormat ) {
                     root_identInfo_Update.addChild( elem );
                 }
-                if ( supplementalInformation != null ) {
-                    root_identInfo_Update.addChild( supplementalInformation );
+                for ( OMElement elem : descriptiveKeywords ) {
+                    root_identInfo_Update.addChild( elem );
                 }
+                for ( OMElement elem : resourceSpecificUsage ) {
+                    root_identInfo_Update.addChild( elem );
+                }
+                for ( OMElement elem : resourceConstraints ) {
+                    root_identInfo_Update.addChild( elem );
+                }
+                for ( OMElement elem : aggregationInfo ) {
+                    root_identInfo_Update.addChild( elem );
+                }
+
+                // if MD_DataIdentification or SV_ServiceIdentification
+                if ( md_dataIdentification != null ) {
+                    for ( OMElement elem : spatialRepresentationType ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    for ( OMElement elem : spatialResolution ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    for ( OMElement elem : language_md_dataIdent ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    for ( OMElement elem : characterSet_md_dataIdent ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    for ( OMElement elem : topicCategory ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    if ( environmentDescription != null ) {
+                        root_identInfo_Update.addChild( environmentDescription );
+                    }
+                    for ( OMElement elem : extent ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    if ( supplementalInformation != null ) {
+                        root_identInfo_Update.addChild( supplementalInformation );
+                    }
+                } else {
+                    root_identInfo_Update.addChild( serviceTypeElem );
+                    for ( OMElement elem : serviceTypeVersionElem ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    root_identInfo_Update.addChild( accessProperties );
+                    root_identInfo_Update.addChild( restrictions );
+                    for ( OMElement elem : keywords_service ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    for ( OMElement elem : extent ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    for ( OMElement elem : coupledResource ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    root_identInfo_Update.addChild( couplingType );
+                    for ( OMElement elem : containsOperations ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+                    for ( OMElement elem : operatesOn ) {
+                        root_identInfo_Update.addChild( elem );
+                    }
+
+                }
+
+                identificationInfo_Update.add( root_identInfo_Update );
             } else {
-                root_identInfo_Update.addChild( serviceTypeElem );
-                for ( OMElement elem : serviceTypeVersionElem ) {
-                    root_identInfo_Update.addChild( elem );
-                }
-                root_identInfo_Update.addChild( accessProperties );
-                root_identInfo_Update.addChild( restrictions );
-                for ( OMElement elem : keywords_service ) {
-                    root_identInfo_Update.addChild( elem );
-                }
-                for ( OMElement elem : extent ) {
-                    root_identInfo_Update.addChild( elem );
-                }
-                for ( OMElement elem : coupledResource ) {
-                    root_identInfo_Update.addChild( elem );
-                }
-                root_identInfo_Update.addChild( couplingType );
-                for ( OMElement elem : containsOperations ) {
-                    root_identInfo_Update.addChild( elem );
-                }
-                for ( OMElement elem : operatesOn ) {
-                    root_identInfo_Update.addChild( elem );
-                }
+                identificationInfo_Update.addAll( identificationInfo );
+            }
+        }
 
-            }
-            identificationInfo_Update.add( root_identInfo_Update );
-            }
-        }
-        if ( isInspire == true ) {
-            gr.setIdentificationInfo( identificationInfo_Update );
-        } else {
-            gr.setIdentificationInfo( identificationInfo );
-        }
+        gr.setIdentificationInfo( identificationInfo_Update );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * ContentInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setContentInfo( getElements( rootElement, new XPath( "./gmd:contentInfo", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * DistributionInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
         List<OMElement> formats = getElements(
                                                rootElement,
                                                new XPath(
@@ -1091,6 +1421,99 @@ public class ISOQPParsing extends XMLAdapter {
         qp.setFormat( listOfFormats );
         gr.setDistributionInfo( getElement( rootElement, new XPath( "./gmd:distributionInfo", nsContext ) ) );
 
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * DataQualityInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setDataQualityInfo( getElements( rootElement, new XPath( "./gmd:dataQualityInfo", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * PortrayalCatalogueInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setPortrayalCatalogueInfo( getElements( rootElement, new XPath( "./gmd:portrayalCatalogueInfo", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * MetadataConstraints
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setMetadataConstraints( getElements( rootElement, new XPath( "./gmd:metadataConstraints", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * ApplicationSchemaInfo
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setApplicationSchemaInfo( getElements( rootElement, new XPath( "./gmd:applicationSchemaInfo", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * MetadataMaintenance
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setMetadataMaintenance( getElement( rootElement, new XPath( "./gmd:metadataMaintenance", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * Series
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setSeries( getElements( rootElement, new XPath( "./gmd:series", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * Describes
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setDescribes( getElements( rootElement, new XPath( "./gmd:describes", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * PropertyType
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setPropertyType( getElements( rootElement, new XPath( "./gmd:propertyType", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * FeatureType
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setFeatureType( getElements( rootElement, new XPath( "./gmd:featureType", nsContext ) ) );
+
+        /*---------------------------------------------------------------
+         * 
+         * 
+         * FeatureAttribute
+         * 
+         * 
+         *---------------------------------------------------------------*/
+        gr.setFeatureAttribute( getElements( rootElement, new XPath( "./gmd:featureAttribute", nsContext ) ) );
+
+        /*
+         * sets the properties that are needed for building DC records
+         */
         gr.setQueryableProperties( qp );
         gr.setReturnableProperties( rp );
 
@@ -2523,6 +2946,32 @@ public class ISOQPParsing extends XMLAdapter {
             return uuid;
         }
 
+    }
+
+    /**
+     * If there is a data metadata record available for the service metadata record.
+     * 
+     * @param resourceIdentifierList
+     * @return
+     */
+    private boolean getCoupledDataMetadatasets( String resourceIdentifier ) {
+        boolean gotOneDataset = false;
+
+        String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = '"
+                   + resourceIdentifier + "';";
+        ResultSet rs;
+
+        try {
+            rs = connection.createStatement().executeQuery( s );
+            while ( rs.next() ) {
+                gotOneDataset = rs.first();
+            }
+        } catch ( SQLException e ) {
+
+            e.printStackTrace();
+        }
+
+        return gotOneDataset;
     }
 
 }
