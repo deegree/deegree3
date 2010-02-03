@@ -272,7 +272,7 @@ public class BufferAccess {
                 int cap = data.capacity();
                 byte[] noData = dataInfo.getNoDataPixel( new byte[0] );
                 data.position( 0 );
-                while ( pos != cap ) {
+                while ( pos < cap ) {
                     data.put( noData );
                     pos = data.position();
                 }
