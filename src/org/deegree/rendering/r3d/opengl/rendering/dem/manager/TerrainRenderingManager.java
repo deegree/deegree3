@@ -52,12 +52,14 @@ import javax.media.opengl.GL;
 
 import org.deegree.commons.concurrent.ExecutionFinishedEvent;
 import org.deegree.commons.concurrent.Executor;
+import org.deegree.commons.utils.LogUtils;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.SpatialSelection;
 import org.deegree.rendering.r3d.multiresolution.crit.ViewFrustumCrit;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
+import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTile;
@@ -93,52 +95,130 @@ public class TerrainRenderingManager {
 
     private double maxProjectedTexelSize;
 
+    private final float[] diffuseColor;
+
+    private final float[] specularColor;
+
+    private final float shininess;
+
+    private final float[] ambientColor;
+
     /**
      * 
      * @param fragmentManager
      * @param maxPixelError
      * @param maxProjectedTexelSize
+     * @param ambientColor
+     *            of the terrain
+     * @param diffuseColor
+     *            of the terrain
+     * @param specularColor
+     *            of the terrain
+     * @param shininess
+     *            of the terrain.
      */
     public TerrainRenderingManager( RenderFragmentManager fragmentManager, double maxPixelError,
-                                    double maxProjectedTexelSize ) {
+                                    double maxProjectedTexelSize, float[] ambientColor, float[] diffuseColor,
+                                    float[] specularColor, float shininess ) {
         this.fragmentManager = fragmentManager;
         this.maxPixelError = maxPixelError;
         this.maxProjectedTexelSize = maxProjectedTexelSize;
+        this.ambientColor = ambientColor;
+        this.diffuseColor = diffuseColor;
+        this.specularColor = specularColor;
+        this.shininess = shininess;
     }
 
     /**
-     * Renders a view-optimized representation of the terrain geometry using the given scale and textures to the
-     * specified GL context.
+     * Renders a view-optimized representation of the terrain geometry using the given scale, colormap and/or textures
+     * to the specified GL context.
      * 
      * @param glRenderContext
      * @param disableElevationModel
+     * @param colorMap
+     *            to render
      * @param textureManagers
+     *            to retrieve the textures from.
      */
-    public void render( RenderContext glRenderContext, boolean disableElevationModel, TextureManager[] textureManagers ) {
+    public void render( RenderContext glRenderContext, boolean disableElevationModel, Colormap colorMap,
+                        TextureManager[] textureManagers ) {
 
-        // ensure correct zScale (zScale = 0 does not work as expected)
-        float zScale = ( disableElevationModel ) ? 0.001f : glRenderContext.getTerrainScale();
+        try {
+            // ensure correct zScale (zScale = 0 does not work as expected)
+            float zScale = ( disableElevationModel ) ? 0.001f : glRenderContext.getTerrainScale();
 
-        // adapt geometry LOD (fragments)
-        updateLOD( glRenderContext, zScale, textureManagers );
+            // adapt geometry LOD (fragments)
+            updateLOD( glRenderContext, zScale, textureManagers );
 
-        // determine textures for each fragment
-        Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( glRenderContext, activeLOD,
-                                                                                         textureManagers );
+            GL gl = glRenderContext.getContext();
+            setupLighting( gl );
 
-        glRenderContext.getContext().glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
-        // glRenderContext.getContext().glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT, new float[] { 0.8f, 0.8f, 0.8f, 1 }, 0
-        // );
-        glRenderContext.getContext().glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, new float[] { 0.8f, 0.8f, 0.8f, 1 }, 0 );
-        glRenderContext.getContext().glMaterialfv( GL.GL_FRONT, GL.GL_SPECULAR, new float[] { 0.02f, 0.02f, 0.02f, 1 },
-                                                   0 );
-        glRenderContext.getContext().glMaterialf( GL.GL_FRONT, GL.GL_SHININESS, 1.5f );
-        // render fragments with textures
-        render( glRenderContext, fragmentToTextures, textureManagers, zScale );
-        if ( LOG.isDebugEnabled() ) {
-            displayStats( glRenderContext );
+            // set z-scale
+            boolean useScale = Math.abs( zScale - 1 ) < 0.0001;
+            if ( useScale ) {
+                gl.glPushMatrix();
+                gl.glScalef( 1.0f, 1.0f, zScale );
+                // normalize normal vectors
+                gl.glEnable( GL.GL_NORMALIZE );
+            }
+
+            long time = System.currentTimeMillis();
+            loadDEMOnGPU( glRenderContext );
+
+            if ( ( textureManagers == null || textureManagers.length == 0 ) && colorMap == null ) {
+                render( gl );
+            } else {
+                if ( colorMap != null ) {
+                    if ( textureManagers != null && textureManagers.length > 0 ) {
+                        LOG.debug( "Color map rendering can not be used with other textures, ignoring the texture managers." );
+                    }
+                    render( glRenderContext, colorMap );
+                } else {
+                    // render fragments with textures
+                    render( glRenderContext, textureManagers );
+                }
+            }
+            if ( LOG.isDebugEnabled() ) {
+                String msg = LogUtils.createDurationTimeString( "Rendering of " + activeLOD.size() + " fragments",
+                                                                time, false );
+                LOG.debug( msg );
+            }
+
+            // make sure all fixed shaders are used.
+            gl.glUseProgram( 0 );
+
+            // disable current array buffer.
+            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, 0 );
+
+            if ( LOG.isDebugEnabled() ) {
+                displayStats( glRenderContext );
+            }
+            // pop the lighting
+            gl.glPopAttrib();
+
+            if ( useScale ) {
+                // reset the scale.
+                gl.glPopMatrix();
+                // normalize normal vectors
+                gl.glDisable( GL.GL_NORMALIZE );
+            }
+        } catch ( Throwable t ) {
+            LOG.debug( "Rendering did not succeed stack tracke.", t );
+            LOG.error( "Rendering did not succeed because: " + t.getLocalizedMessage() );
         }
-        glRenderContext.getContext().glPopAttrib();
+
+    }
+
+    /**
+     * @param gl
+     * 
+     */
+    private void setupLighting( GL gl ) {
+        gl.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
+        gl.glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT, ambientColor, 0 );
+        gl.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, diffuseColor, 0 );
+        gl.glMaterialfv( GL.GL_FRONT, GL.GL_SPECULAR, specularColor, 0 );
+        gl.glMaterialf( GL.GL_FRONT, GL.GL_SHININESS, shininess );
     }
 
     /**
@@ -148,6 +228,20 @@ public class TerrainRenderingManager {
         return activeLOD;
     }
 
+    /**
+     * @return the fragmentManager
+     */
+    public final RenderFragmentManager getFragmentManager() {
+        return fragmentManager;
+    }
+
+    /**
+     * Create a dem lod for the given render context.
+     * 
+     * @param glRenderContext
+     * @param scale
+     * @param textureManagers
+     */
     private void updateLOD( RenderContext glRenderContext, float scale, TextureManager[] textureManagers ) {
 
         long begin = System.currentTimeMillis();
@@ -163,12 +257,22 @@ public class TerrainRenderingManager {
         try {
             fragmentManager.require( activeLOD );
         } catch ( IOException e ) {
-            e.printStackTrace();
+            LOG.error( "Could not load all required DEM LOD fragments for the given render context stack.", e );
+            LOG.error( "Could not load all required DEM LOD fragments for the given render context because: "
+                       + e.getLocalizedMessage() );
         }
         LOG.debug( "Loading of " + activeLOD.size() + " fragments: " + ( System.currentTimeMillis() - begin )
                    + " milliseconds." );
     }
 
+    /**
+     * Get all textures from the texture managers by first making requests and then requesting the managers.
+     * 
+     * @param glRenderContext
+     * @param fragments
+     * @param textureManagers
+     * @return the textures for each render fragment
+     */
     private Map<RenderMeshFragment, List<FragmentTexture>> getTextures( RenderContext glRenderContext,
                                                                         Set<RenderMeshFragment> fragments,
                                                                         TextureManager[] textureManagers ) {
@@ -190,10 +294,10 @@ public class TerrainRenderingManager {
         Executor exec = Executor.getInstance();
         List<ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>>> results = null;
         try {
-            // TODO get timeout from configuration
             results = exec.performSynchronously( workers, (long) maxRequestTime * 1000 );
         } catch ( InterruptedException e ) {
-            LOG.error( e.getMessage(), e );
+            LOG.debug( "Could not fetch the textures, stack.", e );
+            LOG.error( "Could not fetch the textures because: " + e.getMessage() );
         }
         Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();
         if ( results != null ) {
@@ -219,7 +323,8 @@ public class TerrainRenderingManager {
                 } catch ( CancellationException e ) {
                     LOG.warn( "Timeout occured fetching textures." );
                 } catch ( Throwable e ) {
-                    LOG.error( e.getMessage(), e );
+                    LOG.debug( "Could not fetch the textures, stack.", e );
+                    LOG.error( "Could not fetch the textures because: " + e.getMessage() );
                 }
             }
             LOG.debug( "Fetching of textures: " + ( System.currentTimeMillis() - begin ) + " milliseconds." );
@@ -230,44 +335,75 @@ public class TerrainRenderingManager {
         return meshFragmentToTexture;
     }
 
-    private void render( RenderContext glRenderContext,
-                         Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures,
-                         TextureManager[] textureManagers, float zScale ) {
-
+    /**
+     * Load the dem fragment on the GPU, in other words, enable the VBO's, of the normals, vertices and indizes.
+     * 
+     * @param glRenderContext
+     */
+    private void loadDEMOnGPU( RenderContext glRenderContext ) {
         long begin = System.currentTimeMillis();
-        GL gl = glRenderContext.getContext();
         try {
-            fragmentManager.requireOnGPU( activeLOD, gl );
+            fragmentManager.requireOnGPU( activeLOD, glRenderContext.getContext() );
         } catch ( IOException e ) {
-            e.printStackTrace();
+            LOG.debug( "Could not load the fragments on the gpu, stack.", e );
+            LOG.error( "Could not load the fragments on the gpu because: " + e.getMessage() );
         }
         LOG.debug( "GPU upload of " + activeLOD.size() + " fragments: " + ( System.currentTimeMillis() - begin )
                    + " milliseconds." );
 
-        // set z-scale
-        if ( zScale != 1.0f ) {
-            gl.glPushMatrix();
-            gl.glScalef( 1.0f, 1.0f, zScale );
-            // normalize normal vectors
-            gl.glEnable( GL.GL_NORMALIZE );
-        }
+    }
 
+    /**
+     * Simply render all mesh fragments without any coloring or texturing.
+     * 
+     * @param gl
+     */
+    private void render( GL gl ) {
+        for ( RenderMeshFragment fragment : activeLOD ) {
+            fragment.render( gl );
+        }
+    }
+
+    /**
+     * Render the fragments with a colormap
+     * 
+     * @param glRenderContext
+     * @param colorMap
+     */
+    private void render( RenderContext glRenderContext, Colormap colorMap ) {
+        colorMap.enable( glRenderContext );
+        render( glRenderContext.getContext() );
+        colorMap.disable( glRenderContext );
+    }
+
+    /**
+     * Render the meshfragments with textures.
+     * 
+     * @param glRenderContext
+     * @param textureManagers
+     */
+    private void render( RenderContext glRenderContext, TextureManager[] textureManagers ) {
+        // determine textures for each fragment
+        Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( glRenderContext, activeLOD,
+                                                                                         textureManagers );
+        GL gl = glRenderContext.getContext();
         for ( RenderMeshFragment fragment : activeLOD ) {
             List<FragmentTexture> textures = fragmentToTextures.get( fragment );
             if ( textures != null && textures.size() > 0 ) {
-                int i = 0;
+                int numberOfTextures = 0;
                 for ( FragmentTexture texture : textures ) {
                     if ( texture != null ) {
-                        textureManagers[i++].enable( Collections.singletonList( texture ), gl );
+                        textureManagers[numberOfTextures++].enable( Collections.singletonList( texture ), gl );
                     }
                 }
-                if ( i == 0 ) {
-                    fragment.render( gl, null, 0 );
+                if ( numberOfTextures == 0 ) {
+                    fragment.render( gl );
                 } else {
-                    fragment.render( gl, textures, glRenderContext.getShaderProgramIds()[i - 1] );
+                    fragment.render( gl, textures,
+                                     glRenderContext.getCompositingTextureShaderProgram( numberOfTextures ) );
                 }
             } else {
-                fragment.render( gl, null, 0 );
+                fragment.render( gl );
             }
         }
 
@@ -288,28 +424,20 @@ public class TerrainRenderingManager {
                         if ( !texture.cachingEnabled() ) {
                             texture.clearAll( gl );
                         }
-                        // else {
-                        // // free up texture coordinates memory.
-                        // if ( !texture.isEnabled() ) {
-                        // texture.unload();
-                        // }
-                        // }
                     }
                 }
             }
-
         }
-
-        // reset z-scale
-        if ( zScale != 1.0f ) {
-            gl.glPopMatrix();
-            gl.glDisable( GL.GL_NORMALIZE );
-        }
-
-        long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Rendering of " + activeLOD.size() + " fragments took: " + elapsed + " ms." );
     }
 
+    /**
+     * The new LOD is based on the current viewfrustum and the maximum size of any textures.
+     * 
+     * @param glRenderContext
+     * @param zScale
+     * @param textureManagers
+     * @return
+     */
     private Set<RenderMeshFragment> getNewLOD( RenderContext glRenderContext, float zScale,
                                                TextureManager[] textureManagers ) {
 
@@ -367,12 +495,13 @@ public class TerrainRenderingManager {
     }
 
     /**
-     * @return the fragmentManager
+     * Simple callable for retrieving the textures from the managers.
+     * 
+     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+     * @author last edited by: $Author: rbezema $
+     * @version $Revision: $, $Date: $
+     * 
      */
-    public final RenderFragmentManager getFragmentManager() {
-        return fragmentManager;
-    }
-
     private class TextureWorker implements Callable<Map<RenderMeshFragment, FragmentTexture>> {
 
         private final RenderContext glRenderContext;
