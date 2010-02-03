@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
@@ -43,11 +43,11 @@ import org.deegree.rendering.r3d.ViewParams;
 /**
  * The <code>RenderContext</code> wraps the current GL context the view params and all other parameters necessary to
  * render a scene with opengl.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class RenderContext {
 
@@ -59,11 +59,12 @@ public class RenderContext {
 
     private int maxTextureSize;
 
-    private int[] shaderProgramIds;
+    // the compositing texture shader programs.
+    private ShaderProgram[] ctSPrograms;
 
     /**
      * Construct the RenderContext with the given view parameters.
-     *
+     * 
      * @param viewParams
      */
     public RenderContext( ViewParams viewParams ) {
@@ -72,11 +73,11 @@ public class RenderContext {
 
     /**
      * Construct the RenderContext with the given values.
-     *
+     * 
      * @param viewParams
      * @param terrainScale
      *            scaled z value of the terrain.
-     *
+     * 
      */
     public RenderContext( ViewParams viewParams, float terrainScale ) {
         this.viewParams = viewParams;
@@ -85,19 +86,20 @@ public class RenderContext {
 
     /**
      * Construct the RenderContext with the given values.
-     *
+     * 
      * @param viewParams
      * @param terrainScale
      *            scaled z value of the terrain.
      * @param maxTextureSize
-     * @param shaderProgramIds
-     *
+     * @param compositingTextureShaderPrograms
+     *            used for assigning and rendering multiple textures to a macro triangle.
      */
-    public RenderContext( ViewParams viewParams, float terrainScale, int maxTextureSize, int[] shaderProgramIds ) {
+    public RenderContext( ViewParams viewParams, float terrainScale, int maxTextureSize,
+                          ShaderProgram[] compositingTextureShaderPrograms ) {
         this.viewParams = viewParams;
         this.terrainScale = Math.max( terrainScale, 0.001f );
         this.maxTextureSize = maxTextureSize;
-        this.shaderProgramIds = shaderProgramIds;
+        this.ctSPrograms = compositingTextureShaderPrograms;
     }
 
     /**
@@ -153,18 +155,12 @@ public class RenderContext {
     }
 
     /**
-     * @return the shaderProgramIds
+     * @param numberOfTextures
+     *            the number of textures to be blended.
+     * @return a compositing texture shader program for the given number of textures.
      */
-    public final int[] getShaderProgramIds() {
-        return shaderProgramIds;
-    }
-
-    /**
-     * @param shaderProgramIds
-     *            the shaderProgramIds to set
-     */
-    public final void setShaderProgramIds( int[] shaderProgramIds ) {
-        this.shaderProgramIds = shaderProgramIds;
+    public ShaderProgram getCompositingTextureShaderProgram( int numberOfTextures ) {
+        return this.ctSPrograms[numberOfTextures - 1];
     }
 
 }

@@ -48,6 +48,7 @@ import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
+import org.deegree.rendering.r3d.opengl.rendering.ShaderProgram;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
 import org.slf4j.Logger;
 
@@ -219,23 +220,61 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     }
 
     /**
-     * Renders this fragment to the given OpenGL context with optional textures.
+     * Render the fragment data.
      * 
      * @param gl
+     */
+    public void render( GL gl ) {
+        if ( !isEnabled() ) {
+            LOG.warn( "Current fragment is not enabled, discarding it." );
+            return;
+        }
+        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
+        gl.glVertexPointer( 3, GL.GL_FLOAT, 0, 0 );
+
+        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[1] );
+        gl.glNormalPointer( GL.GL_FLOAT, 0, 0 );
+
+        gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
+        gl.glDrawElements( GL.GL_TRIANGLES, data.getNumTriangles() * 3, GL.GL_UNSIGNED_SHORT, 0 );
+    }
+
+    /**
+     * Renders this fragment to the given OpenGL context with given (optional) textures.
+     * 
+     * @param gl
+     *            context to render in.
      * @param textures
-     * @param shaderProgramId
+     *            may be empty, or null
+     * @param shaderProgram
+     *            the shader program containing composite texturing code.
      * @throws RuntimeException
      *             if the geometry data is currently not bound to VBOs
      */
-    public void render( GL gl, List<FragmentTexture> textures, int shaderProgramId ) {
+    public void render( GL gl, List<FragmentTexture> textures, ShaderProgram shaderProgram ) {
 
         if ( !isEnabled() ) {
-            throw new RuntimeException( "Cannot render mesh fragment, not enabled." );
+            LOG.warn( "Current mesh fragment is not enabled, discarding it." );
+            return;
+        }
+        if ( shaderProgram != null ) {
+            enableAndRenderTextures( gl, textures, shaderProgram );
         }
 
+        render( gl );
+
+        if ( shaderProgram != null ) {
+            disableTextureStates( gl, textures, shaderProgram );
+        }
+    }
+
+    /**
+     * @param textures
+     * @param fragShaderProgramId
+     */
+    private void enableAndRenderTextures( GL gl, List<FragmentTexture> textures, ShaderProgram shaderProgram ) {
         // render with or without texture
         if ( textures != null && textures.size() > 0 && textures.get( 0 ) != null ) {
-
             int glVCB = textures.get( 0 ).getGLVertexCoordBufferId();
             int tId = textures.get( 0 ).getGLTextureId();
             if ( glVCB != -1 && tId != -1 ) {
@@ -278,44 +317,41 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
                     }
 
                 }
-                // activate shader and set texSamplers
-                gl.glUseProgram( shaderProgramId );
+                // activate shader and set texSamplers, the shaderprogram is not null.
+                shaderProgram.useProgram( gl );
                 for ( int i = 0; i < textures.size(); i++ ) {
                     if ( textures.get( i ) != null ) {
-                        int texSampler = gl.glGetUniformLocation( shaderProgramId, "tex" + i );
+                        int texSampler = gl.glGetUniformLocation( shaderProgram.getOGLId(), "tex" + i );
                         gl.glUniform1i( texSampler, i );
                     }
+
                 }
             } else {
                 LOG.warn( "No texture id or no texture coordinates for texture(0), this fragments textures." );
             }
-
         }
+    }
 
-        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
-        gl.glVertexPointer( 3, GL.GL_FLOAT, 0, 0 );
-
-        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[1] );
-        gl.glNormalPointer( GL.GL_FLOAT, 0, 0 );
-
-        gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
-        gl.glDrawElements( GL.GL_TRIANGLES, data.getNumTriangles() * 3, GL.GL_UNSIGNED_SHORT, 0 );
-
+    /**
+     * @param gl
+     * @param textures
+     * @param shaderProgram
+     */
+    private void disableTextureStates( GL gl, List<FragmentTexture> textures, ShaderProgram shaderProgram ) {
         // reset non-standard OpenGL states
         if ( textures != null && textures.size() > 0 ) {
-            for ( int i = 0; i < textures.size(); i++ ) {
+            for ( int i = textures.size() - 1; i >= 0; --i ) {
                 int textureUnitId = JOGLUtils.getTextureUnitConst( i );
                 gl.glClientActiveTexture( textureUnitId );
                 gl.glActiveTexture( textureUnitId );
                 gl.glDisable( GL.GL_TEXTURE_2D );
                 gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
             }
-            gl.glActiveTexture( GL.GL_TEXTURE0 );
-            gl.glClientActiveTexture( GL.GL_TEXTURE0 );
+            // gl.glActiveTexture( GL.GL_TEXTURE0 );
+            // gl.glClientActiveTexture( GL.GL_TEXTURE0 );
         }
-
-        gl.glUseProgram( 0 );
-        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, 0 );
+        // rb: shader program can not be null.
+        shaderProgram.disable( gl );
     }
 
     @Override
