@@ -173,7 +173,7 @@ public class ShapeFeatureStore implements FeatureStore {
                         } catch ( UnknownCRSException e2 ) {
                             LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", name,
                                       e.getLocalizedMessage() );
-                            LOG.warn( "The file also does not contain a valid EPSG code." );
+                            LOG.warn( "The file also does not contain a valid EPSG code, assuming EPSG:4326." );
                             LOG.trace( "Stack trace of failed WKT parsing:", e );
                             crs = new CRS( "EPSG:4326" );
                         }
@@ -186,6 +186,7 @@ public class ShapeFeatureStore implements FeatureStore {
                     }
                 }
             } else {
+                LOG.debug( "No crs configured, and no .prj found, assuming EPSG:4326." );
                 crs = new CRS( "EPSG:4326" );
             }
             try {
