@@ -326,7 +326,7 @@ public class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        String dateString = getNodeAsString( rootElement, new XPath( "./gmd:dateStamp/gco:DateTime", nsContext ),
+        String dateString = getNodeAsString( rootElement, new XPath( "./gmd:dateStamp/gco:Date", nsContext ),
                                              "0000-00-00" );
         Date date = null;
         try {
@@ -1988,12 +1988,12 @@ public class ISOQPParsing extends XMLAdapter {
     private void generateISO()
                             throws IOException {
 
-        String sqlStatement = "";
-        String isoElements = "";
+        
         int fk_datasets = this.id;
         int idDatabaseTable = 0;
         for ( String databaseTable : tableRecordType.keySet() ) {
-
+            String sqlStatement = "";
+            String isoElements = "";
             if ( databaseTable.equals( RECORDBRIEF ) ) {
                 isoElements = gr.getIsoBriefElement().toString();
             } else if ( databaseTable.equals( RECORDSUMMARY ) ) {
@@ -2012,6 +2012,7 @@ public class ISOQPParsing extends XMLAdapter {
 
                 stm.executeUpdate( sqlStatement );
 
+                
             } catch ( SQLException e ) {
 
                 e.printStackTrace();

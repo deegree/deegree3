@@ -209,7 +209,7 @@ public class GenerateRecord {
         // Rights, ServiceOperation, SpatialResolution, SpatialRepresentationType, TopicCategory
         if ( identificationInfo != null ) {
             for ( OMElement elem : identificationInfo ) {
-                isoBriefElement.addChild( elem );
+                isoSummaryElement.addChild( elem );
             }
         }
         // Format, FormatVersion, OnlineResource
@@ -267,19 +267,19 @@ public class GenerateRecord {
         }
         // Modified
         if ( dateStamp != null ) {
-            isoSummaryElement.addChild( dateStamp );
+            isoFullElement.addChild( dateStamp );
         }
         // MetadataStandardName
         if ( metadataStandardName != null ) {
-            isoSummaryElement.addChild( metadataStandardName );
+            isoFullElement.addChild( metadataStandardName );
         }
         // MetadataStandardVersion
         if ( metadataStandardVersion != null ) {
-            isoSummaryElement.addChild( metadataStandardVersion );
+            isoFullElement.addChild( metadataStandardVersion );
         }
         // dataSetURI
         if ( dataSetURI != null ) {
-            isoSummaryElement.addChild( dataSetURI );
+            isoFullElement.addChild( dataSetURI );
         }
         // locale
         if ( locale != null ) {
@@ -296,7 +296,7 @@ public class GenerateRecord {
         // ReferenceInfoSystem
         if ( referenceSystemInfo != null || referenceSystemInfo.size() != 0 ) {
             for ( OMElement refSysInfoElem : referenceSystemInfo ) {
-                isoSummaryElement.addChild( refSysInfoElem );
+                isoFullElement.addChild( refSysInfoElem );
             }
         }
         // metadataExtensionInfo
@@ -310,7 +310,7 @@ public class GenerateRecord {
         // Rights, ServiceOperation, SpatialResolution, SpatialRepresentationType, TopicCategory
         if ( identificationInfo != null ) {
             for ( OMElement elem : identificationInfo ) {
-                isoBriefElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // contentInfo
@@ -321,64 +321,64 @@ public class GenerateRecord {
         }
         // Format, FormatVersion, OnlineResource
         if ( distributionInfo != null ) {
-            isoSummaryElement.addChild( distributionInfo );
+            isoFullElement.addChild( distributionInfo );
         }
         // Lineage
         if ( dataQualityInfo != null ) {
             for ( OMElement elem : dataQualityInfo ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // portrayalCatalogueInfo
         if ( portrayalCatalogueInfo != null ) {
             for ( OMElement elem : portrayalCatalogueInfo ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // metadataConstraints
         if ( metadataConstraints != null ) {
             for ( OMElement elem : metadataConstraints ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // applicationSchemaInfo
         if ( applicationSchemaInfo != null ) {
             for ( OMElement elem : applicationSchemaInfo ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // metadataMaintenance
         if ( metadataMaintenance != null ) {
-            isoSummaryElement.addChild( metadataMaintenance );
+            isoFullElement.addChild( metadataMaintenance );
         }
         // series
         if ( series != null ) {
             for ( OMElement elem : series ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // describes
         if ( describes != null ) {
             for ( OMElement elem : describes ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // propertyType
         if ( propertyType != null ) {
             for ( OMElement elem : propertyType ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // featureType
         if ( featureType != null ) {
             for ( OMElement elem : featureType ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
         // featureAttribute
         if ( featureAttribute != null ) {
             for ( OMElement elem : featureAttribute ) {
-                isoSummaryElement.addChild( elem );
+                isoFullElement.addChild( elem );
             }
         }
 

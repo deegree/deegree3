@@ -556,8 +556,6 @@ public class ISORecordStore implements RecordStore {
         return string;
     }
 
-    
-
     /**
      * 
      * @param writer
@@ -866,19 +864,19 @@ public class ISORecordStore implements RecordStore {
                 String selectBrief = "SELECT rb.data FROM recordbrief AS rb, datasets AS ds, qp_identifier AS i WHERE rb.fk_datasets = ds.id AND i.fk_datasets = ds.id AND i.identifier = '"
                                      + identifier + "' AND rb.format = " + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectBrief );
-
+                break;
             case summary:
 
                 String selectSummary = "SELECT rs.data FROM recordsummary AS rs, datasets AS ds, qp_identifier AS i WHERE rs.fk_datasets = ds.id AND i.fk_datasets = ds.id AND i.identifier = '"
                                        + identifier + "' AND rs.format = " + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectSummary );
-
+                break;
             case full:
 
                 String selectFull = "SELECT rf.data FROM recordfull AS rf, datasets AS ds, qp_identifier AS i WHERE rf.fk_datasets = ds.id AND i.fk_datasets = ds.id AND i.identifier = '"
                                     + identifier + "' AND rf.format = " + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectFull );
-
+                break;
             }
 
             writeResultSet( rs, writer );
@@ -977,12 +975,12 @@ public class ISORecordStore implements RecordStore {
     }
 
     /**
-     * This method writes the resultSet from the database to the writer. 
+     * This method writes the resultSet from the database to the writer.
      * 
      * @param resultSet
-     * that should search the backend
+     *            that should search the backend
      * @param writer
-     * that writes the data to the output
+     *            that writes the data to the output
      * @throws SQLException
      */
     private void writeResultSet( ResultSet resultSet, XMLStreamWriter writer )
@@ -1008,7 +1006,7 @@ public class ISORecordStore implements RecordStore {
         resultSet.close();
 
     }
-    
+
     /**
      * Reads a valid XML fragment TODO change fileOutput back into streamWriter
      * 
