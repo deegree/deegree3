@@ -250,8 +250,9 @@ public class RasterDataUtility {
                 return pixel[bands - alphaIndex - 1];
             case 3: /* RGB bands: use gray-pixel intensity */
                 return (float) ( pixel[0] + pixel[1] + pixel[2] ) / 3;
-            case 4: /* RGBA bands: use gray-pixel intensity, ignore alpha */
-                return (float) ( pixel[0] + pixel[1] + pixel[2] + pixel[3] - pixel[alphaIndex] ) / 3;
+            case 4: /* RGBA bands: use as float (d2 rtb does this often) */
+                return Float.intBitsToFloat( ( ( 0xff & pixel[3] ) << 24 ) + ( ( 0xff & pixel[0] ) << 16 )
+                                             + ( ( 0xff & pixel[1] ) << 8 ) + ( 0xff & pixel[2] ) );
             default:
                 return 0;
             }
