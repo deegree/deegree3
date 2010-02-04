@@ -47,6 +47,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.record.publication.TransactionOperation;
 import org.deegree.record.publication.TransactionOptions;
 
@@ -116,8 +117,9 @@ public interface RecordStore {
      * @param writer
      * @param connection
      * @param idList
+     * @throws SQLException 
      */
-    public void getRecordsById( XMLStreamWriter writer, JDBCConnections connection, List<String> idList );
+    public void getRecordsById( XMLStreamWriter writer, List<String> idList, URI outputSchema, SetOfReturnableElements elementSetName ) throws SQLException;
 
     /**
      * 

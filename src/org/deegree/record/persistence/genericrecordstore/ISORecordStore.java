@@ -413,25 +413,7 @@ public class ISORecordStore implements RecordStore {
             }
 
             if ( rs != null ) {
-                while ( rs.next() ) {
-
-                    BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
-                    // ByteArrayInputStream bais2 = new ByteArrayInputStream( rs.getBytes( 1 ) );
-
-                    // TODO remove hardcoding
-                    Charset charset = Charset.forName( "UTF-8" );
-                    InputStreamReader isr = null;
-                    try {
-                        isr = new InputStreamReader( bais, charset );
-                    } catch ( Exception e ) {
-
-                        e.printStackTrace();
-                    }
-
-                    readXMLFragment( isr, writer );
-
-                }
-                rs.close();
+                writeResultSet( rs, writer );
             }
 
             conn.close();
@@ -574,48 +556,7 @@ public class ISORecordStore implements RecordStore {
         return string;
     }
 
-    /**
-     * Reads a valid XML fragment TODO change fileOutput back into streamWriter
-     * 
-     * @param
-     * @param xmlWriter
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     */
-    private void readXMLFragment( InputStreamReader isr, XMLStreamWriter xmlWriter ) {
-
-        // XMLStreamReader xmlReaderOut;
-
-        XMLStreamReader xmlReader;
-        try {
-            // FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
-            // XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
-
-            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
-
-            // skip START_DOCUMENT
-            xmlReader.nextTag();
-
-            // XMLAdapter.writeElement( out, xmlReader );
-
-            XMLAdapter.writeElement( xmlWriter, xmlReader );
-            // fout.close();
-            xmlReader.close();
-
-        } catch ( XMLStreamException e ) {
-            e.printStackTrace();
-        } catch ( FactoryConfigurationError e ) {
-            e.printStackTrace();
-        }
-        // catch ( FileNotFoundException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-
-    }
+    
 
     /**
      * 
@@ -668,7 +609,7 @@ public class ISORecordStore implements RecordStore {
      */
     @Override
     public int transaction( XMLStreamWriter writer, TransactionOperation operations, TransactionOptions options )
-                            throws SQLException, XMLStreamException { 
+                            throws SQLException, XMLStreamException {
 
         int successfullTransaction = 0;
         Connection conn = ConnectionManager.getConnection( connectionId );
@@ -903,7 +844,59 @@ public class ISORecordStore implements RecordStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public void getRecordsById( XMLStreamWriter writer, JDBCConnections connection, List<String> idList ) {
+    public void getRecordsById( XMLStreamWriter writer, List<String> idList, URI outputSchema,
+                                SetOfReturnableElements elementSetName )
+                            throws SQLException {
+
+        Connection conn = ConnectionManager.getConnection( connectionId );
+        int profileFormatNumberOutputSchema = 0;
+
+        for ( QName qName : typeNames.keySet() ) {
+            if ( qName.getNamespaceURI().equals( outputSchema.toString() ) ) {
+                profileFormatNumberOutputSchema = typeNames.get( qName );
+            }
+        }
+
+        ResultSet rs = null;
+        for ( String identifier : idList ) {
+            switch ( elementSetName ) {
+
+            case brief:
+
+                String selectBrief = "SELECT rb.data FROM recordbrief AS rb, datasets AS ds, qp_identifier AS i WHERE rb.fk_datasets = ds.id AND i.fk_datasets = ds.id AND i.identifier = '"
+                                     + identifier + "' AND rb.format = " + profileFormatNumberOutputSchema + ";";
+                rs = conn.createStatement().executeQuery( selectBrief );
+
+            case summary:
+
+                String selectSummary = "SELECT rs.data FROM recordsummary AS rs, datasets AS ds, qp_identifier AS i WHERE rs.fk_datasets = ds.id AND i.fk_datasets = ds.id AND i.identifier = '"
+                                       + identifier + "' AND rs.format = " + profileFormatNumberOutputSchema + ";";
+                rs = conn.createStatement().executeQuery( selectSummary );
+
+            case full:
+
+                String selectFull = "SELECT rf.data FROM recordfull AS rf, datasets AS ds, qp_identifier AS i WHERE rf.fk_datasets = ds.id AND i.fk_datasets = ds.id AND i.identifier = '"
+                                    + identifier + "' AND rf.format = " + profileFormatNumberOutputSchema + ";";
+                rs = conn.createStatement().executeQuery( selectFull );
+
+            }
+
+            writeResultSet( rs, writer );
+
+        }
+
+        // try {
+        // doResultsOnGetRecord(writer, null, profileFormatNumberOutputSchema, null, connection);
+        // } catch ( SQLException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( XMLStreamException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
     }
 
@@ -979,19 +972,83 @@ public class ISORecordStore implements RecordStore {
 
             ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
 
-            while ( rsInsertedDatasets.next() ) {
-                ByteArrayInputStream bais = new ByteArrayInputStream( rsInsertedDatasets.getBytes( 1 ) );
-
-                Charset charset = Charset.forName( "UTF-8" );
-                InputStreamReader isr = null;
-
-                isr = new InputStreamReader( bais, charset );
-
-                readXMLFragment( isr, writer );
-
-            }
-            rsInsertedDatasets.close();
         }
+
+    }
+
+    /**
+     * This method writes the resultSet from the database to the writer. 
+     * 
+     * @param resultSet
+     * that should search the backend
+     * @param writer
+     * that writes the data to the output
+     * @throws SQLException
+     */
+    private void writeResultSet( ResultSet resultSet, XMLStreamWriter writer )
+                            throws SQLException {
+
+        while ( resultSet.next() ) {
+            BufferedInputStream bais = new BufferedInputStream( resultSet.getBinaryStream( 1 ) );
+            // ByteArrayInputStream bais2 = new ByteArrayInputStream( rs.getBytes( 1 ) );
+
+            // TODO remove hardcoding
+            Charset charset = Charset.forName( "UTF-8" );
+            InputStreamReader isr = null;
+            try {
+                isr = new InputStreamReader( bais, charset );
+            } catch ( Exception e ) {
+
+                e.printStackTrace();
+            }
+
+            readXMLFragment( isr, writer );
+
+        }
+        resultSet.close();
+
+    }
+    
+    /**
+     * Reads a valid XML fragment TODO change fileOutput back into streamWriter
+     * 
+     * @param
+     * @param xmlWriter
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     */
+    private void readXMLFragment( InputStreamReader isr, XMLStreamWriter xmlWriter ) {
+
+        // XMLStreamReader xmlReaderOut;
+
+        XMLStreamReader xmlReader;
+        try {
+            // FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
+            // XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
+
+            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
+
+            // skip START_DOCUMENT
+            xmlReader.nextTag();
+
+            // XMLAdapter.writeElement( out, xmlReader );
+
+            XMLAdapter.writeElement( xmlWriter, xmlReader );
+            // fout.close();
+            xmlReader.close();
+
+        } catch ( XMLStreamException e ) {
+            e.printStackTrace();
+        } catch ( FactoryConfigurationError e ) {
+            e.printStackTrace();
+        }
+        // catch ( FileNotFoundException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
 
     }
 
