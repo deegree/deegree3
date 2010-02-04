@@ -133,7 +133,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_1 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         assertEquals( new QName( "INWATERA_1M" ), getFeature.getQueries()[0].getTypeNames()[0].getFeatureTypeName() );
     }
 
@@ -146,7 +146,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_1 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         Query[] queries = getFeature.getQueries();
         assertEquals( ( (FilterQuery) queries[0] ).getTypeNames()[0].getFeatureTypeName(), new QName( "InWaterA_1M" ) );
@@ -161,7 +161,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_2 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "INWATERA_1M" ), filterQuery.getTypeNames()[0].getFeatureTypeName() );
 
@@ -178,7 +178,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_2 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         Query[] queries = getFeature.getQueries();
         assertEquals( ( (FilterQuery) queries[0] ).getPropertyNames()[0].getPropertyName(), "InWaterA_1M/wkbGeom" );
@@ -195,7 +195,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_3 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries()[0];
         assertEquals( "INWATERA_1M.1013", featureQuery.getFeatureIds()[0] );
     }
@@ -209,7 +209,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_3 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         Query[] queries = getFeature.getQueries();
         FeatureIdQuery featureId = (FeatureIdQuery) queries[0];
@@ -225,7 +225,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_4 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         Query[] queries = getFeature.getQueries();
         FeatureIdQuery featureId = (FeatureIdQuery) queries[0];
@@ -244,7 +244,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_4 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         assertEquals( ( (FeatureIdQuery) getFeature.getQueries()[0] ).getPropertyNames()[0][0].getPropertyName(),
                       "InWaterA_1M/wkbGeom" );
         assertEquals( ( (FeatureIdQuery) getFeature.getQueries()[0] ).getPropertyNames()[0][1].getPropertyName(),
@@ -262,7 +262,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_5 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         Query[] queries = getFeature.getQueries();
         FeatureIdQuery featureId = (FeatureIdQuery) queries[0];
@@ -280,7 +280,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_5 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         Query[] queries = getFeature.getQueries();
         FeatureIdQuery featureId = (FeatureIdQuery) queries[0];
@@ -298,7 +298,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_6 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         Query[] queries = getFeature.getQueries();
         FeatureIdQuery featureId = (FeatureIdQuery) queries[0];
@@ -325,7 +325,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_6 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries()[0];
         assertEquals( "InWaterA_1M/wkbGeom", featureQuery.getPropertyNames()[0][0].getPropertyName() );
         assertEquals( "InWaterA_1M/tileId", featureQuery.getPropertyNames()[0][1].getPropertyName() );
@@ -348,7 +348,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_7 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         OperatorFilter opFilter = (OperatorFilter) filterQuery.getFilter();
         Within within = (Within) opFilter.getOperator();
@@ -366,7 +366,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_7 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery filterq = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( "InWaterA_1M", filterq.getTypeNames()[0].getFeatureTypeName().getLocalPart() );
         OperatorFilter filter = (OperatorFilter) filterq.getFilter();
@@ -387,7 +387,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_8 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery filterq = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( "InWaterA_1M/wkbGeom", filterq.getPropertyNames()[0].getPropertyName() );
         assertEquals( "InWaterA_1M/tileId", filterq.getPropertyNames()[1].getPropertyName() );
@@ -419,7 +419,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_9 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery filterQuery0 = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "INWATERA_1M" ), filterQuery0.getTypeNames()[0].getFeatureTypeName() );
         FilterQuery filterQuery1 = (FilterQuery) getFeature.getQueries()[1];
@@ -435,7 +435,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_9 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery query0 = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "http://www.someserver.com", "InWaterA_1M" ),
                       query0.getTypeNames()[0].getFeatureTypeName() );
@@ -453,7 +453,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_10 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
 
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         assertEquals( new QName( "INWATERA_1M" ), filterQuery.getTypeNames()[0].getFeatureTypeName() );
@@ -474,7 +474,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_10 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery query0 = (FilterQuery) getFeature.getQueries()[0];
         PropertyName[] propNames0 = query0.getPropertyNames();
         assertEquals( "InWaterA_1M/wkbGeom", propNames0[0].getPropertyName() );
@@ -496,7 +496,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_11 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries()[0];
         assertEquals( "INWATERA_1M.1013", featureQuery.getFeatureIds()[0] );
         assertEquals( "BUILTUP_1M.3456", featureQuery.getFeatureIds()[1] );
@@ -511,7 +511,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_11 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery query = (FeatureIdQuery) getFeature.getQueries()[0];
         String[] featureIds = query.getFeatureIds();
         assertEquals( "InWaterA_1M.1013", featureIds[0] );
@@ -527,7 +527,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V100_EXAMPLE_12 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries()[0];
 
         assertEquals( "INWATERA_1M.1013", featureQuery.getFeatureIds()[0] );
@@ -547,7 +547,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_12 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries()[0];
         PropertyName[][] propNames = featureQuery.getPropertyNames();
         assertEquals( "InWaterA_1M/wkbGeom", propNames[0][0].getPropertyName() );
@@ -568,7 +568,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_13 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery query0 = (FilterQuery) getFeature.getQueries()[0];
         OperatorFilter filter = (OperatorFilter) query0.getFilter();
         assertTrue( filter.getOperator() instanceof Within );
@@ -597,7 +597,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_14 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery filter0 = (FilterQuery) getFeature.getQueries()[0];
         PropertyName[] propNames = filter0.getPropertyNames();
         assertEquals( "InWaterA_1M/wkbGeom", propNames[0].getPropertyName() );
@@ -633,7 +633,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_15 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries()[0];
         PropertyName[][] propNames = featureQuery.getPropertyNames();
         assertEquals( "uk:Town/gml:name", propNames[0][0].getPropertyName() );
@@ -653,7 +653,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_16 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         assertEquals( "1", getFeature.getTraverseXlinkDepth() );
         assertEquals( new Integer( 1 ), getFeature.getTraverseXlinkExpiry() );
     }
@@ -667,7 +667,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_17 );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FeatureIdQuery featureQuery = (FeatureIdQuery) getFeature.getQueries()[0];
         XLinkPropertyName[][] xlinkProps = featureQuery.getXLinkPropertyNames();
         assertEquals( "uk:Town/gml:name", xlinkProps[0][0].getPropertyName().getPropertyName() );
@@ -688,7 +688,7 @@ public class GetFeatureKVPAdapterTest extends TestCase {
         URL exampleURL = this.getClass().getResource( V110_EXAMPLE_sortby );
         Map<String, String> kvpMap = KVPUtils.readFileIntoMap( exampleURL );
 
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap );
+        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMap, null );
         FilterQuery filterQuery = (FilterQuery) getFeature.getQueries()[0];
         SortProperty[] sortby = filterQuery.getSortBy();
         assertEquals( 4, sortby.length );
