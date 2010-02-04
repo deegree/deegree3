@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.transformations.polynomial;
 
@@ -49,13 +49,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>PolynomialTransformation</code> is the base class for all polynomial transformations.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public abstract class PolynomialTransformation extends Transformation {
 
@@ -108,7 +108,7 @@ public abstract class PolynomialTransformation extends Transformation {
 
     /**
      * The central method, which actually transforms the points by applying the implemented polynomial.
-     *
+     * 
      * @param srcPoints
      *            to transform
      * @return the transformed points.
@@ -140,7 +140,7 @@ public abstract class PolynomialTransformation extends Transformation {
 
     @Override
     public void inverse() {
-        LOG.warn( "A Polynomial Transformation cannot be inverse yet" );
+        LOG.warn( "A Polynomial Transformation cannot be inversed yet" );
     }
 
     @Override
