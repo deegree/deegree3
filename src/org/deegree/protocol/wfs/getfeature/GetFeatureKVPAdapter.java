@@ -108,14 +108,14 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
      * @return parsed {@link GetFeature} request
      * @throws Exception
      */
-    public static GetFeature parse( Map<String, String> kvpParams )
+    public static GetFeature parse( Map<String, String> kvpParams, Map<String, String> nsMap )
                             throws Exception {
 
         Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
 
         GetFeature result = null;
         if ( VERSION_100.equals( version ) ) {
-            result = parse100( kvpParams );
+            result = parse100( kvpParams, nsMap );
         } else if ( VERSION_110.equals( version ) ) {
             result = parse110( kvpParams );
             // } else if ( VERSION_200.equals( version ) ) {
@@ -134,14 +134,14 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
      * @return
      * @throws Exception
      */
-    public GetFeature parseParams( Map<String, String> kvpParams )
+    public GetFeature parseParams( Map<String, String> kvpParams, Map<String, String> nsMap )
                             throws Exception {
 
         Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
 
         GetFeature result = null;
         if ( VERSION_100.equals( version ) ) {
-            result = parse100( kvpParams );
+            result = parse100( kvpParams, nsMap );
         } else if ( VERSION_110.equals( version ) ) {
             result = parse110( kvpParams );
             // } else if ( VERSION_200.equals( version ) ) {
@@ -154,8 +154,16 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
     }
 
     @SuppressWarnings("boxing")
-    private static GetFeature parse100( Map<String, String> kvpParams )
+    private static GetFeature parse100( Map<String, String> kvpParams, Map<String, String> nsMap )
                             throws Exception {
+
+        NamespaceContext nsContext = new NamespaceContext();
+        if ( nsMap != null ) {
+            for ( String key : nsMap.keySet() ) {
+                nsContext.addNamespace( key, nsMap.get( key ) );
+            }
+        }
+
         // optional: MAXFEATURES
         Integer maxFeatures = null;
         String maxFeatureStr = kvpParams.get( "MAXFEATURES" );
@@ -168,7 +176,7 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
         // optional: 'PROPERTYNAME'
         String propertyStr = kvpParams.get( "PROPERTYNAME" );
-        PropertyName[][] propertyNames = getPropertyNames( propertyStr, null );
+        PropertyName[][] propertyNames = getPropertyNames( propertyStr, nsContext );
 
         // optional: FEATUREVERSION
         String featureVersion = kvpParams.get( "FEATUREVERSION" );
