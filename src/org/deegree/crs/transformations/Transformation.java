@@ -44,8 +44,8 @@ import javax.vecmath.Point3d;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.crs.i18n.Messages;
+import org.deegree.crs.transformations.coordinate.ConcatenatedTransform;
 
 /**
  * The <code>Transformation</code> class supplies the most basic method interface for any given transformation.
@@ -178,9 +178,10 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
         if ( length > srcOrdinates.length ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_TRANSFORM_END_GT_LENGTH" ) );
         }
-        if ( ( length - startPositionSrc ) % getSourceDimension() != 0 ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_TRANSFORM_SRC_WRONG_DIM" ) );
-        }
+        // if ( ( length - startPositionSrc ) % getSourceDimension() != 0 ) {
+        // throw new IllegalArgumentException( Messages.getMessage( "CRS_TRANSFORM_SRC_WRONG_DIM" ) );
+        // }
+
         int listSize = ( length - startPositionSrc ) / getSourceDimension();
         if ( listSize < 0 ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_TRANSFORM_LAST_LT_START" ) );
@@ -191,7 +192,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
         if ( dim > 3 || dim < 2 ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORM_WRONG_CRS_DIM", "source" ) );
         }
-        for ( int i = startPositionSrc; i < ( startPositionSrc + length ); i += dim ) {
+        for ( int i = startPositionSrc; i < ( startPositionSrc + length ) && ( ( i + dim ) < startPositionSrc + length ); i += dim ) {
             sourceCoords.add( new Point3d( srcOrdinates[i], srcOrdinates[i + 1], ( dim == 3 ) ? srcOrdinates[i + 2] : 0 ) );
         }
         List<Point3d> result = doTransform( sourceCoords );
