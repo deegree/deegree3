@@ -36,7 +36,8 @@
 package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -62,6 +63,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -150,7 +152,6 @@ public class ISORecordStore implements RecordStore {
         try {
             URL dc = null;
             URL url_identification = null;
-            URL url_service_metadata = null;
             BufferedInputStream bais;
             URLConnection urlConn = null;
 
@@ -655,8 +656,7 @@ public class ISORecordStore implements RecordStore {
                 try {
                     TransformatorPostGres filterExpression = new TransformatorPostGres( upd.getConstraint() );
                     GenericDatabaseDS gdds = new GenericDatabaseDS( filterExpression.getStringWriter(),
-                                                                    ResultType.results, SetOfReturnableElements.full,
-                                                                    -1, 1, filterExpression.getTable(),
+                                                                    ResultType.results, SetOfReturnableElements.full, filterExpression.getTable(),
                                                                     filterExpression.getColumn() );
 
                     int formatNumber = 0;
@@ -757,8 +757,7 @@ public class ISORecordStore implements RecordStore {
             }
 
             GenericDatabaseDS gdds = new GenericDatabaseDS( filterExpression.getStringWriter(), ResultType.results,
-                                                            SetOfReturnableElements.full, -1, 1,
-                                                            filterExpression.getTable(), filterExpression.getColumn() );
+                                                            SetOfReturnableElements.full, filterExpression.getTable(), filterExpression.getColumn() );
             Writer str = new StringWriter();
 
             try {
@@ -975,7 +974,7 @@ public class ISORecordStore implements RecordStore {
     }
 
     /**
-     * This method writes the resultSet from the database to the writer.
+     * This method writes the resultSet from the database with the writer to an XML-output.
      * 
      * @param resultSet
      *            that should search the backend
@@ -1021,15 +1020,15 @@ public class ISORecordStore implements RecordStore {
 
         XMLStreamReader xmlReader;
         try {
-            // FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
-            // XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
+             //FileOutputStream fout = new FileOutputStream("/home/thomas/Desktop/test.xml");
+             //XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
 
             xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( isr );
 
             // skip START_DOCUMENT
             xmlReader.nextTag();
 
-            // XMLAdapter.writeElement( out, xmlReader );
+             //XMLAdapter.writeElement( out, xmlReader );
 
             XMLAdapter.writeElement( xmlWriter, xmlReader );
             // fout.close();
@@ -1040,13 +1039,13 @@ public class ISORecordStore implements RecordStore {
         } catch ( FactoryConfigurationError e ) {
             e.printStackTrace();
         }
-        // catch ( FileNotFoundException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
+//         catch ( FileNotFoundException e ) {
+//         // TODO Auto-generated catch block
+//         e.printStackTrace();
+//         } catch ( IOException e ) {
+//         // TODO Auto-generated catch block
+//         e.printStackTrace();
+//         }
 
     }
 
