@@ -91,6 +91,19 @@ public class GenericDatabaseDS {
         this.column = column;
 
     }
+    
+    public GenericDatabaseDS( Writer expressionWriter, ResultType resultType,
+                              SetOfReturnableElements setOfReturnableElements, Set<String> table,
+                              Set<String> column ) {
+        
+        this.expressionWriter = expressionWriter;
+        this.resultType = resultType;
+        this.setOfReturnableElements = setOfReturnableElements;
+        this.startPosition = 1;
+        this.table = table;
+        this.column = column;
+
+    }
 
     /**
      * @return the expressionWriter
