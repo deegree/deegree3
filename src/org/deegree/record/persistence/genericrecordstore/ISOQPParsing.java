@@ -131,6 +131,8 @@ public class ISOQPParsing extends XMLAdapter {
 
     private OMElement elementFull;
 
+    private ParseIdentificationInfo pI;
+    
     private OMFactory factory = OMAbstractFactory.getOMFactory();
 
     private OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
@@ -435,7 +437,7 @@ public class ISOQPParsing extends XMLAdapter {
         List<OMElement> identificationInfo = getElements( rootElement,
                                                           new XPath( "./gmd:identificationInfo", nsContext ) );
 
-        ParseIdentificationInfo pI = new ParseIdentificationInfo( factory, connection );
+        pI = new ParseIdentificationInfo( factory, connection, nsContext );
         pI.parseIdentificationInfo(identificationInfo, gr, qp, rp, isInspire, crsList);
 
         /*---------------------------------------------------------------

@@ -50,6 +50,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.crs.CRS;
@@ -68,15 +69,26 @@ public class ParseIdentificationInfo extends XMLAdapter{
     
     private Connection connection;
     
-    private OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+    private OMNamespace namespaceGMD;
 
-    private OMNamespace namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
+    private OMNamespace namespaceGCO;
+    
+    private NamespaceContext nsContext;
 
+    /**
+     * 
+     */
+    public ParseIdentificationInfo() {
+        // TODO Auto-generated constructor stub
+    }
     
-    
-    ParseIdentificationInfo(OMFactory factory, Connection connection){
+    ParseIdentificationInfo(OMFactory factory, Connection connection, NamespaceContext nsContext){
         this.factory = factory;
         this.connection = connection;
+        this.nsContext = nsContext;
+        namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+        namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
+        
     }
     
     

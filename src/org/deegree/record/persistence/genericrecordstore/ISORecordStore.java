@@ -631,7 +631,7 @@ public class ISORecordStore implements RecordStore {
                         isDC = false;
                     }
                     elementParsing.executeInsertStatement( isDC );
-                    insertedIds = elementParsing.getRecordInsertIDs();
+                    insertedIds.addAll( elementParsing.getRecordInsertIDs());
                     successfullTransaction++;
                 } catch ( IOException e ) {
                     successfullTransaction--;
@@ -968,6 +968,8 @@ public class ISORecordStore implements RecordStore {
             System.out.println( s );
 
             ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
+            
+            writeResultSet( rsInsertedDatasets, writer );
 
         }
 
