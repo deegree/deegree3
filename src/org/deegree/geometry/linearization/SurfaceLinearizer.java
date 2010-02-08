@@ -113,6 +113,21 @@ public class SurfaceLinearizer {
             }
             linearizedSurface = geomFac.createPolyhedralSurface( surface.getId(), surface.getCoordinateSystem(),
                                                                  linearizedPatches );
+            break;
+        }
+        case Surface: {
+            List<? extends SurfacePatch> patches = surface.getPatches();
+            List<SurfacePatch> linearizedPatches = new ArrayList<SurfacePatch>( patches.size() );
+            for ( SurfacePatch patch : surface.getPatches() ) {
+                if ( !( patch instanceof PolygonPatch ) ) {
+                    String msg = "Linearization of non planar surface patches is not implemented";
+                    throw new IllegalArgumentException( msg );
+                }
+                linearizedPatches.add( linearize( (PolygonPatch) patch, crit ) );
+            }
+            linearizedSurface = geomFac.createSurface( surface.getId(), linearizedPatches,
+                                                       surface.getCoordinateSystem() );
+            break;
         }
         default: {
             // TODO
