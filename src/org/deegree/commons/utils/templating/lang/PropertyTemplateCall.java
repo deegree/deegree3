@@ -81,7 +81,7 @@ public class PropertyTemplateCall {
     }
 
     private void eval( StringBuilder sb, TemplateDefinition t, Object obj, HashMap<String, Object> defs,
-                       List<Property<?>> list, Feature parent ) {
+                       List<Property<?>> list, Feature parent, boolean geometries ) {
         Property<?> p = null;
         if ( obj instanceof Property<?> ) {
             p = (Property<?>) obj;
@@ -97,10 +97,10 @@ public class PropertyTemplateCall {
         for ( Object o : t.body ) {
             if ( o instanceof FeatureTemplateCall ) {
                 if ( p != null && ( p.getValue() instanceof Feature ) ) {
-                    ( (FeatureTemplateCall) o ).eval( sb, defs, p.getValue() );
+                    ( (FeatureTemplateCall) o ).eval( sb, defs, p.getValue(), geometries );
                 }
                 if ( p == null && obj instanceof FeatureCollection ) {
-                    ( (FeatureTemplateCall) o ).eval( sb, defs, obj );
+                    ( (FeatureTemplateCall) o ).eval( sb, defs, obj, geometries );
                 }
             }
             if ( o instanceof String ) {
@@ -129,7 +129,7 @@ public class PropertyTemplateCall {
                 ( (Index) o ).eval( sb, p, list );
             }
             if ( o instanceof OddEven ) {
-                ( (OddEven) o ).eval( sb, defs, p, 1 + list.indexOf( p ) );
+                ( (OddEven) o ).eval( sb, defs, p, 1 + list.indexOf( p ), geometries );
             }
             if ( o instanceof GMLId ) {
                 ( (GMLId) o ).eval( sb, p, parent );
@@ -141,8 +141,9 @@ public class PropertyTemplateCall {
      * @param sb
      * @param defs
      * @param obj
+     * @param geometries
      */
-    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj ) {
+    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, boolean geometries ) {
         Object def = defs.get( name );
         if ( def == null ) {
             LOG.warn( "No template definition with name '{}'.", name );
@@ -151,20 +152,20 @@ public class PropertyTemplateCall {
         TemplateDefinition t = (TemplateDefinition) def;
 
         if ( obj instanceof Property<?> ) {
-            eval( sb, t, obj, defs, Collections.<Property<?>> singletonList( (Property<?>) obj ), null );
+            eval( sb, t, obj, defs, Collections.<Property<?>> singletonList( (Property<?>) obj ), null, geometries );
             return;
         }
         if ( obj instanceof FeatureCollection ) {
-            eval( sb, t, obj, defs, null, (Feature) obj );
+            eval( sb, t, obj, defs, null, (Feature) obj, geometries );
             return;
         }
 
-        List<Property<?>> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate );
+        List<Property<?>> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate, geometries );
 
         LOG.debug( "Property template call '{}' matches objects '{}'.", name, props );
 
         for ( Property<?> p : props ) {
-            eval( sb, t, p, defs, props, (Feature) obj );
+            eval( sb, t, p, defs, props, (Feature) obj, geometries );
         }
     }
 

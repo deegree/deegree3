@@ -79,7 +79,7 @@ public class FeatureTemplateCall {
     }
 
     private void eval( StringBuilder sb, HashMap<String, Object> defs, Feature f, TemplateDefinition t,
-                       List<Feature> list ) {
+                       List<Feature> list, boolean geometries ) {
         if ( visited.contains( f ) ) {
             // TODO add link?
             return;
@@ -93,10 +93,10 @@ public class FeatureTemplateCall {
                 ( (MapCall) o ).eval( sb, defs, f );
             }
             if ( o instanceof FeatureTemplateCall ) {
-                ( (FeatureTemplateCall) o ).eval( sb, defs, f );
+                ( (FeatureTemplateCall) o ).eval( sb, defs, f, geometries );
             }
             if ( o instanceof PropertyTemplateCall ) {
-                ( (PropertyTemplateCall) o ).eval( sb, defs, f );
+                ( (PropertyTemplateCall) o ).eval( sb, defs, f, geometries );
             }
             if ( o instanceof Name ) {
                 ( (Name) o ).eval( sb, f );
@@ -111,7 +111,7 @@ public class FeatureTemplateCall {
                 ( (Index) o ).eval( sb, f, list );
             }
             if ( o instanceof OddEven ) {
-                ( (OddEven) o ).eval( sb, defs, f, 1 + list.indexOf( f ) );
+                ( (OddEven) o ).eval( sb, defs, f, 1 + list.indexOf( f ), geometries );
             }
             if ( o instanceof GMLId ) {
                 ( (GMLId) o ).eval( sb, f, null );
@@ -123,8 +123,9 @@ public class FeatureTemplateCall {
      * @param sb
      * @param defs
      * @param obj
+     * @param geometries
      */
-    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj ) {
+    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, boolean geometries ) {
         if ( obj instanceof Feature ) {
             LOG.debug( "Feature template call '{}' with featureid '{}'", name, ( (Feature) obj ).getId() );
         } else {
@@ -140,16 +141,17 @@ public class FeatureTemplateCall {
 
         if ( obj instanceof FeatureCollection ) {
             Feature[] fs = new Feature[( (FeatureCollection) obj ).size()];
-            List<Feature> list = getMatchingObjects( ( (FeatureCollection) obj ).toArray( fs ), patterns, negate );
+            List<Feature> list = getMatchingObjects( ( (FeatureCollection) obj ).toArray( fs ), patterns, negate,
+                                                     geometries );
             for ( Feature feat : list ) {
-                eval( sb, defs, feat, t, list );
+                eval( sb, defs, feat, t, list, geometries );
             }
             return;
         }
         if ( obj instanceof Feature ) {
-            List<Feature> feats = getMatchingObjects( new Feature[] { (Feature) obj }, patterns, negate );
+            List<Feature> feats = getMatchingObjects( new Feature[] { (Feature) obj }, patterns, negate, geometries );
             for ( Feature f : feats ) {
-                eval( sb, defs, f, t, feats );
+                eval( sb, defs, f, t, feats, geometries );
             }
         }
     }

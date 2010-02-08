@@ -59,9 +59,7 @@ import org.slf4j.Logger;
  */
 public class Util {
 
-    private static final Logger LOG = getLogger( Util.class );
-
-    static <T> List<T> getMatchingObjects( T[] os, List<String> patterns, boolean negate ) {
+    static <T> List<T> getMatchingObjects( T[] os, List<String> patterns, boolean negate, boolean geometries ) {
         if ( !negate && patterns.contains( "*" ) ) {
             return asList( os );
         }
@@ -73,7 +71,7 @@ public class Util {
             if ( o instanceof Property<?> ) {
                 Property<?> p = (Property<?>) o;
 
-                if ( p.getValue() instanceof Geometry && !LOG.isDebugEnabled() ) {
+                if ( p.getValue() instanceof Geometry && geometries ) {
                     continue;
                 }
 
