@@ -192,7 +192,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
         if ( dim > 3 || dim < 2 ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORM_WRONG_CRS_DIM", "source" ) );
         }
-        for ( int i = startPositionSrc; i < ( startPositionSrc + length ) && ( ( i + dim ) < startPositionSrc + length ); i += dim ) {
+        for ( int i = startPositionSrc; ( ( i + ( dim - 1 ) ) < ( startPositionSrc + length ) ); i += dim ) {
             sourceCoords.add( new Point3d( srcOrdinates[i], srcOrdinates[i + 1], ( dim == 3 ) ? srcOrdinates[i + 2] : 0 ) );
         }
         List<Point3d> result = doTransform( sourceCoords );
