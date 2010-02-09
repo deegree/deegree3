@@ -55,6 +55,13 @@ public class CSWConstants {
      * Namespace="http://www.opengis.net/cat/csw/2.0.2"
      * */
     public static final String CSW_202_NS = "http://www.opengis.net/cat/csw/2.0.2";
+    
+    /**
+     * Namespace for elements from the ISO AP 1.0 specification
+     * <p>
+     * Namespace="http://www.isotc211.org/2005/gmd"
+     * */
+    public static final String GMD_NS = "http://www.isotc211.org/2005/gmd";
 
     /** Location of the schema */
     public static final String CSW_202_DISCOVERY_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd";
@@ -67,6 +74,9 @@ public class CSWConstants {
 
     /** Common namespace prefix for elements from the CSW specification */
     public static final String CSW_PREFIX = "csw";
+    
+    /** Common namespace prefix for elements from the ISO AP specification */
+    public static final String GMD_PREFIX = "gmd";
 
     /** CSW protocol version 2.0.2 */
     public static final Version VERSION_202 = Version.parseVersion( "2.0.2" );
