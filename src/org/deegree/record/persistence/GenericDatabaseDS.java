@@ -73,7 +73,6 @@ public class GenericDatabaseDS {
      * @param resultType
      * @param setOfReturnableElements
      * @param maxRecords
-     * a negative number means that this attribute is not needed
      * @param startPosition
      * @param table
      * @param column

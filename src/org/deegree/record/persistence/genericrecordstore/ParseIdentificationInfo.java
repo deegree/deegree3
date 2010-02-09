@@ -910,7 +910,7 @@ public class ParseIdentificationInfo extends XMLAdapter{
                     }
                     
                     boolean isTightlyCoupledOK = false;
-                    //TODO please more effiziency and intelligence
+                    //TODO please more efficiency and intelligence
                     for ( String operatesOnString : operatesOnList ) {
 
                         for ( String operatesOnIdentifierString : operatesOnIdentifierList ) {

@@ -88,6 +88,7 @@ public interface RecordStore {
      * @param writer
      *            writer to export to, must not be <code>null</code>
      * @param typeName
+     *            specifies which record profile should be returned in the response.
      */
     public void describeRecord( XMLStreamWriter writer, QName typeName );
 
@@ -112,18 +113,25 @@ public interface RecordStore {
                             throws SQLException, XMLStreamException, IOException;
 
     /**
-     * Exports the XML for the requested records.
+     * Exports the requested records by the requested identifier.
      * 
      * @param writer
-     * @param connection
+     *            writer to export to, must not be <code>null</code>
      * @param idList
-     * @throws SQLException 
+     *            list of the requested identifiers
+     * @param outputSchema
+     *            that should be presented in the response
+     * @param elementSetName
+     *            specifies which resultType should be returned in the response
+     * @throws SQLException
      */
-    public void getRecordsById( XMLStreamWriter writer, List<String> idList, URI outputSchema, SetOfReturnableElements elementSetName ) throws SQLException;
+    public void getRecordById( XMLStreamWriter writer, List<String> idList, URI outputSchema,
+                               SetOfReturnableElements elementSetName )
+                            throws SQLException;
 
     /**
      * 
-     * Exports the XML fragment to the recordstore.
+     * Exports the XML fragment to the recordstore-backend.
      * <p>
      * INSERT-action: inserts one or more records to the backend. <br>
      * UPDATE-action: updates one or more complete records OR individual properties. <br>
@@ -159,7 +167,7 @@ public interface RecordStore {
 
     /**
      * Returns the typeNames that are known in the backend. <br/>
-     * i.e. the GenericRecordStore holds the two profiles, the DUBLIN CORE and the ISO profile.
+     * i.e. the ISORecordStore holds two profiles, the DUBLIN CORE and the ISO profile.
      * 
      * @return QName
      */

@@ -53,7 +53,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.ValidationException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMAbstractFactory;
@@ -129,10 +128,8 @@ public class ISOQPParsing extends XMLAdapter {
 
     private Connection connection;
 
-    private OMElement elementFull;
-
     private ParseIdentificationInfo pI;
-    
+
     private OMFactory factory = OMAbstractFactory.getOMFactory();
 
     private OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
@@ -159,7 +156,6 @@ public class ISOQPParsing extends XMLAdapter {
      */
     public ISOQPParsing( OMElement element, Connection connection ) {
 
-        this.elementFull = element.cloneOMElement();
         this.connection = connection;
 
         setRootElement( element );
@@ -438,7 +434,7 @@ public class ISOQPParsing extends XMLAdapter {
                                                           new XPath( "./gmd:identificationInfo", nsContext ) );
 
         pI = new ParseIdentificationInfo( factory, connection, nsContext );
-        pI.parseIdentificationInfo(identificationInfo, gr, qp, rp, isInspire, crsList);
+        pI.parseIdentificationInfo( identificationInfo, gr, qp, rp, isInspire, crsList );
 
         /*---------------------------------------------------------------
          * 
@@ -692,16 +688,24 @@ public class ISOQPParsing extends XMLAdapter {
             stm = connection.createStatement();
 
             boolean isUpdate = false;
-
-            generateMainDatabaseDataset();
-            if ( isDC == true ) {
-                generateDC();
+            String s = "SELECT i.identifier FROM qp_identifier AS i WHERE i.identifier = '"+ qp.getIdentifier() + "';";
+            ResultSet r = stm.executeQuery( s );
+            System.out.println(s);
+            if ( r.next() ) {
+                stm.close();
+                throw new IOException("Record with identifier '" + qp.getIdentifier() + "' already exists!");
             } else {
-                generateISO();
+                generateMainDatabaseDataset();
+                if ( isDC == true ) {
+                    generateDC();
+                } else {
+                    generateISO();
+                }
+                executeQueryableProperties( isUpdate );
+                stm.close();
             }
-            executeQueryableProperties( isUpdate );
+            
 
-            stm.close();
         } catch ( SQLException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -714,6 +718,7 @@ public class ISOQPParsing extends XMLAdapter {
      */
     public void executeUpdateStatement() {
         final String databaseTable = "datasets";
+        final String qp_identifier = "qp_identifier";
         boolean isUpdate = true;
 
         StringWriter sqlStatementUpdate = new StringWriter( 500 );
@@ -722,8 +727,8 @@ public class ISOQPParsing extends XMLAdapter {
         String modifiedAttribute = "null";
         try {
             stm = connection.createStatement();
-            sqlStatementUpdate.append( "SELECT " + databaseTable + ".id from " + databaseTable + " where "
-                                       + databaseTable + ".identifier = '" + qp.getIdentifier() + "'" );
+            sqlStatementUpdate.append( "SELECT " + databaseTable + ".id from " + databaseTable + "," + qp_identifier + " where "
+                                       + databaseTable + ".id = " + qp_identifier + ".fk_datasets AND " + qp_identifier + ".identifier = '" + qp.getIdentifier() + "'" );
             System.out.println( sqlStatementUpdate.toString() );
             buf = sqlStatementUpdate.getBuffer();
             ResultSet rs = connection.createStatement().executeQuery( sqlStatementUpdate.toString() );
@@ -894,9 +899,17 @@ public class ISOQPParsing extends XMLAdapter {
         if ( qp.getResourceLanguage() != null ) {
             generateISOQP_ResourceLanguageStatement( isUpdate );
         }
-        // if ( qp.getTemporalExtentBegin() != null && qp.getTemporalExtentEnd() != null ) {
-        // generateISOQP_TemporalExtentStatement( isUpdate );
-        // }
+        try {
+            if ( ( qp.getTemporalExtentBegin().equals( new Date( "0000-00-00" ) ) && qp.getTemporalExtentEnd().equals(
+                                                                                                                       new Date(
+                                                                                                                                 "0000-00-00" ) ) )
+                 || ( qp.getTemporalExtentBegin() != null && qp.getTemporalExtentEnd() != null ) ) {
+                generateISOQP_TemporalExtentStatement( isUpdate );
+            }
+        } catch ( ParseException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         if ( qp.getOperatesOn() != null && qp.getOperatesOnIdentifier() != null && qp.getOperatesOnName() != null ) {
             generateISOQP_OperatesOnStatement( isUpdate );
         }
@@ -1004,6 +1017,9 @@ public class ISOQPParsing extends XMLAdapter {
             } catch ( SQLException e ) {
 
                 e.printStackTrace();
+            } catch ( ParseException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
 
@@ -1017,7 +1033,6 @@ public class ISOQPParsing extends XMLAdapter {
     private void generateISO()
                             throws IOException {
 
-        
         int fk_datasets = this.id;
         int idDatabaseTable = 0;
         for ( String databaseTable : tableRecordType.keySet() ) {
@@ -1041,7 +1056,6 @@ public class ISOQPParsing extends XMLAdapter {
 
                 stm.executeUpdate( sqlStatement );
 
-                
             } catch ( SQLException e ) {
 
                 e.printStackTrace();
@@ -1095,13 +1109,16 @@ public class ISOQPParsing extends XMLAdapter {
             } catch ( SQLException e ) {
 
                 e.printStackTrace();
+            } catch ( ParseException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
 
     }
 
     /**
-     * Generates the identifier for this dataset.
+     * Puts the identifier for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1112,15 +1129,14 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, identifier) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + qp.getIdentifier() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET identifier = '" + qp.getIdentifier()
-                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, identifier) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",'" + qp.getIdentifier() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1132,7 +1148,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the organisationname for this dataset.
+     * Puts the organisationname for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1143,15 +1159,14 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, organisationname) VALUES (" + id
-                               + "," + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '" + qp.getResourceIdentifier()
-                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, organisationname) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1163,41 +1178,47 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the temporalExtent for this dataset. TODO be aware about the datehandling
+     * Puts the temporalextent for this dataset into the database.
      * 
      * @param isUpdate
      */
     private void generateISOQP_TemporalExtentStatement( boolean isUpdate ) {
         final String databaseTable = "isoqp_temporalextent";
         String sqlStatement = "";
+        String tempBeginAttribute = "";
+        String tempEndAttribute = "";
         int mainDatabaseTableID = this.id;
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
+            }
+
+            if ( qp.getTemporalExtentBegin() == null || qp.getTemporalExtentBegin().equals( new Date( "0000-00-00" ) ) ) {
+            } else {
                 id = getLastDatasetId( connection, databaseTable );
                 id++;
                 sqlStatement = "INSERT INTO " + databaseTable
                                + " (id, fk_datasets, tempextent_begin, tempextent_end) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + qp.getTemporalExtentBegin() + "','"
-                               + qp.getTemporalExtentEnd() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET tempextent_begin = '" + qp.getTemporalExtentBegin()
-                               + "', tempextent_end = '" + qp.getTemporalExtentEnd() + "' WHERE fk_datasets = "
-                               + mainDatabaseTableID + ";";
+                               + mainDatabaseTableID + ",'" + tempBeginAttribute + "','" + tempEndAttribute + "');";
+                System.out.println( sqlStatement );
+                stm.executeUpdate( sqlStatement );
             }
-
-            stm.executeUpdate( sqlStatement );
 
         } catch ( SQLException e ) {
 
+            e.printStackTrace();
+        } catch ( ParseException e ) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
     }
 
     /**
-     * Generates the spatialResolution for this dataset.
+     * Puts the spatialresolution for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1208,18 +1229,16 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable
-                               + " (id, fk_datasets, denominator, distancevalue, distanceuom) VALUES (" + id + ","
-                               + mainDatabaseTableID + "," + qp.getDenominator() + "," + qp.getDistanceValue() + ",'"
-                               + qp.getDistanceUOM() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET denominator = " + qp.getDenominator()
-                               + ", distancevalue = " + qp.getDistanceValue() + ", distanceuom = '"
-                               + qp.getDistanceUOM() + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable
+                           + " (id, fk_datasets, denominator, distancevalue, distanceuom) VALUES (" + id + ","
+                           + mainDatabaseTableID + "," + qp.getDenominator() + "," + qp.getDistanceValue() + ",'"
+                           + qp.getDistanceUOM() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1231,7 +1250,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the couplingType for this dataset.
+     * Puts the couplingtype for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1242,15 +1261,14 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, couplingtype) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + qp.getCouplingType() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET couplingtype = '" + qp.getCouplingType()
-                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, couplingtype) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",'" + qp.getCouplingType() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1262,7 +1280,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the operatesOn for this dataset.
+     * Puts the operatesondata for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1273,18 +1291,16 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable
-                               + " (id, fk_datasets, operateson, operatesonidentifier, operatesonname) VALUES (" + id
-                               + "," + mainDatabaseTableID + ",'" + qp.getOperatesOn() + "','"
-                               + qp.getOperatesOnIdentifier() + "','" + qp.getOperatesOnName() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET operateson = '" + qp.getOperatesOn()
-                               + "', operatesonidentifier = '" + qp.getOperatesOnIdentifier() + "', operatesonname = '"
-                               + qp.getOperatesOnName() + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable
+                           + " (id, fk_datasets, operateson, operatesonidentifier, operatesonname) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",'" + qp.getOperatesOn() + "','" + qp.getOperatesOnIdentifier()
+                           + "','" + qp.getOperatesOnName() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1296,7 +1312,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the operation for this dataset.
+     * Puts the operation for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1316,8 +1332,8 @@ public class ISOQPParsing extends XMLAdapter {
             for ( String operation : qp.getOperation() ) {
 
                 id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, operation) VALUES (" + id
-                               + "," + mainDatabaseTableID + ",'" + operation + "');";
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, operation) VALUES (" + id + ","
+                               + mainDatabaseTableID + ",'" + operation + "');";
 
                 stm.executeUpdate( sqlStatement );
 
@@ -1331,7 +1347,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the geographicDescriptionCode for the type "service" for this dataset.
+     * Puts the geographicDescriptionCode for the type "service" for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1342,17 +1358,14 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable
-                               + " (id, fk_datasets, geographicdescriptioncode) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + qp.getGeographicDescriptionCode_service() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '"
-                               + qp.getGeographicDescriptionCode_service() + "' WHERE fk_datasets = "
-                               + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, geographicdescriptioncode) VALUES ("
+                           + id + "," + mainDatabaseTableID + ",'" + qp.getGeographicDescriptionCode_service() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1364,7 +1377,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the serviceTypeVersion for this dataset.
+     * Puts the servicetypeversion for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1375,15 +1388,14 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, servicetypeversion) VALUES (" + id
-                               + "," + mainDatabaseTableID + ",'" + qp.getServiceTypeVersion() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '" + qp.getServiceTypeVersion()
-                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, servicetypeversion) VALUES (" + id
+                           + "," + mainDatabaseTableID + ",'" + qp.getServiceTypeVersion() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1395,7 +1407,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the serviceType for this dataset.
+     * Puts the servicetype for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1406,15 +1418,14 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, servicetype) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + qp.getServiceType() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET organisationname = '" + qp.getServiceType()
-                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, servicetype) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",'" + qp.getServiceType() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1426,7 +1437,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the resourceLanguage for this dataset.
+     * Puts the resourcelanguage for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1437,15 +1448,14 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, resourcelanguage) VALUES (" + id
-                               + "," + mainDatabaseTableID + ",'" + qp.getResourceLanguage() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET resourcelanguage = '" + qp.getResourceLanguage()
-                               + "' WHERE fk_datasets = " + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, resourcelanguage) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",'" + qp.getResourceLanguage() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1457,7 +1467,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the revisiondate for this dataset.
+     * Puts the revisiondate for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1473,15 +1483,15 @@ public class ISOQPParsing extends XMLAdapter {
             } else {
                 revisionDateAttribute = "'" + qp.getRevisionDate() + "'";
 
-                if ( isUpdate == false ) {
-                    id = getLastDatasetId( connection, databaseTable );
-                    id++;
-                    sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, revisiondate) VALUES (" + id
-                                   + "," + mainDatabaseTableID + "," + revisionDateAttribute + ");";
-                } else {
-                    sqlStatement = "UPDATE " + databaseTable + " SET revisiondate = " + revisionDateAttribute
-                                   + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                if ( isUpdate == true ) {
+                    sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                    stm.executeUpdate( sqlStatement );
                 }
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, revisiondate) VALUES (" + id + ","
+                               + mainDatabaseTableID + "," + revisionDateAttribute + ");";
+
                 System.out.println( sqlStatement );
                 stm.executeUpdate( sqlStatement );
             }
@@ -1496,7 +1506,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the creationdate for this dataset.
+     * Puts the creationdate for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1512,15 +1522,14 @@ public class ISOQPParsing extends XMLAdapter {
             } else {
                 creationDateAttribute = "'" + qp.getCreationDate() + "'";
 
-                if ( isUpdate == false ) {
-                    id = getLastDatasetId( connection, databaseTable );
-                    id++;
-                    sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, creationdate) VALUES (" + id
-                                   + "," + mainDatabaseTableID + "," + creationDateAttribute + ");";
-                } else {
-                    sqlStatement = "UPDATE " + databaseTable + " SET creationdate = " + creationDateAttribute
-                                   + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                if ( isUpdate == true ) {
+                    sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                    stm.executeUpdate( sqlStatement );
                 }
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, creationdate) VALUES (" + id + ","
+                               + mainDatabaseTableID + "," + creationDateAttribute + ");";
 
                 stm.executeUpdate( sqlStatement );
             }
@@ -1535,7 +1544,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the publicationdate for this dataset.
+     * Puts the publicationdate for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1551,15 +1560,14 @@ public class ISOQPParsing extends XMLAdapter {
             } else {
                 publicationDateAttribute = "'" + qp.getPublicationDate() + "'";
 
-                if ( isUpdate == false ) {
-                    id = getLastDatasetId( connection, databaseTable );
-                    id++;
-                    sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, publicationdate) VALUES (" + id
-                                   + "," + mainDatabaseTableID + "," + publicationDateAttribute + ");";
-                } else {
-                    sqlStatement = "UPDATE " + databaseTable + " SET publicationdate = " + publicationDateAttribute
-                                   + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                if ( isUpdate == true ) {
+                    sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                    stm.executeUpdate( sqlStatement );
                 }
+                id = getLastDatasetId( connection, databaseTable );
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, publicationdate) VALUES (" + id
+                               + "," + mainDatabaseTableID + "," + publicationDateAttribute + ");";
 
                 stm.executeUpdate( sqlStatement );
             }
@@ -1574,7 +1582,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the resourceIdentifier for this dataset.
+     * Puts the resourceIdentifier for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1609,7 +1617,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the alternate title for this dataset.
+     * Puts the alternatetitle for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1641,7 +1649,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the title for this dataset.
+     * Puts the title for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1673,7 +1681,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the type for this dataset.
+     * Puts the type for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1684,15 +1692,15 @@ public class ISOQPParsing extends XMLAdapter {
         int id = 0;
         try {
 
-            if ( isUpdate == false ) {
-                id = getLastDatasetId( connection, databaseTable );
-                id++;
-                sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, type) VALUES (" + id + ","
-                               + mainDatabaseTableID + ",'" + qp.getType() + "');";
-            } else {
-                sqlStatement = "UPDATE " + databaseTable + " SET type = '" + qp.getType() + "' WHERE fk_datasets = "
-                               + mainDatabaseTableID + ";";
+            if ( isUpdate == true ) {
+                sqlStatement = "DELETE FROM " + databaseTable + " WHERE fk_datasets = " + mainDatabaseTableID + ";";
+                stm.executeUpdate( sqlStatement );
             }
+            id = getLastDatasetId( connection, databaseTable );
+            id++;
+            sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, type) VALUES (" + id + ","
+                           + mainDatabaseTableID + ",'" + qp.getType() + "');";
+
             System.out.println( sqlStatement );
             stm.executeUpdate( sqlStatement );
 
@@ -1704,7 +1712,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the keywords for this dataset.
+     * Puts the keyword for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1742,7 +1750,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the topicCategory for this dataset.
+     * Puts the topiccategory for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1777,7 +1785,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the format for this dataset.
+     * Puts the format for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1810,7 +1818,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
-     * Generates the abstract for this dataset.
+     * Puts the abstract for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1842,6 +1850,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
+     * Puts the boundingbox for this dataset into the database.
      * 
      * @param isUpdate
      */
@@ -1879,6 +1888,7 @@ public class ISOQPParsing extends XMLAdapter {
     }
 
     /**
+     * Puts the crs for this dataset into the database.<br>
      * Creation of the CRS element. <br>
      * TODO its not clear where to get all the elements...
      * 
@@ -2019,7 +2029,5 @@ public class ISOQPParsing extends XMLAdapter {
         }
 
     }
-
-    
 
 }

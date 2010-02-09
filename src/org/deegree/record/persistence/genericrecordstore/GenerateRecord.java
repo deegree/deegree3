@@ -35,12 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.deegree.commons.types.datetime.Date;
 
 /**
  * Generates the records in DC and ISO in all representation types (brief, summary, full).
@@ -420,8 +422,9 @@ public class GenerateRecord {
      * Creation of the "summary"-representation in DC of a record.
      * 
      * @param omElement
+     * @throws ParseException 
      */
-    private void setDCSummaryElements( OMElement omElement ) {
+    private void setDCSummaryElements( OMElement omElement ) throws ParseException {
         setDCBriefElements( omElement );
 
         OMElement omSubject;
@@ -470,7 +473,8 @@ public class GenerateRecord {
         // omModified.setText( date.toString() );
         // omElement.addChild( omModified );
         // }
-        if ( qp.getModified() != null ) {
+        
+        if ( qp.getModified() != null && !qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
             OMElement omModified = factory.createOMElement( "modified", namespaceDCT );
             omModified.setText( qp.getModified().toString() );
             omElement.addChild( omModified );
@@ -494,8 +498,9 @@ public class GenerateRecord {
      * Creation of the "full"-representation in DC of a record.
      * 
      * @param omElement
+     * @throws ParseException 
      */
-    private void setDCFullElements( OMElement omElement ) {
+    private void setDCFullElements( OMElement omElement ) throws ParseException {
 
         setDCSummaryElements( omElement );
 
@@ -571,15 +576,17 @@ public class GenerateRecord {
 
     /**
      * @return the dcSummaryElement
+     * @throws ParseException 
      */
-    public void buildElementAsDcSummaryElement(OMElement element) {
+    public void buildElementAsDcSummaryElement(OMElement element) throws ParseException {
         setDCSummaryElements( element );
     }
 
     /**
      * @return the dcFullElement
+     * @throws ParseException 
      */
-    public void buildElementAsDcFullElement(OMElement element) {
+    public void buildElementAsDcFullElement(OMElement element) throws ParseException {
         setDCFullElements( element );
     }
 
