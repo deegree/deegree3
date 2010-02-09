@@ -176,6 +176,7 @@ public class SymbologyParser {
             common.name = in.getElementText();
         }
         if ( in.getLocalName().equals( "Geometry" ) ) {
+            common.loc = in.getLocation();
             in.nextTag();
             common.geometry = parseExpression( in );
             in.nextTag();
@@ -426,7 +427,7 @@ public class SymbologyParser {
         Continuation<Mark> contn = null;
 
         in.nextTag();
-        
+
         while ( !( in.isEndElement() && in.getLocalName().equals( "Mark" ) ) ) {
             if ( in.isEndElement() ) {
                 in.nextTag();
@@ -785,7 +786,7 @@ public class SymbologyParser {
                 final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
 
                 if ( pair == null ) {
-                    return new Symbolizer<PointStyling>( baseOrEvaluated, common.geometry, common.name );
+                    return new Symbolizer<PointStyling>( baseOrEvaluated, common.geometry, common.name, common.loc );
                 }
 
                 baseOrEvaluated.graphic = pair.first;
@@ -796,7 +797,7 @@ public class SymbologyParser {
                         public void updateStep( PointStyling base, MatchableObject f ) {
                             pair.second.evaluate( base.graphic, f );
                         }
-                    }, common.geometry, null );
+                    }, common.geometry, null, common.loc );
                 }
             } else if ( in.isStartElement() ) {
                 Location loc = in.getLocation();
@@ -807,7 +808,7 @@ public class SymbologyParser {
         }
 
         in.require( END_ELEMENT, null, "PointSymbolizer" );
-        return new Symbolizer<PointStyling>( baseOrEvaluated, common.geometry, common.name );
+        return new Symbolizer<PointStyling>( baseOrEvaluated, common.geometry, common.name, common.loc );
     }
 
     private static UOM getUOM( String uom ) {
@@ -1016,7 +1017,7 @@ public class SymbologyParser {
         }
 
         in.require( END_ELEMENT, null, "RasterSymbolizer" );
-        return new Symbolizer<RasterStyling>( baseOrEvaluated, contn, common.geometry, common.name );
+        return new Symbolizer<RasterStyling>( baseOrEvaluated, contn, common.geometry, common.name, common.loc );
     }
 
     private static ContrastEnhancement parseContrastEnhancement( XMLStreamReader in )
@@ -1100,10 +1101,10 @@ public class SymbologyParser {
         }
 
         if ( contn == null ) {
-            return new Symbolizer<LineStyling>( baseOrEvaluated, common.geometry, common.name );
+            return new Symbolizer<LineStyling>( baseOrEvaluated, common.geometry, common.name, common.loc );
         }
 
-        return new Symbolizer<LineStyling>( baseOrEvaluated, contn, common.geometry, common.name );
+        return new Symbolizer<LineStyling>( baseOrEvaluated, contn, common.geometry, common.name, common.loc );
     }
 
     /**
@@ -1198,10 +1199,10 @@ public class SymbologyParser {
         }
 
         if ( contn == null ) {
-            return new Symbolizer<PolygonStyling>( baseOrEvaluated, common.geometry, common.name );
+            return new Symbolizer<PolygonStyling>( baseOrEvaluated, common.geometry, common.name, common.loc );
         }
 
-        return new Symbolizer<PolygonStyling>( baseOrEvaluated, contn, common.geometry, common.name );
+        return new Symbolizer<PolygonStyling>( baseOrEvaluated, contn, common.geometry, common.name, common.loc );
     }
 
     /**
@@ -1453,11 +1454,13 @@ public class SymbologyParser {
         }
 
         if ( contn == null ) {
-            Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, common.geometry, common.name );
+            Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, common.geometry, common.name,
+                                                                       common.loc );
             return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
         }
 
-        Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, contn, common.geometry, common.name );
+        Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, contn, common.geometry,
+                                                                   common.name, common.loc );
         return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
     }
 
@@ -1857,6 +1860,8 @@ public class SymbologyParser {
         public String abstract_;
 
         Expression geometry;
+
+        Location loc;
     }
 
 }

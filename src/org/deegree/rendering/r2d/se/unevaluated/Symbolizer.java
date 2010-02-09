@@ -40,6 +40,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 
+import javax.xml.stream.Location;
+
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
@@ -75,15 +77,19 @@ public class Symbolizer<T extends Copyable<T>> {
 
     private String name;
 
+    private Location loc;
+
     /**
      * @param evaluated
      * @param geometry
      * @param name
+     * @param loc
      */
-    public Symbolizer( T evaluated, Expression geometry, String name ) {
+    public Symbolizer( T evaluated, Expression geometry, String name, Location loc ) {
         this.evaluated = evaluated;
         this.geometry = geometry;
         this.name = name;
+        this.loc = loc;
     }
 
     /**
@@ -91,12 +97,14 @@ public class Symbolizer<T extends Copyable<T>> {
      * @param next
      * @param geometry
      * @param name
+     * @param loc
      */
-    public Symbolizer( T base, Continuation<T> next, Expression geometry, String name ) {
+    public Symbolizer( T base, Continuation<T> next, Expression geometry, String name, Location loc ) {
         this.base = base;
         this.next = next;
         this.geometry = geometry;
         this.name = name;
+        this.loc = loc;
     }
 
     /**
@@ -121,12 +129,14 @@ public class Symbolizer<T extends Copyable<T>> {
                 Object[] os = geometry.evaluate( f );
 
                 if ( os.length == 0 ) {
-                    LOG.warn( "A geometry expression evaluated to nothing." );
+                    LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated to nothing.",
+                              new Object[] { loc.getSystemId(), loc.getLineNumber(), loc.getColumnNumber() } );
                 } else if ( os[0] instanceof Geometry ) {
                     geom = (Geometry) os[0];
                 } else {
-                    // TODO proper error messages -> SLD/SE line/col
-                    LOG.warn( "A geometry expression evaluated to something other than a geometry." );
+                    LOG.warn(
+                              "The geometry expression in file '{}', line {}, column {} evaluated to something other than a geometry.",
+                              new Object[] { loc.getSystemId(), loc.getLineNumber(), loc.getColumnNumber() } );
                 }
             } catch ( FilterEvaluationException e ) {
                 LOG.warn( "Could not evaluate a geometry expression." );
