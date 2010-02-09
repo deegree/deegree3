@@ -266,6 +266,7 @@ public class OffsetStroke implements Stroke {
                 continue;
             case SEG_MOVETO:
                 n1 = normals.peek();
+                firstMove = false;
                 path.moveTo( pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset );
                 break;
             case SEG_QUADTO:
