@@ -37,7 +37,6 @@ package org.deegree.commons.utils.templating.lang;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +46,6 @@ import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
-import org.slf4j.Logger;
 
 /**
  * <code>Util</code>
@@ -71,7 +69,7 @@ public class Util {
             if ( o instanceof Property<?> ) {
                 Property<?> p = (Property<?>) o;
 
-                if ( p.getValue() instanceof Geometry && geometries ) {
+                if ( p.getValue() instanceof Geometry && !geometries ) {
                     continue;
                 }
 
