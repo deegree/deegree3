@@ -100,7 +100,13 @@ public class MapCall {
             }
             if ( o instanceof Property<?> ) {
                 Object v = ( (Property<?>) o ).getValue();
-                key = v == null ? null : v.toString();
+                try {
+                    key = v == null ? null : v.toString();
+                } catch ( UnsupportedOperationException e ) {
+                    LOG.error( "The error '{}' occurred while converting a property to a string, "
+                               + "probably the WKT writer cannot convert a geometry.", e.getLocalizedMessage() );
+                    LOG.debug( "Stack trace:", e );
+                }
             }
             break;
         }
