@@ -144,7 +144,8 @@ public class SpatialOperatorTransformingPostGIS {
 
             for ( Object opParam : paramsBBox ) {
                 if ( opParam != bboxOp.getBoundingBox() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
+                    writerSpatial.append( stringSpatialPropertyName );
                     writerSpatial.append( " && " );
                 } else {
                     writerSpatial.append( '\'' );
@@ -168,8 +169,8 @@ public class SpatialOperatorTransformingPostGIS {
 
                 if ( opParam != beyondOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( writerSpatial, opParam );
-
+                    propertyNameBuild( opParam );
+                    writerSpatial.append( stringSpatialPropertyName );
                 } else {
                     counter++;
                     wktWriter.writeGeometry( beyondOp.getGeometry(), writerGeometry );
@@ -197,14 +198,11 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsContains ) {
 
                 if ( opParam != containsOp.getGeometry() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
 
                 } else {
                     wktWriter.writeGeometry( containsOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
                 }
 
             }
@@ -222,14 +220,11 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsCrosses ) {
 
                 if ( opParam != crossesOp.getGeometry() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
 
                 } else {
                     wktWriter.writeGeometry( crossesOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
                 }
 
             }
@@ -248,14 +243,11 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsDisjoint ) {
 
                 if ( opParam != disjointOp.getGeometry() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
 
                 } else {
                     wktWriter.writeGeometry( disjointOp.getGeometry(), writerGeometry );
-
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
+                    
                 }
 
             }
@@ -277,16 +269,15 @@ public class SpatialOperatorTransformingPostGIS {
 
                 if ( opParam != dWithinOp.getGeometry() ) {
                     counter++;
-                    propertyNameBuild( writerSpatial, opParam );
-
+                    propertyNameBuild( opParam );
+                    writerSpatial.append( stringSpatialPropertyName );
                 } else {
                     counter++;
                     wktWriter.writeGeometry( dWithinOp.getGeometry(), writerGeometry );
-
+                    
                     writerSpatial.append( '\'' );
                     writerSpatial.append( writerGeometry.toString() );
                     writerSpatial.append( '\'' );
-
                 }
                 if ( counter < paramsDWithin.length ) {
                     writerSpatial.append( ',' );
@@ -309,14 +300,11 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsEquals ) {
 
                 if ( opParam != equalsOp.getGeometry() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
 
                 } else {
                     wktWriter.writeGeometry( equalsOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
                 }
 
             }
@@ -334,14 +322,11 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsIntersects ) {
 
                 if ( opParam != intersectsOp.getGeometry() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
 
                 } else {
                     wktWriter.writeGeometry( intersectsOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
                 }
 
             }
@@ -359,14 +344,11 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsOverlaps ) {
 
                 if ( opParam != overlapsOp.getGeometry() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
 
                 } else {
                     wktWriter.writeGeometry( overlapsOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
                 }
 
             }
@@ -384,14 +366,11 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsTouches ) {
 
                 if ( opParam != touchesOp.getGeometry() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
 
                 } else {
                     wktWriter.writeGeometry( touchesOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
                 }
 
             }
@@ -409,14 +388,11 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsWithin ) {
 
                 if ( opParam != withinOp.getGeometry() ) {
-                    propertyNameBuild( writerSpatial, opParam );
+                    propertyNameBuild( opParam );
 
                 } else {
                     wktWriter.writeGeometry( withinOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
                 }
 
             }
@@ -454,7 +430,7 @@ public class SpatialOperatorTransformingPostGIS {
      * @param opParam
      * @return
      */
-    private void propertyNameBuild( Writer writerSpatial, Object opParam ) {
+    private void propertyNameBuild( Object opParam ) {
 
         String exp = ( (PropertyName) opParam ).getPropertyName();
 
@@ -470,12 +446,7 @@ public class SpatialOperatorTransformingPostGIS {
         table.addAll( expressObject.getTable() );
         column.addAll( expressObject.getColumn() );
         stringSpatialPropertyName += "))";
-        try {
-            writerSpatial.append( stringSpatialPropertyName );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        
 
     }
 
