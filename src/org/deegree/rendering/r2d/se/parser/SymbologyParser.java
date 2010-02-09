@@ -425,8 +425,12 @@ public class SymbologyParser {
         Mark base = new Mark();
         Continuation<Mark> contn = null;
 
+        in.nextTag();
+        
         while ( !( in.isEndElement() && in.getLocalName().equals( "Mark" ) ) ) {
-            in.nextTag();
+            if ( in.isEndElement() ) {
+                in.nextTag();
+            }
 
             if ( in.getLocalName().equals( "WellKnownName" ) ) {
                 base.wellKnown = SimpleMark.valueOf( in.getElementText().toUpperCase() );
@@ -448,7 +452,6 @@ public class SymbologyParser {
                     in.nextTag();
                     if ( in.getLocalName().equals( "MarkIndex" ) ) {
                         base.markIndex = Integer.parseInt( in.getElementText() );
-                        in.nextTag();
                     }
 
                     if ( is != null ) {
