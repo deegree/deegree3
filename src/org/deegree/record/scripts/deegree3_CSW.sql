@@ -6,7 +6,7 @@
 
 
 -- Drop Foreign Key Constraints 
-ALTER TABLE Datasets DROP CONSTRAINT FK_Datasets_SelfQueryableProperties;
+--ALTER TABLE Datasets DROP CONSTRAINT FK_Datasets_SelfQueryableProperties;
 ALTER TABLE ISOQP_Abstract DROP CONSTRAINT FK_ISOQP_Abstract_Datasets;
 ALTER TABLE ISOQP_AlternateTitle DROP CONSTRAINT FK_ISOQP_AlternateTitle_Datasets;
 ALTER TABLE ISOQP_BoundingBox DROP CONSTRAINT FK_ISOQP_BoundingBox_Datasets;
@@ -33,6 +33,7 @@ ALTER TABLE ISOQP_Type DROP CONSTRAINT FK_ISOQP_Type_Datasets;
 ALTER TABLE RecordFull DROP CONSTRAINT fk_recordfull_datasets;
 ALTER TABLE RecordBrief DROP CONSTRAINT fk_recordbrief_datasets;
 ALTER TABLE RecordSummary DROP CONSTRAINT fk_recordsummary_datasets;
+ALTER TABLE QP_Identifier DROP CONSTRAINT fk_qp_identifier_datasets;
 ALTER TABLE DCQP_RIGHTS DROP CONSTRAINT FK_DCQP_RIGHTS_Datasets;
 
 -- Drop Tables, Stored Procedures and Views 
@@ -63,8 +64,11 @@ DROP TABLE ISOQP_Type;
 DROP TABLE RecordBrief;
 DROP TABLE RecordSummary;
 DROP TABLE RecordFull;
-DROP TABLE UserDefinedQueryableProperties;
---DROP TABLE DCQP_RIGHTS;
+DROP TABLE QP_Identifier;
+--DROP TABLE UserDefinedQueryableProperties;
+DROP TABLE DCQP_RIGHTS;
+
+
 
 
 
@@ -98,7 +102,7 @@ COMMENT ON COLUMN Datasets.ParentIdentifier
 CREATE TABLE ISOQP_Abstract ( 
 	ID integer NOT NULL,
 	fk_datasets integer NOT NULL,
-	Abstract varchar(500) NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.abstract 
+	Abstract text NOT NULL    -- MD_Metadata.identificationInfo.AbstractMD_Identification.abstract 
 );
 COMMENT ON TABLE ISOQP_Abstract
     IS 'common queryable property (ISO AP 1.0)';
@@ -379,11 +383,11 @@ CREATE TABLE RecordFull (
 COMMENT ON TABLE RecordFull
     IS 'This is the mandatory table for the full representation of a getRecords response';
 
-CREATE TABLE UserDefinedQueryableProperties ( 
-	fk_datasets integer NOT NULL
-);
-COMMENT ON TABLE UserDefinedQueryableProperties
-    IS 'Collection of user defined queryable properties';
+--CREATE TABLE UserDefinedQueryableProperties ( 
+--	fk_datasets integer NOT NULL
+--);
+--COMMENT ON TABLE UserDefinedQueryableProperties
+--    IS 'Collection of user defined queryable properties';
     
 CREATE TABLE QP_Identifier ( 
 ID integer NOT NULL,
@@ -392,19 +396,19 @@ identifier varchar(50) NOT NULL    -- MD_Metadata.fileIdentifier
 );
 COMMENT ON TABLE QP_Identifier
     IS 'common queryable property (ISO AP 1.0)';
-COMMENT ON COLUMN ISOQP_Abstract.Abstract
+COMMENT ON COLUMN QP_Identifier.identifier
     IS 'MD_Metadata.fileIdentifier';
 
 
---CREATE TABLE DCQP_RIGHTS ( 
---	ID integer NOT NULL,
---	fk_datasets integer NOT NULL,
---	Rights varchar(100) NOT NULL   
---);
---COMMENT ON TABLE DCQP_RIGHTS
---    IS 'dublin core queryable property (DC)';
---COMMENT ON COLUMN DCQP_RIGHTS.Rights
---    IS 'Rights is not in the ISO AP but in DC';
+CREATE TABLE DCQP_RIGHTS ( 
+	ID integer NOT NULL,
+	fk_datasets integer NOT NULL,
+	rights varchar(100) NOT NULL   
+);
+COMMENT ON TABLE DCQP_RIGHTS
+    IS 'dublin core queryable property (DC)';
+COMMENT ON COLUMN DCQP_RIGHTS.Rights
+    IS 'Rights is not in the ISO AP but in DC';
 
 
 -- Create Primary Key Constraints 
@@ -519,20 +523,18 @@ ALTER TABLE RecordFull ADD CONSTRAINT PK_RecordFull
 	PRIMARY KEY (ID);
 
 
-ALTER TABLE UserDefinedQueryableProperties ADD CONSTRAINT PK_SelfQueryableProperties 
-	PRIMARY KEY (fk_datasets);
+--ALTER TABLE UserDefinedQueryableProperties ADD CONSTRAINT PK_SelfQueryableProperties 
+--	PRIMARY KEY (fk_datasets);
 
 
---ALTER TABLE DCQP_Rights ADD CONSTRAINT PK_DCQP_Rights 
---	PRIMARY KEY (ID);
+ALTER TABLE DCQP_Rights ADD CONSTRAINT PK_DCQP_Rights 
+	PRIMARY KEY (ID);
 
 
 
 -- Create Indexes 
 ALTER TABLE Datasets
 	ADD CONSTRAINT UQ_Datasets_ID UNIQUE (ID);
---ALTER TABLE Datasets 
---ADD CONSTRAINT UQ_Datasets_Identifier UNIQUE (identifier);
 ALTER TABLE QP_Identifier
 	ADD CONSTRAINT UQ_QP_Identifier_ID UNIQUE (ID);
 ALTER TABLE QP_Identifier
@@ -583,15 +585,12 @@ ALTER TABLE ISOQP_TopicCategory
 	ADD CONSTRAINT UQ_ISOQP_TopicCategory_ID UNIQUE (ID);
 ALTER TABLE ISOQP_Type
 	ADD CONSTRAINT UQ_ISOQP_Type_ID UNIQUE (ID);
-ALTER TABLE UserDefinedQueryableProperties
-	ADD CONSTRAINT UQ_SelfQueryableProperties_fk_datasets UNIQUE (fk_datasets);
-
---ALTER TABLE DCQP_Rights
---	ADD CONSTRAINT UQ_DCQP_Rights_ID UNIQUE (ID);
+--ALTER TABLE UserDefinedQueryableProperties
+--	ADD CONSTRAINT UQ_SelfQueryableProperties_fk_datasets UNIQUE (fk_datasets);
+ALTER TABLE DCQP_Rights
+	ADD CONSTRAINT UQ_DCQP_Rights_ID UNIQUE (ID);
 
 -- Create Foreign Key Constraints 
---ALTER TABLE Datasets ADD CONSTRAINT FK_Datasets_SelfQueryableProperties 
---	FOREIGN KEY (ID) REFERENCES UserDefinedQueryableProperties (fk_datasets);
 ALTER TABLE QP_Identifier ADD CONSTRAINT FK_QP_Identifier_Datasets 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 	
@@ -673,5 +672,21 @@ ALTER TABLE RecordSummary ADD CONSTRAINT FK_RecordSummary_Datasets
 ALTER TABLE RecordFull ADD CONSTRAINT FK_RecordFull_Datasets 
 	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID) ON DELETE CASCADE;
 	
---ALTER TABLE DCQP_Rights ADD CONSTRAINT FK_DCQP_Rights_Datasets 
---	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+ALTER TABLE DCQP_Rights ADD CONSTRAINT FK_DCQP_Rights_Datasets 
+	FOREIGN KEY (fk_datasets) REFERENCES Datasets (ID);
+
+	
+	
+	
+--source
+ALTER TABLE datasets ADD COLUMN source character varying(250);
+ALTER TABLE datasets ALTER COLUMN source SET STORAGE EXTENDED;
+COMMENT ON COLUMN datasets.source IS 'common queryable property in DC, but is not supported in ISO AP';
+
+--association
+ALTER TABLE datasets ADD COLUMN association character varying(50);
+ALTER TABLE datasets ALTER COLUMN association SET STORAGE EXTENDED;
+COMMENT ON COLUMN datasets.association IS 'common queryable property in DC, but is not supported in ISO AP';
+
+--polygon
+SELECT AddGeometryColumn('public','isoqp_boundingbox','bbox','4326','POLYGON','2');
