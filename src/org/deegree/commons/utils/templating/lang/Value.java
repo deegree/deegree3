@@ -59,7 +59,13 @@ public class Value {
      */
     public void eval( StringBuilder sb, Object o ) {
         if ( o instanceof Property<?> ) {
-            sb.append( ( (Property<?>) o ).getValue() );
+            try {
+                sb.append( ( (Property<?>) o ).getValue() );
+            } catch ( UnsupportedOperationException e ) {
+                LOG.error( "The error '{}' occurred while converting a property to a string, "
+                           + "probably the WKT writer cannot convert a geometry.", e.getLocalizedMessage() );
+                LOG.debug( "Stack trace:", e );
+            }
         } else {
             LOG.warn( "Trying to get value while current object is a feature." );
         }
