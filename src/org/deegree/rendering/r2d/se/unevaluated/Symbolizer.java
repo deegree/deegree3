@@ -105,7 +105,9 @@ public class Symbolizer<T extends Copyable<T>> {
      */
     public Symbolizer( T base, Continuation<T> next, Expression geometry, String name, String file, int line, int col ) {
         if ( geometry == null ) {
-            LOG.debug( "In file '{}', line {}, column {}: no geometry property defined, using first geometry property as default." );
+            LOG.debug(
+                       "In file '{}', line {}, column {}: no geometry property defined, using first geometry property as default.",
+                       new Object[] { file, line, col } );
         }
         this.base = base;
         this.next = next;
