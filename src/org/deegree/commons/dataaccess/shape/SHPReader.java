@@ -581,7 +581,7 @@ public class SHPReader {
             for ( int i = 0; i < segs.length; ++i ) {
                 segs[i] = fac.createLineStringSegment( ps[i] );
             }
-            curve = fac.createCurve( null, segs, crs );
+            curve = fac.createCurve( null, crs, segs );
         }
         return curve;
     }

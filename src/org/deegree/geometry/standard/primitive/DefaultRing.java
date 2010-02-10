@@ -211,7 +211,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
                 return ( (LineStringSegment) segment ).getControlPoints();
             }
-            throw new IllegalArgumentException( Messages.getMessage( "RING_CONTAINS_LINEAR_SEGMENT" ) );
+            throw new IllegalArgumentException( Messages.getMessage( "RING_CONTAINS_NON_LINEAR_SEGMENT" ) );
         }
 
         List<Points> pointsList = new ArrayList<Points>( segments.size() );
@@ -219,7 +219,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
                 pointsList.add( ( (LineStringSegment) segment ).getControlPoints() );
             } else {
-                throw new IllegalArgumentException( Messages.getMessage( "RING_CONTAINS_LINEAR_SEGMENTS" ) );
+                throw new IllegalArgumentException( Messages.getMessage( "RING_CONTAINS_NON_LINEAR_SEGMENTS" ) );
             }
         }
         return new PointsPoints( pointsList );

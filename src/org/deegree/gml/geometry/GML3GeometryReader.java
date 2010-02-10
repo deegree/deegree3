@@ -1134,7 +1134,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, gmlNs, "Curve" );
-        Curve curve = geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), crs );
+        Curve curve = geomFac.createCurve( gid, crs, segments.toArray( new CurveSegment[segments.size()] ) );
         idContext.addObject( curve );
         curve.setGMLProperties( standardProps );
         return curve;

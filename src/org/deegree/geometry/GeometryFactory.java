@@ -172,13 +172,13 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * 
      * @param id
      *            identifier of the new geometry instance
-     * @param segments
-     *            segments a curve shall be created from
      * @param crs
      *            coordinate reference system
+     * @param segments
+     *            segments a curve shall be created from
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, CurveSegment[] segments, CRS crs ) {
+    public Curve createCurve( String id, CRS crs, CurveSegment...segments ) {
         return (Curve) inspect( new DefaultCurve( id, crs, pm, Arrays.asList( segments ) ) );
     }
 

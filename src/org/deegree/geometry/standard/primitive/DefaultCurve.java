@@ -36,7 +36,6 @@
 package org.deegree.geometry.standard.primitive;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,6 +58,7 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
+import org.deegree.geometry.standard.points.PointsSubsequence;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -98,7 +98,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 
     @Override
     public Pair<Point, Point> getBoundary() {
-        throw new UnsupportedOperationException();
+        return new Pair<Point, Point>( getStartPoint(), getEndPoint() );
     }
 
     @Override
@@ -109,8 +109,8 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     @Override
     public Measure getLength( Unit requestedUnit ) {
         // TODO respect requested unit
-        double length = ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength(); 
-        return new Measure( Double.toString( length), null );
+        double length = ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength();
+        return new Measure( Double.toString( length ), null );
     }
 
     @Override
@@ -120,11 +120,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 
     @Override
     public LineString getAsLineString() {
-        if ( segments.size() != 1 && !( segments.get( 0 ) instanceof LineString ) ) {
-            throw new UnsupportedOperationException();
-        }
-        return new DefaultLineString( null, getCoordinateSystem(), pm,
-                                      ( (LineStringSegment) segments.get( 0 ) ).getControlPoints() );
+        return new DefaultLineString( null, getCoordinateSystem(), pm, getControlPoints() );
     }
 
     @Override
@@ -159,34 +155,50 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
                 return ( (LineStringSegment) segment ).getControlPoints();
             }
-            throw new IllegalArgumentException( Messages.getMessage( "CURVE_CONTAINS_LINEAR_SEGMENT" ) );
+            throw new IllegalArgumentException( Messages.getMessage( "CURVE_CONTAINS_NON_LINEAR_SEGMENT" ) );
         }
 
         List<Points> pointsList = new ArrayList<Points>( segments.size() );
+        boolean first = true;
         for ( CurveSegment segment : segments ) {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
-                pointsList.add( ( (LineStringSegment) segment ).getControlPoints() );
+                if ( first ) {
+                    pointsList.add( ( (LineStringSegment) segment ).getControlPoints() );
+                    first = false;
+                } else {
+                    // starting with the second segment, skip the first point (as it *must* be identical to
+                    // last point of the last segment)
+                    pointsList.add( new PointsSubsequence( ( (LineStringSegment) segment ).getControlPoints(), 1 ) );
+                }
             } else {
-                throw new IllegalArgumentException( Messages.getMessage( "CURVE_CONTAINS_LINEAR_SEGMENTS" ) );
+                throw new IllegalArgumentException( Messages.getMessage( "CURVE_CONTAINS_NON_LINEAR_SEGMENTS" ) );
             }
         }
         return new PointsPoints( pointsList );
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
+    protected com.vividsolutions.jts.geom.LineString buildJTSGeometry() {
         CurveLinearizer linearizer = new CurveLinearizer( new GeometryFactory() );
-        // TODO how to determine a feasible linearization criterion?
+        // TODO how to provide a linearization criterion?
         LinearizationCriterion crit = new NumPointsCriterion( 100 );
         List<Coordinate> coords = new LinkedList<Coordinate>();
+        boolean first = true;
         for ( CurveSegment segment : segments ) {
-            LineStringSegment lsSegment = linearizer.linearize( segment, crit );
-            coords.addAll( getCoordinates( lsSegment ) );
+            List<Coordinate> coordinates = getCoordinates( linearizer.linearize( segment, crit ) );
+            if ( first ) {
+                coords.addAll( coordinates );
+                first = false;
+            } else {
+                // starting with the second segment, skip the first point (as it *must* be identical to
+                // last point of the last segment)
+                coords.addAll( coordinates.subList( 1, coordinates.size() - 1 ) );
+            }
         }
         return jtsFactory.createLineString( coords.toArray( new Coordinate[coords.size()] ) );
     }
 
-    private Collection<Coordinate> getCoordinates( LineStringSegment lsSegment ) {
+    private List<Coordinate> getCoordinates( LineStringSegment lsSegment ) {
         Points points = lsSegment.getControlPoints();
         List<Coordinate> coordinates = new ArrayList<Coordinate>( points.size() );
         for ( Point point : points ) {

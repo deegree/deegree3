@@ -151,9 +151,13 @@ public interface Curve extends GeometricPrimitive {
     /**
      * Returns a linear interpolated representation of the curve.
      * <p>
-     * Please note that this operation returns an approximated version if the curve uses non-linear curve segments.
+     * NOTE: This method is only safe to use when the curve is a {@link LineString} or {@link LinearRing} or it only
+     * consists of {@link LineStringSegment}s. In any other case it will fail.
+     * </p>
      * 
-     * @return a linear interpolated representation of the curve
+     * @return curve as a linestring
+     * @throws IllegalArgumentException
+     *             if the curve is not linear interpolated
      */
     public LineString getAsLineString();
 }

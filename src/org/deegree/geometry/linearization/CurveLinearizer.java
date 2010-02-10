@@ -134,7 +134,7 @@ public class CurveLinearizer {
                 for ( int i = 0; i < linearSegments.length; i++ ) {
                     linearSegments[i] = linearize( segments.get( i ), crit );
                 }
-                linearizedCurve = geomFac.createCurve( curve.getId(), linearSegments, curve.getCoordinateSystem() );
+                linearizedCurve = geomFac.createCurve( curve.getId(), curve.getCoordinateSystem(), linearSegments );
             }
             break;
         }
