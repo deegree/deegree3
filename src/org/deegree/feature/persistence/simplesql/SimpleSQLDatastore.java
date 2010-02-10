@@ -201,6 +201,7 @@ public class SimpleSQLDatastore implements FeatureStore {
         PreparedStatement stmt = null;
         try {
             stmt = conn.prepareStatement( bbox );
+            LOG.debug( "Getting bbox with query '{}'.", stmt );
             stmt.execute();
             set = stmt.getResultSet();
             if ( set.next() ) {
