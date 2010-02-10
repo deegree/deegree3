@@ -255,7 +255,8 @@ public class ISOQPParsing extends XMLAdapter {
          *---------------------------------------------------------------*/
         Locale locale = new Locale(getNodeAsString( rootElement, new XPath( "./gmd:language/gco:CharacterString | ./gmd:language/gmd:LanguageCode/@codeListValue", nsContext ),
                                                     null ));
-        rp.setLanguage( locale.getISO3Language() );
+        
+        rp.setLanguage( locale.getLanguage());
 
         gr.setLanguage( getElement( rootElement, new XPath( "./gmd:language", nsContext ) ) );
 
