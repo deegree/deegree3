@@ -40,8 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 
-import javax.xml.stream.Location;
-
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
@@ -77,22 +75,23 @@ public class Symbolizer<T extends Copyable<T>> {
 
     private String name;
 
-    private Pair<Integer, Integer> loc;
-
     private String file;
+
+    private final int line;
+
+    private final int col;
 
     /**
      * @param evaluated
      * @param geometry
      * @param name
-     * @param loc
+     * @param file
+     * @param line
+     * @param col
      */
-    public Symbolizer( T evaluated, Expression geometry, String name, Location loc ) {
+    public Symbolizer( T evaluated, Expression geometry, String name, String file, int line, int col ) {
+        this( null, null, geometry, name, file, line, col );
         this.evaluated = evaluated;
-        this.geometry = geometry;
-        this.name = name;
-        file = loc.getSystemId();
-        this.loc = new Pair<Integer, Integer>( loc.getLineNumber(), loc.getColumnNumber() );
     }
 
     /**
@@ -100,15 +99,21 @@ public class Symbolizer<T extends Copyable<T>> {
      * @param next
      * @param geometry
      * @param name
-     * @param loc
+     * @param file
+     * @param line
+     * @param col
      */
-    public Symbolizer( T base, Continuation<T> next, Expression geometry, String name, Location loc ) {
+    public Symbolizer( T base, Continuation<T> next, Expression geometry, String name, String file, int line, int col ) {
+        if ( geometry == null ) {
+            LOG.debug( "In file '{}', line {}, column {}: no geometry property defined, using first geometry property as default." );
+        }
         this.base = base;
         this.next = next;
         this.geometry = geometry;
         this.name = name;
-        file = loc.getSystemId();
-        this.loc = new Pair<Integer, Integer>( loc.getLineNumber(), loc.getColumnNumber() );
+        this.file = file;
+        this.line = line;
+        this.col = col;
     }
 
     /**
@@ -134,13 +139,13 @@ public class Symbolizer<T extends Copyable<T>> {
 
                 if ( os.length == 0 ) {
                     LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated to nothing.",
-                              new Object[] { file, loc.first, loc.second } );
+                              new Object[] { file, line, col } );
                 } else if ( os[0] instanceof Geometry ) {
                     geom = (Geometry) os[0];
                 } else {
                     LOG.warn(
                               "The geometry expression in file '{}', line {}, column {} evaluated to something other than a geometry.",
-                              new Object[] { file, loc.first, loc.second } );
+                              new Object[] { file, line, col } );
                 }
             } catch ( FilterEvaluationException e ) {
                 LOG.warn( "Could not evaluate a geometry expression." );
@@ -149,6 +154,8 @@ public class Symbolizer<T extends Copyable<T>> {
             Property<Geometry>[] geoms = f.getGeometryProperties();
             if ( geoms.length > 0 ) {
                 geom = geoms[0].getValue();
+            } else {
+                LOG.warn( "Style was applied to feature without geometry property." );
             }
         }
 
