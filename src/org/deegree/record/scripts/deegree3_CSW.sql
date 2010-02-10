@@ -78,7 +78,6 @@ CREATE TABLE Datasets (
 	version integer,    -- version of the record 
 	status numeric(1),
 	AnyText text,    -- common queryable property (ISO AP 1.0): Whole resource text. 
-	Identifier varchar(50) NOT NULL,    -- common queryable property (ISO AP 1.0): MD_Metadata.fileIdentifier 
 	Modified timestamp,    -- common queryable property (ISO AP 1.0): MD_Metadata.dateStamp .Date 
 	HasSecurityConstraints boolean,    -- additional queryable property (ISO AP 1.0): MD_Metadata.AbstractMD_Identification.resourceConstraints.MD_securityConstraints (If an instance of the class MD_SecurityConstraint exists for a resource, the "HasSecurityConstraints" is "true", otherwise "false") 
 	Language varchar(50),    -- additional queryable property (ISO AP 1.0): MD_Metadata.language 
