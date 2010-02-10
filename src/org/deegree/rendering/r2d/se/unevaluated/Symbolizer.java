@@ -77,7 +77,9 @@ public class Symbolizer<T extends Copyable<T>> {
 
     private String name;
 
-    private Location loc;
+    private Pair<Integer, Integer> loc;
+
+    private String file;
 
     /**
      * @param evaluated
@@ -89,7 +91,8 @@ public class Symbolizer<T extends Copyable<T>> {
         this.evaluated = evaluated;
         this.geometry = geometry;
         this.name = name;
-        this.loc = loc;
+        file = loc.getSystemId();
+        this.loc = new Pair<Integer, Integer>( loc.getLineNumber(), loc.getColumnNumber() );
     }
 
     /**
@@ -104,7 +107,8 @@ public class Symbolizer<T extends Copyable<T>> {
         this.next = next;
         this.geometry = geometry;
         this.name = name;
-        this.loc = loc;
+        file = loc.getSystemId();
+        this.loc = new Pair<Integer, Integer>( loc.getLineNumber(), loc.getColumnNumber() );
     }
 
     /**
@@ -130,13 +134,13 @@ public class Symbolizer<T extends Copyable<T>> {
 
                 if ( os.length == 0 ) {
                     LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated to nothing.",
-                              new Object[] { loc.getSystemId(), loc.getLineNumber(), loc.getColumnNumber() } );
+                              new Object[] { file, loc.first, loc.second } );
                 } else if ( os[0] instanceof Geometry ) {
                     geom = (Geometry) os[0];
                 } else {
                     LOG.warn(
                               "The geometry expression in file '{}', line {}, column {} evaluated to something other than a geometry.",
-                              new Object[] { loc.getSystemId(), loc.getLineNumber(), loc.getColumnNumber() } );
+                              new Object[] { file, loc.first, loc.second } );
                 }
             } catch ( FilterEvaluationException e ) {
                 LOG.warn( "Could not evaluate a geometry expression." );
