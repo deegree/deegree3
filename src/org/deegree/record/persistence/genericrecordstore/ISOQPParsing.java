@@ -910,7 +910,7 @@ public class ISOQPParsing extends XMLAdapter {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if ( qp.getOperatesOn() != null && qp.getOperatesOnIdentifier() != null && qp.getOperatesOnName() != null ) {
+        if ( qp.getOperatesOnData() != null || qp.getOperatesOnData().size() != 0 ) {
             generateISOQP_OperatesOnStatement( isUpdate );
         }
         if ( qp.getCouplingType() != null ) {
@@ -1166,7 +1166,7 @@ public class ISOQPParsing extends XMLAdapter {
             id = getLastDatasetId( connection, databaseTable );
             id++;
             sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, organisationname) VALUES (" + id + ","
-                           + mainDatabaseTableID + ",'" + qp.getResourceIdentifier() + "');";
+                           + mainDatabaseTableID + ",'" + qp.getOrganisationName() + "');";
 
             stm.executeUpdate( sqlStatement );
 
@@ -1296,14 +1296,15 @@ public class ISOQPParsing extends XMLAdapter {
                 stm.executeUpdate( sqlStatement );
             }
             id = getLastDatasetId( connection, databaseTable );
+            for ( OperatesOnData operatesOnData : qp.getOperatesOnData() ) {
             id++;
             sqlStatement = "INSERT INTO " + databaseTable
                            + " (id, fk_datasets, operateson, operatesonidentifier, operatesonname) VALUES (" + id + ","
-                           + mainDatabaseTableID + ",'" + qp.getOperatesOn() + "','" + qp.getOperatesOnIdentifier()
-                           + "','" + qp.getOperatesOnName() + "');";
+                           + mainDatabaseTableID + ",'" + operatesOnData.getOperatesOn() + "','" + operatesOnData.getOperatesOnIdentifier()
+                           + "','" + operatesOnData.getOperatesOnName() + "');";
 
             stm.executeUpdate( sqlStatement );
-
+            }
         } catch ( SQLException e ) {
 
             e.printStackTrace();

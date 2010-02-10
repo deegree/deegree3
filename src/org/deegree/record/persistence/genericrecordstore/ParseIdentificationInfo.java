@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
 import java.io.IOException;
@@ -63,16 +63,16 @@ import org.deegree.crs.CRS;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ParseIdentificationInfo extends XMLAdapter{
-    
+public class ParseIdentificationInfo extends XMLAdapter {
+
     private OMFactory factory;
-    
+
     private Connection connection;
-    
+
     private OMNamespace namespaceGMD;
 
     private OMNamespace namespaceGCO;
-    
+
     private NamespaceContext nsContext;
 
     /**
@@ -81,23 +81,21 @@ public class ParseIdentificationInfo extends XMLAdapter{
     public ParseIdentificationInfo() {
         // TODO Auto-generated constructor stub
     }
-    
-    ParseIdentificationInfo(OMFactory factory, Connection connection, NamespaceContext nsContext){
+
+    ParseIdentificationInfo( OMFactory factory, Connection connection, NamespaceContext nsContext ) {
         this.factory = factory;
         this.connection = connection;
         this.nsContext = nsContext;
         namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
         namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
-        
+
     }
-    
-    
-    
-    protected void parseIdentificationInfo(List<OMElement> identificationInfo, GenerateRecord gr, QueryableProperties qp, ReturnableProperties rp, boolean isInspire, List<CRS> crsList ) throws IOException{
-        
-        
-        
-        
+
+    protected void parseIdentificationInfo( List<OMElement> identificationInfo, GenerateRecord gr,
+                                            QueryableProperties qp, ReturnableProperties rp, boolean isInspire,
+                                            List<CRS> crsList )
+                            throws IOException {
+
         List<OMElement> identificationInfo_Update = new ArrayList<OMElement>();
 
         for ( OMElement root_identInfo : identificationInfo ) {
@@ -209,7 +207,7 @@ public class ParseIdentificationInfo extends XMLAdapter{
                     String resourceIdentifier = getNodeAsString(
                                                                  resourceElement,
                                                                  new XPath(
-                                                                            "./gmd:MD_Identifier/gmd:code/gco:CharacterString",
+                                                                            "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                             nsContext ), null );
                     resourceIdentifierList.add( resourceIdentifier );
                 }
@@ -221,7 +219,7 @@ public class ParseIdentificationInfo extends XMLAdapter{
                     String resourceIdentifier = getNodeAsString(
                                                                  resourceElement,
                                                                  new XPath(
-                                                                            "./gmd:MD_Identifier/gmd:code/gco:CharacterString",
+                                                                            "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
                                                                             nsContext ), null );
                     resourceIdentifierList.add( resourceIdentifier );
                 }
@@ -233,15 +231,15 @@ public class ParseIdentificationInfo extends XMLAdapter{
                         firstResourceId = resourceIdentifierList.get( i );
                     }
                 } else {
-                    //String uuid_gen = generateUUID();
-                    //resourceIdentifierList.add( uuid_gen );
+                    // String uuid_gen = generateUUID();
+                    // resourceIdentifierList.add( uuid_gen );
 
                     OMElement omIdentifier = factory.createOMElement( "identifier", namespaceGMD );
                     OMElement omMD_Identifier = factory.createOMElement( "MD_Identifier", namespaceGMD );
                     OMElement omCode = factory.createOMElement( "code", namespaceGMD );
                     OMElement omCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
 
-                    //omCharacterString.setText( uuid_gen );
+                    // omCharacterString.setText( uuid_gen );
                     omCode.addChild( omCharacterString );
                     omMD_Identifier.addChild( omCode );
                     omIdentifier.addChild( omMD_Identifier );
@@ -249,9 +247,15 @@ public class ParseIdentificationInfo extends XMLAdapter{
 
                 }
                 String dataIdentificationId = md_dataIdentification.getAttributeValue( new QName( "id" ) );
+                String dataIdentificationUuId = md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
                 if ( firstResourceId.equals( dataIdentificationId ) ) {
                 } else {
                     md_dataIdentification.getAttribute( new QName( "id" ) ).setAttributeValue( firstResourceId );
+
+                }
+                if ( firstResourceId.equals( dataIdentificationUuId ) ) {
+                } else {
+                    md_dataIdentification.getAttribute( new QName( "uuid" ) ).setAttributeValue( firstResourceId );
 
                 }
 
@@ -395,7 +399,6 @@ public class ParseIdentificationInfo extends XMLAdapter{
             List<OMElement> descriptiveKeywords = getElements( sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:descriptiveKeywords", nsContext ) );
 
-            
             Keyword keywordClass;
 
             List<Keyword> listOfKeywords = new ArrayList<Keyword>();
@@ -471,14 +474,13 @@ public class ParseIdentificationInfo extends XMLAdapter{
                  *---------------------------------------------------------------*/
                 topicCategory = getElements( md_dataIdentification, new XPath( "./gmd:topicCategory", nsContext ) );
 
-                
                 if ( md_dataIdentification != null ) {
                     topicCategories = getNodesAsStrings( md_dataIdentification,
                                                          new XPath( "./gmd:topicCategory/gmd:MD_TopicCategoryCode",
                                                                     nsContext ) );
                 }
                 qp.setTopicCategory( Arrays.asList( topicCategories ) );
-                
+
                 /*---------------------------------------------------------------
                  * MD_DataIdentification
                  * EnvironmentDescription
@@ -707,7 +709,7 @@ public class ParseIdentificationInfo extends XMLAdapter{
              * 
              *---------------------------------------------------------------*/
             List<OMElement> extent = (List<OMElement>) ( extent_md_dataIdent.size() != 0 ? extent_md_dataIdent
-                                                                                    : extent_service );
+                                                                                        : extent_service );
             String temporalExtentBegin = "0000-00-00";
             Date dateTempBeg = null;
             try {
@@ -844,7 +846,6 @@ public class ParseIdentificationInfo extends XMLAdapter{
             }
 
             qp.setKeywords( listOfKeywords );
-            
 
             /*---------------------------------------------------------------
              * SV_ServiceIdentification
@@ -852,36 +853,66 @@ public class ParseIdentificationInfo extends XMLAdapter{
              * 
              *---------------------------------------------------------------*/
             List<String> operatesOnList = new ArrayList<String>();
+            List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();
             for ( OMElement operatesOnElem : operatesOn ) {
                 // ./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier(/gmd:RS_Identifier |
                 // /gmd:MD_Identifier)/gmd:code/gco:CharacterString
-                String operatesOnString = getNodeAsString(
-                                                           operatesOnElem,
-                                                           new XPath(
-                                                                      "./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
-                                                                      nsContext ), null );
-                operatesOnList.add( operatesOnString );
+                String operatesOnStringUuIdAttribute = operatesOnElem.getAttributeValue( new QName( "uuidref" ) );
+                String operatesOnString = "";
+                if ( !operatesOnStringUuIdAttribute.equals( "" ) ) {
+                    operatesOnList.add( operatesOnStringUuIdAttribute );
+                } else {
+                    operatesOnString = getNodeAsString(
+                                                        operatesOnElem,
+                                                        new XPath(
+                                                                   "./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
+                                                                   nsContext ), null );
+                    operatesOnList.add( operatesOnString );
+                }
 
             }
-            qp.setOperatesOn( operatesOnList );
 
+            List<OMElement> operatesOnCoupledResources = getElements(
+                                                                      sv_serviceIdentification,
+                                                                      new XPath(
+                                                                                 "./srv:coupledResource/srv:SV_CoupledResource",
+                                                                                 nsContext ) );
             String[] operatesOnIdentifierList = getNodesAsStrings(
                                                                    sv_serviceIdentification,
                                                                    new XPath(
                                                                               "./srv:coupledResource/srv:SV_CoupledResource/srv:identifier/gco:CharacterString",
                                                                               nsContext ) );
 
-            String[] operatesOnNameList = getNodesAsStrings(
-                                                             sv_serviceIdentification,
-                                                             new XPath(
-                                                                        "./srv:coupledResource/srv:SV_CoupledResource/srv:operationName/gco:CharacterString",
-                                                                        nsContext ) );
-            if ( operatesOnIdentifierList != null ) {
-                qp.setOperatesOnIdentifier( Arrays.asList( operatesOnIdentifierList ) );
+            for ( OMElement operatesOnCoupledResource : operatesOnCoupledResources ) {
+                String operatesOnIdentifierString = getNodeAsString( operatesOnCoupledResource,
+                                                                     new XPath( "./srv:identifier/gco:CharacterString",
+                                                                                nsContext ), "" );
+
+                String operatesOnNameString = getNodeAsString( operatesOnCoupledResource,
+                                                               new XPath( "./srv:operationName/gco:CharacterString",
+                                                                          nsContext ), "" );
+
+                OperatesOnData ood = null;
+                for ( String operatesOnId : operatesOnList ) {
+                    ood = new OperatesOnData();
+
+                    ood.setOperatesOn( operatesOnId );
+
+                    if ( operatesOnId.equals( operatesOnIdentifierString ) ) {
+                        ood.setOperatesOnIdentifier( operatesOnIdentifierString );
+
+                        ood.setOperatesOnName( operatesOnNameString );
+
+                        break;
+                    }
+
+                }
+
+                operatesOnDataList.add( ood );
+
             }
-            if ( operatesOnNameList != null ) {
-                qp.setOperatesOnName( Arrays.asList( operatesOnNameList ) );
-            }
+            qp.setOperatesOnData( operatesOnDataList );
+
             String couplingTypeString = getNodeAsString(
                                                          sv_serviceIdentification,
                                                          new XPath(
@@ -896,7 +927,7 @@ public class ParseIdentificationInfo extends XMLAdapter{
              * 
              *---------------------------------------------------------------*/
             if ( sv_serviceIdentification != null ) {
-                
+
                 if ( couplingTypeString.equals( "loose" ) ) {
                     // TODO
 
@@ -908,9 +939,9 @@ public class ParseIdentificationInfo extends XMLAdapter{
                             throw new IOException( msg );
                         }
                     }
-                    
+
                     boolean isTightlyCoupledOK = false;
-                    //TODO please more efficiency and intelligence
+                    // TODO please more efficiency and intelligence
                     for ( String operatesOnString : operatesOnList ) {
 
                         for ( String operatesOnIdentifierString : operatesOnIdentifierList ) {
@@ -930,11 +961,9 @@ public class ParseIdentificationInfo extends XMLAdapter{
                             String msg = "Missmatch between OperatesOn '" + operatesOnString
                                          + "' and its tightly coupled resource OperatesOnIdentifier. ";
                             throw new IOException( msg );
-                            
-                            //there is no possibility to set the operationName -> not able to set the coupledResource
-                            
-                            
-                            
+
+                            // there is no possibility to set the operationName -> not able to set the coupledResource
+
                         }
 
                     }
@@ -944,9 +973,9 @@ public class ParseIdentificationInfo extends XMLAdapter{
                         String msg = "Missmatch between OperatesOn and its tightly coupled resource OperatesOnIdentifier. ";
                         throw new IOException( msg );
                     }
-                }else{
-                    //mixed coupled if there are loose and tight coupled resources. 
-                    
+                } else {
+                    // mixed coupled if there are loose and tight coupled resources.
+
                 }
             }
 
@@ -1074,7 +1103,7 @@ public class ParseIdentificationInfo extends XMLAdapter{
 
         gr.setIdentificationInfo( identificationInfo_Update );
     }
-    
+
     /**
      * If there is a data metadata record available for the service metadata record.
      * 
@@ -1100,6 +1129,5 @@ public class ParseIdentificationInfo extends XMLAdapter{
 
         return gotOneDataset;
     }
-    
 
 }

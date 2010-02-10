@@ -100,11 +100,7 @@ public class QueryableProperties {
 
     private List<String> topicCategory;
 
-    private List<String> operatesOn;
-
-    private List<String> operatesOnIdentifier;
-
-    private List<String> operatesOnName;
+    private List<OperatesOnData> operatesOnData;
 
     private int denominator;
 
@@ -536,49 +532,20 @@ public class QueryableProperties {
         this.couplingType = couplingType;
     }
 
+    
+
     /**
-     * @return the operatesOn
+     * @return the operatesOnData
      */
-    public List<String> getOperatesOn() {
-        return operatesOn;
+    public List<OperatesOnData> getOperatesOnData() {
+        return operatesOnData;
     }
 
     /**
-     * @param operatesOn
-     *            the operatesOn to set
+     * @param operatesOnData the operatesOnData to set
      */
-    public void setOperatesOn( List<String> operatesOn ) {
-        this.operatesOn = operatesOn;
-    }
-
-    /**
-     * @return the operatesOnIdentifier
-     */
-    public List<String> getOperatesOnIdentifier() {
-        return operatesOnIdentifier;
-    }
-
-    /**
-     * @param operatesOnIdentifier
-     *            the operatesOnIdentifier to set
-     */
-    public void setOperatesOnIdentifier( List<String> operatesOnIdentifier ) {
-        this.operatesOnIdentifier = operatesOnIdentifier;
-    }
-
-    /**
-     * @return the operatesOnName
-     */
-    public List<String> getOperatesOnName() {
-        return operatesOnName;
-    }
-
-    /**
-     * @param operatesOnName
-     *            the operatesOnName to set
-     */
-    public void setOperatesOnName( List<String> operatesOnName ) {
-        this.operatesOnName = operatesOnName;
+    public void setOperatesOnData( List<OperatesOnData> operatesOnData ) {
+        this.operatesOnData = operatesOnData;
     }
 
     /**
