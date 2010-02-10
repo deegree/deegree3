@@ -200,6 +200,11 @@ public class SymbologyParser {
                 }
             }
         }
+        // in case of SLD 1.0.0:
+        if ( in.getLocalName().equals( "Title" ) ) {
+            common.title = in.getElementText();
+            in.nextTag();
+        }
     }
 
     private static Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
