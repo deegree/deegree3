@@ -1010,10 +1010,10 @@ public class ISORecordStore implements RecordStore {
      * )
      */
     @Override
-    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer )
+    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, List<Integer> transactionIds )
                             throws SQLException, IOException {
         Connection conn = ConnectionManager.getConnection( connectionId );
-        for ( int i : insertedIds ) {
+        for ( int i : transactionIds ) {
             Writer s = new StringWriter();
             s.append( " SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + ".data " + "FROM "
                       + mappings.mainDatabaseTable + ", "
@@ -1108,6 +1108,15 @@ public class ISORecordStore implements RecordStore {
         // e.printStackTrace();
         // }
 
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.record.persistence.RecordStore#getTransactionIds()
+     */
+    @Override
+    public List<Integer> getTransactionIds() {
+        
+        return insertedIds;
     }
 
 }

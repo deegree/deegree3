@@ -162,8 +162,10 @@ public interface RecordStore {
      * @throws SQLException
      * @throws IOException
      */
-    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer )
+    public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, List<Integer> transactionIds )
                             throws SQLException, IOException;
+    
+    public List<Integer> getTransactionIds();
 
     /**
      * Returns the typeNames that are known in the backend. <br/>
