@@ -253,10 +253,14 @@ public class ISOQPParsing extends XMLAdapter {
          * 
          * 
          *---------------------------------------------------------------*/
-        Locale locale = new Locale(getNodeAsString( rootElement, new XPath( "./gmd:language/gco:CharacterString | ./gmd:language/gmd:LanguageCode/@codeListValue", nsContext ),
-                                                    null ));
-        
-        rp.setLanguage( locale.getLanguage());
+        Locale locale = new Locale(
+                                    getNodeAsString(
+                                                     rootElement,
+                                                     new XPath(
+                                                                "./gmd:language/gco:CharacterString | ./gmd:language/gmd:LanguageCode/@codeListValue",
+                                                                nsContext ), null ) );
+
+        rp.setLanguage( locale.getLanguage() );
 
         gr.setLanguage( getElement( rootElement, new XPath( "./gmd:language", nsContext ) ) );
 
@@ -604,8 +608,6 @@ public class ISOQPParsing extends XMLAdapter {
         Keyword keyword = new Keyword();
         Format format = new Format();
 
-        
-
         qp.setIdentifierDC( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dc:identifier", nsContext ) ) ) );
 
         rp.setCreator( getNodeAsString( rootElement, new XPath( "./dc:creator", nsContext ), null ) );
@@ -691,12 +693,12 @@ public class ISOQPParsing extends XMLAdapter {
             stm = connection.createStatement();
 
             boolean isUpdate = false;
-            String s = "SELECT i.identifier FROM qp_identifier AS i WHERE i.identifier = '"+ qp.getIdentifier() + "';";
+            String s = "SELECT i.identifier FROM qp_identifier AS i WHERE i.identifier = '" + qp.getIdentifier() + "';";
             ResultSet r = stm.executeQuery( s );
-            System.out.println(s);
+            System.out.println( s );
             if ( r.next() ) {
                 stm.close();
-                throw new IOException("Record with identifier '" + qp.getIdentifier() + "' already exists!");
+                throw new IOException( "Record with identifier '" + qp.getIdentifier() + "' already exists!" );
             } else {
                 generateMainDatabaseDataset();
                 if ( isDC == true ) {
@@ -707,7 +709,6 @@ public class ISOQPParsing extends XMLAdapter {
                 executeQueryableProperties( isUpdate );
                 stm.close();
             }
-            
 
         } catch ( SQLException e ) {
             // TODO Auto-generated catch block
@@ -730,8 +731,9 @@ public class ISOQPParsing extends XMLAdapter {
         String modifiedAttribute = "null";
         try {
             stm = connection.createStatement();
-            sqlStatementUpdate.append( "SELECT " + databaseTable + ".id from " + databaseTable + "," + qp_identifier + " where "
-                                       + databaseTable + ".id = " + qp_identifier + ".fk_datasets AND " + qp_identifier + ".identifier = '" + qp.getIdentifier() + "'" );
+            sqlStatementUpdate.append( "SELECT " + databaseTable + ".id from " + databaseTable + "," + qp_identifier
+                                       + " where " + databaseTable + ".id = " + qp_identifier + ".fk_datasets AND "
+                                       + qp_identifier + ".identifier = '" + qp.getIdentifier() + "'" );
             System.out.println( sqlStatementUpdate.toString() );
             buf = sqlStatementUpdate.getBuffer();
             ResultSet rs = connection.createStatement().executeQuery( sqlStatementUpdate.toString() );
@@ -938,6 +940,8 @@ public class ISOQPParsing extends XMLAdapter {
         final String databaseTable = "datasets";
         String sqlStatement = "";
         String modifiedAttribute = "null";
+        // TODO put in configuration
+        boolean isCaseSensitive = true;
         try {
 
             this.id = getLastDatasetId( connection, databaseTable );
@@ -951,8 +955,8 @@ public class ISOQPParsing extends XMLAdapter {
             sqlStatement += "INSERT INTO "
                             + databaseTable
                             + " (id, version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
-                            + this.id + ",null,null,'" + qp.getAnyText() + "'," + modifiedAttribute + ","
-                            + qp.isHasSecurityConstraints() + ",'" + rp.getLanguage() + "','"
+                            + this.id + ",null,null,'" + generateISOQP_AnyTextStatement( isCaseSensitive ) + "',"
+                            + modifiedAttribute + "," + qp.isHasSecurityConstraints() + ",'" + rp.getLanguage() + "','"
                             + qp.getParentIdentifier() + "',null, null);";
             System.out.println( sqlStatement );
             stm.executeUpdate( sqlStatement );
@@ -1149,123 +1153,145 @@ public class ISOQPParsing extends XMLAdapter {
         }
 
     }
-    
+
     /**
      * Puts the anyText for this dataset into the database.
      * 
      * @param isUpdate
      */
-    private String generateISOQP_AnyTextStatement(boolean isCaseSensitive) {
-        
+    private String generateISOQP_AnyTextStatement( boolean isCaseSensitive ) {
+
         StringWriter anyText = new StringWriter();
         String stopWord = " # ";
-        if(isCaseSensitive == true){
-            //Keywords
-            for(Keyword keyword : qp.getKeywords()){
+
+        // Keywords
+        for ( Keyword keyword : qp.getKeywords() ) {
+            if ( keyword.getKeywordType() != null ) {
                 anyText.append( keyword.getKeywordType() + stopWord );
+            }
+            if ( keyword.getThesaurus() != null ) {
                 anyText.append( keyword.getThesaurus() + stopWord );
-                for(String keywordString : keyword.getKeywords()){
+            }
+            if ( keyword.getKeywords() != null ) {
+                for ( String keywordString : keyword.getKeywords() ) {
                     anyText.append( keywordString + stopWord );
                 }
             }
-            
-            //title
-            for(String title : qp.getTitle()){
+        }
+
+        // title
+        if ( qp.getTitle() != null ) {
+            for ( String title : qp.getTitle() ) {
                 anyText.append( title + stopWord );
             }
-            
-            //abstract
-            for(String _abstract : qp.get_abstract()){
+        }
+
+        // abstract
+        if ( qp.get_abstract() != null ) {
+            for ( String _abstract : qp.get_abstract() ) {
                 anyText.append( _abstract + stopWord );
             }
-            
-            //format
-            for(Format format : qp.getFormat()){
+        }
+        // format
+        if ( qp.getFormat() != null ) {
+            for ( Format format : qp.getFormat() ) {
                 anyText.append( format.getName() + stopWord );
-                //anyText.append( format.getVersion() + stopWord );
+                // anyText.append( format.getVersion() + stopWord );
             }
-            
-            //type
-            anyText.append( qp.getType() + stopWord );
-            
-            //crs
-            for(CRS crs : qp.getCrs()){
+        }
+
+        // type
+        anyText.append( qp.getType() + stopWord );
+
+        // crs
+        if ( qp.getCrs() != null ) {
+            for ( CRS crs : qp.getCrs() ) {
                 anyText.append( crs.getName() + stopWord );
-                
+
             }
-            
-            //creator
-            anyText.append( rp.getCreator() + stopWord );
-            
-            //contributor
-            anyText.append( rp.getContributor() + stopWord );
-            
-            //publisher
-            anyText.append( rp.getPublisher() + stopWord );
-            
-            //language
-            anyText.append( rp.getLanguage() + stopWord );
-            
-            //relation
-            for(String relation : rp.getRelation()){
+        }
+
+        // creator
+        anyText.append( rp.getCreator() + stopWord );
+
+        // contributor
+        anyText.append( rp.getContributor() + stopWord );
+
+        // publisher
+        anyText.append( rp.getPublisher() + stopWord );
+
+        // language
+        anyText.append( rp.getLanguage() + stopWord );
+
+        // relation
+        if ( rp.getRelation() != null ) {
+            for ( String relation : rp.getRelation() ) {
                 anyText.append( relation + stopWord );
             }
-            
-            //rights
-            for(String rights : rp.getRights()){
+        }
+
+        // rights
+        if ( rp.getRights() != null ) {
+            for ( String rights : rp.getRights() ) {
                 anyText.append( rights + stopWord );
             }
-            
-            //alternateTitle
-            for(String alternateTitle : qp.getAlternateTitle()){
+        }
+
+        // alternateTitle
+        if ( qp.getAlternateTitle() != null ) {
+            for ( String alternateTitle : qp.getAlternateTitle() ) {
                 anyText.append( alternateTitle + stopWord );
             }
-            
-            //organisationName
-            anyText.append( qp.getOrganisationName() + stopWord );
-            
-            //topicCategory
-            for( String topicCategory : qp.getTopicCategory()){
+        }
+        // organisationName
+        anyText.append( qp.getOrganisationName() + stopWord );
+
+        // topicCategory
+        if ( qp.getTopicCategory() != null ) {
+            for ( String topicCategory : qp.getTopicCategory() ) {
                 anyText.append( topicCategory + stopWord );
             }
-            
-            //resourceLanguage
-            for(String resourceLanguage : qp.getResourceLanguage()){
+        }
+        // resourceLanguage
+        if ( qp.getResourceLanguage() != null ) {
+            for ( String resourceLanguage : qp.getResourceLanguage() ) {
                 anyText.append( resourceLanguage + stopWord );
             }
-            
-            //geographicDescriptionCode
-            anyText.append( qp.getGeographicDescriptionCode_service() + stopWord );
-            
-            //spatialResolution
-            anyText.append( qp.getDistanceUOM() + stopWord );
-            
-            //serviceType
-            anyText.append( qp.getServiceType() + stopWord );
-            
-            //operation
-            for(String operation : qp.getOperation()){
+        }
+        // geographicDescriptionCode
+        anyText.append( qp.getGeographicDescriptionCode_service() + stopWord );
+
+        // spatialResolution
+        anyText.append( qp.getDistanceUOM() + stopWord );
+
+        // serviceType
+        anyText.append( qp.getServiceType() + stopWord );
+
+        // operation
+        if ( qp.getOperation() != null ) {
+            for ( String operation : qp.getOperation() ) {
                 anyText.append( operation + stopWord );
             }
-            
-            //operatesOnData
-            for(OperatesOnData data : qp.getOperatesOnData()){
+        }
+
+        // operatesOnData
+        if ( qp.getOperatesOnData() != null ) {
+            for ( OperatesOnData data : qp.getOperatesOnData() ) {
                 anyText.append( data.getOperatesOn() + stopWord );
                 anyText.append( data.getOperatesOnIdentifier() + stopWord );
                 anyText.append( data.getOperatesOnName() + stopWord );
-                
+
             }
-            
-            //couplingType
-            anyText.append( qp.getCouplingType() + stopWord );
-            
-            
-            
         }
-        
-        
-        
-        return anyText.toString();
+
+        // couplingType
+        anyText.append( qp.getCouplingType() + stopWord );
+
+        if ( isCaseSensitive == true ) {
+            return anyText.toString();
+        } else {
+            return anyText.toString().toLowerCase();
+        }
 
     }
 
@@ -1419,13 +1445,14 @@ public class ISOQPParsing extends XMLAdapter {
             }
             id = getLastDatasetId( connection, databaseTable );
             for ( OperatesOnData operatesOnData : qp.getOperatesOnData() ) {
-            id++;
-            sqlStatement = "INSERT INTO " + databaseTable
-                           + " (id, fk_datasets, operateson, operatesonidentifier, operatesonname) VALUES (" + id + ","
-                           + mainDatabaseTableID + ",'" + operatesOnData.getOperatesOn() + "','" + operatesOnData.getOperatesOnIdentifier()
-                           + "','" + operatesOnData.getOperatesOnName() + "');";
+                id++;
+                sqlStatement = "INSERT INTO " + databaseTable
+                               + " (id, fk_datasets, operateson, operatesonidentifier, operatesonname) VALUES (" + id
+                               + "," + mainDatabaseTableID + ",'" + operatesOnData.getOperatesOn() + "','"
+                               + operatesOnData.getOperatesOnIdentifier() + "','" + operatesOnData.getOperatesOnName()
+                               + "');";
 
-            stm.executeUpdate( sqlStatement );
+                stm.executeUpdate( sqlStatement );
             }
         } catch ( SQLException e ) {
 

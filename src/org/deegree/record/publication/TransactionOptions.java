@@ -48,6 +48,8 @@ public class TransactionOptions {
     private boolean inspire;
 
     private boolean fileIdentifierAvailable;
+    
+    //private boolean searchCaseSensitivity;
 
     /**
      * @return the inspire
@@ -76,6 +78,22 @@ public class TransactionOptions {
     public void setFileIdentifierAvailable( boolean fileIdentifierAvailable ) {
         this.fileIdentifierAvailable = fileIdentifierAvailable;
     }
+
+//    /**
+//     * @return the searchCaseSensitivity
+//     */
+//    public boolean isSearchCaseSensitivity() {
+//        return searchCaseSensitivity;
+//    }
+//
+//    /**
+//     * @param searchCaseSensitivity the searchCaseSensitivity to set
+//     */
+//    public void setSearchCaseSensitivity( boolean searchCaseSensitivity ) {
+//        this.searchCaseSensitivity = searchCaseSensitivity;
+//    }
+//    
+//    
 
     
 }
