@@ -76,6 +76,7 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.xml.stax.XMLStreamReaderDoc;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,6 +263,17 @@ public class XMLAdapter {
     public XMLAdapter( OMElement rootElement, String systemId ) {
         setRootElement( rootElement );
         setSystemId( systemId );
+    }
+
+    public XMLAdapter( XMLStreamReader xmlStream ) {
+        if ( xmlStream.getEventType() != XMLStreamConstants.START_DOCUMENT ) {
+            setRootElement( new StAXOMBuilder( new XMLStreamReaderDoc( xmlStream ) ).getDocumentElement() );
+        } else {
+            setRootElement( new StAXOMBuilder( xmlStream ).getDocumentElement() );
+        }
+        if ( xmlStream.getLocation() != null && xmlStream.getLocation().getSystemId() != null ) {
+            setSystemId( xmlStream.getLocation().getSystemId() );
+        }
     }
 
     /**
