@@ -127,14 +127,21 @@ public class MetaDataReader {
             double[] tiePoints = geoTIFFMetaData.getModelTiePoints();
             double[] scale = geoTIFFMetaData.getModelPixelScales();
             if ( tiePoints != null && scale != null ) {
-                if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
-                    // rb: this might not be right always, see examples at
-                    // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
-                    rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0],
-                                                              -scale[1], tiePoints[3], tiePoints[4], new CRS( crs ) );
+
+                if ( definedRasterOrigLoc != null ) {
+                    rasterReference = new RasterGeoReference( definedRasterOrigLoc, scale[0], -scale[1], tiePoints[3],
+                                                              tiePoints[4], new CRS( crs ) );
                 } else {
-                    rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0],
-                                                              -scale[1], tiePoints[3], tiePoints[4], new CRS( crs ) );
+                    if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
+                        // rb: this might not always be right, see examples at
+                        // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
+                        // search for PixelIsArea/PixelIsPoint to determine center/outer
+                        rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0],
+                                                                  -scale[1], tiePoints[3], tiePoints[4], new CRS( crs ) );
+                    } else {
+                        rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0],
+                                                                  -scale[1], tiePoints[3], tiePoints[4], new CRS( crs ) );
+                    }
                 }
             }
         } catch ( UnsupportedOperationException ex ) {

@@ -96,6 +96,10 @@ public class DataSourceHandler {
                     if ( fp == null ) {
                         fp = "*";
                     }
+                    if ( datasource.getOriginLocation() != null ) {
+                        options.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
+                                     datasource.getOriginLocation().toString().toUpperCase() );
+                    }
                     options.add( RasterIOOptions.OPT_FORMAT, fp );
                     if ( crs != null ) {
                         options.add( RasterIOOptions.CRS, crs.getName() );
@@ -129,10 +133,14 @@ public class DataSourceHandler {
             RasterFileSetType directory = datasource.getRasterDirectory();
             RasterFileType file = datasource.getRasterFile();
             try {
+                RasterIOOptions options = new RasterIOOptions();
+                if ( datasource.getOriginLocation() != null ) {
+                    options.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
+                                 datasource.getOriginLocation().toString().toUpperCase() );
+                }
                 if ( directory != null ) {
                     File rasterFiles = new File( adapter.resolve( directory.getValue() ).getFile() );
                     boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
-                    RasterIOOptions options = new RasterIOOptions();
                     String fp = directory.getFilePattern();
                     if ( fp == null ) {
                         fp = "*";
@@ -145,7 +153,8 @@ public class DataSourceHandler {
                 }
                 if ( file != null ) {
                     final File loc = new File( adapter.resolve( file.getValue() ).getFile() );
-                    AbstractRaster raster = loadRasterFromFile( loc );
+                    options.add( RasterIOOptions.OPT_FORMAT, file.getFileType() );
+                    AbstractRaster raster = loadRasterFromFile( loc, options );
                     raster.setCoordinateSystem( crs );
                     return raster;
                 }
