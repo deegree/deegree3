@@ -41,6 +41,7 @@ import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 import static java.awt.Font.PLAIN;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
+import static java.lang.Math.toRadians;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -94,7 +95,7 @@ public class Java2DTextRenderer implements TextRenderer {
         double y = pt.y + renderer.considerUOM( styling.displacementY, styling.uom );
         renderer.graphics.setFont( font );
         AffineTransform transform = renderer.graphics.getTransform();
-        renderer.graphics.rotate( styling.rotation, x, y );
+        renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
         TextLayout layout = new TextLayout( text, font, renderer.graphics.getFontRenderContext() );
         double width = layout.getBounds().getWidth();
         double height = layout.getBounds().getHeight();
