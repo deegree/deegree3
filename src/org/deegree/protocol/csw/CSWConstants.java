@@ -84,7 +84,7 @@ public class CSWConstants {
     /**
      * 
      * Operations that is the webservice capable of <br>
-     * <li>GetCapabilities</li> <li>DescribeRecord</li> <li>GetRecords</li> <li>GetRecordById</li> <br>
+     * <li>GetCapabilities</li> <li>DescribeRecord</li> <li>GetRecords</li> <li>GetRecordById</li><li>Transaction</li> <br>
      * 
      * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
      * @author last edited by: $Author: thomas $
