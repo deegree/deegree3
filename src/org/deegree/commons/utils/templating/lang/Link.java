@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.templating.lang;
 
-import static org.apache.xerces.util.URI.isWellFormedAddress;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -91,7 +90,9 @@ public class Link {
         if ( val == null || val.isEmpty() ) {
             return;
         }
-        if ( !isWellFormedAddress( val ) ) {
+        // TODO: what is wanted is a real check for validity. org.apache.xerces.util.URI.isWellFormedAddress has been
+        // tried and seems not to work
+        if ( !val.startsWith( "http://" ) && !val.startsWith( "https://" ) && !val.startsWith( "ftp://" ) ) {
             val = prefix == null ? val : ( prefix + val );
         }
         // TODO price question: what's the Java Way to sgml-quote?
