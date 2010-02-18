@@ -236,8 +236,7 @@ public class RenderHelper {
         }
 
         Shape shape = getShapeFromMark( mark, size - 1, false, rotation );
-        Rectangle2D box = shape.getBounds2D();
-        shape = getTranslateInstance( x - box.getWidth() / 2, y - box.getHeight() / 2 ).createTransformedShape( shape );
+        shape = getTranslateInstance( x, y ).createTransformedShape( shape );
 
         if ( mark.fill != null ) {
             renderer.applyFill( mark.fill, uom );
