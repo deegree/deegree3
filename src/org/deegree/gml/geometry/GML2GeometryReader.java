@@ -535,7 +535,7 @@ public class GML2GeometryReader implements GMLGeometryReader {
                         // anonymous point (no registering necessary)
                         points.add( geomFac.createPoint( null, coords, crs ) );
                     } else {
-                        String msg = "Error in 'gml:LineString' element.";
+                        String msg = "Error in 'gml:Envelope' element.";
                         throw new XMLParsingException( xmlStream, msg );
                     }
                 } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
