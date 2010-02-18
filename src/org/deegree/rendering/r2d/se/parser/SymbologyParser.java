@@ -1784,7 +1784,7 @@ public class SymbologyParser {
                     }
 
                     // TODO legendgraphic
-                    if ( localReader.getLocalName().endsWith( "Symbolizer" ) ) {
+                    if ( localReader.isStartElement() && localReader.getLocalName().endsWith( "Symbolizer" ) ) {
 
                         Pair<Symbolizer<?>, Continuation<StringBuffer>> parsedSym = parseSymbolizer( localReader );
                         if ( parsedSym.second != null ) {
