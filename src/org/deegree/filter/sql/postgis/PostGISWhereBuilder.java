@@ -76,7 +76,7 @@ import org.deegree.filter.sql.islike.IsLikeString;
 import org.deegree.geometry.Geometry;
 
 /**
- * Creates SQL-WHERE clauses from {@link Filter} expressions (to restrict SQL <code>ResultSet</code>s to rows that
+ * Creates SQL-WHERE clauses from {@link Filter} expressions (to restrict SQL <code>ResultSet</code>s to those rows that
  * contain objects that match a given filter). Also handles the creation of ORDER BY clauses.
  * <p>
  * Note that the generated WHERE and ORDER-BY clauses are sometimes not sufficient to guarantee that the

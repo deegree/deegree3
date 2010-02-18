@@ -42,7 +42,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 
 /**
- * Provides {@link PropertyName} to table/column mappings for the {@link PostGISWhereBuilder}.
+ * Implementations provide {@link PropertyName} to table/column mappings for the {@link PostGISWhereBuilder}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -78,7 +78,7 @@ public interface PostGISMapping {
      * necessary.
      * 
      * @param literal
-     * @param propName 
+     * @param propName
      * @return
      * @throws FilterEvaluationException
      */
