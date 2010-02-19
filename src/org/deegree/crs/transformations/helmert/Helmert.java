@@ -45,6 +45,7 @@ import javax.vecmath.Point3d;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.transformations.Transformation;
 
@@ -199,6 +200,17 @@ public class Helmert extends Transformation {
      */
     public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes ) {
         this( sourceCRS, targetCRS, codes, null, null, null, null );
+    }
+
+    /**
+     * Construct a conversion info with all parameters set to 0, the target crs is {@link GeographicCRS#WGS84}
+     * 
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param codes
+     */
+    public Helmert( CoordinateSystem sourceCRS, CRSCodeType[] codes ) {
+        this( sourceCRS, GeographicCRS.WGS84, codes, null, null, null, null );
     }
 
     /**
@@ -487,6 +499,6 @@ public class Helmert extends Transformation {
 
     @Override
     public boolean isIdentity() {
-        return hasValues();
+        return !hasValues();
     }
 }
