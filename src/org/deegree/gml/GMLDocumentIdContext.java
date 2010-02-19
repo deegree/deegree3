@@ -46,8 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keeps track of {@link GMLObject}s inside GML instance documents, their ids and local xlink references during the parsing
- * of GML documents.
+ * Keeps track of {@link GMLObject}s inside GML instance documents, their ids and local xlink references during the
+ * parsing of GML documents.
  * <p>
  * Can be used for resolving local xlink-references at the end of the parsing process of a GML instance document or to
  * access all encountered objects on any level of the document.
@@ -134,6 +134,15 @@ public class GMLDocumentIdContext implements GMLReferenceResolver {
      */
     public Map<String, GMLObject> getObjects() {
         return idToObject;
+    }
+
+    /**
+     * Return all {@link GMLReference} instances that have been added.
+     * 
+     * @return all gml references that have been added before, may be empty, but never <code>null</code>
+     */
+    public List<GMLReference<?>> getReferences() {
+        return refs;
     }
 
     @Override
