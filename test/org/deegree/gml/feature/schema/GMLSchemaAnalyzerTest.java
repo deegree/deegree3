@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +49,7 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * TODO add documentation here
@@ -57,6 +60,8 @@ import org.junit.Test;
  * @version $Revision:$, $Date:$
  */
 public class GMLSchemaAnalyzerTest {
+
+    private static final Logger LOG = getLogger( GMLSchemaAnalyzerTest.class );
 
     @Test
     public void testPhilosopher()
@@ -71,17 +76,17 @@ public class GMLSchemaAnalyzerTest {
                                                                                                  "http://www.deegree.org/app",
                                                                                                  false );
         for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
-            System.out.println( "- Feature type: " + featureElementDecl.getName() );
+            LOG.debug( "- Feature type: " + featureElementDecl.getName() );
         }
         List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations(
                                                                                                                      null,
                                                                                                                      false );
         for ( XSElementDeclaration featureCollectionElementDecl : featureCollectionElementDecls ) {
-            System.out.println( "- Feature collection type: " + featureCollectionElementDecl.getName() );
+            LOG.debug( "- Feature collection type: " + featureCollectionElementDecl.getName() );
         }
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, true );
         for ( XSElementDeclaration geometryElementDecl : geometryElementDecls ) {
-            System.out.println( "- Geometry type: " + geometryElementDecl.getName() );
+            LOG.debug( "- Geometry type: " + geometryElementDecl.getName() );
         }
     }
 
@@ -106,9 +111,9 @@ public class GMLSchemaAnalyzerTest {
         GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_GeometricAggregate", analyzer );
         for ( String string : substitutionts ) {
-            System.out.println( string );
+            LOG.debug( string );
         }
-        System.out.println( substitutionts.size() );
+        LOG.debug( "" + substitutionts.size() );
     }
 
     @Test
@@ -120,9 +125,9 @@ public class GMLSchemaAnalyzerTest {
         GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_GeometricPrimitive", analyzer );
         for ( String string : substitutionts ) {
-            System.out.println( string );
+            LOG.debug( string );
         }
-        System.out.println( substitutionts.size() );
+        LOG.debug( "" + substitutionts.size() );
     }
 
     @Test
@@ -134,9 +139,9 @@ public class GMLSchemaAnalyzerTest {
         GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_ImplicitGeometry", analyzer );
         for ( String string : substitutionts ) {
-            System.out.println( string );
+            LOG.debug( string );
         }
-        System.out.println( substitutionts.size() );
+        LOG.debug( "" + substitutionts.size() );
     }
 
     @Test
@@ -148,9 +153,9 @@ public class GMLSchemaAnalyzerTest {
         GMLSchemaAnalyzer analyzer = new GMLSchemaAnalyzer( GMLVersion.GML_31, schemaURL );
         Set<String> substitutionts = getConcreteSubstitutions( "_Curve", analyzer );
         for ( String string : substitutionts ) {
-            System.out.println( string );
+            LOG.debug( string );
         }
-        System.out.println( substitutionts.size() );
+        LOG.debug( "" + substitutionts.size() );
     }
 
     @Test
@@ -223,7 +228,7 @@ public class GMLSchemaAnalyzerTest {
                                                                                         "_CurveSegment" ),
                                                                              "http://www.opengis.net/gml", true, true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
-            System.out.println( elementDecl.getName() );
+            LOG.debug( elementDecl.getName() );
         }
     }
 
@@ -238,7 +243,7 @@ public class GMLSchemaAnalyzerTest {
                                                                                         "_SurfacePatch" ),
                                                                              "http://www.opengis.net/gml", true, true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
-            System.out.println( elementDecl.getName() );
+            LOG.debug( elementDecl.getName() );
         }
     }
 
@@ -256,7 +261,7 @@ public class GMLSchemaAnalyzerTest {
                                                                              "http://www.opengis.net/gml/3.2", true,
                                                                              true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
-            System.out.println( elementDecl.getName() );
+            LOG.debug( elementDecl.getName() );
         }
     }
 
@@ -274,7 +279,7 @@ public class GMLSchemaAnalyzerTest {
                                                                              "http://www.opengis.net/gml/3.2", true,
                                                                              true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
-            System.out.println( elementDecl.getName() );
+            LOG.debug( elementDecl.getName() );
         }
     }
 
@@ -292,9 +297,9 @@ public class GMLSchemaAnalyzerTest {
                                                                              "http://www.opengis.net/gml/3.2", true,
                                                                              true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
-            System.out.println( elementDecl.getName() );
+            LOG.debug( elementDecl.getName() );
         }
-        System.out.println( elementDecls.size() );
+        LOG.debug( "" + elementDecls.size() );
     }
 
     private Set<String> getConcreteSubstitutions( String localName, GMLSchemaAnalyzer analyzer ) {
