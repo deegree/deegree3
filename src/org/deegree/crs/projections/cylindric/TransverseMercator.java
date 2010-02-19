@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections.cylindric;
 
@@ -53,6 +53,7 @@ import org.deegree.crs.EPSGCode;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
+import org.deegree.crs.projections.Projection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,13 +71,13 @@ import org.slf4j.LoggerFactory;
  * <li>Often used to show regions with greater north-south extent</li>
  * <li>presented by lambert in 1772</li>
  * </ul>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class TransverseMercator extends CylindricalProjection {
@@ -137,7 +138,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /**
      * Sets the id to EPSG:9807
-     *
+     * 
      * @param northernHemisphere
      *            true if on the northern hemisphere false otherwise.
      * @param geographicCRS
@@ -150,14 +151,14 @@ public class TransverseMercator extends CylindricalProjection {
     public TransverseMercator( boolean northernHemisphere, GeographicCRS geographicCRS, double falseNorthing,
                                double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
         this( northernHemisphere, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
-              new CRSIdentifiable(  new EPSGCode( 9807 ) ) );
+              new CRSIdentifiable( new EPSGCode( 9807 ) ) );
     }
 
     /**
      * Sets the false-easting to 50000, false-northing to 0 or 10000000 (depending on the hemisphere), the
      * projection-longitude is calculated from the zone and the projection-latitude is set to 0. The scale will be
      * 0.9996.
-     *
+     * 
      * @param zone
      *            to add
      * @param northernHemisphere
@@ -189,7 +190,7 @@ public class TransverseMercator extends CylindricalProjection {
      * Sets the false-easting to 50000, false-northing to 0 or 10000000 (depending on the hemisphere), the
      * projection-longitude is calculated from the zone and the projection-latitude is set to 0. The scale will be
      * 0.9996.
-     *
+     * 
      * @param zone
      *            to add
      * @param northernHemisphere
@@ -203,7 +204,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /**
      * A northern hemisphere conformal transverse mercator projection with a scale of one. Using the given datum.
-     *
+     * 
      * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
@@ -217,7 +218,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /**
      * A northern hemisphere conformal transverse mercator projection with a scale of one. Using the given datum.
-     *
+     * 
      * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
@@ -328,15 +329,14 @@ public class TransverseMercator extends CylindricalProjection {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.crs.projections.Projection#doProjection(double, double)
      */
     @Override
     public Point2d doProjection( double lambda, double phi )
                             throws ProjectionException {
         // LOG.debug( "Projection, incoming points lambda: " + lambda + " phi: " + phi );
-        LOG.debug( "Projection, incoming points lambda: " + Math.toDegrees( lambda ) + " phi: "
-                      + Math.toDegrees( phi ) );
+        LOG.debug( "Projection, incoming points lambda: " + Math.toDegrees( lambda ) + " phi: " + Math.toDegrees( phi ) );
         Point2d result = new Point2d( 0, 0 );
         lambda -= getProjectionLongitude();
         // phi -= getProjectionLatitude();
@@ -427,7 +427,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /**
      * the utm zone from a given meridian
-     *
+     * 
      * @param longitude
      *            in radians
      * @return the utm zone.
@@ -452,5 +452,13 @@ public class TransverseMercator extends CylindricalProjection {
      */
     public final boolean getHemisphere() {
         return ( hemisphere == 1 );
+    }
+
+    @Override
+    public Projection clone( GeographicCRS newCRS ) {
+        return new TransverseMercator( getHemisphere(), newCRS, getFalseNorthing(), getFalseEasting(),
+                                       getNaturalOrigin(), getUnits(), getScale(),
+                                       new CRSIdentifiable( getCodes(), getNames(), getVersions(), getDescriptions(),
+                                                            getAreasOfUse() ) );
     }
 }

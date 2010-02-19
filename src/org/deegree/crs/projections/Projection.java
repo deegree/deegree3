@@ -167,6 +167,15 @@ public abstract class Projection extends CRSIdentifiable {
     }
 
     /**
+     * Creates a copy of this projection with the given {@link GeographicCRS} as the base.
+     * 
+     * @param newBaseCRS
+     *            the new {@link GeographicCRS}
+     * @return a copy of this projection based upon the given crs.
+     */
+    public abstract Projection clone( GeographicCRS newBaseCRS );
+
+    /**
      * The actual transform method doing a projection from geographic coordinates to map coordinates.
      * 
      * @param lambda
@@ -373,7 +382,7 @@ public abstract class Projection extends CRSIdentifiable {
     public boolean equals( Object other ) {
         if ( other != null && other instanceof Projection ) {
             final Projection that = (Projection) other;
-            return this.units.equals( that.units )
+            return super.equals( that ) && this.units.equals( that.units )
                    && Math.abs( ( this.projectionLatitude - that.projectionLatitude ) ) < EPS11
                    && Math.abs( ( this.projectionLongitude - that.projectionLongitude ) ) < EPS11
                    && Math.abs( ( this.falseNorthing - that.falseNorthing ) ) < EPS11

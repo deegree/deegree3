@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections.azimuthal;
 
@@ -52,6 +52,7 @@ import org.deegree.crs.EPSGCode;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
+import org.deegree.crs.projections.Projection;
 
 /**
  * The <code>LambertAzimuthalEqualArea</code> projection has following properties (From J.S. Snyder, Map Projections a
@@ -71,7 +72,7 @@ import org.deegree.crs.exceptions.ProjectionException;
  * <li>Used for maps of continents and hemispheres</li>
  * <li>presented by lambert in 1772</li>
  * </ul>
- *
+ * 
  * <p>
  * The difference to orthographic and stereographic projection, comes from the spacing between the parallels. The space
  * decreases with increasing distance from the pole. The opposite pole not visible on either the orthographic or
@@ -79,20 +80,20 @@ import org.deegree.crs.exceptions.ProjectionException;
  * equator from the center. Normally the projectction is not shown beyond one hemisphere (or beyond the equator in the
  * polar aspect).
  * </p>
- *
+ * 
  * <p>
  * It is known to be used by following epsg transformations:
  * <ul>
  * <li>EPSG:3035</li>
  * </ul>
  * </p>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class LambertAzimuthalEqualArea extends AzimuthalProjection {
@@ -144,7 +145,8 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      */
     public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
                                       Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, false/* not conformal */, true/*equals-area*/, id );
+        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, false/* not conformal */,
+               true/* equals-area */, id );
         if ( !isSpherical() ) {
             // sin(rad(90)) = 1;
             qp = calcQForAuthalicLatitude( 1., getEccentricity() );
@@ -189,7 +191,8 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      */
     public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
                                       Point2d naturalOrigin, Unit units, double scale ) {
-        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( new EPSGCode( 9820 ) ) );
+        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
+              new CRSIdentifiable( new EPSGCode( 9820 ) ) );
     }
 
     /**
@@ -220,7 +223,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.crs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
@@ -347,7 +350,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.crs.projections.Projection#doProjection(double, double)
      */
     @Override
@@ -482,6 +485,15 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
     @Override
     public String getImplementationName() {
         return "lambertAzimuthalEqualArea";
+    }
+
+    @Override
+    public Projection clone( GeographicCRS newCRS ) {
+        return new LambertAzimuthalEqualArea( newCRS, getFalseNorthing(), getFalseEasting(), getNaturalOrigin(),
+                                              getUnits(), getScale(), new CRSIdentifiable( getCodes(), getNames(),
+                                                                                           getVersions(),
+                                                                                           getDescriptions(),
+                                                                                           getAreasOfUse() ) );
     }
 
 }

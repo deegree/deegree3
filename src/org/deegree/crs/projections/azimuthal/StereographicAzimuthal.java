@@ -53,6 +53,7 @@ import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
+import org.deegree.crs.projections.Projection;
 
 /**
  * The <code>StereographicAzimuthal</code> class allows for Stereographic Projections of the Poles, equator as well as
@@ -465,7 +466,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
                 }
                 // akm1 was set to 2*scale.
                 result.y = akm1 * Math.tan( QUARTERPI + .5 * phi );
-                result.x = sinLamda * ( result.y         );
+                result.x = sinLamda * ( result.y );
                 result.y *= cosLamda;
                 break;
             }
@@ -524,5 +525,13 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      */
     public final double getTrueScaleLatitude() {
         return trueScaleLatitude;
+    }
+
+    @Override
+    public Projection clone( GeographicCRS newCRS ) {
+        return new StereographicAzimuthal( getTrueScaleLatitude(), newCRS, getFalseNorthing(), getFalseEasting(),
+                                           getNaturalOrigin(), getUnits(), getScale(),
+                                           new CRSIdentifiable( getCodes(), getNames(), getVersions(),
+                                                                getDescriptions(), getAreasOfUse() ) );
     }
 }

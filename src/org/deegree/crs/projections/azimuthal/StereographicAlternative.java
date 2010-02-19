@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections.azimuthal;
 
@@ -47,6 +47,7 @@ import org.deegree.crs.EPSGCode;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
+import org.deegree.crs.projections.Projection;
 
 /**
  * <code>StereographicAlternative</code> projection may be imagined to be a projection of the earth's surface onto a
@@ -70,7 +71,7 @@ import org.deegree.crs.exceptions.ProjectionException;
  * unity at the origin such that a unit scale factor applies on a near circle centered at the origin and some distance
  * from it.
  * </p>
- *
+ * 
  * <p>
  * The coordinate transformation from geographical to projected coordinates is executed via the distance and azimuth of
  * the point from the center point or origin. For a sphere the formulas are relatively simple. For the ellipsoid the
@@ -79,7 +80,7 @@ import org.deegree.crs.exceptions.ProjectionException;
  * </p>
  * <quote>from <a
  * href="http://www.posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs34j.html">http://www.posc.org/</a></quote>
- *
+ * 
  * <p>
  * Determinations of oblique projections on an ellipsoid can be difficult to solve and result in long, complex
  * computations. Because conformal transformations can be made multiple time without loss of the conformal property a
@@ -90,14 +91,14 @@ import org.deegree.crs.exceptions.ProjectionException;
  * </p>
  * From the <a href="http://members.verizon.net/~gerald.evenden/proj4/manual.pdf">libproj4-manual</a> by Gerald I.
  * Evenden
- *
- *
+ * 
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class StereographicAlternative extends AzimuthalProjection {
 
@@ -172,7 +173,7 @@ public class StereographicAlternative extends AzimuthalProjection {
 
     /**
      * Sets the id of this projection to epsg::9809 (Oblique Stereographic)
-     *
+     * 
      * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
@@ -182,12 +183,13 @@ public class StereographicAlternative extends AzimuthalProjection {
      */
     public StereographicAlternative( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
                                      Point2d naturalOrigin, Unit units, double scale ) {
-        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( new EPSGCode( 9809 ) ) );
+        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
+              new CRSIdentifiable( new EPSGCode( 9809 ) ) );
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.crs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
@@ -218,7 +220,7 @@ public class StereographicAlternative extends AzimuthalProjection {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.crs.projections.Projection#doProjection(double, double)
      */
     @Override
@@ -242,7 +244,7 @@ public class StereographicAlternative extends AzimuthalProjection {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.crs.projections.Projection#getDeegreeSpecificName()
      */
     @Override
@@ -294,6 +296,15 @@ public class StereographicAlternative extends AzimuthalProjection {
                              * srat( getEccentricity() * Math.sin( phi ), clExponent ) ) - HALFPI;
         slp.x = centralGeographicLatitude * ( lambda );
         return slp;
+    }
+
+    @Override
+    public Projection clone( GeographicCRS newCRS ) {
+        return new StereographicAlternative( newCRS, getFalseNorthing(), getFalseEasting(), getNaturalOrigin(),
+                                             getUnits(), getScale(), new CRSIdentifiable( getCodes(), getNames(),
+                                                                                          getVersions(),
+                                                                                          getDescriptions(),
+                                                                                          getAreasOfUse() ) );
     }
 
 }
