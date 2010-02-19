@@ -65,13 +65,13 @@ public class PrimeMeridian extends CRSIdentifiable {
                                                                      Unit.DEGREE,
                                                                      0,
                                                                      new CRSCodeType[] {
-                                                                                        new CRSCodeType( "8901", "EPSG" ),
+                                                                                        new CRSCodeType( "8901", "epsg" ),
                                                                                         new CRSCodeType(
-                                                                                                         "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901" ),
+                                                                                                         "http://www.opengis.net/gml/srs/epsg.xml#8901" ),
                                                                                         new CRSCodeType(
-                                                                                                         "URN:OPENGIS:DEF:CRS:EPSG::8901" ),
+                                                                                                         "urn:opengis:def:crs:epsg::8901" ),
                                                                                         new CRSCodeType(
-                                                                                                         "URN:OGC:DEF:CRS:EPSG::8901" ) },
+                                                                                                         "urn:ogc:def:crs:epsg::8901" ) },
                                                                      new String[] { "Greenwich" },
                                                                      new String[] { "1995-06-02" }, null, null );
 
@@ -255,6 +255,14 @@ public class PrimeMeridian extends CRSIdentifiable {
             code = code * 37 + units.hashCode();
         }
         return (int) ( code >>> 32 ) ^ (int) code;
+    }
+
+    /**
+     * @param longitude
+     * @param units
+     */
+    public void setLongitude( double longitude, Unit units ) {
+        this.longitude = units.convert( longitude, Unit.RADIAN );
     }
 
 }
