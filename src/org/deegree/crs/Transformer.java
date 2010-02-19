@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,28 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.crs;
 
 import java.security.InvalidParameterException;
 
+import org.deegree.crs.configuration.TransformationFactory;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.transformations.Transformation;
-import org.deegree.crs.transformations.TransformationFactory;
 import org.deegree.crs.transformations.coordinate.CRSTransformation;
 
 /**
  * Abstract base class for all transformers. Stores a target coordinate system and creates {@link CRSTransformation}
  * objects for a given source CRS.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public abstract class Transformer {
 
@@ -63,7 +63,7 @@ public abstract class Transformer {
 
     /**
      * Creates a new Transformer object, with the given target CRS.
-     *
+     * 
      * @param targetCRS
      *            to transform incoming coordinates to.
      * @throws IllegalArgumentException
@@ -79,7 +79,7 @@ public abstract class Transformer {
 
     /**
      * Creates a new Transformer object, with the given id as the target CRS.
-     *
+     * 
      * @param targetCRS
      *            an identifier to which all incoming coordinates shall be transformed.
      * @throws UnknownCRSException
@@ -107,7 +107,7 @@ public abstract class Transformer {
     /**
      * Creates a transformation chain, which can be used to transform incoming coordinates (in the given source CRS)
      * into this Transformer's targetCRS.
-     *
+     * 
      * @param sourceCRS
      *            in which the coordinates are defined.
      * @return the Transformation chain.
@@ -115,7 +115,7 @@ public abstract class Transformer {
      *             if no transformation chain could be created.
      * @throws IllegalArgumentException
      *             if the given CoordinateSystem is <code>null</code>
-     *
+     * 
      */
     protected Transformation createCRSTransformation( CoordinateSystem sourceCRS )
                             throws TransformationException, IllegalArgumentException {
@@ -130,7 +130,7 @@ public abstract class Transformer {
     /**
      * Creates a transformation chain, which can be used to transform incoming coordinates (in the given source CRS)
      * into this Transformer's targetCRS.
-     *
+     * 
      * @param sourceCRS
      *            in which the coordinates are defined.
      * @return the Transformation chain.
@@ -140,7 +140,7 @@ public abstract class Transformer {
      *             if the given CoordinateSystem is <code>null</code>
      * @throws UnknownCRSException
      *             if the given crs name could not be mapped to a valid (configured) crs.
-     *
+     * 
      */
     protected Transformation createCRSTransformation( String sourceCRS )
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
@@ -149,9 +149,7 @@ public abstract class Transformer {
                                                                      "createCRSTransformation( CoordinateSystem )",
                                                                      "sourceCRS" ) );
         }
-        TransformationFactory factory = TransformationFactory.getInstance();
-        return factory.createFromCoordinateSystems( CRSRegistry.lookup( sourceCRS ),
-                                                    targetCRS );
+        return CRSRegistry.getTransformation( null, CRSRegistry.lookup( sourceCRS ), targetCRS );
     }
 
     /**
@@ -165,7 +163,7 @@ public abstract class Transformer {
      * Simple method to check for the CRS transformation to use. If the Transformer was initialized with a
      * {@link Transformation} this will be used (if the sourceCRS fits). If it does not fit or no transformation was
      * given, a new Transformation will be created using the {@link TransformationFactory}
-     *
+     * 
      * @param sourceCRS
      * @return the transformation needed to convert from given source to the constructed target crs.
      * @throws TransformationException
@@ -173,10 +171,9 @@ public abstract class Transformer {
     private synchronized Transformation checkOrCreateTransformation( CoordinateSystem sourceCRS )
                             throws TransformationException {
         if ( definedTransformation == null
-             || ! ( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
+             || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
                                                                                                                             targetCRS ) ) ) {
-            definedTransformation = TransformationFactory.getInstance().createFromCoordinateSystems( sourceCRS,
-                                                                                                     targetCRS );
+            definedTransformation = CRSRegistry.getTransformation( null, sourceCRS, targetCRS );
         }
         return definedTransformation;
     }
