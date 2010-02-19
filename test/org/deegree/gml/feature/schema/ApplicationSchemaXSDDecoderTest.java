@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
@@ -44,6 +46,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * Tests that check the extraction of {@link FeatureType}s from GML application schemas.
@@ -54,6 +57,7 @@ import org.junit.Test;
  * @version $Revision: $, $Date: $
  */
 public class ApplicationSchemaXSDDecoderTest {
+    private static final Logger LOG = getLogger( ApplicationSchemaXSDDecoderTest.class );
 
     @Test
     public void testParsingPhilosopher()
@@ -74,13 +78,14 @@ public class ApplicationSchemaXSDDecoderTest {
 
         String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
         String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
-        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL, schemaURL2 );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL,
+                                                                               schemaURL2 );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
-        System.out.println (fts [0].getName());
+        LOG.debug( "" + fts[0].getName() );
         Assert.assertEquals( 5, fts.length );
         // TODO do more thorough testing
     }
-    
+
     @Test
     public void testParsingCityGML()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
@@ -118,9 +123,9 @@ public class ApplicationSchemaXSDDecoderTest {
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
         for ( FeatureType ft : fts ) {
-            System.out.println( "\nFt: " + ft.getName() );
+            LOG.debug( "\nFt: " + ft.getName() );
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                System.out.println( pt );
+                LOG.debug( "" + pt );
             }
         }
     }
@@ -134,7 +139,7 @@ public class ApplicationSchemaXSDDecoderTest {
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( int i = 0; i < fts.length; i++ ) {
-            System.out.println( fts[i] );
+            LOG.debug( "" + fts[i] );
         }
 
         // TODO do more thorough testing
@@ -162,7 +167,7 @@ public class ApplicationSchemaXSDDecoderTest {
                                                                             new QName(
                                                                                        "http://www.xplanung.de/xplangml",
                                                                                        "BP_Plan" ) );
-        System.out.println( ft );
+        LOG.debug( "" + ft );
         // TODO do more thorough testing
     }
 }
