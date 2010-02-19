@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
 import static java.lang.Double.parseDouble;
@@ -47,17 +47,17 @@ import java.util.StringTokenizer;
 /**
  * This is a collection of some methods that work with arrays and lists, like join or removeAll. It is complementary to
  * the StringTools.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class ArrayUtils {
     /**
      * Removes all occurrences of token in array
-     *
+     * 
      * @param array
      * @param token
      *            the obj to remove
@@ -76,7 +76,7 @@ public class ArrayUtils {
 
     /**
      * Joins a list of strings with given delimiter.
-     *
+     * 
      * @param delimiter
      *            the delimiter to put between every string.
      * @param strings
@@ -90,7 +90,7 @@ public class ArrayUtils {
 
     /**
      * Joins a list of objects with given delimiter.
-     *
+     * 
      * @param delimiter
      *            the delimiter to put between every string.
      * @param objects
@@ -104,7 +104,7 @@ public class ArrayUtils {
 
     /**
      * Joins a collection of objects with given delimiter.
-     *
+     * 
      * @param delimiter
      *            the delimiter to put between every string.
      * @param objects
@@ -123,7 +123,7 @@ public class ArrayUtils {
 
     /**
      * Joins a list of <code>int</code>s.
-     *
+     * 
      * @param delimiter
      * @param values
      * @return the joined string
@@ -141,7 +141,7 @@ public class ArrayUtils {
 
     /**
      * Joins a list of <code>double</code>s.
-     *
+     * 
      * @param delimiter
      * @param values
      * @return the joined string
@@ -158,30 +158,49 @@ public class ArrayUtils {
     }
 
     /**
-     * Checks if the array contains the string <code>value</code>. This method is case insensitive.
-     *
+     * Checks if the array contains the string <code>value</code>.
+     * 
      * @param target
      *            array to check if it contains <code>value</code>
      * @param value
      *            string to check if it within the array
-     * @return true if passed arrya contains value
+     * @param caseSensitive
+     *            true if the search should be case sensitive
+     * @param exact
+     *            if the equals test should return true if one of the target strings contains a part of the value.
+     * @return true if passed array contains value
      */
-    public static boolean contains( String[] target, String value ) {
-        if ( target == null || value == null ) {
-            return false;
-        }
-        for ( String part : target ) {
-            if ( value.equalsIgnoreCase( part ) ) {
-                return true;
+    public static boolean contains( String[] target, String value, boolean caseSensitive, boolean exact ) {
+        if ( target != null && target.length > 0 && value != null ) {
+            String testVal = caseSensitive ? value : value.toLowerCase();
+            for ( String id : target ) {
+                if ( id != null ) {
+                    String idVal = caseSensitive ? id : id.toLowerCase();
+                    if ( exact ? idVal.equals( testVal ) : idVal.contains( testVal ) ) {
+                        return true;
+                    }
+                }
             }
         }
-
         return false;
     }
 
     /**
+     * Checks if the array contains the string <code>value</code>. This method is case insensitive.
+     * 
+     * @param target
+     *            array to check if it contains <code>value</code>
+     * @param value
+     *            string to check if it within the array
+     * @return true if passed array contains value
+     */
+    public static boolean contains( String[] target, String value ) {
+        return contains( target, value, false, true );
+    }
+
+    /**
      * parse a string and return its tokens as array
-     *
+     * 
      * @param s
      *            string to parse
      * @param delimiter
@@ -220,7 +239,7 @@ public class ArrayUtils {
 
     /**
      * parse a string and return its tokens as typed List. empty fields will be removed from the list.
-     *
+     * 
      * @param s
      *            string to parse
      * @param delimiter
@@ -255,7 +274,7 @@ public class ArrayUtils {
 
     /**
      * deletes all double entries from the submitted array
-     *
+     * 
      * @param s
      *            to remove the doubles from
      * @return The string array without all doubled values
