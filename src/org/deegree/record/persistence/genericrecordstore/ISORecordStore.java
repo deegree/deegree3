@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -91,6 +91,7 @@ import org.deegree.record.publication.RecordProperty;
 import org.deegree.record.publication.TransactionOperation;
 import org.deegree.record.publication.TransactionOptions;
 import org.deegree.record.publication.UpdateTransaction;
+import org.slf4j.Logger;
 
 /**
  * {@link RecordStore} implementation of Dublin Core and ISO Profile.
@@ -101,6 +102,8 @@ import org.deegree.record.publication.UpdateTransaction;
  * @version $Revision: $, $Date: $
  */
 public class ISORecordStore implements RecordStore {
+
+    private static final Logger LOG = getLogger( ISORecordStore.class );
 
     private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
@@ -175,13 +178,13 @@ public class ISORecordStore implements RecordStore {
             readXMLFragment( isr, writer );
         } catch ( MalformedURLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( IOException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( Exception e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -257,7 +260,7 @@ public class ISORecordStore implements RecordStore {
         case hits:
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
-                               formatTypeInISORecordStore.get( constraint.getSetOfReturnableElements()),
+                               formatTypeInISORecordStore.get( constraint.getSetOfReturnableElements() ),
                                ResultType.hits );
             break;
 
@@ -301,7 +304,7 @@ public class ISORecordStore implements RecordStore {
 
             while ( rs.next() ) {
                 countRows = rs.getInt( 1 );
-                System.out.println( rs.getInt( 1 ) );
+                LOG.debug( "rs: " + rs.getInt( 1 ) );
             }
 
             if ( resultType.equals( ResultType.hits ) ) {
@@ -523,7 +526,7 @@ public class ISORecordStore implements RecordStore {
             s.append( " LIMIT " + propertyAttributes.getMaxRecords() );
         }
 
-        System.out.println( s );
+        LOG.debug( "rs: " + s );
         return s;
     }
 
@@ -634,7 +637,7 @@ public class ISORecordStore implements RecordStore {
                     successfullTransaction++;
                 } catch ( IOException e ) {
 
-                    e.printStackTrace();
+                    LOG.debug( "error: " + e.getMessage(), e );
                 }
 
             }
@@ -664,7 +667,7 @@ public class ISORecordStore implements RecordStore {
                     successfullTransaction++;
                 } catch ( IOException e ) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.debug( "error: " + e.getMessage(), e );
                 }
             } else {
                 try {
@@ -695,87 +698,90 @@ public class ISORecordStore implements RecordStore {
 
                     }
                     rsUpdatableDatasets.close();
-                    if(deletableDatasets.size() == 0){
-//                        String msg = "No matching found between backend and " + recProp.getPropertyName();
-//                        throw new IllegalArgumentException( msg );
-                    }else{
-                    for ( int i : deletableDatasets ) {
-                        String stri = "SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
-                                      + ".data FROM " + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
-                                      + " WHERE " + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
-                                      + ".format = 2 AND "
-                                      + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + "."
-                                      + mappings.commonForeignkey + " = " + i;
-                        ResultSet rsGetStoredFullRecordXML = conn.createStatement().executeQuery( stri.toString() );
+                    if ( deletableDatasets.size() == 0 ) {
+                        // String msg = "No matching found between backend and " + recProp.getPropertyName();
+                        // throw new IllegalArgumentException( msg );
+                    } else {
+                        for ( int i : deletableDatasets ) {
+                            String stri = "SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
+                                          + ".data FROM "
+                                          + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + " WHERE "
+                                          + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
+                                          + ".format = 2 AND "
+                                          + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + "."
+                                          + mappings.commonForeignkey + " = " + i;
+                            ResultSet rsGetStoredFullRecordXML = conn.createStatement().executeQuery( stri.toString() );
 
-                        while ( rsGetStoredFullRecordXML.next() ) {
-                            for ( RecordProperty recProp : upd.getRecordProperty() ) {
-                                ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
-                                ExpressionFilterObject recordPropertyName;
-                                ExpressionFilterObject recordPropertyValue;
-                                recordPropertyName = filterHandle.expressionFilterHandling(
-                                                                                            org.deegree.filter.Expression.Type.PROPERTY_NAME,
-                                                                                            recProp.getPropertyName() );
-                                recordPropertyValue = filterHandle.expressionFilterHandling(
-                                                                                             org.deegree.filter.Expression.Type.LITERAL,
-                                                                                             recProp.getReplacementValue() );
-                                if ( recordPropertyName.isMatching() == true ) {
+                            while ( rsGetStoredFullRecordXML.next() ) {
+                                for ( RecordProperty recProp : upd.getRecordProperty() ) {
+                                    ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
+                                    ExpressionFilterObject recordPropertyName;
+                                    ExpressionFilterObject recordPropertyValue;
+                                    recordPropertyName = filterHandle.expressionFilterHandling(
+                                                                                                org.deegree.filter.Expression.Type.PROPERTY_NAME,
+                                                                                                recProp.getPropertyName() );
+                                    recordPropertyValue = filterHandle.expressionFilterHandling(
+                                                                                                 org.deegree.filter.Expression.Type.LITERAL,
+                                                                                                 recProp.getReplacementValue() );
+                                    if ( recordPropertyName.isMatching() == true ) {
 
-                                    // not important. There is just one name possible
-                                    for ( String column : recordPropertyName.getColumn() ) {
+                                        // not important. There is just one name possible
+                                        for ( String column : recordPropertyName.getColumn() ) {
 
-                                        // creating an OMElement readed from the backend byteData
-                                        InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
-                                        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                                                      in );
-                                        StAXOMBuilder builder = new StAXOMBuilder( reader );
-                                        OMDocument doc = builder.getDocument();
-                                        OMElement elementBuiltFromDB = doc.getOMDocumentElement();
+                                            // creating an OMElement readed from the backend byteData
+                                            InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
+                                            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
+                                                                                                                          in );
+                                            StAXOMBuilder builder = new StAXOMBuilder( reader );
+                                            OMDocument doc = builder.getDocument();
+                                            OMElement elementBuiltFromDB = doc.getOMDocumentElement();
 
-                                        OMElement omElement = recursiveElementKnotUpdate(
-                                                                                          elementBuiltFromDB,
-                                                                                          elementBuiltFromDB.getChildElements(),
-                                                                                          column,
-                                                                                          recordPropertyValue.getExpression() );
+                                            OMElement omElement = recursiveElementKnotUpdate(
+                                                                                              elementBuiltFromDB,
+                                                                                              elementBuiltFromDB.getChildElements(),
+                                                                                              column,
+                                                                                              recordPropertyValue.getExpression() );
 
-                                        try {
-                                            QName localName = omElement.getQName();
+                                            try {
+                                                QName localName = omElement.getQName();
 
-                                            ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
-                                            if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
-                                                                              CSWConstants.CSW_PREFIX ) )
-                                                 || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
+                                                ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
+                                                if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
+                                                                                  CSWConstants.CSW_PREFIX ) )
+                                                     || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
+                                                                                     "" ) ) ) {
 
-                                                elementParsing.parseAPDC();
+                                                    elementParsing.parseAPDC();
 
-                                            } else {
-                                                elementParsing.parseAPISO( options.isInspire() );
+                                                } else {
+                                                    elementParsing.parseAPISO( options.isInspire() );
 
+                                                }
+                                                elementParsing.executeUpdateStatement();
+                                                successfullTransaction++;
+                                            } catch ( IOException e ) {
+                                                // TODO Auto-generated catch block
+                                                LOG.debug( "error: " + e.getMessage(), e );
                                             }
-                                            elementParsing.executeUpdateStatement();
-                                            successfullTransaction++;
-                                        } catch ( IOException e ) {
-                                            // TODO Auto-generated catch block
-                                            e.printStackTrace();
+
                                         }
 
+                                    } else {
+
+                                        String msg = "No matching found between backend and "
+                                                     + recProp.getPropertyName();
+                                        throw new IllegalArgumentException( msg );
                                     }
-
-                                } else {
-
-                                    String msg = "No matching found between backend and " + recProp.getPropertyName();
-                                    throw new IllegalArgumentException( msg );
                                 }
                             }
-                        }
-                        rsGetStoredFullRecordXML.close();
+                            rsGetStoredFullRecordXML.close();
 
+                        }
                     }
-                    }
-                   
+
                 } catch ( IOException e ) {
 
-                    e.printStackTrace();
+                    LOG.debug( "error: " + e.getMessage(), e );
                 }
             }
 
@@ -805,7 +811,7 @@ public class ISORecordStore implements RecordStore {
                                                formatNumber );
             } catch ( IOException e ) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.debug( "error: " + e.getMessage(), e );
             }
 
             ResultSet rsDeletableDatasets = conn.createStatement().executeQuery( str.toString() );
@@ -854,9 +860,9 @@ public class ISORecordStore implements RecordStore {
             OMElement u = null;
             while ( it.hasNext() ) {
                 u = (OMElement) it.next();
-                System.out.println( u.toString() );
+                LOG.debug( u.toString() );
                 u.getFirstElement().setText( newContent.substring( 1, newContent.length() - 1 ) );
-                System.out.println( u.toString() );
+                LOG.debug( u.toString() );
             }
             return element;
 
@@ -917,7 +923,7 @@ public class ISORecordStore implements RecordStore {
                                        + mappings.commonForeignkey + " = ds.id AND i." + mappings.commonForeignkey
                                        + " = ds.id AND i.identifier = '" + identifier + "' AND rs.format = "
                                        + profileFormatNumberOutputSchema + ";";
-                System.out.println( selectSummary );
+                LOG.debug( selectSummary );
                 rs = conn.createStatement().executeQuery( selectSummary );
                 break;
             case full:
@@ -940,13 +946,13 @@ public class ISORecordStore implements RecordStore {
         // doResultsOnGetRecord(writer, null, profileFormatNumberOutputSchema, null, connection);
         // } catch ( SQLException e ) {
         // // TODO Auto-generated catch block
-        // e.printStackTrace();
+        // LOG.debug( "error: " + e.getMessage(), e );
         // } catch ( XMLStreamException e ) {
         // // TODO Auto-generated catch block
-        // e.printStackTrace();
+        // LOG.debug( "error: " + e.getMessage(), e );
         // } catch ( IOException e ) {
         // // TODO Auto-generated catch block
-        // e.printStackTrace();
+        // LOG.debug( "error: " + e.getMessage(), e );
         // }
 
     }
@@ -1024,7 +1030,7 @@ public class ISORecordStore implements RecordStore {
 
             s.append( " AND " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "." + "id" + " = "
                       + i );
-            System.out.println( s );
+            LOG.debug( "rs: " + s );
 
             ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
 
@@ -1057,7 +1063,7 @@ public class ISORecordStore implements RecordStore {
                 isr = new InputStreamReader( bais, charset );
             } catch ( Exception e ) {
 
-                e.printStackTrace();
+                LOG.debug( "error: " + e.getMessage(), e );
             }
 
             readXMLFragment( isr, writer );
@@ -1096,26 +1102,28 @@ public class ISORecordStore implements RecordStore {
             xmlReader.close();
 
         } catch ( XMLStreamException e ) {
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( FactoryConfigurationError e ) {
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
         // catch ( FileNotFoundException e ) {
         // // TODO Auto-generated catch block
-        // e.printStackTrace();
+        // LOG.debug( "error: " + e.getMessage(), e );
         // } catch ( IOException e ) {
         // // TODO Auto-generated catch block
-        // e.printStackTrace();
+        // LOG.debug( "error: " + e.getMessage(), e );
         // }
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.record.persistence.RecordStore#getTransactionIds()
      */
     @Override
     public List<Integer> getTransactionIds() {
-        
+
         return insertedIds;
     }
 

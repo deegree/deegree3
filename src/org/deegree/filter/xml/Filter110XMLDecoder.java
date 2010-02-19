@@ -729,9 +729,9 @@ public class Filter110XMLDecoder {
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        // this is a deegree extension over Filter 1.1.0 spec.            
-        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );                
-        
+        // this is a deegree extension over Filter 1.1.0 spec.
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+
         xmlStream.nextTag();
         Expression expression = parseExpression( xmlStream );
 
@@ -754,9 +754,9 @@ public class Filter110XMLDecoder {
     private static PropertyIsLike parsePropertyIsLikeOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        // this is a deegree extension over Filter 1.1.0 spec.            
-        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );        
-        
+        // this is a deegree extension over Filter 1.1.0 spec.
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+
         String wildCard = getRequiredAttributeValue( xmlStream, "wildCard" );
         String singleChar = getRequiredAttributeValue( xmlStream, "singleChar" );
         String escapeChar = getRequiredAttributeValue( xmlStream, "escapeChar" );
@@ -923,7 +923,7 @@ public class Filter110XMLDecoder {
                 // third parameter: 'ogc:Distance'
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
-                
+
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
                 // In Filter 1.1.0 (with distinction to 1.0.0) the <Distance> element DOES NOT contain text
                 // and the value is in the "units" attribute. The UOM is taken from the enclosing CRS.
@@ -987,8 +987,11 @@ public class Filter110XMLDecoder {
         List<String> names = new LinkedList<String>();
         for ( Enum<?> e : enumClass.getEnumConstants() ) {
             QName qname = map.get( e );
-            System.out.println( e );
-            names.add( qname.toString() );
+            if ( qname != null ) {
+                LOG.debug( qname.toString() );
+                names.add( qname.toString() );
+            }
+
         }
         return ArrayUtils.join( ", ", names );
     }

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.sqltransform.postgres;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -57,6 +59,7 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.io.WKTWriter.WKTFlag;
+import org.slf4j.Logger;
 
 /**
  * Transforms the spatial query into a PostGIS SQL statement. It encapsules the required methods.
@@ -70,9 +73,9 @@ import org.deegree.geometry.io.WKTWriter.WKTFlag;
  */
 public class SpatialOperatorTransformingPostGIS {
 
-    private ExpressionFilterHandling expressionFilterHandling = new ExpressionFilterHandling();
+    private static final Logger LOG = getLogger( SpatialOperatorTransformingPostGIS.class );
 
-    private ExpressionFilterObject expressObject;
+    private ExpressionFilterHandling expressionFilterHandling = new ExpressionFilterHandling();
 
     private int counter;
 
@@ -208,7 +211,7 @@ public class SpatialOperatorTransformingPostGIS {
             }
 
             operatorBuild( "CONTAINS", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -230,7 +233,7 @@ public class SpatialOperatorTransformingPostGIS {
             }
 
             operatorBuild( "CROSSES", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -247,13 +250,13 @@ public class SpatialOperatorTransformingPostGIS {
 
                 } else {
                     wktWriter.writeGeometry( disjointOp.getGeometry(), writerGeometry );
-                    
+
                 }
 
             }
 
             operatorBuild( "DISJOINT", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -274,7 +277,7 @@ public class SpatialOperatorTransformingPostGIS {
                 } else {
                     counter++;
                     wktWriter.writeGeometry( dWithinOp.getGeometry(), writerGeometry );
-                    
+
                     writerSpatial.append( '\'' );
                     writerSpatial.append( writerGeometry.toString() );
                     writerSpatial.append( '\'' );
@@ -287,7 +290,7 @@ public class SpatialOperatorTransformingPostGIS {
             }
 
             operatorBuild( "DWITHIN", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -310,7 +313,7 @@ public class SpatialOperatorTransformingPostGIS {
             }
 
             operatorBuild( "EQUALS", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -332,7 +335,7 @@ public class SpatialOperatorTransformingPostGIS {
             }
 
             operatorBuild( "INTERSECTS", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -354,7 +357,7 @@ public class SpatialOperatorTransformingPostGIS {
             }
 
             operatorBuild( "OVERLAPS", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -376,7 +379,7 @@ public class SpatialOperatorTransformingPostGIS {
             }
 
             operatorBuild( "TOUCHES", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -398,7 +401,7 @@ public class SpatialOperatorTransformingPostGIS {
             }
 
             operatorBuild( "WITHIN", writerGeometry, writerSpatial );
-            System.out.println( writerSpatial.toString() );
+            LOG.debug( writerSpatial.toString() );
             // return writerSpatial.toString();
             break;
 
@@ -436,17 +439,16 @@ public class SpatialOperatorTransformingPostGIS {
 
         stringSpatialPropertyName += "GeomFromText(AsText(";
 
-        expressObject = expressionFilterHandling.expressionFilterHandling(
-                                                                           ( (PropertyName) opParam ).getType(),
-                                                                           new PropertyName(
-                                                                                             exp,
-                                                                                             ( (PropertyName) opParam ).getNsContext() ) );
+        ExpressionFilterObject expressObject = expressionFilterHandling.expressionFilterHandling(
+                                                                                                  ( (PropertyName) opParam ).getType(),
+                                                                                                  new PropertyName(
+                                                                                                                    exp,
+                                                                                                                    ( (PropertyName) opParam ).getNsContext() ) );
 
         stringSpatialPropertyName += expressObject.getExpression();
         table.addAll( expressObject.getTable() );
         column.addAll( expressObject.getColumn() );
         stringSpatialPropertyName += "))";
-        
 
     }
 

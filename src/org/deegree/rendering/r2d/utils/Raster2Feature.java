@@ -63,11 +63,12 @@ public class Raster2Feature {
 
     public static GenericSimpleFeature transformToFeature( AbstractRaster raster ) {
         GenericSimpleFeature feature = new GenericSimpleFeature();
-        feature.setPropertyValue( new QName( "outlinePolygon" ), createPolygonGeometry( raster ));
+        feature.setPropertyValue( new QName( "outlinePolygon" ), createPolygonGeometry( raster ) );
         return feature;
     }
 
-    /** Return the bounding geometry of a raster as a polygon (but is actually a rectangle). 
+    /**
+     * Return the bounding geometry of a raster as a polygon (but is actually a rectangle).
      * 
      * @param raster
      * @return bounding polygon
@@ -81,12 +82,12 @@ public class Raster2Feature {
         Point pmax = env.getMax();
         Point p1 = fac.createPoint( null, pmin.get0(), pmin.get1(), crs );
         Point p3 = fac.createPoint( null, pmax.get0(), pmax.get1(), crs );
-        
+
         Point p2 = fac.createPoint( null, p1.get0(), p3.get1(), crs );
         Point p4 = fac.createPoint( null, p3.get0(), p1.get1(), crs );
         Point p5 = fac.createPoint( null, p1.get0(), p1.get1(), crs );
-        Point[] points = {p1, p2, p3, p4, p5};
-        System.out.println(asList(points));
+        Point[] points = { p1, p2, p3, p4, p5 };
+        // (asList(points));
         LinearRing ring = fac.createLinearRing( null, crs, new PointsList( asList( points ) ) );
         Polygon poly = fac.createPolygon( null, crs, ring, null );
         return poly;

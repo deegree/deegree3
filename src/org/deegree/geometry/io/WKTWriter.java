@@ -106,7 +106,7 @@ import org.slf4j.Logger;
 /**
  * Writes {@link Geometry} objects as Well-Known Text (WKT).
  * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a> 
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
@@ -644,9 +644,6 @@ public class WKTWriter {
                                                    c.getControlPoints() );
             writeLineString( ls, writer );
         }
-
-        System.out.println( writer.toString() );
-
     }
 
     /**
@@ -662,18 +659,16 @@ public class WKTWriter {
 
         if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
             throw new UnsupportedOperationException( "Handling curves within 'SQL-MM Part 3' is not implemented yet." );
-        } else {
-            CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
-            LinearizationCriterion crit = new NumPointsCriterion( linearizedControlPoints );
-            Curve c = cl.linearize( geometry, crit );
-
-            LineString ls = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
-                                                   c.getControlPoints() );
-            writer.append( '(' );
-            writeLineStringWithoutPrefix( ls, writer );
-            writer.append( ')' );
         }
+        CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
+        LinearizationCriterion crit = new NumPointsCriterion( linearizedControlPoints );
+        Curve c = cl.linearize( geometry, crit );
 
+        LineString ls = new DefaultLineString( c.getId(), c.getCoordinateSystem(), c.getPrecision(),
+                                               c.getControlPoints() );
+        writer.append( '(' );
+        writeLineStringWithoutPrefix( ls, writer );
+        writer.append( ')' );
     }
 
     /**

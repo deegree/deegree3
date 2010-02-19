@@ -58,8 +58,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>WPVSClient</code> class supports the functionality of sending requests to the Web Perspective View
- * Service (WPVS).
+ * The <code>WPVSClient</code> class supports the functionality of sending requests to the Web Perspective View Service
+ * (WPVS).
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: ionita $
@@ -117,7 +117,7 @@ public class WPVSClient {
                 String name = capabilities.getNodeAsString( node, xpName, null );
                 if ( name != null ) {
                     res.add( name );
-                    System.out.println( "dataset found in GetCapabilities: " + name );
+                    LOG.info( "dataset found in GetCapabilities: " + name );
                 }
             } else
                 LOG.warn( "Found an empty dataset!" );

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -67,6 +69,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.crs.CRS;
 import org.deegree.protocol.csw.CSWConstants;
+import org.slf4j.Logger;
 
 /**
  * The parsing for the ISO application profile.
@@ -77,6 +80,8 @@ import org.deegree.protocol.csw.CSWConstants;
  * @version $Revision: $, $Date: $
  */
 public class ISOQPParsing extends XMLAdapter {
+
+    private static final Logger LOG = getLogger( ISOQPParsing.class );
 
     private NamespaceContext nsContext = new NamespaceContext( XMLAdapter.nsContext );
 
@@ -183,7 +188,7 @@ public class ISOQPParsing extends XMLAdapter {
         try {
             elem.serialize( s );
         } catch ( XMLStreamException e ) {
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
         StringReader reader = new StringReader( s.toString() );
         if ( elem.getLocalName().equals( "MD_Metadata" ) ) {
@@ -338,7 +343,7 @@ public class ISOQPParsing extends XMLAdapter {
             date = new Date( dateString );
         } catch ( ParseException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
         qp.setModified( date );
@@ -598,7 +603,7 @@ public class ISOQPParsing extends XMLAdapter {
                             throws IOException {
 
         for ( String error : validate( rootElement ) ) {
-            System.out.println( "VALIDATION-ERROR: " + error );
+            LOG.debug( "VALIDATION-ERROR: " + error );
         }
 
         List<Keyword> keywordList = new ArrayList<Keyword>();
@@ -634,7 +639,7 @@ public class ISOQPParsing extends XMLAdapter {
             modified = new Date( getNodeAsString( rootElement, new XPath( "./dct:modified", nsContext ), null ) );
         } catch ( ParseException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
         qp.setModified( modified );
 
@@ -695,7 +700,7 @@ public class ISOQPParsing extends XMLAdapter {
             boolean isUpdate = false;
             String s = "SELECT i.identifier FROM qp_identifier AS i WHERE i.identifier = '" + qp.getIdentifier() + "';";
             ResultSet r = stm.executeQuery( s );
-            System.out.println( s );
+            LOG.debug( s );
             if ( r.next() ) {
                 stm.close();
                 throw new IOException( "Record with identifier '" + qp.getIdentifier() + "' already exists!" );
@@ -712,7 +717,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -734,14 +739,14 @@ public class ISOQPParsing extends XMLAdapter {
             sqlStatementUpdate.append( "SELECT " + databaseTable + ".id from " + databaseTable + "," + qp_identifier
                                        + " where " + databaseTable + ".id = " + qp_identifier + ".fk_datasets AND "
                                        + qp_identifier + ".identifier = '" + qp.getIdentifier() + "'" );
-            System.out.println( sqlStatementUpdate.toString() );
+            LOG.debug( sqlStatementUpdate.toString() );
             buf = sqlStatementUpdate.getBuffer();
             ResultSet rs = connection.createStatement().executeQuery( sqlStatementUpdate.toString() );
 
             if ( rs != null ) {
                 while ( rs.next() ) {
                     requestedId = rs.getInt( 1 );
-                    System.out.println( rs.getInt( 1 ) );
+                    LOG.debug( "resultSet: " + rs.getInt( 1 ) );
                 }
                 buf.setLength( 0 );
                 rs.close();
@@ -765,7 +770,7 @@ public class ISOQPParsing extends XMLAdapter {
                                               + "' WHERE id = " + requestedId );
 
                     buf = sqlStatementUpdate.getBuffer();
-                    System.out.println( sqlStatementUpdate.toString() );
+                    LOG.debug( sqlStatementUpdate.toString() );
                     stm.executeUpdate( sqlStatementUpdate.toString() );
                     buf.setLength( 0 );
 
@@ -776,7 +781,7 @@ public class ISOQPParsing extends XMLAdapter {
                     sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET modified = " + modifiedAttribute
                                               + " WHERE id = " + requestedId );
                     buf = sqlStatementUpdate.getBuffer();
-                    System.out.println( sqlStatementUpdate.toString() );
+                    LOG.debug( sqlStatementUpdate.toString() );
                     stm.executeUpdate( sqlStatementUpdate.toString() );
                     buf.setLength( 0 );
                 }
@@ -786,7 +791,7 @@ public class ISOQPParsing extends XMLAdapter {
                                               + qp.isHasSecurityConstraints() + "' WHERE id = " + requestedId );
 
                     buf = sqlStatementUpdate.getBuffer();
-                    System.out.println( sqlStatementUpdate.toString() );
+                    LOG.debug( sqlStatementUpdate.toString() );
                     stm.executeUpdate( sqlStatementUpdate.toString() );
                     buf.setLength( 0 );
                 }
@@ -797,7 +802,7 @@ public class ISOQPParsing extends XMLAdapter {
                                               + "' WHERE id = " + requestedId );
 
                     buf = sqlStatementUpdate.getBuffer();
-                    System.out.println( sqlStatementUpdate.toString() );
+                    LOG.debug( sqlStatementUpdate.toString() );
                     stm.executeUpdate( sqlStatementUpdate.toString() );
                     buf.setLength( 0 );
                 }
@@ -807,7 +812,7 @@ public class ISOQPParsing extends XMLAdapter {
                                               + qp.getParentIdentifier() + "' WHERE id = " + requestedId );
 
                     buf = sqlStatementUpdate.getBuffer();
-                    System.out.println( sqlStatementUpdate.toString() );
+                    LOG.debug( sqlStatementUpdate.toString() );
                     stm.executeUpdate( sqlStatementUpdate.toString() );
                     buf.setLength( 0 );
                 }
@@ -829,13 +834,13 @@ public class ISOQPParsing extends XMLAdapter {
             stm.close();
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( IOException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( ParseException e ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
     }
 
@@ -913,7 +918,7 @@ public class ISOQPParsing extends XMLAdapter {
             }
         } catch ( ParseException e ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
         if ( qp.getOperatesOnData() != null || qp.getOperatesOnData().size() != 0 ) {
             generateISOQP_OperatesOnStatement( isUpdate );
@@ -958,15 +963,15 @@ public class ISOQPParsing extends XMLAdapter {
                             + this.id + ",null,null,'" + generateISOQP_AnyTextStatement( isCaseSensitive ) + "',"
                             + modifiedAttribute + "," + qp.isHasSecurityConstraints() + ",'" + rp.getLanguage() + "','"
                             + qp.getParentIdentifier() + "',null, null);";
-            System.out.println( sqlStatement );
+            LOG.debug( sqlStatement );
             stm.executeUpdate( sqlStatement );
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( ParseException e ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1023,10 +1028,10 @@ public class ISOQPParsing extends XMLAdapter {
 
             } catch ( SQLException e ) {
 
-                e.printStackTrace();
+                LOG.debug( "error: " + e.getMessage(), e );
             } catch ( ParseException e ) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.debug( "error: " + e.getMessage(), e );
             }
         }
 
@@ -1065,7 +1070,7 @@ public class ISOQPParsing extends XMLAdapter {
 
             } catch ( SQLException e ) {
 
-                e.printStackTrace();
+                LOG.debug( "error: " + e.getMessage(), e );
             }
 
         }
@@ -1115,10 +1120,10 @@ public class ISOQPParsing extends XMLAdapter {
 
             } catch ( SQLException e ) {
 
-                e.printStackTrace();
+                LOG.debug( "error: " + e.getMessage(), e );
             } catch ( ParseException e ) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.debug( "error: " + e.getMessage(), e );
             }
         }
 
@@ -1149,7 +1154,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1320,7 +1325,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1351,16 +1356,16 @@ public class ISOQPParsing extends XMLAdapter {
                 sqlStatement = "INSERT INTO " + databaseTable
                                + " (id, fk_datasets, tempextent_begin, tempextent_end) VALUES (" + id + ","
                                + mainDatabaseTableID + ",'" + tempBeginAttribute + "','" + tempEndAttribute + "');";
-                System.out.println( sqlStatement );
+                LOG.debug( sqlStatement );
                 stm.executeUpdate( sqlStatement );
             }
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( ParseException e ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1392,7 +1397,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1422,7 +1427,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1456,7 +1461,7 @@ public class ISOQPParsing extends XMLAdapter {
             }
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1491,7 +1496,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1521,7 +1526,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1551,7 +1556,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1581,7 +1586,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1611,7 +1616,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1642,15 +1647,15 @@ public class ISOQPParsing extends XMLAdapter {
                 sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, revisiondate) VALUES (" + id + ","
                                + mainDatabaseTableID + "," + revisionDateAttribute + ");";
 
-                System.out.println( sqlStatement );
+                LOG.debug( sqlStatement );
                 stm.executeUpdate( sqlStatement );
             }
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( ParseException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1685,10 +1690,10 @@ public class ISOQPParsing extends XMLAdapter {
             }
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( ParseException e ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1723,10 +1728,10 @@ public class ISOQPParsing extends XMLAdapter {
             }
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         } catch ( ParseException e ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1761,7 +1766,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1793,7 +1798,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1825,7 +1830,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1851,12 +1856,12 @@ public class ISOQPParsing extends XMLAdapter {
             sqlStatement = "INSERT INTO " + databaseTable + " (id, fk_datasets, type) VALUES (" + id + ","
                            + mainDatabaseTableID + ",'" + qp.getType() + "');";
 
-            System.out.println( sqlStatement );
+            LOG.debug( sqlStatement );
             stm.executeUpdate( sqlStatement );
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1894,7 +1899,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1929,7 +1934,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1962,7 +1967,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -1994,7 +1999,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -2032,7 +2037,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -2067,7 +2072,7 @@ public class ISOQPParsing extends XMLAdapter {
 
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
     }
@@ -2169,7 +2174,7 @@ public class ISOQPParsing extends XMLAdapter {
             }
         } catch ( SQLException e ) {
 
-            e.printStackTrace();
+            LOG.debug( "error: " + e.getMessage(), e );
         }
 
         if ( uuidIsEqual == true ) {

@@ -296,10 +296,10 @@ public class Filter100XMLDecoder {
             Operator rootOperator = parseOperator( xmlStream );
             filter = new OperatorFilter( rootOperator );
             xmlStream.nextTag();
-            System.out.println( xmlStream.getLocalName() );
+            LOG.debug( "Local name: " + xmlStream.getLocalName() );
         }
 
-        System.out.println( xmlStream.getLocalName() );
+        LOG.debug( "Local name: " + xmlStream.getLocalName() );
         xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "Filter" );
         return filter;
     }
@@ -635,9 +635,9 @@ public class Filter100XMLDecoder {
 
         BinaryComparisonOperator comparisonOperator = null;
 
-        // this is a deegree extension over Filter 1.0.0 spec.        
-        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );        
-        
+        // this is a deegree extension over Filter 1.0.0 spec.
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+
         StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
         Expression parameter1 = parseExpression( xmlStream );
         StAXParsingHelper.requireNextTag( xmlStream, START_ELEMENT );
@@ -702,9 +702,9 @@ public class Filter100XMLDecoder {
     private static PropertyIsBetween parsePropertyIsBetweenOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        // this is a deegree extension over Filter 1.0.0 spec.        
-        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );        
-        
+        // this is a deegree extension over Filter 1.0.0 spec.
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+
         xmlStream.nextTag();
         Expression expression = parseExpression( xmlStream );
 
@@ -729,8 +729,8 @@ public class Filter100XMLDecoder {
                             throws XMLStreamException {
 
         // this is a deegree extension over Filter 1.0.0
-        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );        
-        
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", true );
+
         String wildCard = getRequiredAttributeValue( xmlStream, "wildCard" );
         String singleChar = getRequiredAttributeValue( xmlStream, "singleChar" );
         String escapeChar = getRequiredAttributeValue( xmlStream, "escape" );
