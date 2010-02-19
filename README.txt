@@ -174,3 +174,15 @@ Used for: org.deegree.core.rendering.r2d
 Responsible: schmitz
 License: Apache License 2.0
 Origin of files: http://xmlgraphics.apache.org/batik/download.cgi
+
+=== JGridShift ===
+Files: jgridshift-1.0_deegree_version.jar
+URL: http://sourceforge.net/projects/jgridshift/
+Version: 1.0
+Description: Used for the NTv2 transformations between different Geographic coordinate systems.
+Used for: org.deegree.crs
+Responsible: bezema
+License: LGPL
+Patched because: failing getters for ellipsoid values. see META-INF/patch for patches to version 1.0.
+Origin of files: http://sourceforge.net/projects/jgridshift/
+
