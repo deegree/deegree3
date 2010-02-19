@@ -345,4 +345,15 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
     public void setSourceCRS( CoordinateSystem newSource ) {
         this.sourceCRS = newSource;
     }
+
+    /**
+     * @param sourceCRS
+     *            from which ordinates will be transformed
+     * @param targetCRS
+     *            to which ordinates will be transformed.
+     * @return true if this transformation can transform from the given source CRS to the target CRS.
+     */
+    public boolean canTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+        return getSourceCRS().equals( sourceCRS ) && getTargetCRS().equals( targetCRS );
+    }
 }
