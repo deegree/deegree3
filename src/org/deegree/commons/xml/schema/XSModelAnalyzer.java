@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
+import static org.w3c.dom.DOMError.SEVERITY_ERROR;
+import static org.w3c.dom.DOMError.SEVERITY_FATAL_ERROR;
+import static org.w3c.dom.DOMError.SEVERITY_WARNING;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +53,7 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSNamespaceItemList;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.slf4j.Logger;
@@ -103,7 +108,7 @@ public class XSModelAnalyzer {
         xmlSchema = loadModel( schemaUrls );
     }
 
-    public XSNamespaceItemList getNamespaces () {
+    public XSNamespaceItemList getNamespaces() {
         return xmlSchema.getNamespaceItems();
     }
 
@@ -217,27 +222,7 @@ public class XSModelAnalyzer {
 
         XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
         DOMConfiguration config = schemaLoader.getConfig();
-
-        // create and register DOMErrorHandler
-        DOMErrorHandler errorHandler = new DOMErrorHandler() {
-            @SuppressWarnings("synthetic-access")
-            public boolean handleError( DOMError domError ) {
-                switch ( domError.getSeverity() ) {
-                case DOMError.SEVERITY_WARNING: {
-                    LOG.debug( "DOM warning: " + domError.getMessage() );
-                    break;
-                }
-                case DOMError.SEVERITY_ERROR:
-                case DOMError.SEVERITY_FATAL_ERROR: {
-                    String msg = "Severe error in schema document (line: " + domError.getLocation().getLineNumber()
-                                 + ", column: " + domError.getLocation().getColumnNumber() + ") "
-                                 + domError.getMessage();
-                    throw new XMLProcessingException( msg );
-                }
-                }
-                return false;
-            }
-        };
+        ErrorHandler errorHandler = new ErrorHandler();
 
         config.setParameter( "error-handler", errorHandler );
         config.setParameter( "validate", Boolean.TRUE );
@@ -259,6 +244,48 @@ public class XSModelAnalyzer {
         // e.printStackTrace();
         // }
 
-        return schemaLoader.loadURIList( new StringListImpl( schemaUrls, schemaUrls.length ) );
+        XSModel model = schemaLoader.loadURIList( new StringListImpl( schemaUrls, schemaUrls.length ) );
+        if ( !errorHandler.getErrors().isEmpty() ) {
+            throw new XMLProcessingException( errorHandler.getErrors().get( 0 ) );
+        }
+        for ( String warning : errorHandler.getWarnings() ) {
+            LOG.debug( warning );
+        }
+        return model;
+    }
+}
+
+class ErrorHandler implements DOMErrorHandler {
+
+    private List<String> warnings = new ArrayList<String>();
+
+    private List<String> errors = new ArrayList<String>();
+
+    List<String> getWarnings() {
+        return warnings;
+    }
+
+    List<String> getErrors() {
+        return errors;
+    }
+
+    public boolean handleError( DOMError domError ) {
+        switch ( domError.getSeverity() ) {
+        case SEVERITY_WARNING: {
+            String msg = "Problem in schema document (systemId: " + domError.getLocation().getUri() + ", line: "
+                         + domError.getLocation().getLineNumber() + ", column: "
+                         + domError.getLocation().getColumnNumber() + ") " + domError.getMessage();
+            warnings.add( msg );
+            break;
+        }
+        case SEVERITY_ERROR:
+        case SEVERITY_FATAL_ERROR: {
+            String msg = "Severe error in schema document (systemId: " + domError.getLocation().getUri() + ", line: "
+                         + domError.getLocation().getLineNumber() + ", column: "
+                         + domError.getLocation().getColumnNumber() + ") " + domError.getMessage();
+            errors.add( msg );
+        }
+        }
+        return true;
     }
 }
