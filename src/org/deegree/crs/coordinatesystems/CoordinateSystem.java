@@ -47,7 +47,7 @@ import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Datum;
 import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
-import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
+import org.deegree.crs.transformations.Transformation;
 
 /**
  * Three kinds of <code>CoordinateSystem</code>s (in this class abbreviated with CRS) are supported in this lib.
@@ -88,7 +88,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     private Datum usedDatum;
 
-    private final List<PolynomialTransformation> transformations;
+    private final List<Transformation> transformations;
 
     /**
      * Defines this CRS as a GeoCentric one.
@@ -143,7 +143,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         super( codes, names, versions, descriptions, areasOfUse );
         this.axisOrder = axisOrder;
         this.usedDatum = datum;
-        this.transformations = new LinkedList<PolynomialTransformation>();
+        this.transformations = new LinkedList<Transformation>();
     }
 
     /**
@@ -154,13 +154,13 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @param axisOrder
      * @param identity
      */
-    public CoordinateSystem( List<PolynomialTransformation> transformations, Datum datum, Axis[] axisOrder,
+    public CoordinateSystem( List<Transformation> transformations, Datum datum, Axis[] axisOrder,
                              CRSIdentifiable identity ) {
         super( identity );
         this.axisOrder = axisOrder;
         this.usedDatum = datum;
         if ( transformations == null ) {
-            transformations = new LinkedList<PolynomialTransformation>();
+            transformations = new LinkedList<Transformation>();
         }
         this.transformations = transformations;
     }
@@ -217,8 +217,8 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         if ( targetCRS == null ) {
             return false;
         }
-        for ( PolynomialTransformation transformation : transformations ) {
-            if ( transformation != null && targetCRS.equals( transformation.getTargetCRS() ) ) {
+        for ( Transformation transformation : transformations ) {
+            if ( transformation != null && transformation.canTransform( this, targetCRS ) ) {
                 return true;
             }
         }
@@ -230,12 +230,12 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      *            to get the alternative transformation for.
      * @return the transformation associated with the given crs, <code>null</code> otherwise.
      */
-    public PolynomialTransformation getDirectTransformation( CoordinateSystem targetCRS ) {
+    public Transformation getDirectTransformation( CoordinateSystem targetCRS ) {
         if ( targetCRS == null ) {
             return null;
         }
-        for ( PolynomialTransformation transformation : transformations ) {
-            if ( transformation.getTargetCRS().equals( targetCRS ) ) {
+        for ( Transformation transformation : transformations ) {
+            if ( transformation.canTransform( this, targetCRS ) ) {
                 return transformation;
             }
         }
@@ -386,7 +386,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     /**
      * @return the polynomial transformations.
      */
-    public final List<PolynomialTransformation> getTransformations() {
+    public final List<Transformation> getTransformations() {
         return transformations;
     }
 
@@ -432,4 +432,5 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         }
         return 1;
     }
+
 }

@@ -42,7 +42,7 @@ import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Axis;
 import org.deegree.crs.projections.Projection;
-import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
+import org.deegree.crs.transformations.Transformation;
 
 /**
  * A <code>ProjectedCRS</code> is a coordinatesystem defined with a projection and a geographic crs. It allows for
@@ -149,7 +149,7 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param identity
      */
-    public ProjectedCRS( List<PolynomialTransformation> transformations, Projection projection, Axis[] axisOrder,
+    public ProjectedCRS( List<Transformation> transformations, Projection projection, Axis[] axisOrder,
                          CRSIdentifiable identity ) {
         super( transformations, projection.getGeographicCRS().getGeodeticDatum(), axisOrder, identity );
         this.underlyingCRS = projection.getGeographicCRS();
@@ -206,7 +206,7 @@ public class ProjectedCRS extends CoordinateSystem {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>

@@ -45,11 +45,10 @@ import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.i18n.Messages;
-import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
+import org.deegree.crs.transformations.Transformation;
 
 /**
- * The <code>GeographicCoordinateSystem</code> (in epsg aka Geodetic CRS) is a two dimensional crs with axis of
- * lat-lon.
+ * The <code>GeographicCoordinateSystem</code> (in epsg aka Geodetic CRS) is a two dimensional crs with axis of lat-lon.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -62,9 +61,9 @@ import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
 public class GeographicCRS extends CoordinateSystem {
 
     /**
-     * A geographic coordinate system using WGS84 datum. This coordinate system use <var>longitude</var>/<var>latitude</var>
-     * axis with latitude values increasing north and longitude values increasing east. Angular units are degrees and
-     * prime meridian is Greenwich.
+     * A geographic coordinate system using WGS84 datum. This coordinate system use
+     * <var>longitude</var>/<var>latitude</var> axis with latitude values increasing north and longitude values
+     * increasing east. Angular units are degrees and prime meridian is Greenwich.
      */
     public static final GeographicCRS WGS84 = new GeographicCRS(
                                                                  GeodeticDatum.WGS84,
@@ -72,12 +71,16 @@ public class GeographicCRS extends CoordinateSystem {
                                                                              new Axis( Unit.DEGREE, "lon", Axis.AO_EAST ),
                                                                              new Axis( Unit.DEGREE, "lat",
                                                                                        Axis.AO_NORTH ) },
-                                                                 new EPSGCode( 4326 ), "WGS 84" );
+                                                                 new CRSCodeType[] {
+                                                                                    new EPSGCode( 4326 ),
+                                                                                    new CRSCodeType(
+                                                                                                     "urn:ogc:def:crs:EPSG::4326" ) },
+                                                                 new String[] { "WGS 84" }, null, null, null );
 
     /**
-     * A geographic coordinate system using WGS84 datum. This coordinate system use <var>longitude</var>/<var>latitude</var>
-     * axis with latitude values increasing north and longitude values increasing east. Angular units are degrees and
-     * prime meridian is Greenwich.
+     * A geographic coordinate system using WGS84 datum. This coordinate system use
+     * <var>longitude</var>/<var>latitude</var> axis with latitude values increasing north and longitude values
+     * increasing east. Angular units are degrees and prime meridian is Greenwich.
      */
     public static final GeographicCRS WGS84_YX = new GeographicCRS( GeodeticDatum.WGS84,
                                                                     new Axis[] {
@@ -155,12 +158,21 @@ public class GeographicCRS extends CoordinateSystem {
     }
 
     /**
+     * @param datum
+     * @param axisOrder
+     * @param code
+     */
+    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code ) {
+        this( datum, axisOrder, new CRSCodeType[] { code }, null, null, null, null );
+    }
+
+    /**
      * @param transformations
      * @param usedDatum
      * @param axisOrder
      * @param id
      */
-    public GeographicCRS( List<PolynomialTransformation> transformations, GeodeticDatum usedDatum, Axis[] axisOrder,
+    public GeographicCRS( List<Transformation> transformations, GeodeticDatum usedDatum, Axis[] axisOrder,
                           CRSIdentifiable id ) {
         super( transformations, usedDatum, axisOrder, id );
         if ( axisOrder.length != 2 ) {

@@ -42,7 +42,7 @@ import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.GeodeticDatum;
-import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
+import org.deegree.crs.transformations.Transformation;
 
 /**
  * A <code>GeocentricCRS</code> is a coordinatesystem having three axis and a mass point defined to be equivalent to
@@ -64,7 +64,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * points North.
      */
     public static final GeocentricCRS WGS84 = new GeocentricCRS( GeodeticDatum.WGS84,
-                                                                 CRSCodeType.valueOf( "GC_WGS84" ), "Geocentric WGS84" );
+                                                                 CRSCodeType.valueOf( "EPSG:4978" ), "Geocentric WGS84" );
 
     /**
      * @param datum
@@ -132,7 +132,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param axisOrder
      * @param identity
      */
-    public GeocentricCRS( List<PolynomialTransformation> transformations, GeodeticDatum usedDatum, Axis[] axisOrder,
+    public GeocentricCRS( List<Transformation> transformations, GeodeticDatum usedDatum, Axis[] axisOrder,
                           CRSIdentifiable identity ) {
         super( transformations, usedDatum, axisOrder, identity );
     }
