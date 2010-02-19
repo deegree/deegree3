@@ -36,31 +36,17 @@
 
 package org.deegree.crs.configuration;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.deegree.crs.CRSCodeType;
-import org.deegree.crs.configuration.deegree.db.CRSRemover;
-import org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider;
 import org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider;
-import org.deegree.crs.configuration.proj4.PROJ4CRSProvider;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.i18n.Messages;
-import org.deegree.crs.projections.Projection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,19 +76,21 @@ public class CRSConfiguration {
 
     private CRSProvider provider;
 
+    private TransformationFactory transformationFactory;
+
     /**
      * 
      */
     public static final Map<String, CRSConfiguration> DEFINED_CONFIGURATIONS = new HashMap<String, CRSConfiguration>();
 
     // Load from XML file
-    private static final String DEFAULT_PROVIDER_CLASS = "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider";
+    private static final String XML_PROVIDER = "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider";
 
     // Load from DB
     // private static final String DEFAULT_PROVIDER_CLASS =
     // "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider";
 
-    private static String CONFIGURED_DEFAULT_PROVIDER_CLASS = DEFAULT_PROVIDER_CLASS;
+    private static String CONFIGURED_DEFAULT_PROVIDER_CLASS = XML_PROVIDER;
 
     private final static String PROVIDER_CONFIG = "crs_providers.properties";
 
@@ -148,6 +136,7 @@ public class CRSConfiguration {
      */
     private CRSConfiguration( CRSProvider provider ) {
         this.provider = provider;
+        this.transformationFactory = new TransformationFactory( provider );
     }
 
     /**
@@ -176,9 +165,9 @@ public class CRSConfiguration {
         }
         CRSProvider provider = null;
 
-        if ( CONFIGURED_DEFAULT_PROVIDER_CLASS.equals( provName )
-             && CONFIGURED_DEFAULT_PROVIDER_CLASS.equals( DEFAULT_PROVIDER_CLASS ) ) {
-            provider = new DeegreeCRSProvider( new Properties( configuredProperties ) );
+        if ( XML_PROVIDER.equals( provName )
+             || ( CONFIGURED_DEFAULT_PROVIDER_CLASS.equals( provName ) && CONFIGURED_DEFAULT_PROVIDER_CLASS.equals( XML_PROVIDER ) ) ) {
+            provider = DeegreeCRSProvider.getInstance( new Properties( configuredProperties ) );
             // provider = new DatabaseCRSProvider( configuredProperties );
         } else {
             try {
@@ -212,8 +201,8 @@ public class CRSConfiguration {
             } finally {
                 if ( provider == null ) {
                     LOG.info( "The configured class: " + provName
-                              + " was not created. Trying to create a deegree-crs-provider" );
-                    provider = new DeegreeCRSProvider( new Properties( configuredProperties ) );
+                              + " was not created. Trying to create an xml based deegree-crs-provider" );
+                    provider = DeegreeCRSProvider.getInstance( new Properties( configuredProperties ) );
                     // provider = new DatabaseCRSProvider( configuredProperties );
                 }
             }
@@ -253,204 +242,17 @@ public class CRSConfiguration {
     }
 
     /**
-     * Export the CoordinateSystems from a given Input format to a given Output format and place the result into an
-     * output File. If the input format is Proj4, an input File will be provided. If the -verify option is provided,
-     * then the program will check whether there is an Input-CRS that is not found in an Output-CRS. If this is so, all
-     * Input CRS's will be exported to the Output format.
-     * 
-     * @param args
-     * @throws Exception
-     */
-    public static void main( String[] args )
-                            throws Exception {
-        if ( args.length == 0 ) {
-            outputHelp();
-        }
-        boolean remove = false;
-        // organize the command-line arguments in the params map ( argument -> value that comes next in the list )
-        Map<String, String> params = new HashMap<String, String>( 5 );
-        for ( int i = 0; i < args.length; i++ ) {
-            String arg = args[i];
-            if ( arg != null && !"".equals( arg.trim() ) ) {
-                arg = arg.trim();
-                if ( arg.equalsIgnoreCase( "-?" ) || arg.equalsIgnoreCase( "-h" ) ) {
-                    outputHelp();
-                } else {
-                    if ( arg.equalsIgnoreCase( "-remove" ) )
-                        remove = true;
-                    if ( i + 1 < args.length ) {
-                        String val = args[++i];
-                        if ( val != null && !"".equals( val.trim() ) ) {
-                            params.put( arg, val.trim() );
-                        } else {
-                            System.out.println( "Invalid value for parameter: " + arg );
-                        }
-                    } else {
-                        if ( !arg.equalsIgnoreCase( "-remove" ) )
-                            System.out.println( "No value for parameter: " + arg );
-                    }
-                }
-            }
-        }
-        String inFormat = params.get( "-inFormat" );
-        if ( inFormat == null || "".equals( inFormat.trim() ) ) {
-            System.out.println( "No input format (inFormat) defined, setting to proj4" );
-            inFormat = "proj4";
-        }
-        String inFile = params.get( "-inFile" );
-        if ( ( inFile == null || "".equals( inFile.trim() ) ) && ( !inFormat.equals( "database" ) ) ) {
-            System.out.println( "No input file set, exiting\n" );
-            outputHelp();
-            throw new Exception( "No input file set, exiting" );
-        }
-        // File inputFile = new File( inFile );
-
-        String outFile = params.get( "-outFile" );
-        String outFormat = params.get( "-outFormat" );
-        if ( !remove && ( outFormat == null || "".equals( outFormat.trim() ) ) ) {
-            System.out.println( "No output format (outFormat) defined, setting to deegree" );
-            outFormat = "deegree";
-        }
-
-        String veri = params.get( "-verify" );
-        boolean verify = ( veri != null && !"".equals( veri.trim() ) );
-
-        Properties inProps = null;
-        if ( !inFormat.equalsIgnoreCase( "database" ) ) {
-            inProps = new Properties();
-            inProps.put( "crs.configuration", inFile );
-        }
-        CRSProvider in = null;
-        if ( "deegree".equalsIgnoreCase( inFormat ) ) {
-            in = new DeegreeCRSProvider( new Properties( configuredProperties ) );
-        } else if ( "proj4".equalsIgnoreCase( inFormat ) ) {
-            in = new PROJ4CRSProvider( inProps );
-        } else if ( "database".equalsIgnoreCase( inFormat ) ) {
-            in = new DatabaseCRSProvider();
-        } else {
-            throw new Exception( "-inFormat argument (" + inFormat
-                                 + ") is not recognized. Known values are deegree, proj4, database." );
-        }
-
-        CRSProvider out = null;
-        if ( "proj4".equalsIgnoreCase( outFormat ) ) {
-            out = new PROJ4CRSProvider();
-        } else if ( "database".equalsIgnoreCase( outFormat ) ) {
-            out = new DatabaseCRSProvider();
-        } else if ( "deegree".equalsIgnoreCase( outFormat ) ) {
-            out = new DeegreeCRSProvider( new Properties( configuredProperties ) );
-        } else {
-            throw new Exception( "-outFormat argument (" + outFormat
-                                 + ") is not recognized. Known values are deegree, proj4, database." );
-        }
-
-        try {
-            // List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
-            // allSystems.add( in.getCRSByCode( new CRSCodeType( "3395", "EPSG" ) ) );
-            List<CoordinateSystem> allSystems = in.getAvailableCRSs();
-
-            if ( remove ) {
-                CRSRemover remover = new CRSRemover();
-                remover.setConnection( ( (DatabaseCRSProvider) in ).getConnection() );
-                // List<CoordinateSystem> someSystems = new LinkedList<CoordinateSystem>();
-                // someSystems.add( in.getCRSByCode( new CRSCodeType( "4010", "EPSG") ) );
-                remover.removeCRSList( allSystems );
-                remover.closeConnection();
-            } else {
-
-                if ( verify ) { // perform check that the inFormat Projection definitions conform the outFormat
-                    out = new DeegreeCRSProvider( null );
-                    List<CoordinateSystem> notExported = new LinkedList<CoordinateSystem>();
-                    for ( CoordinateSystem inCRS : allSystems ) {
-                        if ( inCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                            CRSCodeType id = inCRS.getCode();
-                            CoordinateSystem outCRS = out.getCRSByCode( id );
-                            // System.out.print( "Getting crs: " + id + " and projection: " +
-                            // ((ProjectedCRS)inCRS).getProjection().getDeegreeSpecificName() );
-                            if ( outCRS != null && outCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                                // System.out.println( "... [SUCCESS] to retrieve from deegree-config
-                                // with projection: " +
-                                // ((ProjectedCRS)outCRS).getProjection().getDeegreeSpecificName() );
-                                Projection inProj = ( (ProjectedCRS) inCRS ).getProjection();
-                                Projection outProj = ( (ProjectedCRS) outCRS ).getProjection();
-                                if ( Math.abs( inProj.getProjectionLatitude() - outProj.getProjectionLatitude() ) > EPS11 ) {
-                                    System.out.println( "For the projection with id: "
-                                                        + id
-                                                        + " the projectionLatitude differs:\n in ("
-                                                        + ( (ProjectedCRS) inCRS ).getProjection().getImplementationName()
-                                                        + "): "
-                                                        + Math.toDegrees( inProj.getProjectionLatitude() )
-                                                        + "\nout("
-                                                        + ( (ProjectedCRS) outCRS ).getProjection().getImplementationName()
-                                                        + " with id: "
-                                                        + ( (ProjectedCRS) outCRS ).getProjection().getImplementationName()
-                                                        + "): " + Math.toDegrees( outProj.getProjectionLatitude() ) );
-                                }
-                            } else {
-                                notExported.add( inCRS );
-                                System.out.println( id + " [FAILED] to retrieve from deegree-config." );
-                            }
-                        }
-                    }
-                    if ( notExported.size() > 0 ) {
-                        StringBuilder sb = new StringBuilder( notExported.size() * 2000 );
-                        out.export( sb, allSystems );
-                        if ( outFile != null && !"".equals( outFile.trim() ) ) {
-                            File outputFile = new File( outFile );
-                            BufferedWriter writer = new BufferedWriter( new FileWriter( outputFile ) );
-                            writer.write( sb.toString() );
-                            writer.flush();
-                            writer.close();
-                        } else {
-                            System.out.println( sb.toString() );
-                        }
-                    }
-                } else if ( outFormat.equals( "database" ) ) {
-                    DatabaseCRSProvider dbOut = (DatabaseCRSProvider) out;
-                    dbOut.export( allSystems );
-                } else {
-                    StringBuilder sb = new StringBuilder( allSystems.size() * 2000 );
-                    out.export( sb, allSystems );
-                    if ( outFile != null && !"".equals( outFile.trim() ) ) {
-                        File outputFile = new File( outFile );
-                        BufferedWriter writer = new BufferedWriter( new FileWriter( outputFile ) );
-                        writer.write( sb.toString() );
-                        writer.flush();
-                        writer.close();
-                    } else {
-                        System.out.println( sb.toString() );
-                    }
-                }
-            }
-        } catch ( CRSConfigurationException e ) {
-            e.printStackTrace();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void outputHelp() {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "The CRSConfiguration program can be used to:\n"
-                   + "                                                 a) Create a deegree-crs-configuration, from other crs definition-formats.\n"
-                   + "                                                 b) Remove supplied CRS from a specified configuration\n" );
-        sb.append( "-inFile the /path/to/crs-definitions-file\n" );
-        sb.append( "-inFormat the format of the input file, valid values are proj4(default),deegree \n" );
-        sb.append( "-outFormat the format of the output file, valid values are deegree (default)\n" );
-        sb.append( "-outFile the /path/to/the/output/file or standard output if not supplied.\n" );
-        sb.append( "[-remove] removes the CRSs given in the Input configuration from the Output backend\n" );
-        sb.append( "[-verify] checks the projection parameters of the inFormat against the deegree configuration.\n" );
-        sb.append( "-?|-h output this text\n" );
-        sb.append( "example usage: java -cp deegree.jar org.deegree.crs.configuration.CRSConfiguration -inFormat 'proj4' -inFile '/home/proj4/nad/epsg' -outFormat 'deegree' -outFile '/home/deegree/crs-definitions.xml'\n" );
-        System.out.println( sb.toString() );
-        System.exit( 1 );
-    }
-
-    /**
      * @return the crs provider.
      */
     public final CRSProvider getProvider() {
         return provider;
+    }
+
+    /**
+     * @return a transformation factory instantiated with the provider;
+     */
+    public final TransformationFactory getTransformationFactory() {
+        return transformationFactory;
     }
 
     /**

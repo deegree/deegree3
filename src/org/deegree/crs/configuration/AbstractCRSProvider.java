@@ -47,11 +47,9 @@ import java.util.Properties;
 
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
-import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.configuration.resources.CRSResource;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.i18n.Messages;
@@ -207,43 +205,44 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                     LOG.debug( e.getLocalizedMessage(), e );
                     throw new CRSConfigurationException( e );
                 }
-                if ( result != null ) {
-                    GeographicCRS t = null;
-                    if ( result.getType() == CoordinateSystem.COMPOUND_CRS ) {
-                        if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == CoordinateSystem.PROJECTED_CRS ) {
-                            t = ( (ProjectedCRS) ( (CompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS();
-                        } else if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                            t = (GeographicCRS) ( (CompoundCRS) result ).getUnderlyingCRS();
-                        } else {
-                            LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
-                        }
-                    } else if ( result.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                        t = ( (ProjectedCRS) result ).getGeographicCRS();
-                    } else if ( result.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                        t = (GeographicCRS) result;
-                    } else {
-                        LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
-                    }
-                    if ( t != null ) {
-                        Helmert wgs84 = t.getGeodeticDatum().getWGS84Conversion();
-                        if ( wgs84 == null ) {
-                            wgs84 = resolver.getWGS84Transformation( t );
-                        }
-                        if ( wgs84 != null ) {
-                            if ( wgs84.getSourceCRS() == null ) {
-                                wgs84.setSourceCRS( t );
-                                addIdToCache( wgs84, true );
-                            }
-                            GeodeticDatum datum = result.getGeodeticDatum();
-                            if ( datum != null ) {
-                                datum.setToWGS84( wgs84 );
-                                // update the cache as well
-                                addIdToCache( datum, true );
-                            }
-
-                        }
-                    }
-                }
+                // if ( result != null ) {
+                // GeographicCRS t = null;
+                // if ( result.getType() == CoordinateSystem.COMPOUND_CRS ) {
+                // if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == CoordinateSystem.PROJECTED_CRS ) {
+                // t = ( (ProjectedCRS) ( (CompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS();
+                // } else if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == CoordinateSystem.GEOGRAPHIC_CRS
+                // ) {
+                // t = (GeographicCRS) ( (CompoundCRS) result ).getUnderlyingCRS();
+                // } else {
+                // LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
+                // }
+                // } else if ( result.getType() == CoordinateSystem.PROJECTED_CRS ) {
+                // t = ( (ProjectedCRS) result ).getGeographicCRS();
+                // } else if ( result.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
+                // t = (GeographicCRS) result;
+                // } else {
+                // LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
+                // }
+                // if ( t != null ) {
+                // Helmert wgs84 = t.getGeodeticDatum().getWGS84Conversion();
+                // if ( wgs84 == null ) {
+                // wgs84 = resolver.getWGS84Transformation( t );
+                // }
+                // if ( wgs84 != null ) {
+                // if ( wgs84.getSourceCRS() == null ) {
+                // wgs84.setSourceCRS( t );
+                // addIdToCache( wgs84, true );
+                // }
+                // GeodeticDatum datum = result.getGeodeticDatum();
+                // if ( datum != null ) {
+                // datum.setToWGS84( wgs84 );
+                // // update the cache as well
+                // addIdToCache( datum, true );
+                // }
+                //
+                // }
+                // }
+                // }
             }
         }
         if ( result == null ) {
@@ -299,8 +298,8 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
      * @param transformationDefinition
      *            containing the parameters needed to build a Transformation.
      * @return a {@link Transformation} instance initialized with values from the given definition or <code>null</code>
-     *         if the given transformationDefintion is <code>null</code>. If the parsed transformation is not
-     *         supported or a {@link NotSupportedTransformation} will be returned.
+     *         if the given transformationDefintion is <code>null</code>. If the parsed transformation is not supported
+     *         or a {@link NotSupportedTransformation} will be returned.
      * @throws CRSConfigurationException
      *             if an error was found in the given crsDefintion
      */
@@ -397,7 +396,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         V result = null;
         try {
-            result = (V) cachedIdentifiables.get( CRSCodeType.valueOf( id ) );
+            result = (V) cachedIdentifiables.get( CRSCodeType.valueOf( id.toLowerCase() ) );
         } catch ( ClassCastException cce ) {
             LOG.error( "Given id is not of type: " + expectedType.getCanonicalName() + " found following error: "
                        + cce.getLocalizedMessage() );
