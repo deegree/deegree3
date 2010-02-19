@@ -1091,7 +1091,7 @@ public class XMLAdapter {
 
         NamespaceContext nsContext = new NamespaceContext();
         augmentNamespaceContext( element, nsContext );
-        System.out.println( nsContext );
+        // System.out.println( nsContext );
         return nsContext;
     }
 
