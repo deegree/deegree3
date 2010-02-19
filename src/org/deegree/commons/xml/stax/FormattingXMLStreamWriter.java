@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.stax;
 
 import javax.xml.namespace.NamespaceContext;
@@ -41,10 +41,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 /**
  * This class is a pretty print wrapper for XMLStreamWriter.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class FormattingXMLStreamWriter implements XMLStreamWriter {
@@ -60,7 +60,7 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
 
     /**
      * Create a new wrapper for XMLStreamWriter that formats the xml output.
-     *
+     * 
      * @param xmlStreamWriter
      */
     public FormattingXMLStreamWriter( XMLStreamWriter xmlStreamWriter ) {
@@ -70,7 +70,7 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
 
     /**
      * Create a new wrapper for XMLStreamWriter that formats the xml output.
-     *
+     * 
      * @param xmlStreamWriter
      * @param indent
      *            the indent string for each indent level
@@ -151,7 +151,9 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
 
     public void writeComment( String data )
                             throws XMLStreamException {
+        indent();
         s.writeComment( data );
+        unindent();
     }
 
     public void writeDTD( String dtd )
@@ -229,7 +231,7 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
         s.writeStartElement( localName );
     }
 
-   public void writeStartElement( String namespaceURI, String localName )
+    public void writeStartElement( String namespaceURI, String localName )
                             throws XMLStreamException {
         indent();
         s.writeStartElement( namespaceURI, localName );
