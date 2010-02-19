@@ -107,7 +107,7 @@ public class RasterRendererApplet extends JApplet {
         try {
             // LOG.debug( "Loading SE XML..." );
             URI uri = SymbologyParserTest.class.getResource( fname ).toURI();
-            System.out.println( "Loading resource: " + uri );
+            LOG.debug( "Loading resource: " + uri );
             File f = new File( uri );
             final XMLInputFactory fac = XMLInputFactory.newInstance();
             XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
@@ -134,7 +134,7 @@ public class RasterRendererApplet extends JApplet {
                 strCat += line;
                 System.err.println( line );
             }
-            LOG.info( strCat );
+            LOG.debug( strCat );
         } catch ( IOException e ) {
             e.printStackTrace();
         }
