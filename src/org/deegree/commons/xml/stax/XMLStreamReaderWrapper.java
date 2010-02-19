@@ -344,7 +344,7 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
             throw new XMLStreamException( "parser must be on START_ELEMENT to read next text", getLocation() );
         }
         int eventType = next();
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         while ( eventType != XMLStreamConstants.END_ELEMENT ) {
             if ( eventType == XMLStreamConstants.CHARACTERS || eventType == XMLStreamConstants.CDATA
                  || eventType == XMLStreamConstants.SPACE || eventType == XMLStreamConstants.ENTITY_REFERENCE ) {
