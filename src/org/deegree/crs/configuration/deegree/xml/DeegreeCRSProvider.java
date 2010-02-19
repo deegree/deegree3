@@ -36,53 +36,63 @@
 
 package org.deegree.crs.configuration.deegree.xml;
 
+import static java.lang.System.currentTimeMillis;
+
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.types.ows.Version;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
+import org.deegree.crs.components.Ellipsoid;
+import org.deegree.crs.components.GeodeticDatum;
+import org.deegree.crs.components.PrimeMeridian;
 import org.deegree.crs.configuration.AbstractCRSProvider;
+import org.deegree.crs.configuration.CRSConfiguration;
+import org.deegree.crs.configuration.CRSProvider;
+import org.deegree.crs.configuration.deegree.xml.om.Parser;
+import org.deegree.crs.configuration.deegree.xml.stax.StAXResource;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
-import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.transformations.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>DeegreeCRSProvider</code> reads the deegree crs-config (based on it's own xml-schema) and creates the
- * CRS's (and their datums, conversion info's, ellipsoids and projections) if requested.
+ * The <code>DeegreeCRSProvider</code> reads the deegree crs-config (based on it's own xml-schema) and creates the CRS's
+ * (and their datums, conversion info's, ellipsoids and projections) if requested.
  * <p>
  * Attention, although urn's are case-sensitive, the deegreeCRSProvider is not. All incoming id's are toLowerCased!
  * </p>
- * <h2>Automatic loading of projection/transformation classes</h2>
- * It is possible to create your own projection/transformation classes, which can be automatically loaded.
+ * <h2>Automatic loading of projection/transformation classes</h2> It is possible to create your own
+ * projection/transformation classes, which can be automatically loaded.
  * <p>
  * You can achieve this loading by supplying the <b><code>class</code></b> attribute to a
- * <code>crs:projectedCRS/crs:projection</code> or <code>crs:coordinateSystem/crs:transformation</code> element in
- * the 'deegree-crs-configuration.xml'. This attribute must contain the full class name (with package), e.g.
+ * <code>crs:projectedCRS/crs:projection</code> or <code>crs:coordinateSystem/crs:transformation</code> element in the
+ * 'deegree-crs-configuration.xml'. This attribute must contain the full class name (with package), e.g.
  * &lt;crs:projection class='my.package.and.projection.Implementation'&gt;
  * </p>
- * Because the loading is done with reflections your classes must sustain following criteria:
- * <h3>Projections</h3>
+ * Because the loading is done with reflections your classes must sustain following criteria: <h3>Projections</h3>
  * <ol>
  * <li>It must be a sub class of {@link org.deegree.crs.projections.Projection}</li>
- * <li>A constructor with following signature must be supplied: <br/> <code>
+ * <li>A constructor with following signature must be supplied: <br/>
+ * <code>
  * public MyProjection( <br/>
  * &emsp;&emsp;&emsp;&emsp;{@link org.deegree.crs.coordinatesystems.GeographicCRS} underlyingCRS,<br/>
  * &emsp;&emsp;&emsp;&emsp;double falseNorthing,<br/>
@@ -104,7 +114,8 @@ import org.slf4j.LoggerFactory;
  * <h3>Transformations</h3>
  * <ol>
  * <li>It must be a sub class of {@link org.deegree.crs.transformations.polynomial.PolynomialTransformation}</li>
- * <li>A constructor with following signature must be supplied: <br/> <code>
+ * <li>A constructor with following signature must be supplied: <br/>
+ * <code>
  * public MyTransformation( <br/>
  * &emsp;&emsp;&emsp;&emsp;java.util.list&lt;Double&gt; aValues,<br/>
  * &emsp;&emsp;&emsp;&emsp;java.util.list&lt;Double&gt; bValues,<br/>
@@ -127,10 +138,14 @@ import org.slf4j.LoggerFactory;
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <T>
+ *            The return type of the {@link CRSParser#getURIAsType(String)} method
  * 
  */
 
-public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
+public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
+
+    private static final String VERSION = "CRS_VERSION";
 
     private static Logger LOG = LoggerFactory.getLogger( DeegreeCRSProvider.class );
 
@@ -139,65 +154,16 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param properties
      *            containing information about the crs resource class and the file location of the crs configuration. If
-     *            either is null the default mechanism is using the {@link CRSParser} and the
-     *            deegree-crs-configuration.xml
+     *            either is null the default mechanism is using the {@link Parser} and the deegree-crs-configuration.xml
      * @throws CRSConfigurationException
      *             if the give file or the default-crs-configuration.xml file could not be loaded.
      */
-    public DeegreeCRSProvider( Properties properties ) throws CRSConfigurationException {
+    @SuppressWarnings("unchecked")
+    private DeegreeCRSProvider( Properties properties ) throws CRSConfigurationException {
+        // rb: set to unchecked, the constructor is private and is only called from within the getInstance which is
+        // valid.
         super( properties, CRSParser.class, null );
-        if ( getResolver() == null ) {
-            CRSParser versionedParser = new CRSParser( this, new Properties( properties ) );
-            String version = versionedParser.getVersion();
-            if ( !"".equals( version ) ) {
-                version = version.trim().replaceAll( "\\.", "_" );
-                String className = "org.deegree.crs.configuration.deegree.xml.CRSParser_" + version;
-                try {
-                    Class<?> tClass = Class.forName( className );
-                    tClass.asSubclass( CRSParser.class );
-                    LOG.debug( "Trying to load configured CRS provider from classname: " + className );
-                    Constructor<?> constructor = tClass.getConstructor( this.getClass(), Properties.class,
-                                                                        OMElement.class );
-                    if ( constructor == null ) {
-                        LOG.error( "No constructor ( " + this.getClass() + ", Properties.class) found in class:"
-                                   + className );
-                    } else {
-                        versionedParser = (CRSParser) constructor.newInstance( this, new Properties( properties ),
-                                                                               versionedParser.getRootElement() );
-                    }
-                    className = "org.deegree.crs.configuration.deegree.xml.CRSExporter_" + version;
-                    tClass = Class.forName( className );
-                    tClass.asSubclass( CRSExporter.class );
-                    LOG.debug( "Trying to load configured CRS exporter for version: " + version + " from classname: "
-                               + className );
-                    constructor = tClass.getConstructor( Properties.class );
-                    if ( constructor == null ) {
-                        LOG.error( "No constructor ( Properties.class ) found in class:" + className );
-                    } else {
-                        exporter = (CRSExporter) constructor.newInstance( new Properties( properties ) );
-                    }
-                } catch ( InstantiationException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, e.getMessage() ) );
-                } catch ( IllegalAccessException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, e.getMessage() ), e );
-                } catch ( ClassNotFoundException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, e.getMessage() ), e );
-                } catch ( SecurityException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, e.getMessage() ), e );
-                } catch ( NoSuchMethodException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, e.getMessage() ), e );
-                } catch ( IllegalArgumentException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, e.getMessage() ), e );
-                } catch ( InvocationTargetException e ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, e.getMessage() ), e );
-                } catch ( Throwable t ) {
-                    LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, t.getMessage() ), t );
-                }
-            } else {
-                exporter = new CRSExporter( new Properties( properties ) );
-            }
-            setResolver( versionedParser );
-        }
+        exporter = new CRSExporter( new Properties( properties ) );
     }
 
     public boolean canExport() {
@@ -231,38 +197,49 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
      * @return the casted resolver of the super class.
      */
     @Override
-    public CRSParser getResolver() {
-        return (CRSParser) super.getResolver();
+    public CRSParser<T> getResolver() {
+        return (CRSParser<T>) super.getResolver();
     }
 
     public List<CRSCodeType> getAvailableCRSCodes() {
-        return getResolver().getAvailableCRSCodes();
+        List<CRSCodeType[]> codes = getResolver().getAvailableCRSCodes();
+        List<CRSCodeType> result = new LinkedList<CRSCodeType>();
+        for ( CRSCodeType[] code : codes ) {
+            if ( code != null ) {
+                result.addAll( Arrays.asList( code ) );
+            }
+        }
+        return result;
     }
 
     public List<CoordinateSystem> getAvailableCRSs() {
         List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
+        Set<String> knownIds = new HashSet<String>();
         // List<OMElement> allCRSIDs = getResolver().getAvailableCRSs();
-        List<CRSCodeType> allCRSIDs = getResolver().getAvailableCRSCodes();
+        List<CRSCodeType[]> allCRSIDs = getResolver().getAvailableCRSCodes();
         final int total = allCRSIDs.size();
         int count = 0;
         int percentage = (int) Math.round( total / 100.d );
         int number = 0;
-        LOG.info( "Trying to create a total of " + total + " coordinate systems." );        
-        for ( CRSCodeType crsID : allCRSIDs ) {
+        LOG.info( "Trying to create a total of " + total + " coordinate systems." );
+        for ( CRSCodeType[] crsID : allCRSIDs ) {
             if ( crsID != null ) {
                 // String id = crsID.getTextContent();
-                String id = crsID.getOriginal();
+                String id = crsID[0].getOriginal();
                 if ( id != null && !"".equals( id.trim() ) ) {
                     if ( count++ % percentage == 0 ) {
                         System.out.println( ( number ) + ( ( number++ < 10 ) ? " " : "" ) + "% created" );
                     }
-                    boolean createdAlready = false;
-                    for ( int i = 0; i < allSystems.size() && !createdAlready; ++i ) {
-                        CoordinateSystem c = allSystems.get( i );
-                        createdAlready = ( c != null && c.hasCode( CRSCodeType.valueOf( id ) ) );
-                    }
-                    if ( !createdAlready ) {
+                    // boolean createdAlready =
+                    // for ( int i = 0; i < allSystems.size() && !createdAlready; ++i ) {
+                    // CoordinateSystem c = allSystems.get( i );
+                    // createdAlready = ( c != null && c.hasCode( CRSCodeType.valueOf( id ) ) );
+                    // }
+                    if ( !knownIds.contains( id.toLowerCase() ) ) {
                         allSystems.add( getCRSByCode( CRSCodeType.valueOf( id ) ) );
+                        for ( CRSCodeType code : crsID ) {
+                            knownIds.add( code.getOriginal().toLowerCase() );
+                        }
                     }
                 }
             }
@@ -272,13 +249,13 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
     }
 
     @Override
-    protected CoordinateSystem parseCoordinateSystem( OMElement crsDefinition )
+    protected CoordinateSystem parseCoordinateSystem( T crsDefinition )
                             throws CRSConfigurationException {
         return getResolver().parseCoordinateSystem( crsDefinition );
     }
 
     @Override
-    public Transformation parseTransformation( OMElement transformationDefinition )
+    public Transformation parseTransformation( T transformationDefinition )
                             throws CRSConfigurationException {
         return getResolver().parseTransformation( transformationDefinition );
 
@@ -289,23 +266,109 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
         return getResolver().getTransformation( sourceCRS, targetCRS );
     }
 
-    @Override
-    public CoordinateSystem getCRSByCode( CRSCodeType id )
-                            throws CRSConfigurationException {
-        CRSParser resolver = getResolver();
-        try {
-            return resolver.parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
-        } catch ( IOException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        return null;
-    }
+    // @Override
+    // public CoordinateSystem getCRSByCode( CRSCodeType id )
+    // throws CRSConfigurationException {
+    // CRSParser<T> resolver = getResolver();
+    // try {
+    // return resolver.parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
+    // } catch ( IOException e ) {
+    // LOG.error( e.getMessage(), e );
+    // }
+    // return null;
+    // }
 
     @Override
     public CRSIdentifiable getIdentifiable( CRSCodeType id )
                             throws CRSConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
+        return getResolver().parseIdentifiableObject( id.getOriginal() );
     }
 
+    /**
+     * @param usedProjection
+     * @param underlyingCRS
+     * @return the Projection parsed from the configuration or
+     *         <code>null<code> if no projection with given id was found.
+     */
+    public Projection getProjection( String usedProjection, GeographicCRS underlyingCRS ) {
+        return getResolver().getProjectionForId( usedProjection, underlyingCRS );
+    }
+
+    /**
+     * @param datumId
+     * @return the datum denoted by given id or <code>null</code> if no datum with given id was found.
+     */
+    public GeodeticDatum getGeodeticDatumForId( String datumId ) {
+        return getResolver().getGeodeticDatumForId( datumId );
+    }
+
+    /**
+     * @param ellipsoidId
+     * @return the ellipsoid denoted by given id or <code>null</code> if no ellipsoid with given id was found.
+     */
+    public Ellipsoid getEllipsoidForId( String ellipsoidId ) {
+        return getResolver().getEllipsoidForId( ellipsoidId );
+    }
+
+    /**
+     * @param pMeridianId
+     * @return the PrimeMeridian denoted by given id or <code>null</code> if no PrimeMeridian with given id was found.
+     */
+    public PrimeMeridian getPrimeMeridianForId( String pMeridianId ) {
+        return getResolver().getPrimeMeridianForId( pMeridianId );
+    }
+
+    /**
+     * 
+     * @param properties
+     * @return a deegree stax or om based crs provider instance.
+     */
+    @SuppressWarnings("unchecked")
+    public static DeegreeCRSProvider<?> getInstance( Properties properties ) {
+        // rb: set to unchecked, because the generic castings are all valid.
+        // read the properties to get a stax/om parser
+        Version version = new Version( 0, 3, 0 );
+        DeegreeCRSProvider<?> provider = null;
+        CRSParser parser = null;
+        if ( properties != null ) {
+            String v = properties.getProperty( VERSION );
+            if ( !"".equals( v ) ) {
+                Version vers = Version.parseVersion( v );
+                if ( vers.compareTo( version ) < 0 ) {
+                    provider = new DeegreeCRSProvider<OMElement>( properties );
+                    parser = new Parser( (DeegreeCRSProvider<OMElement>) provider, properties );
+                } else {
+                    provider = new DeegreeCRSProvider<StAXResource>( properties );
+                    parser = new org.deegree.crs.configuration.deegree.xml.stax.Parser(
+                                                                                        (DeegreeCRSProvider<StAXResource>) provider,
+                                                                                        properties );
+                }
+            }
+        }
+        if ( provider == null ) {
+            provider = new DeegreeCRSProvider<StAXResource>( properties );
+            parser = new org.deegree.crs.configuration.deegree.xml.stax.Parser(
+                                                                                (DeegreeCRSProvider<StAXResource>) provider,
+                                                                                properties );
+        }
+        provider.setResolver( parser );
+        return provider;
+    }
+
+    /**
+     * Checks if the time of creating all crs's
+     * 
+     * @param args
+     */
+    public static void main( String[] args ) {
+        CRSProvider provider = CRSConfiguration.getCRSConfiguration().getProvider();
+
+        long sT = currentTimeMillis();
+
+        List<CRSCodeType> availableCRSCodes = provider.getAvailableCRSCodes();
+        long eT = currentTimeMillis() - sT;
+        System.out.println( "Action took: " + eT + " ms." );
+
+        System.out.println( "size: " + availableCRSCodes.size() );
+    }
 }

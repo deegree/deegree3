@@ -39,15 +39,20 @@ package org.deegree.crs.configuration.deegree.xml;
 import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
 import static org.deegree.crs.projections.ProjectionUtils.EPS11;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Axis;
@@ -55,6 +60,8 @@ import org.deegree.crs.components.Ellipsoid;
 import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.PrimeMeridian;
 import org.deegree.crs.components.Unit;
+import org.deegree.crs.configuration.CRSConfiguration;
+import org.deegree.crs.configuration.CRSProvider;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
@@ -64,6 +71,7 @@ import org.deegree.crs.projections.Projection;
 import org.deegree.crs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.crs.projections.conic.LambertConformalConic;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
+import org.deegree.crs.transformations.Transformation;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
 import org.slf4j.Logger;
@@ -496,35 +504,38 @@ public class CRSExporter {
      *            to export to.
      * @throws XMLStreamException
      */
-    protected void exportTransformations( List<PolynomialTransformation> transformations, XMLStreamWriter xmlWriter )
+    protected void exportTransformations( List<Transformation> transformations, XMLStreamWriter xmlWriter )
                             throws XMLStreamException {
-        for ( PolynomialTransformation transformation : transformations ) {
+        for ( Transformation transformation : transformations ) {
             if ( transformation != null ) {
-                xmlWriter.writeStartElement( CRSNS, "polynomialTransformation" );
+                if ( transformation instanceof PolynomialTransformation ) {
+                    PolynomialTransformation trans = (PolynomialTransformation) transformation;
+                    xmlWriter.writeStartElement( CRSNS, "polynomialTransformation" );
 
-                if ( !"leastsquare".equals( transformation.getImplementationName().toLowerCase() ) ) {
-                    xmlWriter.writeAttribute( "class", transformation.getClass().getCanonicalName() );
+                    if ( !"leastsquare".equals( transformation.getImplementationName().toLowerCase() ) ) {
+                        xmlWriter.writeAttribute( "class", trans.getClass().getCanonicalName() );
+                    }
+                    xmlWriter.writeStartElement( CRSNS, "" + trans.getImplementationName() );
+                    // polynomialOrder
+                    xmlWriter.writeStartElement( CRSNS, "polynomialOrder" );
+                    xmlWriter.writeCharacters( Integer.toString( trans.getOrder() ) );
+                    xmlWriter.writeEndElement();
+                    // xParameters
+                    xmlWriter.writeStartElement( CRSNS, "xParameters" );
+                    xmlWriter.writeCharacters( trans.getFirstParams().toString() );
+                    xmlWriter.writeEndElement();
+                    // yParameters
+                    xmlWriter.writeStartElement( CRSNS, "yParameters" );
+                    xmlWriter.writeCharacters( trans.getSecondParams().toString() );
+                    xmlWriter.writeEndElement();
+                    // targetCRS
+                    xmlWriter.writeStartElement( CRSNS, "targetCRS" );
+                    xmlWriter.writeCharacters( trans.getTargetCRS().getCode().toString() );
+                    xmlWriter.writeEndElement();
+
+                    xmlWriter.writeEndElement();
+                    xmlWriter.writeEndElement();
                 }
-                xmlWriter.writeStartElement( CRSNS, "" + transformation.getImplementationName() );
-                // polynomialOrder
-                xmlWriter.writeStartElement( CRSNS, "polynomialOrder" );
-                xmlWriter.writeCharacters( Integer.toString( transformation.getOrder() ) );
-                xmlWriter.writeEndElement();
-                // xParameters
-                xmlWriter.writeStartElement( CRSNS, "xParameters" );
-                xmlWriter.writeCharacters( transformation.getFirstParams().toString() );
-                xmlWriter.writeEndElement();
-                // yParameters
-                xmlWriter.writeStartElement( CRSNS, "yParameters" );
-                xmlWriter.writeCharacters( transformation.getSecondParams().toString() );
-                xmlWriter.writeEndElement();
-                // targetCRS
-                xmlWriter.writeStartElement( CRSNS, "targetCRS" );
-                xmlWriter.writeCharacters( transformation.getTargetCRS().getCode().toString() );
-                xmlWriter.writeEndElement();
-
-                xmlWriter.writeEndElement();
-                xmlWriter.writeEndElement();
             }
         }
     }
@@ -712,4 +723,60 @@ public class CRSExporter {
         }
     }
 
+    /**
+     * Simple main to test exportation.
+     * 
+     * @param args
+     * @throws XMLStreamException
+     * @throws FileNotFoundException
+     */
+    public static void main( String[] args )
+                            throws XMLStreamException, FileNotFoundException {
+        // CoordinateSystem lookup = CRSRegistry.lookup( "EPSG:31466" );
+        CRSConfiguration config = CRSConfiguration.getCRSConfiguration();
+        CRSProvider provider = config.getProvider();
+
+        List<CoordinateSystem> one = provider.getAvailableCRSs();
+        // List<CoordinateSystem> one = new ArrayList<CoordinateSystem>();
+        // CoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
+        // one.add( a );
+        // a = provider.getCRSByCode( new CRSCodeType( "EPSG:4314" ) );
+        // one.add( a );
+        //
+        // // lcc
+        // a = provider.getCRSByCode( new CRSCodeType( "BBR:0001" ) );
+        // one.add( a );
+        //
+        // // lambera
+        // a = provider.getCRSByCode( new CRSCodeType( "EPSG:2163" ) );
+        // one.add( a );
+        // // mercator
+        // a = provider.getCRSByCode( new CRSCodeType( "EPSG:3857" ) );
+        // one.add( a );
+        //
+        // // stereo
+        // a = provider.getCRSByCode( new CRSCodeType( "EPSG:32661" ) );
+        // one.add( a );
+        //
+        // // stereo al
+        // a = provider.getCRSByCode( new CRSCodeType( "EPSG:2290" ) );
+        // one.add( a );
+        //
+        // // compound
+        // a = provider.getCRSByCode( new CRSCodeType( "EPSG:4979" ) );
+        // one.add( a );
+
+        // CoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:4809" ) );
+        // one.add( a );
+        // CoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:4157" ) );
+        // one.add( a );
+
+        CRSExporter exporter = new CRSExporter_0_3_0( new Properties() );
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
+        FileOutputStream out = new FileOutputStream( new File( "new_crs.xml" ) );
+        XMLStreamWriter writer = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( out ) );
+        exporter.export( one, writer );
+
+    }
 }
