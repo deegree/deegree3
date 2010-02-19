@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.crs.i18n;
 
 import java.io.IOException;
@@ -50,24 +50,24 @@ import org.slf4j.LoggerFactory;
 /**
  * Responsible for the access to messages that are visible to the user.
  * <p>
- * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is always a lowercased ISO
- * 639 code), so internationalization is supported. If a certain property (or the property file) for the specific
- * default language of the system is not found, the message is taken from <code>messages_en.properties</code>.
- *
+ * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is always a lowercased ISO 639
+ * code), so internationalization is supported. If a certain property (or the property file) for the specific default
+ * language of the system is not found, the message is taken from <code>messages_en.properties</code>.
+ * 
  * @see Locale#getLanguage()
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: rbezema $
- *
+ * 
  * @version $Revision: 15508 $, $Date: 2009-01-06 12:08:22 +0100 (Di, 06. Jan 2009) $
  */
 public class Messages {
 
     /* This definition allows Eclipse to display the content of referenced message keys. */
     @SuppressWarnings("unused")
-    private static final String BUNDLE_NAME = "org.deegree.commons.i18n.messages_en";
+    private static final String BUNDLE_NAME = "org.deegree.crs.i18n.messages_en";
 
     private static Properties defaultProps = new Properties();
 
@@ -184,9 +184,9 @@ public class Messages {
     /**
      * Returns the message assigned to the passed key. If no message is assigned, an error message will be returned that
      * indicates the missing key.
-     *
+     * 
      * @see MessageFormat for conventions on string formatting and escape characters.
-     *
+     * 
      * @param key
      * @param arguments
      * @return the message assigned to the passed key
