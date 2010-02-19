@@ -1,0 +1,2 @@
+LGPL,
+see http://sourceforge.net/projects/jgridshift/

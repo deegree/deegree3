@@ -91,5 +91,8 @@
 
     <!-- CUP runtime for generated parsers -->
     <dependency org="cup" name="cup" rev="0.11a" transitive="false" conf="${module.name}-build" />
+
+    <!-- NTv2 transformations -->
+    <dependency org="jgridshift" name="jgridshift" rev="1.0_deegree_version" transitive="false" conf="${module.name}-build" />    
   </dependencies>
 </ivy-module>
