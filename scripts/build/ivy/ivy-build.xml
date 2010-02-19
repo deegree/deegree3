@@ -275,7 +275,62 @@
         </zip>
     </target>
 
+    <!-- =================================================================== -->
+    <!-- JUnit tests                                                         -->
+    <!-- =================================================================== -->
 
+	<target name="compile-test" depends="compile" >
+		<delete dir="${test.classes.dir}"/>
+		<mkdir dir="${test.classes.dir}"/>
+        <javac updatedProperty="compile.change" destdir="${test.classes.dir}" classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}">
+            <src path="${test.src.dir}" />
+            <src path="${src.dir}" />
+        	<src path="${src-api.dir}" />
+        </javac>
+        <fileset dir="${src.dir}" id="sources.resources">
+            <exclude name="**/package.html" />
+            <exclude name="**/*.java" />
+            <exclude name="META-INF/deegreeCRS/log/*" />
+            <exclude name="META-INF/deegreeCRS/tmp" />
+            <exclude name="META-INF/deegreeCRS/db.lck" />
+            <exclude name="META-INF/deegreeCRS/dbex.lck" />
+        </fileset>
+        <copy todir="${test.classes.dir}">
+            <fileset refid="sources.resources" />
+        </copy>
+        <fileset dir="${test.src.dir}" id="test">
+            <exclude name="**/package.html" />
+            <exclude name="**/*.java" />
+            <exclude name="META-INF/deegreeCRS/log/*" />
+            <exclude name="META-INF/deegreeCRS/tmp" />
+            <exclude name="META-INF/deegreeCRS/db.lck" />
+            <exclude name="META-INF/deegreeCRS/dbex.lck" />
+        </fileset>
+        <copy todir="${test.classes.dir}">
+            <fileset refid="test" />
+        </copy>             	
+	</target>
+	
+    <target name="junit" depends="compile-test" description="Run JUnit tests">
+    	<echo message="Running unit tests in ${test.results.dir}" />
+        <delete dir="${test.results.dir}" />
+        <mkdir dir="${test.results.dir}" />        
+        <junit maxmemory="1024m" fork="yes" haltonfailure="no" haltonerror="no">
+            <classpath>
+            	<pathelement path="${test.classes.dir}"/>
+                <path refid="build.path" />            	
+            </classpath>
+            <sysproperty key="user.dir" value="${test.results.dir}" />
+            <formatter type="xml" />
+            <test name="org.deegree.CoreTestSuite" />
+        </junit>
+        <junitreport todir="${test.results.dir}">
+            <fileset dir="${test.results.dir}">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="${test.results.dir}/html" />
+        </junitreport>
+    </target>	
 
     <!-- =================================
           publish targets, publishing means: make the current 'revision' available for all other modules by putting them in a (local) repository.

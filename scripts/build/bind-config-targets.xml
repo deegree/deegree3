@@ -9,7 +9,7 @@
 		<property name="schema.file" value="commons.xsd" />
 		<property name="schema.name" value="commons" />
 
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.4.0/" />
 		<property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
 
 		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
@@ -26,7 +26,7 @@
 		</taskdef>
 		<property name="schema.file" value="appschema.xsd" />
 		<property name="schema.name" value="feature" />
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.4.0/" />
 		<property name="src.output.dir" value="${src.dir}/org/deegree/feature/types/jaxbconfig" />
 		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
 			<depends dir="${schema.dir}" includes="**/*.xsd" />
@@ -41,7 +41,7 @@
         </taskdef>
         <property name="schema.file" value="postgis_appschema.xsd" />
         <property name="schema.name" value="feature" />
-        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.4.0/" />
         <property name="src.output.dir" value="${src.dir}/org/deegree/feature/persistence/postgis/jaxbconfig" />
 
         <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
@@ -57,7 +57,7 @@
 		</taskdef>
 		<property name="schema.file" value="all_datasources.xsd" />
 		<property name="schema.name" value="datasource" />
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.4.0/" />
 		<property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
 
 		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">

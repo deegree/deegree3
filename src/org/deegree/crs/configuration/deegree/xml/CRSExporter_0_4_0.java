@@ -91,22 +91,22 @@ import org.deegree.crs.transformations.polynomial.LeastSquareApproximation;
 import org.slf4j.Logger;
 
 /**
- * The <code>CRSExporter_0_6_0</code>export a list of coordinate systems into the 0.3.0 format
+ * The <code>CRSExporter_0_4_0</code>export a list of coordinate systems into the 0.4.0 format
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
  * 
  */
-public class CRSExporter_0_3_0 extends CRSExporter {
-    private static final Logger LOG = getLogger( CRSExporter_0_3_0.class );
+public class CRSExporter_0_4_0 extends CRSExporter {
+    private static final Logger LOG = getLogger( CRSExporter_0_4_0.class );
 
     private final String id;
 
     /**
      * @param properties
      */
-    public CRSExporter_0_3_0( Properties properties ) {
+    public CRSExporter_0_4_0( Properties properties ) {
         super( properties );
         String user = null;
         if ( properties != null ) {
@@ -771,7 +771,7 @@ public class CRSExporter_0_3_0 extends CRSExporter {
         xmlWriter.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
         // xmlWriter.writeAttribute( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS, "schemaLocation",
         // "http://www.deegree.org/crs Y:/WORKSPACE/D3_CORE/RESOURCES/SCHEMA/CRS/0.3.0/crsdefinition.xsd" );
-        xmlWriter.writeAttribute( "version", "0.3.0" );
+        xmlWriter.writeAttribute( "version", "0.4.0" );
     }
 
     /**
@@ -787,8 +787,8 @@ public class CRSExporter_0_3_0 extends CRSExporter {
             xmlWriter.writeNamespace( CommonNamespaces.CRS_PREFIX, CommonNamespaces.CRSNS );
             xmlWriter.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
             xmlWriter.writeAttribute( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS, "schemaLocation",
-                                      "http://www.deegree.org/crs Y:/WORKSPACE/D3_CORE/RESOURCES/SCHEMA/CRS/0.3.0/crsdefinition.xsd" );
-            xmlWriter.writeAttribute( "version", "0.3.0" );
+                                      "http://www.deegree.org/crs Y:/WORKSPACE/D3_CORE/RESOURCES/SCHEMA/CRS/0.4.0/crsdefinition.xsd" );
+            xmlWriter.writeAttribute( "version", "0.4.0" );
 
             xmlWriter.writeStartElement( CRSNS, "ProjectionsFile" );
             xmlWriter.writeCharacters( "projection-definitions.xml" );

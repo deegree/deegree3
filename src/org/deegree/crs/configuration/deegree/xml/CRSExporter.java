@@ -771,7 +771,7 @@ public class CRSExporter {
         // CoordinateSystem a = provider.getCRSByCode( new CRSCodeType( "EPSG:4157" ) );
         // one.add( a );
 
-        CRSExporter exporter = new CRSExporter_0_3_0( new Properties() );
+        CRSExporter exporter = new CRSExporter_0_4_0( new Properties() );
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
         FileOutputStream out = new FileOutputStream( new File( "new_crs.xml" ) );

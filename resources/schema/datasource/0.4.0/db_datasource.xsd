@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ds="http://www.deegree.org/datasource"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
+  <xs:include schemaLocation="./constrained_datasource.xsd" />
+  <xs:element name="DatabaseDataSource" substitutionGroup="ds:AbstractDataSource" type="ds:DatabaseDataSourceType" />
+
+  <xs:complexType name="DatabaseDataSourceType">
+    <xs:annotation>
+      <xs:documentation>Defines the access to a database</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="ds:AbstractDataSourceType">
+        <xs:sequence>
+          <xs:element name="ConnectionPoolId" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element  name="ConstrainedDatabaseDataSource" type="ds:ConstrainedDatabaseDataSourceType" substitutionGroup="ds:AbstractGeospatialDataSource"/>
+    <xs:complexType name="ConstrainedDatabaseDataSourceType">
+        <xs:annotation>
+      <xs:documentation>Defines the access to a database with a constrained</xs:documentation>
+    </xs:annotation>
+      <xs:complexContent>
+        <xs:extension base="ds:AbstractGeospatialDataSourceType">
+          <xs:sequence>
+            <xs:element name="ConnectionPoolId" type="xs:string" />
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

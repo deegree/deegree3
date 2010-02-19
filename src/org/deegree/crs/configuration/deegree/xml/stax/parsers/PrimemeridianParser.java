@@ -57,7 +57,7 @@ import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.slf4j.Logger;
 
 /**
- * A stax based 0.3.0 crs configuration parser for prime meridian objects.
+ * A stax based 0.4.0 crs configuration parser for prime meridian objects.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$

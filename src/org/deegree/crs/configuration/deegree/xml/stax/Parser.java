@@ -230,7 +230,7 @@ public class Parser implements CRSParser<StAXResource> {
     @Override
     public String getVersion()
                             throws CRSConfigurationException {
-        return "0.3.0";
+        return "0.4.0";
     }
 
     @Override
