@@ -98,7 +98,7 @@ public class CRS {
      */
     public CRS( CoordinateSystem crs ) {
         if ( crs != null ) {
-            crsName = crs.getName();
+            crsName = crs.getCode().getOriginal();
             this.crs = crs;
         }
     }

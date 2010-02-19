@@ -78,10 +78,10 @@ public class CRSCodeType {
         if ( code.trim().equals( "" ) )
             throw new IllegalArgumentException( "Code cannot be white space(s)!" );
 
-        this.codeSpace = codeSpace;
+        this.codeSpace = codeSpace.toLowerCase();
         this.code = code;
         this.codeVersion = "";
-        this.original = codeSpace + ":" + code;
+        this.original = ( codeSpace + ":" + code );
     }
 
     /**
@@ -125,10 +125,10 @@ public class CRSCodeType {
         } else if ( codenumber.length() != 0 && codeversion.length() != 0 ) {
             this.code = codenumber;
             this.codeVersion = codeversion;
-            this.codeSpace = "EPSG";
+            this.codeSpace = "epsg";
         } else {
             this.code = codenumber;
-            this.codeSpace = "EPSG";
+            this.codeSpace = "epsg";
             this.codeVersion = "";
         }
 
@@ -187,32 +187,55 @@ public class CRSCodeType {
     }
 
     @Override
-    public int hashCode() {
-        return original.hashCode();
-    }
-
-    @Override
     public boolean equals( Object o ) {
         if ( !( o instanceof CRSCodeType ) ) {
             return false;
         }
         CRSCodeType that = (CRSCodeType) o;
-
-        return original.equals( that.getOriginal() );
+        return original.equalsIgnoreCase( that.getOriginal() );
     }
 
     /**
-     * Returns the codespace codeversion and code, or just the original string
-     * if it could not be parsed. Recommended for presentation purposes only.
-     * @return  the code in the form $codespace::$codeversion::$code 
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long code = 32452843;
+        code = code * 37 + original.hashCode();
+        return (int) ( code >>> 32 ) ^ (int) code;
+    }
+
+    /**
+     * Returns the codespace codeversion and code, or just the original string if it could not be parsed. Recommended
+     * for presentation purposes only.
+     * 
+     * @return the code in the form $codespace:$codeversion:$code
      */
     @Override
     public String toString() {
         if ( !code.equals( "" ) ) {
             if ( !codeVersion.equals( "" ) ) {
-                return codeSpace + "::" + codeVersion + "::" + code;
+                return codeSpace + ":" + codeVersion + ":" + code;
             }
-            return codeSpace + "::" + code;
+            return codeSpace + ":" + code;
         }
 
         return original;
