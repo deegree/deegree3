@@ -54,10 +54,15 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -236,6 +241,31 @@ public class StAXParsingHelper {
         return parseAsBoolean( xmlStream, xmlStream.getElementText() );
     }
 
+    /**
+     * Post: reader will be unchanged or at {@link XMLStreamConstants#END_ELEMENT} of the matching element or at
+     * {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.
+     * 
+     * @param reader
+     * @param elementName
+     * @param defaultValue
+     * @param nextElemOnSucces
+     *            if true the reader will be moved to the next tag if the retrieval was successful.
+     * @return the element text as boolean
+     * @throws XMLStreamException
+     */
+    public static boolean getElementTextAsBoolean( XMLStreamReader reader, QName elementName, boolean defaultValue,
+                                                   boolean nextElemOnSucces )
+                            throws XMLStreamException {
+        boolean res = defaultValue;
+        if ( elementName.equals( reader ) ) {
+            res = parseAsBoolean( reader, reader.getElementText() );
+            if ( nextElemOnSucces ) {
+                nextElement( reader );
+            }
+        }
+        return res;
+    }
+
     public static boolean getAttributeValueAsBoolean( XMLStreamReader xmlStream, String namespaceURI, String localName,
                                                       boolean defaultValue )
                             throws XMLParsingException {
@@ -329,13 +359,245 @@ public class StAXParsingHelper {
         return parseAsBoolean( xmlStream, getRequiredAttributeValue( xmlStream, namespaceURI, localName ) );
     }
 
-    public static void nextElement( XMLStreamReader xmlReader ) throws XMLStreamException {
-        xmlReader.next();        
-        while (xmlReader.getEventType() != END_DOCUMENT && !xmlReader.isStartElement() && !xmlReader.isEndElement() ) {
+    /**
+     * Get the text of the element or if the reader does not match the given elementName the default text will be
+     * returned. Post: reader will be unchanged or at {@link XMLStreamConstants#END_ELEMENT} of the matching element or
+     * at {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.
+     * 
+     * 
+     * @param reader
+     * @param elemName
+     * @param defaultText
+     * @param nextElemOnSucces
+     *            if true the reader will be moved to the next tag if the retrieval was successful.
+     * @return the text of the element or if the reader does not match the given elementName the default text will be
+     *         returned.
+     * @throws XMLStreamException
+     */
+    public static String getText( XMLStreamReader reader, QName elemName, String defaultText, boolean nextElemOnSucces )
+                            throws XMLStreamException {
+        String value = defaultText;
+        if ( reader.isStartElement() && reader.getName().equals( elemName ) ) {
+            value = reader.getElementText();
+            if ( nextElemOnSucces ) {
+                nextElement( reader );
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Skips to the next element if the reader points the required element. Post: reader will be at
+     * {@link XMLStreamConstants#START_ELEMENT} of the next element.
+     * 
+     * @param reader
+     * @param elementName
+     * @throws XMLStreamException
+     */
+    public static void skipRequiredElement( XMLStreamReader reader, QName elementName )
+                            throws XMLStreamException {
+        if ( reader.isStartElement() && reader.getName().equals( elementName ) ) {
+            nextElement( reader );
+            if ( reader.isEndElement() && reader.getName().equals( elementName ) ) {
+                nextElement( reader );
+            }
+            return;
+        }
+        throw new XMLParsingException( reader, "Required element " + elementName
+                                               + " was not found at given stream position." );
+    }
+
+    /**
+     * Get the text of the given element which must be an element with given name. Post: reader will be at
+     * {@link XMLStreamConstants#END_ELEMENT} of matching element or at {@link XMLStreamConstants #START_ELEMENT} of the
+     * next element if requested.
+     * 
+     * @param reader
+     * @param elementName
+     * @param nextElemOnSucces
+     *            if true the reader will be moved to the next tag if the retrieval was successful.
+     * @return the text of the current 'required' element.
+     * @throws XMLStreamException
+     */
+    public static String getRequiredText( XMLStreamReader reader, QName elementName, boolean nextElemOnSucces )
+                            throws XMLStreamException {
+        if ( reader.isStartElement() && reader.getName().equals( elementName ) ) {
+            String val = reader.getElementText();
+            if ( nextElemOnSucces ) {
+                nextElement( reader );
+            }
+            return val;
+        }
+        throw new XMLParsingException( reader, "Required element " + elementName
+                                               + " was not found at given stream position." );
+    }
+
+    /**
+     * The reader must be on a StartElement, any attributes will be skipped. Post: reader will be unchanged or at
+     * {@link XMLStreamConstants#START_ELEMENT } of the first element after the last matching element
+     * 
+     * @param reader
+     * @param name
+     *            of the elements
+     * @return an array of strings, denoting the elements with the given name.
+     * @throws XMLStreamException
+     */
+    public static String[] getSimpleUnboundedAsStrings( XMLStreamReader reader, QName name )
+                            throws XMLStreamException {
+        List<String> values = new LinkedList<String>();
+        if ( reader.isStartElement() ) {
+            while ( name.equals( reader.getName() ) ) {
+                String text = reader.getElementText();
+                if ( text != null ) {
+                    values.add( text );
+                }
+                // move beyond the end tag.
+                nextElement( reader );
+            }
+        }
+        return values.toArray( new String[values.size()] );
+    }
+
+    /**
+     * Move the reader forth one {@link XMLStreamConstants#END_ELEMENT} or {@link XMLStreamConstants#END_ELEMENT},
+     * throws n
+     * 
+     * @param xmlReader
+     * @throws XMLStreamException
+     * @throws NoSuchElementException
+     *             if the end of the document is reached.
+     */
+    public static void nextElement( XMLStreamReader xmlReader )
+                            throws XMLStreamException, NoSuchElementException {
+        xmlReader.next();
+        while ( xmlReader.getEventType() != END_DOCUMENT && !xmlReader.isStartElement() && !xmlReader.isEndElement() ) {
             xmlReader.next();
         }
-        if (xmlReader.getEventType() == END_DOCUMENT) {
+        if ( xmlReader.getEventType() == END_DOCUMENT ) {
             throw new NoSuchElementException();
         }
+    }
+
+    /**
+     * Post: reader will be unchanged or on success at {@link XMLStreamConstants #END_ELEMENT} of the matching element
+     * or at {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.
+     * 
+     * @param reader
+     *            pointing to the current element.
+     * @param elementName
+     *            of the current element.
+     * @param defaultValue
+     *            to return if the current name was not the one given or the value could not be parsed as a double.
+     * @param nextElemOnSucces
+     *            if true the reader will be moved to the next tag if the retrieval was successful.
+     * @return the text of the current element (which should have element name) parsed as a double.
+     * @throws XMLStreamException
+     *             from {@link XMLStreamReader#getElementText()}.
+     */
+    public static double getElementTextAsDouble( XMLStreamReader reader, QName elementName, double defaultValue,
+                                                 boolean nextElemOnSucces )
+                            throws XMLStreamException {
+        double value = defaultValue;
+        if ( elementName.equals( reader.getName() ) && reader.isStartElement() ) {
+            String s = reader.getElementText();
+            if ( s != null ) {
+                try {
+                    value = Double.parseDouble( s );
+                    if ( nextElemOnSucces ) {
+                        nextElement( reader );
+                    }
+                } catch ( NumberFormatException nfe ) {
+                    LOG.debug( reader.getLocation() + ") Value " + s + " in element: " + elementName
+                               + " was not a parsable double, returning double value: " + defaultValue );
+                }
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Returns the text in the required element as a double. If the name of the reader does not match the given qName,
+     * an exception will be thrown. If the value is not a double, an exception will be thrown. Post: reader will be
+     * unchanged or at {@link XMLStreamConstants #END_ELEMENT} of the matching element or at
+     * {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.
+     * 
+     * @param reader
+     * @param elementName
+     * @param nextElemOnSucces
+     *            if true the reader will be move to the next element if the operation was successful.
+     * @return the double value of the required element.
+     * @throws XMLStreamException
+     */
+    public static double getRequiredElementTextAsDouble( XMLStreamReader reader, QName elementName,
+                                                         boolean nextElemOnSucces )
+                            throws XMLStreamException {
+        if ( !elementName.equals( reader.getName() ) ) {
+            throw new XMLParsingException( reader, "The current element: " + reader.getName() + " is not expected: "
+                                                   + elementName );
+        }
+        double result = getElementTextAsDouble( reader, elementName, Double.NaN, nextElemOnSucces );
+        if ( Double.isNaN( result ) ) {
+            throw new XMLParsingException( reader, "The element " + elementName + " does not specify a double value." );
+        }
+        return result;
+    }
+
+    /**
+     * Move the reader to the first element which matches the given name. The reader will be positioned on the
+     * {@link XMLStreamConstants#START_ELEMENT} event or after the {@link XMLStreamConstants#END_DOCUMENT} which ever
+     * comes first.
+     * 
+     * @param reader
+     *            to position
+     * @param elementName
+     *            name of the element to move forward to.
+     * @return true if the reader is on the given element, false otherwise.
+     * @throws XMLStreamException
+     * 
+     */
+    public static boolean moveReaderToFirstMatch( XMLStreamReader reader, QName elementName )
+                            throws XMLStreamException {
+        if ( elementName == null ) {
+            return true;
+        }
+        Set<QName> allowed = new HashSet<QName>( 1 );
+        allowed.add( elementName );
+        return moveReaderToFirstMatch( reader, allowed );
+    }
+
+    /**
+     * Move the reader to the first element which matches one of the given name(s). The reader will be positioned on the
+     * {@link XMLStreamConstants#START_ELEMENT} event or after the {@link XMLStreamConstants#END_DOCUMENT} which ever
+     * comes first.
+     * 
+     * @param reader
+     *            to position
+     * @param alowedElements
+     *            name of the element to move forward to.
+     * @return true if the reader is on the given element, false otherwise.
+     * @throws XMLStreamException
+     * 
+     */
+    public static boolean moveReaderToFirstMatch( XMLStreamReader reader, Collection<QName> alowedElements )
+                            throws XMLStreamException {
+        boolean hasMoreElements = true;
+        do {
+            if ( reader.isStartElement() && alowedElements.contains( reader.getName() ) ) {
+                return true;
+            }
+            try {
+                if ( LOG.isDebugEnabled() ) {
+                    if ( reader.isStartElement() || reader.isEndElement() ) {
+                        LOG.debug( "Skipping element: " + reader.getName() );
+                    }
+                }
+                nextElement( reader );
+            } catch ( NoSuchElementException e ) {
+                // end of file
+                hasMoreElements = false;
+            }
+
+        } while ( hasMoreElements );
+        return false;
     }
 }
