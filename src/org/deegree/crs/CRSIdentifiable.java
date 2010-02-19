@@ -36,11 +36,14 @@
 
 package org.deegree.crs;
 
+import static org.deegree.commons.utils.ArrayUtils.contains;
+
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.crs.i18n.Messages;
-import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,8 +68,8 @@ public class CRSIdentifiable {
     private String[] descriptions;
 
     private String[] areasOfUse;
-    
-    private double [] areaOfUseBBox;
+
+    private double[] areaOfUseBBox;
 
     /**
      * Takes the references of the other object and stores them in this CRSIdentifiable Object.
@@ -291,7 +294,6 @@ public class CRSIdentifiable {
     public boolean equals( Object other ) {
         if ( other != null && other instanceof CRSIdentifiable
              && ( (CRSIdentifiable) other ).getCodes().length == getCodes().length ) {
-
             // compare the codes from each part as sets
             CRSCodeType[] thisArray = getCodes();
             CRSCodeType[] otherArray = ( (CRSIdentifiable) other ).getCodes();
@@ -303,9 +305,9 @@ public class CRSIdentifiable {
                 otherSet.add( otherArray[i] );
             }
 
-            if ( !thisSet.equals( otherSet ) )
+            if ( !thisSet.equals( otherSet ) ) {
                 return false;
-
+            }
             return true;
         }
 
@@ -372,6 +374,33 @@ public class CRSIdentifiable {
     }
 
     /**
+     * Iterates over all Ids (code type originals) and Names and tests if either one matches the given string.
+     * 
+     * @param idOrName
+     *            a String which might be an id or a name.
+     * @param caseSensitive
+     *            should the match me case sensitive
+     * @param exact
+     *            should the names and ids contain the given string or match exact.
+     * @return true if any of the names or codes match without case the given string.
+     */
+    public boolean hasIdOrName( String idOrName, boolean caseSensitive, boolean exact ) {
+        return ArrayUtils.contains( getOrignalCodeStrings(), idOrName, caseSensitive, exact )
+               || ArrayUtils.contains( getNames(), idOrName, caseSensitive, exact );
+    }
+
+    /**
+     * 
+     * @param id
+     * @param caseSensitive
+     * @param exact
+     * @return true if the given id is present in this objects id's.
+     */
+    public boolean hasId( String id, boolean caseSensitive, boolean exact ) {
+        return contains( getOrignalCodeStrings(), id, caseSensitive, exact );
+    }
+
+    /**
      * Returns the area of use, i.e. the domain where this {@link CRSIdentifiable} is valid.
      * 
      * @return the domain of validity (EPSG:4326 coordinates), order: minX, minY, maxX, maxY, never <code>null</code>
@@ -380,7 +409,7 @@ public class CRSIdentifiable {
     public double[] getAreaOfUseBBox() {
 
         if ( areaOfUseBBox == null ) {
-            areaOfUseBBox = new double [4];
+            areaOfUseBBox = new double[4];
             areaOfUseBBox[0] = Double.NaN;
             areaOfUseBBox[1] = Double.NaN;
             areaOfUseBBox[2] = Double.NaN;
@@ -421,5 +450,163 @@ public class CRSIdentifiable {
             ords[i] = Double.parseDouble( tokens[i] );
         }
         return ords;
+    }
+
+    /**
+     * @param newCodeType
+     * @param override
+     */
+    public void setDefaultId( CRSCodeType newCodeType, boolean override ) {
+        if ( newCodeType != null ) {
+            if ( override ) {
+                this.codes[0] = newCodeType;
+            } else {
+                CRSCodeType[] newCodes = new CRSCodeType[codes.length + 1];
+                newCodes[0] = newCodeType;
+                System.arraycopy( codes, 0, newCodes, 1, codes.length );
+                this.codes = newCodes;
+            }
+        }
+    }
+
+    /**
+     * @param bbox
+     *            an envelope of validity in epsg:4326 coordinates, min(lon,lat) max(lon,lat);
+     */
+    public void setDefaultAreaOfUse( double[] bbox ) {
+        if ( bbox != null && bbox.length == 4 ) {
+            if ( ( bbox[0] >= -180 && bbox[2] <= 180 && bbox[0] < bbox[2] )
+                 && ( bbox[1] >= -90 && bbox[3] <= 90 && bbox[1] < bbox[3] ) ) {
+
+                String[] newAreas = null;
+                if ( areasOfUse == null || areasOfUse.length == 0 ) {
+                    newAreas = new String[1];
+                } else {
+                    newAreas = new String[areasOfUse.length + 1];
+                    System.arraycopy( areasOfUse, 0, newAreas, 1, areasOfUse.length );
+                }
+                StringBuilder sb = new StringBuilder( bbox[0] + "," + bbox[1] + "," + bbox[2] + "," + bbox[3] );
+                newAreas[0] = sb.toString();
+                areasOfUse = newAreas;
+            }
+        }
+    }
+
+    /**
+     * @param areaOfUse
+     */
+    public void addAreaOfUse( String areaOfUse ) {
+        if ( areaOfUse != null ) {
+            String[] aou = new String[areasOfUse == null ? 1 : areasOfUse.length + 1];
+            if ( areasOfUse == null || areasOfUse.length == 0 ) {
+                aou[0] = areaOfUse;
+            } else {
+                System.arraycopy( areasOfUse, 0, aou, 0, areasOfUse.length );
+                aou[aou.length - 1] = areaOfUse;
+            }
+            this.areasOfUse = aou;
+        }
+    }
+
+    /**
+     * @param name
+     */
+    public void addName( String name ) {
+        if ( name != null ) {
+            String[] nNames = new String[names == null ? 1 : names.length + 1];
+            if ( names == null || names.length == 0 ) {
+                nNames[0] = name;
+            } else {
+                System.arraycopy( names, 0, nNames, 0, names.length );
+                nNames[nNames.length - 1] = name;
+            }
+            this.names = nNames;
+        }
+
+    }
+
+    /**
+     * @param defaultName
+     *            the new default name
+     * @param override
+     *            true if the new name should override the name currently at position 0
+     */
+    public void setDefaultName( String defaultName, boolean override ) {
+        if ( defaultName != null && !"".equals( defaultName ) ) {
+            String[] newNames = new String[1];
+            if ( override ) {
+                if ( names != null && names.length >= 1 ) {
+                    newNames = Arrays.copyOf( names, names.length );
+                }
+            } else {
+                if ( names != null && names.length >= 1 ) {
+                    newNames = new String[names.length + 1];
+                    System.arraycopy( names, 0, newNames, 1, names.length );
+                }
+            }
+            newNames[0] = defaultName;
+            this.names = newNames;
+        } else {
+            if ( override ) {
+                this.names = null;
+            }
+        }
+    }
+
+    /**
+     * @param newDescription
+     *            the new default description
+     * @param override
+     *            true if the new description should override the description currently at position 0
+     */
+    public void setDefaultDescription( String newDescription, boolean override ) {
+        if ( newDescription != null && !"".equals( newDescription ) ) {
+            String[] newDesc = new String[1];
+            if ( override ) {
+                if ( descriptions != null && descriptions.length >= 1 ) {
+                    newDesc = Arrays.copyOf( descriptions, descriptions.length );
+                }
+            } else {
+                if ( descriptions != null && descriptions.length >= 1 ) {
+                    newDesc = new String[descriptions.length + 1];
+                    System.arraycopy( descriptions, 0, newDesc, 1, descriptions.length );
+                }
+            }
+            newDesc[0] = newDescription;
+            this.descriptions = newDesc;
+        } else {
+            if ( override ) {
+                this.descriptions = null;
+            }
+        }
+
+    }
+
+    /**
+     * @param newVersion
+     *            the new default version
+     * @param override
+     *            true if the new version should override the version currently at position 0
+     */
+    public void setDefaultVersion( String newVersion, boolean override ) {
+        if ( newVersion != null && !"".equals( newVersion ) ) {
+            String[] newVers = new String[1];
+            if ( override ) {
+                if ( versions != null && versions.length >= 1 ) {
+                    newVers = Arrays.copyOf( versions, versions.length );
+                }
+            } else {
+                if ( versions != null && versions.length >= 1 ) {
+                    newVers = new String[versions.length + 1];
+                    System.arraycopy( versions, 0, newVers, 1, versions.length );
+                }
+            }
+            newVers[0] = newVersion;
+            this.versions = newVers;
+        } else {
+            if ( override ) {
+                this.versions = null;
+            }
+        }
     }
 }
