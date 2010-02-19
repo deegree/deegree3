@@ -40,6 +40,7 @@ package org.deegree.coverage.raster;
 
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.gc;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -73,6 +74,7 @@ import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.utils.Rasters;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * The <code>RasterFactory</code> class TODO add class documentation here.
@@ -83,6 +85,7 @@ import org.junit.Test;
  * 
  */
 public class RasterFactory {
+    private static final Logger LOG = getLogger( RasterFactory.class );
 
     private final static float[] TEST_HEIGHTS = new float[] { -10.912f, -5.8f, 0.001f, 5.5f, 10.1f, 15.3f };
 
@@ -143,9 +146,9 @@ public class RasterFactory {
         RenderedOp tiff = getJAIImage( "test_tiled_image_lzw.tif" );
         RenderedOp tiffNone = getJAIImage( "test_tiled_image.tif" );
 
-        System.out.println( "jpg:  " + jpg.getWidth() + ", " + jpg.getHeight() );
-        System.out.println( "tiff:  " + tiff.getWidth() + ", " + tiff.getHeight() );
-        System.out.println( "tiffNone:  " + tiffNone.getWidth() + ", " + tiffNone.getHeight() );
+        LOG.debug( "jpg:  " + jpg.getWidth() + ", " + jpg.getHeight() );
+        LOG.debug( "tiff:  " + tiff.getWidth() + ", " + tiff.getHeight() );
+        LOG.debug( "tiffNone:  " + tiffNone.getWidth() + ", " + tiffNone.getHeight() );
 
         // synchronized ( tiff ) {
         // tiff.wait( 10000 );
@@ -154,12 +157,12 @@ public class RasterFactory {
 
         long ret = currentTimeMillis();
         saveSubset( jpg, "jpg", 0, 0, 250, 260 );
-        System.out.println( "jpg subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
+        LOG.debug( "jpg subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
         // jpg.dispose();
         //
         ret = currentTimeMillis();
         saveSubset( jpg, "jpg", 2098, 2000, 1050, 1008 );
-        System.out.println( "jpg subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+        LOG.debug( "jpg subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
         jpg.dispose();
 
         gc();
@@ -169,18 +172,18 @@ public class RasterFactory {
         gc();
         gc();
         synchronized ( tiff ) {
-            System.out.println( "done getting jpg." );
+            LOG.debug( "done getting jpg." );
             // tiff.wait( 50000 );
             tiff.notifyAll();
         }
 
         ret = currentTimeMillis();
         saveSubset( tiff, "jai_tif_1", 0, 0, 250, 260 );
-        System.out.println( "compressed tiff subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
+        LOG.debug( "compressed tiff subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
 
         ret = currentTimeMillis();
         saveSubset( tiff, "jai_tif_2", 4998, 4900, 10500, 13080 );
-        System.out.println( "compressed tiff subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+        LOG.debug( "compressed tiff subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
 
         gc();
         gc();
@@ -189,31 +192,31 @@ public class RasterFactory {
         gc();
         gc();
         synchronized ( tiff ) {
-            System.out.println( "done getting compressed." );
+            LOG.debug( "done getting compressed." );
             tiff.wait( 5000 );
             tiff.notifyAll();
         }
         ret = currentTimeMillis();
         saveSubset( tiffNone, "jai_tif_none_1", 0, 0, 250, 260 );
-        System.out.println( "tiff subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
+        LOG.debug( "tiff subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
         ret = currentTimeMillis();
         saveSubset( tiffNone, "jai_tif_none_2", 4998, 4900, 10500, 13080 );
-        System.out.println( "tiff subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+        LOG.debug( "tiff subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
 
-        System.out.println( "jai total: " + ( currentTimeMillis() - t ) + "millis" );
+        LOG.debug( "jai total: " + ( currentTimeMillis() - t ) + "millis" );
         t = System.currentTimeMillis();
     }
 
     private void saveSubset( RenderedOp image, String name, int x, int y, int w, int h )
                             throws IOException {
-        System.out.println( "getting subset: " + name );
+        LOG.debug( "getting subset: " + name );
         WritableRaster jpgRaster = image.getColorModel().createCompatibleWritableRaster( w, h ).createWritableTranslatedChild(
                                                                                                                                x,
                                                                                                                                y );
         image.copyExtendedData( jpgRaster, BorderExtender.createInstance( BorderExtender.BORDER_ZERO ) );
         // BufferedImage img = new BufferedImage( image.getColorModel(), jpgRaster.getWritableParent(), false, null );
         // ImageIO.write( img, "png", File.createTempFile( name, ".png" ) );
-        System.out.println( "wrote subset: " + name );
+        LOG.debug( "wrote subset: " + name );
     }
 
     private RenderedOp getJAIImage( String file )
@@ -299,28 +302,28 @@ public class RasterFactory {
         JAI jai = JAI.getDefaultInstance();
         OperationRegistry reg = jai.getOperationRegistry();
         RenderingHints renderingHints = jai.getRenderingHints();
-        System.out.println( renderingHints.values() );
+        LOG.debug( "values: " + renderingHints.values() );
 
         String[] modeNames = RegistryMode.getModeNames();
         for ( String modeName : modeNames ) {
-            System.out.println( "**** " + modeName + " ****" );
+            LOG.debug( "**** " + modeName + " ****" );
             String[] descriptorNames = reg.getDescriptorNames( modeName );
             for ( String dn : descriptorNames ) {
-                System.out.println( "- " + dn );
+                LOG.debug( "- " + dn );
                 RegistryElementDescriptor descriptor = reg.getDescriptor( modeName, dn );
                 String[] supportedModes = descriptor.getSupportedModes();
                 for ( String sm : supportedModes ) {
-                    System.out.println( " - " + sm );
+                    LOG.debug( " - " + sm );
                     ParameterListDescriptor parameterListDescriptor = descriptor.getParameterListDescriptor( sm );
                     if ( parameterListDescriptor != null ) {
                         String[] parameterNames = parameterListDescriptor.getParamNames();
                         if ( parameterNames != null ) {
                             for ( String parameterName : parameterNames ) {
-                                System.out.println( "  - " + parameterName );
+                                LOG.debug( "  - " + parameterName );
                             }
                         }
                     } else {
-                        System.out.println( "  - no parameters" );
+                        LOG.debug( "  - no parameters" );
                     }
                 }
             }

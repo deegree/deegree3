@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.validation;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,7 +48,6 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -54,12 +55,11 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReaderTest;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * Testcases that check the correct determination of topological errors by the {@link GeometryValidator}.
@@ -70,6 +70,7 @@ import org.junit.Test;
  * @version $Revision:$, $Date:$
  */
 public class GeometryValidatorTest {
+    private static final Logger LOG = getLogger( GeometryValidatorTest.class );
 
     private static GeometryFactory geomFac = new GeometryFactory();
 
@@ -267,13 +268,17 @@ public class GeometryValidatorTest {
                              eventHandler.getEvents().get( 0 ) );
     }
 
-    private Geometry parseGeometry( String fileName ) throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+    private Geometry parseGeometry( String fileName )
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
         URL docURL = GML3GeometryReaderTest.class.getResource( BASE_DIR + fileName );
         return GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL ).readGeometry();
     }
 }
 
 class TestValidationEventHandler implements GeometryValidationEventHandler {
+
+    private static final Logger LOG = getLogger( TestValidationEventHandler.class );
 
     private List<ValidationEventType> events = new ArrayList<ValidationEventType>();
 
@@ -379,7 +384,7 @@ class TestValidationEventHandler implements GeometryValidationEventHandler {
     private void printAffectedGeometryParticles( List<Object> affectedGeometryParticles ) {
         String indent = "";
         for ( Object object : affectedGeometryParticles ) {
-            System.out.println( indent + "-" + object );
+            LOG.debug( indent + "-" + object );
             indent += "  ";
         }
     }

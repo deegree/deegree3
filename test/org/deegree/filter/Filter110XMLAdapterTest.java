@@ -36,6 +36,7 @@
 package org.deegree.filter;
 
 import static org.junit.Assert.assertNotNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -56,6 +57,7 @@ import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * Tests the correct parsing and exporting of Filter Encoding 1.1.0 documents.
@@ -66,6 +68,8 @@ import org.junit.Test;
  * @version $Revision:$, $Date:$
  */
 public class Filter110XMLAdapterTest {
+
+    private static final Logger LOG = getLogger( Filter110XMLAdapterTest.class );
 
     @Test
     public void parseIdFilter()
@@ -81,7 +85,7 @@ public class Filter110XMLAdapterTest {
         Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_969" ) );
     }
 
-    @Test (expected=XMLParsingException.class)
+    @Test(expected = XMLParsingException.class)
     public void parseMixedIdFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         parse( "testfilter_110_id_mixed.xml" );
@@ -105,7 +109,7 @@ public class Filter110XMLAdapterTest {
         Assert.assertEquals( Operator.Type.COMPARISON, and.getParameter( 1 ).getType() );
         ComparisonOperator param2Oper = (ComparisonOperator) and.getParameter( 1 );
         Assert.assertEquals( ComparisonOperator.SubType.PROPERTY_IS_EQUAL_TO, param2Oper.getSubType() );
-    
+
     }
 
     @Test(expected = XMLParsingException.class)
@@ -140,89 +144,89 @@ public class Filter110XMLAdapterTest {
                                                                                          url.openStream() );
         xmlStream.nextTag();
         Location loc = xmlStream.getLocation();
-        System.out.println( loc.getLineNumber() );
-        System.out.println( loc.getSystemId() );
-        System.out.println( loc.getColumnNumber() );
+        LOG.debug( "" + loc.getLineNumber() );
+        LOG.debug( "" + loc.getSystemId() );
+        LOG.debug( "" + loc.getColumnNumber() );
         return Filter110XMLDecoder.parse( xmlStream );
     }
-    
+
     @Test
     public void parseBeyondFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter15.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseDisjointFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter16.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseContainsFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter17.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseCrossesFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter18.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseDWithinFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter19.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseIntersectsFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter20.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseEqualsFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter21.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseOverlapsFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter22.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseTouchesFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter23.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
-    
+
     @Test
     public void parseWithinFilter()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter24.xml" );
         Assert.assertNotNull( filter );
-        
+
     }
 }

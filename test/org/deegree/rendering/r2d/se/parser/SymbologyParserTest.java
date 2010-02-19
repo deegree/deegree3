@@ -78,13 +78,13 @@ public class SymbologyParserTest extends TestCase {
         File dir = new File( cls.getResource( "SymbologyParserTest.class" ).getFile() ).getParentFile();
         for ( File f : dir.listFiles() ) {
             if ( f.getName().endsWith( ".xml" ) ) {
-                LOG.info( "Expecting {} to parse fine.", f );
+                LOG.debug( "Expecting {} to parse fine.", f );
                 XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
                 in.next();
                 assertNotNull( parse( in ) );
             }
             if ( f.getName().endsWith( ".bad" ) ) {
-                LOG.info( "Expecting {} to fail.", f );
+                LOG.debug( "Expecting {} to fail.", f );
                 XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
                 in.next();
                 try {

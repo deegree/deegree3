@@ -226,7 +226,7 @@ public class FeatureXPathTest {
     // xpath.setNamespaceContext( nsContext );
     // List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
     // for ( Node node : selectedNodes ) {
-    // System.out.println( ( (PropertyNode) node ).getProperty().getValue() );
+    // LOG.debug( ( (PropertyNode) node ).getProperty().getValue() );
     // }
     // }
 

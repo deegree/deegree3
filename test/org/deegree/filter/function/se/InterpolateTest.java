@@ -78,7 +78,7 @@ public class InterpolateTest extends TestCase {
     private void loadCategorizeFromXml()
                             throws URISyntaxException, XMLStreamException, FileNotFoundException {
         URI uri = SymbologyParserTest.class.getResource( "setest18.xml" ).toURI();
-        LOG.info( "Loading resource: {}", uri );
+        LOG.debug( "Loading resource: {}", uri );
         File f = new File( uri );
         final XMLInputFactory fac = XMLInputFactory.newInstance();
         XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
@@ -97,7 +97,7 @@ public class InterpolateTest extends TestCase {
                             throws FileNotFoundException, URISyntaxException, XMLStreamException {
         loadCategorizeFromXml();
         interp.buildLookupArrays();
-        LOG.info( "Interpolate: {}", interp );
+        LOG.debug( "Interpolate: {}", interp );
         test( -0.51 );
         test( 0 );
         test( 0.49 );

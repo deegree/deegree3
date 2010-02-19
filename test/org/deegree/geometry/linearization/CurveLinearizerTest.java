@@ -36,6 +36,8 @@
 
 package org.deegree.geometry.linearization;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +52,7 @@ import org.deegree.geometry.standard.curvesegments.DefaultCubicSpline;
 import org.deegree.geometry.standard.points.PointsList;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -67,6 +70,7 @@ import com.vividsolutions.jts.geomgraph.Position;
  * @version $Revision: $, $Date: $
  */
 public class CurveLinearizerTest {
+    private static final Logger LOG = getLogger( CurveLinearizerTest.class );
 
     private org.deegree.geometry.GeometryFactory geomFac;
 
@@ -301,11 +305,11 @@ public class CurveLinearizerTest {
             output.add( p0 );
             output.add( p1 );
             output.add( p2 );
-            System.out.println( exportToWKT( new PointsList( output ) ) );
+            LOG.debug( exportToWKT( new PointsList( output ) ) );
         }
         Points output2 = linearizer.linearize( arc, new NumPointsCriterion( 15 ) ).getControlPoints();
         if ( outputWKT ) {
-            System.out.println( exportToWKT( output2 ) );
+            LOG.debug( exportToWKT( output2 ) );
         }
         return output2;
     }
@@ -443,7 +447,7 @@ public class CurveLinearizerTest {
 
         // inverse
         positions = createLinearArc( p2, p1, p0, false );
-        System.out.println( exportToWKT( positions ) );
+        LOG.debug( exportToWKT( positions ) );
         Assert.assertEquals(
                              exportToWKT( positions ),
                              "LINESTRING (-2.3 2.5, -3.127698122123212 1.62577746297488, -3.5962725289439463 0.5168197311917766, -3.6462132676293435 -0.6860331892554763, -3.2711777574486907 -1.8300164022933543, -2.518796311104997 -2.769841590722937, -1.4846229830504076 -3.3861489435505883, -0.300000000000001 -3.6006661075204693, 0.8846229830504059 -3.386148943550589, 1.918796311104995 -2.769841590722937, 2.67117775744869 -1.8300164022933538, 3.0462132676293425 -0.6860331892554776, 2.9962725289439462 0.5168197311917739, 2.5276981221232138 1.6257774629748767, 1.7000000000000002 2.5)" );
@@ -465,7 +469,7 @@ public class CurveLinearizerTest {
 
         // inverse
         positions = createLinearArc( p2, p1, p0, true );
-        System.out.println( exportToWKT( positions ).trim() );
+        LOG.debug( exportToWKT( positions ).trim() );
         Assert.assertEquals(
                              exportToWKT( positions ).trim(),
                              "LINESTRING (-2.3 -2.5, -2.992224229754389 -1.109058926972116, -3.0123899967132983 0.4444805140263982, -2.3565032234136143 1.8529207837948918, -1.1544703292307315 2.8373030135193718, 0.3556313291764255 3.2026582299471267, 1.8747075981788668 2.8766233516769613, 3.1018867924528286 1.9237735849056588, 3.794111022207218 0.5328325118777754, 3.814276789166127 -1.0207069291207391, 3.1583900158664444 -2.4291471988892326, 1.9563571216835611 -3.413529428613713, 0.4462554632764042 -3.778884645041468, -1.0728208057260369 -3.452849766771303, -2.3 -2.5)" );

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.linearization;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,7 @@ import org.deegree.geometry.standard.primitive.DefaultPolygon;
 import org.deegree.geometry.standard.primitive.DefaultRing;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * The <code>SurfaceLinearizerTest</code> class verifies the corecteness of the surface linearization
@@ -70,6 +73,8 @@ import org.junit.Test;
  */
 public class SurfaceLinearizerTest {
 
+    private static final Logger LOG = getLogger( SurfaceLinearizerTest.class );
+
     final double MAX_ERROR = 0.001;
 
     final int MAX_POINTS = 10000;
@@ -88,16 +93,16 @@ public class SurfaceLinearizerTest {
     public void linearizePolygon() {
         Polygon polygon = new DefaultPolygon( null, null, null, createExteriorRing(), createInteriorRings() );
         Polygon res = (Polygon) linearizer.linearize( polygon, new MaxErrorCriterion( MAX_ERROR, MAX_POINTS ) );
-        System.out.println( "exterior ring:" );
+        LOG.debug( "exterior ring:" );
         for ( Curve curve : res.getExteriorRing().getMembers() ) {
             for ( Point p : curve.getControlPoints() ) {
-                System.out.println( p.get0() + ", " + p.get1() );
+                LOG.debug( p.get0() + ", " + p.get1() );
             }
         }
         for ( Points pts : res.getInteriorRingsCoordinates() ) {
-            System.out.println( "interior ring:" );
+            LOG.debug( "interior ring:" );
             for ( int i = 0; i < pts.size(); i++ )
-                System.out.println( pts.get( i ).get0() + ", " + pts.get( i ).get1() );
+                LOG.debug( pts.get( i ).get0() + ", " + pts.get( i ).get1() );
         }
     }
 

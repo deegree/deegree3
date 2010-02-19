@@ -78,7 +78,7 @@ public class CategorizeTest extends TestCase {
     private void loadCategorizeFromXml()
                             throws URISyntaxException, XMLStreamException, FileNotFoundException {
         URI uri = SymbologyParserTest.class.getResource( "setest17.xml" ).toURI();
-        LOG.info( "Loading resource: {}", uri );
+        LOG.debug( "Loading resource: {}", uri );
         File f = new File( uri );
         final XMLInputFactory fac = XMLInputFactory.newInstance();
         XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
@@ -96,7 +96,7 @@ public class CategorizeTest extends TestCase {
     public void testCategorize() throws FileNotFoundException, URISyntaxException, XMLStreamException {
         loadCategorizeFromXml();
         cat.buildLookupArrays();
-        LOG.info( "Categorize: {}", cat );
+        LOG.debug( "Categorize: {}", cat );
         test( -1 );
         test( -0.5 );
         test( 0 );

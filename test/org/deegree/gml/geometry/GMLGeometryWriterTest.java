@@ -58,8 +58,8 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.gml.GMLDocumentIdContext;
-import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
@@ -190,7 +190,7 @@ public class GMLGeometryWriterTest {
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
             GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                    new HashSet<String>() );
+                                                                  new HashSet<String>() );
             exporter.export( geom );
             writer.flush();
 
@@ -217,7 +217,7 @@ public class GMLGeometryWriterTest {
             GML3SurfacePatchReader parser = new GML3SurfacePatchReader( geometryParser, geomFactory );
             URL docURL = GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource );
             if ( docURL == null )
-                System.out.println( GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource ) );
+                LOG.debug( "patch dir: " + GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource ) );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
             SurfacePatch surfPatch = parser.parseSurfacePatch( xmlReader, null );
@@ -234,7 +234,7 @@ public class GMLGeometryWriterTest {
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
             GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                    new HashSet<String>() );
+                                                                  new HashSet<String>() );
             ;
             exporter.exportSurfacePatch( surfPatch );
             writer.flush();
@@ -277,7 +277,7 @@ public class GMLGeometryWriterTest {
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
             GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                    new HashSet<String>() );
+                                                                  new HashSet<String>() );
             ;
             exporter.exportCurveSegment( curveSegment );
             writer.flush();
@@ -318,7 +318,7 @@ public class GMLGeometryWriterTest {
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
             GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                    new HashSet<String>() );
+                                                                  new HashSet<String>() );
             exporter.export( geom );
             writer.flush();
 
@@ -362,8 +362,7 @@ public class GMLGeometryWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                new HashSet<String>() );
+        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false, new HashSet<String>() );
         ;
         exporter.export( geom );
         writer.flush();
@@ -396,8 +395,7 @@ public class GMLGeometryWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                new HashSet<String>() );
+        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false, new HashSet<String>() );
         exporter.export( geom );
         writer.flush();
 
@@ -430,8 +428,7 @@ public class GMLGeometryWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false,
-                                                                new HashSet<String>() );
+        GML3GeometryWriter exporter = new GML3GeometryWriter( GML_31, writer, null, null, false, new HashSet<String>() );
         ;
         exporter.export( geom );
         writer.flush();

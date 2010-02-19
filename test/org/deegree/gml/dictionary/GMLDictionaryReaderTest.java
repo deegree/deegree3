@@ -98,6 +98,6 @@ public class GMLDictionaryReaderTest {
         GMLDictionaryWriter writer = new GMLDictionaryWriter( GML_30, new FormattingXMLStreamWriter( xmlWriter.getXMLStreamWriter() ));
         writer.write( dict );
         xmlWriter.getXMLStreamWriter().close();
-//        System.out.println (xmlWriter.toString());
+//        LOG.debug (xmlWriter.toString());
     }
 }

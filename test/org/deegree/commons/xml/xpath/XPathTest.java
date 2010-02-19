@@ -34,22 +34,27 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.xpath;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
+import org.slf4j.Logger;
 
 public class XPathTest {
+    private static final Logger LOG = getLogger( XPathTest.class );
 
     /**
      * @param args
      * @throws JaxenException
      */
-    public static void main( String[] args ) throws JaxenException {
+    public static void main( String[] args )
+                            throws JaxenException {
 
-        XPath xpath = new AXIOMXPath("app:name");
-        xpath.addNamespace("app", "http://www.deegree.org/app");
+        XPath xpath = new AXIOMXPath( "app:name" );
+        xpath.addNamespace( "app", "http://www.deegree.org/app" );
 
-        System.out.println ("xpath: '" + xpath + "'");
+        LOG.debug( "xpath: '" + xpath + "'" );
 
     }
 

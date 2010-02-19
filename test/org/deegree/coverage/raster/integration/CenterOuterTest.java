@@ -148,7 +148,7 @@ public abstract class CenterOuterTest implements CompareValues {
             }
         }
         sb.append( "};" );
-        System.out.println( sb.toString() );
+        LOG.debug( sb.toString() );
     }
 
     /**

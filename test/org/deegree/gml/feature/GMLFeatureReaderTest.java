@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -66,6 +68,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.ReferenceResolvingException;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * Tests that check the correct reading of {@link Feature} objects from GML documents.
@@ -76,6 +79,7 @@ import org.junit.Test;
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureReaderTest {
+    private static final Logger LOG = getLogger( GMLFeatureReaderTest.class );
 
     private static final String BASE_DIR = "testdata/features/";
 
@@ -104,7 +108,7 @@ public class GMLFeatureReaderTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureReader gmlAdapter = new GMLFeatureReader( GMLVersion.GML_31, null, null);
+        GMLFeatureReader gmlAdapter = new GMLFeatureReader( GMLVersion.GML_31, null, null );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         gmlAdapter.getDocumentIdContext().resolveLocalRefs();
@@ -138,7 +142,7 @@ public class GMLFeatureReaderTest {
             if ( "f094".equals( feature.getId() ) ) {
                 Property<?> decimalProp = feature.getProperty( new QName( "http://cite.opengeospatial.org/gmlsf",
                                                                           "decimalProperty" ) );
-                System.out.println( decimalProp );
+                LOG.debug( "decimal prop: " + decimalProp );
             }
         }
     }
@@ -161,9 +165,9 @@ public class GMLFeatureReaderTest {
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
 
         for ( Feature feature : fc ) {
-            System.out.println( feature.getId() );
+            LOG.debug( feature.getId() );
             for ( Property<?> prop : feature.getProperties( GMLVersion.GML_31 ) ) {
-                System.out.println( prop.getName() );
+                LOG.debug( "prop name: " + prop.getName() );
             }
             break;
         }
@@ -214,21 +218,21 @@ public class GMLFeatureReaderTest {
         FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
 
-//        XMLStreamWriter writer = new FormattingXMLStreamWriter(
-//                                                                XMLOutputFactory.newInstance().createXMLStreamWriter(
-//                                                                                                                      new FileWriter(
-//                                                                                                                                      "/tmp/out.xml" ) ) );
-//        writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
-//        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
-//        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
-//        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
-//        writer.setPrefix( "cgf", "http://www.opengis.net/cite/geometry" );
-//        writer.setPrefix( "ccf", "http://www.opengis.net/cite/complex" );
-//        writer.setPrefix( "uri", "http://www.opengis.net/cite/data" );
-//        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-//        GML2FeatureEncoder encoder = new GML2FeatureEncoder( writer, null );
-//        encoder.export( fc );
-//        writer.close();
+        // XMLStreamWriter writer = new FormattingXMLStreamWriter(
+        // XMLOutputFactory.newInstance().createXMLStreamWriter(
+        // new FileWriter(
+        // "/tmp/out.xml" ) ) );
+        // writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
+        // writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
+        // writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        // writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        // writer.setPrefix( "cgf", "http://www.opengis.net/cite/geometry" );
+        // writer.setPrefix( "ccf", "http://www.opengis.net/cite/complex" );
+        // writer.setPrefix( "uri", "http://www.opengis.net/cite/data" );
+        // writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        // GML2FeatureEncoder encoder = new GML2FeatureEncoder( writer, null );
+        // encoder.export( fc );
+        // writer.close();
     }
 
     // @Test
@@ -250,9 +254,9 @@ public class GMLFeatureReaderTest {
 
         // work with the fc
         for ( Feature feature : fc ) {
-            System.out.println( "member fid: " + feature.getId() );
+            LOG.debug( "member fid: " + feature.getId() );
         }
-        System.out.println( "member features: " + fc.size() );
+        LOG.debug( "member features: " + fc.size() );
     }
 
     // @Test

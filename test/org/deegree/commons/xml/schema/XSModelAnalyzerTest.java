@@ -106,13 +106,13 @@ public class XSModelAnalyzerTest {
         XSModel model = analyzer.getXSModel();
         XSElementDeclaration a = model.getElementDeclaration( "Philosopher", "http://www.deegree.org/app" );
         XSElementDeclaration b = model.getElementDeclaration( "FeatureCollection", "http://www.opengis.net/wfs" );
-        System.out.println( a.getSubstitutionGroupAffiliation() );
-        System.out.println( b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation() );
+        LOG.debug( "" + a.getSubstitutionGroupAffiliation() );
+        LOG.debug( "" + b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation() );
 
         QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
         List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
                                                                                         null, true, true );
-        // System.out.println (concreteFeatureElements.size());
+        // LOG.debug (concreteFeatureElements.size());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class XSModelAnalyzerTest {
         for ( XSElementDeclaration decl : geometryElements ) {
 
             XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) decl.getTypeDefinition();
-            System.out.println( "element: " + decl.getName() + ", type: " + typeDef.getName() );
+            LOG.debug( "element: " + decl.getName() + ", type: " + typeDef.getName() );
 
             switch ( typeDef.getContentType() ) {
             case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT:
@@ -148,7 +148,7 @@ public class XSModelAnalyzerTest {
 
         switch ( modelGroup.getCompositor() ) {
         case XSModelGroup.COMPOSITOR_ALL: {
-            LOG.info( "Unhandled model group: COMPOSITOR_ALL" );
+            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
             break;
         }
         case XSModelGroup.COMPOSITOR_CHOICE: {
@@ -161,11 +161,11 @@ public class XSModelAnalyzerTest {
                     int minOccurs2 = particle2.getMinOccurs();
                     int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                     QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
-                    System.out.println( "- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2 );
+                    LOG.debug( "- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2 );
                     break;
                 }
                 case XSConstants.WILDCARD: {
-                    LOG.info( "Unhandled particle: WILDCARD" );
+                    LOG.debug( "Unhandled particle: WILDCARD" );
                     break;
                 }
                 case XSConstants.MODEL_GROUP: {
@@ -187,11 +187,11 @@ public class XSModelAnalyzerTest {
                     int minOccurs2 = particle2.getMinOccurs();
                     int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                     QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
-                    System.out.println( "- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2 );
+                    LOG.debug( "- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2 );
                     break;
                 }
                 case XSConstants.WILDCARD: {
-                    LOG.info( "Unhandled particle: WILDCARD" );
+                    LOG.debug( "Unhandled particle: WILDCARD" );
                     break;
                 }
                 case XSConstants.MODEL_GROUP: {
