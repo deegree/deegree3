@@ -25,7 +25,8 @@
     <complexType>
       <sequence>
         <element ref="ft:FeatureType" minOccurs="1" maxOccurs="unbounded" />
-      </sequence>      
+      </sequence>
+      <attribute name="targetNamespace" type="anyURI" />
     </complexType>
   </element>
   <!--
@@ -154,42 +155,42 @@
   </element>
 <simpleType name="PrimitiveType">
     <restriction base="string">
-      <enumeration value="STRING">
+      <enumeration value="string">
         <annotation>
           <documentation>String-valued property (=xs:string)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="BOOLEAN">
+      <enumeration value="boolean">
         <annotation>
           <documentation>Boolean-valued property (=xs:boolean)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="DECIMAL">
+      <enumeration value="decimal">
         <annotation>
           <documentation>Decimal-valued property (=xs:decimal)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="DOUBLE">
+      <enumeration value="double">
         <annotation>
           <documentation>Double-valued property (=xs:double)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="INTEGER">
+      <enumeration value="integer">
         <annotation>
           <documentation>Integer-valued property (=xs:integer)</documentation>
         </annotation>
       </enumeration>      
-      <enumeration value="DATE">
+      <enumeration value="date">
         <annotation>
           <documentation>Date-valued property (=xs:date)</documentation>
         </annotation>
       </enumeration>
-      <enumeration value="DATE_TIME">
+      <enumeration value="dateTime">
         <annotation>
           <documentation>Date-valued property (=xs:dateTime)</documentation>
         </annotation>        
       </enumeration>
-      <enumeration value="TIME">
+      <enumeration value="time">
         <annotation>
           <documentation>Time-valued property (=xs:time)</documentation>
         </annotation>        
