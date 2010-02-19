@@ -127,7 +127,7 @@ public class RawDataBufferFloat extends DataBuffer {
     public void setElem( int i, int val ) {
         int index = calculatePosition( i );
         if ( index < floatBuffer.capacity() && index < floatBuffer.limit() ) {
-            System.out.println( "SETTING?" );
+            // System.out.println( "SETTING?" );
             floatBuffer.putInt( index, val );
         }
         throw new IndexOutOfBoundsException( "The given index is outside the bank." );
