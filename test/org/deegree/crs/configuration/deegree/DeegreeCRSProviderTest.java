@@ -52,6 +52,7 @@ import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
+import org.deegree.crs.transformations.Transformation;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
@@ -92,7 +93,7 @@ public class DeegreeCRSProviderTest extends TestCase {
         DeegreeCRSProvider dProvider = (DeegreeCRSProvider) provider;
         // try loading the gaus krueger zone 2. (transverse mercator)
         CoordinateSystem testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
-        testCRS_31466( testCRS );
+        testCRS_31466( testCRS, dProvider );
         testCRS = dProvider.getCRSByCode( new CRSCodeType( "SOME_DUMMY_CODE" ) );
         assertTrue( testCRS == null );
         // test mercator reading
@@ -112,7 +113,7 @@ public class DeegreeCRSProviderTest extends TestCase {
         assertTrue( testCRS != null );
     }
 
-    private void testCRS_31466( CoordinateSystem testCRS ) {
+    private void testCRS_31466( CoordinateSystem testCRS, DeegreeCRSProvider provider ) {
         assertNotNull( testCRS );
         assertTrue( testCRS instanceof ProjectedCRS );
         ProjectedCRS realCRS = (ProjectedCRS) testCRS;
@@ -144,6 +145,12 @@ public class DeegreeCRSProviderTest extends TestCase {
 
         // test towgs84 params
         Helmert toWGS = datum.getWGS84Conversion();
+        if ( toWGS == null ) {
+            Transformation trans = provider.getTransformation( realCRS.getGeographicCRS(), GeographicCRS.WGS84 );
+            assertNotNull( trans );
+            assertTrue( trans instanceof Helmert );
+            toWGS = (Helmert) trans;
+        }
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
         assertEquals( "1777", toWGS.getCode().getCode() );
@@ -178,9 +185,9 @@ public class DeegreeCRSProviderTest extends TestCase {
         DeegreeCRSProvider dProvider = (DeegreeCRSProvider) provider;
 
         CoordinateSystem testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
-        testCRS_31466( testCRS );
+        testCRS_31466( testCRS, dProvider );
 
         testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
-        testCRS_31466( testCRS );
+        testCRS_31466( testCRS, dProvider );
     }
 }
