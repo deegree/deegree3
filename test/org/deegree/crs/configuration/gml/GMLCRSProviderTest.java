@@ -52,6 +52,7 @@ import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
+import org.deegree.crs.transformations.Transformation;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -115,12 +116,12 @@ public class GMLCRSProviderTest extends TestCase {
         try {
             GMLCRSProvider gProvider = getProvider();
             // for (String id : gProvider.getCRSByID(""))) {
-            // System.out.println ("id: " + id);
+            // LOG.debug ("id: " + id);
             // }
             // try loading the gaus krueger zone 3.
-            // System.out.println( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
+            // LOG.debug( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
             CoordinateSystem testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
-            testCRS_31467( testCRS );
+            testCRS_31467( testCRS, gProvider );
             testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "SOME_DUMMY_CODE" ) );
             assertTrue( testCRS == null );
         } catch ( NullPointerException e ) {
@@ -128,7 +129,7 @@ public class GMLCRSProviderTest extends TestCase {
         }
     }
 
-    private void testCRS_31467( CoordinateSystem testCRS ) {
+    private void testCRS_31467( CoordinateSystem testCRS, GMLCRSProvider provider ) {
         assertNotNull( testCRS );
         assertTrue( testCRS instanceof ProjectedCRS );
         ProjectedCRS realCRS = (ProjectedCRS) testCRS;
@@ -163,6 +164,12 @@ public class GMLCRSProviderTest extends TestCase {
 
         // test towgs84 params
         Helmert toWGS = datum.getWGS84Conversion();
+        if ( toWGS == null ) {
+            Transformation trans = provider.getTransformation( realCRS.getGeographicCRS(), GeographicCRS.WGS84 );
+            assertNotNull( trans );
+            assertTrue( trans instanceof Helmert );
+            toWGS = (Helmert) trans;
+        }
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
         assertEquals( "urn:ogc:def:coordinateOperation:EPSG::1777", toWGS.getCode().getOriginal() );
@@ -194,9 +201,9 @@ public class GMLCRSProviderTest extends TestCase {
         GMLCRSProvider gProvider = getProvider();
 
         CoordinateSystem testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
-        testCRS_31467( testCRS );
+        testCRS_31467( testCRS, gProvider );
 
         testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
-        testCRS_31467( testCRS );
+        testCRS_31467( testCRS, gProvider );
     }
 }
