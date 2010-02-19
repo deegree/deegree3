@@ -42,8 +42,8 @@ import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 
 /**
- * The <code>Unit</code> class defines a mechanism to convert between different measurements units, such as
- * british_yard and meter.
+ * The <code>Unit</code> class defines a mechanism to convert between different measurements units, such as british_yard
+ * and meter.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -86,9 +86,24 @@ public final class Unit extends CRSIdentifiable {
     public static final Unit BRITISHYARD = new Unit( "y", "britishyard", 0.9144, METRE );
 
     /**
+     * foot; unit of length, with base unit of 0.304 meter.
+     */
+    public static final Unit FOOT = new Unit( "ft", "foot", 0.3048, METRE );
+
+    /**
      * US foot; unit of length, with base unit of 0.304 meter.
      */
     public static final Unit USFOOT = new Unit( "ft", "usfoot", 0.3048006096012192, METRE );
+
+    /**
+     * Clarkse foot; unit of length, with base unit of 0.304797 meter.
+     */
+    public static final Unit CLARK_FOOT = new Unit( "ftCla", "cfoot", 0.3047972654, METRE );
+
+    /**
+     * Indian foot; unit of length, with base unit of 0.304799 meter.
+     */
+    public static final Unit INDIAN_FOOT = new Unit( "ftCla", "cfoot", 0.30479951024814694, METRE );
 
     /**
      * Base unit of time.
@@ -186,7 +201,9 @@ public final class Unit extends CRSIdentifiable {
 
     /**
      * Will create a unit from the given String. If no appropriate unit was found <code>null<code> will be returned.
-     * @param unit to convert to an actual unit.
+     * 
+     * @param unit
+     *            to convert to an actual unit.
      * @return a unit or <code>null</code>
      */
     public static Unit createUnitFromString( final String unit ) {
@@ -196,6 +213,12 @@ public final class Unit extends CRSIdentifiable {
                 return METRE;
             } else if ( "BRITISHYARD".equals( t ) || "Y".equals( t ) || matchEPSGString( unit, "uom", "9060" ) ) {
                 return BRITISHYARD;
+            } else if ( "CLARKFOOT".equals( t ) || "FTCLA".equals( t ) || matchEPSGString( unit, "uom", "9005" ) ) {
+                return CLARK_FOOT;
+            } else if ( "INDIANFOOT".equals( t ) || "FTIND".equals( t ) || matchEPSGString( unit, "uom", "9080" ) ) {
+                return INDIAN_FOOT;
+            } else if ( "FOOT".equals( t ) || matchEPSGString( unit, "uom", "9002" ) ) {
+                return FOOT;
             } else if ( "USFOOT".equals( t ) || "FT".equals( t ) || matchEPSGString( unit, "uom", "9003" ) ) {
                 return USFOOT;
             } else if ( "DEGREE".equals( t ) || "°".equals( t ) || matchEPSGString( unit, "uom", "9102" )
@@ -288,7 +311,7 @@ public final class Unit extends CRSIdentifiable {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
