@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.crs;
 
+import static java.lang.System.currentTimeMillis;
+
 import javax.vecmath.Point2d;
 
 import org.deegree.crs.components.Axis;
@@ -43,10 +45,12 @@ import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.configuration.CRSConfiguration;
 import org.deegree.crs.configuration.CRSProvider;
+import org.deegree.crs.configuration.TransformationFactory;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
+import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
 import org.deegree.crs.transformations.Transformation;
@@ -56,8 +60,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * The <code>CRSRegistry</code> class wraps the access to the CRSProvider in the org.deegree.crs package by supplying
- * a static <code>create</code> method, thus encapsulating the access to the CoordinateSystems.
+ * The <code>CRSRegistry</code> class wraps the access to the CRSProvider in the org.deegree.crs package by supplying a
+ * static <code>create</code> method, thus encapsulating the access to the CoordinateSystems.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -89,10 +93,17 @@ public class CRSRegistry {
      */
     public synchronized static CoordinateSystem lookup( String providerName, String name )
                             throws UnknownCRSException {
+        long sT = currentTimeMillis();
         CRSProvider crsProvider = getProvider( providerName );
+        long eT = currentTimeMillis() - sT;
+        LOG.debug( "Getting provider: " + crsProvider + " took: " + eT + " ms." );
         CoordinateSystem realCRS = null;
         try {
+
+            sT = currentTimeMillis();
             realCRS = crsProvider.getCRSByCode( CRSCodeType.valueOf( name ) );
+            eT = currentTimeMillis() - sT;
+            LOG.debug( "Getting crs ( " + name + " )from provider: " + crsProvider + " took: " + eT + " ms." );
         } catch ( CRSConfigurationException e ) {
             // throw new RuntimeException( "The crs configuration is broken, no way to recover from this." );
             throw new RuntimeException(
@@ -155,16 +166,24 @@ public class CRSRegistry {
      * Retrieve a {@link Transformation} (chain) which transforms coordinates from the given source into the given
      * target crs. If no such {@link Transformation} could be found or the implementation does not support inverse
      * lookup of transformations <code>null<code> will be returned.
+     * 
      * @param providerName
      *            to use.
-     * @param sourceCRS start of the transformation (chain)
-     * @param targetCRS end point of the transformation (chain).
+     * @param sourceCRS
+     *            start of the transformation (chain)
+     * @param targetCRS
+     *            end point of the transformation (chain).
      * @return the given {@link Transformation} or <code>null<code> if no such transformation was found.
+     * @throws TransformationException
+     * @throws IllegalArgumentException
      */
     public synchronized static Transformation getTransformation( String providerName, CoordinateSystem sourceCRS,
-                                                                 CoordinateSystem targetCRS ) {
-        CRSProvider crsProvider = getProvider( providerName );
-        return crsProvider.getTransformation( sourceCRS, targetCRS );
+                                                                 CoordinateSystem targetCRS )
+                            throws IllegalArgumentException, TransformationException {
+        CRSConfiguration crsConfiguration = CRSConfiguration.getCRSConfiguration( providerName );
+
+        TransformationFactory fac = crsConfiguration.getTransformationFactory();
+        return fac.createFromCoordinateSystems( sourceCRS, targetCRS );
     }
 
     /**
