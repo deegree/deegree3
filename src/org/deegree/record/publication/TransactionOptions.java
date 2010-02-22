@@ -48,8 +48,17 @@ public class TransactionOptions {
     private boolean inspire;
 
     private boolean fileIdentifierAvailable;
-    
-    //private boolean searchCaseSensitivity;
+
+    /**
+     * Creates a new {@link TransactionOptions} instance.
+     * 
+     * @param inspire
+     * @param fileIdentifierAvailable
+     */
+    public TransactionOptions( boolean inspire, boolean fileIdentifierAvailable ) {
+        this.inspire = inspire;
+        this.fileIdentifierAvailable = fileIdentifierAvailable;
+    }
 
     /**
      * @return the inspire
@@ -65,35 +74,4 @@ public class TransactionOptions {
         return fileIdentifierAvailable;
     }
 
-    /**
-     * @param inspire the inspire to set
-     */
-    public void setInspire( boolean inspire ) {
-        this.inspire = inspire;
-    }
-
-    /**
-     * @param fileIdentifierAvailable the fileIdentifierAvailable to set
-     */
-    public void setFileIdentifierAvailable( boolean fileIdentifierAvailable ) {
-        this.fileIdentifierAvailable = fileIdentifierAvailable;
-    }
-
-//    /**
-//     * @return the searchCaseSensitivity
-//     */
-//    public boolean isSearchCaseSensitivity() {
-//        return searchCaseSensitivity;
-//    }
-//
-//    /**
-//     * @param searchCaseSensitivity the searchCaseSensitivity to set
-//     */
-//    public void setSearchCaseSensitivity( boolean searchCaseSensitivity ) {
-//        this.searchCaseSensitivity = searchCaseSensitivity;
-//    }
-//    
-//    
-
-    
 }

@@ -70,8 +70,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.deegree.commons.configuration.JDBCConnections;
-import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
@@ -231,8 +229,7 @@ public class ISORecordStore implements RecordStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, JDBCConnections con,
-                            GenericDatabaseDS constraint )
+    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, GenericDatabaseDS constraint )
                             throws SQLException, XMLStreamException, IOException {
 
         int profileFormatNumberOutputSchema = 0;
@@ -255,11 +252,11 @@ public class ISORecordStore implements RecordStore {
         switch ( constraint.getResultType() ) {
         case results:
 
-            doResultsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint, con );
+            doResultsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint );
             break;
         case hits:
 
-            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint, con,
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint,
                                formatTypeInISORecordStore.get( constraint.getSetOfReturnableElements() ),
                                ResultType.hits );
             break;
@@ -287,7 +284,7 @@ public class ISORecordStore implements RecordStore {
      */
     private void doHitsOnGetRecord( XMLStreamWriter writer, int typeNameFormatNumber,
                                     int profileFormatNumberOutputSchema, GenericDatabaseDS constraint,
-                                    JDBCConnections con, String formatType, ResultType resultType )
+                                    String formatType, ResultType resultType )
                             throws SQLException, XMLStreamException, IOException {
 
         int countRows = 0;
@@ -298,53 +295,52 @@ public class ISORecordStore implements RecordStore {
                                                           profileFormatNumberOutputSchema, true );
 
         // ConnectionManager.addConnections( con );
-        for ( PooledConnection pool : con.getPooledConnection() ) {
-            Connection conn = ConnectionManager.getConnection( connectionId );
-            ResultSet rs = conn.createStatement().executeQuery( selectCountRows.toString() );
 
-            while ( rs.next() ) {
-                countRows = rs.getInt( 1 );
-                LOG.debug( "rs: " + rs.getInt( 1 ) );
-            }
+        Connection conn = ConnectionManager.getConnection( connectionId );
+        ResultSet rs = conn.createStatement().executeQuery( selectCountRows.toString() );
 
-            if ( resultType.equals( ResultType.hits ) ) {
-                writer.writeAttribute( "elementSet", constraint.getSetOfReturnableElements().name() );
-
-                // writer.writeAttribute( "recordSchema", "");
-
-                writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
-
-                writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( 0 ) );
-
-                writer.writeAttribute( "nextRecord", Integer.toString( 1 ) );
-
-                writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
-            } else {
-
-                if ( countRows > constraint.getMaxRecords() ) {
-                    nextRecord = constraint.getMaxRecords() + 1;
-                    returnedRecords = constraint.getMaxRecords();
-                } else {
-                    nextRecord = 0;
-                    returnedRecords = countRows;
-                }
-
-                writer.writeAttribute( "elementSet", constraint.getSetOfReturnableElements().name() );
-
-                // writer.writeAttribute( "recordSchema", "");
-
-                writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
-
-                writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( returnedRecords ) );
-
-                writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
-
-                writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
-            }
-
-            rs.close();
-            conn.close();
+        while ( rs.next() ) {
+            countRows = rs.getInt( 1 );
+            LOG.debug( "rs: " + rs.getInt( 1 ) );
         }
+
+        if ( resultType.equals( ResultType.hits ) ) {
+            writer.writeAttribute( "elementSet", constraint.getSetOfReturnableElements().name() );
+
+            // writer.writeAttribute( "recordSchema", "");
+
+            writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
+
+            writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( 0 ) );
+
+            writer.writeAttribute( "nextRecord", Integer.toString( 1 ) );
+
+            writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+        } else {
+
+            if ( countRows > constraint.getMaxRecords() ) {
+                nextRecord = constraint.getMaxRecords() + 1;
+                returnedRecords = constraint.getMaxRecords();
+            } else {
+                nextRecord = 0;
+                returnedRecords = countRows;
+            }
+
+            writer.writeAttribute( "elementSet", constraint.getSetOfReturnableElements().name() );
+
+            // writer.writeAttribute( "recordSchema", "");
+
+            writer.writeAttribute( "numberOfRecordsMatched", Integer.toString( countRows ) );
+
+            writer.writeAttribute( "numberOfRecordsReturned", Integer.toString( returnedRecords ) );
+
+            writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
+
+            writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
+        }
+
+        rs.close();
+        conn.close();
 
     }
 
@@ -366,68 +362,64 @@ public class ISORecordStore implements RecordStore {
      * @throws IOException
      */
     private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
-                                       GenericDatabaseDS propertyAttributes, JDBCConnections con )
+                                       GenericDatabaseDS propertyAttributes )
                             throws SQLException, XMLStreamException, IOException {
         int typeNameFormatNumber = 0;
         if ( typeNames.containsKey( typeName ) ) {
             typeNameFormatNumber = typeNames.get( typeName );
         }
 
-        for ( PooledConnection pool : con.getPooledConnection() ) {
+        Connection conn = ConnectionManager.getConnection( connectionId );
 
-            Connection conn = ConnectionManager.getConnection( connectionId );
+        ResultSet rs = null;
+        switch ( propertyAttributes.getSetOfReturnableElements() ) {
 
-            ResultSet rs = null;
-            switch ( propertyAttributes.getSetOfReturnableElements() ) {
+        case brief:
 
-            case brief:
+            Writer selectBrief = generateSELECTStatement(
+                                                          formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                                          propertyAttributes, typeNameFormatNumber,
+                                                          profileFormatNumberOutputSchema, false );
+            rs = conn.createStatement().executeQuery( selectBrief.toString() );
 
-                Writer selectBrief = generateSELECTStatement(
-                                                              formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                                                              propertyAttributes, typeNameFormatNumber,
-                                                              profileFormatNumberOutputSchema, false );
-                rs = conn.createStatement().executeQuery( selectBrief.toString() );
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
+                               formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                               ResultType.results );
 
-                doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
-                                   con, formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                                   ResultType.results );
+            break;
+        case summary:
 
-                break;
-            case summary:
+            Writer selectSummary = generateSELECTStatement(
+                                                            formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
+                                                            propertyAttributes, typeNameFormatNumber,
+                                                            profileFormatNumberOutputSchema, false );
+            rs = conn.createStatement().executeQuery( selectSummary.toString() );
 
-                Writer selectSummary = generateSELECTStatement(
-                                                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
-                                                                propertyAttributes, typeNameFormatNumber,
-                                                                profileFormatNumberOutputSchema, false );
-                rs = conn.createStatement().executeQuery( selectSummary.toString() );
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
+                               formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
+                               ResultType.results );
 
-                doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
-                                   con, formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
-                                   ResultType.results );
+            break;
+        case full:
 
-                break;
-            case full:
+            Writer selectFull = generateSELECTStatement(
+                                                         formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
+                                                         propertyAttributes, typeNameFormatNumber,
+                                                         profileFormatNumberOutputSchema, false );
+            rs = conn.createStatement().executeQuery( selectFull.toString() );
 
-                Writer selectFull = generateSELECTStatement(
-                                                             formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
-                                                             propertyAttributes, typeNameFormatNumber,
-                                                             profileFormatNumberOutputSchema, false );
-                rs = conn.createStatement().executeQuery( selectFull.toString() );
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
+                               formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
+                               ResultType.results );
 
-                doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
-                                   con, formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
-                                   ResultType.results );
-
-                break;
-            }
-
-            if ( rs != null ) {
-                writeResultSet( rs, writer );
-            }
-
-            conn.close();
-
+            break;
         }
+
+        if ( rs != null ) {
+            writeResultSet( rs, writer );
+        }
+
+        conn.close();
 
     }
 

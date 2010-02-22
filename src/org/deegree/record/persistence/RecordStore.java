@@ -45,7 +45,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.record.publication.TransactionOperation;
@@ -108,7 +107,7 @@ public interface RecordStore {
      * @throws XMLStreamException
      * @throws IOException
      */
-    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, JDBCConnections connection,
+    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema,
                             GenericDatabaseDS genericDatabaseDS )
                             throws SQLException, XMLStreamException, IOException;
 
@@ -164,7 +163,7 @@ public interface RecordStore {
      */
     public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, List<Integer> transactionIds )
                             throws SQLException, IOException;
-    
+
     public List<Integer> getTransactionIds();
 
     /**
