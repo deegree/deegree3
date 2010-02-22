@@ -22,12 +22,12 @@
             <xs:element name="EllispoidsFile" type="xs:string" default="ellipsoid-definitions.xml"/>
             <xs:element name="DatumsFile" type="xs:string" default="datum-definitions.xml"/>
             <xs:element name="CRSsFile" type="xs:string" default="crs-definitions.xml"/>
-            <xs:element ref="crs:ProjectionDefinitions"/>
-            <xs:element ref="crs:TransformationDefinitions"/>
-            <xs:element ref="crs:PMDefinitions"/>
-            <xs:element ref="crs:EllipsoidDefinitions"/>
-            <xs:element ref="crs:DatumDefinitions"/>
-            <xs:element ref="crs:CRSDefinitions"/>
+            <xs:element ref="crs:ProjectionDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:TransformationDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:PMDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:EllipsoidDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:DatumDefinitions" minOccurs="0"/>
+            <xs:element ref="crs:CRSDefinitions" minOccurs="0"/>
           </xs:sequence>
         </xs:extension>
       </xs:complexContent>
@@ -376,8 +376,8 @@
     <xs:complexContent>
       <xs:extension base="crs:_Identifiable">
         <xs:sequence>
-          <xs:element name="LatitudeOfNaturalOrigin" type="crs:LatLongType" minOccurs="1"/>
-          <xs:element name="LongitudeOfNaturalOrigin" type="crs:LatLongType" minOccurs="1"/>
+          <xs:element name="LatitudeOfNaturalOrigin" type="crs:LatLongType"/>
+          <xs:element name="LongitudeOfNaturalOrigin" type="crs:LatLongType"/>
           <xs:element name="ScaleFactor" type="xs:double" default="1" minOccurs="0"/>
           <xs:element name="FalseEasting" type="xs:double" default="0" minOccurs="0"/>
           <xs:element name="FalseNorthing" type="xs:double" default="0" minOccurs="0"/>
