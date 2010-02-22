@@ -55,7 +55,7 @@ public class CSWConstants {
      * Namespace="http://www.opengis.net/cat/csw/2.0.2"
      * */
     public static final String CSW_202_NS = "http://www.opengis.net/cat/csw/2.0.2";
-    
+
     /**
      * Namespace for elements from the ISO AP 1.0 specification
      * <p>
@@ -65,7 +65,7 @@ public class CSWConstants {
 
     /** Location of the schema */
     public static final String CSW_202_DISCOVERY_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd";
-    
+
     /** Location of the schema */
     public static final String CSW_202_PUBLICATION_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-publication.xsd";
 
@@ -74,7 +74,7 @@ public class CSWConstants {
 
     /** Common namespace prefix for elements from the CSW specification */
     public static final String CSW_PREFIX = "csw";
-    
+
     /** Common namespace prefix for elements from the ISO AP specification */
     public static final String GMD_PREFIX = "gmd";
 
@@ -117,13 +117,13 @@ public class CSWConstants {
      */
     public enum Sections {
 
-        /***/
+        /** Metadata about the CSW implementation */
         ServiceIdentification,
-        /***/
+        /** Metadata about the organisation that provides the CSW implementation */
         ServiceProvider,
-        /***/
+        /** Metadata about the operations provided by this CSW implementation */
         OperationsMetadata,
-        /***/
+        /** Metadata about the filter capabilities that are implemented at this server */
         Filter_Capabilities
     }
 
@@ -160,10 +160,20 @@ public class CSWConstants {
      */
     public enum SetOfReturnableElements {
 
+        /**
+         * Brief representation of a record. This is the shortest view of a record by a specific profile.
+         */
         brief,
 
+        /**
+         * Summary representation of a record. This view responses all the elements that should be queryable by a
+         * record-profile.
+         */
         summary,
-
+        /**
+         * Full representation of a record. In that response there are all the elements represented that a record holds.
+         * Thus, there are elements presented that are not queryable regarding to the CSW specification.
+         */
         full
 
     }
@@ -188,8 +198,7 @@ public class CSWConstants {
         FILTER
 
     }
-    
-    
+
     /**
      * 
      * Defined in the CSW-publication.xsd. Specifies the data manipulation operations <br>
@@ -202,14 +211,24 @@ public class CSWConstants {
      */
     public enum TransactionType {
 
+        /**
+         * With the INSERT action of the transaction operation there can be inserted one or more records into the
+         * backend.
+         */
         INSERT,
 
+        /**
+         * With the DELETE action of the transaction operation there can be deleted specific records defined by a filter
+         * expression.
+         */
         DELETE,
 
+        /**
+         * With the UPDATE action of the transaction operation there can be updated one complete record or just
+         * properties of specific records defined by a filter expression.
+         */
         UPDATE
 
     }
-
-    
 
 }
