@@ -532,7 +532,7 @@ public class Java2DRenderingTest extends TestCase {
         r.render( styling, text, points.peek() );
         styling.rotation = 180;
         r.render( styling, text, points.poll() );
-        styling.rotation = 90 / 2;
+        styling.rotation = 90;
         r.render( styling, text, points.poll() );
         styling.rotation = 0;
         r.render( styling, text, points.peek() );
