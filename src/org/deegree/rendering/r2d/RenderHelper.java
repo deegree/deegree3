@@ -170,15 +170,6 @@ public class RenderHelper {
                 GlyphVector vec = mark.font.deriveFont( (float) size ).createGlyphVector( frc,
                                                                                           new int[] { mark.markIndex } );
                 shape = vec.getOutline();
-
-                Rectangle2D box = shape.getBounds2D();
-                double cur = max( box.getWidth(), box.getHeight() );
-                double fac = size / cur;
-
-                AffineTransform trans = new AffineTransform();
-                trans.scale( fac, fac );
-                trans.translate( -box.getMinX(), -box.getMinY() );
-                shape = trans.createTransformedShape( shape );
             } else {
                 GeneralPath path = new GeneralPath();
                 shape = path;
@@ -219,14 +210,28 @@ public class RenderHelper {
         Rectangle2D box = shape.getBounds2D();
         double cur = max( box.getWidth(), box.getHeight() );
         double fac = size / cur;
-        AffineTransform trans = getScaleInstance( fac, fac );
-        if ( translate ) {
-            trans.translate( x, y );
+        AffineTransform t = AffineTransform.getScaleInstance( fac, fac );
+        t.translate( -box.getMinX(), -box.getMinY() );
+
+        // correct non-square shapes
+        double w = box.getWidth();
+        double h = box.getHeight();
+        
+        if ( w < h ) {
+            t.translate( -( w - h ) / 2, 0 );
         } else {
-            trans.translate( -box.getCenterX(), -box.getCenterY() );
+            t.translate( 0, -( h - w ) / 2 );
         }
-        trans.rotate( toRadians( rotation ) );
-        return trans.createTransformedShape( shape );
+
+        shape = t.createTransformedShape( shape );
+
+        t = new AffineTransform();
+        if ( translate ) {
+            t.translate( x, y );
+        }
+        t.rotate( toRadians( rotation ) );
+
+        return t.createTransformedShape( shape );
     }
 
     /**
@@ -250,7 +255,6 @@ public class RenderHelper {
         }
 
         Shape shape = getShapeFromMark( mark, size - 1, rotation, true, x, y );
-        // shape = getTranslateInstance( x, y ).createTransformedShape( shape );
 
         if ( mark.fill != null ) {
             renderer.applyFill( mark.fill, uom );
