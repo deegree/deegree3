@@ -35,11 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.List;
 
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.slf4j.Logger;
 
 /**
  * TODO add documentation here
@@ -50,6 +53,8 @@ import org.deegree.filter.MatchableObject;
  * @version $Revision:$, $Date:$
  */
 public class Function implements Expression {
+
+    private static final Logger LOG = getLogger( Function.class );
 
     private String name;
 
@@ -76,6 +81,7 @@ public class Function implements Expression {
     @Override
     public Object[] evaluate( MatchableObject object )
                             throws FilterEvaluationException {
+        LOG.warn( "The function with name '{}' is not implemented.", name );
         throw new FilterEvaluationException( "Evaluation of the '" + getType().name()
                                              + "' expression is not implemented yet." );
     }

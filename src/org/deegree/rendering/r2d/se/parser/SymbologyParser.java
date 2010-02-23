@@ -1847,6 +1847,7 @@ public class SymbologyParser {
                 }
             } catch ( FilterEvaluationException e ) {
                 LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), filter.toString() );
+                LOG.debug( "Stack trace:", e );
             }
         }
 
