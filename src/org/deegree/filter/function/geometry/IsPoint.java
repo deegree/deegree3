@@ -7,6 +7,7 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
+import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -30,7 +31,9 @@ public class IsPoint extends Function {
     public Object[] evaluate( MatchableObject f )
                             throws FilterEvaluationException {
         Object[] vals = getParams()[0].evaluate( f );
-        return new Object[] { new Boolean( vals != null && vals.length > 0 && vals[0] instanceof Point ).toString() };
+        // TODO is handling of multi geometries like this ok?
+        return new Object[] { new Boolean( vals != null && vals.length > 0
+                                           && ( vals[0] instanceof Point || vals[0] instanceof MultiPoint ) ).toString() };
     }
 
 }

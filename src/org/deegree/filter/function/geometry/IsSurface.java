@@ -7,6 +7,8 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
+import org.deegree.geometry.multi.MultiPolygon;
+import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Surface;
 
 /**
@@ -30,7 +32,11 @@ public class IsSurface extends Function {
     public Object[] evaluate( MatchableObject f )
                             throws FilterEvaluationException {
         Object[] vals = getParams()[0].evaluate( f );
-        return new Object[] { new Boolean( vals != null && vals.length > 0 && vals[0] instanceof Surface ).toString() };
+        // TODO is handling of multi geometries like this ok?
+        boolean result = vals != null
+                         && vals.length > 0
+                         && ( vals[0] instanceof Surface || vals[0] instanceof MultiPolygon || vals[0] instanceof MultiSurface );
+        return new Object[] { new Boolean( result ).toString() };
     }
 
 }
