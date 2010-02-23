@@ -279,7 +279,7 @@ public class Java2DRenderer implements Renderer {
                 }
                 Shape shape = getShapeFromMark( stroke.stroke.mark,
                                                 stroke.stroke.size <= 0 ? 6 : considerUOM( stroke.stroke.size, uom ),
-                                                true, stroke.stroke.rotation );
+                                                stroke.stroke.rotation );
                 ShapeStroke s = new ShapeStroke( shape, considerUOM( stroke.strokeGap + stroke.stroke.size, uom ),
                                                  stroke.positionPercentage );
                 transed = s.createStrokedShape( transed );
