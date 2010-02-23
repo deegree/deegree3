@@ -54,6 +54,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Path2D.Double;
 
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.multi.MultiCurve;
+import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -197,8 +199,14 @@ public class Java2DTextRenderer implements TextRenderer {
             if ( styling.linePlacement != null ) {
                 render( styling, font, text, (Curve) geom );
             }
-        } else if ( geom instanceof MultiSurface ) {
-            render( styling, font, text, ( (MultiSurface) geom ).getCentroid() );
+        } else if ( geom instanceof MultiSurface || geom instanceof MultiCurve ) {
+            // TODO think about whether this is wanted (vs. explicit centroid geometry function and multi-rendering
+            // here)
+            render( styling, font, text, geom.getCentroid() );
+        } else if ( geom instanceof MultiPoint ) {
+            for ( Point p : (MultiPoint) geom ) {
+                render( styling, font, text, p );
+            }
         } else {
             LOG.warn( "Trying to use unsupported geometry type '{}' for text rendering.",
                       geom.getClass().getSimpleName() );
