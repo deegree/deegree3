@@ -376,7 +376,7 @@ public class Java2DRenderer implements Renderer {
 
         if ( g.image == null ) {
             renderMark( g.mark, g.size < 0 ? 6 : round( considerUOM( g.size, styling.uom ) ), styling.uom, this,
-                        rect.getMaxX(), rect.getCenterY(), g.rotation );
+                        rect.getMinX(), rect.getMinY(), g.rotation );
             return;
         }
 
