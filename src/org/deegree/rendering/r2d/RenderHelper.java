@@ -229,7 +229,10 @@ public class RenderHelper {
         if ( translate ) {
             t.translate( x, y );
         }
-        t.rotate( toRadians( rotation ) );
+        
+        box = shape.getBounds2D();
+        
+        t.rotate( toRadians( rotation ), box.getCenterX(), box.getCenterY() );
 
         return t.createTransformedShape( shape );
     }
