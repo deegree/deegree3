@@ -69,6 +69,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -509,13 +510,16 @@ public class Java2DRenderer implements Renderer {
     private void render( PolygonStyling styling, Surface surface ) {
         for ( SurfacePatch patch : surface.getPatches() ) {
             if ( patch instanceof PolygonPatch ) {
+                LinkedList<Double> lines = new LinkedList<Double>();
                 PolygonPatch polygonPatch = (PolygonPatch) patch;
                 Area polygon = null;
                 for ( Curve curve : polygonPatch.getBoundaryRings() ) {
+                    Double d = fromCurve( curve );
+                    lines.add( d );
                     if ( polygon == null ) {
-                        polygon = new Area( fromCurve( curve ) );
+                        polygon = new Area( d );
                     } else {
-                        polygon.subtract( new Area( fromCurve( curve ) ) );
+                        polygon.subtract( new Area( d ) );
                     }
                 }
 
@@ -526,8 +530,10 @@ public class Java2DRenderer implements Renderer {
 
                 applyFill( styling.fill, styling.uom );
                 graphics.fill( polygon );
-                applyStroke( styling.stroke, styling.uom, polygon, styling.perpendicularOffset,
-                             styling.perpendicularOffsetType );
+                for ( Double d : lines ) {
+                    applyStroke( styling.stroke, styling.uom, d, styling.perpendicularOffset,
+                                 styling.perpendicularOffsetType );
+                }
             } else {
                 throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
             }
