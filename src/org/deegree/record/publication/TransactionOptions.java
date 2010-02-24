@@ -36,7 +36,7 @@
 package org.deegree.record.publication;
 
 /**
- * Bean that holds all the necessary attributes needed for the transaction operation.
+ * This class holds all the necessary attributes needed for the transaction operation.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
