@@ -110,8 +110,6 @@ public class ISORecordStore implements RecordStore {
 
     private String connectionId;
 
-    private ISO_DC_Mappings mappings = new ISO_DC_Mappings();
-
     private Set<String> tableSet;
 
     /**
@@ -445,7 +443,7 @@ public class ISORecordStore implements RecordStore {
      */
     private void correctTable( Set<String> tableSetToBeCorrected ) {
         for ( String s : tableSetToBeCorrected ) {
-            if ( mappings.mainDatabaseTable.equals( s ) ) {
+            if ( ISO_DC_Mappings.databaseTables.datasets.name().equals( s ) ) {
                 tableSetToBeCorrected.remove( s );
                 break;
             }
@@ -508,7 +506,8 @@ public class ISORecordStore implements RecordStore {
 
         s.append( "AND " + formatType + ".data IN(" );
 
-        s.append( "SELECT " + formatType + ".data FROM " + mappings.mainDatabaseTable + ", " + formatType );
+        s.append( "SELECT " + formatType + ".data FROM " + ISO_DC_Mappings.databaseTables.datasets.name() + ", "
+                  + formatType );
 
         if ( tableSet.size() == 0 ) {
             s.append( ' ' );
@@ -516,9 +515,11 @@ public class ISORecordStore implements RecordStore {
             s.append( ", " + concatTableFROM( tableSet ) );
         }
 
-        s.append( "WHERE " + formatType + "." + mappings.commonForeignkey + " = " + mappings.mainDatabaseTable
-                  + ".id AND " + formatType + ".format = " + typeNameFormatNumber + " AND " + formatType + "."
-                  + mappings.commonForeignkey + " >= " + propertyAttributes.getStartPosition() );
+        s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+                  + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
+                  + typeNameFormatNumber + " AND " + formatType + "."
+                  + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= "
+                  + propertyAttributes.getStartPosition() );
 
         if ( tableSet.size() == 0 ) {
             s.append( ' ' );
@@ -549,9 +550,11 @@ public class ISORecordStore implements RecordStore {
         for ( String s : table ) {
             if ( table.size() - 1 != counter ) {
                 counter++;
-                string.append( s + "." + mappings.commonForeignkey + " = " + mappings.mainDatabaseTable + ".id AND " );
+                string.append( s + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+                               + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " );
             } else {
-                string.append( s + "." + mappings.commonForeignkey + " = " + mappings.mainDatabaseTable + ".id " );
+                string.append( s + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+                               + ISO_DC_Mappings.databaseTables.datasets.name() + ".id " );
             }
         }
         return string;
@@ -590,7 +593,6 @@ public class ISORecordStore implements RecordStore {
                             throws SQLException, XMLStreamException {
 
         List<Integer> insertedIds = new ArrayList<Integer>();
-
         Connection conn = ConnectionManager.getConnection( connectionId );
 
         switch ( operations.getType() ) {
@@ -601,19 +603,23 @@ public class ISORecordStore implements RecordStore {
                 QName localName = element.getQName();
                 boolean isDC = true;
                 try {
-                    ISOQPParsing elementParsing = new ISOQPParsing( element );
+
+                    ExecuteStatements executeStatements = new ExecuteStatements();
 
                     if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
                          || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
 
-                        elementParsing.parseAPDC();
+                        executeStatements.executeInsertStatement( isDC, conn, new ISOQPParsing().parseAPDC( element ) );
 
                     } else {
-                        elementParsing.parseAPISO( options.isInspire(), conn );
                         isDC = false;
+                        executeStatements.executeInsertStatement( isDC, conn,
+                                                                  new ISOQPParsing().parseAPISO( element,
+                                                                                                 options.isInspire(),
+                                                                                                 conn ) );
+
                     }
-                    elementParsing.executeInsertStatement( isDC, conn );
-                    insertedIds.addAll( elementParsing.getRecordsAffectedIDs() );
+                    insertedIds.addAll( executeStatements.getRecordsAffectedIDs() );
 
                 } catch ( IOException e ) {
 
@@ -633,18 +639,20 @@ public class ISORecordStore implements RecordStore {
                 try {
                     QName localName = upd.getElement().getQName();
 
-                    ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement() );
+                    ExecuteStatements executeStatements = new ExecuteStatements();
 
                     if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
                          || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
 
-                        elementParsing.parseAPDC();
+                        executeStatements.executeUpdateStatement( conn, new ISOQPParsing().parseAPDC( upd.getElement() ) );
 
                     } else {
-                        elementParsing.parseAPISO( options.isInspire(), conn );
+                        executeStatements.executeUpdateStatement( conn,
+                                                                  new ISOQPParsing().parseAPISO( upd.getElement(),
+                                                                                                 options.isInspire(),
+                                                                                                 conn ) );
 
                     }
-                    elementParsing.executeUpdateStatement( conn );
 
                 } catch ( IOException e ) {
 
@@ -690,7 +698,7 @@ public class ISORecordStore implements RecordStore {
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
                                           + ".format = 2 AND "
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + "."
-                                          + mappings.commonForeignkey + " = " + i;
+                                          + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = " + i;
                             ResultSet rsGetStoredFullRecordXML = conn.createStatement().executeQuery( stri.toString() );
 
                             while ( rsGetStoredFullRecordXML.next() ) {
@@ -726,20 +734,27 @@ public class ISORecordStore implements RecordStore {
                                             try {
                                                 QName localName = omElement.getQName();
 
-                                                ISOQPParsing elementParsing = new ISOQPParsing( omElement );
+                                                ExecuteStatements executeStatements = new ExecuteStatements();
 
                                                 if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
                                                                                   CSWConstants.CSW_PREFIX ) )
                                                      || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
                                                                                      "" ) ) ) {
 
-                                                    elementParsing.parseAPDC();
+                                                    executeStatements.executeUpdateStatement(
+                                                                                              conn,
+                                                                                              new ISOQPParsing().parseAPDC( omElement ) );
 
                                                 } else {
-                                                    elementParsing.parseAPISO( options.isInspire(), conn );
+
+                                                    executeStatements.executeUpdateStatement(
+                                                                                              conn,
+                                                                                              new ISOQPParsing().parseAPISO(
+                                                                                                                             omElement,
+                                                                                                                             options.isInspire(),
+                                                                                                                             conn ) );
 
                                                 }
-                                                elementParsing.executeUpdateStatement( conn );
 
                                             } catch ( IOException e ) {
 
@@ -805,7 +820,9 @@ public class ISORecordStore implements RecordStore {
             rsDeletableDatasets.close();
 
             for ( int i : deletableDatasets ) {
-                conn.createStatement().executeUpdate( "DELETE FROM " + mappings.mainDatabaseTable + " WHERE id = " + i );
+                conn.createStatement().executeUpdate(
+                                                      "DELETE FROM " + ISO_DC_Mappings.databaseTables.datasets.name()
+                                                                              + " WHERE id = " + i );
             }
 
             break;
@@ -886,8 +903,10 @@ public class ISORecordStore implements RecordStore {
 
                 String selectBrief = "SELECT rb.data FROM "
                                      + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + " AS rb, "
-                                     + mappings.mainDatabaseTable + " AS ds, qp_identifier AS i WHERE rb."
-                                     + mappings.commonForeignkey + " = ds.id AND i." + mappings.commonForeignkey
+                                     + ISO_DC_Mappings.databaseTables.datasets.name()
+                                     + " AS ds, qp_identifier AS i WHERE rb."
+                                     + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
+                                     + ISO_DC_Mappings.commonColumnNames.fk_datasets.name()
                                      + " = ds.id AND i.identifier = '" + identifier + "' AND rb.format = "
                                      + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectBrief );
@@ -896,8 +915,10 @@ public class ISORecordStore implements RecordStore {
 
                 String selectSummary = "SELECT rs.data FROM "
                                        + formatTypeInISORecordStore.get( SetOfReturnableElements.summary ) + " AS rs, "
-                                       + mappings.mainDatabaseTable + " AS ds, qp_identifier AS i WHERE rs."
-                                       + mappings.commonForeignkey + " = ds.id AND i." + mappings.commonForeignkey
+                                       + ISO_DC_Mappings.databaseTables.datasets.name()
+                                       + " AS ds, qp_identifier AS i WHERE rs."
+                                       + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
+                                       + ISO_DC_Mappings.commonColumnNames.fk_datasets.name()
                                        + " = ds.id AND i.identifier = '" + identifier + "' AND rs.format = "
                                        + profileFormatNumberOutputSchema + ";";
                 LOG.debug( selectSummary );
@@ -907,8 +928,10 @@ public class ISORecordStore implements RecordStore {
 
                 String selectFull = "SELECT rf.data FROM "
                                     + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + " AS rf, "
-                                    + mappings.mainDatabaseTable + " AS ds, qp_identifier AS i WHERE rf."
-                                    + mappings.commonForeignkey + " = ds.id AND i." + mappings.commonForeignkey
+                                    + ISO_DC_Mappings.databaseTables.datasets.name()
+                                    + " AS ds, qp_identifier AS i WHERE rf."
+                                    + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
+                                    + ISO_DC_Mappings.commonColumnNames.fk_datasets.name()
                                     + " = ds.id AND i.identifier = '" + identifier + "' AND rf.format = "
                                     + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectFull );
@@ -949,8 +972,8 @@ public class ISORecordStore implements RecordStore {
             constraintExpression.append( "" );
         }
 
-        s.append( "SELECT " + formatType + "." + mappings.commonForeignkey + " FROM " + mappings.mainDatabaseTable
-                  + ", " + formatType );
+        s.append( "SELECT " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " FROM "
+                  + ISO_DC_Mappings.databaseTables.datasets.name() + ", " + formatType );
 
         if ( tableSet.size() == 0 ) {
             s.append( ' ' );
@@ -958,8 +981,9 @@ public class ISORecordStore implements RecordStore {
             s.append( ", " + concatTableFROM( tableSet ) );
         }
 
-        s.append( "WHERE " + formatType + "." + mappings.commonForeignkey + " = " + mappings.mainDatabaseTable
-                  + ".id AND " + formatType + "." + mappings.commonForeignkey + " >= " + constraint.getStartPosition()
+        s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+                  + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + "."
+                  + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= " + constraint.getStartPosition()
                   + " AND " + formatType + ".format = " + formatNumber );
 
         if ( tableSet.size() == 0 ) {
@@ -986,11 +1010,12 @@ public class ISORecordStore implements RecordStore {
         for ( int i : transactionIds ) {
             Writer s = new StringWriter();
             s.append( " SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + ".data " + "FROM "
-                      + mappings.mainDatabaseTable + ", "
+                      + ISO_DC_Mappings.databaseTables.datasets.name() + ", "
                       + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + " " );
 
             s.append( " WHERE " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "."
-                      + mappings.commonForeignkey + " = " + mappings.mainDatabaseTable + ".id " );
+                      + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+                      + ISO_DC_Mappings.databaseTables.datasets.name() + ".id " );
 
             s.append( " AND " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "." + "id" + " = "
                       + i );
@@ -1038,12 +1063,10 @@ public class ISORecordStore implements RecordStore {
     }
 
     /**
-     * Reads a valid XML fragment TODO change fileOutput back into streamWriter
+     * Reads a valid XML fragment
      * 
-     * @param
+     * @param isr
      * @param xmlWriter
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
      */
     private void readXMLFragment( InputStreamReader isr, XMLStreamWriter xmlWriter ) {
 
