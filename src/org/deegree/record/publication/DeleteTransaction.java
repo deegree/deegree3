@@ -39,10 +39,9 @@ import javax.xml.namespace.QName;
 
 import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
-import org.deegree.record.publication.TransactionOperation;
 
 /**
- * Represents a CSW <code>Delete</code> operation (part of a {@link Transaction} request).
+ * Represents a CSW <code>Delete</code> action (part of a Transaction operation request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -56,6 +55,7 @@ public class DeleteTransaction extends TransactionOperation {
     private Filter constraint;
 
     /**
+     * Creates a new {@link DeleteTransaction} instance.
      * 
      * @param handle
      * @param typeName

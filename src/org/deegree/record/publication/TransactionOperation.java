@@ -32,13 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.publication;
 
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
- * Abstract base class for the operations that can occur inside a {@link Transaction} request.
+ * Abstract base class for the actions that can occur inside a Transaction operation request.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -46,25 +46,23 @@ import org.deegree.protocol.csw.CSWConstants.TransactionType;
  * @version $Revision: $, $Date: $
  */
 public abstract class TransactionOperation {
-    
+
     private String handle;
-    
-    
-    
+
     /**
      * Returns the type of operation. Use this to safely determine the subtype of {@link TransactionOperation}.
      * 
      * @return type of operation
      */
     public abstract TransactionType getType();
-    
+
     /**
      * Creates a new {@link TransactionOperation} with an optional handle.
      * 
      * @param handle
      *            identifier for the operation, may be null
      */
-    protected TransactionOperation(String handle){
+    protected TransactionOperation( String handle ) {
         this.handle = handle;
     }
 
@@ -74,7 +72,5 @@ public abstract class TransactionOperation {
     public String getHandle() {
         return handle;
     }
-   
-    
-    
+
 }

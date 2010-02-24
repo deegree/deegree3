@@ -41,10 +41,9 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
-import org.deegree.record.publication.TransactionOperation;
 
 /**
- * Represents a CSW <code>Insert</code> operation (part of a {@link Transaction} request).
+ * Represents a CSW <code>Insert</code> action (part of a Transaction operation request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -58,6 +57,9 @@ public class InsertTransaction extends TransactionOperation {
     private QName typeName;
 
     /**
+     * 
+     * @param transChildElementInsertAPISORecordList
+     * @param typeName
      * @param handle
      */
     public InsertTransaction( List<OMElement> transChildElementInsertAPISORecordList, QName typeName, String handle ) {
@@ -86,26 +88,10 @@ public class InsertTransaction extends TransactionOperation {
     }
 
     /**
-     * @param element
-     *            the element to set
-     */
-    public void setElement( List<OMElement> element ) {
-        this.element = element;
-    }
-
-    /**
      * @return the typeName
      */
     public QName getTypeName() {
         return typeName;
-    }
-
-    /**
-     * @param typeName
-     *            the typeName to set
-     */
-    public void setTypeName( QName typeName ) {
-        this.typeName = typeName;
     }
 
 }

@@ -42,10 +42,9 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
-import org.deegree.record.publication.TransactionOperation;
 
 /**
- * Represents a CSW <code>Update</code> operation (part of a {@link Transaction} request).
+ * Represents a CSW <code>Update</code> action (part of a Transaction operation request).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -53,9 +52,9 @@ import org.deegree.record.publication.TransactionOperation;
  * @version $Revision: $, $Date: $
  */
 public class UpdateTransaction extends TransactionOperation {
-    
+
     private OMElement element;
-    
+
     private QName typeName;
 
     private Filter constraint;
@@ -63,9 +62,16 @@ public class UpdateTransaction extends TransactionOperation {
     private List<RecordProperty> recordProperty;
 
     /**
+     * Creates a new {@link UpdateTransaction} instance.
+     * 
      * @param handle
+     * @param element
+     * @param typeName
+     * @param constraint
+     * @param recordProperty
      */
-    public UpdateTransaction( String handle, OMElement element, QName typeName, Filter constraint, List<RecordProperty> recordProperty ) {
+    public UpdateTransaction( String handle, OMElement element, QName typeName, Filter constraint,
+                              List<RecordProperty> recordProperty ) {
         super( handle );
         this.element = element;
         this.typeName = typeName;
@@ -111,14 +117,5 @@ public class UpdateTransaction extends TransactionOperation {
     public QName getTypeName() {
         return typeName;
     }
-
-    /**
-     * @param typeName the typeName to set
-     */
-    public void setTypeName( QName typeName ) {
-        this.typeName = typeName;
-    }
-    
-    
 
 }
