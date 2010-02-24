@@ -28,6 +28,7 @@ import java_cup.runtime.*;
 WhiteSpace           = [ \b\f\n\r]
 LetterOrDigit        = ([:letter:] | [0-9])
 LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
+LetterDigitSym       = {LetterOrDigit} | [-_]
 
 %%
 
@@ -98,7 +99,7 @@ LetterOrDigitOrSpace = ({LetterOrDigit} | [ ])
 
 <LINK> {
   [:]         {}
-  [:letter:]+[:][/][/]{LetterOrDigit}+([.]{LetterOrDigit}+)*([:][0-9]+)?([^:>]*)
+  [:letter:]+[:][/][/]{LetterDigitSym}+([.]{LetterDigitSym}+)*([:][0-9]+)?([^:>]*)
               { return new Symbol(TemplatingSymbols.LINK_PREFIX_TOKEN, yyline, yycolumn, yytext()); }
   [^:>]+      { return new Symbol(TemplatingSymbols.LINK_TEXT_TOKEN, yyline, yycolumn, yytext()); }
   [>]         { yybegin(YYINITIAL); }
