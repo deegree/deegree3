@@ -42,8 +42,7 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 
 /**
- * This class holds all the necessary information that is needed for the database request. It is an abstraction to a
- * specific database export. <br/>
+ * This class holds all the necessary information that is needed for the database request. <br>
  * The request itself is encapsulated in the expression{@link Writer}.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
@@ -51,7 +50,7 @@ import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GenericDatabaseDS {
+public class RecordStoreOptions {
 
     private Writer expressionWriter;
 
@@ -60,46 +59,68 @@ public class GenericDatabaseDS {
     private SetOfReturnableElements setOfReturnableElements;
 
     private int maxRecords;
-    
+
     private int startPosition;
 
-    private Set<String> table;
+    private Set<String> tables;
 
     private Set<String> column;
 
     /**
+     * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared.
      * 
      * @param expressionWriter
+     *            encapsulates the information to build an SQL expression
      * @param resultType
+     *            {@link ResultType}
      * @param setOfReturnableElements
+     *            {@link SetOfReturnableElements}
      * @param maxRecords
+     *            the maximum number of records that shall be presented in the response
      * @param startPosition
-     * @param table
+     *            at which record position should start the response
+     * @param tables
+     *            that are identified in the request which are affecting the backend
      * @param column
+     *            that are identified in the request which are affecting the backend
      */
-    public GenericDatabaseDS( Writer expressionWriter, ResultType resultType,
-                              SetOfReturnableElements setOfReturnableElements, int maxRecords, int startPosition, Set<String> table,
-                              Set<String> column ) {
-        
+    public RecordStoreOptions( Writer expressionWriter, ResultType resultType,
+                               SetOfReturnableElements setOfReturnableElements, int maxRecords, int startPosition,
+                               Set<String> tables, Set<String> column ) {
+
         this.expressionWriter = expressionWriter;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
         this.maxRecords = maxRecords;
         this.startPosition = startPosition;
-        this.table = table;
+        this.tables = tables;
         this.column = column;
 
     }
-    
-    public GenericDatabaseDS( Writer expressionWriter, ResultType resultType,
-                              SetOfReturnableElements setOfReturnableElements, Set<String> table,
-                              Set<String> column ) {
-        
+
+    /**
+     * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared except the
+     * startPosition attibute that is set to 1 by default.
+     * 
+     * @param expressionWriter
+     *            encapsulates the information to build an SQL expression
+     * @param resultType
+     *            {@link ResultType}
+     * @param setOfReturnableElements
+     *            {@link SetOfReturnableElements}
+     * @param table
+     *            that are identified in the request which are affecting the backend
+     * @param column
+     *            that are identified in the request which are affecting the backend
+     */
+    public RecordStoreOptions( Writer expressionWriter, ResultType resultType,
+                               SetOfReturnableElements setOfReturnableElements, Set<String> table, Set<String> column ) {
+
         this.expressionWriter = expressionWriter;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
         this.startPosition = 1;
-        this.table = table;
+        this.tables = table;
         this.column = column;
 
     }
@@ -112,26 +133,10 @@ public class GenericDatabaseDS {
     }
 
     /**
-     * @param expressionWriter
-     *            the expressionWriter to set
-     */
-    public void setExpressionWriter( Writer expressionWriter ) {
-        this.expressionWriter = expressionWriter;
-    }
-
-    /**
      * @return the resultType
      */
     public ResultType getResultType() {
         return resultType;
-    }
-
-    /**
-     * @param resultType
-     *            the resultType to set
-     */
-    public void setResultType( ResultType resultType ) {
-        this.resultType = resultType;
     }
 
     /**
@@ -142,29 +147,11 @@ public class GenericDatabaseDS {
     }
 
     /**
-     * @param setOfReturnableElements
-     *            the setOfReturnableElements to set
-     */
-    public void setSetOfReturnableElements( SetOfReturnableElements setOfReturnableElements ) {
-        this.setOfReturnableElements = setOfReturnableElements;
-    }
-
-    /**
      * @return the maxRecords
      */
     public int getMaxRecords() {
         return maxRecords;
     }
-
-    /**
-     * @param maxRecords
-     *            the maxRecords to set
-     */
-    public void setMaxRecords( int maxRecords ) {
-        this.maxRecords = maxRecords;
-    }
-    
-    
 
     /**
      * @return the startPosition
@@ -174,25 +161,10 @@ public class GenericDatabaseDS {
     }
 
     /**
-     * @param startPosition the startPosition to set
-     */
-    public void setStartPosition( int startPosition ) {
-        this.startPosition = startPosition;
-    }
-
-    /**
      * @return the table
      */
-    public Set<String> getTable() {
-        return table;
-    }
-
-    /**
-     * @param table
-     *            the table to set
-     */
-    public void setTable( Set<String> table ) {
-        this.table = table;
+    public Set<String> getTables() {
+        return tables;
     }
 
     /**
@@ -200,14 +172,6 @@ public class GenericDatabaseDS {
      */
     public Set<String> getColumn() {
         return column;
-    }
-
-    /**
-     * @param column
-     *            the column to set
-     */
-    public void setColumn( Set<String> column ) {
-        this.column = column;
     }
 
 }

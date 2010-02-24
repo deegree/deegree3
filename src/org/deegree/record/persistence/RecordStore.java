@@ -45,14 +45,13 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.record.publication.TransactionOperation;
 import org.deegree.record.publication.TransactionOptions;
 
 /**
- * Base interface of the {@link Record} persistence layer, provides access to stored {@link Record} instances and their
- * schemas.
+ * Base interface of the {@link RecordStore} persistence layer, provides access to stored {@link RecordStore} instances
+ * and their schemas.
  * <p>
  * NOTE: One {@link RecordStore} instance corresponds to one metadata format (e.g. DublinCore, MD_Metadata (ISO TC211),
  * SV_Service (ISO TC211)).
@@ -69,15 +68,14 @@ public interface RecordStore {
     /**
      * Called by the container to indicate that this {@link RecordStore} instance is being placed into service.
      * 
-     * @throws FeatureStoreException
+     * @throws RecordStoreException
      *             if the initialization fails
      */
     public void init()
                             throws RecordStoreException;
 
     /**
-     * Called by the container to indicate that this {@link RecordStoreException} instance is being taken out of
-     * service.
+     * Called by the container to indicate that this {@link RecordStore} instance is being taken out of service.
      */
     public void destroy();
 
@@ -98,21 +96,22 @@ public interface RecordStore {
      * @param writer
      *            writer to export to, must not be <code>null</code>
      * @param typeName
-     *            typeName for the requested record
-     * @param connection
-     *            JDBC connection attributes
-     * @param filterTransformator
-     *            PostGresFilterTransformator that transforms the filterexpression into an SQL compatible fragment
+     *            of a specific requested record profile
+     * @param outputSchema
+     *            that should present in the response. If there is a DC recordStore requested and the outputSchema is a
+     *            ISO schema then there should be presented the ISO representation of the record.
+     * @param recordStoreOptions
+     *            {@link RecordStoreOptions}
      * @throws SQLException
      * @throws XMLStreamException
      * @throws IOException
      */
     public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema,
-                            GenericDatabaseDS genericDatabaseDS )
+                            RecordStoreOptions recordStoreOptions )
                             throws SQLException, XMLStreamException, IOException;
 
     /**
-     * Exports the requested records by the requested identifier.
+     * Exports the records by the requested identifier.
      * 
      * @param writer
      *            writer to export to, must not be <code>null</code>
@@ -121,7 +120,7 @@ public interface RecordStore {
      * @param outputSchema
      *            that should be presented in the response
      * @param elementSetName
-     *            specifies which resultType should be returned in the response
+     *            {@link SetOfReturnableElements}
      * @throws SQLException
      */
     public void getRecordById( XMLStreamWriter writer, List<String> idList, URI outputSchema,
@@ -129,7 +128,6 @@ public interface RecordStore {
                             throws SQLException;
 
     /**
-     * 
      * Exports the XML fragment to the recordstore-backend.
      * <p>
      * INSERT-action: inserts one or more records to the backend. <br>
@@ -142,13 +140,14 @@ public interface RecordStore {
      *            writer to export to, must not be <code>null</code>
      * @param operations
      *            that are hold by this container
-     * @param isInspire
-     *            if there exists an INSPIRE constraint
-     * @return
+     * @param opations
+     *            {@link TransactionOptions}
+     * @return the number of successful transactions
      * @throws SQLException
      * @throws XMLStreamException
      */
-    public int transaction( XMLStreamWriter writer, TransactionOperation operations, TransactionOptions opations )
+    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations,
+                                      TransactionOptions opations )
                             throws SQLException, XMLStreamException;
 
     /**
@@ -164,10 +163,10 @@ public interface RecordStore {
     public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, List<Integer> transactionIds )
                             throws SQLException, IOException;
 
-    public List<Integer> getTransactionIds();
+    // public List<Integer> getTransactionIds();
 
     /**
-     * Returns the typeNames that are known in the backend. <br/>
+     * Returns the typeNames that are known in the backend. <br>
      * i.e. the ISORecordStore holds two profiles, the DUBLIN CORE and the ISO profile.
      * 
      * @return QName
