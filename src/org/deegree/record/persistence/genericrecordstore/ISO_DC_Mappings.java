@@ -207,7 +207,7 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings {
     /**
      * Private constructor for no instantiating from outside.
      */
-    private ISO_DC_Mappings() {
+    public ISO_DC_Mappings() {
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
@@ -322,20 +322,6 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings {
         // ----------------------</additional common queryable properties>-------------------------
         // ----------------------------------------------------------------------------------------
 
-    }
-
-    /**
-     * Private class attribute to realise the Singelton-Pattern in eager-creation.
-     */
-    private final static ISO_DC_Mappings INSTANCE = new ISO_DC_Mappings();
-
-    /**
-     * Static method provides the only instance of this class.
-     * 
-     * @return {@link ISO_DC_Mappings}
-     */
-    public static ISO_DC_Mappings getInstance() {
-        return INSTANCE;
     }
 
     /*

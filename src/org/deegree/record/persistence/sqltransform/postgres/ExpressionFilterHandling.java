@@ -72,6 +72,7 @@ public class ExpressionFilterHandling {
      * 
      * @param typeExpression
      * @param exp
+     * @return {@link ExpressionFilterObject}
      */
     public ExpressionFilterObject expressionFilterHandling( org.deegree.filter.Expression.Type typeExpression,
                                                             Expression exp ) {

@@ -110,7 +110,7 @@ public class ISORecordStore implements RecordStore {
 
     private String connectionId;
 
-    private ISO_DC_Mappings mappings = ISO_DC_Mappings.getInstance();
+    private ISO_DC_Mappings mappings = new ISO_DC_Mappings();
 
     private Set<String> tableSet;
 
