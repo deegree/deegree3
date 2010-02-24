@@ -32,11 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
 /**
- * BoundingBox representation for records. This class encapsulates the data for representation only. 
+ * BoundingBox representation for records. This class encapsulates the data for representation only.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -44,15 +44,15 @@ package org.deegree.record.persistence.genericrecordstore;
  * @version $Revision: $, $Date: $
  */
 public class BoundingBox {
-    
+
     private double westBoundLongitude;
-    
+
     private double southBoundLatitude;
-    
+
     private double eastBoundLongitude;
-    
+
     private double northBoundLatitude;
-    
+
     /**
      * 
      * @param westBoundLongitude
@@ -60,7 +60,8 @@ public class BoundingBox {
      * @param eastBoundLongitude
      * @param northBoundLatitude
      */
-    public BoundingBox(double westBoundLongitude, double southBoundLatitude, double eastBoundLongitude, double northBoundLatitude){
+    public BoundingBox( double westBoundLongitude, double southBoundLatitude, double eastBoundLongitude,
+                        double northBoundLatitude ) {
         this.westBoundLongitude = westBoundLongitude;
         this.southBoundLatitude = southBoundLatitude;
         this.eastBoundLongitude = eastBoundLongitude;
@@ -75,24 +76,10 @@ public class BoundingBox {
     }
 
     /**
-     * @param westBoundLongitude the westBoundLongitude to set
-     */
-    public void setWestBoundLongitude( double westBoundLongitude ) {
-        this.westBoundLongitude = westBoundLongitude;
-    }
-
-    /**
      * @return the southBoundLatitude
      */
     public double getSouthBoundLatitude() {
         return southBoundLatitude;
-    }
-
-    /**
-     * @param southBoundLatitude the southBoundLatitude to set
-     */
-    public void setSouthBoundLatitude( double southBoundLatitude ) {
-        this.southBoundLatitude = southBoundLatitude;
     }
 
     /**
@@ -103,26 +90,10 @@ public class BoundingBox {
     }
 
     /**
-     * @param eastBoundLongitude the eastBoundLongitude to set
-     */
-    public void setEastBoundLongitude( double eastBoundLongitude ) {
-        this.eastBoundLongitude = eastBoundLongitude;
-    }
-
-    /**
      * @return the northBoundLatitude
      */
     public double getNorthBoundLatitude() {
         return northBoundLatitude;
     }
-
-    /**
-     * @param northBoundLatitude the northBoundLatitude to set
-     */
-    public void setNorthBoundLatitude( double northBoundLatitude ) {
-        this.northBoundLatitude = northBoundLatitude;
-    }
-    
-    
 
 }

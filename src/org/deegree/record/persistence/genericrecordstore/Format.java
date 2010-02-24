@@ -32,11 +32,12 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
 /**
- * Format representation for records. This class encapsulates the data for representation only. 
+ * Format representation for records. This class encapsulates the data for representation only. <br>
+ * Format determines the software, hardware or other equipment needed to display or operates on a resource.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -44,10 +45,23 @@ package org.deegree.record.persistence.genericrecordstore;
  * @version $Revision: $, $Date: $
  */
 public class Format {
-    
+
     private String name;
-    
+
     private String version;
+
+    /**
+     * Creates a new {@link Format} instance.
+     * 
+     * @param name
+     *            physical or digital manifestation of a resource, e.g. shapefile
+     * @param version
+     *            of the format, e.g. Amendment 1 or 1.0
+     */
+    public Format( String name, String version ) {
+        this.name = name;
+        this.version = version;
+    }
 
     /**
      * @return the name
@@ -57,26 +71,10 @@ public class Format {
     }
 
     /**
-     * @param name the name to set
-     */
-    public void setName( String name ) {
-        this.name = name;
-    }
-
-    /**
      * @return the version
      */
     public String getVersion() {
         return version;
     }
-
-    /**
-     * @param version the version to set
-     */
-    public void setVersion( String version ) {
-        this.version = version;
-    }
-    
-    
 
 }

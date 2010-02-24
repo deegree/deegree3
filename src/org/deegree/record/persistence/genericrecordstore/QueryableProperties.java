@@ -41,7 +41,7 @@ import org.deegree.commons.types.datetime.Date;
 import org.deegree.crs.CRS;
 
 /**
- * Properties that are queryable by applicationprofiles such as ISO
+ * Properties that are queryable by applicationprofiles such as ISO application profile version 1.0 document 07-045.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -62,9 +62,7 @@ public class QueryableProperties {
 
     private List<Format> format;
 
-    private String identifier;
-    
-    private List<String> identifierDC;
+    private List<String> identifier;
 
     private Date modified;
 
@@ -128,30 +126,16 @@ public class QueryableProperties {
 
     // ---</additional common queryable properties for SERVICE>
 
-    public QueryableProperties() {
-
-    }
-
-    /*
-     * public QueryableProperties(List<String> subject, List<OMElement> title, OMElement language, List<String>
-     * abridgement, String anyText, List<String> format, OMElement identifier, List<Date> modified, String type,
-     * BoundingBox boundingBox, CRS crs){ this.subject = subject; this.title = title; this.language = language;
-     * this.abridgement = abridgement; this.anyText = anyText; this.format = format; this.identifier = identifier;
-     * this.modified = modified; this.type = type; this.boundingBox = boundingBox; this.crs = crs;
-     * 
-     * }
-     */
-
     /**
-     * @return the abridgement
+     * @return _abstract
      */
     public List<String> get_abstract() {
         return _abstract;
     }
 
     /**
-     * @param abridgement
-     *            the abridgement to set
+     * 
+     * @param _abstract
      */
     public void set_abstract( List<String> _abstract ) {
         this._abstract = _abstract;
@@ -190,7 +174,7 @@ public class QueryableProperties {
     /**
      * @return the identifier
      */
-    public String getIdentifier() {
+    public List<String> getIdentifier() {
         return identifier;
     }
 
@@ -198,7 +182,7 @@ public class QueryableProperties {
      * @param identifier
      *            the identifier to set
      */
-    public void setIdentifier( String identifier ) {
+    public void setIdentifier( List<String> identifier ) {
         this.identifier = identifier;
     }
 
@@ -532,8 +516,6 @@ public class QueryableProperties {
         this.couplingType = couplingType;
     }
 
-    
-
     /**
      * @return the operatesOnData
      */
@@ -542,7 +524,8 @@ public class QueryableProperties {
     }
 
     /**
-     * @param operatesOnData the operatesOnData to set
+     * @param operatesOnData
+     *            the operatesOnData to set
      */
     public void setOperatesOnData( List<OperatesOnData> operatesOnData ) {
         this.operatesOnData = operatesOnData;
@@ -622,21 +605,5 @@ public class QueryableProperties {
     public void setTemporalExtentEnd( Date temporalExtentEnd ) {
         this.temporalExtentEnd = temporalExtentEnd;
     }
-
-    /**
-     * @return the identifierDC
-     */
-    public List<String> getIdentifierDC() {
-        return identifierDC;
-    }
-
-    /**
-     * @param identifierDC the identifierDC to set
-     */
-    public void setIdentifierDC( List<String> identifierDC ) {
-        this.identifierDC = identifierDC;
-    }
-    
-    
 
 }

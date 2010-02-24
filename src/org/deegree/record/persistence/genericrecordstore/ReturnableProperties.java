@@ -32,13 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
 import java.util.List;
 
 /**
- * Properties that are just returnable by applicationprofiles such as ISO 
+ * Properties that are just returnable by applicationprofiles such as ISO
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -46,23 +46,20 @@ import java.util.List;
  * @version $Revision: $, $Date: $
  */
 public class ReturnableProperties {
-    
+
     private String graphicOverview;
-    
+
     private String creator;
-    
+
     private String publisher;
-        
+
     private String contributor;
-    
+
     private List<String> rights;
-    
+
     private String source;
-    
-    private String language;
-    
+
     private List<String> relation;
-    
 
     /**
      * @return the creator
@@ -72,7 +69,8 @@ public class ReturnableProperties {
     }
 
     /**
-     * @param creator the creator to set
+     * @param creator
+     *            the creator to set
      */
     public void setCreator( String creator ) {
         this.creator = creator;
@@ -86,7 +84,8 @@ public class ReturnableProperties {
     }
 
     /**
-     * @param publisher the publisher to set
+     * @param publisher
+     *            the publisher to set
      */
     public void setPublisher( String publisher ) {
         this.publisher = publisher;
@@ -100,14 +99,13 @@ public class ReturnableProperties {
     }
 
     /**
-     * @param contributor the contributor to set
+     * @param contributor
+     *            the contributor to set
      */
     public void setContributor( String contributor ) {
         this.contributor = contributor;
     }
 
-    
-    
     /**
      * @return the graphicOverview
      */
@@ -116,7 +114,8 @@ public class ReturnableProperties {
     }
 
     /**
-     * @param graphicOverview the graphicOverview to set
+     * @param graphicOverview
+     *            the graphicOverview to set
      */
     public void setGraphicOverview( String graphicOverview ) {
         this.graphicOverview = graphicOverview;
@@ -130,7 +129,8 @@ public class ReturnableProperties {
     }
 
     /**
-     * @param rights the rights to set
+     * @param rights
+     *            the rights to set
      */
     public void setRights( List<String> rights ) {
         this.rights = rights;
@@ -144,24 +144,11 @@ public class ReturnableProperties {
     }
 
     /**
-     * @param source the source to set
+     * @param source
+     *            the source to set
      */
     public void setSource( String source ) {
         this.source = source;
-    }
-    
-    /**
-     * @return the language
-     */
-    public String getLanguage() {
-        return language;
-    }
-
-    /**
-     * @param language the language to set
-     */
-    public void setLanguage( String language ) {
-        this.language = language;
     }
 
     /**
@@ -172,11 +159,11 @@ public class ReturnableProperties {
     }
 
     /**
-     * @param relation the relation to set
+     * @param relation
+     *            the relation to set
      */
     public void setRelation( List<String> relation ) {
         this.relation = relation;
     }
-
 
 }

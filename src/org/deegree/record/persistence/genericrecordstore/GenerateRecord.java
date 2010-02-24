@@ -59,73 +59,73 @@ public class GenerateRecord {
     private OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
 
     private OMNamespace namespaceDCT = factory.createOMNamespace( "http://purl.org/dc/terms/", "dct" );
-    
+
     private OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
 
-    private OMElement identifier = null;
+    private OMElement identifier;
 
-    private OMElement language = null;
+    private OMElement language;
 
-    private OMElement characterSet = null;
+    private OMElement characterSet;
 
-    private OMElement parentIdentifier = null;
+    private OMElement parentIdentifier;
 
-    private List<OMElement> hierarchyLevel = null;
+    private List<OMElement> hierarchyLevel;
 
-    private List<OMElement> hierarchyLevelName = null;
+    private List<OMElement> hierarchyLevelName;
 
-    private List<OMElement> contact = null;
+    private List<OMElement> contact;
 
-    private OMElement dateStamp = null;
+    private OMElement dateStamp;
 
-    private OMElement metadataStandardName = null;
+    private OMElement metadataStandardName;
 
-    private OMElement metadataStandardVersion = null;
+    private OMElement metadataStandardVersion;
 
-    private OMElement dataSetURI = null;
+    private OMElement dataSetURI;
 
-    private List<OMElement> locale = null;
+    private List<OMElement> locale;
 
-    private List<OMElement> spatialRepresentationInfo = null;
+    private List<OMElement> spatialRepresentationInfo;
 
-    private List<OMElement> referenceSystemInfo = null;
+    private List<OMElement> referenceSystemInfo;
 
-    private List<OMElement> metadataExtensionInfo = null;
+    private List<OMElement> metadataExtensionInfo;
 
-    private List<OMElement> identificationInfo = null;
+    private List<OMElement> identificationInfo;
 
-    private List<OMElement> contentInfo = null;
+    private List<OMElement> contentInfo;
 
-    private OMElement distributionInfo = null;
+    private OMElement distributionInfo;
 
-    private List<OMElement> dataQualityInfo = null;
+    private List<OMElement> dataQualityInfo;
 
-    private List<OMElement> portrayalCatalogueInfo = null;
+    private List<OMElement> portrayalCatalogueInfo;
 
-    private List<OMElement> metadataConstraints = null;
+    private List<OMElement> metadataConstraints;
 
-    private List<OMElement> applicationSchemaInfo = null;
+    private List<OMElement> applicationSchemaInfo;
 
-    private OMElement metadataMaintenance = null;
+    private OMElement metadataMaintenance;
 
-    private List<OMElement> series = null;
+    private List<OMElement> series;
 
-    private List<OMElement> describes = null;
+    private List<OMElement> describes;
 
-    private List<OMElement> propertyType = null;
+    private List<OMElement> propertyType;
 
-    private List<OMElement> featureType = null;
+    private List<OMElement> featureType;
 
-    private List<OMElement> featureAttribute = null;
+    private List<OMElement> featureAttribute;
 
-    private OMElement isoBriefElement = null;
+    private OMElement isoBriefElement;
 
-    private OMElement isoSummaryElement = null;
+    private OMElement isoSummaryElement;
 
-    private OMElement isoFullElement = null;
-    
+    private OMElement isoFullElement;
+
     private QueryableProperties qp;
-    
+
     private ReturnableProperties rp;
 
     /**
@@ -387,8 +387,7 @@ public class GenerateRecord {
         return isoFullElement;
 
     }
-    
-    
+
     /**
      * Creation of the "brief"-representation in DC of a record.
      * 
@@ -397,13 +396,12 @@ public class GenerateRecord {
      */
     private void setDCBriefElements( OMElement omElement ) {
 
-        
         OMElement omType = factory.createOMElement( "type", namespaceDC );
 
-        for(String identifier : qp.getIdentifierDC()){
-        OMElement omIdentifier = factory.createOMElement( "identifier", namespaceDC );
-        omIdentifier.setText( identifier );
-        omElement.addChild( omIdentifier );
+        for ( String identifierDC : qp.getIdentifier() ) {
+            OMElement omIdentifier = factory.createOMElement( "identifier", namespaceDC );
+            omIdentifier.setText( identifierDC );
+            omElement.addChild( omIdentifier );
         }
         for ( String title : qp.getTitle() ) {
             OMElement omTitle = factory.createOMElement( "title", namespaceDC );
@@ -417,14 +415,15 @@ public class GenerateRecord {
         }
         omElement.addChild( omType );
     }
-    
+
     /**
      * Creation of the "summary"-representation in DC of a record.
      * 
      * @param omElement
-     * @throws ParseException 
+     * @throws ParseException
      */
-    private void setDCSummaryElements( OMElement omElement ) throws ParseException {
+    private void setDCSummaryElements( OMElement omElement )
+                            throws ParseException {
         setDCBriefElements( omElement );
 
         OMElement omSubject;
@@ -473,7 +472,7 @@ public class GenerateRecord {
         // omModified.setText( date.toString() );
         // omElement.addChild( omModified );
         // }
-        
+
         if ( qp.getModified() != null && !qp.getModified().equals( new Date( "0000-00-00" ) ) ) {
             OMElement omModified = factory.createOMElement( "modified", namespaceDCT );
             omModified.setText( qp.getModified().toString() );
@@ -498,9 +497,10 @@ public class GenerateRecord {
      * Creation of the "full"-representation in DC of a record.
      * 
      * @param omElement
-     * @throws ParseException 
+     * @throws ParseException
      */
-    private void setDCFullElements( OMElement omElement ) throws ParseException {
+    private void setDCFullElements( OMElement omElement )
+                            throws ParseException {
 
         setDCSummaryElements( omElement );
 
@@ -525,9 +525,9 @@ public class GenerateRecord {
             omSource.setText( rp.getSource() );
             omElement.addChild( omSource );
         }
-        if ( rp.getLanguage() != null ) {
+        if ( qp.getLanguage() != null ) {
             OMElement omLanguage = factory.createOMElement( "language", namespaceDC );
-            omLanguage.setText( rp.getLanguage() );
+            omLanguage.setText( qp.getLanguage() );
             omElement.addChild( omLanguage );
         }
 
@@ -541,8 +541,6 @@ public class GenerateRecord {
         }
 
     }
-    
-    
 
     /**
      * @return the isoBriefElement
@@ -564,29 +562,29 @@ public class GenerateRecord {
     public OMElement getIsoFullElement() {
         return setISOFullElements();
     }
-    
-    
 
     /**
      * @return the dcBriefElement
      */
-    public void buildElementAsDcBriefElement(OMElement element) {
-        setDCBriefElements(element );
+    public void buildElementAsDcBriefElement( OMElement element ) {
+        setDCBriefElements( element );
     }
 
     /**
      * @return the dcSummaryElement
-     * @throws ParseException 
+     * @throws ParseException
      */
-    public void buildElementAsDcSummaryElement(OMElement element) throws ParseException {
+    public void buildElementAsDcSummaryElement( OMElement element )
+                            throws ParseException {
         setDCSummaryElements( element );
     }
 
     /**
      * @return the dcFullElement
-     * @throws ParseException 
+     * @throws ParseException
      */
-    public void buildElementAsDcFullElement(OMElement element) throws ParseException {
+    public void buildElementAsDcFullElement( OMElement element )
+                            throws ParseException {
         setDCFullElements( element );
     }
 
@@ -927,7 +925,8 @@ public class GenerateRecord {
     }
 
     /**
-     * @param QueryableProperties the QueryableProperties to set
+     * @param QueryableProperties
+     *            the QueryableProperties to set
      */
     public void setQueryableProperties( QueryableProperties qp ) {
         this.qp = qp;
@@ -941,12 +940,11 @@ public class GenerateRecord {
     }
 
     /**
-     * @param rp the rp to set
+     * @param rp
+     *            the rp to set
      */
     public void setReturnableProperties( ReturnableProperties rp ) {
         this.rp = rp;
     }
-    
-    
 
 }

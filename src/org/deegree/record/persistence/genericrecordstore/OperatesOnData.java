@@ -32,11 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
 /**
- * TODO add class documentation here
+ * Specifies the tightly coupled dataset relation in ISO profile 1.0. This is defined in OGC 07-045 document.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -44,25 +44,37 @@ package org.deegree.record.persistence.genericrecordstore;
  * @version $Revision: $, $Date: $
  */
 public class OperatesOnData {
-    
+
     private String operatesOn;
-    
+
     private String operatesOnIdentifier;
-    
+
     private String operatesOnName;
+
+    /**
+     * Creates a new {@link OperatesOnData} instance.
+     * 
+     * @param operatesOn
+     *            holds the identifier of a dataset tightly coupled with the service instance.
+     * 
+     * @param operatesOnIdentifier
+     *            identifier of a tightly coupled dataset on which the service operates on.
+     * 
+     * @param operatesOnName
+     *            name of an operation with which the service operates on a tightly coupled dataset.
+     * 
+     */
+    public OperatesOnData( String operatesOn, String operatesOnIdentifier, String operatesOnName ) {
+        this.operatesOn = operatesOn;
+        this.operatesOnIdentifier = operatesOnIdentifier;
+        this.operatesOnName = operatesOnName;
+    }
 
     /**
      * @return the operatesOn
      */
     public String getOperatesOn() {
         return operatesOn;
-    }
-
-    /**
-     * @param operatesOn the operatesOn to set
-     */
-    public void setOperatesOn( String operatesOn ) {
-        this.operatesOn = operatesOn;
     }
 
     /**
@@ -73,26 +85,10 @@ public class OperatesOnData {
     }
 
     /**
-     * @param operatesOnIdentifier the operatesOnIdentifier to set
-     */
-    public void setOperatesOnIdentifier( String operatesOnIdentifier ) {
-        this.operatesOnIdentifier = operatesOnIdentifier;
-    }
-
-    /**
      * @return the operatesOnName
      */
     public String getOperatesOnName() {
         return operatesOnName;
     }
-
-    /**
-     * @param operatesOnName the operatesOnName to set
-     */
-    public void setOperatesOnName( String operatesOnName ) {
-        this.operatesOnName = operatesOnName;
-    }
-    
-    
 
 }

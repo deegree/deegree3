@@ -32,13 +32,15 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
 import java.util.List;
 
 /**
- * Keyword representation for records. This class encapsulates the data for representation only. 
+ * Keyword representation for records. This class encapsulates the data for representation only. <br>
+ * In ISO profile this class encapsulates the keywords, whereas in DC profile the subjects are encapsulates in this
+ * class.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -46,12 +48,28 @@ import java.util.List;
  * @version $Revision: $, $Date: $
  */
 public class Keyword {
-    
+
     private String keywordType;
-    
+
     private List<String> keywords;
-    
+
     private String thesaurus;
+
+    /**
+     * Creates a new {@link Keyword} instance.
+     * 
+     * @param keywordType
+     *            a group of similar keywords. It's defined in a codeList {discipline, place, stratum, theme, temporal}
+     * @param keywords
+     *            topic of the content of the resource
+     * @param thesaurus
+     *            of the keywords
+     */
+    public Keyword( String keywordType, List<String> keywords, String thesaurus ) {
+        this.keywordType = keywordType;
+        this.keywords = keywords;
+        this.thesaurus = thesaurus;
+    }
 
     /**
      * @return the keywordType
@@ -61,24 +79,10 @@ public class Keyword {
     }
 
     /**
-     * @param keywordType the keywordType to set
-     */
-    public void setKeywordType( String keywordType ) {
-        this.keywordType = keywordType;
-    }
-
-    /**
-     * @return the keyword
+     * @return the keywords
      */
     public List<String> getKeywords() {
         return keywords;
-    }
-
-    /**
-     * @param keyword the keyword to set
-     */
-    public void setKeywords( List<String> keywords ) {
-        this.keywords = keywords;
     }
 
     /**
@@ -87,14 +91,5 @@ public class Keyword {
     public String getThesaurus() {
         return thesaurus;
     }
-
-    /**
-     * @param thesaurus the thesaurus to set
-     */
-    public void setThesaurus( String thesaurus ) {
-        this.thesaurus = thesaurus;
-    }
-    
-    
 
 }

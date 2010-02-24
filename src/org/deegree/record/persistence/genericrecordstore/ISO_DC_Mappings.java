@@ -59,6 +59,142 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings {
     private Map<String, MappingInfo> propToTableAndCol = new HashMap<String, MappingInfo>();
 
     /**
+     * Enumeration of the databasetables.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum databaseTables {
+        /**
+         * main databasetable, all of the other tables derive from this table
+         */
+        datasets,
+
+        /**
+         * record identifier
+         */
+        qp_identifier,
+
+        /**
+         * organisationname which is responsible of the content
+         */
+        isoqp_organisationname,
+
+        /**
+         * temporal extent of the record
+         */
+        isoqp_temporalextent,
+
+        /**
+         * spatial resolution of the record
+         */
+        isoqp_spatialresolution,
+
+        /**
+         * couplingtype of the service record
+         */
+        isoqp_couplingtype,
+
+        /**
+         * tightly coupled dataset relation
+         */
+        isoqp_operatesondata,
+
+        /**
+         * name of the service operation
+         */
+        isoqp_operation,
+
+        /**
+         * the geographicdescriptioncode of the record
+         */
+        isoqp_geographicdescriptioncode,
+
+        /**
+         * the version of the service type
+         */
+        isoqp_servicetypeversion,
+
+        /**
+         * name of the service type, e.g. WFS
+         */
+        isoqp_servicetype,
+
+        /**
+         * language of the record
+         */
+        isoqp_resourcelanguage,
+
+        /**
+         * revision date of the record
+         */
+        isoqp_revisiondate,
+
+        /**
+         * creation date of the record
+         */
+        isoqp_creationdate,
+
+        /**
+         * publication date of the record
+         */
+        isoqp_publicationdate,
+
+        /**
+         * identifier of the resource that can be coupled with a service record
+         */
+        isoqp_resourceIdentifier,
+
+        /**
+         * alternate title of the record
+         */
+        isoqp_alternatetitle,
+
+        /**
+         * the title of the record
+         */
+        isoqp_title,
+
+        /**
+         * the nature of the record, one of dataset, datasetcollection, service, application
+         */
+        isoqp_type,
+
+        /**
+         * the topic or content of the record
+         */
+        isoqp_keyword,
+
+        /**
+         * main theme(s) of the record
+         */
+        isoqp_topiccategory,
+
+        /**
+         * the physical or digital manifestation of the record
+         */
+        isoqp_format,
+
+        /**
+         * the abstract of the record
+         */
+        isoqp_abstract,
+
+        /**
+         * the bounding box that encapsulates the record by spatial boundaries
+         */
+        isoqp_boundingbox,
+
+        /**
+         * the coordinate reference system of the bounding box(es)
+         */
+        isoqp_crs
+
+    }
+
+    /**
      * datasets
      */
     protected final String mainDatabaseTable = "datasets";
@@ -68,7 +204,10 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings {
      */
     protected final String commonForeignkey = "fk_datasets";
 
-    public ISO_DC_Mappings() {
+    /**
+     * Private constructor for no instantiating from outside.
+     */
+    private ISO_DC_Mappings() {
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
@@ -183,6 +322,20 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings {
         // ----------------------</additional common queryable properties>-------------------------
         // ----------------------------------------------------------------------------------------
 
+    }
+
+    /**
+     * Private class attribute to realise the Singelton-Pattern in eager-creation.
+     */
+    private final static ISO_DC_Mappings INSTANCE = new ISO_DC_Mappings();
+
+    /**
+     * Static method provides the only instance of this class.
+     * 
+     * @return {@link ISO_DC_Mappings}
+     */
+    public static ISO_DC_Mappings getInstance() {
+        return INSTANCE;
     }
 
     /*

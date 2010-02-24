@@ -74,12 +74,11 @@ import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.CSWConstants.ConstraintLanguage;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.record.persistence.GenericDatabaseDS;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
+import org.deegree.record.persistence.RecordStoreOptions;
 import org.deegree.record.persistence.sqltransform.postgres.ExpressionFilterHandling;
 import org.deegree.record.persistence.sqltransform.postgres.ExpressionFilterObject;
 import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGres;
@@ -103,16 +102,21 @@ public class ISORecordStore implements RecordStore {
 
     private static final Logger LOG = getLogger( ISORecordStore.class );
 
+    /**
+     * registers the typeNames that are applicable to this recordStore and maps a typeName to a format, if it is DC or
+     * ISO
+     */
     private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
     private String connectionId;
 
-    private List<Integer> insertedIds;
-
-    ISO_DC_Mappings mappings = new ISO_DC_Mappings();
+    private ISO_DC_Mappings mappings = ISO_DC_Mappings.getInstance();
 
     private Set<String> tableSet;
 
+    /**
+     * maps the specific returnable element format to a concrete table in the backend
+     */
     private static final Map<SetOfReturnableElements, String> formatTypeInISORecordStore = new HashMap<SetOfReturnableElements, String>();
 
     static {
@@ -131,6 +135,11 @@ public class ISORecordStore implements RecordStore {
 
     }
 
+    /**
+     * Creates a new {@link ISORecordStore} instance with a registered connectionId.
+     * 
+     * @param connectionId
+     */
     public ISORecordStore( String connectionId ) {
         this.connectionId = connectionId;
     }
@@ -143,25 +152,32 @@ public class ISORecordStore implements RecordStore {
     @Override
     public void describeRecord( XMLStreamWriter writer, QName typeName ) {
         try {
-            URL dc = null;
-            URL url_identification = null;
+
             BufferedInputStream bais;
             URLConnection urlConn = null;
 
-            if ( typeName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) ) ) {
+            if ( "".equals( typeName ) ) {
 
-                dc = new URL( CSWConstants.CSW_202_RECORD );
+                urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
 
-                urlConn = dc.openConnection();
-
-            } else if ( typeName.equals( new QName( CSWConstants.GMD_NS, "MD_Metadata", CSWConstants.GMD_PREFIX ) ) ) {
-
-                url_identification = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" );
-
-                urlConn = url_identification.openConnection();
+                urlConn = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" ).openConnection();
 
                 writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
 
+            } else if ( typeName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) ) ) {
+
+                urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
+
+            } else if ( typeName.equals( new QName( CSWConstants.GMD_NS, "MD_Metadata", CSWConstants.GMD_PREFIX ) ) ) {
+
+                urlConn = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" ).openConnection();
+
+                writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
+
+            } else {
+                String errorMessage = "The typeName " + typeName + "is not supported by this profile. ";
+                LOG.debug( errorMessage );
+                throw new IllegalArgumentException( errorMessage );
             }
 
             urlConn.setDoInput( true );
@@ -169,9 +185,7 @@ public class ISORecordStore implements RecordStore {
 
             // TODO remove hardcoding
             Charset charset = Charset.forName( "UTF-8" );
-            InputStreamReader isr = null;
-
-            isr = new InputStreamReader( bais, charset );
+            InputStreamReader isr = new InputStreamReader( bais, charset );
 
             readXMLFragment( isr, writer );
         } catch ( MalformedURLException e ) {
@@ -229,7 +243,7 @@ public class ISORecordStore implements RecordStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, GenericDatabaseDS constraint )
+    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, RecordStoreOptions constraint )
                             throws SQLException, XMLStreamException, IOException {
 
         int profileFormatNumberOutputSchema = 0;
@@ -239,9 +253,7 @@ public class ISORecordStore implements RecordStore {
             typeNameFormatNumber = typeNames.get( typeName );
         }
 
-        if ( typeName.getNamespaceURI().equals( outputSchema ) ) {
-
-        } else {
+        if ( !typeName.getNamespaceURI().equals( outputSchema ) ) {
             for ( QName qName : typeNames.keySet() ) {
                 if ( qName.getNamespaceURI().equals( outputSchema.toString() ) ) {
                     profileFormatNumberOutputSchema = typeNames.get( qName );
@@ -260,6 +272,8 @@ public class ISORecordStore implements RecordStore {
                                formatTypeInISORecordStore.get( constraint.getSetOfReturnableElements() ),
                                ResultType.hits );
             break;
+
+        case validate:
 
         }
 
@@ -283,7 +297,7 @@ public class ISORecordStore implements RecordStore {
      * @throws IOException
      */
     private void doHitsOnGetRecord( XMLStreamWriter writer, int typeNameFormatNumber,
-                                    int profileFormatNumberOutputSchema, GenericDatabaseDS constraint,
+                                    int profileFormatNumberOutputSchema, RecordStoreOptions constraint,
                                     String formatType, ResultType resultType )
                             throws SQLException, XMLStreamException, IOException {
 
@@ -362,7 +376,7 @@ public class ISORecordStore implements RecordStore {
      * @throws IOException
      */
     private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
-                                       GenericDatabaseDS propertyAttributes )
+                                       RecordStoreOptions propertyAttributes )
                             throws SQLException, XMLStreamException, IOException {
         int typeNameFormatNumber = 0;
         if ( typeNames.containsKey( typeName ) ) {
@@ -427,12 +441,12 @@ public class ISORecordStore implements RecordStore {
      * Corrects the table set from the mainDatabaseTable. Because it could happen that the mainDatabaseTable is called
      * in the Filterexpression explicitly.
      * 
-     * @param tableSet
+     * @param tableSetToBeCorrected
      */
-    private void correctTable( Set<String> tableSet ) {
-        for ( String s : tableSet ) {
+    private void correctTable( Set<String> tableSetToBeCorrected ) {
+        for ( String s : tableSetToBeCorrected ) {
             if ( mappings.mainDatabaseTable.equals( s ) ) {
-                tableSet.remove( s );
+                tableSetToBeCorrected.remove( s );
                 break;
             }
         }
@@ -457,12 +471,12 @@ public class ISORecordStore implements RecordStore {
      * @return a Writer
      * @throws IOException
      */
-    private Writer generateSELECTStatement( String formatType, GenericDatabaseDS propertyAttributes,
+    private Writer generateSELECTStatement( String formatType, RecordStoreOptions propertyAttributes,
                                             int typeNameFormatNumber, int profileFormatNumberOutputSchema,
                                             boolean setCount )
                             throws IOException {
-        if ( propertyAttributes.getTable() != null ) {
-            tableSet = propertyAttributes.getTable();
+        if ( propertyAttributes.getTables() != null ) {
+            tableSet = propertyAttributes.getTables();
         } else {
             tableSet = new HashSet<String>();
         }
@@ -512,9 +526,7 @@ public class ISORecordStore implements RecordStore {
             s.append( " AND " + concatTableWHERE( tableSet ) );
         }
         s.append( constraintExpression + ")" );
-        if ( propertyAttributes.getMaxRecords() < 0 ) {
-
-        } else {
+        if ( propertyAttributes.getMaxRecords() != 0 ) {
             s.append( " LIMIT " + propertyAttributes.getMaxRecords() );
         }
 
@@ -566,33 +578,6 @@ public class ISORecordStore implements RecordStore {
         return string;
     }
 
-    /**
-     * Transformation operation for the parsed filter expression. Example for isoqp_title with INNER JOIN
-     * 
-     * @param constraint
-     * @param constraintLanguage
-     * @return
-     */
-    private String transformFilterExpression( ConstraintLanguage constraintLanguage, String constraint ) {
-
-        String isoqp_title = "";
-        String rest = "";
-        constraint = constraint.replace( "\"", "" );
-
-        for ( String s : constraint.split( " = " ) ) {
-            if ( s.equals( "title" ) ) {
-                isoqp_title = "isoqp_title";
-            } else {
-                rest = s;
-            }
-        }
-
-        String sqlExpression = "INNER JOIN " + isoqp_title + " ON (ds.id = " + isoqp_title + ".fk_datasets) WHERE "
-                               + isoqp_title + ".title = " + rest;
-
-        return sqlExpression;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -600,11 +585,12 @@ public class ISORecordStore implements RecordStore {
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
     @Override
-    public int transaction( XMLStreamWriter writer, TransactionOperation operations, TransactionOptions options )
+    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations,
+                                      TransactionOptions options )
                             throws SQLException, XMLStreamException {
 
-        insertedIds = new ArrayList<Integer>();
-        int successfullTransaction = 0;
+        List<Integer> insertedIds = new ArrayList<Integer>();
+
         Connection conn = ConnectionManager.getConnection( connectionId );
 
         switch ( operations.getType() ) {
@@ -615,18 +601,20 @@ public class ISORecordStore implements RecordStore {
                 QName localName = element.getQName();
                 boolean isDC = true;
                 try {
-                    ISOQPParsing elementParsing = new ISOQPParsing( element, conn );
+                    ISOQPParsing elementParsing = new ISOQPParsing( element );
+
                     if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
                          || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
+
                         elementParsing.parseAPDC();
 
                     } else {
-                        elementParsing.parseAPISO( options.isInspire() );
+                        elementParsing.parseAPISO( options.isInspire(), conn );
                         isDC = false;
                     }
-                    elementParsing.executeInsertStatement( isDC );
-                    insertedIds.addAll( elementParsing.getRecordInsertIDs() );
-                    successfullTransaction++;
+                    elementParsing.executeInsertStatement( isDC, conn );
+                    insertedIds.addAll( elementParsing.getRecordsAffectedIDs() );
+
                 } catch ( IOException e ) {
 
                     LOG.debug( "error: " + e.getMessage(), e );
@@ -645,29 +633,30 @@ public class ISORecordStore implements RecordStore {
                 try {
                     QName localName = upd.getElement().getQName();
 
-                    ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement(), conn );
+                    ISOQPParsing elementParsing = new ISOQPParsing( upd.getElement() );
+
                     if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
                          || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
 
                         elementParsing.parseAPDC();
 
                     } else {
-                        elementParsing.parseAPISO( options.isInspire() );
+                        elementParsing.parseAPISO( options.isInspire(), conn );
 
                     }
-                    elementParsing.executeUpdateStatement();
-                    successfullTransaction++;
+                    elementParsing.executeUpdateStatement( conn );
+
                 } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
+
                     LOG.debug( "error: " + e.getMessage(), e );
                 }
             } else {
                 try {
                     TransformatorPostGres filterExpression = new TransformatorPostGres( upd.getConstraint() );
-                    GenericDatabaseDS gdds = new GenericDatabaseDS( filterExpression.getStringWriter(),
-                                                                    ResultType.results, SetOfReturnableElements.full,
-                                                                    filterExpression.getTable(),
-                                                                    filterExpression.getColumn() );
+                    RecordStoreOptions gdds = new RecordStoreOptions( filterExpression.getStringWriter(),
+                                                                      ResultType.results, SetOfReturnableElements.full,
+                                                                      filterExpression.getTable(),
+                                                                      filterExpression.getColumn() );
 
                     int formatNumber = 0;
                     String nsURI = filterExpression.getPropName().getNamespaceURI();
@@ -737,7 +726,8 @@ public class ISORecordStore implements RecordStore {
                                             try {
                                                 QName localName = omElement.getQName();
 
-                                                ISOQPParsing elementParsing = new ISOQPParsing( omElement, conn );
+                                                ISOQPParsing elementParsing = new ISOQPParsing( omElement );
+
                                                 if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
                                                                                   CSWConstants.CSW_PREFIX ) )
                                                      || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
@@ -746,13 +736,13 @@ public class ISORecordStore implements RecordStore {
                                                     elementParsing.parseAPDC();
 
                                                 } else {
-                                                    elementParsing.parseAPISO( options.isInspire() );
+                                                    elementParsing.parseAPISO( options.isInspire(), conn );
 
                                                 }
-                                                elementParsing.executeUpdateStatement();
-                                                successfullTransaction++;
+                                                elementParsing.executeUpdateStatement( conn );
+
                                             } catch ( IOException e ) {
-                                                // TODO Auto-generated catch block
+
                                                 LOG.debug( "error: " + e.getMessage(), e );
                                             }
 
@@ -793,16 +783,16 @@ public class ISORecordStore implements RecordStore {
                 }
             }
 
-            GenericDatabaseDS gdds = new GenericDatabaseDS( filterExpression.getStringWriter(), ResultType.results,
-                                                            SetOfReturnableElements.full, filterExpression.getTable(),
-                                                            filterExpression.getColumn() );
+            RecordStoreOptions gdds = new RecordStoreOptions( filterExpression.getStringWriter(), ResultType.results,
+                                                              SetOfReturnableElements.full,
+                                                              filterExpression.getTable(), filterExpression.getColumn() );
             Writer str = new StringWriter();
 
             try {
                 str = getRequestedIDStatement( formatTypeInISORecordStore.get( SetOfReturnableElements.full ), gdds,
                                                formatNumber );
             } catch ( IOException e ) {
-                // TODO Auto-generated catch block
+
                 LOG.debug( "error: " + e.getMessage(), e );
             }
 
@@ -815,16 +805,14 @@ public class ISORecordStore implements RecordStore {
             rsDeletableDatasets.close();
 
             for ( int i : deletableDatasets ) {
-                String deleteDataset = "DELETE FROM " + mappings.mainDatabaseTable + " WHERE id = " + i;
-                int deleteRS = conn.createStatement().executeUpdate( deleteDataset );
-                successfullTransaction++;
+                conn.createStatement().executeUpdate( "DELETE FROM " + mappings.mainDatabaseTable + " WHERE id = " + i );
             }
 
             break;
         }
         conn.close();
 
-        return successfullTransaction;
+        return insertedIds;
     }
 
     /**
@@ -858,14 +846,11 @@ public class ISORecordStore implements RecordStore {
             }
             return element;
 
-        } else {
+        }
+        while ( childElements.hasNext() ) {
+            OMElement elem = (OMElement) childElements.next();
 
-            while ( childElements.hasNext() ) {
-                OMElement elem = (OMElement) childElements.next();
-
-                recursiveElementKnotUpdate( elem, elem.getChildElements(), searchForLocalName, newContent );
-
-            }
+            recursiveElementKnotUpdate( elem, elem.getChildElements(), searchForLocalName, newContent );
 
         }
 
@@ -934,19 +919,6 @@ public class ISORecordStore implements RecordStore {
 
         }
 
-        // try {
-        // doResultsOnGetRecord(writer, null, profileFormatNumberOutputSchema, null, connection);
-        // } catch ( SQLException e ) {
-        // // TODO Auto-generated catch block
-        // LOG.debug( "error: " + e.getMessage(), e );
-        // } catch ( XMLStreamException e ) {
-        // // TODO Auto-generated catch block
-        // LOG.debug( "error: " + e.getMessage(), e );
-        // } catch ( IOException e ) {
-        // // TODO Auto-generated catch block
-        // LOG.debug( "error: " + e.getMessage(), e );
-        // }
-
     }
 
     /**
@@ -958,10 +930,10 @@ public class ISORecordStore implements RecordStore {
      * @return
      * @throws IOException
      */
-    private Writer getRequestedIDStatement( String formatType, GenericDatabaseDS constraint, int formatNumber )
+    private Writer getRequestedIDStatement( String formatType, RecordStoreOptions constraint, int formatNumber )
                             throws IOException {
-        if ( constraint.getTable() != null ) {
-            tableSet = constraint.getTable();
+        if ( constraint.getTables() != null ) {
+            tableSet = constraint.getTables();
         } else {
             tableSet = new HashSet<String>();
         }
@@ -1106,17 +1078,6 @@ public class ISORecordStore implements RecordStore {
         // LOG.debug( "error: " + e.getMessage(), e );
         // }
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.record.persistence.RecordStore#getTransactionIds()
-     */
-    @Override
-    public List<Integer> getTransactionIds() {
-
-        return insertedIds;
     }
 
 }
