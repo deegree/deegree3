@@ -47,7 +47,8 @@ import org.deegree.record.persistence.MappingInfo;
 import org.deegree.record.persistence.Profile_DB_Mappings;
 
 /**
- * Implementation of the {@link Profile_DB_Mappings}.
+ * Implementation of the {@link Profile_DB_Mappings}. It's the base class for access to the backend. Is there any change
+ * in the database schema for the {@link ISORecordStore} then in this class should be changed the binding, as well.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -57,6 +58,29 @@ import org.deegree.record.persistence.Profile_DB_Mappings;
 public class ISO_DC_Mappings implements Profile_DB_Mappings {
 
     private Map<String, MappingInfo> propToTableAndCol = new HashMap<String, MappingInfo>();
+
+    /**
+     * 
+     * Enumeration of the common column names that are used in the backend for each databasetable.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum commonColumnNames {
+
+        /**
+         * the primarykey of the databasetables
+         */
+        id,
+
+        /**
+         * the foreignkey of the databasetables
+         */
+        fk_datasets
+
+    }
 
     /**
      * Enumeration of the databasetables.
@@ -193,16 +217,6 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings {
         isoqp_crs
 
     }
-
-    /**
-     * datasets
-     */
-    protected final String mainDatabaseTable = "datasets";
-
-    /**
-     * fk_datasets
-     */
-    protected final String commonForeignkey = "fk_datasets";
 
     /**
      * Private constructor for no instantiating from outside.
