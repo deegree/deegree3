@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
 import java.math.BigDecimal;
@@ -79,8 +79,8 @@ class GML3GeometryBaseReader {
      */
     protected final String gmlNs;
 
-    protected final GeometryFactory geomFac;    
-    
+    protected final GeometryFactory geomFac;
+
     private final QName GML_X;
 
     private final QName GML_Y;
@@ -121,11 +121,15 @@ class GML3GeometryBaseReader {
     }
 
     protected List<Point> parsePosList( XMLStreamReaderWrapper xmlStream, CRS crs )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+                            throws XMLParsingException, XMLStreamException {
 
         int coordDim = determineCoordDimensions( xmlStream, -1 );
         if ( coordDim == -1 && crs != null ) {
-            coordDim = crs.getWrappedCRS().getDimension();
+            try {
+                coordDim = crs.getWrappedCRS().getDimension();
+            } catch ( UnknownCRSException e ) {
+                LOG.debug( "Trying to determine dimension of CRS: " + e.getLocalizedMessage(), e );
+            }
         }
         if ( coordDim == -1 ) {
             LOG.warn( "No coordinate dimension information available. Defaulting to 2." );
