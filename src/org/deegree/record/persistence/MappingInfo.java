@@ -66,14 +66,46 @@ public class MappingInfo {
         this.type = type;
     }
 
+    /**
+     * 
+     * Specifies the datatype for a property in the backend.
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author: thomas $
+     * 
+     * @version $Revision: $, $Date: $
+     */
     public enum ColumnType {
-        STRING, INTEGER, DATE, ENVELOPE, FLOAT 
+        /**
+         * a string
+         */
+        STRING,
+
+        /**
+         * an integer
+         */
+        INTEGER,
+
+        /**
+         * a date
+         */
+        DATE,
+
+        /**
+         * an envelope
+         */
+        ENVELOPE,
+
+        /**
+         * a float
+         */
+        FLOAT
     }
 
     /**
      * @return the table
      */
-    public String getTable() {
+    public String getTables() {
         return table;
     }
 
@@ -82,6 +114,13 @@ public class MappingInfo {
      */
     public String getColumn() {
         return column;
+    }
+
+    /**
+     * @return the type
+     */
+    public ColumnType getType() {
+        return type;
     }
 
 }

@@ -39,9 +39,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.commons.datasource.configuration.DCRecordStoreType;
 import org.deegree.commons.datasource.configuration.ISORecordStoreType;
 import org.deegree.commons.datasource.configuration.RecordStoreType;
 import org.deegree.feature.i18n.Messages;
@@ -76,7 +73,6 @@ public class RecordStoreManager {
 
     }
 
-    
     /**
      * Creates a {@link RecordStore} instance from the given configuration object.
      * <p>
@@ -85,7 +81,7 @@ public class RecordStoreManager {
      * 
      * @param config
      *            configuration object
-     *            
+     * 
      * @return corresponding {@link RecordStore} instance
      * @throws RecordStoreException
      *             if the creation fails, e.g. due to a configuration error
@@ -94,24 +90,21 @@ public class RecordStoreManager {
                             throws RecordStoreException {
         RecordStore rs = null;
         String id = config.getDataSourceName();
-        
 
-        
         if ( config instanceof ISORecordStoreType ) {
 
             ISORecordStoreType isoConfig = (ISORecordStoreType) config;
-           
-            //XMLAdapter resolver = new XMLAdapter();
-            //resolver.setSystemId( baseURL );
 
-            rs = new ISORecordStore(isoConfig.getConnId());
-            //rs.describeRecord();
-        }
-        else {
+            // XMLAdapter resolver = new XMLAdapter();
+            // resolver.setSystemId( baseURL );
+
+            rs = new ISORecordStore( isoConfig.getConnId() );
+
+        } else {
             String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", config.getClass() );
             throw new RecordStoreException( msg );
         }
-        
+
         if ( id != null ) {
             if ( idToRs.containsKey( id ) ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
@@ -126,5 +119,4 @@ public class RecordStoreManager {
         return rs;
     }
 
-    
 }

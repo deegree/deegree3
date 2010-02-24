@@ -157,19 +157,20 @@ public interface RecordStore {
      * 
      * @param writer
      *            to be updated with a brief representation of the inserted records
+     * @param transactionIds
+     *            that are affected by the transaction
      * @throws SQLException
      * @throws IOException
      */
     public void getRecordsForTransactionInsertStatement( XMLStreamWriter writer, List<Integer> transactionIds )
                             throws SQLException, IOException;
 
-    // public List<Integer> getTransactionIds();
-
     /**
      * Returns the typeNames that are known in the backend. <br>
      * i.e. the ISORecordStore holds two profiles, the DUBLIN CORE and the ISO profile.
      * 
-     * @return QName
+     * @return a map from a QName to an int value
+     * 
      */
     public Map<QName, Integer> getTypeNames();
 
