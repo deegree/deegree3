@@ -67,6 +67,8 @@ public class ExpressionFilterHandling {
 
     private QName propName;
 
+    private Profile_DB_Mappings iso_dc_mapping;
+
     /**
      * Handles the {@link Expression} that is identified during the parsing of the {@link Operator}s
      * 
@@ -81,7 +83,7 @@ public class ExpressionFilterHandling {
 
         column = new HashSet<String>();
 
-        Profile_DB_Mappings b = new ISO_DC_Mappings();
+        iso_dc_mapping = new ISO_DC_Mappings();
 
         boolean isMatching = false;
 
@@ -106,13 +108,13 @@ public class ExpressionFilterHandling {
         case PROPERTY_NAME:
             PropertyName propertyName = (PropertyName) exp;
 
-            for ( String s : b.getPropToTableAndCol().keySet() ) {
+            for ( String s : iso_dc_mapping.getPropToTableAndCol().keySet() ) {
                 if ( propertyName.getPropertyName().equals( s ) ) {
-                    MappingInfo m = b.getPropToTableAndCol().get( s );
+                    MappingInfo m = iso_dc_mapping.getPropToTableAndCol().get( s );
                     propName = propertyName.getAsQName();
-                    table.add( m.getTable() );
+                    table.add( m.getTables() );
                     column.add( m.getColumn() );
-                    expression = m.getTable() + "." + m.getColumn();
+                    expression = m.getTables() + "." + m.getColumn();
                     isMatching = true;
                 }
             }

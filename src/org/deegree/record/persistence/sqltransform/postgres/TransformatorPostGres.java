@@ -191,15 +191,15 @@ public class TransformatorPostGres {
         case SPATIAL:
             SpatialOperator spaOp = (SpatialOperator) opFilter.getOperator();
             SpatialOperatorTransformingPostGIS spa = new SpatialOperatorTransformingPostGIS( spaOp, writer );
-            table.addAll( spa.getTable() );
+            table.addAll( spa.getTables() );
             column.addAll( spa.getColumn() );
-            // return spa.getSpatialOperation();
+
             break;
 
         case LOGICAL:
             LogicalOperator logOp = (LogicalOperator) opFilter.getOperator();
             SubType typeLogical = logOp.getSubType();
-            // String stringLogical = "";
+
             int count;
 
             switch ( typeLogical ) {
@@ -208,7 +208,7 @@ public class TransformatorPostGres {
 
                 And andOp = (And) logOp;
                 Operator[] paramsAnd = andOp.getParams();
-                // stringLogical = "";
+
                 count = 0;
                 for ( Operator opParam : paramsAnd ) {
                     if ( count != paramsAnd.length - 1 ) {
@@ -329,7 +329,7 @@ public class TransformatorPostGres {
                 break;
             case PROPERTY_IS_NULL:
                 PropertyIsNull propertyIsNull = (PropertyIsNull) compOp;
-                writer.append( propIsNull( propertyIsNull.getParams() ) );
+                writer.append( propIsNull( propertyIsNull.getParams() ).toString() );
 
                 break;
             case PROPERTY_IS_BETWEEN:
@@ -431,16 +431,16 @@ public class TransformatorPostGres {
      * @param compOp
      * @return
      */
-    private String propIsNull( Expression[] compOp ) {
-        String s = "";
+    private StringWriter propIsNull( Expression[] compOp ) {
+        StringWriter s = new StringWriter( 500 );
 
         for ( Expression exp : compOp ) {
             expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
             table.addAll( expressObject.getTable() );
             column.addAll( expressObject.getColumn() );
             propName = expressObject.getPropertyName();
-            s += expressObject.getExpression();
-            s += " IS NULL ";
+            s.append( expressObject.getExpression() );
+            s.append( " IS NULL " );
 
         }
         return s;
