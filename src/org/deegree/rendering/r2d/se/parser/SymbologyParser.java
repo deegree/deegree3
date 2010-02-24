@@ -1257,7 +1257,11 @@ public class SymbologyParser {
             in.require( END_ELEMENT, null, null );
 
             if ( textOnly ) {
-                updater.update( obj, text.getFirst().first );
+                if ( text.isEmpty() ) {
+                    LOG.warn( "Expression was empty at line {}, column {}.", in.getLocation().getLineNumber(),
+                              in.getLocation().getColumnNumber() );
+                }
+                updater.update( obj, text.isEmpty() ? "" : text.getFirst().first );
             } else {
                 contn = new Continuation<T>( contn ) {
                     @Override
