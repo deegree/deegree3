@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.sqltransform.postgres;
+package org.deegree.record.persistence.sqltransform;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,10 +47,15 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.record.persistence.MappingInfo;
 import org.deegree.record.persistence.Profile_DB_Mappings;
 import org.deegree.record.persistence.genericrecordstore.ISO_DC_Mappings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the expression that is identified. This means the building of the tables and the columns that has to be used
- * and the expression that can be put to the database.
+ * and the expression that can be put to the database.<br>
+ * If there is anywhere a <Code>null</Code> expression returned then proof the input parameter (element 'PropertyName'
+ * in the filterexpression), firstly. If there is no matching between this paramater and any parameter in the
+ * {@link ISO_DC_Mappings} <Code>null</Code> will return.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -58,6 +63,8 @@ import org.deegree.record.persistence.genericrecordstore.ISO_DC_Mappings;
  * @version $Revision: $, $Date: $
  */
 public class ExpressionFilterHandling {
+
+    private static final Logger LOG = LoggerFactory.getLogger( ExpressionFilterHandling.class );
 
     private Set<String> table;
 
@@ -131,6 +138,7 @@ public class ExpressionFilterHandling {
             break;
 
         }
+
         return new ExpressionFilterObject( expression, table, column, propName, isMatching );
 
     }

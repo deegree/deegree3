@@ -79,9 +79,9 @@ import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 import org.deegree.record.persistence.RecordStoreOptions;
-import org.deegree.record.persistence.sqltransform.postgres.ExpressionFilterHandling;
-import org.deegree.record.persistence.sqltransform.postgres.ExpressionFilterObject;
-import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGres;
+import org.deegree.record.persistence.sqltransform.ExpressionFilterHandling;
+import org.deegree.record.persistence.sqltransform.ExpressionFilterObject;
+import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGIS;
 import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.RecordProperty;
@@ -473,8 +473,8 @@ public class ISORecordStore implements RecordStore {
                                             int typeNameFormatNumber, int profileFormatNumberOutputSchema,
                                             boolean setCount )
                             throws IOException {
-        if ( propertyAttributes.getTables() != null ) {
-            tableSet = propertyAttributes.getTables();
+        if ( propertyAttributes.getExpressionHelper().getTables() != null ) {
+            tableSet = propertyAttributes.getExpressionHelper().getTables();
         } else {
             tableSet = new HashSet<String>();
         }
@@ -660,15 +660,14 @@ public class ISORecordStore implements RecordStore {
                 }
             } else {
                 try {
-                    TransformatorPostGres filterExpression = new TransformatorPostGres( upd.getConstraint() );
-                    RecordStoreOptions gdds = new RecordStoreOptions( filterExpression.getStringWriter(),
-                                                                      ResultType.results, SetOfReturnableElements.full,
-                                                                      filterExpression.getTable(),
-                                                                      filterExpression.getColumn() );
+                    TransformatorPostGIS filterExpression = new TransformatorPostGIS( upd.getConstraint() );
+                    RecordStoreOptions gdds = new RecordStoreOptions( filterExpression.getWriter(), ResultType.results,
+                                                                      SetOfReturnableElements.full,
+                                                                      filterExpression.getExpressHelper() );
 
                     int formatNumber = 0;
-                    String nsURI = filterExpression.getPropName().getNamespaceURI();
-                    String prefix = filterExpression.getPropName().getPrefix();
+                    String nsURI = filterExpression.getExpressHelper().getPropertyName().getNamespaceURI();
+                    String prefix = filterExpression.getExpressHelper().getPropertyName().getPrefix();
                     QName analysedQName = new QName( nsURI, "", prefix );
                     for ( QName qName : typeNames.keySet() ) {
                         if ( qName.equals( analysedQName ) ) {
@@ -715,7 +714,7 @@ public class ISORecordStore implements RecordStore {
                                     if ( recordPropertyName.isMatching() == true ) {
 
                                         // not important. There is just one name possible
-                                        for ( String column : recordPropertyName.getColumn() ) {
+                                        for ( String column : recordPropertyName.getColumns() ) {
 
                                             // creating an OMElement readed from the backend byteData
                                             InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
@@ -787,10 +786,10 @@ public class ISORecordStore implements RecordStore {
         case DELETE:
 
             DeleteTransaction delete = (DeleteTransaction) operations;
-            TransformatorPostGres filterExpression = new TransformatorPostGres( delete.getConstraint() );
+            TransformatorPostGIS filterExpression = new TransformatorPostGIS( delete.getConstraint() );
             int formatNumber = 0;
-            String nsURI = filterExpression.getPropName().getNamespaceURI();
-            String prefix = filterExpression.getPropName().getPrefix();
+            String nsURI = filterExpression.getExpressHelper().getPropertyName().getNamespaceURI();
+            String prefix = filterExpression.getExpressHelper().getPropertyName().getPrefix();
             QName analysedQName = new QName( nsURI, "", prefix );
             for ( QName qName : typeNames.keySet() ) {
                 if ( qName.equals( analysedQName ) ) {
@@ -798,9 +797,9 @@ public class ISORecordStore implements RecordStore {
                 }
             }
 
-            RecordStoreOptions gdds = new RecordStoreOptions( filterExpression.getStringWriter(), ResultType.results,
+            RecordStoreOptions gdds = new RecordStoreOptions( filterExpression.getWriter(), ResultType.results,
                                                               SetOfReturnableElements.full,
-                                                              filterExpression.getTable(), filterExpression.getColumn() );
+                                                              filterExpression.getExpressHelper() );
             Writer str = new StringWriter();
 
             try {
@@ -955,8 +954,8 @@ public class ISORecordStore implements RecordStore {
      */
     private Writer getRequestedIDStatement( String formatType, RecordStoreOptions constraint, int formatNumber )
                             throws IOException {
-        if ( constraint.getTables() != null ) {
-            tableSet = constraint.getTables();
+        if ( constraint.getExpressionHelper().getTables() != null ) {
+            tableSet = constraint.getExpressionHelper().getTables();
         } else {
             tableSet = new HashSet<String>();
         }

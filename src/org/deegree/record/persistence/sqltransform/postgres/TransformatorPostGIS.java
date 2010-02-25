@@ -38,9 +38,6 @@ package org.deegree.record.persistence.sqltransform.postgres;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
 
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -63,38 +60,39 @@ import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.logical.LogicalOperator.SubType;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.record.persistence.sqltransform.ExpressionFilterHandling;
+import org.deegree.record.persistence.sqltransform.ExpressionFilterHelper;
+import org.deegree.record.persistence.sqltransform.ExpressionFilterObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Here the filterexpression is syntactically splitted into its components. To handle the expression a specific
- * knowledge about the database, which is underlying, is needed. This class transforms a filterexpression into a
- * PostGres datastore readable format.
+ * knowledge about the database, which is underlying, is needed. This class transforms a filterexpression into a PostGIS
+ * datastore processable format.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
  */
-public class TransformatorPostGres {
+public class TransformatorPostGIS {
+
+    private static final Logger LOG = LoggerFactory.getLogger( TransformatorPostGIS.class );
 
     private Writer writer;
-
-    private Set<String> table;
-
-    private Set<String> column;
-
-    private QName propName;
 
     private ExpressionFilterHandling expressionFilterHandling;
 
     private ExpressionFilterObject expressObject;
 
     /**
-     * Creates a new {@link TransformatorPostGres} instance.
+     * Creates a new {@link TransformatorPostGIS} instance.
      * 
      * @param constraint
      *            the filter constraint
      */
-    public TransformatorPostGres( Filter constraint ) {
+    public TransformatorPostGIS( Filter constraint ) {
 
         if ( constraint != null ) {
             try {
@@ -109,29 +107,15 @@ public class TransformatorPostGres {
     /**
      * @return the stringWriter
      */
-    public Writer getStringWriter() {
+    public Writer getWriter() {
         return writer;
     }
 
     /**
-     * @return the table
+     * @return the expressHelper
      */
-    public Set<String> getTable() {
-        return table;
-    }
-
-    /**
-     * @return the column
-     */
-    public Set<String> getColumn() {
-        return column;
-    }
-
-    /**
-     * @return the propName
-     */
-    public QName getPropName() {
-        return propName;
+    public ExpressionFilterHelper getExpressHelper() {
+        return ExpressionFilterHelper.getInstance();
     }
 
     /**
@@ -144,6 +128,8 @@ public class TransformatorPostGres {
                             throws IOException {
 
         Type type = filter.getType();
+        writer = new StringWriter( 200 );
+        expressionFilterHandling = new ExpressionFilterHandling();
 
         switch ( type ) {
 
@@ -153,7 +139,9 @@ public class TransformatorPostGres {
 
             org.deegree.filter.Operator.Type typeOperator = opFilter.getOperator().getType();
 
-            operatorFilterHandling( opFilter, typeOperator, writer );
+            writer = operatorFilterHandling( opFilter, typeOperator );
+
+            LOG.info( writer.toString() );
 
         case ID_FILTER:
             // TODO
@@ -182,17 +170,17 @@ public class TransformatorPostGres {
      * @param typeOperator
      * @throws IOException
      */
-    private void operatorFilterHandling( OperatorFilter opFilter, org.deegree.filter.Operator.Type typeOperator,
-                                         Writer writer )
+    private Writer operatorFilterHandling( OperatorFilter opFilter, org.deegree.filter.Operator.Type typeOperator )
                             throws IOException {
 
         switch ( typeOperator ) {
 
         case SPATIAL:
             SpatialOperator spaOp = (SpatialOperator) opFilter.getOperator();
-            SpatialOperatorTransformingPostGIS spa = new SpatialOperatorTransformingPostGIS( spaOp, writer );
-            table.addAll( spa.getTables() );
-            column.addAll( spa.getColumn() );
+            SpatialOperatorTransformingPostGIS spa = new SpatialOperatorTransformingPostGIS( spaOp );
+            writer.append( spa.getWriterSpatial().toString() );
+            LOG.info( writer.toString() );
+            ExpressionFilterHelper.getInstance().addTablesANDColumns( spa.getTables(), spa.getColumns() );
 
             break;
 
@@ -213,23 +201,18 @@ public class TransformatorPostGres {
                 for ( Operator opParam : paramsAnd ) {
                     if ( count != paramsAnd.length - 1 ) {
                         OperatorFilter opera = new OperatorFilter( opParam );
-                        // stringLogical += "(";
-                        // stringLogical += operatorFilterHandling( opera, opParam.getType() );
-                        // stringLogical += ")";
-                        // stringLogical += " AND ";
+
                         writer.append( '(' );
-                        operatorFilterHandling( opera, opParam.getType(), writer );
+                        operatorFilterHandling( opera, opParam.getType() );
                         writer.append( ')' );
                         writer.append( " AND " );
 
                         count++;
                     } else {
                         OperatorFilter opera = new OperatorFilter( opParam );
-                        // stringLogical += "(";
-                        // stringLogical += operatorFilterHandling( opera, opParam.getType() );
-                        // stringLogical += ")";
+
                         writer.append( '(' );
-                        operatorFilterHandling( opera, opParam.getType(), writer );
+                        operatorFilterHandling( opera, opParam.getType() );
                         writer.append( ')' );
                     }
                 }
@@ -239,20 +222,20 @@ public class TransformatorPostGres {
             case OR:
                 Or orOp = (Or) logOp;
                 Operator[] paramsOr = orOp.getParams();
-                // stringLogical = "";
+
                 count = 0;
                 for ( Operator opParam : paramsOr ) {
                     if ( count != paramsOr.length - 1 ) {
                         OperatorFilter opera = new OperatorFilter( opParam );
                         writer.append( '(' );
-                        operatorFilterHandling( opera, opParam.getType(), writer );
+                        operatorFilterHandling( opera, opParam.getType() );
                         writer.append( ')' );
                         writer.append( " OR " );
                         count++;
                     } else {
                         OperatorFilter opera = new OperatorFilter( opParam );
                         writer.append( '(' );
-                        operatorFilterHandling( opera, opParam.getType(), writer );
+                        operatorFilterHandling( opera, opParam.getType() );
                         writer.append( ')' );
                     }
                 }
@@ -262,12 +245,12 @@ public class TransformatorPostGres {
             case NOT:
                 Not notOp = (Not) logOp;
                 Operator[] paramsNot = notOp.getParams();
-                // stringLogical = "";
+
                 for ( Operator opParam : paramsNot ) {
                     OperatorFilter opera = new OperatorFilter( opParam );
                     writer.append( " NOT " );
                     writer.append( '(' );
-                    operatorFilterHandling( opera, opParam.getType(), writer );
+                    operatorFilterHandling( opera, opParam.getType() );
                     writer.append( ')' );
 
                 }
@@ -342,6 +325,7 @@ public class TransformatorPostGres {
 
             break;
         }
+        return writer;
 
     }
 
@@ -354,17 +338,16 @@ public class TransformatorPostGres {
      */
     private StringWriter expressionArrayHandling( Expression expression1, String compOp, Expression expression2 ) {
 
-        StringWriter s = new StringWriter( 500 );
+        StringWriter s = new StringWriter( 100 );
         expressObject = expressionFilterHandling.expressionFilterHandling( expression1.getType(), expression1 );
-        table.addAll( expressObject.getTable() );
-        column.addAll( expressObject.getColumn() );
-        propName = expressObject.getPropertyName();
+
+        ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(), expressObject.getColumns() );
+
         s.append( expressObject.getExpression() );
         s.append( compOp );
         expressObject = expressionFilterHandling.expressionFilterHandling( expression2.getType(), expression2 );
-        table.addAll( expressObject.getTable() );
-        column.addAll( expressObject.getColumn() );
-        propName = expressObject.getPropertyName();
+        ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(), expressObject.getColumns() );
+
         s.append( expressObject.getExpression() );
 
         return s;
@@ -379,18 +362,16 @@ public class TransformatorPostGres {
      */
     private StringWriter propIsBetweenHandling( Expression lowerBoundary, Expression upperBoundary ) {
 
-        StringWriter s = new StringWriter( 500 );
+        StringWriter s = new StringWriter( 100 );
         s.append( " BETWEEN " );
         expressObject = expressionFilterHandling.expressionFilterHandling( lowerBoundary.getType(), lowerBoundary );
-        table.addAll( expressObject.getTable() );
-        column.addAll( expressObject.getColumn() );
-        propName = expressObject.getPropertyName();
+
+        ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(), expressObject.getColumns() );
         s.append( expressObject.getExpression() );
         s.append( " AND " );
         expressObject = expressionFilterHandling.expressionFilterHandling( upperBoundary.getType(), upperBoundary );
-        table.addAll( expressObject.getTable() );
-        column.addAll( expressObject.getColumn() );
-        propName = expressObject.getPropertyName();
+
+        ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(), expressObject.getColumns() );
         s.append( expressObject.getExpression() );
 
         return s;
@@ -403,14 +384,14 @@ public class TransformatorPostGres {
      * @return
      */
     private StringWriter propIsLikeHandling( Expression[] compOp ) {
-        StringWriter s = new StringWriter( 500 );
+        StringWriter s = new StringWriter( 50 );
         int counter = 0;
 
         for ( Expression exp : compOp ) {
             expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
-            table.addAll( expressObject.getTable() );
-            column.addAll( expressObject.getColumn() );
-            propName = expressObject.getPropertyName();
+
+            ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(),
+                                                                      expressObject.getColumns() );
             if ( counter != compOp.length - 1 ) {
                 counter++;
 
@@ -432,13 +413,13 @@ public class TransformatorPostGres {
      * @return
      */
     private StringWriter propIsNull( Expression[] compOp ) {
-        StringWriter s = new StringWriter( 500 );
+        StringWriter s = new StringWriter( 50 );
 
         for ( Expression exp : compOp ) {
             expressObject = expressionFilterHandling.expressionFilterHandling( exp.getType(), exp );
-            table.addAll( expressObject.getTable() );
-            column.addAll( expressObject.getColumn() );
-            propName = expressObject.getPropertyName();
+
+            ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(),
+                                                                      expressObject.getColumns() );
             s.append( expressObject.getExpression() );
             s.append( " IS NULL " );
 

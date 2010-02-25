@@ -59,6 +59,8 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.io.WKTWriter.WKTFlag;
+import org.deegree.record.persistence.sqltransform.ExpressionFilterHandling;
+import org.deegree.record.persistence.sqltransform.ExpressionFilterObject;
 import org.slf4j.Logger;
 
 /**
@@ -75,7 +77,7 @@ public class SpatialOperatorTransformingPostGIS {
 
     private Set<String> tables;
 
-    private Set<String> column;
+    private Set<String> columns;
 
     private DecimalCoordinateFormatter decimalFormatter;
 
@@ -89,6 +91,8 @@ public class SpatialOperatorTransformingPostGIS {
 
     private Writer writerGeometry;
 
+    private Writer writerSpatial;
+
     /**
      * Creates a new {@link SpatialOperatorTransformingPostGIS} instance.
      * 
@@ -97,12 +101,13 @@ public class SpatialOperatorTransformingPostGIS {
      * @param writer
      *            the writer to write the output to
      */
-    public SpatialOperatorTransformingPostGIS( SpatialOperator spaOp, Writer writer ) {
+    public SpatialOperatorTransformingPostGIS( SpatialOperator spaOp ) {
         this.spaOp = spaOp;
 
         try {
 
-            doSpatialOperatorToPostGreSQL( writer );
+            writerSpatial = doSpatialOperatorToPostGreSQL();
+
         } catch ( IOException e ) {
 
             e.printStackTrace();
@@ -120,8 +125,15 @@ public class SpatialOperatorTransformingPostGIS {
     /**
      * @return the column
      */
-    public Set<String> getColumn() {
-        return column;
+    public Set<String> getColumns() {
+        return columns;
+    }
+
+    /**
+     * @return the writerSpatial
+     */
+    public Writer getWriterSpatial() {
+        return writerSpatial;
     }
 
     /**
@@ -129,9 +141,9 @@ public class SpatialOperatorTransformingPostGIS {
      * 
      * @throws IOException
      */
-    private void doSpatialOperatorToPostGreSQL( Writer writerSpatial )
+    private Writer doSpatialOperatorToPostGreSQL()
                             throws IOException {
-
+        Writer writer = new StringWriter( 200 );
         decimalFormatter = new DecimalCoordinateFormatter( 2 );
         flag = new HashSet<WKTFlag>();
         stringSpatialProperty = new StringWriter();
@@ -152,12 +164,12 @@ public class SpatialOperatorTransformingPostGIS {
             for ( Object opParam : paramsBBox ) {
                 if ( opParam != bboxOp.getBoundingBox() ) {
 
-                    writerSpatial.append( propertyNameBuild( opParam ).toString() );
-                    writerSpatial.append( " && " );
+                    writer.append( propertyNameBuild( opParam ).toString() );
+                    writer.append( " && " );
                 } else {
-                    writerSpatial.append( '\'' );
-                    wktWriter.writeGeometry( bboxOp.getBoundingBox(), writerSpatial );
-                    writerSpatial.append( '\'' );
+                    writer.append( '\'' );
+                    wktWriter.writeGeometry( bboxOp.getBoundingBox(), writer );
+                    writer.append( '\'' );
                 }
 
             }
@@ -166,7 +178,7 @@ public class SpatialOperatorTransformingPostGIS {
         case BEYOND:
             Beyond beyondOp = (Beyond) spaOp;
             Object[] paramsBeyond = beyondOp.getParams();
-            writerSpatial.append( "DISTANCE(" );
+            writer.append( "DISTANCE(" );
             // flag.add( WKTFlag.USE_DKT );
             wktWriter = new WKTWriter( flag, decimalFormatter );
 
@@ -176,23 +188,23 @@ public class SpatialOperatorTransformingPostGIS {
                 if ( opParam != beyondOp.getGeometry() ) {
                     counter++;
                     stringSpatialProperty = propertyNameBuild( opParam );
-                    writerSpatial.append( stringSpatialProperty.toString() );
+                    writer.append( stringSpatialProperty.toString() );
                 } else {
                     counter++;
                     wktWriter.writeGeometry( beyondOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
+                    writer.append( '\'' );
+                    writer.append( writerGeometry.toString() );
+                    writer.append( '\'' );
 
                 }
                 if ( counter < paramsBeyond.length ) {
-                    writerSpatial.append( ',' );
+                    writer.append( ',' );
                 } else {
-                    writerSpatial.append( ") <= " + beyondOp.getDistance().getValue().toString() + " AND " );
+                    writer.append( ") <= " + beyondOp.getDistance().getValue().toString() + " AND " );
                 }
             }
-            operatorBuild( "DISJOINT", writerGeometry, writerSpatial, stringSpatialProperty );
+            operatorBuild( "DISJOINT", writerGeometry, writer, stringSpatialProperty );
             break;
 
         case CONTAINS:
@@ -212,8 +224,8 @@ public class SpatialOperatorTransformingPostGIS {
 
             }
 
-            operatorBuild( "CONTAINS", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "CONTAINS", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
@@ -234,8 +246,8 @@ public class SpatialOperatorTransformingPostGIS {
 
             }
 
-            operatorBuild( "CROSSES", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "CROSSES", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
@@ -257,15 +269,15 @@ public class SpatialOperatorTransformingPostGIS {
 
             }
 
-            operatorBuild( "DISJOINT", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "DISJOINT", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
         case DWITHIN:
             DWithin dWithinOp = (DWithin) spaOp;
             Object[] paramsDWithin = dWithinOp.getParams();
-            writerSpatial.append( "DISTANCE(" );
+            writer.append( "DISTANCE(" );
             flag.add( WKTFlag.USE_DKT );
             wktWriter = new WKTWriter( flag, decimalFormatter );
 
@@ -275,24 +287,24 @@ public class SpatialOperatorTransformingPostGIS {
                 if ( opParam != dWithinOp.getGeometry() ) {
                     counter++;
                     stringSpatialProperty = propertyNameBuild( opParam );
-                    writerSpatial.append( stringSpatialProperty.toString() );
+                    writer.append( stringSpatialProperty.toString() );
                 } else {
                     counter++;
                     wktWriter.writeGeometry( dWithinOp.getGeometry(), writerGeometry );
 
-                    writerSpatial.append( '\'' );
-                    writerSpatial.append( writerGeometry.toString() );
-                    writerSpatial.append( '\'' );
+                    writer.append( '\'' );
+                    writer.append( writerGeometry.toString() );
+                    writer.append( '\'' );
                 }
                 if ( counter < paramsDWithin.length ) {
-                    writerSpatial.append( ',' );
+                    writer.append( ',' );
                 } else {
-                    writerSpatial.append( ") <= " + dWithinOp.getDistance().getValue().toString() + " AND " );
+                    writer.append( ") <= " + dWithinOp.getDistance().getValue().toString() + " AND " );
                 }
             }
 
-            operatorBuild( "DWITHIN", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "DWITHIN", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
@@ -314,8 +326,8 @@ public class SpatialOperatorTransformingPostGIS {
 
             }
 
-            operatorBuild( "EQUALS", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "EQUALS", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
@@ -336,8 +348,8 @@ public class SpatialOperatorTransformingPostGIS {
 
             }
 
-            operatorBuild( "INTERSECTS", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "INTERSECTS", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
@@ -358,8 +370,8 @@ public class SpatialOperatorTransformingPostGIS {
 
             }
 
-            operatorBuild( "OVERLAPS", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "OVERLAPS", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
@@ -380,8 +392,8 @@ public class SpatialOperatorTransformingPostGIS {
 
             }
 
-            operatorBuild( "TOUCHES", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "TOUCHES", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
@@ -402,12 +414,14 @@ public class SpatialOperatorTransformingPostGIS {
 
             }
 
-            operatorBuild( "WITHIN", writerGeometry, writerSpatial, stringSpatialProperty );
-            LOG.debug( writerSpatial.toString() );
+            operatorBuild( "WITHIN", writerGeometry, writer, stringSpatialProperty );
+            LOG.debug( writer.toString() );
 
             break;
 
         }
+
+        return writer;
 
     }
 
@@ -452,8 +466,8 @@ public class SpatialOperatorTransformingPostGIS {
                                                                                                                     ( (PropertyName) opParam ).getNsContext() ) );
 
         stringSpatialPropertyName.append( expressObject.getExpression() );
-        tables.addAll( expressObject.getTable() );
-        column.addAll( expressObject.getColumn() );
+        tables = expressObject.getTables();
+        columns = expressObject.getColumns();
         stringSpatialPropertyName.append( "))" );
         return stringSpatialPropertyName;
 

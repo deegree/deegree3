@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.sqltransform.postgres;
+package org.deegree.record.persistence.sqltransform;
 
 import java.util.Set;
 
@@ -51,9 +51,9 @@ public class ExpressionFilterObject {
 
     private String expression;
 
-    private Set<String> table;
+    private Set<String> tables;
 
-    private Set<String> column;
+    private Set<String> columns;
 
     private QName propertyName;
 
@@ -75,8 +75,8 @@ public class ExpressionFilterObject {
     public ExpressionFilterObject( String expression, Set<String> tables, Set<String> column, QName propertyName,
                                    boolean isMatching ) {
         this.expression = expression;
-        this.table = tables;
-        this.column = column;
+        this.tables = tables;
+        this.columns = column;
         this.propertyName = propertyName;
         this.isMatching = isMatching;
     }
@@ -91,15 +91,15 @@ public class ExpressionFilterObject {
     /**
      * @return the table
      */
-    public Set<String> getTable() {
-        return table;
+    public Set<String> getTables() {
+        return tables;
     }
 
     /**
      * @return the column
      */
-    public Set<String> getColumn() {
-        return column;
+    public Set<String> getColumns() {
+        return columns;
     }
 
     /**

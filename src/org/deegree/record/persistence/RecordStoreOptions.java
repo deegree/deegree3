@@ -36,10 +36,10 @@
 package org.deegree.record.persistence;
 
 import java.io.Writer;
-import java.util.Set;
 
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
+import org.deegree.record.persistence.sqltransform.ExpressionFilterHelper;
 
 /**
  * This class holds all the necessary information that is needed for the database request. <br>
@@ -62,9 +62,7 @@ public class RecordStoreOptions {
 
     private int startPosition;
 
-    private Set<String> tables;
-
-    private Set<String> column;
+    private ExpressionFilterHelper expressionHelper;
 
     /**
      * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared.
@@ -78,23 +76,20 @@ public class RecordStoreOptions {
      * @param maxRecords
      *            the maximum number of records that shall be presented in the response
      * @param startPosition
-     *            at which record position should start the response
-     * @param tables
-     *            that are identified in the request which are affecting the backend
-     * @param column
-     *            that are identified in the request which are affecting the backend
+     *            at which record position should start the response}
+     * @param expressionHelper
+     *            {@link ExpressionFilterHelper}
      */
     public RecordStoreOptions( Writer expressionWriter, ResultType resultType,
                                SetOfReturnableElements setOfReturnableElements, int maxRecords, int startPosition,
-                               Set<String> tables, Set<String> column ) {
+                               ExpressionFilterHelper expressionHelper ) {
 
         this.expressionWriter = expressionWriter;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
         this.maxRecords = maxRecords;
         this.startPosition = startPosition;
-        this.tables = tables;
-        this.column = column;
+        this.expressionHelper = expressionHelper;
 
     }
 
@@ -108,20 +103,17 @@ public class RecordStoreOptions {
      *            {@link ResultType}
      * @param setOfReturnableElements
      *            {@link SetOfReturnableElements}
-     * @param table
-     *            that are identified in the request which are affecting the backend
-     * @param column
-     *            that are identified in the request which are affecting the backend
+     * @param expressionHelper
+     *            {@link ExpressionFilterHelper}
      */
     public RecordStoreOptions( Writer expressionWriter, ResultType resultType,
-                               SetOfReturnableElements setOfReturnableElements, Set<String> table, Set<String> column ) {
+                               SetOfReturnableElements setOfReturnableElements, ExpressionFilterHelper expressionHelper ) {
 
         this.expressionWriter = expressionWriter;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
         this.startPosition = 1;
-        this.tables = table;
-        this.column = column;
+        this.expressionHelper = expressionHelper;
 
     }
 
@@ -161,17 +153,10 @@ public class RecordStoreOptions {
     }
 
     /**
-     * @return the table
+     * @return the expressionHelper
      */
-    public Set<String> getTables() {
-        return tables;
-    }
-
-    /**
-     * @return the column
-     */
-    public Set<String> getColumn() {
-        return column;
+    public ExpressionFilterHelper getExpressionHelper() {
+        return expressionHelper;
     }
 
 }
