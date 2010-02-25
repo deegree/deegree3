@@ -76,7 +76,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO
+ * The <code>GML2GeometryReader</code> parses the geometry elements in GML 2.1 documents. The following geometries are
+ * supported:
+ * <ul>
+ * <li>Point</li>
+ * <li>LineString</li>
+ * <li>LineRing</li>
+ * <li>Polygon</li>
+ * <li>MultiPoint</li>
+ * <li>MultiLineString</li>
+ * <li>MultiPolygon</li>
+ * <li>MultiGeometry</li>
+ * </ul>
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
