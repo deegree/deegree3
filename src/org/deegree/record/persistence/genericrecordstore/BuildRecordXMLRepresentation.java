@@ -44,9 +44,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.axiom.om.OMAbstractFactory;
@@ -137,13 +135,13 @@ public class BuildRecordXMLRepresentation {
                 omElement = factory.createOMElement( tableRecordType.get( databaseTable ), namespaceCSW );
 
                 if ( omElement.getLocalName().equals( BRIEFRECORD ) ) {
-                    parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement );
+                    parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
                     isoOMElement.write( parsedElement.getGenerateRecord().getIsoBriefElement().toString() );
                 } else if ( omElement.getLocalName().equals( SUMMARYRECORD ) ) {
-                    parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement );
+                    parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
                     isoOMElement.write( parsedElement.getGenerateRecord().getIsoSummaryElement().toString() );
                 } else {
-                    parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement );
+                    parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
                     isoOMElement.write( parsedElement.getGenerateRecord().getIsoFullElement().toString() );
                 }
 
@@ -186,30 +184,29 @@ public class BuildRecordXMLRepresentation {
      * 
      * @throws IOException
      */
-    List<Integer> generateISO( Connection connection, Statement stm, int operatesOnId,
-                               ParsedProfileElement parsedElement )
+    int generateISO( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement )
                             throws IOException {
 
-        int idDatabaseTable = 0;
+        int idDatabaseTable;
         for ( String databaseTable : tableRecordType.keySet() ) {
             StringWriter sqlStatement = new StringWriter( 500 );
-            StringWriter isoElements = new StringWriter( 2000 );
+            OMElement isoElement;
             if ( databaseTable.equals( RECORDBRIEF ) ) {
-                isoElements.write( parsedElement.getGenerateRecord().getIsoBriefElement().toString() );
+                isoElement = parsedElement.getGenerateRecord().getIsoBriefElement();
             } else if ( databaseTable.equals( RECORDSUMMARY ) ) {
-                isoElements.write( parsedElement.getGenerateRecord().getIsoSummaryElement().toString() );
+                isoElement = parsedElement.getGenerateRecord().getIsoSummaryElement();
             } else {
-                isoElements.write( parsedElement.getGenerateRecord().getIsoFullElement().toString() );
+                isoElement = parsedElement.getGenerateRecord().getIsoFullElement();
             }
 
             try {
 
                 idDatabaseTable = getLastDatasetId( connection, databaseTable );
                 idDatabaseTable++;
+                LOG.info( "ISODatabaseTable: " + idDatabaseTable );
 
                 sqlStatement.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES ("
-                                     + idDatabaseTable + "," + operatesOnId + ", 2, '" + isoElements + "');" );
-
+                                     + idDatabaseTable + "," + operatesOnId + ", 2, '" + isoElement.toString() + "');" );
                 stm.executeUpdate( sqlStatement.toString() );
 
             } catch ( SQLException e ) {
@@ -221,6 +218,7 @@ public class BuildRecordXMLRepresentation {
         /*
          * additional it generates the Dublin Core representation
          */
+
         return generateDC( connection, stm, operatesOnId, parsedElement );
 
     }
@@ -235,38 +233,36 @@ public class BuildRecordXMLRepresentation {
      * 
      * @return a list of Integers that are the primarykeys from the inserted records
      */
-    List<Integer> generateDC( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement ) {
-        OMElement omElement = null;
-        StringWriter sqlStatement = new StringWriter( 500 );
-        List<Integer> recordsAffectedIDs = null;
+    int generateDC( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement ) {
+
+        int recordsAffectedID = 0;
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
 
-        int idDatabaseTable = 0;
+        int idDatabaseTable;
         for ( String databaseTable : tableRecordType.keySet() ) {
+            StringWriter sqlStatement = new StringWriter( 500 );
 
             try {
-                recordsAffectedIDs = new ArrayList<Integer>();
 
                 idDatabaseTable = getLastDatasetId( connection, databaseTable );
                 idDatabaseTable++;
 
-                omElement = factory.createOMElement( tableRecordType.get( databaseTable ), namespaceCSW );
+                OMElement omElement = factory.createOMElement( tableRecordType.get( databaseTable ), namespaceCSW );
 
                 if ( omElement.getLocalName().equals( BRIEFRECORD ) ) {
-                    parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement );
+                    parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
+                    recordsAffectedID = idDatabaseTable;
                 } else if ( omElement.getLocalName().equals( SUMMARYRECORD ) ) {
-                    parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement );
+                    parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
                 } else {
-                    parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement );
+                    parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
                 }
 
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
                 sqlStatement.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES ("
                                      + idDatabaseTable + "," + operatesOnId + ", 1, '" + omElement.toString() + "');" );
-
-                recordsAffectedIDs.add( idDatabaseTable );
 
                 stm.executeUpdate( sqlStatement.toString() );
 
@@ -278,7 +274,7 @@ public class BuildRecordXMLRepresentation {
                 LOG.debug( "error: " + e.getMessage(), e );
             }
         }
-        return recordsAffectedIDs;
+        return recordsAffectedID;
 
     }
 

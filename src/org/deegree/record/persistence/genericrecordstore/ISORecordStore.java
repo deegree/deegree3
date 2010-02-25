@@ -601,7 +601,7 @@ public class ISORecordStore implements RecordStore {
 
             for ( OMElement element : ins.getElement() ) {
                 QName localName = element.getQName();
-                boolean isDC = true;
+
                 try {
 
                     ExecuteStatements executeStatements = new ExecuteStatements();
@@ -609,17 +609,17 @@ public class ISORecordStore implements RecordStore {
                     if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
                          || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
 
-                        executeStatements.executeInsertStatement( isDC, conn, new ISOQPParsing().parseAPDC( element ) );
+                        executeStatements.executeInsertStatement( true, conn, insertedIds,
+                                                                  new ISOQPParsing().parseAPDC( element ) );
 
                     } else {
-                        isDC = false;
-                        executeStatements.executeInsertStatement( isDC, conn,
+
+                        executeStatements.executeInsertStatement( false, conn, insertedIds,
                                                                   new ISOQPParsing().parseAPISO( element,
                                                                                                  options.isInspire(),
                                                                                                  conn ) );
 
                     }
-                    insertedIds.addAll( executeStatements.getRecordsAffectedIDs() );
 
                 } catch ( IOException e ) {
 
@@ -1018,7 +1018,7 @@ public class ISORecordStore implements RecordStore {
 
             s.append( " AND " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "." + "id" + " = "
                       + i );
-            LOG.debug( "rs: " + s );
+            LOG.info( "rs: " + s );
 
             ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
 

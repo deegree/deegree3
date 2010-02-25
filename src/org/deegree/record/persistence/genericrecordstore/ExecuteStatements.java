@@ -67,7 +67,7 @@ public class ExecuteStatements {
 
     private BuildRecordXMLRepresentation buildRecXML;
 
-    private List<Integer> recordsAffectedIDs;
+    // private List<Integer> recordsAffectedIDs;
 
     /**
      * This method executes the statement for INSERT datasets
@@ -80,7 +80,8 @@ public class ExecuteStatements {
      *            {@link ParsedProfileElement}
      * @throws IOException
      */
-    public void executeInsertStatement( boolean isDC, Connection connection, ParsedProfileElement parsedElement )
+    public void executeInsertStatement( boolean isDC, Connection connection, List<Integer> insertedIds,
+                                        ParsedProfileElement parsedElement )
                             throws IOException {
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildRecordXMLRepresentation();
@@ -92,20 +93,25 @@ public class ExecuteStatements {
             /*
              * Question if there already exists the identifier.
              */
-            String s = "SELECT i.identifier FROM qp_identifier AS i WHERE i.identifier = '"
-                       + parsedElement.getQueryableProperties().getIdentifier() + "';";
-            ResultSet r = stm.executeQuery( s );
-            LOG.debug( s );
-            if ( r.next() ) {
-                stm.close();
-                throw new IOException( "Record with identifier '"
-                                       + parsedElement.getQueryableProperties().getIdentifier() + "' already exists!" );
+            for ( String identifier : parsedElement.getQueryableProperties().getIdentifier() ) {
+                String s = "SELECT i.identifier FROM qp_identifier AS i WHERE i.identifier = '" + identifier + "';";
+                ResultSet r = stm.executeQuery( s );
+                LOG.debug( s );
+
+                if ( r.next() ) {
+                    stm.close();
+                    throw new IOException( "Record with identifier '"
+                                           + parsedElement.getQueryableProperties().getIdentifier()
+                                           + "' already exists!" );
+                }
             }
             int operatesOnId = generateQP.generateMainDatabaseDataset( connection, stm, parsedElement );
+
             if ( isDC == true ) {
-                recordsAffectedIDs = buildRecXML.generateDC( connection, stm, operatesOnId, parsedElement );
+                insertedIds.add( buildRecXML.generateDC( connection, stm, operatesOnId, parsedElement ) );
             } else {
-                recordsAffectedIDs = buildRecXML.generateISO( connection, stm, operatesOnId, parsedElement );
+                insertedIds.add( buildRecXML.generateISO( connection, stm, operatesOnId, parsedElement ) );
+
             }
             generateQP.executeQueryableProperties( isUpdate, connection, stm, operatesOnId, parsedElement );
             stm.close();
@@ -254,13 +260,6 @@ public class ExecuteStatements {
         stm.executeUpdate( sqlStatementUpdate.toString() );
         buf.setLength( 0 );
 
-    }
-
-    /**
-     * @return the maindatabasetable IDs of the records that are affected by the transaction
-     */
-    public List<Integer> getRecordsAffectedIDs() {
-        return recordsAffectedIDs;
     }
 
 }

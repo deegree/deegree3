@@ -87,8 +87,7 @@ public class GenerateQueryableProperties {
             operatesOnId = getLastDatasetId( connection, databaseTable );
             operatesOnId++;
 
-            if ( parsedElement.getQueryableProperties().getModified() != null
-                 || !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
+            if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
                 modifiedAttribute = "'" + parsedElement.getQueryableProperties().getModified() + "'";
             }
 
@@ -104,7 +103,7 @@ public class GenerateQueryableProperties {
                                  + parsedElement.getQueryableProperties().isHasSecurityConstraints() + ",'"
                                  + parsedElement.getQueryableProperties().getLanguage() + "','"
                                  + parsedElement.getQueryableProperties().getParentIdentifier() + "',null, null);" );
-            LOG.debug( sqlStatement.toString() );
+            LOG.info( "maindatabasetable: " + sqlStatement.toString() );
             stm.executeUpdate( sqlStatement.toString() );
 
         } catch ( SQLException e ) {
@@ -252,12 +251,16 @@ public class GenerateQueryableProperties {
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
 
-        s_PRE.append( "INSERT INTO " + databaseTable + " (" + ISO_DC_Mappings.commonColumnNames.id.name() + ", "
-                      + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + ", identifier)" );
+        for ( String identifierString : qp.getIdentifier() ) {
+            s_PRE.append( "INSERT INTO " + databaseTable + " (" + ISO_DC_Mappings.commonColumnNames.id.name() + ", "
+                          + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + ", identifier)" );
 
-        s_POST.append( "'" + qp.getIdentifier() + "');" );
+            s_POST.append( "'" + identifierString + "');" );
 
-        executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE, s_POST );
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE,
+                                                      s_POST );
+
+        }
 
     }
 

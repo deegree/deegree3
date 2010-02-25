@@ -54,13 +54,13 @@ import org.deegree.commons.types.datetime.Date;
  */
 public class GenerateRecord {
 
-    private OMFactory factory = OMAbstractFactory.getOMFactory();
-
-    private OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
-
-    private OMNamespace namespaceDCT = factory.createOMNamespace( "http://purl.org/dc/terms/", "dct" );
-
-    private OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+    // private OMFactory factory = OMAbstractFactory.getOMFactory();
+    //
+    // private OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
+    //
+    // private OMNamespace namespaceDCT = factory.createOMNamespace( "http://purl.org/dc/terms/", "dct" );
+    //
+    // private OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
 
     private OMElement identifier;
 
@@ -135,6 +135,9 @@ public class GenerateRecord {
      */
     private OMElement setISOBriefElements() {
 
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+
         isoBriefElement = factory.createOMElement( "MD_Metadata", namespaceGMD );
         // identifier
         isoBriefElement.addChild( identifier );
@@ -160,6 +163,9 @@ public class GenerateRecord {
      * @return OMElement
      */
     private OMElement setISOSummaryElements() {
+
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
 
         isoSummaryElement = factory.createOMElement( "MD_Metadata", namespaceGMD );
         // identifier
@@ -235,6 +241,9 @@ public class GenerateRecord {
      * @return OMElement
      */
     private OMElement setISOFullElements() {
+
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
 
         isoFullElement = factory.createOMElement( "MD_Metadata", namespaceGMD );
         // identifier
@@ -394,7 +403,9 @@ public class GenerateRecord {
      * @param factory
      * @param omElement
      */
-    private void setDCBriefElements( OMElement omElement ) {
+    private void setDCBriefElements( OMElement omElement, OMFactory factory ) {
+
+        OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
 
         OMElement omType = factory.createOMElement( "type", namespaceDC );
 
@@ -422,9 +433,13 @@ public class GenerateRecord {
      * @param omElement
      * @throws ParseException
      */
-    private void setDCSummaryElements( OMElement omElement )
+    private void setDCSummaryElements( OMElement omElement, OMFactory factory )
                             throws ParseException {
-        setDCBriefElements( omElement );
+        setDCBriefElements( omElement, factory );
+
+        OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
+
+        OMNamespace namespaceDCT = factory.createOMNamespace( "http://purl.org/dc/terms/", "dct" );
 
         OMElement omSubject;
         // dc:subject
@@ -499,10 +514,12 @@ public class GenerateRecord {
      * @param omElement
      * @throws ParseException
      */
-    private void setDCFullElements( OMElement omElement )
+    private void setDCFullElements( OMElement omElement, OMFactory factory )
                             throws ParseException {
 
-        setDCSummaryElements( omElement );
+        OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
+
+        setDCSummaryElements( omElement, factory );
 
         if ( rp.getCreator() != null ) {
             OMElement omCreator = factory.createOMElement( "creator", namespaceDC );
@@ -566,26 +583,26 @@ public class GenerateRecord {
     /**
      * @return the dcBriefElement
      */
-    public void buildElementAsDcBriefElement( OMElement element ) {
-        setDCBriefElements( element );
+    public void buildElementAsDcBriefElement( OMElement element, OMFactory factory ) {
+        setDCBriefElements( element, factory );
     }
 
     /**
      * @return the dcSummaryElement
      * @throws ParseException
      */
-    public void buildElementAsDcSummaryElement( OMElement element )
+    public void buildElementAsDcSummaryElement( OMElement element, OMFactory factory )
                             throws ParseException {
-        setDCSummaryElements( element );
+        setDCSummaryElements( element, factory );
     }
 
     /**
      * @return the dcFullElement
      * @throws ParseException
      */
-    public void buildElementAsDcFullElement( OMElement element )
+    public void buildElementAsDcFullElement( OMElement element, OMFactory factory )
                             throws ParseException {
-        setDCFullElements( element );
+        setDCFullElements( element, factory );
     }
 
     /**
