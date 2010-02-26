@@ -564,23 +564,23 @@ public class WKTParser {
         String crsType = tokenizer.sval; // expecting StreamTokenizer.TT_WORD
 
         // COMPOUND CRS
-        if ( crsType.equalsIgnoreCase( "COMPD_CS" ) ) {
+        if ( crsType.equalsIgnoreCase( "COMPD_CS" ) || crsType.equalsIgnoreCase( "COMPDCS" ) ) {
             return parseCompoundCRS();
 
             // PROJECTED CRS
-        } else if ( crsType.equalsIgnoreCase( "PROJCS" ) ) {
+        } else if ( crsType.equalsIgnoreCase( "PROJCS" ) || crsType.equalsIgnoreCase( "PROJ_CS" ) ) {
             return parseProjectedCRS();
 
             // GEOGRAPHIC CRS
-        } else if ( crsType.equalsIgnoreCase( "GEOGCS" ) ) {
+        } else if ( crsType.equalsIgnoreCase( "GEOGCS" ) || crsType.equalsIgnoreCase( "GEOG_CS" ) ) {
             return parseGeographiCRS();
 
             // GEOCENTRIC CRS
-        } else if ( crsType.equalsIgnoreCase( "GEOCCS" ) ) {
+        } else if ( crsType.equalsIgnoreCase( "GEOCCS" ) || crsType.equalsIgnoreCase( "GEOC_CS" ) ) {
             return parseGeocentricCRS();
 
             // VERTICAL CRS
-        } else if ( crsType.equalsIgnoreCase( "VERT_CS" ) ) {
+        } else if ( crsType.equalsIgnoreCase( "VERT_CS" ) || crsType.equalsIgnoreCase( "VERTCS" ) ) {
             return parseVerticalCRS();
 
         } else
@@ -823,7 +823,7 @@ public class WKTParser {
                         throw new WKTParsingException(
                                                        "The PARAMETER element must contain a quoted String as parameter name. At line "
                                                                                + tokenizer.lineno() );
-                    String paramName = tokenizer.sval;
+                    String paramName = tokenizer.sval.toLowerCase();
                     passOverChar( ',' );
                     tokenizer.nextToken();
                     if ( tokenizer.ttype != StreamTokenizer.TT_NUMBER )
@@ -867,6 +867,13 @@ public class WKTParser {
         if ( unit == null )
             throw new WKTParsingException( "The PROJCS element must contain a UNIT keyword element. Before line "
                                            + tokenizer.lineno() );
+
+        if ( params.containsKey( "Standard_Parallel_1" ) ) {
+            params.put( "standard_parallel1", params.get( "Standard_Parallel_1" ) );
+        }
+        if ( params.containsKey( "Standard_Parallel_2" ) ) {
+            params.put( "standard_parallel2", params.get( "Standard_Parallel_2" ) );
+        }
 
         // default value for parameters
         if ( !params.containsKey( "semi_major" ) )
@@ -918,7 +925,8 @@ public class WKTParser {
                                      new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                        new String[] { name }, null,
                                                                                        null, null ) );
-        else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_2SP" ) )
+        else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_2SP" )
+                  || projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic" ) ) {
             return new ProjectedCRS(
                                      new LambertConformalConic(
                                                                 params.get( "standard_parallel1" ),
@@ -937,9 +945,9 @@ public class WKTParser {
                                      new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                        new String[] { name }, null,
                                                                                        null, null ) );
-        else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" )
-                  || projectionType.equalsIgnoreCase( "Double_Stereographic" )
-                  || projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) )
+        } else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" )
+                    || projectionType.equalsIgnoreCase( "Double_Stereographic" )
+                    || projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) )
             return new ProjectedCRS(
                                      new StereographicAlternative(
                                                                    geographicCRS,
