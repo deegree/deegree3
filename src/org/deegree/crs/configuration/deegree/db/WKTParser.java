@@ -93,6 +93,27 @@ public class WKTParser {
 
     private BufferedReader buff;
 
+    boolean equalsParameterVariants( String candidate, String paramName ) {
+        String candidateVariant = candidate.replace( "_", "" );
+        String paramVariant = paramName.replaceAll( "_", "" );
+        if ( candidateVariant.equalsIgnoreCase( paramVariant ) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    String containsVariantsKey( Map<String, Double> params, String candidate ) {
+        String candidateVariant = candidate.replaceAll( "_", "" );
+        for ( String key : params.keySet() ) {
+            String keyVariant = key.replaceAll( "_", "" );
+            if ( keyVariant.equalsIgnoreCase( candidateVariant ) ) {
+                return key;
+            }
+        }
+        return null;
+    }
+
     /**
      * Walk a character (comma or round/square bracket).
      * 
@@ -564,23 +585,23 @@ public class WKTParser {
         String crsType = tokenizer.sval; // expecting StreamTokenizer.TT_WORD
 
         // COMPOUND CRS
-        if ( crsType.equalsIgnoreCase( "COMPD_CS" ) || crsType.equalsIgnoreCase( "COMPDCS" ) ) {
+        if ( equalsParameterVariants( crsType, "COMPD_CS" ) ) {
             return parseCompoundCRS();
 
             // PROJECTED CRS
-        } else if ( crsType.equalsIgnoreCase( "PROJCS" ) || crsType.equalsIgnoreCase( "PROJ_CS" ) ) {
+        } else if ( equalsParameterVariants( crsType, "PROJ_CS" ) ) {
             return parseProjectedCRS();
 
             // GEOGRAPHIC CRS
-        } else if ( crsType.equalsIgnoreCase( "GEOGCS" ) || crsType.equalsIgnoreCase( "GEOG_CS" ) ) {
+        } else if ( equalsParameterVariants( crsType, "GEOG_CS" ) ) {
             return parseGeographiCRS();
 
             // GEOCENTRIC CRS
-        } else if ( crsType.equalsIgnoreCase( "GEOCCS" ) || crsType.equalsIgnoreCase( "GEOC_CS" ) ) {
+        } else if ( equalsParameterVariants( crsType, "GEOC_CS" ) ) {
             return parseGeocentricCRS();
 
             // VERTICAL CRS
-        } else if ( crsType.equalsIgnoreCase( "VERT_CS" ) || crsType.equalsIgnoreCase( "VERTCS" ) ) {
+        } else if ( equalsParameterVariants( crsType, "VERT_CS" ) ) {
             return parseVerticalCRS();
 
         } else
@@ -799,7 +820,7 @@ public class WKTParser {
                 name = tokenizer.sval;
                 break;
             case StreamTokenizer.TT_WORD:
-                if ( tokenizer.sval.equalsIgnoreCase( "GEOGCS" ) ) {
+                if ( equalsParameterVariants( tokenizer.sval, "GEOG_CS" ) ) {
                     tokenizer.pushBack();
                     geographicCRS = (GeographicCRS) realParseCoordinateSystem();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "PROJECTION" ) ) {
@@ -844,9 +865,10 @@ public class WKTParser {
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException( "An unexpected keyword was encountered in the PROJCS element: "
                                                    + tokenizer.sval + ". At line: " + tokenizer.lineno() );
+                }
                 break;
 
             default:
@@ -868,35 +890,64 @@ public class WKTParser {
             throw new WKTParsingException( "The PROJCS element must contain a UNIT keyword element. Before line "
                                            + tokenizer.lineno() );
 
-        if ( params.containsKey( "Standard_Parallel_1" ) ) {
-            params.put( "standard_parallel1", params.get( "Standard_Parallel_1" ) );
-        }
-        if ( params.containsKey( "Standard_Parallel_2" ) ) {
-            params.put( "standard_parallel2", params.get( "Standard_Parallel_2" ) );
-        }
-
         // default value for parameters
-        if ( !params.containsKey( "semi_major" ) )
+        String semiMajor = null;
+        if ( ( semiMajor = containsVariantsKey( params, "semi_major" ) ) == null ) {
             params.put( "semi_major", 0.0 );
-        if ( !params.containsKey( "semi_minor" ) )
+        } else {
+            params.put( "semi_major", params.get( semiMajor ) );
+        }
+        String semiMinor = null;
+        if ( ( semiMinor = containsVariantsKey( params, "semi_minor" ) ) == null ) {
             params.put( "semi_minor", 0.0 );
-        if ( !params.containsKey( "latitude_of_origin" ) )
+        } else {
+            params.put( "semi_minor", params.get( semiMinor ) );
+        }
+        String latOrigin = null;
+        if ( ( latOrigin = containsVariantsKey( params, "latitude_of_origin" ) ) == null ) {
             params.put( "latitude_of_origin", 0.0 );
-        if ( !params.containsKey( "central_meridian" ) )
+        } else {
+            params.put( "latitude_of_origin", params.get( latOrigin ) );
+        }
+        String centralMeridian = null;
+        if ( ( centralMeridian = containsVariantsKey( params, "central_meridian" ) ) == null ) {
             params.put( "central_meridian", 0.0 );
-        if ( !params.containsKey( "scale_factor" ) )
+        } else {
+            params.put( "central_meridian", params.get( centralMeridian ) );
+        }
+        String scaleFactor = null;
+        if ( ( scaleFactor = containsVariantsKey( params, "scale_factor" ) ) == null ) {
             params.put( "scale_factor", 1.0 );
-        if ( !params.containsKey( "false_easting" ) )
+        } else {
+            params.put( "scale_factor", params.get( scaleFactor ) );
+        }
+        String falseEasting = null;
+        if ( ( falseEasting = containsVariantsKey( params, "false_easting" ) ) == null ) {
             params.put( "false_easting", 0.0 );
-        if ( !params.containsKey( "false_northing" ) )
+        } else {
+            params.put( "false_easting", params.get( falseEasting ) );
+        }
+        String falseNorthing = null;
+        if ( ( falseNorthing = containsVariantsKey( params, "false_northing" ) ) == null ) {
             params.put( "false_northing", 0.0 );
-        if ( !params.containsKey( "standard_parallel1" ) )
+        } else {
+            params.put( "false_northing", params.get( falseNorthing ) );
+        }
+        String stdParallel1 = null;
+        if ( ( stdParallel1 = containsVariantsKey( params, "standard_parallel_1" ) ) == null ) {
             params.put( "standard_parallel1", 0.0 );
-        if ( !params.containsKey( "standard_parallel2" ) )
+        } else {
+            params.put( "standard_parallel1", params.get( stdParallel1 ) );
+        }
+        String stdParallel2 = null;
+        if ( ( stdParallel2 = containsVariantsKey( params, "standard_parallel_2" ) ) == null ) {
             params.put( "standard_parallel2", 0.0 );
+        } else {
+            params.put( "standard_parallel2", params.get( stdParallel2 ) );
+        }
 
         if ( projectionType.equalsIgnoreCase( "transverse_mercator" )
-             || projectionType.equalsIgnoreCase( "Gauss_Kruger" ) )
+             || projectionType.equalsIgnoreCase( "Gauss_Kruger" ) ) {
             return new ProjectedCRS( new TransverseMercator( true, geographicCRS, params.get( "false_northing" ),
                                                              params.get( "false_easting" ),
                                                              new Point2d( params.get( "central_meridian" ),
@@ -908,7 +959,7 @@ public class WKTParser {
                                      new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                        new String[] { name }, null,
                                                                                        null, null ) );
-        else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_1SP" ) )
+        } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_1SP" ) ) {
             return new ProjectedCRS(
                                      new LambertConformalConic(
                                                                 geographicCRS,
@@ -925,8 +976,8 @@ public class WKTParser {
                                      new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                        new String[] { name }, null,
                                                                                        null, null ) );
-        else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_2SP" )
-                  || projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic" ) ) {
+        } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_2SP" )
+                    || projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic" ) ) {
             return new ProjectedCRS(
                                      new LambertConformalConic(
                                                                 params.get( "standard_parallel1" ),
@@ -947,7 +998,7 @@ public class WKTParser {
                                                                                        null, null ) );
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" )
                     || projectionType.equalsIgnoreCase( "Double_Stereographic" )
-                    || projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) )
+                    || projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) ) {
             return new ProjectedCRS(
                                      new StereographicAlternative(
                                                                    geographicCRS,
@@ -964,7 +1015,7 @@ public class WKTParser {
                                      new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                        new String[] { name }, null,
                                                                                        null, null ) );
-        else if ( projectionType.equalsIgnoreCase( "Stereographic_Azimuthal" ) )
+        } else if ( projectionType.equalsIgnoreCase( "Stereographic_Azimuthal" ) ) {
             return new ProjectedCRS(
                                      new StereographicAzimuthal(
                                                                  // TODO true_scale_latitude parameter???
@@ -982,8 +1033,9 @@ public class WKTParser {
                                      new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                        new String[] { name }, null,
                                                                                        null, null ) );
-        else
+        } else {
             throw new WKTParsingException( "The projection type " + projectionType + " is not supported." );
+        }
     }
 
     private CompoundCRS parseCompoundCRS()
@@ -999,18 +1051,21 @@ public class WKTParser {
                 name = tokenizer.sval;
                 break;
             case StreamTokenizer.TT_WORD:
-                if ( tokenizer.sval.equalsIgnoreCase( "COMPD_CS" ) || tokenizer.sval.equalsIgnoreCase( "PROJCS" )
-                     || tokenizer.sval.equalsIgnoreCase( "GEOGCS" ) || tokenizer.sval.equals( "GEOCCS" )
-                     || tokenizer.sval.equals( "VERT_CS" ) ) {
+                if ( equalsParameterVariants( tokenizer.sval, "COMPD_CS" )
+                     || equalsParameterVariants( tokenizer.sval, "PROJ_CS" )
+                     || equalsParameterVariants( tokenizer.sval, "GEOG_CS" )
+                     || equalsParameterVariants( tokenizer.sval, "GEOC_CS" )
+                     || equalsParameterVariants( tokenizer.sval, "VERT_CS" ) ) {
                     tokenizer.pushBack();
                     twoCRSs.add( realParseCoordinateSystem() );
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
-                } else
+                } else {
                     throw new WKTParsingException(
                                                    "Found a keyword different that AUTHORITY or any supported CRS inside the COMPD_CS. At line: "
                                                                            + tokenizer.lineno() );
+                }
                 break;
 
             default:
@@ -1018,15 +1073,18 @@ public class WKTParser {
                                                + tokenizer.lineno() );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( twoCRSs.size() != 2 )
+        if ( twoCRSs.size() != 2 ) {
             throw new WKTParsingException( "The COMPD_CS element has two contain exactly 2 CRSs. Before line "
                                            + tokenizer.lineno() );
-        if ( name == null )
+        }
+        if ( name == null ) {
             throw new WKTParsingException( "The COMPD_CS element must contain a name as a quoted String. Before line "
                                            + tokenizer.lineno() );
+        }
 
         VerticalCRS verticalCRS = null;
         CoordinateSystem underlyingCRS = null;
@@ -1036,9 +1094,10 @@ public class WKTParser {
         } else if ( twoCRSs.get( 1 ) instanceof VerticalCRS ) {
             verticalCRS = (VerticalCRS) twoCRSs.get( 1 );
             underlyingCRS = twoCRSs.get( 0 );
-        } else
+        } else {
             throw new WKTParsingException( "One of the CRSs from the COMPD_CS element must be a VERT_CS. Before line "
                                            + tokenizer.lineno() );
+        }
 
         return new CompoundCRS( verticalCRS.getVerticalAxis(), underlyingCRS, 0.0,
                                 new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null,
