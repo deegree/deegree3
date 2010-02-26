@@ -141,8 +141,6 @@ public class TransformatorPostGIS {
 
             writer = operatorFilterHandling( opFilter, typeOperator );
 
-            LOG.info( writer.toString() );
-
         case ID_FILTER:
             // TODO
             break;
@@ -179,7 +177,7 @@ public class TransformatorPostGIS {
             SpatialOperator spaOp = (SpatialOperator) opFilter.getOperator();
             SpatialOperatorTransformingPostGIS spa = new SpatialOperatorTransformingPostGIS( spaOp );
             writer.append( spa.getWriterSpatial().toString() );
-            LOG.info( writer.toString() );
+
             ExpressionFilterHelper.getInstance().addTablesANDColumns( spa.getTables(), spa.getColumns() );
 
             break;
@@ -342,12 +340,12 @@ public class TransformatorPostGIS {
         expressObject = expressionFilterHandling.expressionFilterHandling( expression1.getType(), expression1 );
 
         ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(), expressObject.getColumns() );
-
+        ExpressionFilterHelper.getInstance().setPropertyName( expressObject.getPropertyName() );
         s.append( expressObject.getExpression() );
         s.append( compOp );
         expressObject = expressionFilterHandling.expressionFilterHandling( expression2.getType(), expression2 );
         ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(), expressObject.getColumns() );
-
+        ExpressionFilterHelper.getInstance().setPropertyName( expressObject.getPropertyName() );
         s.append( expressObject.getExpression() );
 
         return s;
@@ -367,11 +365,13 @@ public class TransformatorPostGIS {
         expressObject = expressionFilterHandling.expressionFilterHandling( lowerBoundary.getType(), lowerBoundary );
 
         ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(), expressObject.getColumns() );
+        ExpressionFilterHelper.getInstance().setPropertyName( expressObject.getPropertyName() );
         s.append( expressObject.getExpression() );
         s.append( " AND " );
         expressObject = expressionFilterHandling.expressionFilterHandling( upperBoundary.getType(), upperBoundary );
 
         ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(), expressObject.getColumns() );
+        ExpressionFilterHelper.getInstance().setPropertyName( expressObject.getPropertyName() );
         s.append( expressObject.getExpression() );
 
         return s;
@@ -392,6 +392,7 @@ public class TransformatorPostGIS {
 
             ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(),
                                                                       expressObject.getColumns() );
+            ExpressionFilterHelper.getInstance().setPropertyName( expressObject.getPropertyName() );
             if ( counter != compOp.length - 1 ) {
                 counter++;
 
@@ -420,6 +421,7 @@ public class TransformatorPostGIS {
 
             ExpressionFilterHelper.getInstance().addTablesANDColumns( expressObject.getTables(),
                                                                       expressObject.getColumns() );
+            ExpressionFilterHelper.getInstance().setPropertyName( expressObject.getPropertyName() );
             s.append( expressObject.getExpression() );
             s.append( " IS NULL " );
 

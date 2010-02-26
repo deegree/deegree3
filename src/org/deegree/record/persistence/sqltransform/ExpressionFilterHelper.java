@@ -54,7 +54,7 @@ public class ExpressionFilterHelper {
 
     private Set<String> columns = new HashSet<String>();
 
-    private QName propertyName;
+    private Set<QName> propertyName = new HashSet<QName>();
 
     private static final ExpressionFilterHelper INSTANCE = new ExpressionFilterHelper();
 
@@ -91,8 +91,16 @@ public class ExpressionFilterHelper {
     /**
      * @return the propertyName
      */
-    public QName getPropertyName() {
+    public Set<QName> getPropertyName() {
         return propertyName;
+    }
+
+    /**
+     * @param propertyName
+     *            the propertyName to set
+     */
+    public void setPropertyName( QName propertyName ) {
+        this.propertyName.add( propertyName );
     }
 
     /**
