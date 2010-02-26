@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.text.ParseException;
 import java.util.List;
 
@@ -43,6 +45,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.types.datetime.Date;
+import org.slf4j.Logger;
 
 /**
  * Generates the records in DC and ISO in all representation types (brief, summary, full).
@@ -53,6 +56,8 @@ import org.deegree.commons.types.datetime.Date;
  * @version $Revision: $, $Date: $
  */
 public class GenerateRecord {
+
+    private static final Logger LOG = getLogger( GenerateRecord.class );
 
     // private OMFactory factory = OMAbstractFactory.getOMFactory();
     //
@@ -632,7 +637,14 @@ public class GenerateRecord {
      *            the language to set
      */
     public void setLanguage( OMElement language ) {
-        this.language = language;
+        LOG.info( language.toString() );
+        if ( language != null ) {
+            this.language = language;
+        } else {
+
+            this.language = null;
+        }
+
     }
 
     /**

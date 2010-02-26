@@ -67,8 +67,6 @@ public class ExecuteStatements {
 
     private BuildRecordXMLRepresentation buildRecXML;
 
-    // private List<Integer> recordsAffectedIDs;
-
     /**
      * This method executes the statement for INSERT datasets
      * 
@@ -126,10 +124,13 @@ public class ExecuteStatements {
      * This method executes the statement for updating the queryable- and returnable properties of one specific record.
      * 
      * @param connection
+     * @param updatedIds
      * @param parsedElement
      *            {@link ParsedProfileElement}
      */
-    public void executeUpdateStatement( Connection connection, ParsedProfileElement parsedElement ) {
+    public void executeUpdateStatement( Connection connection, List<Integer> updatedIds,
+                                        ParsedProfileElement parsedElement ) {
+
         final String databaseTable = ISO_DC_Mappings.databaseTables.datasets.name();
         final String qp_identifier = ISO_DC_Mappings.databaseTables.qp_identifier.name();
         boolean isUpdate = true;
@@ -163,8 +164,7 @@ public class ExecuteStatements {
 
                 if ( requestedId != 0 ) {
 
-                    if ( parsedElement.getQueryableProperties().getModified() != null
-                         || !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
+                    if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
                         modifiedAttribute = "'" + parsedElement.getQueryableProperties().getModified() + "'";
                     }
 
@@ -184,8 +184,7 @@ public class ExecuteStatements {
                     }
 
                     // modified
-                    if ( parsedElement.getQueryableProperties().getModified() != null
-                         || !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
+                    if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET modified = " + modifiedAttribute
                                                   + " WHERE id = " + requestedId );
                         executeSQLStatementUpdate( sqlStatementUpdate );
@@ -220,7 +219,7 @@ public class ExecuteStatements {
                     // TODO association
 
                     // recordBrief, recordSummary, recordFull update
-                    buildRecXML.updateRecord( requestedId, parsedElement, stm );
+                    updatedIds.add( buildRecXML.updateRecord( requestedId, parsedElement, stm ) );
 
                     generateQP.executeQueryableProperties( isUpdate, connection, stm, requestedId, parsedElement );
 

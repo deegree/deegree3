@@ -115,28 +115,30 @@ public class BuildRecordXMLRepresentation {
      *            which record dataset should be updated
      * @param parsedElement
      * @param stm
+     * @return an integer that indicates if there is a record updated
      * @throws IOException
      */
-    void updateRecord( int fk_datasets, ParsedProfileElement parsedElement, Statement stm )
+    int updateRecord( int fk_datasets, ParsedProfileElement parsedElement, Statement stm )
                             throws IOException {
 
         StringWriter isoOMElement = new StringWriter( 2000 );
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
 
+        int counter = 0;
         for ( String databaseTable : tableRecordType.keySet() ) {
 
             StringWriter sqlStatement = new StringWriter( 500 );
             StringBuffer buf = new StringBuffer();
-            OMElement omElement = null;
 
             try {
                 // DC-update
-                omElement = factory.createOMElement( tableRecordType.get( databaseTable ), namespaceCSW );
+                OMElement omElement = factory.createOMElement( tableRecordType.get( databaseTable ), namespaceCSW );
 
                 if ( omElement.getLocalName().equals( BRIEFRECORD ) ) {
                     parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
                     isoOMElement.write( parsedElement.getGenerateRecord().getIsoBriefElement().toString() );
+                    counter++;
                 } else if ( omElement.getLocalName().equals( SUMMARYRECORD ) ) {
                     parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
                     isoOMElement.write( parsedElement.getGenerateRecord().getIsoSummaryElement().toString() );
@@ -171,6 +173,8 @@ public class BuildRecordXMLRepresentation {
             }
         }
 
+        return counter;
+
     }
 
     /**
@@ -180,7 +184,7 @@ public class BuildRecordXMLRepresentation {
      * @param stm
      * @param operatesOnId
      * @param parsedElement
-     * @return a list of Integers that are the primarykeys from the inserted records
+     * @return an integer that is the primarykey from the inserted record
      * 
      * @throws IOException
      */
@@ -231,7 +235,7 @@ public class BuildRecordXMLRepresentation {
      * @param operatesOnId
      * @param parsedElement
      * 
-     * @return a list of Integers that are the primarykeys from the inserted records
+     * @return an integer that is the primarykey from the inserted record
      */
     int generateDC( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement ) {
 

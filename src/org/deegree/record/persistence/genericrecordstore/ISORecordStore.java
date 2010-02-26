@@ -67,7 +67,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
@@ -644,10 +643,11 @@ public class ISORecordStore implements RecordStore {
                     if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
                          || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
 
-                        executeStatements.executeUpdateStatement( conn, new ISOQPParsing().parseAPDC( upd.getElement() ) );
+                        executeStatements.executeUpdateStatement( conn, affectedIds,
+                                                                  new ISOQPParsing().parseAPDC( upd.getElement() ) );
 
                     } else {
-                        executeStatements.executeUpdateStatement( conn,
+                        executeStatements.executeUpdateStatement( conn, affectedIds,
                                                                   new ISOQPParsing().parseAPISO( upd.getElement(),
                                                                                                  options.isInspire(),
                                                                                                  conn ) );
@@ -666,31 +666,46 @@ public class ISORecordStore implements RecordStore {
                                                                       filterExpression.getExpressHelper() );
 
                     int formatNumber = 0;
-                    // String nsURI = filterExpression.getExpressHelper().getPropertyName().getNamespaceURI();
-                    // String prefix = filterExpression.getExpressHelper().getPropertyName().getPrefix();
-                    // QName analysedQName = new QName( nsURI, "", prefix );
-                    // for ( QName qName : typeNames.keySet() ) {
-                    // if ( qName.equals( analysedQName ) ) {
-                    // formatNumber = typeNames.get( qName );
-                    // }
-                    // }
+                    Set<QName> qNameSet = new HashSet<QName>();
+
+                    for ( QName propName : filterExpression.getExpressHelper().getPropertyName() ) {
+                        String nsURI = propName.getNamespaceURI();
+                        String prefix = propName.getPrefix();
+                        QName analysedQName = new QName( nsURI, "", prefix );
+                        qNameSet.add( analysedQName );
+                    }
+
+                    if ( qNameSet.size() > 1 ) {
+                        String message = "There are different kinds of RecordStores affected by the request! Please decide on just one of the requested ones: ";
+                        int i = 0;
+                        for ( QName qNameError : qNameSet ) {
+                            i++;
+                            message += i + ". " + qNameError.toString() + " ";
+                        }
+                        LOG.info( Integer.toString( qNameSet.size() ) );
+                        throw new IllegalArgumentException( message );
+                    }
+
+                    for ( QName qName : typeNames.keySet() ) {
+                        if ( qName.equals( qNameSet.iterator().next() ) ) {
+                            formatNumber = typeNames.get( qName );
+                        }
+                    }
 
                     Writer str = getRequestedIDStatement(
                                                           formatTypeInISORecordStore.get( SetOfReturnableElements.full ),
                                                           gdds, formatNumber );
 
                     ResultSet rsUpdatableDatasets = conn.createStatement().executeQuery( str.toString() );
-                    List<Integer> deletableDatasets = new ArrayList<Integer>();
+                    List<Integer> updatableDatasets = new ArrayList<Integer>();
                     while ( rsUpdatableDatasets.next() ) {
-                        deletableDatasets.add( rsUpdatableDatasets.getInt( 1 ) );
+                        updatableDatasets.add( rsUpdatableDatasets.getInt( 1 ) );
 
                     }
                     rsUpdatableDatasets.close();
-                    if ( deletableDatasets.size() == 0 ) {
-                        // String msg = "No matching found between backend and " + recProp.getPropertyName();
-                        // throw new IllegalArgumentException( msg );
-                    } else {
-                        for ( int i : deletableDatasets ) {
+                    if ( updatableDatasets.size() != 0 ) {
+                        LOG.info( "updatableDatasets: " + Integer.toString( updatableDatasets.size() ) );
+                        for ( int i : updatableDatasets ) {
                             String stri = "SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
                                           + ".data FROM "
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + " WHERE "
@@ -699,37 +714,40 @@ public class ISORecordStore implements RecordStore {
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + "."
                                           + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = " + i;
                             ResultSet rsGetStoredFullRecordXML = conn.createStatement().executeQuery( stri.toString() );
-
+                            LOG.info( stri.toString() );
                             while ( rsGetStoredFullRecordXML.next() ) {
                                 for ( RecordProperty recProp : upd.getRecordProperty() ) {
                                     ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
                                     ExpressionFilterObject recordPropertyName;
                                     ExpressionFilterObject recordPropertyValue;
+
                                     recordPropertyName = filterHandle.expressionFilterHandling(
                                                                                                 org.deegree.filter.Expression.Type.PROPERTY_NAME,
                                                                                                 recProp.getPropertyName() );
                                     recordPropertyValue = filterHandle.expressionFilterHandling(
                                                                                                  org.deegree.filter.Expression.Type.LITERAL,
                                                                                                  recProp.getReplacementValue() );
+                                    LOG.info( "recordPropertyName: " + recordPropertyName.getPropertyName().toString() );
                                     if ( recordPropertyName.isMatching() == true ) {
-
+                                        LOG.info( "i'm in 1: " );
                                         // not important. There is just one name possible
                                         for ( String column : recordPropertyName.getColumns() ) {
-
+                                            LOG.info( "column: " + column );
                                             // creating an OMElement readed from the backend byteData
                                             InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
                                             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                                                           in );
-                                            StAXOMBuilder builder = new StAXOMBuilder( reader );
-                                            OMDocument doc = builder.getDocument();
-                                            OMElement elementBuiltFromDB = doc.getOMDocumentElement();
+
+                                            OMElement elementBuiltFromDB = new StAXOMBuilder( reader ).getDocument().getOMDocumentElement();
+
+                                            // LOG.info( elementBuiltFromDB.toString() );
 
                                             OMElement omElement = recursiveElementKnotUpdate(
                                                                                               elementBuiltFromDB,
                                                                                               elementBuiltFromDB.getChildElements(),
                                                                                               column,
                                                                                               recordPropertyValue.getExpression() );
-
+                                            // LOG.info( "\n\n\n\n\n\n\n " + elementBuiltFromDB.toString() );
                                             try {
                                                 QName localName = omElement.getQName();
 
@@ -742,12 +760,14 @@ public class ISORecordStore implements RecordStore {
 
                                                     executeStatements.executeUpdateStatement(
                                                                                               conn,
+                                                                                              affectedIds,
                                                                                               new ISOQPParsing().parseAPDC( omElement ) );
 
                                                 } else {
-
+                                                    // LOG.info( omElement.toString() );
                                                     executeStatements.executeUpdateStatement(
                                                                                               conn,
+                                                                                              affectedIds,
                                                                                               new ISOQPParsing().parseAPISO(
                                                                                                                              omElement,
                                                                                                                              options.isInspire(),
@@ -789,10 +809,6 @@ public class ISORecordStore implements RecordStore {
             TransformatorPostGIS filterExpression = new TransformatorPostGIS( delete.getConstraint() );
             int formatNumber = 0;
 
-            /*
-             * eigentlich wird nur der ns und der prefix gebraucht um zu entscheiden, welcher Recordstore das ist.
-             */
-
             Set<QName> qNameSet = new HashSet<QName>();
 
             for ( QName propName : filterExpression.getExpressHelper().getPropertyName() ) {
@@ -801,7 +817,7 @@ public class ISORecordStore implements RecordStore {
                 QName analysedQName = new QName( nsURI, "", prefix );
                 qNameSet.add( analysedQName );
             }
-            LOG.info( "Before the exception: " + qNameSet.iterator().next().toString() );
+
             if ( qNameSet.size() > 1 ) {
                 String message = "There are different kinds of RecordStores affected by the request! Please decide on just one of the requested ones: ";
                 for ( QName qNameError : qNameSet ) {
@@ -810,8 +826,6 @@ public class ISORecordStore implements RecordStore {
 
                 throw new IllegalArgumentException( message );
             }
-
-            LOG.info( "After the exception: " + qNameSet.iterator().next().toString() );
 
             for ( QName qName : typeNames.keySet() ) {
                 if ( qName.equals( qNameSet.iterator().next() ) ) {
