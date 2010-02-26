@@ -592,7 +592,7 @@ public class ISORecordStore implements RecordStore {
                                       TransactionOptions options )
                             throws SQLException, XMLStreamException {
 
-        List<Integer> insertedIds = new ArrayList<Integer>();
+        List<Integer> affectedIds = new ArrayList<Integer>();
         Connection conn = ConnectionManager.getConnection( connectionId );
 
         switch ( operations.getType() ) {
@@ -609,12 +609,12 @@ public class ISORecordStore implements RecordStore {
                     if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
                          || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
 
-                        executeStatements.executeInsertStatement( true, conn, insertedIds,
+                        executeStatements.executeInsertStatement( true, conn, affectedIds,
                                                                   new ISOQPParsing().parseAPDC( element ) );
 
                     } else {
 
-                        executeStatements.executeInsertStatement( false, conn, insertedIds,
+                        executeStatements.executeInsertStatement( false, conn, affectedIds,
                                                                   new ISOQPParsing().parseAPISO( element,
                                                                                                  options.isInspire(),
                                                                                                  conn ) );
@@ -666,14 +666,14 @@ public class ISORecordStore implements RecordStore {
                                                                       filterExpression.getExpressHelper() );
 
                     int formatNumber = 0;
-                    String nsURI = filterExpression.getExpressHelper().getPropertyName().getNamespaceURI();
-                    String prefix = filterExpression.getExpressHelper().getPropertyName().getPrefix();
-                    QName analysedQName = new QName( nsURI, "", prefix );
-                    for ( QName qName : typeNames.keySet() ) {
-                        if ( qName.equals( analysedQName ) ) {
-                            formatNumber = typeNames.get( qName );
-                        }
-                    }
+                    // String nsURI = filterExpression.getExpressHelper().getPropertyName().getNamespaceURI();
+                    // String prefix = filterExpression.getExpressHelper().getPropertyName().getPrefix();
+                    // QName analysedQName = new QName( nsURI, "", prefix );
+                    // for ( QName qName : typeNames.keySet() ) {
+                    // if ( qName.equals( analysedQName ) ) {
+                    // formatNumber = typeNames.get( qName );
+                    // }
+                    // }
 
                     Writer str = getRequestedIDStatement(
                                                           formatTypeInISORecordStore.get( SetOfReturnableElements.full ),
@@ -788,11 +788,33 @@ public class ISORecordStore implements RecordStore {
             DeleteTransaction delete = (DeleteTransaction) operations;
             TransformatorPostGIS filterExpression = new TransformatorPostGIS( delete.getConstraint() );
             int formatNumber = 0;
-            String nsURI = filterExpression.getExpressHelper().getPropertyName().getNamespaceURI();
-            String prefix = filterExpression.getExpressHelper().getPropertyName().getPrefix();
-            QName analysedQName = new QName( nsURI, "", prefix );
+
+            /*
+             * eigentlich wird nur der ns und der prefix gebraucht um zu entscheiden, welcher Recordstore das ist.
+             */
+
+            Set<QName> qNameSet = new HashSet<QName>();
+
+            for ( QName propName : filterExpression.getExpressHelper().getPropertyName() ) {
+                String nsURI = propName.getNamespaceURI();
+                String prefix = propName.getPrefix();
+                QName analysedQName = new QName( nsURI, "", prefix );
+                qNameSet.add( analysedQName );
+            }
+            LOG.info( "Before the exception: " + qNameSet.iterator().next().toString() );
+            if ( qNameSet.size() > 1 ) {
+                String message = "There are different kinds of RecordStores affected by the request! Please decide on just one of the requested ones: ";
+                for ( QName qNameError : qNameSet ) {
+                    message += qNameError.toString();
+                }
+
+                throw new IllegalArgumentException( message );
+            }
+
+            LOG.info( "After the exception: " + qNameSet.iterator().next().toString() );
+
             for ( QName qName : typeNames.keySet() ) {
-                if ( qName.equals( analysedQName ) ) {
+                if ( qName.equals( qNameSet.iterator().next() ) ) {
                     formatNumber = typeNames.get( qName );
                 }
             }
@@ -824,11 +846,13 @@ public class ISORecordStore implements RecordStore {
                                                                               + " WHERE id = " + i );
             }
 
+            affectedIds = deletableDatasets;
+
             break;
         }
         conn.close();
 
-        return insertedIds;
+        return affectedIds;
     }
 
     /**
