@@ -781,7 +781,7 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "PointSymbolizer" );
 
-        Common common = new Common();
+        Common common = new Common( in.getLocation() );
         PointStyling baseOrEvaluated = new PointStyling();
         baseOrEvaluated.uom = uom;
 
@@ -882,7 +882,7 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "RasterSymbolizer" );
 
-        Common common = new Common();
+        Common common = new Common( in.getLocation() );
         RasterStyling baseOrEvaluated = new RasterStyling();
         baseOrEvaluated.uom = uom;
         Continuation<RasterStyling> contn = null;
@@ -1066,7 +1066,7 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "LineSymbolizer" );
 
-        Common common = new Common();
+        Common common = new Common( in.getLocation() );
         LineStyling baseOrEvaluated = new LineStyling();
         baseOrEvaluated.uom = uom;
         Continuation<LineStyling> contn = null;
@@ -1126,7 +1126,7 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "PolygonSymbolizer" );
 
-        Common common = new Common();
+        Common common = new Common( in.getLocation() );
         PolygonStyling baseOrEvaluated = new PolygonStyling();
         baseOrEvaluated.uom = uom;
         Continuation<PolygonStyling> contn = null;
@@ -1305,7 +1305,7 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "TextSymbolizer" );
 
-        Common common = new Common();
+        Common common = new Common( in.getLocation() );
         TextStyling baseOrEvaluated = new TextStyling();
         baseOrEvaluated.uom = uom;
         Continuation<TextStyling> contn = null;
@@ -1723,7 +1723,7 @@ public class SymbologyParser {
 
         LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> result = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
-        Common common = new Common();
+        Common common = new Common( in.getLocation() );
         QName featureTypeName = null;
 
         while ( !( in.isEndElement() && ( in.getLocalName().equals( "FeatureTypeStyle" ) || in.getLocalName().equals(
@@ -1759,7 +1759,7 @@ public class SymbologyParser {
                     }
                 }
 
-                Common ruleCommon = new Common();
+                Common ruleCommon = new Common( in.getLocation() );
                 double minScale = MIN_VALUE;
                 double maxScale = MAX_VALUE;
 
@@ -1866,6 +1866,12 @@ public class SymbologyParser {
      * @version $Revision$, $Date$
      */
     public static class Common {
+        Common( Location loc ) {
+            this.loc = loc.getSystemId();
+            line = loc.getLineNumber();
+            col = loc.getColumnNumber();
+        }
+
         /***/
         public String name;
 
