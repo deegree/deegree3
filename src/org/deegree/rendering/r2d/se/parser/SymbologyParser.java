@@ -915,6 +915,7 @@ public class SymbologyParser {
                         if ( enh != null ) {
                             enhancements.put( "red", enh );
                         }
+                        in.nextTag();
                     } else if ( in.getLocalName().equals( "GreenChannel" ) ) {
                         in.nextTag();
                         in.require( START_ELEMENT, null, "SourceChannelName" );
@@ -924,6 +925,7 @@ public class SymbologyParser {
                         if ( enh != null ) {
                             enhancements.put( "green", enh );
                         }
+                        in.nextTag();
                     } else if ( in.getLocalName().equals( "BlueChannel" ) ) {
                         in.nextTag();
                         in.require( START_ELEMENT, null, "SourceChannelName" );
@@ -933,6 +935,7 @@ public class SymbologyParser {
                         if ( enh != null ) {
                             enhancements.put( "blue", enh );
                         }
+                        in.nextTag();
                     } else if ( in.getLocalName().equals( "GrayChannel" ) ) {
                         in.nextTag();
                         in.require( START_ELEMENT, null, "SourceChannelName" );
@@ -942,6 +945,7 @@ public class SymbologyParser {
                         if ( enh != null ) {
                             enhancements.put( "gray", enh );
                         }
+                        in.nextTag();
                     } else if ( in.isStartElement() ) {
                         Location loc = in.getLocation();
                         LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
