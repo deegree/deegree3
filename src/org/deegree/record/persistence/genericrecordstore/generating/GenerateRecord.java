@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericrecordstore.generating;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,6 +45,10 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.types.datetime.Date;
+import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
+import org.deegree.record.persistence.genericrecordstore.parsing.ReturnableProperties;
+import org.deegree.record.persistence.neededdatastructures.Format;
+import org.deegree.record.persistence.neededdatastructures.Keyword;
 import org.slf4j.Logger;
 
 /**
@@ -58,14 +62,6 @@ import org.slf4j.Logger;
 public class GenerateRecord {
 
     private static final Logger LOG = getLogger( GenerateRecord.class );
-
-    // private OMFactory factory = OMAbstractFactory.getOMFactory();
-    //
-    // private OMNamespace namespaceDC = factory.createOMNamespace( "http://purl.org/dc/elements/1.1/", "dc" );
-    //
-    // private OMNamespace namespaceDCT = factory.createOMNamespace( "http://purl.org/dc/terms/", "dct" );
-    //
-    // private OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
 
     private OMElement identifier;
 

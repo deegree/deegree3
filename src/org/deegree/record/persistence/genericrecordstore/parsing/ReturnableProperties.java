@@ -33,12 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericrecordstore.parsing;
 
 import java.util.List;
 
 /**
- * Properties that are just returnable by applicationprofiles such as ISO
+ * Properties that are just returnable by applicationprofiles such as ISO and Dublin Core. <br>
+ * E.g. the "creator" can not be queried but is an element in Dublin Core Metadata profile. So it has to be extracted
+ * from an insertable record.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $

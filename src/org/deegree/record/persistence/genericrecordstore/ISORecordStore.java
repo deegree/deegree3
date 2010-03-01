@@ -78,6 +78,7 @@ import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 import org.deegree.record.persistence.RecordStoreOptions;
+import org.deegree.record.persistence.genericrecordstore.parsing.ISOQPParsing;
 import org.deegree.record.persistence.sqltransform.ExpressionFilterHandling;
 import org.deegree.record.persistence.sqltransform.ExpressionFilterObject;
 import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGIS;
@@ -153,6 +154,9 @@ public class ISORecordStore implements RecordStore {
             BufferedInputStream bais;
             URLConnection urlConn = null;
 
+            /*
+             * if there is no specific typeName requested then there should be responded every recordStore
+             */
             if ( "".equals( typeName ) ) {
 
                 urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
@@ -161,17 +165,29 @@ public class ISORecordStore implements RecordStore {
 
                 writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
 
-            } else if ( typeName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) ) ) {
+            }
+            /*
+             * if typeName is csw:Record
+             */
+            else if ( typeName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) ) ) {
 
                 urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
 
-            } else if ( typeName.equals( new QName( CSWConstants.GMD_NS, "MD_Metadata", CSWConstants.GMD_PREFIX ) ) ) {
+            }
+            /*
+             * if typeName is gmd:MD_Metadata
+             */
+            else if ( typeName.equals( new QName( CSWConstants.GMD_NS, "MD_Metadata", CSWConstants.GMD_PREFIX ) ) ) {
 
                 urlConn = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" ).openConnection();
 
                 writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
 
-            } else {
+            }
+            /*
+             * if the typeName is no registered in this recordprofile
+             */
+            else {
                 String errorMessage = "The typeName " + typeName + "is not supported by this profile. ";
                 LOG.debug( errorMessage );
                 throw new IllegalArgumentException( errorMessage );

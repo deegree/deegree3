@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericrecordstore.generating;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -47,6 +47,13 @@ import java.text.ParseException;
 
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.crs.CRS;
+import org.deegree.record.persistence.genericrecordstore.ISO_DC_Mappings;
+import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
+import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
+import org.deegree.record.persistence.genericrecordstore.parsing.ReturnableProperties;
+import org.deegree.record.persistence.neededdatastructures.Format;
+import org.deegree.record.persistence.neededdatastructures.Keyword;
+import org.deegree.record.persistence.neededdatastructures.OperatesOnData;
 import org.slf4j.Logger;
 
 /**

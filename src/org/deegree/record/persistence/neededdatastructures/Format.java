@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.neededdatastructures;
 
 /**
  * Format representation for records. This class encapsulates the data for representation only. <br>

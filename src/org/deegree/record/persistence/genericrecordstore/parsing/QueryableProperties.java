@@ -33,12 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericrecordstore.parsing;
 
 import java.util.List;
 
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.crs.CRS;
+import org.deegree.record.persistence.neededdatastructures.BoundingBox;
+import org.deegree.record.persistence.neededdatastructures.Format;
+import org.deegree.record.persistence.neededdatastructures.Keyword;
+import org.deegree.record.persistence.neededdatastructures.OperatesOnData;
 
 /**
  * Properties that are queryable by applicationprofiles such as ISO application profile version 1.0 document 07-045.

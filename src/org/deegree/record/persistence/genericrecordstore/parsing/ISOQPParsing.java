@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericrecordstore.parsing;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -64,10 +64,14 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.crs.CRS;
 import org.deegree.protocol.csw.CSWConstants;
+import org.deegree.record.persistence.genericrecordstore.generating.GenerateRecord;
+import org.deegree.record.persistence.neededdatastructures.BoundingBox;
+import org.deegree.record.persistence.neededdatastructures.Format;
+import org.deegree.record.persistence.neededdatastructures.Keyword;
 import org.slf4j.Logger;
 
 /**
- * The parsing for the ISO and DC application profile. Here the input XML document is parsed into its parts. So this is
+ * Parsing regarding to ISO and DC application profile. Here the input XML document is parsed into its parts. So this is
  * the entry point to generate a record that fits with the backend. The queryable and returnable properties are
  * disentangled. This is needed to put them into the queryable property tables in the backend and makes them queryable.
  * In this context they are feasible to build the Dublin Core record which has nearly planar elements with no nested
@@ -83,12 +87,6 @@ public final class ISOQPParsing extends XMLAdapter {
     private static final Logger LOG = getLogger( ISOQPParsing.class );
 
     private NamespaceContext nsContextISOParsing = new NamespaceContext( XMLAdapter.nsContext );
-
-    private OMFactory factory = OMAbstractFactory.getOMFactory();
-
-    private OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
-
-    private OMNamespace namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
 
     private QueryableProperties qp;
 
@@ -136,12 +134,16 @@ public final class ISOQPParsing extends XMLAdapter {
      *            if the INSPIRE directive is set
      * @param connection
      * @return {@link ParsedProfileElement}
-     * 
-     * 
      * @throws IOException
      */
     public ParsedProfileElement parseAPISO( OMElement element, boolean isInspire, Connection connection )
                             throws IOException {
+
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+
+        OMNamespace namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
 
         setRootElement( element );
         if ( element.getDefaultNamespace() != null ) {
@@ -397,7 +399,8 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:spatialRepresentationInfo", nsContextISOParsing ) );
+        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:spatialRepresentationInfo",
+                                                                      nsContextISOParsing ) );
 
         if ( omElementNullCheckList != null ) {
             gr.setSpatialRepresentationInfo( getElements( rootElement, new XPath( "./gmd:spatialRepresentationInfo",
@@ -448,7 +451,8 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:metadataExtensionInfo", nsContextISOParsing ) );
+        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:metadataExtensionInfo",
+                                                                      nsContextISOParsing ) );
 
         if ( omElementNullCheckList != null ) {
             gr.setMetadataExtensionInfo( getElements( rootElement, new XPath( "./gmd:metadataExtensionInfo",
@@ -545,7 +549,8 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:portrayalCatalogueInfo", nsContextISOParsing ) );
+        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:portrayalCatalogueInfo",
+                                                                      nsContextISOParsing ) );
 
         if ( omElementNullCheckList != null ) {
             gr.setPortrayalCatalogueInfo( getElements( rootElement, new XPath( "./gmd:portrayalCatalogueInfo",
@@ -575,7 +580,8 @@ public final class ISOQPParsing extends XMLAdapter {
          * 
          *---------------------------------------------------------------*/
 
-        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:applicationSchemaInfo", nsContextISOParsing ) );
+        omElementNullCheckList = getElements( rootElement, new XPath( "./gmd:applicationSchemaInfo",
+                                                                      nsContextISOParsing ) );
 
         if ( omElementNullCheckList != null ) {
             gr.setApplicationSchemaInfo( getElements( rootElement, new XPath( "./gmd:applicationSchemaInfo",

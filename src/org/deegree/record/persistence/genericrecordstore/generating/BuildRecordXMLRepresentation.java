@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericrecordstore.generating;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -51,11 +51,13 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
+import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
 import org.slf4j.Logger;
 
 /**
- * Here is the handling of generating and additional inserting the ISO and DC application profile record as well as the
- * update of these records.
+ * Here is the handling of generating and inserting the ISO and DC application profile record as well as the update of
+ * these records.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -118,7 +120,7 @@ public class BuildRecordXMLRepresentation {
      * @return an integer that indicates if there is a record updated
      * @throws IOException
      */
-    int updateRecord( int fk_datasets, ParsedProfileElement parsedElement, Statement stm )
+    public int updateRecord( int fk_datasets, ParsedProfileElement parsedElement, Statement stm )
                             throws IOException {
 
         StringWriter isoOMElement = new StringWriter( 2000 );
@@ -188,7 +190,7 @@ public class BuildRecordXMLRepresentation {
      * 
      * @throws IOException
      */
-    int generateISO( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement )
+    public int generateISO( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement )
                             throws IOException {
 
         int idDatabaseTable;
@@ -237,7 +239,7 @@ public class BuildRecordXMLRepresentation {
      * 
      * @return an integer that is the primarykey from the inserted record
      */
-    int generateDC( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement ) {
+    public int generateDC( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement ) {
 
         int recordsAffectedID = 0;
         OMFactory factory = OMAbstractFactory.getOMFactory();

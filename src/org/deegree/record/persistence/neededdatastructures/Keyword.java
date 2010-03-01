@@ -33,62 +33,63 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.neededdatastructures;
+
+import java.util.List;
 
 /**
- * Specifies the tightly coupled dataset relation in ISO profile 1.0. This is defined in OGC 07-045 document.
+ * Keyword representation for records. This class encapsulates the data for representation only. <br>
+ * In ISO profile this class encapsulates the keywords, whereas in DC profile the subjects are encapsulates in this
+ * class.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
  */
-public class OperatesOnData {
+public class Keyword {
 
-    private String operatesOn;
+    private String keywordType;
 
-    private String operatesOnIdentifier;
+    private List<String> keywords;
 
-    private String operatesOnName;
+    private String thesaurus;
 
     /**
-     * Creates a new {@link OperatesOnData} instance.
+     * Creates a new {@link Keyword} instance.
      * 
-     * @param operatesOn
-     *            holds the identifier of a dataset tightly coupled with the service instance.
-     * 
-     * @param operatesOnIdentifier
-     *            identifier of a tightly coupled dataset on which the service operates on.
-     * 
-     * @param operatesOnName
-     *            name of an operation with which the service operates on a tightly coupled dataset.
-     * 
+     * @param keywordType
+     *            a group of similar keywords. It's defined in a codeList {discipline, place, stratum, theme, temporal}
+     * @param keywords
+     *            topic of the content of the resource
+     * @param thesaurus
+     *            of the keywords
      */
-    public OperatesOnData( String operatesOn, String operatesOnIdentifier, String operatesOnName ) {
-        this.operatesOn = operatesOn;
-        this.operatesOnIdentifier = operatesOnIdentifier;
-        this.operatesOnName = operatesOnName;
+    public Keyword( String keywordType, List<String> keywords, String thesaurus ) {
+        this.keywordType = keywordType;
+        this.keywords = keywords;
+        this.thesaurus = thesaurus;
     }
 
     /**
-     * @return the operatesOn
+     * @return the keywordType
      */
-    public String getOperatesOn() {
-        return operatesOn;
+    public String getKeywordType() {
+        return keywordType;
     }
 
     /**
-     * @return the operatesOnIdentifier
+     * @return the keywords
      */
-    public String getOperatesOnIdentifier() {
-        return operatesOnIdentifier;
+    public List<String> getKeywords() {
+        return keywords;
     }
 
     /**
-     * @return the operatesOnName
+     * @return the thesaurus
      */
-    public String getOperatesOnName() {
-        return operatesOnName;
+    public String getThesaurus() {
+        return thesaurus;
     }
 
 }

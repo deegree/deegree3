@@ -33,10 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericrecordstore.parsing;
+
+import org.deegree.record.persistence.genericrecordstore.generating.GenerateRecord;
 
 /**
- * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.
+ * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.<br>
+ * Here are the queryable and returnable properties and the elements in xml format.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $

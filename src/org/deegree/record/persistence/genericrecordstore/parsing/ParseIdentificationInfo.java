@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.genericrecordstore;
+package org.deegree.record.persistence.genericrecordstore.parsing;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -54,6 +54,10 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.crs.CRS;
+import org.deegree.record.persistence.genericrecordstore.generating.GenerateRecord;
+import org.deegree.record.persistence.neededdatastructures.BoundingBox;
+import org.deegree.record.persistence.neededdatastructures.Keyword;
+import org.deegree.record.persistence.neededdatastructures.OperatesOnData;
 
 /**
  * Parses the identification info element of an in ISO profile declared record. This is an outsourced method because of
