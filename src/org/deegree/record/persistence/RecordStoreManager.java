@@ -89,6 +89,7 @@ public class RecordStoreManager {
     public static synchronized RecordStore create( RecordStoreType config )
                             throws RecordStoreException {
         RecordStore rs = null;
+
         String id = config.getDataSourceName();
 
         if ( config instanceof ISORecordStoreType ) {
@@ -105,18 +106,23 @@ public class RecordStoreManager {
             throw new RecordStoreException( msg );
         }
 
+        registerAndInit( rs, id );
+        return rs;
+    }
+
+    private static void registerAndInit( RecordStore rs, String id )
+                            throws RecordStoreException {
+
+        rs.init();
         if ( id != null ) {
             if ( idToRs.containsKey( id ) ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
                 throw new RecordStoreException( msg );
             }
             LOG.info( "Registering global record store (" + rs + ") with id '" + id + "'." );
-        } else {
-            rs.init();
             idToRs.put( id, rs );
-        }
 
-        return rs;
+        }
     }
 
 }

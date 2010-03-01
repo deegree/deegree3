@@ -81,7 +81,7 @@ import org.deegree.record.persistence.RecordStoreOptions;
 import org.deegree.record.persistence.genericrecordstore.parsing.ISOQPParsing;
 import org.deegree.record.persistence.sqltransform.ExpressionFilterHandling;
 import org.deegree.record.persistence.sqltransform.ExpressionFilterObject;
-import org.deegree.record.persistence.sqltransform.postgres.TransformatorPostGIS;
+import org.deegree.record.persistence.sqltransform.postgis.TransformatorPostGIS;
 import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.RecordProperty;

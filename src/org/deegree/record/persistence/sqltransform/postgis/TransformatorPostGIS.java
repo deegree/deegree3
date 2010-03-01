@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.record.persistence.sqltransform.postgres;
+package org.deegree.record.persistence.sqltransform.postgis;
 
 import java.io.IOException;
 import java.io.StringWriter;
