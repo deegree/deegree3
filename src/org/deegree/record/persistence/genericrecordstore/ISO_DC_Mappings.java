@@ -349,4 +349,42 @@ public class ISO_DC_Mappings implements Profile_DB_Mappings {
         return propToTableAndCol;
     }
 
+    // /*
+    // * (non-Javadoc)
+    // *
+    // * @see org.deegree.filter.sql.postgis.PostGISMapping#getMapping(org.deegree.filter.expression.PropertyName)
+    // */
+    // @Override
+    // public PropertyNameMapping getMapping( PropertyName propName )
+    // throws FilterEvaluationException {
+    // // TODO Auto-generated method stub
+    // return null;
+    // }
+    //
+    // /*
+    // * (non-Javadoc)
+    // *
+    // * @see org.deegree.filter.sql.postgis.PostGISMapping#getPostGISValue(org.deegree.filter.expression.Literal,
+    // * org.deegree.filter.expression.PropertyName)
+    // */
+    // @Override
+    // public Object getPostGISValue( Literal literal, PropertyName propName )
+    // throws FilterEvaluationException {
+    // // TODO Auto-generated method stub
+    // return null;
+    // }
+    //
+    // /*
+    // * (non-Javadoc)
+    // *
+    // * @see org.deegree.filter.sql.postgis.PostGISMapping#getPostGISValue(org.deegree.geometry.Geometry,
+    // * org.deegree.filter.expression.PropertyName)
+    // */
+    // @Override
+    // public byte[] getPostGISValue( Geometry literal, PropertyName propName )
+    // throws FilterEvaluationException {
+    // // TODO Auto-generated method stub
+    // return null;
+    // }
+
 }

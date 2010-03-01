@@ -110,7 +110,7 @@ public class GenerateQueryableProperties {
                                  + parsedElement.getQueryableProperties().isHasSecurityConstraints() + ",'"
                                  + parsedElement.getQueryableProperties().getLanguage() + "','"
                                  + parsedElement.getQueryableProperties().getParentIdentifier() + "',null, null);" );
-            LOG.info( "maindatabasetable: " + sqlStatement.toString() );
+
             stm.executeUpdate( sqlStatement.toString() );
 
         } catch ( SQLException e ) {

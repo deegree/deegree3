@@ -209,7 +209,6 @@ public class BuildRecordXMLRepresentation {
 
                 idDatabaseTable = getLastDatasetId( connection, databaseTable );
                 idDatabaseTable++;
-                LOG.info( "ISODatabaseTable: " + idDatabaseTable );
 
                 sqlStatement.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES ("
                                      + idDatabaseTable + "," + operatesOnId + ", 2, '" + isoElement.toString() + "');" );

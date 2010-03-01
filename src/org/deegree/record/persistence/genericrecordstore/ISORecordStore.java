@@ -698,7 +698,7 @@ public class ISORecordStore implements RecordStore {
                             i++;
                             message += i + ". " + qNameError.toString() + " ";
                         }
-                        LOG.info( Integer.toString( qNameSet.size() ) );
+
                         throw new IllegalArgumentException( message );
                     }
 
@@ -720,7 +720,7 @@ public class ISORecordStore implements RecordStore {
                     }
                     rsUpdatableDatasets.close();
                     if ( updatableDatasets.size() != 0 ) {
-                        LOG.info( "updatableDatasets: " + Integer.toString( updatableDatasets.size() ) );
+
                         for ( int i : updatableDatasets ) {
                             String stri = "SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
                                           + ".data FROM "
@@ -730,7 +730,7 @@ public class ISORecordStore implements RecordStore {
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + "."
                                           + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = " + i;
                             ResultSet rsGetStoredFullRecordXML = conn.createStatement().executeQuery( stri.toString() );
-                            LOG.info( stri.toString() );
+
                             while ( rsGetStoredFullRecordXML.next() ) {
                                 for ( RecordProperty recProp : upd.getRecordProperty() ) {
                                     ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
@@ -743,12 +743,12 @@ public class ISORecordStore implements RecordStore {
                                     recordPropertyValue = filterHandle.expressionFilterHandling(
                                                                                                  org.deegree.filter.Expression.Type.LITERAL,
                                                                                                  recProp.getReplacementValue() );
-                                    LOG.info( "recordPropertyName: " + recordPropertyName.getPropertyName().toString() );
+
                                     if ( recordPropertyName.isMatching() == true ) {
-                                        LOG.info( "i'm in 1: " );
+
                                         // not important. There is just one name possible
                                         for ( String column : recordPropertyName.getColumns() ) {
-                                            LOG.info( "column: " + column );
+
                                             // creating an OMElement readed from the backend byteData
                                             InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
                                             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
@@ -1072,7 +1072,6 @@ public class ISORecordStore implements RecordStore {
 
             s.append( " AND " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "." + "id" + " = "
                       + i );
-            LOG.info( "rs: " + s );
 
             ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
 

@@ -76,6 +76,8 @@ public class ExpressionFilterHandling {
 
     private Profile_DB_Mappings iso_dc_mapping;
 
+    // private PostGISMapping iso_dc_mapping;
+
     /**
      * Handles the {@link Expression} that is identified during the parsing of the {@link Operator}s
      * 

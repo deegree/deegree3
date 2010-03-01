@@ -633,7 +633,6 @@ public class GenerateRecord {
      *            the language to set
      */
     public void setLanguage( OMElement language ) {
-        LOG.info( language.toString() );
         if ( language != null ) {
             this.language = language;
         } else {
