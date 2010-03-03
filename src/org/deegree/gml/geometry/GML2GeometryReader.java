@@ -36,16 +36,18 @@ package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
@@ -108,6 +110,46 @@ public class GML2GeometryReader implements GMLGeometryReader {
 
     private static final QName GML_Z = new QName( GML21NS, "Z" );
 
+    // local names of all concrete elements substitutable for "gml:_Curve"
+    private static final Set<String> curveElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_Ring"
+    private static final Set<String> ringElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_Surface"
+    private static final Set<String> surfaceElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_GeometricPrimitive"
+    private static final Set<String> primitiveElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_GeometricAggregate"
+    private static final Set<String> aggregateElements = new HashSet<String>();
+
+    static {
+
+        curveElements.add( "LineString" );
+
+        // substitutions for "gml:_Ring"
+        ringElements.add( "LinearRing" );
+
+        // substitutions for "gml:_Surface"
+        surfaceElements.add( "Polygon" );
+
+        // substitutions for "gml:_GeometricPrimitive"
+        primitiveElements.add( "Point" );
+        primitiveElements.add( "Box" );
+        primitiveElements.addAll( curveElements );
+        primitiveElements.addAll( ringElements );
+        primitiveElements.addAll( surfaceElements );
+
+        // substitutions for "gml:_GeometricAggregate"
+        aggregateElements.add( "MultiGeometry" );
+        aggregateElements.add( "MultiLineString" );
+        aggregateElements.add( "MultiPoint" );
+        aggregateElements.add( "MultiPolygon" );
+
+    }
+
     private GeometryFactory geomFac;
 
     private GMLDocumentIdContext idContext;
@@ -146,6 +188,35 @@ public class GML2GeometryReader implements GMLGeometryReader {
     public Geometry parse( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
         return parse( xmlStream, null );
+    }
+
+    public boolean isGeometryElement( XMLStreamReader reader ) {
+        if ( reader != null && reader.getEventType() == XMLStreamConstants.START_ELEMENT ) {
+            QName elName = reader.getName();
+            return isGeometryElement( elName );
+        }
+        return false;
+    }
+
+    public boolean isGeometryOrEnvelopeElement( XMLStreamReader reader ) {
+        // box is in the list of known geometries
+        return isGeometryElement( reader );
+    }
+
+    /**
+     * Returns whether the given element name denotes a GML 2... geometry element (a concrete element substitutable for
+     * "gml:_Geometry").
+     * 
+     * @param elName
+     *            qualified element name to check
+     * @return true, if the element is a GML 2.y.z. geometry element, false otherwise
+     */
+    public boolean isGeometryElement( QName elName ) {
+        if ( !GML21NS.equals( elName.getNamespaceURI() ) ) {
+            return false;
+        }
+        String localName = elName.getLocalPart();
+        return primitiveElements.contains( localName ) || aggregateElements.contains( localName );
     }
 
     /**
@@ -193,15 +264,31 @@ public class GML2GeometryReader implements GMLGeometryReader {
     }
 
     /**
+     * Parse the current geometry or bbox, the given stream is pointing to.
+     * 
      * @param xmlStream
-     * @return
+     * @return the Geometry (or Envelope) the given stream is pointing to.
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+        return parseGeometryOrEnvelope( xmlStream, null );
+    }
+
+    /**
+     * Parse the current geometry or bbox, the given stream is pointing to.
+     * 
+     * @param xmlStream
+     * @return the Geometry (or Envelope) the given stream is pointing to.
      * @throws XMLParsingException
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
     public Geometry parseGeometryOrBox( XMLStreamReaderWrapper xmlStream )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
-        return parseGeometryOrBox( xmlStream, null );
+        return parseGeometryOrEnvelope( xmlStream, null );
     }
 
     /**
@@ -212,23 +299,17 @@ public class GML2GeometryReader implements GMLGeometryReader {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
+
     public Geometry parseGeometryOrBox( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        Geometry geometry = null;
+        return parseGeometryOrEnvelope( xmlStream, defaultCRS );
+    }
 
-        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
-            String msg = "Unexpected element: " + xmlStream.getName()
-                         + "' is not a GML geometry or envelope element. Not in the gml namespace.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
-
-        if ( "Box".equals( xmlStream.getLocalName() ) ) {
-            geometry = parseEnvelope( xmlStream, defaultCRS );
-        } else {
-            geometry = parse( xmlStream, defaultCRS );
-        }
-        return geometry;
+    @Override
+    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+        return parse( xmlStream, defaultCRS );
     }
 
     /**

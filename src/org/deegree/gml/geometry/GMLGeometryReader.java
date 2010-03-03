@@ -34,7 +34,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -85,4 +87,30 @@ public interface GMLGeometryReader {
      */
     public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException;
+
+    /**
+     * @param xmlReader
+     * @return true if stream's event is an {@link XMLStreamConstants#START_ELEMENT} && the current element's name is a
+     *         known geometry.
+     */
+    public boolean isGeometryElement( XMLStreamReader xmlReader );
+
+    /**
+     * @param xmlReader
+     * @return true if stream's event is an {@link XMLStreamConstants#START_ELEMENT} && the current element's name is an
+     *         envelope.
+     */
+    public boolean isGeometryOrEnvelopeElement( XMLStreamReader xmlReader );
+
+    /**
+     * Parse the current geometry or envelope the given stream is pointing to.
+     * 
+     * @param xmlStream
+     * @return the Geometry (or Envelope) the given stream is pointing to.
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException;
 }

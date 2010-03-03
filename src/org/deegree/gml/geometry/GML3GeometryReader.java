@@ -46,6 +46,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -275,6 +276,22 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         return idContext;
     }
 
+    public boolean isGeometryElement( XMLStreamReader reader ) {
+        if ( reader != null && reader.getEventType() == XMLStreamConstants.START_ELEMENT ) {
+            QName elName = reader.getName();
+            return isGeometryElement( elName );
+        }
+        return false;
+    }
+
+    public boolean isGeometryOrEnvelopeElement( XMLStreamReader reader ) {
+        if ( reader != null && reader.getEventType() == XMLStreamConstants.START_ELEMENT ) {
+            QName elName = reader.getName();
+            return isGeometryOrEnvelopeElement( elName );
+        }
+        return false;
+    }
+
     /**
      * Returns whether the given element name denotes a GML 3.1.1 geometry element (a concrete element substitutable for
      * "gml:_Geometry").
@@ -288,9 +305,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             return false;
         }
         String localName = elName.getLocalPart();
-        return primitiveElements.contains( localName ) || ringElements.contains( localName )
-               || aggregateElements.contains( localName ) || complexElements.contains( localName )
-               || implictGeometryElements.contains( localName );
+        return primitiveElements.contains( localName ) || aggregateElements.contains( localName )
+               || complexElements.contains( localName ) || implictGeometryElements.contains( localName );
     }
 
     /**
@@ -307,8 +323,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         }
         String localName = elName.getLocalPart();
         return "Envelope".equals( localName ) || primitiveElements.contains( localName )
-               || ringElements.contains( localName ) || aggregateElements.contains( localName )
-               || complexElements.contains( localName ) || implictGeometryElements.contains( localName );
+               || aggregateElements.contains( localName ) || complexElements.contains( localName )
+               || implictGeometryElements.contains( localName );
     }
 
     /**
@@ -450,6 +466,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
+    @Override
     public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
@@ -1353,22 +1370,22 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         GMLStdProps standardProps = propsParser.read( xmlStream );
 
         List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
-        if ( xmlStream.getEventType() != START_ELEMENT || !gmlNs.equals( xmlStream.getNamespaceURI())) {
+        if ( xmlStream.getEventType() != START_ELEMENT || !gmlNs.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Surface requires a patches, trianglePatches or polygonPatches child element.";
             throw new XMLParsingException( xmlStream, msg );
         }
         String localName = xmlStream.getLocalName();
-        if ("patches".equals( localName )) {
+        if ( "patches".equals( localName ) ) {
             while ( xmlStream.nextTag() == START_ELEMENT ) {
                 memberPatches.add( surfacePatchParser.parseSurfacePatch( xmlStream, crs ) );
             }
             xmlStream.require( END_ELEMENT, gmlNs, "patches" );
-        } else if ("trianglePatches".equals( localName )) {
+        } else if ( "trianglePatches".equals( localName ) ) {
             while ( xmlStream.nextTag() == START_ELEMENT ) {
                 memberPatches.add( surfacePatchParser.parseTriangle( xmlStream, crs ) );
             }
             xmlStream.require( END_ELEMENT, gmlNs, "trianglePatches" );
-        } else if ("polygonPatches".equals( localName )) {
+        } else if ( "polygonPatches".equals( localName ) ) {
             while ( xmlStream.nextTag() == START_ELEMENT ) {
                 memberPatches.add( surfacePatchParser.parsePolygonPatch( xmlStream, crs ) );
             }
