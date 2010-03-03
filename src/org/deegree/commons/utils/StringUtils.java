@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
 import java.util.ArrayList;
@@ -46,12 +46,12 @@ import java.util.regex.Pattern;
 /**
  * This is a collection of some methods that work with strings, like split or replace. It is complementary to the
  * ArrayTools.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class StringUtils {
 
@@ -72,9 +72,9 @@ public class StringUtils {
 
     /**
      * concatenates an array of strings using a
-     *
+     * 
      * @see StringBuffer
-     *
+     * 
      * @param size
      *            estimated size of the target string
      * @param objects
@@ -93,13 +93,13 @@ public class StringUtils {
 
     /**
      * Extract all the strings that begin and end with the given tokens.
-     *
+     * 
      * @param target
      * @param start
      *            start token
      * @param end
      *            ent token
-     *
+     * 
      * @return a list with all extracted strings
      */
     public static List<String> extract( String target, String start, String end ) {
@@ -116,14 +116,14 @@ public class StringUtils {
      * Replaces the first substring of this string that matches the given from string with the given replacement. Works
      * like {@link String#replaceFirst(String, String)} but doesn't use regular expressions. All occurences of special
      * chars will be escaped.
-     *
+     * 
      * @param target
      *            is the original string
      * @param from
      *            is the string to be replaced
      * @param to
      *            is the string which will used to replace
-     *
+     * 
      * @return the changed target string
      */
     public static String replaceFirst( String target, String from, String to ) {
@@ -134,14 +134,14 @@ public class StringUtils {
      * Replaces the all substrings of this string that matches the given from string with the given replacement. Works
      * like {@link String#replaceAll(String, String)} but doesn't use regular expressions. All occurences of special
      * chars will be escaped.
-     *
+     * 
      * @param target
      *            is the original string
      * @param from
      *            is the string to be replaced
      * @param to
      *            is the string which will used to replace
-     *
+     * 
      * @return the changed target string
      */
     public static String replaceAll( String target, String from, String to ) {
@@ -152,7 +152,7 @@ public class StringUtils {
      * Splits a string on all occurrences of delimiter and returns a list with all parts. Each part will be trimmed from
      * whitespace. See {@link StringUtils#split(String, String, int)} for further options. If you need regular
      * expressions, use {@link String#split(String)}.
-     *
+     * 
      * @param string
      *            the string to split
      * @param delimiter
@@ -165,16 +165,16 @@ public class StringUtils {
     /**
      * Splits a string on all occurrences of delimiter and returns a list with all parts. If you need regular
      * expressions, use {@link String#split(String)}.
-     *
+     * 
      * This methods offers some options to modify the behaviour of the splitting. You can combine the options with |
      * (eg. StringTools.split(string, delimiter, REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS)
-     *
+     * 
      * <ul>
      * <li> {@link StringUtils#REMOVE_DOUBLE_FIELDS} removes all double occurrences of a field.</li>
      * <li> {@link StringUtils#REMOVE_EMPTY_FIELDS} removes all empty fields.</li>
      * <li> {@link StringUtils#NO_TRIM_FIELDS} doesn't remove whitespace around each field</li>
      * </ul>
-     *
+     * 
      * @param string
      * @param delimiter
      * @param options
@@ -225,7 +225,7 @@ public class StringUtils {
     /**
      * Removes all occurrences of a string from the start and end. If you only want to remove whitespaces use
      * {@link String#trim()}.
-     *
+     * 
      * @param string
      * @param mark
      *            string to remove from begin and end of <code>string</code>
@@ -254,10 +254,10 @@ public class StringUtils {
 
     /**
      * Counts the occurrences of token in target.
-     *
+     * 
      * @param target
      * @param token
-     *
+     * 
      * @return number of tokens within a string
      */
     public static int count( String target, String token ) {
@@ -271,6 +271,16 @@ public class StringUtils {
             count += 1;
         }
         return count;
+    }
+
+    /**
+     * @param s
+     *            the string to test.
+     * @return true iff s is not <code>null</code> and s not is the empty string "".
+     */
+    public final static boolean isSet( String s ) {
+        return s != null && !"".equals( s );
+
     }
 
 }
