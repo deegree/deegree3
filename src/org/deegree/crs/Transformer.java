@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.crs;
 
-import java.security.InvalidParameterException;
-
 import org.deegree.crs.configuration.TransformationFactory;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
@@ -59,6 +57,8 @@ public abstract class Transformer {
 
     private final CoordinateSystem targetCRS;
 
+    private final CRS tCRS;
+
     private Transformation definedTransformation = null;
 
     /**
@@ -75,6 +75,7 @@ public abstract class Transformer {
                                                                      "Transformer(CoordinateSystem)", "targetCRS" ) );
         }
         this.targetCRS = targetCRS;
+        this.tCRS = new CRS( targetCRS );
     }
 
     /**
@@ -88,19 +89,28 @@ public abstract class Transformer {
      *             if the given parameter is null.
      */
     protected Transformer( String targetCRS ) throws UnknownCRSException, IllegalArgumentException {
+        if ( targetCRS == null ) {
+            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL", "Transformer(String)",
+                                                                     "targetCRS" ) );
+        }
         this.targetCRS = CRSRegistry.lookup( targetCRS );
+        this.tCRS = new CRS( targetCRS );
     }
 
     /**
      * @param definedTransformation
      *            to use instead of the CRSFactory.
+     * @throws IllegalArgumentException
+     *             if the given parameter is null.
      */
     protected Transformer( Transformation definedTransformation ) {
         if ( definedTransformation == null ) {
-            throw new InvalidParameterException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-                                                                      "GeoTransformer(CRSTransformation)", "targetCRS" ) );
+            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
+                                                                     "Transformer(Transformation)",
+                                                                     "definedTransformation" ) );
         }
         targetCRS = definedTransformation.getTargetCRS();
+        this.tCRS = new CRS( targetCRS );
         this.definedTransformation = definedTransformation;
     }
 
@@ -157,6 +167,13 @@ public abstract class Transformer {
      */
     public final CoordinateSystem getTargetCRS() {
         return targetCRS;
+    }
+
+    /**
+     * @return the target crs as a wrapped {@link CRS}
+     */
+    public final CRS getWrappedTargetCRS() {
+        return this.tCRS;
     }
 
     /**
