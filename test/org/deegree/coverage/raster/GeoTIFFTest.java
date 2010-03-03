@@ -51,7 +51,6 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.crs.CRSCodeType;
-import org.deegree.crs.EPSGCode;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -128,7 +127,7 @@ public class GeoTIFFTest {
         Assert.assertEquals( 39.10223806, renvMin[1], delta );
         Assert.assertEquals( -110.35882409, renvMax[0], delta );
         Assert.assertEquals( 41.54129761, renvMax[1], delta );
-        Assert.assertEquals( new EPSGCode( 4326 ), raster.getEnvelope().getCoordinateSystem().getWrappedCRS().getCode() );
+        Assert.assertTrue( raster.getEnvelope().getCoordinateSystem().getWrappedCRS().hasId( "epsg:4326", true, true ) );
     }
 
     /**
