@@ -191,9 +191,9 @@ public class KVPUtils {
         boolean result = defaultValue;
         String booleanString = kvpParams.get( paramName );
         if ( booleanString != null ) {
-            if ( booleanString.equals( "true" ) ) {
+            if ( booleanString.equalsIgnoreCase( "true" ) ) {
                 result = true;
-            } else if ( booleanString.equals( "false" ) ) {
+            } else if ( booleanString.equalsIgnoreCase( "false" ) ) {
                 result = false;
             } else {
                 String msg = "Parameter '" + paramName + "' must either be 'true' or 'false', but is '" + booleanString
