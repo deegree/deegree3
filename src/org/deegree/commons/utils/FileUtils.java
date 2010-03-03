@@ -268,7 +268,7 @@ public class FileUtils {
     public static File getAsFile( URL url )
                             throws IllegalArgumentException {
 
-        LOG.info( "Protocol: '" + url.getProtocol() + "'" );
+        LOG.debug( "Protocol: '" + url.getProtocol() + "'" );
 
         File f;
         try {
