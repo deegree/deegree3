@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.crs.transformations;
+package org.deegree.crs.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
