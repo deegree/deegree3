@@ -65,6 +65,7 @@ import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.TriangulatedSurface;
 import org.deegree.geometry.primitive.patches.Cone;
 import org.deegree.geometry.primitive.patches.Cylinder;
+import org.deegree.geometry.primitive.patches.GriddedSurfacePatch;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
@@ -122,6 +123,7 @@ import org.deegree.geometry.standard.primitive.DefaultTin;
 import org.deegree.geometry.standard.primitive.DefaultTriangulatedSurface;
 import org.deegree.geometry.standard.surfacepatches.DefaultCone;
 import org.deegree.geometry.standard.surfacepatches.DefaultCylinder;
+import org.deegree.geometry.standard.surfacepatches.DefaultGriddedSurfacePatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultRectangle;
 import org.deegree.geometry.standard.surfacepatches.DefaultSphere;
@@ -178,7 +180,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            segments a curve shall be created from
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, CRS crs, CurveSegment...segments ) {
+    public Curve createCurve( String id, CRS crs, CurveSegment... segments ) {
         return (Curve) inspect( new DefaultCurve( id, crs, pm, Arrays.asList( segments ) ) );
     }
 
@@ -726,5 +728,16 @@ public class GeometryFactory extends SimpleGeometryFactory {
                                                                           List<GeometricPrimitive> memberPrimitives ) {
         return (CompositeGeometry<GeometricPrimitive>) inspect( new DefaultCompositeGeometry( id, crs, pm,
                                                                                               memberPrimitives ) );
+    }
+
+    /**
+     * Creates a {@link GriddedSurfacePatch} from the given list of points, each element denotes a row in the grid.
+     * 
+     * @param grid
+     *            containing the rows of the grid.
+     * @return a new {@link GriddedSurfacePatch}.
+     */
+    public GriddedSurfacePatch createGriddedSurfacePatch( List<Points> grid ) {
+        return new DefaultGriddedSurfacePatch( grid );
     }
 }
