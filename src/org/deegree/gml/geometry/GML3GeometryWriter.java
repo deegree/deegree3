@@ -40,6 +40,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_32;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -156,6 +157,19 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private final GMLStdPropsWriter stdPropsWriter;
 
     /**
+     * Creates a new {@link GML3GeometryWriter} instance, with no default crs, the default formatter and no simple
+     * feature support.
+     * 
+     * @param version
+     *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
+     * @param writer
+     *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
+     */
+    public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer ) {
+        this( version, writer, null, null, false, null );
+    }
+
+    /**
      * Creates a new {@link GML3GeometryWriter} instance.
      * 
      * @param version
@@ -172,6 +186,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
      *            if true, the generated GML must to conform to the GML-SF profile (only simple geometries are used and
      *            they are exported without id attributes)
      * @param exportedIds
+     *            for the creation of xlinks, may be <code>null</code>
      */
     public GML3GeometryWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCrs,
                                CoordinateFormatter formatter, boolean exportSf, Set<String> exportedIds ) {
@@ -197,7 +212,11 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         } else {
             this.formatter = formatter;
         }
-        this.exportedIds = exportedIds;
+        if ( exportedIds == null ) {
+            this.exportedIds = new HashSet<String>();
+        } else {
+            this.exportedIds = exportedIds;
+        }
         this.stdPropsWriter = new GMLStdPropsWriter( version, writer );
     }
 
@@ -933,14 +952,6 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
         case POLYGON_PATCH:
             exportPolygonPatch( (PolygonPatch) surfacePatch );
             break;
-
-        case RECTANGLE:
-            exportRectangle( (Rectangle) surfacePatch );
-            break;
-
-        case TRIANGLE:
-            exportTriangle( (Triangle) surfacePatch );
-            break;
         }
     }
 
@@ -968,18 +979,29 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
     private void exportPolygonPatch( PolygonPatch polygonPatch )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        writer.writeStartElement( gmlNs, "PolygonPatch" );
+        switch ( polygonPatch.getPolygonPatchType() ) {
+        case POLYGON_PATCH:
+            writer.writeStartElement( gmlNs, "PolygonPatch" );
 
-        writer.writeStartElement( gmlNs, "exterior" );
-        exportRing( polygonPatch.getExteriorRing() );
-        writer.writeEndElement();
-
-        for ( Ring ring : polygonPatch.getInteriorRings() ) {
-            writer.writeStartElement( gmlNs, "interior" );
-            exportRing( ring );
+            writer.writeStartElement( gmlNs, "exterior" );
+            exportRing( polygonPatch.getExteriorRing() );
             writer.writeEndElement();
+
+            for ( Ring ring : polygonPatch.getInteriorRings() ) {
+                writer.writeStartElement( gmlNs, "interior" );
+                exportRing( ring );
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+            break;
+        case TRIANGLE:
+            exportTriangle( (Triangle) polygonPatch );
+            break;
+        case RECTANGLE:
+            exportRectangle( (Rectangle) polygonPatch );
+            break;
         }
-        writer.writeEndElement();
+
     }
 
     private void exportSphere( Sphere sphere )
@@ -1429,9 +1451,10 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
     private void exportArc( Arc arc )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         writer.writeStartElement( "gml", "Arc", gmlNs );
-        exportAsPos( arc.getPoint1() );
-        exportAsPos( arc.getPoint2() );
-        exportAsPos( arc.getPoint3() );
+        export( arc.getControlPoints(), -1 );
+        // exportAsPos( arc.getPoint1() );
+        // exportAsPos( arc.getPoint2() );
+        // exportAsPos( arc.getPoint3() );
         writer.writeEndElement();
     }
 
