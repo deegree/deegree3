@@ -49,7 +49,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.crs.CRS;
-import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
@@ -111,12 +110,10 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
      * @param defaultCRS
      *            default CRS to use if no crs attribute is specified
      * @return corresponding <code>Envelope</code> object
-     * @throws UnknownCRSException
      * @throws XMLParsingException
      *             if a syntactical or semantical error has been encountered in the element's contents
      */
-    public Envelope parseBoundingBoxType( OMElement boundingBoxDataElement, CRS defaultCRS )
-                            throws UnknownCRSException {
+    public Envelope parseBoundingBoxType( OMElement boundingBoxDataElement, CRS defaultCRS ) {
 
         // "ows:LowerCorner" element (minOccurs="1", maxOccurs="1")
         double[] lowerCorner = parseDoubleList( getRequiredElement( boundingBoxDataElement,
