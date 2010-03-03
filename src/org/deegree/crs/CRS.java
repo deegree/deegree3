@@ -68,7 +68,7 @@ import org.deegree.geometry.GeometryFactory;
  */
 public class CRS {
 
-    /** The commonly used 'EPSG:4326', with axis order X, Y. */
+    /** The commonly used geographic 'EPSG:4326', with axis order X, Y. */
     public static final CRS EPSG_4326 = new CRS( GeographicCRS.WGS84 );
 
     /**
