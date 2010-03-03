@@ -37,6 +37,7 @@ package org.deegree.gml.geometry;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -111,6 +112,16 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      * 
      * @param writer
      *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
+     */
+    public GML2GeometryWriter( XMLStreamWriter writer ) {
+        this( writer, null, null, null );
+    }
+
+    /**
+     * Creates a new {@link GML2GeometryWriter} instance.
+     * 
+     * @param writer
+     *            the {@link XMLStreamWriter} that is used to serialize the GML, must not be <code>null</code>
      * @param outputCrs
      *            crs used for exported geometries, may be <code>null</code> (in that case, the crs of the geometries is
      *            used)
@@ -118,13 +129,17 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
      *            <code>null</code> (use 5 decimal places)
      * @param exportedIds
-     *            must not be null
+     *            may be <code>null</code>
      */
     public GML2GeometryWriter( XMLStreamWriter writer, CRS outputCrs, CoordinateFormatter formatter,
                                Set<String> exportedIds ) {
         this.writer = writer;
         this.outputCRS = outputCrs;
-        this.exportedIds = exportedIds;
+        if ( exportedIds == null ) {
+            this.exportedIds = new HashSet<String>();
+        } else {
+            this.exportedIds = exportedIds;
+        }
         if ( outputCrs != null ) {
             try {
                 CoordinateSystem crs = outputCrs.getWrappedCRS();
@@ -239,8 +254,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param polygon
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws TransformationException 
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void exportPolygon( Polygon polygon )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
@@ -276,8 +291,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param linearRing
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws TransformationException 
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void exportLinearRing( Ring linearRing )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
@@ -290,8 +305,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param curve
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws TransformationException 
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void exportLineString( Curve curve )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
@@ -304,8 +319,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param envelope
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws TransformationException 
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     @Override
     public void exportEnvelope( Envelope envelope )
@@ -322,8 +337,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param multiGeometry
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws TransformationException 
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     @Override
     public void exportMultiGeometry( MultiGeometry<? extends Geometry> multiGeometry )
@@ -346,8 +361,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param multiPoint
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws TransformationException 
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void exportMultiPoint( MultiPoint multiPoint )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
@@ -371,8 +386,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param multiLineString
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws TransformationException 
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void exportMultiLineString( MultiLineString multiLineString )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
@@ -402,8 +417,8 @@ public class GML2GeometryWriter implements GMLGeometryWriter {
     /**
      * @param multiPolygon
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws TransformationException 
+     * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public void exportMultiPolygon( MultiPolygon multiPolygon )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
