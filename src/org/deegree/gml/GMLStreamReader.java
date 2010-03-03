@@ -36,6 +36,7 @@
 package org.deegree.gml;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -151,6 +152,24 @@ public class GMLStreamReader {
     }
 
     /**
+     * @return true if the stream's event is an {@link XMLStreamConstants#START_ELEMENT} && the current element's name
+     *         is a known geometry (in respect to it's gml version).
+     */
+    public boolean isGeometryElement() {
+        GMLGeometryReader geomReader = getGeometryReader();
+        return geomReader.isGeometryElement( getXMLReader() );
+    }
+
+    /**
+     * @return true if the stream's event is an {@link XMLStreamConstants#START_ELEMENT} && the current element's name
+     *         is a known geometry (in respect to it's gml version).
+     */
+    public boolean isGeometryOrEnvelopeElement() {
+        GMLGeometryReader geomReader = getGeometryReader();
+        return geomReader.isGeometryOrEnvelopeElement( getXMLReader() );
+    }
+
+    /**
      * Controls the {@link GMLReferenceResolver} that the generated {@link GMLReference}s shall use for resolving
      * themselves.
      * 
@@ -242,19 +261,34 @@ public class GMLStreamReader {
      * @throws XMLParsingException
      * @throws UnknownCRSException
      */
+    public Geometry readGeometryOrEnvelope()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        return getGeometryReader().parseGeometryOrEnvelope( xmlStream, defaultCRS );
+    }
+
+    /**
+     * Returns the deegree model representation for the GML geometry element event that the cursor of the underlying xml
+     * stream points to.
+     * 
+     * @return deegree model representation for the current GML geometry element, never <code>null</code>
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
     public Geometry readGeometry()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         return getGeometryReader().parse( xmlStream, defaultCRS );
     }
 
     /**
-     * Returns the deegree model representation for the GML dictionary element event that the cursor of the underlying xml
-     * stream points to.
+     * Returns the deegree model representation for the GML dictionary element event that the cursor of the underlying
+     * xml stream points to.
      * 
      * @return deegree model representation for the current GML dictionary element, never <code>null</code>
      * @throws XMLStreamException
-     */    
-    public Dictionary readDictionary() throws XMLStreamException {
+     */
+    public Dictionary readDictionary()
+                            throws XMLStreamException {
         return getDictionaryReader().readDictionary();
     }
 
@@ -325,11 +359,11 @@ public class GMLStreamReader {
         }
         return geometryReader;
     }
-    
+
     private GMLDictionaryReader getDictionaryReader() {
         if ( dictReader == null ) {
-            dictReader = new GMLDictionaryReader( version, xmlStream, idContext);
+            dictReader = new GMLDictionaryReader( version, xmlStream, idContext );
         }
         return dictReader;
-    }    
+    }
 }
