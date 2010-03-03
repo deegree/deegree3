@@ -57,11 +57,7 @@ public interface SurfacePatch {
         /** Patch is a {@link GriddedSurfacePatch}. */
         GRIDDED_SURFACE_PATCH,
         /** Patch is a {@link PolygonPatch}. */
-        POLYGON_PATCH,
-        /** Patch is a {@link Rectangle}. */
-        RECTANGLE,
-        /** Patch is a {@link Triangle}. */
-        TRIANGLE
+        POLYGON_PATCH
     }
 
     /**

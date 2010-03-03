@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.surfacepatches;
+
+import static org.deegree.geometry.primitive.patches.SurfacePatch.SurfacePatchType.POLYGON_PATCH;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,14 +46,13 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.Triangle;
-import org.deegree.geometry.primitive.patches.SurfacePatch.SurfacePatchType;
 
 /**
  * Default implementation of {@link Triangle}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultTriangle implements Triangle {
@@ -60,14 +61,14 @@ public class DefaultTriangle implements Triangle {
 
     /**
      * Creates a new {@link DefaultTriangle} instance from the given parameters.
-     *
+     * 
      * @param exterior
      *            ring that contains exactly four planar points, the first and last point must be identical
      */
     public DefaultTriangle( LinearRing exterior ) {
-        if (exterior.getControlPoints().size() != 4) {
+        if ( exterior.getControlPoints().size() != 4 ) {
             String msg = "The exterior ring of a triangle must contain exactly four points.";
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException( msg );
         }
         this.exterior = exterior;
     }
@@ -114,7 +115,12 @@ public class DefaultTriangle implements Triangle {
     }
 
     @Override
+    public PolygonPatchType getPolygonPatchType() {
+        return PolygonPatchType.TRIANGLE;
+    }
+
+    @Override
     public SurfacePatchType getSurfacePatchType() {
-        return SurfacePatchType.TRIANGLE;
+        return POLYGON_PATCH;
     }
 }

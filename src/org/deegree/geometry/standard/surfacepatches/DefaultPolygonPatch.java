@@ -113,4 +113,9 @@ public class DefaultPolygonPatch implements PolygonPatch {
     public SurfacePatchType getSurfacePatchType() {
         return SurfacePatchType.POLYGON_PATCH;
     }
+
+    @Override
+    public PolygonPatchType getPolygonPatchType() {
+        return PolygonPatchType.POLYGON_PATCH;
+    }
 }

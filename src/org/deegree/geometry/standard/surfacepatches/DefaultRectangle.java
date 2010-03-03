@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.surfacepatches;
 
 import java.util.Collections;
@@ -47,10 +47,10 @@ import org.deegree.geometry.primitive.patches.Rectangle;
 
 /**
  * Default implementation of {@link Rectangle}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultRectangle implements Rectangle {
@@ -59,14 +59,14 @@ public class DefaultRectangle implements Rectangle {
 
     /**
      * Creates a new {@link DefaultRectangle} instance from the given parameters.
-     *
+     * 
      * @param exterior
      *            ring that contains exactly five planar points, the first and last point must be identical
      */
     public DefaultRectangle( LinearRing exterior ) {
-        if (exterior.getControlPoints().size() != 5) {
+        if ( exterior.getControlPoints().size() != 5 ) {
             String msg = "The exterior ring of a rectangle must contain exactly five points.";
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException( msg );
         }
         this.exterior = exterior;
     }
@@ -114,11 +114,16 @@ public class DefaultRectangle implements Rectangle {
 
     @Override
     public List<LinearRing> getBoundaryRings() {
-        return Collections.singletonList( exterior);
+        return Collections.singletonList( exterior );
     }
 
     @Override
     public SurfacePatchType getSurfacePatchType() {
-        return SurfacePatchType.RECTANGLE;
+        return SurfacePatchType.POLYGON_PATCH;
+    }
+
+    @Override
+    public PolygonPatchType getPolygonPatchType() {
+        return PolygonPatchType.RECTANGLE;
     }
 }

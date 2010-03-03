@@ -45,12 +45,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.types.ows.CodeType;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
-import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
@@ -63,25 +63,21 @@ import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
-import org.deegree.geometry.primitive.OrientableCurve;
-import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Tin;
-import org.deegree.geometry.primitive.TriangulatedSurface;
 import org.deegree.geometry.primitive.patches.GriddedSurfacePatch;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
-import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
-import org.deegree.geometry.primitive.patches.Triangle;
+import org.deegree.geometry.primitive.patches.PolygonPatch.PolygonPatchType;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.ArcByBulge;
 import org.deegree.geometry.primitive.segments.ArcByCenterPoint;
@@ -347,19 +343,19 @@ public class WKTWriter {
             writePolygon( (Polygon) geometry, writer );
             break;
         case PolyhedralSurface:
-            writeSurfaceGeometry( (PolyhedralSurface) geometry, writer );
+            writeSurfaceGeometry( geometry, writer );
             break;
         case TriangulatedSurface:
-            writeSurfaceGeometry( (TriangulatedSurface) geometry, writer );
+            writeSurfaceGeometry( geometry, writer );
             break;
         case Tin:
             writeTin( (Tin) geometry, writer );
             break;
         case CompositeSurface:
-            writeSurfaceGeometry( (CompositeSurface) geometry, writer );
+            writeSurfaceGeometry( geometry, writer );
             break;
         case OrientableSurface:
-            writeSurfaceGeometry( (OrientableSurface) geometry, writer );
+            writeSurfaceGeometry( geometry, writer );
             break;
 
         }
@@ -418,7 +414,6 @@ public class WKTWriter {
         int counter = 0;
         List<? extends SurfacePatch> l = geometry.getPatches();
         for ( SurfacePatch p : l ) {
-            Polygon poly;
             switch ( p.getSurfacePatchType() ) {
             case GRIDDED_SURFACE_PATCH:
                 GriddedSurfacePatch gsp = ( (GriddedSurfacePatch) p );
@@ -435,32 +430,8 @@ public class WKTWriter {
                 break;
             case POLYGON_PATCH:
                 counter++;
-                PolygonPatch polyPatch = (PolygonPatch) p;
-
-                poly = new DefaultPolygon( geometry.getId(), geometry.getCoordinateSystem(), geometry.getPrecision(),
-                                           polyPatch.getExteriorRing(), polyPatch.getInteriorRings() );
-                writer.append( '(' );
-                writePolygonWithoutPrefix( poly, writer );
-                writer.append( ')' );
-
-                break;
-            case RECTANGLE:
-                counter++;
-                Rectangle rectangle = ( (Rectangle) p );
-                poly = new DefaultPolygon( geometry.getId(), geometry.getCoordinateSystem(), geometry.getPrecision(),
-                                           rectangle.getExteriorRing(), rectangle.getInteriorRings() );
-                writer.append( '(' );
-                writePolygonWithoutPrefix( poly, writer );
-                writer.append( ')' );
-                break;
-            case TRIANGLE:
-                counter++;
-                Triangle triangle = ( (Triangle) p );
-                poly = new DefaultPolygon( geometry.getId(), geometry.getCoordinateSystem(), geometry.getPrecision(),
-                                           triangle.getExteriorRing(), triangle.getInteriorRings() );
-                writer.append( '(' );
-                writePolygonWithoutPrefix( poly, writer );
-                writer.append( ')' );
+                writePolygonPatch( geometry.getId(), geometry.getCoordinateSystem(), geometry.getPrecision(),
+                                   (PolygonPatch) p, writer );
                 break;
             }
             if ( counter < l.size() ) {
@@ -469,6 +440,23 @@ public class WKTWriter {
 
         }
 
+    }
+
+    private void writePolygonPatch( String id, CRS crs, PrecisionModel pm, PolygonPatch polyPatch, Writer writer )
+                            throws IOException {
+        PolygonPatchType type = polyPatch.getPolygonPatchType();
+        Polygon poly = null;
+        switch ( type ) {
+        case POLYGON_PATCH:
+        case RECTANGLE:
+        case TRIANGLE:
+            poly = new DefaultPolygon( id, crs, pm, polyPatch.getExteriorRing(), polyPatch.getInteriorRings() );
+            break;
+        }
+
+        writer.append( '(' );
+        writePolygonWithoutPrefix( poly, writer );
+        writer.append( ')' );
     }
 
     /**
@@ -562,7 +550,7 @@ public class WKTWriter {
             break;
 
         case OrientableCurve:
-            writeCurveGeometry( (OrientableCurve) geometry, writer );
+            writeCurveGeometry( geometry, writer );
             break;
 
         case CompositeCurve:

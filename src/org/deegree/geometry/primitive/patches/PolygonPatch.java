@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive.patches;
 
 import java.util.List;
@@ -54,6 +54,18 @@ import org.deegree.geometry.primitive.Ring;
  * @version $Revision: 33706 $, $Date: 2009-08-07 00:49:16 +0200 (Fr, 07 Aug 2009) $
  */
 public interface PolygonPatch extends SurfacePatch {
+
+    /**
+     * Simple enum defining the different possible {@link PolygonPatch} instances.
+     */
+    public enum PolygonPatchType {
+        /** Patch is a generic {@link PolygonPatch}. */
+        POLYGON_PATCH,
+        /** Patch is a {@link Rectangle}. Which does not have interior rings. */
+        RECTANGLE,
+        /** Patch is a {@link Triangle}. Which does not have interior rings. */
+        TRIANGLE
+    }
 
     /**
      * Returns the boundary rings (interior + exteriors)
@@ -80,4 +92,9 @@ public interface PolygonPatch extends SurfacePatch {
      * @return the interior rings (holes) of the patch, list may be empty (but not null)
      */
     public List<Ring> getInteriorRings();
+
+    /**
+     * @return the type of this polygon patch.
+     */
+    public PolygonPatchType getPolygonPatchType();
 }
