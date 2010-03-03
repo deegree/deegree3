@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.publication;
 
-import org.deegree.filter.Expression;
+import org.deegree.filter.expression.PropertyName;
 
 /**
  * To specify individual property values to be updated.
@@ -47,9 +47,9 @@ import org.deegree.filter.Expression;
  */
 public class RecordProperty {
 
-    private Expression propertyName;
+    private PropertyName propertyName;
 
-    private Expression replacementValue;
+    private Object replacementValue;
 
     /**
      * To specify individual property values to be updated.
@@ -59,7 +59,7 @@ public class RecordProperty {
      * @param replacementValue
      *            can be anyType [0..1]
      */
-    public RecordProperty( Expression propertyName, Expression replacementValue ) {
+    public RecordProperty( PropertyName propertyName, Object replacementValue ) {
         this.propertyName = propertyName;
         this.replacementValue = replacementValue;
     }
@@ -69,14 +69,14 @@ public class RecordProperty {
      * @return the propertyName element contains the name of a property to be updated. The name may be a path
      *         expression.
      */
-    public Expression getPropertyName() {
+    public PropertyName getPropertyName() {
         return propertyName;
     }
 
     /**
      * @return the replacementValue element contains the replacement value for the named property.
      */
-    public Expression getReplacementValue() {
+    public Object getReplacementValue() {
         return replacementValue;
     }
 
