@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,24 +32,24 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
 /**
  * <code>Pair</code> is a convenience class, which pairs two objects. For a pair of <code>String</code>s see
  * {@link StringPair}.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  * @param <T>
  *            the first Object of the pair
  * @param <U>
  *            the second Object of the pair
- *
+ * 
  */
 public class Pair<T, U> {
     /**
@@ -95,6 +95,20 @@ public class Pair<T, U> {
     @Override
     public String toString() {
         return "<" + first + ", " + second + ">";
+    }
+
+    /**
+     * @return true if either the first or the second value is <code>null</code>
+     */
+    public boolean hasNull() {
+        return first == null || second == null;
+    }
+
+    /**
+     * @return true if the first and the second value are <code>null</code>
+     */
+    public boolean isNull() {
+        return first == null && second == null;
     }
 
 }
