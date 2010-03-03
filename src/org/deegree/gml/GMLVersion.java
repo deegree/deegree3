@@ -35,8 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
+import static org.deegree.commons.utils.StringUtils.isSet;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+
+import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
  * Enum type for the GML versions that have to be differerentiated in deegree's GML subsystem.
@@ -47,6 +51,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
  * @version $Revision: $, $Date: $
  */
 public enum GMLVersion {
+
     /** GML 2 versions (any in the range from 2.0.0 to 2.1.2) */
     GML_2( GMLNS, "text/xml; subtype=gml/2.1.2" ),
     /** GML 3.0 versions (either 3.0.0 or 3.0.1) */
@@ -55,7 +60,7 @@ public enum GMLVersion {
     GML_31( GMLNS, "text/xml; subtype=gml/3.1.1" ),
     /** GML 3.2 versions (3.2.1) */
     GML_32( GML3_2_NS, "text/xml; subtype=gml/3.2.1" );
-      
+
     private final String ns;
 
     private final String mimeType;
@@ -81,5 +86,61 @@ public enum GMLVersion {
      */
     public String getMimeType() {
         return mimeType;
+    }
+
+    @Override
+    public String toString() {
+        return mimeType;
+    }
+
+    /**
+     * This method creates a {@link GMLVersion} from the given mimetype. Expected is following format: <b>'some/type';
+     * subtype=gml/x.y.z</b>. If the mime does not comply the defaultversion is returned. This method uses version
+     * negotiation, e.g. if the given version equals or is larger then a version the next possible gml version will be
+     * used, e.g. gml/3.2.0 will match to {@link GMLVersion#GML_32} (gml/3.2.1), gml/3.0.9 (none existing) will match to
+     * {@link GMLVersion#GML_31}.
+     * 
+     * @param mimeType
+     *            to be parsed
+     * @param defaultVersion
+     *            to be used if the mime type is not compliant with above rules, may be <code>null</code>
+     * @return the GMLVersion of the mime type or the default version.
+     */
+    public static GMLVersion fromMimeType( String mimeType, GMLVersion defaultVersion ) {
+        GMLVersion result = defaultVersion;
+        if ( isSet( mimeType ) ) {
+            String subType = null;
+            String[] split = mimeType.split( ";" );
+            if ( split.length > 1 ) {
+                subType = split[split.length - 1];
+                if ( isSet( subType ) ) {
+                    subType = subType.toLowerCase().trim();
+                    int index = subType.lastIndexOf( "=gml/" );
+                    if ( index > -1 ) {
+                        String version = subType.substring( index + "=gml/".length() );
+                        if ( isSet( version ) ) {
+                            Version v = null;
+                            try {
+                                v = Version.parseVersion( version );
+                            } catch ( InvalidParameterValueException n ) {
+                                // not a number, assuming default
+                            }
+                            if ( v != null ) {
+                                if ( v.compareTo( new Version( 2, 1, 2 ) ) <= 0 ) {
+                                    result = GML_2;
+                                } else if ( v.compareTo( new Version( 3, 0, 1 ) ) <= 0 ) {
+                                    result = GML_30;
+                                } else if ( v.compareTo( new Version( 3, 1, 1 ) ) <= 0 ) {
+                                    result = GML_31;
+                                } else if ( v.compareTo( new Version( 3, 2, 1 ) ) <= 0 ) {
+                                    result = GML_32;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 }
