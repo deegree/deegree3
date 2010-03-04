@@ -97,7 +97,7 @@ public class Link {
         }
         // TODO price question: what's the Java Way to sgml-quote?
         val = val.replace( "&", "&amp;" );
-        sb.append( "<a href='" ).append( val ).append( "'>" );
+        sb.append( "<a target='_blank' href='" ).append( val ).append( "'>" );
         sb.append( text == null ? val : text );
         sb.append( "</a>" );
     }
