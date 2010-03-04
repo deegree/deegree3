@@ -56,6 +56,18 @@ public class CSWConstants {
      * */
     public static final String CSW_202_NS = "http://www.opengis.net/cat/csw/2.0.2";
 
+    /** ISO application profile */
+    public static final String ISO_19115_NS = "http://www.isotc211.org/2005/gmd";
+
+    /** DC application profile */
+    public static final String ISO_DC_NS = "http://purl.org/dc/elements/1.1/";
+
+    /** DCT application profile */
+    public static final String ISO_DCT_NS = "http://purl.org/dc/terms/";
+
+    /** APISO application profile */
+    public static final String APISO_NS = "http://www.opengis.net/cat/csw/apiso/1.0";
+
     /**
      * Namespace for elements from the ISO AP 1.0 specification
      * <p>
