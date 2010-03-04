@@ -37,9 +37,9 @@ package org.deegree.record.persistence;
 
 import java.io.Writer;
 
+import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.deegree.record.persistence.sqltransform.ExpressionFilterHelper;
 
 /**
  * This class holds all the necessary information that is needed for the database request. <br>
@@ -52,8 +52,6 @@ import org.deegree.record.persistence.sqltransform.ExpressionFilterHelper;
  */
 public class RecordStoreOptions {
 
-    private Writer expressionWriter;
-
     private ResultType resultType;
 
     private SetOfReturnableElements setOfReturnableElements;
@@ -62,13 +60,13 @@ public class RecordStoreOptions {
 
     private int startPosition;
 
-    private ExpressionFilterHelper expressionHelper;
+    private Filter filter;
 
     /**
      * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared.
      * 
-     * @param expressionWriter
-     *            encapsulates the information to build an SQL expression
+     * @param filter
+     *            the parsed filter expression
      * @param resultType
      *            {@link ResultType}
      * @param setOfReturnableElements
@@ -77,19 +75,15 @@ public class RecordStoreOptions {
      *            the maximum number of records that shall be presented in the response
      * @param startPosition
      *            at which record position should start the response}
-     * @param expressionHelper
-     *            {@link ExpressionFilterHelper}
      */
-    public RecordStoreOptions( Writer expressionWriter, ResultType resultType,
-                               SetOfReturnableElements setOfReturnableElements, int maxRecords, int startPosition,
-                               ExpressionFilterHelper expressionHelper ) {
+    public RecordStoreOptions( Filter filter, ResultType resultType, SetOfReturnableElements setOfReturnableElements,
+                               int maxRecords, int startPosition ) {
 
-        this.expressionWriter = expressionWriter;
+        this.filter = filter;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
         this.maxRecords = maxRecords;
         this.startPosition = startPosition;
-        this.expressionHelper = expressionHelper;
 
     }
 
@@ -97,31 +91,27 @@ public class RecordStoreOptions {
      * Creates a new {@link RecordStoreOptions} instance with all attributes that can be declared except the
      * startPosition attibute that is set to 1 by default.
      * 
-     * @param expressionWriter
-     *            encapsulates the information to build an SQL expression
+     * @param filter
+     *            the parsed filter expression
      * @param resultType
      *            {@link ResultType}
      * @param setOfReturnableElements
      *            {@link SetOfReturnableElements}
-     * @param expressionHelper
-     *            {@link ExpressionFilterHelper}
      */
-    public RecordStoreOptions( Writer expressionWriter, ResultType resultType,
-                               SetOfReturnableElements setOfReturnableElements, ExpressionFilterHelper expressionHelper ) {
+    public RecordStoreOptions( Filter filter, ResultType resultType, SetOfReturnableElements setOfReturnableElements ) {
 
-        this.expressionWriter = expressionWriter;
+        this.filter = filter;
         this.resultType = resultType;
         this.setOfReturnableElements = setOfReturnableElements;
         this.startPosition = 1;
-        this.expressionHelper = expressionHelper;
 
     }
 
     /**
-     * @return the expressionWriter
+     * @return the filter
      */
-    public Writer getExpressionWriter() {
-        return expressionWriter;
+    public Filter getFilter() {
+        return filter;
     }
 
     /**
@@ -150,13 +140,6 @@ public class RecordStoreOptions {
      */
     public int getStartPosition() {
         return startPosition;
-    }
-
-    /**
-     * @return the expressionHelper
-     */
-    public ExpressionFilterHelper getExpressionHelper() {
-        return expressionHelper;
     }
 
 }

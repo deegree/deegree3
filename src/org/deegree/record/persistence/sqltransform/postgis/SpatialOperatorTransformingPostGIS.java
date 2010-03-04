@@ -59,8 +59,6 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.io.WKTWriter.WKTFlag;
-import org.deegree.record.persistence.sqltransform.ExpressionFilterHandling;
-import org.deegree.record.persistence.sqltransform.ExpressionFilterObject;
 import org.slf4j.Logger;
 
 /**
@@ -453,21 +451,21 @@ public class SpatialOperatorTransformingPostGIS {
     private StringWriter propertyNameBuild( Object opParam ) {
 
         StringWriter stringSpatialPropertyName = new StringWriter( 100 );
-        ExpressionFilterHandling expressionFilterHandling = new ExpressionFilterHandling();
+        // ExpressionFilterHandling expressionFilterHandling = new ExpressionFilterHandling();
 
         String exp = ( (PropertyName) opParam ).getPropertyName();
 
         stringSpatialPropertyName.append( "GeomFromText(AsText(" );
 
-        ExpressionFilterObject expressObject = expressionFilterHandling.expressionFilterHandling(
-                                                                                                  ( (PropertyName) opParam ).getType(),
-                                                                                                  new PropertyName(
-                                                                                                                    exp,
-                                                                                                                    ( (PropertyName) opParam ).getNsContext() ) );
-
-        stringSpatialPropertyName.append( expressObject.getExpression() );
-        tables = expressObject.getTables();
-        columns = expressObject.getColumns();
+        // ExpressionFilterObject expressObject = expressionFilterHandling.expressionFilterHandling(
+        // ( (PropertyName) opParam ).getType(),
+        // new PropertyName(
+        // exp,
+        // ( (PropertyName) opParam ).getNsContext() ) );
+        //
+        // stringSpatialPropertyName.append( expressObject.getExpression() );
+        // tables = expressObject.getTables();
+        // columns = expressObject.getColumns();
         stringSpatialPropertyName.append( "))" );
         return stringSpatialPropertyName;
 

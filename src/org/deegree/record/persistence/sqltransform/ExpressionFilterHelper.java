@@ -38,8 +38,6 @@ package org.deegree.record.persistence.sqltransform;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.namespace.QName;
-
 /**
  * Encapsulates the atomic properties that are needed to build an SQL expression.
  * 
@@ -53,8 +51,6 @@ public class ExpressionFilterHelper {
     private Set<String> tables = new HashSet<String>();
 
     private Set<String> columns = new HashSet<String>();
-
-    private Set<QName> propertyName = new HashSet<QName>();
 
     private static final ExpressionFilterHelper INSTANCE = new ExpressionFilterHelper();
 
@@ -89,21 +85,6 @@ public class ExpressionFilterHelper {
     }
 
     /**
-     * @return the propertyName
-     */
-    public Set<QName> getPropertyName() {
-        return propertyName;
-    }
-
-    /**
-     * @param propertyName
-     *            the propertyName to set
-     */
-    public void setPropertyName( QName propertyName ) {
-        this.propertyName.add( propertyName );
-    }
-
-    /**
      * Adds tables and columns to an existing set.
      * 
      * @param tables
@@ -111,9 +92,9 @@ public class ExpressionFilterHelper {
      * @param columns
      *            to be added
      */
-    public void addTablesANDColumns( Set<String> tables, Set<String> columns ) {
-        this.tables.addAll( tables );
-        this.columns.addAll( columns );
+    public void addTablesANDColumns( String table, String column ) {
+        this.tables.add( table );
+        this.columns.add( column );
     }
 
 }

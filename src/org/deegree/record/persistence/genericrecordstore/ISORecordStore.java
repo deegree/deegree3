@@ -51,6 +51,7 @@ import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,6 +73,11 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
+import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
@@ -79,9 +85,6 @@ import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 import org.deegree.record.persistence.RecordStoreOptions;
 import org.deegree.record.persistence.genericrecordstore.parsing.ISOQPParsing;
-import org.deegree.record.persistence.sqltransform.ExpressionFilterHandling;
-import org.deegree.record.persistence.sqltransform.ExpressionFilterObject;
-import org.deegree.record.persistence.sqltransform.postgis.TransformatorPostGIS;
 import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.RecordProperty;
@@ -108,12 +111,16 @@ public class ISORecordStore implements RecordStore {
      */
     private static Map<QName, Integer> typeNames = new HashMap<QName, Integer>();
 
-    private String connectionId;
+    private final String connectionId;
+
+    // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
+    private boolean useLegacyPredicates;
 
     private Set<String> tableSet;
 
     /**
-     * maps the specific returnable element format to a concrete table in the backend
+     * maps the specific returnable element format to a concrete table in the backend<br>
+     * brief, summary, full
      */
     private static final Map<SetOfReturnableElements, String> formatTypeInISORecordStore = new HashMap<SetOfReturnableElements, String>();
 
@@ -234,8 +241,68 @@ public class ISORecordStore implements RecordStore {
     public void init()
                             throws RecordStoreException {
 
-        // TODO Auto-generated method stub
+        LOG.debug( "init" );
+        // lockManager = new DefaultLockManager( this, "LOCK_DB" );
 
+        Connection conn = null;
+        try {
+            conn = ConnectionManager.getConnection( connectionId );
+
+            String version = determinePostGISVersion( conn );
+            if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
+                 || version.startsWith( "1.2" ) ) {
+                LOG.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
+                useLegacyPredicates = true;
+            } else {
+                LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
+            }
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    private String determinePostGISVersion( Connection conn ) {
+        String version = "1.0";
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SELECT postgis_version()" );
+            rs.next();
+            String postGISVersion = rs.getString( 1 );
+            version = postGISVersion.split( " " )[0];
+            LOG.debug( "PostGIS version: " + version );
+        } catch ( Exception e ) {
+            LOG.warn( "Could not determine PostGIS version: " + e.getMessage() + " -- defaulting to 1.0.0" );
+            closeSafely( null, stmt, rs );
+        }
+        return version;
+    }
+
+    private void closeSafely( Connection conn, Statement stmt, ResultSet rs ) {
+        if ( rs != null ) {
+            try {
+                rs.close();
+            } catch ( SQLException e ) {
+                LOG.warn( e.getMessage(), e );
+            }
+        }
+        if ( stmt != null ) {
+            try {
+                stmt.close();
+            } catch ( SQLException e ) {
+                LOG.warn( e.getMessage(), e );
+            }
+        }
+        if ( conn != null ) {
+            try {
+                conn.close();
+            } catch ( SQLException e ) {
+                LOG.warn( e.getMessage(), e );
+            }
+        }
     }
 
     /*
@@ -256,8 +323,20 @@ public class ISORecordStore implements RecordStore {
      * javax.xml.namespace.QName)
      */
     @Override
-    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema, RecordStoreOptions constraint )
+    public void getRecords( XMLStreamWriter writer, QName typeName, URI outputSchema,
+                            RecordStoreOptions recordStoreOptions )
                             throws SQLException, XMLStreamException, IOException {
+
+        ISO_DC_Mappings mapping = new ISO_DC_Mappings();
+        PostGISWhereBuilder builder = null;
+        // TODO sortProperty
+        try {
+            builder = new PostGISWhereBuilder( mapping, (OperatorFilter) recordStoreOptions.getFilter(), null,
+                                               useLegacyPredicates );
+        } catch ( FilterEvaluationException e ) {
+
+            e.printStackTrace();
+        }
 
         int profileFormatNumberOutputSchema = 0;
         int typeNameFormatNumber = 0;
@@ -274,16 +353,16 @@ public class ISORecordStore implements RecordStore {
             }
         }
 
-        switch ( constraint.getResultType() ) {
+        switch ( recordStoreOptions.getResultType() ) {
         case results:
 
-            doResultsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, constraint );
+            doResultsOnGetRecord( writer, typeName, profileFormatNumberOutputSchema, recordStoreOptions, builder );
             break;
         case hits:
 
-            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, constraint,
-                               formatTypeInISORecordStore.get( constraint.getSetOfReturnableElements() ),
-                               ResultType.hits );
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
+                               formatTypeInISORecordStore.get( recordStoreOptions.getSetOfReturnableElements() ),
+                               ResultType.hits, builder );
             break;
 
         case validate:
@@ -310,16 +389,16 @@ public class ISORecordStore implements RecordStore {
      * @throws IOException
      */
     private void doHitsOnGetRecord( XMLStreamWriter writer, int typeNameFormatNumber,
-                                    int profileFormatNumberOutputSchema, RecordStoreOptions constraint,
-                                    String formatType, ResultType resultType )
+                                    int profileFormatNumberOutputSchema, RecordStoreOptions recordStoreOptions,
+                                    String formatType, ResultType resultType, PostGISWhereBuilder builder )
                             throws SQLException, XMLStreamException, IOException {
 
         int countRows = 0;
         int nextRecord = 0;
         int returnedRecords = 0;
 
-        Writer selectCountRows = generateSELECTStatement( formatType, constraint, typeNameFormatNumber,
-                                                          profileFormatNumberOutputSchema, true );
+        Writer selectCountRows = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
+                                                          profileFormatNumberOutputSchema, true, builder );
 
         // ConnectionManager.addConnections( con );
 
@@ -332,7 +411,7 @@ public class ISORecordStore implements RecordStore {
         }
 
         if ( resultType.equals( ResultType.hits ) ) {
-            writer.writeAttribute( "elementSet", constraint.getSetOfReturnableElements().name() );
+            writer.writeAttribute( "elementSet", recordStoreOptions.getSetOfReturnableElements().name() );
 
             // writer.writeAttribute( "recordSchema", "");
 
@@ -345,15 +424,15 @@ public class ISORecordStore implements RecordStore {
             writer.writeAttribute( "expires", DateUtils.formatISO8601Date( new Date() ) );
         } else {
 
-            if ( countRows > constraint.getMaxRecords() ) {
-                nextRecord = constraint.getMaxRecords() + 1;
-                returnedRecords = constraint.getMaxRecords();
+            if ( countRows > recordStoreOptions.getMaxRecords() ) {
+                nextRecord = recordStoreOptions.getMaxRecords() + 1;
+                returnedRecords = recordStoreOptions.getMaxRecords();
             } else {
                 nextRecord = 0;
                 returnedRecords = countRows;
             }
 
-            writer.writeAttribute( "elementSet", constraint.getSetOfReturnableElements().name() );
+            writer.writeAttribute( "elementSet", recordStoreOptions.getSetOfReturnableElements().name() );
 
             // writer.writeAttribute( "recordSchema", "");
 
@@ -380,7 +459,7 @@ public class ISORecordStore implements RecordStore {
      *            - the requested typeName
      * @param profileFormatNumberOutputSchema
      *            - the format number of the outputSchema
-     * @param propertyAttributes
+     * @param recordStoreOptions
      *            - the properties that are identified by the request
      * @param con
      *            - the JDBCConnection
@@ -389,7 +468,7 @@ public class ISORecordStore implements RecordStore {
      * @throws IOException
      */
     private void doResultsOnGetRecord( XMLStreamWriter writer, QName typeName, int profileFormatNumberOutputSchema,
-                                       RecordStoreOptions propertyAttributes )
+                                       RecordStoreOptions recordStoreOptions, PostGISWhereBuilder builder )
                             throws SQLException, XMLStreamException, IOException {
         int typeNameFormatNumber = 0;
         if ( typeNames.containsKey( typeName ) ) {
@@ -399,45 +478,45 @@ public class ISORecordStore implements RecordStore {
         Connection conn = ConnectionManager.getConnection( connectionId );
 
         ResultSet rs = null;
-        switch ( propertyAttributes.getSetOfReturnableElements() ) {
+        switch ( recordStoreOptions.getSetOfReturnableElements() ) {
 
         case brief:
 
             Writer selectBrief = generateSELECTStatement(
                                                           formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                                                          propertyAttributes, typeNameFormatNumber,
-                                                          profileFormatNumberOutputSchema, false );
+                                                          recordStoreOptions, typeNameFormatNumber,
+                                                          profileFormatNumberOutputSchema, false, builder );
             rs = conn.createStatement().executeQuery( selectBrief.toString() );
 
-            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                               ResultType.results );
+                               ResultType.results, builder );
 
             break;
         case summary:
 
             Writer selectSummary = generateSELECTStatement(
                                                             formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
-                                                            propertyAttributes, typeNameFormatNumber,
-                                                            profileFormatNumberOutputSchema, false );
+                                                            recordStoreOptions, typeNameFormatNumber,
+                                                            profileFormatNumberOutputSchema, false, builder );
             rs = conn.createStatement().executeQuery( selectSummary.toString() );
 
-            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
-                               ResultType.results );
+                               ResultType.results, builder );
 
             break;
         case full:
 
             Writer selectFull = generateSELECTStatement(
                                                          formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
-                                                         propertyAttributes, typeNameFormatNumber,
-                                                         profileFormatNumberOutputSchema, false );
+                                                         recordStoreOptions, typeNameFormatNumber,
+                                                         profileFormatNumberOutputSchema, false, builder );
             rs = conn.createStatement().executeQuery( selectFull.toString() );
 
-            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, propertyAttributes,
+            doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
-                               ResultType.results );
+                               ResultType.results, builder );
 
             break;
         }
@@ -451,29 +530,13 @@ public class ISORecordStore implements RecordStore {
     }
 
     /**
-     * Corrects the table set from the mainDatabaseTable. Because it could happen that the mainDatabaseTable is called
-     * in the Filterexpression explicitly.
-     * 
-     * @param tableSetToBeCorrected
-     */
-    private void correctTable( Set<String> tableSetToBeCorrected ) {
-        for ( String s : tableSetToBeCorrected ) {
-            if ( ISO_DC_Mappings.databaseTables.datasets.name().equals( s ) ) {
-                tableSetToBeCorrected.remove( s );
-                break;
-            }
-        }
-
-    }
-
-    /**
      * Selectstatement for the constrainted tables.
      * <p>
      * Realisation with AND
      * 
      * @param formatType
      *            - brief, summary or full
-     * @param propertyAttributes
+     * @param recordStoreOptions
      *            - properties that were requested
      * @param typeNameFormatNumber
      *            - the format number that is identified by the requested typeName
@@ -484,25 +547,19 @@ public class ISORecordStore implements RecordStore {
      * @return a Writer
      * @throws IOException
      */
-    private Writer generateSELECTStatement( String formatType, RecordStoreOptions propertyAttributes,
+    private Writer generateSELECTStatement( String formatType, RecordStoreOptions recordStoreOptions,
                                             int typeNameFormatNumber, int profileFormatNumberOutputSchema,
-                                            boolean setCount )
+                                            boolean setCount, PostGISWhereBuilder builder )
                             throws IOException {
-        if ( propertyAttributes.getExpressionHelper().getTables() != null ) {
-            tableSet = propertyAttributes.getExpressionHelper().getTables();
-        } else {
-            tableSet = new HashSet<String>();
-        }
-        correctTable( tableSet );
 
         Writer s = new StringWriter();
         Writer constraintExpression = new StringWriter();
         String COUNT_PRE;
         String COUNT_SUF;
-        StringWriter stringWriter = (StringWriter) propertyAttributes.getExpressionWriter();
+        StringBuilder stringWriter = builder.getWhereClause();
 
-        if ( stringWriter.getBuffer().length() != 0 ) {
-            constraintExpression.append( "AND (" + propertyAttributes.getExpressionWriter().toString() + ") " );
+        if ( stringWriter.length() != 0 ) {
+            constraintExpression.append( "AND (" + builder.getWhereClause() + ") " );
         } else {
             constraintExpression.append( "" );
         }
@@ -524,29 +581,29 @@ public class ISORecordStore implements RecordStore {
         s.append( "SELECT " + formatType + ".data FROM " + ISO_DC_Mappings.databaseTables.datasets.name() + ", "
                   + formatType );
 
-        if ( tableSet.size() == 0 ) {
-            s.append( ' ' );
-        } else {
-            s.append( ", " + concatTableFROM( tableSet ) );
-        }
+        // if ( builder.getFilterHelper().getTables().size() == 0 ) {
+        // s.append( ' ' );
+        // } else {
+        // s.append( ", " + concatTableFROM( builder.getFilterHelper().getTables() ) );
+        // }
+        //
+        // s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+        // + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
+        // + typeNameFormatNumber + " AND " + formatType + "."
+        // + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= "
+        // + recordStoreOptions.getStartPosition() );
+        //
+        // if ( builder.getFilterHelper().getTables().size() == 0 ) {
+        // s.append( ' ' );
+        // } else {
+        // s.append( " AND " + concatTableWHERE( builder.getFilterHelper().getTables() ) );
+        // }
+        // s.append( constraintExpression + ")" );
+        // if ( recordStoreOptions.getMaxRecords() != 0 ) {
+        // s.append( " LIMIT " + recordStoreOptions.getMaxRecords() );
+        // }
 
-        s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-                  + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
-                  + typeNameFormatNumber + " AND " + formatType + "."
-                  + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= "
-                  + propertyAttributes.getStartPosition() );
-
-        if ( tableSet.size() == 0 ) {
-            s.append( ' ' );
-        } else {
-            s.append( " AND " + concatTableWHERE( tableSet ) );
-        }
-        s.append( constraintExpression + ")" );
-        if ( propertyAttributes.getMaxRecords() != 0 ) {
-            s.append( " LIMIT " + propertyAttributes.getMaxRecords() );
-        }
-
-        LOG.debug( "rs: " + s );
+        LOG.info( "rs: " + s );
         return s;
     }
 
@@ -650,6 +707,7 @@ public class ISORecordStore implements RecordStore {
             /**
              * if there should a complete record be updated or some properties
              */
+
             if ( upd.getElement() != null ) {
                 try {
                     QName localName = upd.getElement().getQName();
@@ -675,32 +733,41 @@ public class ISORecordStore implements RecordStore {
                     LOG.debug( "error: " + e.getMessage(), e );
                 }
             } else {
+
                 try {
-                    TransformatorPostGIS filterExpression = new TransformatorPostGIS( upd.getConstraint() );
-                    RecordStoreOptions gdds = new RecordStoreOptions( filterExpression.getWriter(), ResultType.results,
-                                                                      SetOfReturnableElements.full,
-                                                                      filterExpression.getExpressHelper() );
+
+                    RecordStoreOptions gdds = new RecordStoreOptions( upd.getConstraint(), ResultType.results,
+                                                                      SetOfReturnableElements.full );
 
                     int formatNumber = 0;
                     Set<QName> qNameSet = new HashSet<QName>();
 
-                    for ( QName propName : filterExpression.getExpressHelper().getPropertyName() ) {
+                    ISO_DC_Mappings mapping = new ISO_DC_Mappings();
+                    PostGISWhereBuilder builder = null;
+
+                    // TODO sortProperty
+
+                    builder = new PostGISWhereBuilder( mapping, (OperatorFilter) upd.getConstraint(), null,
+                                                       useLegacyPredicates );
+
+                    for ( QName propName : mapping.getPropToTableAndCol().keySet() ) {
                         String nsURI = propName.getNamespaceURI();
                         String prefix = propName.getPrefix();
                         QName analysedQName = new QName( nsURI, "", prefix );
                         qNameSet.add( analysedQName );
                     }
 
-                    if ( qNameSet.size() > 1 ) {
-                        String message = "There are different kinds of RecordStores affected by the request! Please decide on just one of the requested ones: ";
-                        int i = 0;
-                        for ( QName qNameError : qNameSet ) {
-                            i++;
-                            message += i + ". " + qNameError.toString() + " ";
-                        }
-
-                        throw new IllegalArgumentException( message );
-                    }
+                    // if ( qNameSet.size() > 1 ) {
+                    // String message =
+                    // "There are different kinds of RecordStores affected by the request! Please decide on just one of the requested ones: ";
+                    // int i = 0;
+                    // for ( QName qNameError : qNameSet ) {
+                    // i++;
+                    // message += i + ". " + qNameError.toString() + " ";
+                    // }
+                    //
+                    // throw new IllegalArgumentException( message );
+                    // }
 
                     for ( QName qName : typeNames.keySet() ) {
                         if ( qName.equals( qNameSet.iterator().next() ) ) {
@@ -710,7 +777,7 @@ public class ISORecordStore implements RecordStore {
 
                     Writer str = getRequestedIDStatement(
                                                           formatTypeInISORecordStore.get( SetOfReturnableElements.full ),
-                                                          gdds, formatNumber );
+                                                          gdds, formatNumber, builder );
 
                     ResultSet rsUpdatableDatasets = conn.createStatement().executeQuery( str.toString() );
                     List<Integer> updatableDatasets = new ArrayList<Integer>();
@@ -733,77 +800,55 @@ public class ISORecordStore implements RecordStore {
 
                             while ( rsGetStoredFullRecordXML.next() ) {
                                 for ( RecordProperty recProp : upd.getRecordProperty() ) {
-                                    ExpressionFilterHandling filterHandle = new ExpressionFilterHandling();
-                                    ExpressionFilterObject recordPropertyName;
-                                    ExpressionFilterObject recordPropertyValue;
 
-                                    recordPropertyName = filterHandle.expressionFilterHandling(
-                                                                                                org.deegree.filter.Expression.Type.PROPERTY_NAME,
-                                                                                                recProp.getPropertyName() );
-                                    recordPropertyValue = filterHandle.expressionFilterHandling(
-                                                                                                 org.deegree.filter.Expression.Type.LITERAL,
-                                                                                                 recProp.getReplacementValue() );
+                                    PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName() );
 
-                                    if ( recordPropertyName.isMatching() == true ) {
+                                    Object obje = mapping.getPostGISValue( (Literal) recProp.getReplacementValue(),
+                                                                           recProp.getPropertyName() );
 
-                                        // not important. There is just one name possible
-                                        for ( String column : recordPropertyName.getColumns() ) {
+                                    // creating an OMElement readed from the backend byteData
+                                    InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
+                                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( in );
 
-                                            // creating an OMElement readed from the backend byteData
-                                            InputStream in = rsGetStoredFullRecordXML.getBinaryStream( 1 );
-                                            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                                                          in );
+                                    OMElement elementBuiltFromDB = new StAXOMBuilder( reader ).getDocument().getOMDocumentElement();
 
-                                            OMElement elementBuiltFromDB = new StAXOMBuilder( reader ).getDocument().getOMDocumentElement();
+                                    OMElement omElement = recursiveElementKnotUpdate(
+                                                                                      elementBuiltFromDB,
+                                                                                      elementBuiltFromDB.getChildElements(),
+                                                                                      propMapping.getColumn(),
+                                                                                      obje.toString() );
 
-                                            // LOG.info( elementBuiltFromDB.toString() );
+                                    try {
+                                        QName localName = omElement.getQName();
 
-                                            OMElement omElement = recursiveElementKnotUpdate(
-                                                                                              elementBuiltFromDB,
-                                                                                              elementBuiltFromDB.getChildElements(),
-                                                                                              column,
-                                                                                              recordPropertyValue.getExpression() );
-                                            // LOG.info( "\n\n\n\n\n\n\n " + elementBuiltFromDB.toString() );
-                                            try {
-                                                QName localName = omElement.getQName();
+                                        ExecuteStatements executeStatements = new ExecuteStatements();
 
-                                                ExecuteStatements executeStatements = new ExecuteStatements();
+                                        if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
+                                                                          CSWConstants.CSW_PREFIX ) )
+                                             || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
 
-                                                if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
-                                                                                  CSWConstants.CSW_PREFIX ) )
-                                                     || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
-                                                                                     "" ) ) ) {
+                                            executeStatements.executeUpdateStatement(
+                                                                                      conn,
+                                                                                      affectedIds,
+                                                                                      new ISOQPParsing().parseAPDC( omElement ) );
 
-                                                    executeStatements.executeUpdateStatement(
-                                                                                              conn,
-                                                                                              affectedIds,
-                                                                                              new ISOQPParsing().parseAPDC( omElement ) );
+                                        } else {
 
-                                                } else {
-                                                    // LOG.info( omElement.toString() );
-                                                    executeStatements.executeUpdateStatement(
-                                                                                              conn,
-                                                                                              affectedIds,
-                                                                                              new ISOQPParsing().parseAPISO(
-                                                                                                                             omElement,
-                                                                                                                             options.isInspire(),
-                                                                                                                             conn ) );
-
-                                                }
-
-                                            } catch ( IOException e ) {
-
-                                                LOG.debug( "error: " + e.getMessage(), e );
-                                            }
+                                            executeStatements.executeUpdateStatement(
+                                                                                      conn,
+                                                                                      affectedIds,
+                                                                                      new ISOQPParsing().parseAPISO(
+                                                                                                                     omElement,
+                                                                                                                     options.isInspire(),
+                                                                                                                     conn ) );
 
                                         }
 
-                                    } else {
+                                    } catch ( IOException e ) {
 
-                                        String msg = "No matching found between backend and "
-                                                     + recProp.getPropertyName();
-                                        throw new IllegalArgumentException( msg );
+                                        LOG.debug( "error: " + e.getMessage(), e );
                                     }
+
                                 }
                             }
                             rsGetStoredFullRecordXML.close();
@@ -814,6 +859,9 @@ public class ISORecordStore implements RecordStore {
                 } catch ( IOException e ) {
 
                     LOG.debug( "error: " + e.getMessage(), e );
+                } catch ( FilterEvaluationException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
 
@@ -822,26 +870,39 @@ public class ISORecordStore implements RecordStore {
         case DELETE:
 
             DeleteTransaction delete = (DeleteTransaction) operations;
-            TransformatorPostGIS filterExpression = new TransformatorPostGIS( delete.getConstraint() );
+
             int formatNumber = 0;
 
             Set<QName> qNameSet = new HashSet<QName>();
+            ISO_DC_Mappings mapping = new ISO_DC_Mappings();
+            PostGISWhereBuilder builder = null;
 
-            for ( QName propName : filterExpression.getExpressHelper().getPropertyName() ) {
-                String nsURI = propName.getNamespaceURI();
-                String prefix = propName.getPrefix();
-                QName analysedQName = new QName( nsURI, "", prefix );
-                qNameSet.add( analysedQName );
-            }
+            // TODO sortProperty
+            try {
+                builder = new PostGISWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(), null,
+                                                   useLegacyPredicates );
 
-            if ( qNameSet.size() > 1 ) {
-                String message = "There are different kinds of RecordStores affected by the request! Please decide on just one of the requested ones: ";
-                for ( QName qNameError : qNameSet ) {
-                    message += qNameError.toString();
+                for ( QName propName : mapping.getPropToTableAndCol().keySet() ) {
+                    LOG.info( propName.toString() );
+                    String nsURI = propName.getNamespaceURI();
+                    String prefix = propName.getPrefix();
+                    QName analysedQName = new QName( nsURI, "", prefix );
+                    qNameSet.add( analysedQName );
                 }
+            } catch ( FilterEvaluationException e ) {
 
-                throw new IllegalArgumentException( message );
+                e.printStackTrace();
             }
+
+            // if ( qNameSet.size() > 1 ) {
+            // String message =
+            // "There are different kinds of RecordStores affected by the request! Please decide on just one of the requested ones: ";
+            // for ( QName qNameError : qNameSet ) {
+            // message += qNameError.toString();
+            // }
+            //
+            // throw new IllegalArgumentException( message );
+            // }
 
             for ( QName qName : typeNames.keySet() ) {
                 if ( qName.equals( qNameSet.iterator().next() ) ) {
@@ -849,18 +910,18 @@ public class ISORecordStore implements RecordStore {
                 }
             }
 
-            RecordStoreOptions gdds = new RecordStoreOptions( filterExpression.getWriter(), ResultType.results,
-                                                              SetOfReturnableElements.full,
-                                                              filterExpression.getExpressHelper() );
+            RecordStoreOptions gdds = new RecordStoreOptions( delete.getConstraint(), ResultType.results,
+                                                              SetOfReturnableElements.full );
             Writer str = new StringWriter();
 
             try {
                 str = getRequestedIDStatement( formatTypeInISORecordStore.get( SetOfReturnableElements.full ), gdds,
-                                               formatNumber );
+                                               formatNumber, builder );
             } catch ( IOException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
             }
+            LOG.info( str.toString() );
 
             ResultSet rsDeletableDatasets = conn.createStatement().executeQuery( str.toString() );
             List<Integer> deletableDatasets = new ArrayList<Integer>();
@@ -910,9 +971,9 @@ public class ISORecordStore implements RecordStore {
             OMElement u = null;
             while ( it.hasNext() ) {
                 u = (OMElement) it.next();
-                LOG.debug( u.toString() );
-                u.getFirstElement().setText( newContent.substring( 1, newContent.length() - 1 ) );
-                LOG.debug( u.toString() );
+                LOG.debug( "rec: " + u.toString() );
+                u.getFirstElement().setText( newContent );
+                LOG.debug( "rec2: " + u.toString() );
             }
             return element;
 
@@ -1006,44 +1067,40 @@ public class ISORecordStore implements RecordStore {
      * @return
      * @throws IOException
      */
-    private Writer getRequestedIDStatement( String formatType, RecordStoreOptions constraint, int formatNumber )
+    private Writer getRequestedIDStatement( String formatType, RecordStoreOptions constraint, int formatNumber,
+                                            PostGISWhereBuilder builder )
                             throws IOException {
-        if ( constraint.getExpressionHelper().getTables() != null ) {
-            tableSet = constraint.getExpressionHelper().getTables();
-        } else {
-            tableSet = new HashSet<String>();
-        }
-        correctTable( tableSet );
+
         StringWriter s = new StringWriter();
         Writer constraintExpression = new StringWriter();
 
-        StringWriter stringWriter = (StringWriter) constraint.getExpressionWriter();
+        StringBuilder stringWriter = builder.getWhereClause();
 
-        if ( stringWriter.getBuffer().length() != 0 ) {
-            constraintExpression.append( "AND (" + constraint.getExpressionWriter().toString() + ") " );
+        if ( stringWriter.length() != 0 ) {
+            constraintExpression.append( "AND (" + builder.getWhereClause() + ") " );
         } else {
             constraintExpression.append( "" );
         }
 
-        s.append( "SELECT " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " FROM "
-                  + ISO_DC_Mappings.databaseTables.datasets.name() + ", " + formatType );
-
-        if ( tableSet.size() == 0 ) {
-            s.append( ' ' );
-        } else {
-            s.append( ", " + concatTableFROM( tableSet ) );
-        }
-
-        s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-                  + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + "."
-                  + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= " + constraint.getStartPosition()
-                  + " AND " + formatType + ".format = " + formatNumber );
-
-        if ( tableSet.size() == 0 ) {
-            s.append( ' ' );
-        } else {
-            s.append( " AND " + concatTableWHERE( tableSet ) );
-        }
+        // s.append( "SELECT " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " FROM "
+        // + ISO_DC_Mappings.databaseTables.datasets.name() + ", " + formatType );
+        //
+        // if ( builder.getFilterHelper().getTables().size() == 0 ) {
+        // s.append( ' ' );
+        // } else {
+        // s.append( ", " + concatTableFROM( builder.getFilterHelper().getTables() ) );
+        // }
+        //
+        // s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+        // + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + "."
+        // + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= " + constraint.getStartPosition()
+        // + " AND " + formatType + ".format = " + formatNumber );
+        //
+        // if ( builder.getFilterHelper().getTables().size() == 0 ) {
+        // s.append( ' ' );
+        // } else {
+        // s.append( " AND " + concatTableWHERE( builder.getFilterHelper().getTables() ) );
+        // }
         s.append( constraintExpression + "" );
 
         return s;

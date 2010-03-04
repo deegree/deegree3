@@ -44,8 +44,7 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.Operator;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
-import org.deegree.record.persistence.MappingInfo;
-import org.deegree.record.persistence.Profile_DB_Mappings;
+import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.record.persistence.genericrecordstore.ISO_DC_Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,9 +73,9 @@ public class ExpressionFilterHandling {
 
     private QName propName;
 
-    private Profile_DB_Mappings iso_dc_mapping;
+    // private Profile_DB_Mappings iso_dc_mapping;
 
-    // private PostGISMapping iso_dc_mapping;
+    private PostGISMapping iso_dc_mapping;
 
     /**
      * Handles the {@link Expression} that is identified during the parsing of the {@link Operator}s
@@ -117,16 +116,16 @@ public class ExpressionFilterHandling {
         case PROPERTY_NAME:
             PropertyName propertyName = (PropertyName) exp;
 
-            for ( String s : iso_dc_mapping.getPropToTableAndCol().keySet() ) {
-                if ( propertyName.getPropertyName().equals( s ) ) {
-                    MappingInfo m = iso_dc_mapping.getPropToTableAndCol().get( s );
-                    propName = propertyName.getAsQName();
-                    table.add( m.getTables() );
-                    column.add( m.getColumn() );
-                    expression = m.getTables() + "." + m.getColumn();
-                    isMatching = true;
-                }
-            }
+            // for ( String s : iso_dc_mapping.getPropToTableAndCol().keySet() ) {
+            // if ( propertyName.getPropertyName().equals( s ) ) {
+            // MappingInfo m = iso_dc_mapping.getPropToTableAndCol().get( s );
+            // propName = propertyName.getAsQName();
+            // table.add( m.getTables() );
+            // column.add( m.getColumn() );
+            // expression = m.getTables() + "." + m.getColumn();
+            // isMatching = true;
+            // }
+            // }
 
             break;
 

@@ -310,6 +310,16 @@ public class GenerateQueryableProperties {
 
             stm.executeUpdate( sqlStatement.toString() );
 
+            /*
+             * clean the Writer
+             */
+            StringBuffer buf = ( (StringWriter) queryablePropertyStatement_POST ).getBuffer();
+            buf.setLength( 0 );
+            buf = ( (StringWriter) queryablePropertyStatement_PRE ).getBuffer();
+            buf.setLength( 0 );
+            buf = sqlStatement.getBuffer();
+            buf.setLength( 0 );
+
         } catch ( SQLException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
@@ -865,6 +875,7 @@ public class GenerateQueryableProperties {
         StringWriter s_POST = new StringWriter( 50 );
 
         for ( Keyword keyword : qp.getKeywords() ) {
+
             for ( String keywordString : keyword.getKeywords() ) {
                 s_PRE.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, keywordtype, keyword, thesaurus)" );
 

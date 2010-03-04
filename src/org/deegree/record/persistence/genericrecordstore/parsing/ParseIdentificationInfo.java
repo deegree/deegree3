@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore.parsing;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -58,6 +60,7 @@ import org.deegree.record.persistence.genericrecordstore.generating.GenerateReco
 import org.deegree.record.persistence.neededdatastructures.BoundingBox;
 import org.deegree.record.persistence.neededdatastructures.Keyword;
 import org.deegree.record.persistence.neededdatastructures.OperatesOnData;
+import org.slf4j.Logger;
 
 /**
  * Parses the identification info element of an in ISO profile declared record. This is an outsourced method because of
@@ -69,6 +72,8 @@ import org.deegree.record.persistence.neededdatastructures.OperatesOnData;
  * @version $Revision: $, $Date: $
  */
 public class ParseIdentificationInfo extends XMLAdapter {
+
+    private static final Logger LOG = getLogger( ParseIdentificationInfo.class );
 
     private OMFactory factory;
 
