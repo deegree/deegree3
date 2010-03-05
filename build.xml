@@ -80,7 +80,7 @@
           target: resolve
          ================================= -->
     <target name="resolve" depends="load-ivy">
-        <ivy:retrieve conf="${module.name}-build" pattern="${lib.dir}/[module](-[revision]).[ext]" ivypattern="${lib.dir}/[module](-[revision]).ivy" file="${ivy.dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
+        <ivy:retrieve conf="${module.name}-build" pattern="${lib.dir}/[module](-[revision]).[ext]" file="${ivy.dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
     </target>
 
     <target name="download-svn" unless="download.svn">

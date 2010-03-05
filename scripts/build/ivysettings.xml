@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivysettings>
   <settings defaultResolver="deegree" />
-  <credentials host="${publication.host}" realm="${publication.realm}" username="${publication.username}" passwd="${publication.password}" />
+  <credentials host="${publication.host}" realm="${publication.realm}" username="${publication.username}"
+    passwd="${publication.password}" />
   <resolvers>
-    <chain name="deegree" returnFirst="true" checkmodified="true">
-      <!-- 1. lookup deegree modules in local ivy repository (located normally in ${user.home}/.ivy2/local/ -->
-      <filesystem name="local-publisher" local="false" checksums="md5" checkmodified="true">
+    <chain name="deegree" returnFirst="true">
+      <!-- 1. lookup deegree modules in local ivy repository (by default located in ${user.home}/.ivy2/local/ -->
+      <filesystem name="local-publisher" checksums="md5">
         <artifact pattern="${ivy.local.repository.dir}/[organisation]/[module]/[artifact].[ext]" />
         <ivy pattern="${ivy.local.repository.dir}/[organisation]/[module]/[module]-[revision].ivy" />
       </filesystem>
       <!-- 2. lookup deegree modules in deegree repository -->
-      <url name="libs-snapshot" m2compatible="true" checkmodified="true">
+      <url name="libs-snapshot" m2compatible="true">
         <artifact pattern="${ivy.repository.libs-snapshots}/[organisation]/[module]/[revision]/[artifact].[ext]" />
         <ivy pattern="${ivy.repository.libs-snapshots}/[organisation]/[module]/[revision]/[module]-[revision].ivy" />
       </url>
@@ -24,6 +25,9 @@
       <ivy pattern="${ivy.publish.snapshot}/[organisation]/[module]/[revision]/[artifact]" />
     </url>
   </resolvers>
-  <!-- Avoid copying of local artifacts (from local-publisher) to the cache and use directly their original location. -->
+  <!--
+    NOTE: Do not disable the copying of local artifacts (i.e. from local-publisher) to the ivy cache. This will break
+    the identifying of updated snapshots of dependent deegree modules.
+  -->
   <!-- caches useOrigin="true" /-->
 </ivysettings>
