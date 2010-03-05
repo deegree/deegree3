@@ -325,10 +325,6 @@
 	</target>
 
 	<target name="publish" depends="build-jar, build-javadoc, build-src-zip">
-
-		<!-- Read publication properties (host, username, password) -->
-		<property file="${user.home}/d3_publication.properties" />
-
 		<!-- put the result on the deployment server -->
 		<ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" srcivypattern="${build.dir}/ivy.xml" />
 		<ivy:makepom ivyfile="${build.dir}/ivy.xml" pomfile="${build.dir}/deegree-${module.name}.pom" />
