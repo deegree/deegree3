@@ -110,6 +110,8 @@ public class PostGISWhereBuilder {
 
     private StringBuilder orderBy = new StringBuilder();
 
+    private List<PropertyNameMapping> propNameMappingList;
+
     /**
      * Creates a new {@link PostGISWhereBuilder} instance.
      * 
@@ -172,6 +174,13 @@ public class PostGISWhereBuilder {
     }
 
     /**
+     * @return the propNameMappingList
+     */
+    public List<PropertyNameMapping> getPropNameMappingList() {
+        return propNameMappingList;
+    }
+
+    /**
      * TODO
      * 
      * @return
@@ -204,6 +213,7 @@ public class PostGISWhereBuilder {
 
     private void buildWhere( Operator op )
                             throws FilterEvaluationException {
+        propNameMappingList = new ArrayList<PropertyNameMapping>();
         switch ( op.getType() ) {
         case COMPARISON: {
             buildWhere( (ComparisonOperator) op );
@@ -547,6 +557,7 @@ public class PostGISWhereBuilder {
 
         PropertyNameMapping propMapping = mapping.getMapping( propName );
         if ( propMapping != null ) {
+            propNameMappingList.add( propMapping );
             whereClause.append( propMapping.getTable() );
             whereClause.append( '.' );
             whereClause.append( propMapping.getColumn() );
@@ -606,6 +617,7 @@ public class PostGISWhereBuilder {
         case PROPERTY_NAME: {
             PropertyNameMapping propMapping = mapping.getMapping( (PropertyName) expr );
             if ( propMapping != null ) {
+                propNameMappingList.add( propMapping );
                 if ( lowerCase ) {
                     whereClause.append( "LOWER(" );
                     whereClause.append( propMapping.getTable() );
