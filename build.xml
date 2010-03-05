@@ -8,10 +8,13 @@
 
     <target name="build" depends="publish-local" description="-> create module jar" />
     <target name="build-javadoc" depends="zip-javadoc" description="-> create module javadoc" />
-    <target name="build-src-zip" depends="zip-sources" description="-> create zip of module for building" />
+    <target name="build-src-zip" depends="zip-sources" description="-> create zip of module source artifacts" />	
+    <target name="clean" description="-> clean build directory">
+        <delete dir="${build.dir}" failonerror="false" />
+    </target>
     <target name="run-tests" depends="junit" description="-> run module tests and create report" />
-    <target name="fetch-libs" depends="resolve" description="-> puts all jars needed by the module into lib directory" />
-    <target name="print-env" depends="env" description="-> prints the system environment (for debugging)" />
+    <target name="fetch-libs" depends="resolve" description="-> retrieve all jars needed for building the module" />
+    <target name="print-env" depends="env" description="-> print system environment properties" />
 
     <!-- Create the paths for the libs (TODO use ivy configurations) -->
     <path id="build.path">
@@ -318,19 +321,11 @@
         <echo message="project ${module.name}-build released with version ${build.version}" />
     </target>
 
-    <!-- ==================================
-          target: clean
-     ================================= -->
-    <target name="clean">
-        <delete dir="${build.dir}" failonerror="false" />
-    </target>
-
     <target name="init-publication-properties">
         <property file="${user.home}/d3_publication.properties" />
     </target>
     
     <target name="publish" depends="init-publication-properties,build,build-javadoc,build-src-zip">
-
         <!-- put the result on the deployment server -->
         <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" srcivypattern="${build.dir}/ivy.xml" />
         <ivy:makepom ivyfile="${build.dir}/ivy.xml" pomfile="${build.dir}/deegree-${module.name}.pom" />
