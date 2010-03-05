@@ -91,7 +91,7 @@
 
 	<target name="init-svn" depends="download-svn" if="svn.use.lookup">
 		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="ivy.lib.path" />
-		<svn javahl="false">
+		<svn javahl="false" failonerror="false">
 			<info target="${basedir}" />
 		</svn>
 		<!-- Display svn revision number -->
