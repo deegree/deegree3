@@ -19,12 +19,11 @@
       <!-- 4. lookup external libraries (unreleased) from deegree repository -->
       <ibiblio name="ext-releases" m2compatible="true" root="${ivy.repository.ext-releases}" />
     </chain>
-    <url name="publish-snapshot" m2compatible="false" checksums="md5">
-      <!-- You can use m2compatible="true" instead of specifying your own pattern -->
+    <url name="publish-snapshot" m2compatible="true" checksums="md5">
       <artifact pattern="${ivy.publish.snapshot}/[organisation]/[module]/[revision]/[artifact].[ext]" />
       <ivy pattern="${ivy.publish.snapshot}/[organisation]/[module]/[revision]/[artifact]" />
     </url>
   </resolvers>
-  <!-- http://ant.apache.org/ivy/history/2.1.0/settings/caches.html -->
-  <!-- caches useOrigin="true" /-->
+  <!-- Avoid copying of local artifacts (from local-publisher) to the cache and use directly their original location. -->
+  <caches useOrigin="true" />
 </ivysettings>
