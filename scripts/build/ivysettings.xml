@@ -5,7 +5,7 @@
   <resolvers>
     <chain name="deegree" returnFirst="true" checkmodified="true">
       <!-- 1. lookup deegree modules in local ivy repository (located normally in ${user.home}/.ivy2/local/ -->
-      <filesystem name="local-publisher" local="true" checksums="md5" checkmodified="true">
+      <filesystem name="local-publisher" local="false" checksums="md5" checkmodified="true">
         <artifact pattern="${ivy.local.repository.dir}/[organisation]/[module]/[artifact].[ext]" />
         <ivy pattern="${ivy.local.repository.dir}/[organisation]/[module]/[module]-[revision].ivy" />
       </filesystem>
@@ -25,5 +25,5 @@
     </url>
   </resolvers>
   <!-- Avoid copying of local artifacts (from local-publisher) to the cache and use directly their original location. -->
-  <caches useOrigin="true" />
+  <!-- caches useOrigin="true" /-->
 </ivysettings>
