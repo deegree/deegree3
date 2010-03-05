@@ -49,6 +49,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -337,7 +338,7 @@ public class ISORecordStore implements RecordStore {
 
             e.printStackTrace();
         }
-
+        LOG.info( "here bin ich nun" );
         int profileFormatNumberOutputSchema = 0;
         int typeNameFormatNumber = 0;
 
@@ -396,14 +397,16 @@ public class ISORecordStore implements RecordStore {
         int countRows = 0;
         int nextRecord = 0;
         int returnedRecords = 0;
+        Connection conn = ConnectionManager.getConnection( connectionId );
 
-        Writer selectCountRows = generateSELECTStatement( formatType, recordStoreOptions, typeNameFormatNumber,
-                                                          profileFormatNumberOutputSchema, true, builder );
+        PreparedStatement selectCountRows = generateSELECTStatement( formatType, recordStoreOptions,
+                                                                     typeNameFormatNumber,
+                                                                     profileFormatNumberOutputSchema, true, builder,
+                                                                     conn );
 
         // ConnectionManager.addConnections( con );
 
-        Connection conn = ConnectionManager.getConnection( connectionId );
-        ResultSet rs = conn.createStatement().executeQuery( selectCountRows.toString() );
+        ResultSet rs = selectCountRows.executeQuery();
 
         while ( rs.next() ) {
             countRows = rs.getInt( 1 );
@@ -482,11 +485,12 @@ public class ISORecordStore implements RecordStore {
 
         case brief:
 
-            Writer selectBrief = generateSELECTStatement(
-                                                          formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                                                          recordStoreOptions, typeNameFormatNumber,
-                                                          profileFormatNumberOutputSchema, false, builder );
-            rs = conn.createStatement().executeQuery( selectBrief.toString() );
+            PreparedStatement selectBrief = generateSELECTStatement(
+                                                                     formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                                                     recordStoreOptions, typeNameFormatNumber,
+                                                                     profileFormatNumberOutputSchema, false, builder,
+                                                                     conn );
+            rs = selectBrief.executeQuery();
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
@@ -495,11 +499,12 @@ public class ISORecordStore implements RecordStore {
             break;
         case summary:
 
-            Writer selectSummary = generateSELECTStatement(
-                                                            formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
-                                                            recordStoreOptions, typeNameFormatNumber,
-                                                            profileFormatNumberOutputSchema, false, builder );
-            rs = conn.createStatement().executeQuery( selectSummary.toString() );
+            PreparedStatement selectSummary = generateSELECTStatement(
+                                                                       formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
+                                                                       recordStoreOptions, typeNameFormatNumber,
+                                                                       profileFormatNumberOutputSchema, false, builder,
+                                                                       conn );
+            rs = selectSummary.executeQuery();
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
@@ -508,11 +513,12 @@ public class ISORecordStore implements RecordStore {
             break;
         case full:
 
-            Writer selectFull = generateSELECTStatement(
-                                                         formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
-                                                         recordStoreOptions, typeNameFormatNumber,
-                                                         profileFormatNumberOutputSchema, false, builder );
-            rs = conn.createStatement().executeQuery( selectFull.toString() );
+            PreparedStatement selectFull = generateSELECTStatement(
+                                                                    formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
+                                                                    recordStoreOptions, typeNameFormatNumber,
+                                                                    profileFormatNumberOutputSchema, false, builder,
+                                                                    conn );
+            rs = selectFull.executeQuery();
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
@@ -546,24 +552,33 @@ public class ISORecordStore implements RecordStore {
      *            - if the COUNT method should be in the statement
      * @return a Writer
      * @throws IOException
+     * @throws SQLException
      */
-    private Writer generateSELECTStatement( String formatType, RecordStoreOptions recordStoreOptions,
-                                            int typeNameFormatNumber, int profileFormatNumberOutputSchema,
-                                            boolean setCount, PostGISWhereBuilder builder )
-                            throws IOException {
+    private PreparedStatement generateSELECTStatement( String formatType, RecordStoreOptions recordStoreOptions,
+                                                       int typeNameFormatNumber, int profileFormatNumberOutputSchema,
+                                                       boolean setCount, PostGISWhereBuilder builder, Connection conn )
+                            throws IOException, SQLException {
 
         Writer s = new StringWriter();
+        PreparedStatement stmt = null;
         Writer constraintExpression = new StringWriter();
         String COUNT_PRE;
         String COUNT_SUF;
+
         StringBuilder stringWriter = builder.getWhereClause();
 
+        /*
+         * building a constraint expression from the WHERE-builder
+         */
         if ( stringWriter.length() != 0 ) {
-            constraintExpression.append( "AND (" + builder.getWhereClause() + ") " );
+            constraintExpression.append( " AND (" + builder.getWhereClause() + ") " );
         } else {
-            constraintExpression.append( "" );
+            constraintExpression.append( " " );
         }
 
+        /*
+         * precondition if there is a counting of rows needed
+         */
         if ( setCount == true ) {
             COUNT_PRE = "COUNT(";
             COUNT_SUF = ")";
@@ -580,77 +595,69 @@ public class ISORecordStore implements RecordStore {
 
         s.append( "SELECT " + formatType + ".data FROM " + ISO_DC_Mappings.databaseTables.datasets.name() + ", "
                   + formatType );
-
-        // if ( builder.getFilterHelper().getTables().size() == 0 ) {
-        // s.append( ' ' );
-        // } else {
-        // s.append( ", " + concatTableFROM( builder.getFilterHelper().getTables() ) );
-        // }
-        //
-        // s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-        // + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
-        // + typeNameFormatNumber + " AND " + formatType + "."
-        // + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= "
-        // + recordStoreOptions.getStartPosition() );
-        //
-        // if ( builder.getFilterHelper().getTables().size() == 0 ) {
-        // s.append( ' ' );
-        // } else {
-        // s.append( " AND " + concatTableWHERE( builder.getFilterHelper().getTables() ) );
-        // }
-        // s.append( constraintExpression + ")" );
-        // if ( recordStoreOptions.getMaxRecords() != 0 ) {
-        // s.append( " LIMIT " + recordStoreOptions.getMaxRecords() );
-        // }
-
-        LOG.info( "rs: " + s );
-        return s;
-    }
-
-    /**
-     * Relates the tables to the main table "datasets".
-     * 
-     * @param table
-     * @return
-     * @throws IOException
-     */
-    private Writer concatTableWHERE( Set<String> table )
-                            throws IOException {
-        Writer string = new StringWriter();
-        int counter = 0;
-
-        for ( String s : table ) {
-            if ( table.size() - 1 != counter ) {
-                counter++;
-                string.append( s + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-                               + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " );
-            } else {
-                string.append( s + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-                               + ISO_DC_Mappings.databaseTables.datasets.name() + ".id " );
+        LOG.info( "dsfasdgasg" );
+        /*
+         * appends the tables identified in the WHERE-builder to the FROM clause
+         */
+        if ( builder != null && builder.getPropNameMappingList() != null ) {
+            for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
+                if ( propName.getTable() == null ) {
+                    s.append( ' ' );
+                } else {
+                    s.append( ", " + propName.getTable() + " " );
+                }
             }
         }
-        return string;
-    }
 
-    /**
-     * @param table
-     * @return
-     * @throws IOException
-     */
-    private Writer concatTableFROM( Set<String> table )
-                            throws IOException {
-        Writer string = new StringWriter();
-        int counter = 0;
+        s.append( " WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+                  + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
+                  + typeNameFormatNumber + " AND " + formatType + "."
+                  + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= "
+                  + recordStoreOptions.getStartPosition() );
 
-        for ( String s : table ) {
-            if ( table.size() - 1 != counter ) {
-                counter++;
-                string.append( s + ", " );
-            } else {
-                string.append( s + " " );
+        /*
+         * appends the tables with their columns identified in the WHERE-builder to the WHERE clause and binds it to the
+         * maindatabasetable
+         */
+        if ( builder != null && builder.getPropNameMappingList() != null ) {
+            for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
+                if ( propName.getTable() == null ) {
+                    s.append( ' ' );
+                } else {
+                    s.append( " AND " + propName.getTable() + "."
+                              + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+                              + ISO_DC_Mappings.databaseTables.datasets.name() + ".id " );
+                }
             }
         }
-        return string;
+
+        /*
+         * appends the constraint expression from the WHERE-builder
+         */
+        s.append( constraintExpression + ")" );
+
+        /*
+         * finally, appends the LIMIT constraint
+         */
+        if ( recordStoreOptions.getMaxRecords() != 0 ) {
+            s.append( " LIMIT " + recordStoreOptions.getMaxRecords() );
+        }
+
+        stmt = conn.prepareStatement( s.toString() );
+
+        /*
+         * the parameter identified in the WHERE-builder replaces the "?" in the statement
+         */
+        if ( builder != null && builder.getWhereClause().length() > 0 ) {
+            for ( Object arg : builder.getWhereParams() ) {
+                LOG.info( "Setting argument: " + arg );
+                stmt.setObject( 1, arg );
+
+            }
+        }
+
+        LOG.info( "rs: " + stmt );
+        return stmt;
     }
 
     /*
@@ -775,11 +782,11 @@ public class ISORecordStore implements RecordStore {
                         }
                     }
 
-                    Writer str = getRequestedIDStatement(
-                                                          formatTypeInISORecordStore.get( SetOfReturnableElements.full ),
-                                                          gdds, formatNumber, builder );
+                    PreparedStatement str = getRequestedIDStatement(
+                                                                     formatTypeInISORecordStore.get( SetOfReturnableElements.full ),
+                                                                     gdds, formatNumber, builder, conn );
 
-                    ResultSet rsUpdatableDatasets = conn.createStatement().executeQuery( str.toString() );
+                    ResultSet rsUpdatableDatasets = str.executeQuery();
                     List<Integer> updatableDatasets = new ArrayList<Integer>();
                     while ( rsUpdatableDatasets.next() ) {
                         updatableDatasets.add( rsUpdatableDatasets.getInt( 1 ) );
@@ -912,29 +919,33 @@ public class ISORecordStore implements RecordStore {
 
             RecordStoreOptions gdds = new RecordStoreOptions( delete.getConstraint(), ResultType.results,
                                                               SetOfReturnableElements.full );
-            Writer str = new StringWriter();
+            PreparedStatement str = null;
+            ResultSet rsDeletableDatasets = null;
 
             try {
                 str = getRequestedIDStatement( formatTypeInISORecordStore.get( SetOfReturnableElements.full ), gdds,
-                                               formatNumber, builder );
+                                               formatNumber, builder, conn );
+                rsDeletableDatasets = str.executeQuery();
             } catch ( IOException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
             }
             LOG.info( str.toString() );
 
-            ResultSet rsDeletableDatasets = conn.createStatement().executeQuery( str.toString() );
             List<Integer> deletableDatasets = new ArrayList<Integer>();
-            while ( rsDeletableDatasets.next() ) {
-                deletableDatasets.add( rsDeletableDatasets.getInt( 1 ) );
+            if ( rsDeletableDatasets != null ) {
+                while ( rsDeletableDatasets.next() ) {
+                    deletableDatasets.add( rsDeletableDatasets.getInt( 1 ) );
 
-            }
-            rsDeletableDatasets.close();
+                }
+                rsDeletableDatasets.close();
 
-            for ( int i : deletableDatasets ) {
-                conn.createStatement().executeUpdate(
-                                                      "DELETE FROM " + ISO_DC_Mappings.databaseTables.datasets.name()
-                                                                              + " WHERE id = " + i );
+                for ( int i : deletableDatasets ) {
+                    conn.createStatement().executeUpdate(
+                                                          "DELETE FROM "
+                                                                                  + ISO_DC_Mappings.databaseTables.datasets.name()
+                                                                                  + " WHERE id = " + i );
+                }
             }
 
             affectedIds = deletableDatasets;
@@ -1066,44 +1077,64 @@ public class ISORecordStore implements RecordStore {
      * @param formatNumber
      * @return
      * @throws IOException
+     * @throws SQLException
      */
-    private Writer getRequestedIDStatement( String formatType, RecordStoreOptions constraint, int formatNumber,
-                                            PostGISWhereBuilder builder )
-                            throws IOException {
+    private PreparedStatement getRequestedIDStatement( String formatType, RecordStoreOptions constraint,
+                                                       int formatNumber, PostGISWhereBuilder builder, Connection conn )
+                            throws IOException, SQLException {
 
         StringWriter s = new StringWriter();
+        PreparedStatement stmt = null;
         Writer constraintExpression = new StringWriter();
 
         StringBuilder stringWriter = builder.getWhereClause();
 
         if ( stringWriter.length() != 0 ) {
-            constraintExpression.append( "AND (" + builder.getWhereClause() + ") " );
+            constraintExpression.append( " AND (" + builder.getWhereClause() + ") " );
         } else {
-            constraintExpression.append( "" );
+            constraintExpression.append( " " );
         }
 
-        // s.append( "SELECT " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " FROM "
-        // + ISO_DC_Mappings.databaseTables.datasets.name() + ", " + formatType );
-        //
-        // if ( builder.getFilterHelper().getTables().size() == 0 ) {
-        // s.append( ' ' );
-        // } else {
-        // s.append( ", " + concatTableFROM( builder.getFilterHelper().getTables() ) );
-        // }
-        //
-        // s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-        // + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + "."
-        // + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= " + constraint.getStartPosition()
-        // + " AND " + formatType + ".format = " + formatNumber );
-        //
-        // if ( builder.getFilterHelper().getTables().size() == 0 ) {
-        // s.append( ' ' );
-        // } else {
-        // s.append( " AND " + concatTableWHERE( builder.getFilterHelper().getTables() ) );
-        // }
+        s.append( "SELECT " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " FROM "
+                  + ISO_DC_Mappings.databaseTables.datasets.name() + ", " + formatType );
+
+        for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
+            if ( propName.getTable() == null ) {
+                s.append( ' ' );
+            } else {
+                s.append( ", " + propName.getTable() + " " );
+            }
+        }
+
+        s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
+                  + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + "."
+                  + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= " + constraint.getStartPosition()
+                  + " AND " + formatType + ".format = " + formatNumber );
+
+        for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
+            if ( propName.getTable() == null ) {
+                s.append( ' ' );
+            } else {
+                s.append( " AND " + propName.getTable() + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name()
+                          + " = " + ISO_DC_Mappings.databaseTables.datasets.name() + ".id " );
+            }
+        }
+
         s.append( constraintExpression + "" );
 
-        return s;
+        stmt = conn.prepareStatement( s.toString() );
+
+        if ( builder != null && builder.getWhereClause().length() > 0 ) {
+            for ( Object arg : builder.getWhereParams() ) {
+                LOG.info( "Setting argument: " + arg );
+                stmt.setObject( 1, arg );
+
+            }
+        }
+
+        LOG.debug( "resultSet:" + stmt );
+
+        return stmt;
     }
 
     /*

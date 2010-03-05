@@ -38,6 +38,7 @@ package org.deegree.record.persistence.genericrecordstore;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.ISO_DCT_NS;
 import static org.deegree.protocol.csw.CSWConstants.ISO_DC_NS;
+import static org.deegree.protocol.ows.OWSCommonXMLAdapter.OWS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
@@ -53,7 +54,6 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Geometry;
-import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.record.persistence.Profile_DB_Mappings;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
@@ -96,7 +96,7 @@ public class ISO_DC_Mappings implements PostGISMapping {// implements Profile_DB
                                                                                               "bbox" ) );
         propToTableAndCol.put( new QName( ISO_DC_NS, "coverage" ),
                                new PropertyNameMapping( "isoqp_BoundingBox", "bbox" ) );
-        propToTableAndCol.put( new QName( OWSCommonXMLAdapter.OWS_NS, "BoundingBox" ),
+        propToTableAndCol.put( new QName( OWS_NS, "BoundingBox" ),
                                new PropertyNameMapping( "isoqp_BoundingBox", "bbox" ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type" ) );
@@ -395,12 +395,12 @@ public class ISO_DC_Mappings implements PostGISMapping {// implements Profile_DB
     @Override
     public PropertyNameMapping getMapping( PropertyName propName )
                             throws FilterEvaluationException {
-        LOG.info( "first time in Mapping: " + propName.getPropertyName() );
+        LOG.info( "first time in Mapping: " + propName.getAsQName() );
         for ( QName matchingPropertyName : propToTableAndCol.keySet() ) {
-            // LOG.info( matchingPropertyName + " - " + QName.valueOf( propName.getPropertyName() ) );
+            LOG.info( matchingPropertyName + " - " + propName.getAsQName() );
 
             // TODO handle the case that PropertyName is *not* a QName, but a more complex XPath
-            if ( QName.valueOf( propName.getPropertyName() ).equals( matchingPropertyName ) ) {
+            if ( propName.getAsQName().equals( matchingPropertyName ) ) {
 
                 LOG.info( "mapping for PropName: " + propToTableAndCol.get( matchingPropertyName ).getTable() + " "
                           + propToTableAndCol.get( matchingPropertyName ).getColumn() );
