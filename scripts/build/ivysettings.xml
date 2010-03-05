@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivysettings>
+  <settings defaultResolver="deegree" />
+  <credentials host="${publication.host}" realm="${publication.realm}" username="${publication.username}" passwd="${publication.password}" />
+  <resolvers>
+    <chain name="deegree" returnFirst="true">
+      <!-- 1. lookup deegree modules in local ivy repository (located normally in ${user.home}/.ivy2/local/ -->
+      <filesystem name="local-publisher" local="true" checksums="md5">
+        <artifact pattern="${ivy.local.repository.dir}/[organisation]/[module]/[artifact].[ext]" />
+        <ivy pattern="${ivy.local.repository.dir}/[organisation]/[module]/[module]-[revision].ivy" />
+      </filesystem>
+      <!-- 2. lookup deegree modules in deegree remote repository -->
+      <url name="libs-snapshot" m2compatible="false">
+        <artifact pattern="${ivy.repository.libs-snapshots}/[organisation]/[module]/[revision]/[artifact].[ext]" />
+        <ivy pattern="${ivy.repository.libs-snapshots}/[organisation]/[module]/[revision]/[module]-[revision].ivy" />
+      </url>
+      <!-- 3. lookup external libraries from deegree (mirror) repository -->
+      <ibiblio name="remote-repos" m2compatible="true" root="${ivy.repository.remote-repos}" />
+      <!-- 4. lookup external libraries (unreleased) from deegree repository -->
+      <ibiblio name="ext-releases" m2compatible="true" root="${ivy.repository.ext-releases}" />
+    </chain>
+    <url name="publish-snapshot" m2compatible="false" checksums="md5">
+      <!-- You can use m2compatible="true" instead of specifying your own pattern -->
+      <artifact pattern="${ivy.publish.snapshot}/[organisation]/[module]/[revision]/[artifact].[ext]" />
+      <ivy pattern="${ivy.publish.snapshot}/[organisation]/[module]/[revision]/[artifact]" />
+    </url>
+  </resolvers>
+  <!-- http://ant.apache.org/ivy/history/2.1.0/settings/caches.html -->
+  <!-- caches useOrigin="true" /-->
+</ivysettings>
