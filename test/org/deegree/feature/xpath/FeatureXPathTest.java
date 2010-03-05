@@ -102,7 +102,7 @@ public class FeatureXPathTest {
         xpath.setNamespaceContext( nsContext );
         List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
         Assert.assertNotNull( selectedNodes );
-        Assert.assertEquals( 7, selectedNodes.size() );
+        Assert.assertEquals( 6, selectedNodes.size() );
     }
 
     @SuppressWarnings("unchecked")
