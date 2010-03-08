@@ -328,7 +328,7 @@ public class ISORecordStore implements RecordStore {
                             RecordStoreOptions recordStoreOptions )
                             throws SQLException, XMLStreamException, IOException {
 
-        ISO_DC_Mappings mapping = new ISO_DC_Mappings();
+        PostGISMappingsISODC mapping = new PostGISMappingsISODC();
         PostGISWhereBuilder builder = null;
         // TODO sortProperty
         try {
@@ -593,9 +593,8 @@ public class ISORecordStore implements RecordStore {
 
         s.append( "AND " + formatType + ".data IN(" );
 
-        s.append( "SELECT " + formatType + ".data FROM " + ISO_DC_Mappings.databaseTables.datasets.name() + ", "
+        s.append( "SELECT " + formatType + ".data FROM " + PostGISMappingsISODC.databaseTables.datasets.name() + ", "
                   + formatType );
-        LOG.info( "dsfasdgasg" );
         /*
          * appends the tables identified in the WHERE-builder to the FROM clause
          */
@@ -609,10 +608,10 @@ public class ISORecordStore implements RecordStore {
             }
         }
 
-        s.append( " WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-                  + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
+        s.append( " WHERE " + formatType + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
+                  + PostGISMappingsISODC.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
                   + typeNameFormatNumber + " AND " + formatType + "."
-                  + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= "
+                  + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " >= "
                   + recordStoreOptions.getStartPosition() );
 
         /*
@@ -625,8 +624,8 @@ public class ISORecordStore implements RecordStore {
                     s.append( ' ' );
                 } else {
                     s.append( " AND " + propName.getTable() + "."
-                              + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-                              + ISO_DC_Mappings.databaseTables.datasets.name() + ".id " );
+                              + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
+                              + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
                 }
             }
         }
@@ -749,7 +748,7 @@ public class ISORecordStore implements RecordStore {
                     int formatNumber = 0;
                     Set<QName> qNameSet = new HashSet<QName>();
 
-                    ISO_DC_Mappings mapping = new ISO_DC_Mappings();
+                    PostGISMappingsISODC mapping = new PostGISMappingsISODC();
                     PostGISWhereBuilder builder = null;
 
                     // TODO sortProperty
@@ -802,7 +801,7 @@ public class ISORecordStore implements RecordStore {
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
                                           + ".format = 2 AND "
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + "."
-                                          + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = " + i;
+                                          + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = " + i;
                             ResultSet rsGetStoredFullRecordXML = conn.createStatement().executeQuery( stri.toString() );
 
                             while ( rsGetStoredFullRecordXML.next() ) {
@@ -881,7 +880,7 @@ public class ISORecordStore implements RecordStore {
             int formatNumber = 0;
 
             Set<QName> qNameSet = new HashSet<QName>();
-            ISO_DC_Mappings mapping = new ISO_DC_Mappings();
+            PostGISMappingsISODC mapping = new PostGISMappingsISODC();
             PostGISWhereBuilder builder = null;
 
             // TODO sortProperty
@@ -943,7 +942,7 @@ public class ISORecordStore implements RecordStore {
                 for ( int i : deletableDatasets ) {
                     conn.createStatement().executeUpdate(
                                                           "DELETE FROM "
-                                                                                  + ISO_DC_Mappings.databaseTables.datasets.name()
+                                                                                  + PostGISMappingsISODC.databaseTables.datasets.name()
                                                                                   + " WHERE id = " + i );
                 }
             }
@@ -1028,10 +1027,10 @@ public class ISORecordStore implements RecordStore {
 
                 String selectBrief = "SELECT rb.data FROM "
                                      + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + " AS rb, "
-                                     + ISO_DC_Mappings.databaseTables.datasets.name()
+                                     + PostGISMappingsISODC.databaseTables.datasets.name()
                                      + " AS ds, qp_identifier AS i WHERE rb."
-                                     + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
-                                     + ISO_DC_Mappings.commonColumnNames.fk_datasets.name()
+                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
+                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
                                      + " = ds.id AND i.identifier = '" + identifier + "' AND rb.format = "
                                      + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectBrief );
@@ -1040,10 +1039,10 @@ public class ISORecordStore implements RecordStore {
 
                 String selectSummary = "SELECT rs.data FROM "
                                        + formatTypeInISORecordStore.get( SetOfReturnableElements.summary ) + " AS rs, "
-                                       + ISO_DC_Mappings.databaseTables.datasets.name()
+                                       + PostGISMappingsISODC.databaseTables.datasets.name()
                                        + " AS ds, qp_identifier AS i WHERE rs."
-                                       + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
-                                       + ISO_DC_Mappings.commonColumnNames.fk_datasets.name()
+                                       + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
+                                       + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
                                        + " = ds.id AND i.identifier = '" + identifier + "' AND rs.format = "
                                        + profileFormatNumberOutputSchema + ";";
                 LOG.debug( selectSummary );
@@ -1053,10 +1052,10 @@ public class ISORecordStore implements RecordStore {
 
                 String selectFull = "SELECT rf.data FROM "
                                     + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + " AS rf, "
-                                    + ISO_DC_Mappings.databaseTables.datasets.name()
+                                    + PostGISMappingsISODC.databaseTables.datasets.name()
                                     + " AS ds, qp_identifier AS i WHERE rf."
-                                    + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
-                                    + ISO_DC_Mappings.commonColumnNames.fk_datasets.name()
+                                    + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
+                                    + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
                                     + " = ds.id AND i.identifier = '" + identifier + "' AND rf.format = "
                                     + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectFull );
@@ -1095,8 +1094,8 @@ public class ISORecordStore implements RecordStore {
             constraintExpression.append( " " );
         }
 
-        s.append( "SELECT " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " FROM "
-                  + ISO_DC_Mappings.databaseTables.datasets.name() + ", " + formatType );
+        s.append( "SELECT " + formatType + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " FROM "
+                  + PostGISMappingsISODC.databaseTables.datasets.name() + ", " + formatType );
 
         for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
             if ( propName.getTable() == null ) {
@@ -1106,17 +1105,17 @@ public class ISORecordStore implements RecordStore {
             }
         }
 
-        s.append( "WHERE " + formatType + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-                  + ISO_DC_Mappings.databaseTables.datasets.name() + ".id AND " + formatType + "."
-                  + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " >= " + constraint.getStartPosition()
+        s.append( "WHERE " + formatType + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
+                  + PostGISMappingsISODC.databaseTables.datasets.name() + ".id AND " + formatType + "."
+                  + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " >= " + constraint.getStartPosition()
                   + " AND " + formatType + ".format = " + formatNumber );
 
         for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
             if ( propName.getTable() == null ) {
                 s.append( ' ' );
             } else {
-                s.append( " AND " + propName.getTable() + "." + ISO_DC_Mappings.commonColumnNames.fk_datasets.name()
-                          + " = " + ISO_DC_Mappings.databaseTables.datasets.name() + ".id " );
+                s.append( " AND " + propName.getTable() + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
+                          + " = " + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
             }
         }
 
@@ -1151,12 +1150,12 @@ public class ISORecordStore implements RecordStore {
         for ( int i : transactionIds ) {
             Writer s = new StringWriter();
             s.append( " SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + ".data " + "FROM "
-                      + ISO_DC_Mappings.databaseTables.datasets.name() + ", "
+                      + PostGISMappingsISODC.databaseTables.datasets.name() + ", "
                       + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + " " );
 
             s.append( " WHERE " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "."
-                      + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = "
-                      + ISO_DC_Mappings.databaseTables.datasets.name() + ".id " );
+                      + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
+                      + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
 
             s.append( " AND " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "." + "id" + " = "
                       + i );

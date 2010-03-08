@@ -54,24 +54,23 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Geometry;
-import org.deegree.record.persistence.Profile_DB_Mappings;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
 import org.slf4j.Logger;
 
 /**
- * Implementation of the {@link Profile_DB_Mappings}. It's the base class for access to the backend. Is there any change
- * in the database schema for the {@link ISORecordStore} then in this class should be changed the binding, as well.
+ * Implementation of the {@link PostGISMapping}. It's the base class for access to the backend. Is there any change in
+ * the database schema for the {@link ISORecordStore} then in this class should be changed the binding, as well.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
  * 
  * @version $Revision: $, $Date: $
  */
-public class ISO_DC_Mappings implements PostGISMapping {// implements Profile_DB_Mappings {
+public class PostGISMappingsISODC implements PostGISMapping {
 
-    private static final Logger LOG = getLogger( ISO_DC_Mappings.class );
+    private static final Logger LOG = getLogger( PostGISMappingsISODC.class );
 
     private static Map<QName, PropertyNameMapping> propToTableAndCol = new HashMap<QName, PropertyNameMapping>();
 

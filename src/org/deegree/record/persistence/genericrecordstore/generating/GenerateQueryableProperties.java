@@ -47,7 +47,7 @@ import java.text.ParseException;
 
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.crs.CRS;
-import org.deegree.record.persistence.genericrecordstore.ISO_DC_Mappings;
+import org.deegree.record.persistence.genericrecordstore.PostGISMappingsISODC;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
 import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
 import org.deegree.record.persistence.genericrecordstore.parsing.ReturnableProperties;
@@ -84,7 +84,7 @@ public class GenerateQueryableProperties {
      *         databasetables
      */
     public int generateMainDatabaseDataset( Connection connection, Statement stm, ParsedProfileElement parsedElement ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.datasets.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.datasets.name();
         StringWriter sqlStatement = new StringWriter( 1000 );
         String modifiedAttribute = "null";
         boolean isCaseSensitive = true;
@@ -254,13 +254,13 @@ public class GenerateQueryableProperties {
      */
     private void generateQP_IdentifierStatement( boolean isUpdate, Connection connection, Statement stm,
                                                  int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.qp_identifier.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.qp_identifier.name();
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
 
         for ( String identifierString : qp.getIdentifier() ) {
-            s_PRE.append( "INSERT INTO " + databaseTable + " (" + ISO_DC_Mappings.commonColumnNames.id.name() + ", "
-                          + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + ", identifier)" );
+            s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.commonColumnNames.id.name() + ", "
+                          + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", identifier)" );
 
             s_POST.append( "'" + identifierString + "');" );
 
@@ -298,7 +298,7 @@ public class GenerateQueryableProperties {
 
             if ( isUpdate == true ) {
                 sqlStatement.append( "DELETE FROM " + databaseTable + " WHERE "
-                                     + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " = " + operatesOnId
+                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = " + operatesOnId
                                      + ";" );
                 stm.executeUpdate( sqlStatement.toString() );
             }
@@ -475,7 +475,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_OrganisationNameStatement( boolean isUpdate, Connection connection, Statement stm,
                                                           int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_organisationname.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_organisationname.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -495,7 +495,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_TemporalExtentStatement( boolean isUpdate, Connection connection, Statement stm,
                                                         int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_temporalextent.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_temporalextent.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -523,7 +523,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_SpatialResolutionStatement( boolean isUpdate, Connection connection, Statement stm,
                                                            int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_spatialresolution.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_spatialresolution.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -543,13 +543,13 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_CouplingTypeStatement( boolean isUpdate, Connection connection, Statement stm,
                                                       int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_couplingtype.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_couplingtype.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
 
-        s_PRE.append( "INSERT INTO " + databaseTable + " (" + ISO_DC_Mappings.commonColumnNames.id.name() + ", "
-                      + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + ", couplingtype)" );
+        s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.commonColumnNames.id.name() + ", "
+                      + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", couplingtype)" );
 
         s_POST.append( "'" + qp.getCouplingType() + "');" );
 
@@ -564,7 +564,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_OperatesOnStatement( boolean isUpdate, Connection connection, Statement stm,
                                                     int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_operatesondata.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_operatesondata.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -589,7 +589,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_OperationStatement( boolean isUpdate, Connection connection, Statement stm,
                                                    int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_operation.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_operation.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -613,7 +613,7 @@ public class GenerateQueryableProperties {
     private void generateISOQP_GeographicDescriptionCode_ServiceStatement( boolean isUpdate, Connection connection,
                                                                            Statement stm, int operatesOnId,
                                                                            QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_geographicdescriptioncode.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_geographicdescriptioncode.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -633,7 +633,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_ServiceTypeVersionStatement( boolean isUpdate, Connection connection, Statement stm,
                                                             int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_servicetypeversion.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_servicetypeversion.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -653,7 +653,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_ServiceTypeStatement( boolean isUpdate, Connection connection, Statement stm,
                                                      int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_servicetype.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_servicetype.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -673,7 +673,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_ResourceLanguageStatement( boolean isUpdate, Connection connection, Statement stm,
                                                           int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_resourcelanguage.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_resourcelanguage.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -693,7 +693,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_RevisionDateStatement( boolean isUpdate, Connection connection, Statement stm,
                                                       int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_revisiondate.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_revisiondate.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -722,7 +722,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_CreationDateStatement( boolean isUpdate, Connection connection, Statement stm,
                                                       int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_creationdate.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_creationdate.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -751,7 +751,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_PublicationDateStatement( boolean isUpdate, Connection connection, Statement stm,
                                                          int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_publicationdate.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_publicationdate.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -780,7 +780,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_ResourceIdentifierStatement( boolean isUpdate, Connection connection, Statement stm,
                                                             int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_resourceIdentifier.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_resourceIdentifier.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -803,7 +803,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_AlternateTitleStatement( boolean isUpdate, Connection connection, Statement stm,
                                                         int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_alternatetitle.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_alternatetitle.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -826,7 +826,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_TitleStatement( boolean isUpdate, Connection connection, Statement stm,
                                                int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_title.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_title.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -849,7 +849,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_TypeStatement( boolean isUpdate, Connection connection, Statement stm, int operatesOnId,
                                               QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_type.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_type.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -869,7 +869,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_KeywordStatement( boolean isUpdate, Connection connection, Statement stm,
                                                  int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_keyword.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_keyword.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -896,7 +896,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_TopicCategoryStatement( boolean isUpdate, Connection connection, Statement stm,
                                                        int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_topiccategory.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_topiccategory.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -919,7 +919,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_FormatStatement( boolean isUpdate, Connection connection, Statement stm,
                                                 int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_format.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_format.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -942,7 +942,7 @@ public class GenerateQueryableProperties {
      */
     private void generateISOQP_AbstractStatement( boolean isUpdate, Connection connection, Statement stm,
                                                   int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_abstract.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_abstract.name();
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
@@ -966,7 +966,7 @@ public class GenerateQueryableProperties {
     // TODO one record got one or more bboxes?
     private void generateISOQP_BoundingBoxStatement( boolean isUpdate, Connection connection, Statement stm,
                                                      int operatesOnId, QueryableProperties qp ) {
-        final String databaseTable = ISO_DC_Mappings.databaseTables.isoqp_boundingbox.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.isoqp_boundingbox.name();
         StringWriter sqlStatement = new StringWriter( 500 );
 
         int localId = 0;

@@ -134,8 +134,8 @@ public class ExecuteStatements {
     public void executeUpdateStatement( Connection connection, List<Integer> updatedIds,
                                         ParsedProfileElement parsedElement ) {
 
-        final String databaseTable = ISO_DC_Mappings.databaseTables.datasets.name();
-        final String qp_identifier = ISO_DC_Mappings.databaseTables.qp_identifier.name();
+        final String databaseTable = PostGISMappingsISODC.databaseTables.datasets.name();
+        final String qp_identifier = PostGISMappingsISODC.databaseTables.qp_identifier.name();
         boolean isUpdate = true;
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildRecordXMLRepresentation();
@@ -149,10 +149,10 @@ public class ExecuteStatements {
             for ( String identifierString : parsedElement.getQueryableProperties().getIdentifier() ) {
 
                 sqlStatementUpdate.append( "SELECT " + databaseTable + "."
-                                           + ISO_DC_Mappings.commonColumnNames.id.name() + " FROM " + databaseTable
+                                           + PostGISMappingsISODC.commonColumnNames.id.name() + " FROM " + databaseTable
                                            + "," + qp_identifier + " WHERE " + databaseTable + "."
-                                           + ISO_DC_Mappings.commonColumnNames.id.name() + " = " + qp_identifier + "."
-                                           + ISO_DC_Mappings.commonColumnNames.fk_datasets.name() + " AND "
+                                           + PostGISMappingsISODC.commonColumnNames.id.name() + " = " + qp_identifier + "."
+                                           + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " AND "
                                            + qp_identifier + ".identifier = '" + identifierString + "'" );
                 LOG.debug( sqlStatementUpdate.toString() );
                 StringBuffer buf = sqlStatementUpdate.getBuffer();
