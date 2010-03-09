@@ -117,8 +117,6 @@ public class ISORecordStore implements RecordStore {
     // if true, use old-style for spatial predicates (intersects instead of ST_Intersecs)
     private boolean useLegacyPredicates;
 
-    private Set<String> tableSet;
-
     /**
      * maps the specific returnable element format to a concrete table in the backend<br>
      * brief, summary, full
@@ -165,7 +163,7 @@ public class ISORecordStore implements RecordStore {
             /*
              * if there is no specific typeName requested then there should be responded every recordStore
              */
-            if ( "".equals( typeName ) ) {
+            if ( new QName( "" ).equals( typeName ) ) {
 
                 urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
 
@@ -338,7 +336,7 @@ public class ISORecordStore implements RecordStore {
 
             e.printStackTrace();
         }
-        LOG.info( "here bin ich nun" );
+
         int profileFormatNumberOutputSchema = 0;
         int typeNameFormatNumber = 0;
 
@@ -1114,8 +1112,9 @@ public class ISORecordStore implements RecordStore {
             if ( propName.getTable() == null ) {
                 s.append( ' ' );
             } else {
-                s.append( " AND " + propName.getTable() + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
-                          + " = " + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
+                s.append( " AND " + propName.getTable() + "."
+                          + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
+                          + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
             }
         }
 
