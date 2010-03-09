@@ -50,6 +50,7 @@ import org.slf4j.Logger;
  * 
  */
 public class LogUtils {
+
     /**
      * Writes the given {@link String} to the specified file, if the log level is set to debug. *
      * 

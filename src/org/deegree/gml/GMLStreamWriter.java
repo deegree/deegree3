@@ -178,7 +178,7 @@ public class GMLStreamWriter {
      * Controls the format (e.g. number of decimal places) for written coordinates.
      * 
      * @param formatter
-     *            formatter to use, may be <code>null</code> (use 5 decimal places)
+     *            formatter to use, may be <code>null</code> (don't do any formatting)
      */
     public void setCoordinateFormatter( CoordinateFormatter formatter ) {
         this.formatter = formatter;
