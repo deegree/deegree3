@@ -315,7 +315,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             Points exteriorPoints = getAsPoints( jtsPolygon.getExteriorRing().getCoordinateSequence() );
             LinearRing exteriorRing = new DefaultLinearRing( null, crs, pm, exteriorPoints );
             List<Ring> interiorRings = new ArrayList<Ring>( jtsPolygon.getNumInteriorRing() );
-            for ( int i = 0; i < interiorRings.size(); i++ ) {
+            for ( int i = 0; i < jtsPolygon.getNumInteriorRing(); i++ ) {
                 Points interiorPoints = getAsPoints( jtsPolygon.getInteriorRingN( i ).getCoordinateSequence() );
                 interiorRings.add( new DefaultLinearRing( null, crs, pm, interiorPoints ) );
             }
