@@ -325,11 +325,10 @@
         <property file="${user.home}/d3_publication.properties" />
     </target>
     
-    <target name="publish" depends="init-publication-properties,build,build-javadoc,build-src-zip">
+    <target name="publish" depends="clean,init-publication-properties,build,build-javadoc,build-src-zip">
         <!-- put the result on the deployment server -->
         <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" srcivypattern="${build.dir}/ivy.xml" />
         <ivy:makepom ivyfile="${build.dir}/ivy.xml" pomfile="${build.dir}/deegree-${module.name}.pom" />
-
         <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" publishivy="false" />
         <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" publishivy="false" />
         <ivy:report todir="${build.dir}" outputpattern="${report.name}.[ext]" conf="${module.name}-build" xsl="true" xml="false" dot="false" graph="false" />
