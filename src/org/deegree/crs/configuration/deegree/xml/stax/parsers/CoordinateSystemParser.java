@@ -77,14 +77,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A stax based 0.4.0 crs configuration parser for Coordinate system objects.
+ * Stax-based parser for Coordinate system objects.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
  */
 public class CoordinateSystemParser extends DefinitionParser {
 

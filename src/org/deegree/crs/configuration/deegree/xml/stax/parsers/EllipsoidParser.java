@@ -61,14 +61,15 @@ import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 
 /**
- * A stax based 0.4.0 crs configuration parser for ellipsoid objects.
+ * Stax-based configuration parser for ellipsoid objects.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
 public class EllipsoidParser extends DefinitionParser {
+
     private static final Logger LOG = getLogger( EllipsoidParser.class );
 
     private static final QName ELLIPS_ELEM = new QName( CRS_NS, "Ellipsoid" );

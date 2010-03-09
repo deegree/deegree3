@@ -4,7 +4,7 @@
     xmlns:app="http://www.deegree.org/app"
     xmlns:gml="http://www.opengis.net/gml"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/feature/featuretype ./0.4.0/featuretype_definition.xsd">
+    xsi:schemaLocation="http://www.deegree.org/feature/featuretype ./0.5.0/featuretype_definition.xsd">
 
   <FeatureType name="Philosopher">
 <!--

@@ -68,7 +68,7 @@ import org.deegree.crs.components.PrimeMeridian;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.components.VerticalDatum;
 import org.deegree.crs.configuration.CRSConfiguration;
-import org.deegree.crs.configuration.deegree.xml.CRSExporter;
+import org.deegree.crs.configuration.deegree.xml.CRSExporterBase;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
@@ -1102,7 +1102,7 @@ public class CRSQuerier {
             List<CoordinateSystem> crsList = new ArrayList<CoordinateSystem>();
             crsList.add( crs );
 
-            CRSExporter exporter = new CRSExporter( null );
+            CRSExporterBase exporter = new CRSExporterBase( null );
             exporter.export( crsList, xmlWriter );
 
             sb.append( out.toString( Charset.defaultCharset().displayName() ) );

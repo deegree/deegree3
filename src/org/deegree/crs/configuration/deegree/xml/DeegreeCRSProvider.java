@@ -149,7 +149,7 @@ public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
 
     private static Logger LOG = LoggerFactory.getLogger( DeegreeCRSProvider.class );
 
-    private CRSExporter exporter;
+    private CRSExporterBase exporter;
 
     /**
      * @param properties
@@ -163,7 +163,7 @@ public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
         // rb: set to unchecked, the constructor is private and is only called from within the getInstance which is
         // valid.
         super( properties, CRSParser.class, null );
-        exporter = new CRSExporter( new Properties( properties ) );
+        exporter = new CRSExporterBase( new Properties( properties ) );
     }
 
     public boolean canExport() {

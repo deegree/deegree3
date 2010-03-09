@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+  -->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://www.deegree.org/commons" xmlns:ds="http://www.deegree.org/datasource"
+  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
+
+  <import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.5.0/commons.xsd" />
+  <include schemaLocation="datasource.xsd" />
+
+  <element name="FeatureStore" substitutionGroup="ds:AbstractDataSource" type="ds:FeatureStoreType" abstract="true">
+    <annotation>
+      <documentation>Substitution group head for datasources that provide access to features.</documentation>
+    </annotation>
+  </element>
+  <complexType name="FeatureStoreType" abstract="true">
+    <complexContent>
+      <extension base="ds:AbstractDataSourceType">
+        <sequence>
+          <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
+            <complexType>
+              <attribute name="prefix" type="string" use="required" />
+              <attribute name="namespaceURI" type="string" use="required" />
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="FeatureStoreReference" substitutionGroup="ds:AbstractDataSource" type="ds:FeatureStoreReferenceType">
+    <annotation>
+      <documentation>Describes a reference to a global FeatureStore declaration.</documentation>
+    </annotation>
+  </element>
+  <complexType name="FeatureStoreReferenceType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <attribute name="refId" type="string" use="required" />
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="ShapefileDataSource" substitutionGroup="ds:FeatureStore" type="ds:ShapefileDataSourceType">
+    <annotation>
+      <documentation>FeatureStore that is backed by a shape file.</documentation>
+    </annotation>
+  </element>
+  <complexType name="ShapefileDataSourceType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <sequence>
+          <element name="StorageSRS" type="string" minOccurs="0" />
+          <element name="File" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="DirectSQLDataSource" substitutionGroup="ds:FeatureStore" type="ds:DirectSQLDataSourceType">
+    <annotation>
+      <documentation>FeatureStore that is backed by a SQL statement/connection.</documentation>
+    </annotation>
+  </element>
+  <complexType name="DirectSQLDataSourceType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <sequence>
+          <element name="StorageSRS" type="string" />
+          <element name="ConnectionPoolId" type="string" />
+          <element name="SQLStatement" type="string" />
+          <element name="BBoxStatement" type="string" />
+          <element name="LODStatement" minOccurs="0" maxOccurs="unbounded">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="aboveScale" type="int" />
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="Namespace" type="string" minOccurs="0" />
+          <element name="FeatureTypeName" type="string" minOccurs="0" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="MemoryFeatureStore" substitutionGroup="ds:FeatureStore" type="ds:MemoryFeatureStoreType">
+    <annotation>
+      <documentation>FeatureStore that keeps all features in memory.</documentation>
+    </annotation>
+  </element>
+  <complexType name="MemoryFeatureStoreType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <sequence>
+          <element name="GMLSchemaFileURL" maxOccurs="unbounded">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="gmlVersion" type="cm:GMLVersionType" use="required" />
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="GMLFeatureCollectionFileURL" minOccurs="0" maxOccurs="unbounded">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="gmlVersion" type="cm:GMLVersionType" use="required" />
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="PostGISFeatureStore" substitutionGroup="ds:FeatureStore" type="ds:PostGISFeatureStoreType">
+    <annotation>
+      <documentation>FeatureStore that is backed by a PostgreSQL/PostGIS database.</documentation>
+    </annotation>
+  </element>
+  <complexType name="PostGISFeatureStoreType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <sequence>
+          <element name="StorageSRS" type="string" />
+          <element name="JDBCConnId" type="string" />
+          <element name="DBSchemaQualifier" type="string" minOccurs="0" />
+          <element name="GMLSchemaFileURL" minOccurs="0" maxOccurs="unbounded">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="gmlVersion" type="cm:GMLVersionType" use="required" />
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="RelationalMapping" type="string" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+</schema>

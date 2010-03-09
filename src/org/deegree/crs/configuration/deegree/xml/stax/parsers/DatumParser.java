@@ -61,12 +61,12 @@ import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 
 /**
- * A stax based 0.4.0 crs configuration parser for datum objects.
+ * Stax-based configuration parser for datum objects.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
 public class DatumParser extends DefinitionParser {
     private static final Logger LOG = getLogger( DatumParser.class );

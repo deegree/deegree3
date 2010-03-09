@@ -2,7 +2,7 @@
 <ApplicationSchema xmlns="http://www.deegree.org/feature/featuretype"
   xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/feature/featuretype http://schemas.deegree.org/feature/0.4.0/postgis_appschema.xsd">
+  xsi:schemaLocation="http://www.deegree.org/feature/featuretype http://schemas.deegree.org/feature/0.5.0/postgis_appschema.xsd">
 
   <!-- Global mapping information -->
   <GlobalMappingHints>
