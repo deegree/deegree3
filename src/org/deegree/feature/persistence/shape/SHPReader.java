@@ -497,6 +497,11 @@ public class SHPReader {
         LinkedList<Polygon> polys = new LinkedList<Polygon>();
 
         for ( Points p : ps ) {
+            if ( p.size() < 4 ) {
+                LOG.warn( "Ignoring ring with only {} points!", p.size() );
+                continue;
+            }
+
             if ( outer == null ) {
                 outer = fac.createLinearRing( null, crs, p );
             } else {
