@@ -36,6 +36,8 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
+import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
@@ -116,7 +119,7 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
      * @return the list of objects this manager manages.
      */
     public List<T> getObjects( Envelope env ) {
-        return root.query( env );
+        return root.query( createEnvelope( env ) );
     }
 
     /**
@@ -131,7 +134,7 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
      * @return All objects this manager manages
      */
     public List<T> getObjects() {
-        return root.query( validDomain );
+        return root.query( createEnvelope( validDomain ) );
     }
 
     @Override

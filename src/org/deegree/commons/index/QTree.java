@@ -48,8 +48,6 @@ import java.util.Set;
 
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.commons.utils.Pair;
-import org.deegree.geometry.Envelope;
-import org.deegree.rendering.r3d.opengl.rendering.model.manager.PositionableModel;
 
 /**
  * The <code>QTree</code> is a quadtree based organization of a scene containing {@link PositionableModel}s.
@@ -128,8 +126,8 @@ public class QTree<T> extends SpatialIndex<T> {
      * @param numberOfObjects
      *            each node will contain
      */
-    public QTree( Envelope validDomain, int numberOfObjects ) {
-        this( numberOfObjects, createEnvelope( validDomain ), (byte) 0 );
+    public QTree( float[] validDomain, int numberOfObjects ) {
+        this( numberOfObjects, validDomain, (byte) 0 );
         if ( validDomain == null ) {
             throw new IllegalArgumentException( "The envelope must be set." );
         }
@@ -171,21 +169,7 @@ public class QTree<T> extends SpatialIndex<T> {
      * @return true if the object was inserted, false otherwise.
      */
     @Override
-    public boolean insert( Envelope envelope, T object ) {
-        if ( envelope == null || object == null ) {
-            return false;
-        }
-        return insert( createEnvelope( envelope ), object );
-    }
-
-    /**
-     * @param envelope
-     *            of the object
-     * @param object
-     *            to insert
-     * @return true if the object was inserted, false otherwise.
-     */
-    protected boolean insert( float[] envelope, T object ) {
+    public boolean insert( float[] envelope, T object ) {
         if ( object != null ) {
             if ( intersects( this.envelope, envelope, maxOffset ) ) {
                 Entry<T> obj = new Entry<T>( envelope, object );
@@ -724,9 +708,9 @@ public class QTree<T> extends SpatialIndex<T> {
      * @return the leafObjects which intersect with this node and or it's children, or the empty list.
      */
     @Override
-    public List<T> query( Envelope env ) {
+    public List<T> query( float[] env ) {
         Set<Entry<T>> r = new HashSet<Entry<T>>();
-        getObjects( createEnvelope( env ), r );
+        getObjects( env, r );
         return getEntrySetAsResult( r );
     }
 
@@ -939,8 +923,8 @@ public class QTree<T> extends SpatialIndex<T> {
     }
 
     @Override
-    public void insertBulk( List<Pair<Envelope, T>> listOfObjects ) {
-        for ( Pair<Envelope, T> p : listOfObjects ) {
+    public void insertBulk( List<Pair<float[], T>> listOfObjects ) {
+        for ( Pair<float[], T> p : listOfObjects ) {
             if ( p != null ) {
                 insert( p.first, p.second );
             }

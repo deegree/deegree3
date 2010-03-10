@@ -33,33 +33,56 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.templating.lang;
+package org.deegree.feature.utils.templating.lang;
 
+import static java.util.Collections.singletonList;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
+
+import java.util.HashMap;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 
 /**
- * <code>Name</code>
+ * <code>OddEven</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Name {
+public class OddEven {
+
+    private String name;
+
+    private boolean odd;
+
+    /**
+     * @param name
+     * @param odd
+     */
+    public OddEven( String name, boolean odd ) {
+        this.name = name;
+        this.odd = odd;
+    }
 
     /**
      * @param sb
-     * @param o
+     * @param defs
+     * @param obj
+     * @param idx
+     * @param geometries
      */
-    public void eval( StringBuilder sb, Object o ) {
-        if ( o instanceof Feature ) {
-            sb.append( ( (Feature) o ).getName().getLocalPart() );
+    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, int idx, boolean geometries ) {
+        if ( idx % 2 == 0 ^ odd ) {
+            return;
         }
-        if ( o instanceof Property<?> ) {
-            sb.append( ( (Property<?>) o ).getName().getLocalPart() );
+
+        if ( obj instanceof Feature ) {
+            new FeatureTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, geometries );
+        }
+        if ( obj instanceof Property<?> ) {
+            new PropertyTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, geometries );
         }
     }
 

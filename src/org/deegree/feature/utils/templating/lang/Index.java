@@ -33,22 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.templating.lang;
+package org.deegree.feature.utils.templating.lang;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 
+import java.util.List;
+
 /**
- * <code>Definition</code>
+ * <code>Index</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public abstract class Definition {
+public class Index {
 
-    /***/
-    public String name;
+    /**
+     * @param <T>
+     * @param sb
+     * @param val
+     * @param vals
+     */
+    public <T> void eval( StringBuilder sb, T val, List<T> vals ) {
+        sb.append( vals.indexOf( val ) + 1 );
+    }
 
     @Override
     public String toString() {

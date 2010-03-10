@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.templating.lang;
+package org.deegree.feature.utils.templating.lang;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.slf4j.LoggerFactory.getLogger;

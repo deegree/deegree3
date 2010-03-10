@@ -33,31 +33,33 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.templating.lang;
+package org.deegree.feature.utils.templating.lang;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.deegree.commons.utils.templating.lang.Util.getMatchingObjects;
+import static org.deegree.feature.utils.templating.lang.Util.getMatchingObjects;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Property;
 import org.slf4j.Logger;
 
 /**
- * <code>FeatureTemplateCall</code>
+ * <code>PropertyTemplateCall</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureTemplateCall {
+public class PropertyTemplateCall {
 
-    private static final Logger LOG = getLogger( FeatureTemplateCall.class );
+    private static final Logger LOG = getLogger( PropertyTemplateCall.class );
 
     private String name;
 
@@ -65,56 +67,72 @@ public class FeatureTemplateCall {
 
     private HashSet<Object> visited = new HashSet<Object>();
 
-    private boolean negate;
+    private final boolean negate;
 
     /**
      * @param name
      * @param patterns
      * @param negate
      */
-    public FeatureTemplateCall( String name, List<String> patterns, boolean negate ) {
+    public PropertyTemplateCall( String name, List<String> patterns, boolean negate ) {
         this.name = name;
         this.patterns = patterns;
         this.negate = negate;
     }
 
-    private void eval( StringBuilder sb, HashMap<String, Object> defs, Feature f, TemplateDefinition t,
-                       List<Feature> list, boolean geometries ) {
-        if ( visited.contains( f ) ) {
-            // TODO add link?
-            return;
+    private void eval( StringBuilder sb, TemplateDefinition t, Object obj, HashMap<String, Object> defs,
+                       List<Property<?>> list, Feature parent, boolean geometries ) {
+        Property<?> p = null;
+        if ( obj instanceof Property<?> ) {
+            p = (Property<?>) obj;
         }
-        visited.add( f );
+        if ( p != null ) {
+            if ( visited.contains( p ) ) {
+                // TODO add link?
+                return;
+            }
+            visited.add( p );
+        }
+
         for ( Object o : t.body ) {
+            if ( o instanceof FeatureTemplateCall ) {
+                if ( p != null && ( p.getValue() instanceof Feature ) ) {
+                    ( (FeatureTemplateCall) o ).eval( sb, defs, p.getValue(), geometries );
+                }
+                if ( p == null && obj instanceof FeatureCollection ) {
+                    ( (FeatureTemplateCall) o ).eval( sb, defs, obj, geometries );
+                }
+            }
             if ( o instanceof String ) {
                 sb.append( o );
             }
-            if ( o instanceof MapCall ) {
-                ( (MapCall) o ).eval( sb, defs, f );
+            if ( p == null ) {
+                continue;
             }
-            if ( o instanceof FeatureTemplateCall ) {
-                ( (FeatureTemplateCall) o ).eval( sb, defs, f, geometries );
+            if ( o instanceof MapCall ) {
+                ( (MapCall) o ).eval( sb, defs, p );
             }
             if ( o instanceof PropertyTemplateCall ) {
-                ( (PropertyTemplateCall) o ).eval( sb, defs, f, geometries );
+                LOG.warn( "Trying to call template '{}' as property template while current object is property.",
+                          ( (PropertyTemplateCall) o ).name );
             }
             if ( o instanceof Name ) {
-                ( (Name) o ).eval( sb, f );
+                ( (Name) o ).eval( sb, p );
             }
             if ( o instanceof Value ) {
-                ( (Value) o ).eval( sb, f );
+                ( (Value) o ).eval( sb, p );
             }
             if ( o instanceof Link ) {
-                ( (Link) o ).eval( sb, f );
+                ( (Link) o ).eval( sb, p );
             }
             if ( o instanceof Index ) {
-                ( (Index) o ).eval( sb, f, list );
+                ( (Index) o ).eval( sb, p, list );
             }
             if ( o instanceof OddEven ) {
-                ( (OddEven) o ).eval( sb, defs, f, 1 + list.indexOf( f ), geometries );
+                ( (OddEven) o ).eval( sb, defs, p, 1 + list.indexOf( p ), geometries );
             }
             if ( o instanceof GMLId ) {
-                ( (GMLId) o ).eval( sb, f, null );
+                ( (GMLId) o ).eval( sb, p, parent );
             }
         }
     }
@@ -126,12 +144,6 @@ public class FeatureTemplateCall {
      * @param geometries
      */
     public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, boolean geometries ) {
-        if ( obj instanceof Feature ) {
-            LOG.debug( "Feature template call '{}' with featureid '{}'", name, ( (Feature) obj ).getId() );
-        } else {
-            LOG.debug( "Feature template call '{}' with '{}'", name, obj );
-        }
-
         Object def = defs.get( name );
         if ( def == null ) {
             LOG.warn( "No template definition with name '{}'.", name );
@@ -139,20 +151,21 @@ public class FeatureTemplateCall {
         }
         TemplateDefinition t = (TemplateDefinition) def;
 
-        if ( obj instanceof FeatureCollection ) {
-            Feature[] fs = new Feature[( (FeatureCollection) obj ).size()];
-            List<Feature> list = getMatchingObjects( ( (FeatureCollection) obj ).toArray( fs ), patterns, negate,
-                                                     geometries );
-            for ( Feature feat : list ) {
-                eval( sb, defs, feat, t, list, geometries );
-            }
+        if ( obj instanceof Property<?> ) {
+            eval( sb, t, obj, defs, Collections.<Property<?>> singletonList( (Property<?>) obj ), null, geometries );
             return;
         }
-        if ( obj instanceof Feature ) {
-            List<Feature> feats = getMatchingObjects( new Feature[] { (Feature) obj }, patterns, negate, geometries );
-            for ( Feature f : feats ) {
-                eval( sb, defs, f, t, feats, geometries );
-            }
+        if ( obj instanceof FeatureCollection ) {
+            eval( sb, t, obj, defs, null, (Feature) obj, geometries );
+            return;
+        }
+
+        List<Property<?>> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate, geometries );
+
+        LOG.debug( "Property template call '{}' matches objects '{}'.", name, props );
+
+        for ( Property<?> p : props ) {
+            eval( sb, t, p, defs, props, (Feature) obj, geometries );
         }
     }
 

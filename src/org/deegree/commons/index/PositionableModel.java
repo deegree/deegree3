@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,62 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.templating.lang;
 
-import static java.util.Collections.singletonList;
-import static org.deegree.commons.utils.JavaUtils.generateToString;
-
-import java.util.HashMap;
-
-import org.deegree.feature.Feature;
-import org.deegree.feature.Property;
+package org.deegree.commons.index;
 
 /**
- * <code>OddEven</code>
+ * The <code>PositionableModel</code> defines methods on an object model for getting scene position and size
+ * information.
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
+ * 
  */
-public class OddEven {
-
-    private String name;
-
-    private boolean odd;
+public interface PositionableModel {
 
     /**
-     * @param name
-     * @param odd
+     * @return the position of the implementing class.
      */
-    public OddEven( String name, boolean odd ) {
-        this.name = name;
-        this.odd = odd;
-    }
+    public float[] getPosition();
 
     /**
-     * @param sb
-     * @param defs
-     * @param obj
-     * @param idx
-     * @param geometries
+     * @return the boundingbox of the model with float[0][0-3] the min, float[1][0-3] the max.
      */
-    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, int idx, boolean geometries ) {
-        if ( idx % 2 == 0 ^ odd ) {
-            return;
-        }
+    public float[] getModelBBox();
 
-        if ( obj instanceof Feature ) {
-            new FeatureTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, geometries );
-        }
-        if ( obj instanceof Property<?> ) {
-            new PropertyTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, geometries );
-        }
-    }
+    /**
+     * @return a scalar which is represents the 'error' of this positionable.
+     */
+    public float getErrorScalar();
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+    /**
+     * @return a scalar which represents the 'height' of this positionable.
+     */
+    public float getObjectHeight();
+
+    /**
+     * @return a scalar which represents the 'groundlevel' of this positionable.
+     */
+    public float getGroundLevel();
 
 }

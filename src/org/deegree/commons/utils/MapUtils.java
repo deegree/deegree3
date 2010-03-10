@@ -37,13 +37,8 @@
 package org.deegree.commons.utils;
 
 import static java.lang.Math.sqrt;
-import static org.deegree.crs.coordinatesystems.GeographicCRS.WGS84;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;
 
 /**
@@ -65,115 +60,6 @@ public class MapUtils {
 
     /** The Value of a PixelSize */
     public static final double DEFAULT_PIXEL_SIZE = 0.00028;
-
-    /**
-     * @param mapWidth
-     * @param mapHeight
-     * @param bbox
-     * @param crs
-     * @return the WMS 1.1.1 scale (size of the diagonal pixel)
-     */
-    public static double calcScaleWMS111( int mapWidth, int mapHeight, Envelope bbox, CoordinateSystem crs ) {
-        if ( mapWidth == 0 || mapHeight == 0 ) {
-            return 0;
-        }
-        double scale = 0;
-
-        if ( crs == null ) {
-            throw new RuntimeException( "Invalid crs: " + crs );
-        }
-
-        if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
-            /*
-             * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
-             * maps having a projected reference system. Direct calculation of scale avoids uncertainties
-             */
-            double dx = bbox.getSpan0() / mapWidth;
-            double dy = bbox.getSpan1() / mapHeight;
-            scale = sqrt( dx * dx + dy * dy );
-        } else {
-
-            if ( !crs.equals( WGS84 ) ) {
-                // transform the bounding box of the request to EPSG:4326
-                GeometryTransformer trans = new GeometryTransformer( WGS84 );
-                try {
-                    bbox = (Envelope) trans.transform( bbox, crs );
-                } catch ( IllegalArgumentException e ) {
-                    LOG.error( "Unknown error", e );
-                } catch ( TransformationException e ) {
-                    LOG.error( "Unknown error", e );
-                }
-            }
-            double dx = bbox.getSpan0() / mapWidth;
-            double dy = bbox.getSpan1() / mapHeight;
-            double minx = bbox.getMin().get0() + dx * ( mapWidth / 2d - 1 );
-            double miny = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
-            double maxx = bbox.getMin().get0() + dx * ( mapWidth / 2d );
-            double maxy = bbox.getMin().get1() + dy * ( mapHeight / 2d );
-
-            double distance = calcDistance( minx, miny, maxx, maxy );
-
-            scale = distance / SQRT2;
-
-        }
-
-        return scale;
-    }
-
-    /**
-     * @param mapWidth
-     * @param mapHeight
-     * @param bbox
-     * @param crs
-     * @return the WMS 1.3.0 scale (horizontal size of the pixel, pixel size == 0.28mm)
-     */
-    public static double calcScaleWMS130( int mapWidth, int mapHeight, Envelope bbox, CoordinateSystem crs ) {
-        if ( mapWidth == 0 || mapHeight == 0 ) {
-            return 0;
-        }
-
-        double scale = 0;
-
-        if ( crs == null ) {
-            throw new RuntimeException( "Invalid crs: " + crs );
-        }
-
-        if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
-            /*
-             * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
-             * maps having a projected reference system. Direct calculation of scale avoids uncertainties
-             */
-            double dx = bbox.getSpan0() / mapWidth;
-            scale = dx / DEFAULT_PIXEL_SIZE;
-        } else {
-
-            if ( !crs.equals( WGS84 ) ) {
-                // transform the bounding box of the request to EPSG:4326
-                GeometryTransformer trans = new GeometryTransformer( WGS84 );
-                try {
-                    bbox = (Envelope) trans.transform( bbox, crs );
-                } catch ( IllegalArgumentException e ) {
-                    LOG.error( "Unknown error", e );
-                } catch ( TransformationException e ) {
-                    LOG.error( "Unknown error", e );
-                }
-            }
-            double dx = bbox.getSpan0() / mapWidth;
-            double dy = bbox.getSpan1() / mapHeight;
-
-            double minx = bbox.getMin().get0() + dx * ( mapWidth / 2d - 1 );
-            double miny = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
-            double maxx = bbox.getMin().get0() + dx * ( mapWidth / 2d );
-            double maxy = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
-
-            double distance = calcDistance( minx, miny, maxx, maxy );
-
-            scale = distance / SQRT2 / DEFAULT_PIXEL_SIZE;
-
-        }
-
-        return scale;
-    }
 
     /**
      * calculates the distance in meters between two points in EPSG:4326 coodinates. this is a convenience method

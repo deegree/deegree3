@@ -41,10 +41,9 @@ import java.math.BigInteger;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.types.datetime.DateTime;
 import org.deegree.commons.types.datetime.Time;
-import org.deegree.feature.Feature;
 
 /**
- * Primitive type system for object properties (e.g. for {@link Feature} instances).
+ * Primitive type system for object properties (e.g. for {@link org.deegree.feature.Feature} instances).
  * <p>
  * Based on XML schema types, but stripped down to leave out any distinctions that are not necessary in the feature
  * model.
@@ -103,7 +102,7 @@ public enum PrimitiveType {
                             throws IllegalArgumentException {
         Class<?> oClass = value.getClass();
         for ( PrimitiveType pt : values() ) {
-            if (pt.getValueClass() == oClass) {
+            if ( pt.getValueClass() == oClass ) {
                 return pt;
             }
         }

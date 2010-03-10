@@ -34,10 +34,11 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.commons.dataaccess.shape;
+package org.deegree.feature.persistence.shape;
 
 import static org.deegree.commons.utils.ByteUtils.readLEDouble;
 import static org.deegree.commons.utils.ByteUtils.readLEInt;
+import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -330,7 +331,7 @@ public class SHPReader {
 
         LinkedList<Pair<Integer, Geometry>> list = new LinkedList<Pair<Integer, Geometry>>();
 
-        List<Long> pointers = (List<Long>) rtree.query( bbox );
+        List<Long> pointers = (List<Long>) rtree.query( createEnvelope( bbox ) );
         for ( Long ptr : pointers ) {
             in.seek( ptr - 8 );
 
@@ -432,9 +433,9 @@ public class SHPReader {
      * @return a list of all envelopes (minx, miny, maxx, maxy)
      * @throws IOException
      */
-    public Pair<ArrayList<Pair<Envelope, Long>>, Boolean> readEnvelopes()
+    public Pair<ArrayList<Pair<float[], Long>>, Boolean> readEnvelopes()
                             throws IOException {
-        ArrayList<Pair<Envelope, Long>> list = new ArrayList<Pair<Envelope, Long>>();
+        ArrayList<Pair<float[], Long>> list = new ArrayList<Pair<float[], Long>>();
         boolean startsFromZero = false;
 
         in.seek( 100 );
@@ -453,15 +454,16 @@ public class SHPReader {
             case POINT: {
                 double x = readLEDouble( in );
                 double y = readLEDouble( in );
-                Pair<Envelope, Long> p = new Pair<Envelope, Long>( fac.createEnvelope( x, y, x, y, null ), pos );
+                Pair<float[], Long> p = new Pair<float[], Long>( new float[] { (float) x, (float) y, (float) x,
+                                                                              (float) y }, pos );
                 list.add( p );
                 break;
             }
             default: {
-                Pair<Envelope, Long> p = new Pair<Envelope, Long>( fac.createEnvelope( readLEDouble( in ),
-                                                                                       readLEDouble( in ),
-                                                                                       readLEDouble( in ),
-                                                                                       readLEDouble( in ), null ), pos );
+                Pair<float[], Long> p = new Pair<float[], Long>( new float[] { (float) readLEDouble( in ),
+                                                                              (float) readLEDouble( in ),
+                                                                              (float) readLEDouble( in ),
+                                                                              (float) readLEDouble( in ) }, pos );
                 list.add( p );
                 break;
             }
@@ -470,7 +472,7 @@ public class SHPReader {
             in.seek( pos + length );
         }
 
-        return new Pair<ArrayList<Pair<Envelope, Long>>, Boolean>( list, startsFromZero );
+        return new Pair<ArrayList<Pair<float[], Long>>, Boolean>( list, startsFromZero );
     }
 
     /**

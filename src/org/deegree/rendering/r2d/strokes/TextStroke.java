@@ -56,8 +56,8 @@ import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.lang.Math.atan2;
 import static java.lang.Math.sqrt;
 import static java.util.Arrays.asList;
-import static org.deegree.commons.utils.GeometryUtils.measurePathLengths;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
+import static org.deegree.geometry.utils.GeometryUtils.measurePathLengths;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Font;

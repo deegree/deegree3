@@ -33,44 +33,21 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.templating.lang;
+package org.deegree.feature.utils.templating.lang;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import org.deegree.feature.Feature;
-import org.slf4j.Logger;
+import java.util.HashMap;
 
 /**
- * <code>GMLId</code>
+ * <code>MapDefinition</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GMLId {
+public class MapDefinition extends Definition {
 
-    private static final Logger LOG = getLogger( GMLId.class );
-
-    /**
-     * @param sb
-     * @param o
-     * @param parent
-     */
-    public void eval( StringBuilder sb, Object o, Feature parent ) {
-        if ( o instanceof Feature ) {
-            String id = ( (Feature) o ).getId();
-            if ( id != null && !id.isEmpty() ) {
-                sb.append( id );
-            }
-        } else if ( parent != null ) {
-            String id = parent.getId();
-            if ( id != null && !id.isEmpty() ) {
-                sb.append( id );
-            }
-        } else {
-            LOG.warn( "Trying to get GML id from property without parent information." );
-        }
-    }
+    /***/
+    public HashMap<String, String> map = new HashMap<String, String>();
 
 }

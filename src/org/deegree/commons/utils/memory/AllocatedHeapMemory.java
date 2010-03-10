@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.memory;
 
@@ -46,17 +46,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.primitive.Point;
-
 /**
- * The <code>AllocatedHeapMemory</code> class provides methods for calculating the heap memory for some primitive objects.
- *
+ * The <code>AllocatedHeapMemory</code> class provides methods for calculating the heap memory for some primitive
+ * objects.
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class AllocatedHeapMemory {
     /**
@@ -102,9 +99,9 @@ public class AllocatedHeapMemory {
     /**
      * This will return the size of an instance of a new Object, if the asReference is true, the size of a reference
      * will be added as well.
-     *
+     * 
      * @param asReference
-     *
+     * 
      * @return occupied bytes of a simple object, optional as a reference.
      */
     public static final int instanceAndReferenceSize( boolean asReference ) {
@@ -113,7 +110,7 @@ public class AllocatedHeapMemory {
 
     /**
      * The JVM allocates 8 bytes at a time..
-     *
+     * 
      * @param currentSize
      *            of the object
      * @return the next module 8 value.
@@ -129,7 +126,7 @@ public class AllocatedHeapMemory {
 
     /**
      * The approximate size of the given String Object in bytes.
-     *
+     * 
      * @param s
      *            to check
      * @param asReference
@@ -169,7 +166,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param o
      * @param asReference
      *            true if the array is a reference inside another class (if the size of a reference should be added).
@@ -203,7 +200,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param o
      * @param asReference
      *            true if the array is a reference inside another class (if the size of a reference should be added).
@@ -222,7 +219,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param o
      * @param asReference
      *            true if the array is a reference inside another class (if the size of a reference should be added).
@@ -241,7 +238,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param o
      * @param asReference
      *            true if the array is a reference inside another class (if the size of a reference should be added).
@@ -260,7 +257,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param o
      * @param asReference
      *            true if the array is a reference inside another class (if the size of a reference should be added).
@@ -279,7 +276,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param o
      * @param asReference
      *            true if the array is a reference inside another class (if the size of a reference should be added).
@@ -298,7 +295,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param ar
      * @return
      */
@@ -315,7 +312,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param ll
      *            to calculate from
      * @return
@@ -363,7 +360,7 @@ public class AllocatedHeapMemory {
 
     /**
      * The size of the Objects referenced in the list are not accounted for.
-     *
+     * 
      * @param l
      *            get the bytes for.
      * @param asReference
@@ -394,7 +391,7 @@ public class AllocatedHeapMemory {
     }
 
     /**
-     *
+     * 
      * @param b
      * @param asReference
      *            true if the buffer is a reference inside another class (if the size of a reference should be added)
@@ -460,90 +457,90 @@ public class AllocatedHeapMemory {
         return localSize;
     }
 
-    /**
-     *
-     * @param env
-     *            to get the size for.
-     * @param asReference
-     *            true if the Envelope is a reference inside another class (if the size of a reference should be added)
-     * @return the number of bytes this class has in memory
-     */
-    public static long sizeOfEnvelope( Envelope env, boolean asReference ) {
-        long localSize = 0;
-        if ( env != null ) {
-            // 4 for reference
-            // 8 for Object
-            // Envelope has:
-            // 2 * Point //assuming centroid is null
-            // an id String
-            // a crs
-            localSize = instanceAndReferenceSize( asReference ) + sizeOfPoint( env.getMin(), true, false )
-                        + sizeOfPoint( env.getMax(), true, false ) + sizeOfString( env.getId(), true, true )
-                        + sizeOfCRS( env.getCoordinateSystem(), true );
-            if ( !asReference ) {
-                localSize = roundToMem( localSize );
-            }
-        } else {
-            if ( asReference ) {
-                localSize += REF_SIZE;
-            }
-        }
-        return localSize;
-    }
+    // /**
+    // *
+    // * @param env
+    // * to get the size for.
+    // * @param asReference
+    // * true if the Envelope is a reference inside another class (if the size of a reference should be added)
+    // * @return the number of bytes this class has in memory
+    // */
+    // public static long sizeOfEnvelope( Envelope env, boolean asReference ) {
+    // long localSize = 0;
+    // if ( env != null ) {
+    // // 4 for reference
+    // // 8 for Object
+    // // Envelope has:
+    // // 2 * Point //assuming centroid is null
+    // // an id String
+    // // a crs
+    // localSize = instanceAndReferenceSize( asReference ) + sizeOfPoint( env.getMin(), true, false )
+    // + sizeOfPoint( env.getMax(), true, false ) + sizeOfString( env.getId(), true, true )
+    // + sizeOfCRS( env.getCoordinateSystem(), true );
+    // if ( !asReference ) {
+    // localSize = roundToMem( localSize );
+    // }
+    // } else {
+    // if ( asReference ) {
+    // localSize += REF_SIZE;
+    // }
+    // }
+    // return localSize;
+    // }
 
-    /**
-     * The size of a point
-     *
-     * @param p
-     *            to check
-     * @param asReference
-     *            true if the Point is a reference inside another class (if the size of a reference should be added)
-     * @param withCRS
-     *            true if the crs should be taken into account.
-     * @return the size of bytes of the given list.
-     */
-    public static long sizeOfPoint( Point p, boolean asReference, boolean withCRS ) {
-        long localSize = 0;
-        if ( p != null ) {
-            // 4 for reference
-            // 8 for Object
-            // one point has:
-            // a double[]
-            // an id String
-            // a crs
-            localSize += instanceAndReferenceSize( asReference ) + sizeOfString( p.getId(), true, true )
-                         + sizeOfDoubleArray( p.getAsArray(), true )
-                         + ( ( withCRS ) ? sizeOfCRS( p.getCoordinateSystem(), true ) : 0 );
-            if ( !asReference ) {
-                localSize = roundToMem( localSize );
-            }
+    // /**
+    // * The size of a point
+    // *
+    // * @param p
+    // * to check
+    // * @param asReference
+    // * true if the Point is a reference inside another class (if the size of a reference should be added)
+    // * @param withCRS
+    // * true if the crs should be taken into account.
+    // * @return the size of bytes of the given list.
+    // */
+    // public static long sizeOfPoint( Point p, boolean asReference, boolean withCRS ) {
+    // long localSize = 0;
+    // if ( p != null ) {
+    // // 4 for reference
+    // // 8 for Object
+    // // one point has:
+    // // a double[]
+    // // an id String
+    // // a crs
+    // localSize += instanceAndReferenceSize( asReference ) + sizeOfString( p.getId(), true, true )
+    // + sizeOfDoubleArray( p.getAsArray(), true )
+    // + ( ( withCRS ) ? sizeOfCRS( p.getCoordinateSystem(), true ) : 0 );
+    // if ( !asReference ) {
+    // localSize = roundToMem( localSize );
+    // }
+    //
+    // } else {
+    // if ( asReference ) {
+    // localSize += REF_SIZE;
+    // }
+    // }
+    // return localSize;
+    // }
 
-        } else {
-            if ( asReference ) {
-                localSize += REF_SIZE;
-            }
-        }
-        return localSize;
-    }
-
-    /**
-     * @param coordinateSystem
-     * @param asReference
-     * @return 0 or 256 bytes, this method should check all the references and components... not so trivial.
-     */
-    public static long sizeOfCRS( CRS coordinateSystem, boolean asReference ) {
-        long localSize = 0;
-        if ( coordinateSystem != null ) {
-            // Aargh, lots of stuff here:
-            // Identiable
-            // lets just say it's about 256 bytes
-            localSize = 256;
-        } else {
-            if ( asReference ) {
-                localSize += REF_SIZE;
-            }
-        }
-        return localSize;
-    }
+    // /**
+    // * @param coordinateSystem
+    // * @param asReference
+    // * @return 0 or 256 bytes, this method should check all the references and components... not so trivial.
+    // */
+    // public static long sizeOfCRS( CRS coordinateSystem, boolean asReference ) {
+    // long localSize = 0;
+    // if ( coordinateSystem != null ) {
+    // // Aargh, lots of stuff here:
+    // // Identiable
+    // // lets just say it's about 256 bytes
+    // localSize = 256;
+    // } else {
+    // if ( asReference ) {
+    // localSize += REF_SIZE;
+    // }
+    // }
+    // return localSize;
+    // }
 
 }

@@ -36,12 +36,15 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
+import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.index.QTree;
 import org.deegree.commons.utils.math.VectorUtils;
 import org.deegree.commons.utils.math.Vectors3f;
@@ -84,7 +87,7 @@ public class QTModelScene<T extends PositionableModel> extends QTree<T> {
      * @param maxPixelError
      */
     public QTModelScene( Envelope validDomain, int numberOfObjects, double maxPixelError ) {
-        super( validDomain, numberOfObjects );
+        super( createEnvelope( validDomain ), numberOfObjects );
         this.maxPixelError = maxPixelError;
     }
 
@@ -98,7 +101,7 @@ public class QTModelScene<T extends PositionableModel> extends QTree<T> {
      * @return true if the object was inserted, false otherwise.
      */
     @Override
-    public boolean insert( Envelope envelope, T object ) {
+    public boolean insert( float[] envelope, T object ) {
         if ( envelope == null || object == null ) {
             return false;
         }

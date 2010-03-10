@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.commons.dataaccess.dbase;
+package org.deegree.feature.persistence.shape;
 
 import static java.lang.Double.valueOf;
 import static java.util.Calendar.DAY_OF_MONTH;

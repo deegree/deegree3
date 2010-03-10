@@ -53,9 +53,7 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSNamespaceItemList;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.gml.schema.GMLSchemaAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMConfiguration;
@@ -69,7 +67,7 @@ import org.w3c.dom.DOMErrorHandler;
  * types.
  * </p>
  * 
- * @see GMLSchemaAnalyzer
+ * @see org.deegree.gml.schema.GMLSchemaAnalyzer
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

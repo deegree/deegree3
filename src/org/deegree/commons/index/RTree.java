@@ -48,6 +48,7 @@ import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -55,7 +56,6 @@ import java.util.List;
 import java.util.TreeMap;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
 /**
@@ -96,11 +96,11 @@ public class RTree<T> extends SpatialIndex<T> {
      * @param numberOfObjects
      *            each rectangle shall hold before splitting.
      */
-    public RTree( Envelope rootEnvelope, int numberOfObjects ) {
+    public RTree( float[] rootEnvelope, int numberOfObjects ) {
         if ( rootEnvelope == null ) {
             throw new NullPointerException( "The root envelope may not be null" );
         }
-        this.bbox = createEnvelope( rootEnvelope );
+        this.bbox = Arrays.copyOf( rootEnvelope, rootEnvelope.length );
         if ( numberOfObjects > 0 ) {
             this.maxNumberOfObjects = numberOfObjects;
         }
@@ -161,23 +161,23 @@ public class RTree<T> extends SpatialIndex<T> {
      * @return a list of objects intersecting the given boundingbox.
      */
     @Override
-    public LinkedList<T> query( Envelope env ) {
+    public LinkedList<T> query( float[] env ) {
         if ( root != null ) {
-            final float[] bbox = new float[] { (float) env.getMin().get0(), (float) env.getMin().get1(),
-                                              (float) env.getMax().get0(), (float) env.getMax().get1() };
+            // final float[] bbox = new float[] { (float) env.getMin().get0(), (float) env.getMin().get1(),
+            // (float) env.getMax().get0(), (float) env.getMax().get1() };
 
-            if ( intersects( bbox, this.bbox, 2 ) ) {
-                return query( bbox, root );
+            if ( intersects( env, this.bbox, 2 ) ) {
+                return query( env, root );
             }
         }
         return new LinkedList<T>();
     }
 
-    private TreeMap<Float, LinkedList<Pair<float[], ?>>> sortEnvelopes( Collection<Pair<Envelope, ?>> rects, int byIdx ) {
+    private TreeMap<Float, LinkedList<Pair<float[], ?>>> sortEnvelopes( Collection<Pair<float[], ?>> rects, int byIdx ) {
         TreeMap<Float, LinkedList<Pair<float[], ?>>> map = new TreeMap<Float, LinkedList<Pair<float[], ?>>>();
 
-        for ( Pair<Envelope, ?> p : rects ) {
-            float[] env = createEnvelope( p.first );
+        for ( Pair<float[], ?> p : rects ) {
+            float[] env = p.first;
             float d = env[byIdx] + ( env[byIdx + 2] - env[byIdx] ) / 2;
             if ( !map.containsKey( d ) ) {
                 map.put( d, new LinkedList<Pair<float[], ?>>() );
@@ -230,18 +230,18 @@ public class RTree<T> extends SpatialIndex<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void insertBulk( List<Pair<Envelope, T>> listOfObjects ) {
+    public void insertBulk( List<Pair<float[], T>> listOfObjects ) {
         // rb: dirty cast because the ? will not accept T... m*rf*king generics.
         root = buildTree( (List) listOfObjects );
     }
 
     @SuppressWarnings("unchecked")
-    private Entry<T>[] buildTree( List<Pair<Envelope, ?>> rects ) {
+    private Entry<T>[] buildTree( List<Pair<float[], ?>> rects ) {
         if ( rects.size() <= maxNumberOfObjects ) {
             Entry<T>[] node = new Entry[rects.size()];
             for ( int i = 0; i < rects.size(); ++i ) {
                 node[i] = new Entry<T>();
-                node[i].bbox = createEnvelope( rects.get( i ).first );
+                node[i].bbox = rects.get( i ).first;// createEnvelope( rects.get( i ).first );
                 if ( rects.get( i ).second instanceof Entry[] ) {
                     node[i].next = (Entry[]) rects.get( i ).second;
                 } else {
@@ -410,7 +410,7 @@ public class RTree<T> extends SpatialIndex<T> {
     }
 
     @Override
-    public boolean insert( Envelope envelope, T object ) {
+    public boolean insert( float[] envelope, T object ) {
         throw new UnsupportedOperationException( "Inserting of a single object should be implemented" );
     }
 

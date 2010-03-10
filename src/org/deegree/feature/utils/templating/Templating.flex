@@ -1,4 +1,4 @@
-package org.deegree.commons.utils.templating;
+package org.deegree.feature.utils.templating;
 
 import java_cup.runtime.*;
 

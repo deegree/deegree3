@@ -4,14 +4,14 @@
 // Tue Jan 26 15:08:06 CET 2010
 //----------------------------------------------------
 
-package org.deegree.commons.utils.templating;
+package org.deegree.feature.utils.templating;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java_cup.runtime.*;
 import org.deegree.commons.utils.*;
-import org.deegree.commons.utils.templating.lang.*;
+import org.deegree.feature.utils.templating.lang.*;
 
 /** CUP v0.11a beta 20060608 generated parser.
   * @version Tue Jan 26 15:08:06 CET 2010

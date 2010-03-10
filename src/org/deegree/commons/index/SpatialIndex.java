@@ -42,7 +42,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.geometry.Envelope;
 
 /**
  * The <code>SpatialIndex</code> defines basic methods for the adding, removing and querying of a spatial index.
@@ -64,7 +63,7 @@ public abstract class SpatialIndex<T> {
      *            to intersect
      * @return the list of intersecting objects.
      */
-    public abstract Collection<T> query( Envelope envelope );
+    public abstract Collection<T> query( float[] envelope );
 
     /**
      * Create the spatial index from the given list of envelope, objects tuples.
@@ -72,7 +71,7 @@ public abstract class SpatialIndex<T> {
      * @param listOfObjects
      *            to be inserted into the spatial index.
      */
-    public abstract void insertBulk( List<Pair<Envelope, T>> listOfObjects );
+    public abstract void insertBulk( List<Pair<float[], T>> listOfObjects );
 
     /**
      * Removes all objects from this spatial index.
@@ -90,7 +89,7 @@ public abstract class SpatialIndex<T> {
      * @throws UnsupportedOperationException
      *             if the implementation does not support inserting single objects
      */
-    public abstract boolean insert( Envelope envelope, T object );
+    public abstract boolean insert( float[] envelope, T object );
 
     /**
      * Removes the given object from this spatial index, using the objects' equals method.
@@ -153,35 +152,6 @@ public abstract class SpatialIndex<T> {
                || contains( box1, maxOffset, box2[maxOffset], box2[1] ) || noEdgeOverlap( box1, box2, maxOffset )
                || noEdgeOverlap( box2, box1, maxOffset );
 
-    }
-
-    /**
-     * Creates float array out of an envelope (Geometry).
-     * 
-     * @param validDomain
-     * @return a float[] representation of the given envelope
-     */
-    public static final float[] createEnvelope( Envelope validDomain ) {
-        int dim = validDomain.getCoordinateDimension();
-        double[] env = validDomain.getMin().getAsArray();
-
-        if ( !( dim == 3 || dim == 2 ) ) {
-            throw new IllegalArgumentException( "The envelope must be 2 or 3 dimensional." );
-        }
-        float[] envelope = new float[dim * 2];
-        int index = 0;
-        envelope[index++] = (float) env[0];
-        envelope[index++] = (float) env[1];
-        if ( dim == 3 ) {
-            envelope[index++] = (float) env[2];
-        }
-        env = validDomain.getMax().getAsArray();
-        envelope[index++] = (float) env[0];
-        envelope[index++] = (float) env[1];
-        if ( dim == 3 ) {
-            envelope[index] = (float) env[2];
-        }
-        return envelope;
     }
 
 }

@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.commons.utils;
+package org.deegree.geometry.utils;
 
 import static java.awt.geom.PathIterator.SEG_CLOSE;
 import static java.awt.geom.PathIterator.SEG_CUBICTO;
@@ -270,6 +270,35 @@ public class GeometryUtils {
             }
         }
         return result;
+    }
+
+    /**
+     * Creates float array out of an envelope (Geometry).
+     * 
+     * @param validDomain
+     * @return a float[] representation of the given envelope
+     */
+    public static final float[] createEnvelope( Envelope validDomain ) {
+        int dim = validDomain.getCoordinateDimension();
+        double[] env = validDomain.getMin().getAsArray();
+
+        if ( !( dim == 3 || dim == 2 ) ) {
+            throw new IllegalArgumentException( "The envelope must be 2 or 3 dimensional." );
+        }
+        float[] envelope = new float[dim * 2];
+        int index = 0;
+        envelope[index++] = (float) env[0];
+        envelope[index++] = (float) env[1];
+        if ( dim == 3 ) {
+            envelope[index++] = (float) env[2];
+        }
+        env = validDomain.getMax().getAsArray();
+        envelope[index++] = (float) env[0];
+        envelope[index++] = (float) env[1];
+        if ( dim == 3 ) {
+            envelope[index] = (float) env[2];
+        }
+        return envelope;
     }
 
 }

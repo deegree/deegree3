@@ -33,73 +33,34 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.templating.lang;
+package org.deegree.feature.utils.templating.lang;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.slf4j.LoggerFactory.getLogger;
 
+import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
-import org.slf4j.Logger;
 
 /**
- * <code>Link</code>
+ * <code>Name</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Link {
-
-    private static final Logger LOG = getLogger( Link.class );
-
-    private String prefix;
-
-    private String text;
-
-    /**
-     * @param prefix
-     */
-    public Link( String prefix ) {
-        this.prefix = prefix;
-    }
-
-    /**
-     * @param prefix
-     * @param text
-     */
-    public Link( String prefix, String text ) {
-        this.prefix = prefix;
-        if ( text != null ) {
-            // TODO price question: what's the Java Way to sgml-quote?
-            text = text.replace( "&", "&amp;" );
-        }
-        this.text = text;
-    }
+public class Name {
 
     /**
      * @param sb
      * @param o
      */
     public void eval( StringBuilder sb, Object o ) {
-        if ( !( o instanceof Property<?> ) ) {
-            LOG.warn( "Trying to get value as link while current object is a feature." );
-            return;
+        if ( o instanceof Feature ) {
+            sb.append( ( (Feature) o ).getName().getLocalPart() );
         }
-        String val = ( (Property<?>) o ).getValue().toString();
-        if ( val == null || val.isEmpty() ) {
-            return;
+        if ( o instanceof Property<?> ) {
+            sb.append( ( (Property<?>) o ).getName().getLocalPart() );
         }
-        // TODO: what is wanted is a real check for validity. org.apache.xerces.util.URI.isWellFormedAddress has been
-        // tried and seems not to work
-        if ( !val.startsWith( "http://" ) && !val.startsWith( "https://" ) && !val.startsWith( "ftp://" ) ) {
-            val = prefix == null ? val : ( prefix + val );
-        }
-        // TODO price question: what's the Java Way to sgml-quote?
-        val = val.replace( "&", "&amp;" );
-        sb.append( "<a target='_blank' href='" ).append( val ).append( "'>" );
-        sb.append( text == null ? val : text );
-        sb.append( "</a>" );
     }
 
     @Override

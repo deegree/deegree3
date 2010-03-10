@@ -38,6 +38,8 @@
 
 package org.deegree.coverage.raster.container;
 
+import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
+
 import java.util.List;
 
 import org.deegree.commons.index.QTree;
@@ -73,7 +75,7 @@ public class IndexedMemoryTileContainer implements TileContainer {
      */
     public IndexedMemoryTileContainer( Envelope domain, RasterGeoReference rasterReference, int objectsInLeaf ) {
         this.rasterReference = rasterReference;
-        this.index = new QTree<AbstractRaster>( domain, objectsInLeaf );
+        this.index = new QTree<AbstractRaster>( createEnvelope( domain ), objectsInLeaf );
         this.domain = domain;
     }
 
@@ -89,7 +91,7 @@ public class IndexedMemoryTileContainer implements TileContainer {
 
     @Override
     public List<AbstractRaster> getTiles( Envelope env ) {
-        return index.query( env );
+        return index.query( createEnvelope( env ) );
     }
 
     /**
@@ -103,7 +105,7 @@ public class IndexedMemoryTileContainer implements TileContainer {
             if ( this.rdi == null ) {
                 this.rdi = raster.getRasterDataInfo();
             }
-            index.insert( raster.getEnvelope(), raster );
+            index.insert( createEnvelope( raster.getEnvelope() ), raster );
         }
     }
 

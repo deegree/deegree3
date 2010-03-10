@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.shape;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -56,8 +57,6 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.dataaccess.dbase.DBFReader;
-import org.deegree.commons.dataaccess.shape.SHPReader;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
@@ -273,10 +272,10 @@ public class ShapeFeatureStore implements FeatureStore {
                             throws IOException {
         Envelope env = shapeReader.getEnvelope();
         // use 128 values per rect.
-        RTree<Long> result = new RTree<Long>( env, -1 );
+        RTree<Long> result = new RTree<Long>( createEnvelope( env ), -1 );
         // to work around Java's non-existent variant type
         LOG.debug( "Read envelopes from shape file..." );
-        Pair<ArrayList<Pair<Envelope, Long>>, Boolean> p = shapeReader.readEnvelopes();
+        Pair<ArrayList<Pair<float[], Long>>, Boolean> p = shapeReader.readEnvelopes();
         LOG.debug( "done." );
         result.insertBulk( p.first );
         return new Pair<RTree<Long>, Boolean>( result, p.second );

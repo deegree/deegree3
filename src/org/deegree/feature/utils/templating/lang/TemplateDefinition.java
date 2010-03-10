@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,43 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+package org.deegree.feature.utils.templating.lang;
 
-package org.deegree.rendering.r3d.opengl.rendering.model.manager;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * The <code>PositionableModel</code> defines methods on an object model for getting scene position and size
- * information.
+ * <code>TemplateDefinition</code>
  * 
- * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * 
+ * @version $Revision$, $Date$
  */
-public interface PositionableModel {
+public class TemplateDefinition extends Definition {
 
-    /**
-     * @return the position of the implementing class.
-     */
-    public float[] getPosition();
-
-    /**
-     * @return the boundingbox of the model with float[0][0-3] the min, float[1][0-3] the max.
-     */
-    public float[] getModelBBox();
-
-    /**
-     * @return a scalar which is represents the 'error' of this positionable.
-     */
-    public float getErrorScalar();
-
-    /**
-     * @return a scalar which represents the 'height' of this positionable.
-     */
-    public float getObjectHeight();
-
-    /**
-     * @return a scalar which represents the 'groundlevel' of this positionable.
-     */
-    public float getGroundLevel();
+    /***/
+    public List<Object> body = new LinkedList<Object>();
 
 }

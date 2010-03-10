@@ -1,11 +1,11 @@
-package org.deegree.commons.utils.templating;
+package org.deegree.feature.utils.templating;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java_cup.runtime.*;
 import org.deegree.commons.utils.*;
-import org.deegree.commons.utils.templating.lang.*;
+import org.deegree.feature.utils.templating.lang.*;
 
 terminal String    TEXT_TOKEN, TEMPLATE_DEFINITION_TOKEN, MAP_DEFINITION_TOKEN, LINK_PREFIX_TOKEN, LINK_TEXT_TOKEN,
                    EVEN_CALL_TOKEN, ODD_CALL_TOKEN, INDEX_CALL_TOKEN, VALUE_TOKEN, NAME_TOKEN,

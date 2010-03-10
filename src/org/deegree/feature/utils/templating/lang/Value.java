@@ -33,22 +33,47 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.templating.lang;
+package org.deegree.feature.utils.templating.lang;
 
-import java.util.LinkedList;
-import java.util.List;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import org.deegree.feature.Property;
+import org.slf4j.Logger;
 
 /**
- * <code>TemplateDefinition</code>
+ * <code>Value</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class TemplateDefinition extends Definition {
+public class Value {
 
-    /***/
-    public List<Object> body = new LinkedList<Object>();
+    private static final Logger LOG = getLogger( Value.class );
+
+    /**
+     * @param sb
+     * @param o
+     */
+    public void eval( StringBuilder sb, Object o ) {
+        if ( o instanceof Property<?> ) {
+            try {
+                sb.append( ( (Property<?>) o ).getValue() );
+            } catch ( UnsupportedOperationException e ) {
+                LOG.error( "The error '{}' occurred while converting a property to a string, "
+                           + "probably the WKT writer cannot convert a geometry.", e.getLocalizedMessage() );
+                LOG.debug( "Stack trace:", e );
+            }
+        } else {
+            LOG.warn( "Trying to get value while current object is a feature." );
+        }
+    }
+
+    @Override
+    public String toString() {
+        return generateToString( this );
+    }
 
 }

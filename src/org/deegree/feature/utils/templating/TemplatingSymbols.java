@@ -4,7 +4,7 @@
 // Tue Jan 26 15:08:06 CET 2010
 //----------------------------------------------------
 
-package org.deegree.commons.utils.templating;
+package org.deegree.feature.utils.templating;
 
 /** CUP generated class containing symbol constants. */
 public class TemplatingSymbols {
