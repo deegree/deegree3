@@ -81,6 +81,7 @@ public class IIORasterReader implements RasterReader {
     static {
         SUPPORTED_TYPES = new HashSet<String>();
 
+        ImageIO.scanForPlugins();
         String[] readerFormatNames = ImageIO.getReaderFormatNames();
         if ( readerFormatNames != null ) {
             for ( String format : readerFormatNames ) {
