@@ -200,7 +200,7 @@ public class TransactionXMLAdapter {
 
         try {
             xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLStreamException e ) {
             // CITE compliance (wfs:wfs-1.1.0-Transaction-tc12.1)
             throw new MissingParameterException( "Mandatory 'ogc:Filter' element is missing in request." );
         }

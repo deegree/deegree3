@@ -65,8 +65,6 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStoreTransaction} implementation used by the {@link MemoryFeatureStore}.
@@ -330,6 +328,15 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 updated = newFc.size();
                 for ( Feature feature : newFc ) {
                     for ( Property<?> prop : replacementProps ) {
+                        // check compatibility (CRS) for geometry replacements (CITE wfs:wfs-1.1.0-Transaction-tc7.2)
+                        if ( prop.getValue() instanceof Geometry ) {
+                            Geometry geom = (Geometry) feature.getPropertyValue( prop.getType().getName() );
+                            if ( geom != null ) {
+                                if ( geom.getCoordinateDimension() != ( (Geometry) prop.getValue() ).getCoordinateDimension() ) {
+                                    throw new InvalidParameterValueException( "Cannot replace given geometry property '" + prop.getType().getName() + "' with given value (wrong dimension).");
+                                }
+                            }
+                        }
                         // TODO what about multi properties, strategy for proper handling of GML version
                         feature.setPropertyValue( prop.getType().getName(), 0, prop.getValue(), GMLVersion.GML_31 );
                     }
