@@ -47,7 +47,6 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.deegree.commons.utils.GraphvizDot;
-import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;
 
@@ -62,12 +61,7 @@ import org.junit.Test;
 public class QTreeTest {
     private final static GeometryFactory geomFac = new GeometryFactory();
 
-    private static final Envelope env = new org.deegree.geometry.standard.DefaultEnvelope( geomFac.createPoint( null,
-                                                                                                                -5, -5,
-                                                                                                                null ),
-                                                                                           geomFac.createPoint( null,
-                                                                                                                5, 5,
-                                                                                                                null ) );
+    private static final float[] env = new float[] { -5, -5, 5, 5 };
 
     /**
      * <code>
@@ -77,54 +71,54 @@ public class QTreeTest {
      *   </code>
      */
 
-    private final static Envelope[] TEST = new Envelope[] {
+    private final static float[][] TEST = new float[][] {
     // id1: area: 0
-                                                           geomFac.createEnvelope( -3, -2, -1, -1, null ),
+                                                         new float[] { -3, -2, -1, -1 },
 
-                                                           // id2: aerea:1
-                                                           geomFac.createEnvelope( 4.5f, -3.5f, 4.8f, -2.2f, null ),
+                                                         // id2: aerea:1
+                                                         new float[] { 4.5f, -3.5f, 4.8f, -2.2f },
 
-                                                           // id3: area 3
-                                                           geomFac.createEnvelope( 1.5f, 1, 2.5f, 2, null ),
+                                                         // id3: area 3
+                                                         new float[] { 1.5f, 1, 2.5f, 2 },
 
-                                                           // id4: area 2
-                                                           geomFac.createEnvelope( -4.5f, 3, -2.8f, 5, null ),
+                                                         // id4: area 2
+                                                         new float[] { -4.5f, 3, -2.8f, 5 },
 
-                                                           // id5: area: 3 with overlap
-                                                           geomFac.createEnvelope( 1.5f, 1.5f, 6, 6, null ),
+                                                         // id5: area: 3 with overlap
+                                                         new float[] { 1.5f, 1.5f, 6, 6 },
 
-                                                           // id6: area: 1-3
-                                                           geomFac.createEnvelope( 2, -4.8f, 4, 1.5f, null ),
+                                                         // id6: area: 1-3
+                                                         new float[] { 2, -4.8f, 4, 1.5f },
 
-                                                           // id7, area 0-2
-                                                           geomFac.createEnvelope( -2, -2, -1.5f, 5, null ),
+                                                         // id7, area 0-2
+                                                         new float[] { -2, -2, -1.5f, 5 },
 
-                                                           // id8, area: 2-3 (small stripe)
-                                                           geomFac.createEnvelope( -3.5f, 1.8f, 4.3f, 1.9f, null ),
+                                                         // id8, area: 2-3 (small stripe)
+                                                         new float[] { -3.5f, 1.8f, 4.3f, 1.9f },
 
-                                                           // id9, area: 0-1 (large)
-                                                           geomFac.createEnvelope( -4.8f, -4.8f, 3.7f, -0.2f, null ),
+                                                         // id9, area: 0-1 (large)
+                                                         new float[] { -4.8f, -4.8f, 3.7f, -0.2f },
 
-                                                           // id10, area: whole
-                                                           geomFac.createEnvelope( -4.9f, -4.9f, 4.9f, 4.9f, null ),
+                                                         // id10, area: whole
+                                                         new float[] { -4.9f, -4.9f, 4.9f, 4.9f },
 
-                                                           // id11, area:repeated 3/ur
-                                                           geomFac.createEnvelope( 2.6f, 2.6f, 4.9f, 4.9f, null ),
+                                                         // id11, area:repeated 3/ur
+                                                         new float[] { 2.6f, 2.6f, 4.9f, 4.9f },
 
-                                                           // id12, area: repeated 3/ur
-                                                           geomFac.createEnvelope( 2.6f, 2.6f, 4.9f, 4.9f, null ),
+                                                         // id12, area: repeated 3/ur
+                                                         new float[] { 2.6f, 2.6f, 4.9f, 4.9f },
 
-                                                           // id13, area: repeated 3/ur
-                                                           geomFac.createEnvelope( 2.6f, 2.6f, 4.9f, 4.9f, null ),
+                                                         // id13, area: repeated 3/ur
+                                                         new float[] { 2.6f, 2.6f, 4.9f, 4.9f },
 
-                                                           // id14, area: repeated 3/ur
-                                                           geomFac.createEnvelope( 2.6f, 2.6f, 4.9f, 4.9f, null ),
+                                                         // id14, area: repeated 3/ur
+                                                         new float[] { 2.6f, 2.6f, 4.9f, 4.9f },
 
-                                                           // id15, area: one more at the top-right of 3
-                                                           geomFac.createEnvelope( 2.9f, 2.9f, 4.3f, 3.9f, null ),
+                                                         // id15, area: one more at the top-right of 3
+                                                         new float[] { 2.9f, 2.9f, 4.3f, 3.9f },
 
-                                                           // id16, area: and even one more at UR 3
-                                                           geomFac.createEnvelope( 3.1f, 3.5f, 4.1f, 4.3f, null )
+                                                         // id16, area: and even one more at UR 3
+                                                         new float[] { 3.1f, 3.5f, 4.1f, 4.3f }
 
     // // id17, area: almost equals LL of 2
     // new float[] { -4f, 1f, -3.5f, 1.5f },
@@ -186,18 +180,18 @@ public class QTreeTest {
                             throws IOException {
         QTree<Integer> qTree = fillTree( outputTree );
         // request 10
-        List<Integer> objects = qTree.query( geomFac.createEnvelope( -4, .5, -3, .9, null ) );
+        List<Integer> objects = qTree.query( new float[] { -4, .5f, -3, .9f } );
         Assert.assertEquals( 1, objects.size() );
         Collections.sort( objects );
         Assert.assertEquals( 10, (int) objects.get( 0 ) );
 
         // test for difficult intersects with 7
-        objects = qTree.query( geomFac.createEnvelope( -2.5, 4.91, -1, 4.99, null ) );
+        objects = qTree.query( new float[] { -2.5f, 4.91f, -1, 4.99f } );
         Assert.assertEquals( 1, objects.size() );
         Assert.assertEquals( 7, (int) objects.get( 0 ) );
 
         // test for total
-        objects = qTree.query( geomFac.createEnvelope( -7, -7, 6.1, 6.1, null ) );
+        objects = qTree.query( new float[] { -7, -7, 6.1f, 6.1f } );
         Assert.assertEquals( TEST.length, objects.size() );
         Collections.sort( objects );
         for ( int i = 0; i < objects.size(); ++i ) {
@@ -205,7 +199,7 @@ public class QTreeTest {
         }
 
         // test for very small intersection on cross from 3, 6, 5 and because of it's size 10
-        objects = qTree.query( geomFac.createEnvelope( 2.49999, 1.49999, 2.50001, 1.50001, null ) );
+        objects = qTree.query( new float[] { 2.49999f, 1.49999f, 2.50001f, 1.50001f } );
         Assert.assertEquals( 4, objects.size() );
         Collections.sort( objects );
         Assert.assertEquals( 3, (int) objects.get( 0 ) );
@@ -214,7 +208,7 @@ public class QTreeTest {
         Assert.assertEquals( 10, (int) objects.get( 3 ) );
 
         // test for the same envelope as e6
-        objects = qTree.query( geomFac.createEnvelope( 2, -4.8, 4, 1.5, null ) );
+        objects = qTree.query( new float[] { 2, -4.8f, 4, 1.5f } );
         Assert.assertEquals( 5, objects.size() );
         Collections.sort( objects );
         Assert.assertEquals( 3, (int) objects.get( 0 ) );
@@ -224,7 +218,7 @@ public class QTreeTest {
         Assert.assertEquals( 10, (int) objects.get( 4 ) );
 
         // test for the equal envelopes 11,12,13,14 and of course 5, 10
-        objects = qTree.query( geomFac.createEnvelope( 4.5, 4.5, 4.7, 4.7, null ) );
+        objects = qTree.query( new float[] { 4.5f, 4.5f, 4.7f, 4.7f } );
         Assert.assertEquals( 6, objects.size() );
         Collections.sort( objects );
         Assert.assertEquals( 5, (int) objects.get( 0 ) );

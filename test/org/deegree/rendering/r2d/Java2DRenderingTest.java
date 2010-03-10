@@ -46,7 +46,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.System.getProperty;
 import static javax.imageio.ImageIO.read;
 import static javax.imageio.ImageIO.write;
-import static org.deegree.commons.utils.GeometryUtils.move;
+import static org.deegree.geometry.utils.GeometryUtils.move;
 import static org.deegree.rendering.r2d.GeometryGenerator.randomCurve;
 import static org.deegree.rendering.r2d.GeometryGenerator.randomQuad;
 import static org.deegree.rendering.r2d.styling.components.Font.Style.ITALIC;
