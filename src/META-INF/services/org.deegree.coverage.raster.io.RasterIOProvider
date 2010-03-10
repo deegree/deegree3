@@ -1,4 +1,3 @@
 org.deegree.coverage.raster.io.imageio.IIORasterIOProvider
-org.deegree.coverage.raster.io.jai.JAIRasterIOProvider
 org.deegree.coverage.raster.io.xyz.XYZRasterIOProvider
 org.deegree.coverage.raster.io.grid.GridRasterIOProvider
