@@ -38,8 +38,6 @@
 
 package org.deegree.crs.exceptions;
 
-import org.deegree.geometry.Geometry;
-
 /**
  * The <code>OutsideDomainException</code> exception is thrown when a Geometry is outside the domain of coordinate
  * system in which the Geometry was defined.
@@ -55,22 +53,12 @@ public class OutsideCRSDomainException extends RuntimeException {
      * 
      */
     private static final long serialVersionUID = 6131934900011528537L;
-    private final Geometry geom;
 
     /**
      * @param message
-     * @param offendingGeometry
      */
-    public OutsideCRSDomainException( String message, Geometry offendingGeometry ) {
+    public OutsideCRSDomainException( String message ) {
         super( message );
-        this.geom = offendingGeometry;
-
     }
 
-    /**
-     * @return the offending geometry
-     */
-    public Geometry getOffendingGeometry() {
-        return geom;
-    }
 }

@@ -38,15 +38,12 @@ package org.deegree.crs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.deegree.crs.configuration.deegree.db.WKTParser;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 
 /**
  * Represents the name to a {@link CRS} that is not necessarily resolved or resolvable.
@@ -57,8 +54,8 @@ import org.deegree.geometry.GeometryFactory;
  * are multiple equivalent ways to encode coordinate reference system identifications (another one would be
  * 'urn:ogc:def:crs:EPSG::4326'). By using this class to represent a CRS, the original spelling is maintained.</li>
  * <li>A coordinate reference system may be specified which is not known to the {@link CRSRegistry}. However, for some
- * operations this is not a necessarily a problem, e.g. a GML document may be read and transformed into {@link Feature}
- * and {@link Geometry} objects.</li>
+ * operations this is not a necessarily a problem, e.g. a GML document may be read and transformed into
+ * {@link org.deegree.feature.Feature} and {@link org.deegree.geometry.Geometry} objects.</li>
  * </nl>
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -81,7 +78,7 @@ public class CRS {
      */
     private CoordinateSystem crs;
 
-    private Envelope areaOfUse;
+    private double[] areaOfUse;
 
     /**
      * Creates a new {@link CRS} instance with a coordinate reference system name.
@@ -163,11 +160,11 @@ public class CRS {
      *         (-180,-90,180,90) if no such information is available
      * @throws UnknownCRSException
      */
-    public Envelope getAreaOfUse()
+    public double[] getAreaOfUse()
                             throws UnknownCRSException {
         if ( areaOfUse == null ) {
             double[] coords = getWrappedCRS().getAreaOfUseBBox();
-            areaOfUse = new GeometryFactory().createEnvelope( coords[0], coords[1], coords[2], coords[3], EPSG_4326 );
+            areaOfUse = Arrays.copyOf( coords, 4 );
         }
         return areaOfUse;
     }

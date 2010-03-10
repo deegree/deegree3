@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
+import static org.deegree.commons.utils.StringUtils.isSet;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
@@ -314,7 +315,9 @@ public class GeometryTransformer extends Transformer {
                             throws TransformationException, IllegalArgumentException {
         if ( domainOfValidity != null ) {
             if ( !insideValidDomain( domainOfValidity, geo ) ) {
-                throw new OutsideCRSDomainException( "Geometry is outside the area of validity of the source CRS.", geo );
+                throw new OutsideCRSDomainException( "Geometry (gml:id="
+                                                     + ( isSet( geo.getId() ) ? geo.getId() : "not set" )
+                                                     + ")is outside the area of validity of the source CRS." );
             }
         }
         Geometry transformedGeometry = null;
