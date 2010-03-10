@@ -475,13 +475,14 @@ public class GMLFeatureWriter {
             if ( ( traverseXlinkDepth > 0 && inlineLevels < traverseXlinkDepth ) || referenceTemplate == null
                  || traverseXlinkDepth == -1 ) {
                 // must be exported inline
-                LOG.warn( "Inlining of remote feature references is not implemented yet." );
-                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                writer.writeAttribute( XLNNS, "href", ref.getURI() );
-                writer.writeComment( "Reference to remote feature '"
-                                     + ref.getURI()
-                                     + "' (should have been inlined, but inlining of remote features is not implemented yet)." );
-                writer.writeEndElement();
+                throw new UnsupportedOperationException( "Inlining of remote feature references is not implemented yet." );
+                // LOG.warn( "Inlining of remote feature references is not implemented yet." );
+                // writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                // writer.writeAttribute( XLNNS, "href", ref.getURI() );
+                // writer.writeComment( "Reference to remote feature '"
+                // + ref.getURI()
+                // + "' (should have been inlined, but inlining of remote features is not implemented yet)." );
+                // writer.writeEndElement();
             } else {
                 // must be exported by reference
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
