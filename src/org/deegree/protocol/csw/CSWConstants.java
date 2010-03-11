@@ -90,6 +90,12 @@ public class CSWConstants {
     /** Common namespace prefix for elements from the ISO AP specification */
     public static final String GMD_PREFIX = "gmd";
 
+    /** Common local part of a qualified name for elements from the CSW specification */
+    public static final String DC_LOCAL_PART = "Record";
+
+    /** Common local part of a qualified name for elements from the ISO AP specification */
+    public static final String GMD_LOCAL_PART = "MD_Metadata";
+
     /** CSW protocol version 2.0.2 */
     public static final Version VERSION_202 = Version.parseVersion( "2.0.2" );
 
