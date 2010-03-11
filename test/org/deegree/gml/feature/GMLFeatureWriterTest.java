@@ -55,7 +55,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
@@ -104,13 +103,14 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_2, new FormattingXMLStreamWriter( writer ), null, null, null, null, 0, - 1, false );
+        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_2, new FormattingXMLStreamWriter( writer ), null, null,
+                                                          null, null, 0, -1, null, false );
         exporter.export( feature );
         writer.flush();
         writer.close();
-        //        XMLAssert.assertValidity( memoryWriter.getReader() );
-    }    
-    
+        // XMLAssert.assertValidity( memoryWriter.getReader() );
+    }
+
     @Test
     public void testWriteGML31()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
@@ -137,10 +137,10 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_31, writer, null, null, null, null, 0, - 1, false );
+        GMLFeatureWriter exporter = new GMLFeatureWriter( GML_31, writer, null, null, null, null, 0, -1, null, false );
         exporter.export( feature );
         writer.flush();
         writer.close();
-//        XMLAssert.assertValidity( memoryWriter.getReader() );
+        // XMLAssert.assertValidity( memoryWriter.getReader() );
     }
 }
