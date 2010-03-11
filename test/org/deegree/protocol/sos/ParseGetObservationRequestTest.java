@@ -40,7 +40,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
@@ -200,7 +199,7 @@ public class ParseGetObservationRequestTest {
      */
     public static OMElement getRootElementFromStream( InputStream stream )
                             throws XMLProcessingException {
-        XMLAdapter xmladapter = new XMLAdapter( new InputStreamReader( stream ) );
+        XMLAdapter xmladapter = new XMLAdapter( stream );
         return xmladapter.getRootElement();
     }
 

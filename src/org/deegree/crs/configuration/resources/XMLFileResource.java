@@ -36,11 +36,9 @@
 
 package org.deegree.crs.configuration.resources;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
 
@@ -113,9 +111,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
                 LOG.debug( "Trying to load configuration from file: " + fileName );
                 is = new FileInputStream( fileName );
             }
-            read = new BufferedReader( new InputStreamReader( is ) );
-
-            load( read );
+            load( is );
             if ( getRootElement() == null ) {
                 throw new NullPointerException( "The file: " + fileName + " does not contain a root element. " );
             }
