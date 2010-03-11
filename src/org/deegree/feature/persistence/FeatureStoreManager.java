@@ -260,7 +260,7 @@ public class FeatureStoreManager {
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         }
-        ShapeFeatureStore fs = new ShapeFeatureStore( shapeFileName, crs, null );
+        ShapeFeatureStore fs = new ShapeFeatureStore( shapeFileName, crs, null, jaxbConfig.getNamespace() );
 
         registerAndInit( fs, id );
         return fs;

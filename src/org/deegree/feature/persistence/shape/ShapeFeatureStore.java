@@ -126,15 +126,19 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private ApplicationSchema schema;
 
+    private String namespace;
+
     /**
      * @param name
      * @param crs
      * @param encoding
+     * @param namespace
      */
-    public ShapeFeatureStore( String name, CRS crs, Charset encoding ) {
+    public ShapeFeatureStore( String name, CRS crs, Charset encoding, String namespace ) {
         this.name = name;
         this.crs = crs;
         this.encoding = encoding;
+        this.namespace = namespace;
     }
 
     @Override
@@ -217,13 +221,14 @@ public class ShapeFeatureStore implements FeatureStore {
         }
 
         try {
-            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( new File( name ).getName() ) );
+            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding,
+                                 new QName( namespace, new File( name ).getName() ), namespace );
             ft = dbf.getFeatureType();
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", name );
-            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY,
-                                                                      DIM_2_OR_3, false, null, BOTH );
-            ft = new GenericFeatureType( new QName( new File( name ).getName() ),
+            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry" ), 0, 1,
+                                                                      GEOMETRY, DIM_2_OR_3, false, null, BOTH );
+            ft = new GenericFeatureType( new QName( namespace, new File( name ).getName() ),
                                          Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new ApplicationSchema( new FeatureType[] { ft }, null );
@@ -296,7 +301,8 @@ public class ShapeFeatureStore implements FeatureStore {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
                     LOG.debug( "Re-opening the dbf file {}", name );
-                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( name ) );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( namespace, name ),
+                                         namespace );
                     ft = dbf.getFeatureType();
                     schema = new ApplicationSchema( new FeatureType[] { ft }, null );
                     dbfLastModified = dbfFile.lastModified();

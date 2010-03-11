@@ -51,6 +51,7 @@
       <extension base="ds:FeatureStoreType">
         <sequence>
           <element name="StorageSRS" type="string" minOccurs="0" />
+          <element name="Namespace" type="string" minOccurs="0" />
           <element name="File" type="string" />
         </sequence>
       </extension>
