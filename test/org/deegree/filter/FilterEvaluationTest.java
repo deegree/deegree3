@@ -212,7 +212,7 @@ public class FilterEvaluationTest {
     private Filter parseFilter( String resourceName )
                             throws XMLStreamException, FactoryConfigurationError {
         InputStream is = FilterEvaluationTest.class.getResourceAsStream( "testdata/v110/" + resourceName );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().( is );
         xmlStream.nextTag();
         return Filter110XMLDecoder.parse( xmlStream );
     }

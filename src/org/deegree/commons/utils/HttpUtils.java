@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
@@ -62,17 +62,17 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * <code>HttpUtils</code>
- *
+ * 
  * Example use from rhino:
- *
+ * 
  * <code>
  * var u = org.deegree.commons.utils.HttpUtils
  * u.retrieve(u.UTF8STRING, "http://demo.deegree.org/deegree-wms/services?request=capabilities&service=WMS")
  * </code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class HttpUtils {
@@ -81,10 +81,10 @@ public class HttpUtils {
 
     /**
      * <code>Worker</code> is used to specify how to return the stream from the remote location.
-     *
+     * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
      * @param <T>
      */
@@ -120,11 +120,12 @@ public class HttpUtils {
      * Returns streaming XMLAdapter.
      */
     public static final Worker<XMLStreamReaderWrapper> XML_STREAM = new Worker<XMLStreamReaderWrapper>() {
-        public XMLStreamReaderWrapper work( InputStream in ) throws IOException {
+        public XMLStreamReaderWrapper work( InputStream in )
+                                throws IOException {
             try {
-                return new XMLStreamReaderWrapper(xmlInputFactory.createXMLStreamReader(in ), "Post response" );
+                return new XMLStreamReaderWrapper( xmlInputFactory.createXMLStreamReader( in ), "Post response" );
             } catch ( XMLStreamException e ) {
-                throw new IOException ("Error creating XMLStreamReader for POST response: " + e.getMessage());
+                throw new IOException( "Error creating XMLStreamReader for POST response: " + e.getMessage() );
             }
         }
     };
@@ -213,7 +214,7 @@ public class HttpUtils {
 
     /**
      * Performs an HTTP-Get request and provides typed access to the response.
-     *
+     * 
      * @param <T>
      * @param worker
      * @param url
@@ -223,14 +224,14 @@ public class HttpUtils {
      * @throws HttpException
      * @throws IOException
      */
-    public static <T> T post( Worker<T> worker, String url, InputStream postBody, Map<String,String> headers)
+    public static <T> T post( Worker<T> worker, String url, InputStream postBody, Map<String, String> headers )
                             throws HttpException, IOException {
         // TODO no proxies used
         HttpClient client = new HttpClient();
         PostMethod post = new PostMethod( url );
-        post.setRequestEntity( new InputStreamRequestEntity(postBody) );
+        post.setRequestEntity( new InputStreamRequestEntity( postBody ) );
         for ( String key : headers.keySet() ) {
-            post.setRequestHeader( key, headers.get( key ));
+            post.setRequestHeader( key, headers.get( key ) );
         }
         client.executeMethod( post );
         return worker.work( post.getResponseBodyAsStream() );
@@ -238,7 +239,7 @@ public class HttpUtils {
 
     /**
      * Performs an HTTP-Get request and provides typed access to the response.
-     *
+     * 
      * @param <T>
      * @param worker
      * @param url
@@ -247,14 +248,14 @@ public class HttpUtils {
      * @throws HttpException
      * @throws IOException
      */
-    public static <T> T get( Worker<T> worker, String url, Map<String,String> headers)
+    public static <T> T get( Worker<T> worker, String url, Map<String, String> headers )
                             throws HttpException, IOException {
 
         // TODO no proxies used
         HttpClient client = new HttpClient();
         GetMethod get = new GetMethod( url );
         for ( String key : headers.keySet() ) {
-            get.setRequestHeader( key, headers.get( key ));
+            get.setRequestHeader( key, headers.get( key ) );
         }
         client.executeMethod( get );
         return worker.work( get.getResponseBodyAsStream() );
