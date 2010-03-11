@@ -358,7 +358,7 @@ public class ShapeFeatureStore implements FeatureStore {
         LinkedList<Pair<Integer, Geometry>> list;
         synchronized ( shp ) {
             try {
-                list = shp.query( bbox, withGeometries, false );
+                list = shp.query( bbox, true, false );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace", e );
                 throw new FeatureStoreException( e );
@@ -378,9 +378,7 @@ public class ShapeFeatureStore implements FeatureStore {
         }
         final int geomIdx = ft.getPropertyDeclarations().size() - 1;
         GeometryPropertyType geom = (GeometryPropertyType) ft.getPropertyDeclarations().get( geomIdx );
-        if ( withGeometries ) {
-            fields.add( geom );
-        }
+        fields.add( geom );
 
         Filter filter = query.getFilter();
         if ( filter != null ) {
@@ -409,12 +407,14 @@ public class ShapeFeatureStore implements FeatureStore {
                     props.add( entry.get( t ) );
                 }
             }
-            if ( withGeometries ) {
-                props.add( new GenericProperty<Geometry>( geom, pair.second ) );
-            }
+            props.add( new GenericProperty<Geometry>( geom, pair.second ) );
             Feature feat = ft.newFeature( "shp_" + pair.first, props, null );
 
             if ( filter == null || filter.evaluate( feat ) ) {
+                if ( !withGeometries ) {
+                    props.removeLast();
+                    feat = ft.newFeature( "shp_" + pair.first, props, null );
+                }
                 feats.add( feat );
             }
         }
