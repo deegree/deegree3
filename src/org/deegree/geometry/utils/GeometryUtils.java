@@ -279,6 +279,9 @@ public class GeometryUtils {
      * @return a float[] representation of the given envelope
      */
     public static final float[] createEnvelope( Envelope validDomain ) {
+        if ( validDomain == null ) {
+            return null;
+        }
         int dim = validDomain.getCoordinateDimension();
         double[] env = validDomain.getMin().getAsArray();
 

@@ -142,7 +142,7 @@ public abstract class SpatialIndex<T> {
      * @return true if the given boxes intersects with each other.
      */
     protected boolean intersects( final float[] box1, final float[] box2, int maxOffset ) {
-        return contains( box2, maxOffset, box1[0], box1[maxOffset + 1] )
+        return box1 == null || box2 == null || contains( box2, maxOffset, box1[0], box1[maxOffset + 1] )
                || contains( box2, maxOffset, box1[0], box1[1] )
                || contains( box2, maxOffset, box1[maxOffset], box1[maxOffset + 1] )
                || contains( box2, maxOffset, box1[maxOffset], box1[1] )
