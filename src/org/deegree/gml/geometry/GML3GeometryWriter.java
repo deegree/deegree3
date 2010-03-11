@@ -183,7 +183,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
      *            formatter to use for exporting coordinates, e.g. to limit the number of decimal places, may be
      *            <code>null</code> (use 5 decimal places)
      * @param exportSf
-     *            if true, the generated GML must to conform to the GML-SF profile (only simple geometries are used and
+     *            if true, the generated GML must conform to the GML-SF profile (only simple geometries are used and
      *            they are exported without id attributes)
      * @param exportedIds
      *            for the creation of xlinks, may be <code>null</code>

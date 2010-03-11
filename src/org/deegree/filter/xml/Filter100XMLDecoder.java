@@ -930,7 +930,11 @@ public class Filter100XMLDecoder {
         List<String> names = new LinkedList<String>();
         for ( Enum<?> e : enumClass.getEnumConstants() ) {
             QName qname = map.get( e );
-            names.add( qname.toString() );
+            if ( qname == null ) {
+                LOG.warn( "No value for " + e );
+            } else {
+                names.add( qname.toString() );
+            }
         }
         return ArrayUtils.join( ", ", names );
     }

@@ -102,6 +102,7 @@ public class BBoxQuery extends Query {
     }
 
     /**
+     * Returns the properties of the features that should be retrieved.
      * <p>
      * From WFS Speification V1.1, clause 14.7.3.1: <i>A list of properties may be specified for each feature type that
      * is being queried. A "*" character can be used to indicate that all properties should be retrieved. There is a 1:1
@@ -116,6 +117,7 @@ public class BBoxQuery extends Query {
     }
 
     /**
+     * Returns the properties of the features for which a specific XLink behaviour is requested. 
      * <p>
      * Contains the Depth and Expiry properties for XLinks traversal. More precisely, the nested depth to which an
      * xlink:href should be traversed (or "*" for indefinite depth), respectively the number of minutes the WFS should

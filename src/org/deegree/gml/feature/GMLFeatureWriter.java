@@ -80,6 +80,7 @@ import org.deegree.gml.feature.generic.GenericCustomPropertyWriter;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
+import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +135,7 @@ public class GMLFeatureWriter {
      *            used)
      */
     public GMLFeatureWriter( XMLStreamWriter writer, CRS outputCRS ) {
-        this( GMLVersion.GML_31, writer, outputCRS, null, null, null, 0, -1, false );
+        this( GMLVersion.GML_31, writer, outputCRS, null, null, null, 0, -1, null, false );
     }
 
     /**
@@ -155,17 +156,18 @@ public class GMLFeatureWriter {
      *            properties to be exported, may be <code>null</code> (export all properties)
      * @param traverseXlinkDepth
      * @param traverseXlinkExpiry
+     * @param xlinkProps
      * @param exportSfGeometries
      */
     public GMLFeatureWriter( GMLVersion version, XMLStreamWriter writer, CRS outputCRS, CoordinateFormatter formatter,
                              String referenceTemplate, PropertyName[] requestedProps, int traverseXlinkDepth,
-                             int traverseXlinkExpiry, boolean exportSfGeometries ) {
+                             int traverseXlinkExpiry, XLinkPropertyName[] xlinkProps, boolean exportSfGeometries ) {
         this.version = version;
         this.writer = writer;
         this.referenceTemplate = referenceTemplate;
         if ( requestedProps != null ) {
             for ( PropertyName propertyName : requestedProps ) {
-                // TODO what about non-simple properties
+                // TODO what about non-simple property names
                 QName qName = propertyName.getAsQName();
                 if ( qName != null ) {
                     this.propNames.add( qName );
@@ -174,6 +176,15 @@ public class GMLFeatureWriter {
         }
         this.traverseXlinkDepth = traverseXlinkDepth;
         this.traverseXlinkExpiry = traverseXlinkExpiry;
+        if ( xlinkProps != null ) {
+            for ( XLinkPropertyName xlinkProp : xlinkProps ) {
+                // TODO what about non-simple property names
+                QName qName = xlinkProp.getPropertyName().getAsQName();
+                if ( qName != null ) {
+//                    this.propNames.add( qName );
+                }
+            }
+        }
 
         gmlNs = version.getNamespace();
         if ( !version.equals( GMLVersion.GML_2 ) ) {
@@ -475,7 +486,8 @@ public class GMLFeatureWriter {
             if ( ( traverseXlinkDepth > 0 && inlineLevels < traverseXlinkDepth ) || referenceTemplate == null
                  || traverseXlinkDepth == -1 ) {
                 // must be exported inline
-                throw new UnsupportedOperationException( "Inlining of remote feature references is not implemented yet." );
+                throw new UnsupportedOperationException(
+                                                         "Inlining of remote feature references is not implemented yet." );
                 // LOG.warn( "Inlining of remote feature references is not implemented yet." );
                 // writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
                 // writer.writeAttribute( XLNNS, "href", ref.getURI() );

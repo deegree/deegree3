@@ -147,13 +147,14 @@ public class FilterQuery extends Query {
     }
 
     /**
+     * Returns the properties of the features for which a specific XLink behaviour is requested.
      * <p>
-     * Contains the Depth and Expiry properties for XLinks traversal. More precisely, the nested depth to which an
+     * Sets the depth and expiry properties for XLinks traversal. More precisely, the nested depth to which an
      * xlink:href should be traversed (or "*" for indefinite depth), respectively the number of minutes the WFS should
      * wait for a response when traversing through xlinks is encountered.
      * </p>
      * 
-     * @return the xLinkPropertyNames. See {@link XLinkPropertyName}
+     * @return the properties of the features with specific XLink behaviour, may be null
      */
     public XLinkPropertyName[] getXLinkPropertyNames() {
         return xLinkPropertyNames;

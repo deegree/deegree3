@@ -280,8 +280,9 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
                                                       null );
                 Integer xlinkExpiryInt = null;
                 try {
-                    if ( xlinkExpiry != null )
+                    if ( xlinkExpiry != null ) {
                         xlinkExpiryInt = Integer.parseInt( xlinkExpiry );
+                    }
                 } catch ( NumberFormatException e ) {
                     // TODO string provided as time in minutes is not an integer
                 }

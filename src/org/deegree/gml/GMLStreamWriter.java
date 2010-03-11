@@ -59,6 +59,7 @@ import org.deegree.gml.feature.GMLFeatureWriter;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
+import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
  * Stream-based writer for all kinds of GML objects supported by deegree.
@@ -100,6 +101,8 @@ public class GMLStreamWriter {
 
     private PropertyName[] featureProps;
 
+    private XLinkPropertyName[] xlinkProps;
+
     private int traverseXLinkExpiry;
 
     private boolean autoNs;
@@ -122,6 +125,17 @@ public class GMLStreamWriter {
     }
 
     /**
+     * Controls the value of the <code>xsi:schemaLocation</code> attribute in the root element.
+     * 
+     * @param schemaLocation
+     *            value to be exported in the <code>xsi:schemaLocation</code> attribute in the root element, or
+     *            <code>null</code> (no <code>xsi:schemaLocation</code> attribute will be exported)
+     */
+    public void setSchemaLocation( String schemaLocation ) {
+        this.schemaLocation = schemaLocation;
+    }
+
+    /**
      * Controls the indentation of the generated XML.
      * 
      * @param indentString
@@ -133,13 +147,47 @@ public class GMLStreamWriter {
     }
 
     /**
+     * Controls the output CRS for written geometries.
+     * 
+     * @param crs
+     *            crs to be used for the geometries, can be <code>null</code> (keeps the original CRS)
+     */
+    public void setOutputCRS( CRS crs ) {
+        this.crs = crs;
+    }
+
+    /**
+     * Controls the format (e.g. number of decimal places) for written coordinates.
+     * 
+     * @param formatter
+     *            formatter to use, may be <code>null</code> (don't do any formatting)
+     */
+    public void setCoordinateFormatter( CoordinateFormatter formatter ) {
+        this.formatter = formatter;
+    }
+
+    public void setAutoNamespaceBinding( boolean autoNs ) {
+        this.autoNs = autoNs;
+    }
+
+    /**
      * Controls the number of xlink levels that will be expanded inside property elements.
      * 
      * @param inlineXLinklevels
      *            number of xlink levels to be expanded, -1 expands to any depth
      */
-    public void setXLinkExpansion( int inlineXLinklevels ) {
+    public void setXLinkDepth( int inlineXLinklevels ) {
         this.inlineXLinklevels = inlineXLinklevels;
+    }
+
+    /**
+     * Controls the number number of seconds to wait when remote xlinks are expanded inside property elements.
+     * 
+     * @param traverseXLinkExpiry
+     *            number of seconds to wait for the resolving of remote xlinks, -1 sets no timeout
+     */
+    public void setXLinkExpiry( int traverseXLinkExpiry ) {
+        this.traverseXLinkExpiry = traverseXLinkExpiry;
     }
 
     /**
@@ -165,38 +213,14 @@ public class GMLStreamWriter {
     }
 
     /**
-     * Controls the output CRS for written geometries.
+     * Sets a specific XLink-expansion behaviour for object properties (e.g. {@link Feature} or {@link Geometry}
+     * properties).
      * 
-     * @param crs
-     *            crs to be used for the geometries, can be <code>null</code> (keeps the original CRS)
+     * @param xlinkProps
+     *            XLink-behaviour information, or <code>null</code> (no property-specific xlink behaviour)
      */
-    public void setOutputCRS( CRS crs ) {
-        this.crs = crs;
-    }
-
-    /**
-     * Controls the format (e.g. number of decimal places) for written coordinates.
-     * 
-     * @param formatter
-     *            formatter to use, may be <code>null</code> (don't do any formatting)
-     */
-    public void setCoordinateFormatter( CoordinateFormatter formatter ) {
-        this.formatter = formatter;
-    }
-
-    /**
-     * Controls the value of the <code>xsi:schemaLocation</code> attribute in the root element.
-     * 
-     * @param schemaLocation
-     *            value to be exported in the <code>xsi:schemaLocation</code> attribute in the root element, or
-     *            <code>null</code> (no <code>xsi:schemaLocation</code> attribute will be exported)
-     */
-    public void setSchemaLocation( String schemaLocation ) {
-        this.schemaLocation = schemaLocation;
-    }
-
-    public void setAutoNamespaceBinding( boolean autoNs ) {
-        this.autoNs = autoNs;
+    public void setXLinkFeatureProperties( XLinkPropertyName[] xlinkProps ) {
+        this.xlinkProps = xlinkProps;
     }
 
     /**
@@ -298,7 +322,7 @@ public class GMLStreamWriter {
     private GMLFeatureWriter getFeatureWriter() {
         if ( featureWriter == null ) {
             featureWriter = new GMLFeatureWriter( version, xmlStream, crs, formatter, localXLinkTemplate, featureProps,
-                                                  inlineXLinklevels, traverseXLinkExpiry, false );
+                                                  inlineXLinklevels, traverseXLinkExpiry, xlinkProps, false );
         }
         return featureWriter;
     }

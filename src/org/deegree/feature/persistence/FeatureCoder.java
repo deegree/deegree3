@@ -112,7 +112,7 @@ public class FeatureCoder {
         GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, xmlWriter );
         gmlWriter.setOutputCRS( crs );
         gmlWriter.setLocalXLinkTemplate( "#{}" );
-        gmlWriter.setXLinkExpansion( 0 );
+        gmlWriter.setXLinkDepth( 0 );
         xmlWriter.setPrefix( "", feature.getName().getNamespaceURI() );
         gmlWriter.write( feature );
         gmlWriter.close();
