@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,6 +58,8 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -179,6 +182,33 @@ public class XMLAdapter {
                 throw new XMLProcessingException( e );
             }
         }
+    }
+
+    /**
+     * Creates a new instance that loads its content from the given <code>StringReader</code> using the default url.
+     * 
+     * @param reader
+     *            source of the xml content
+     * 
+     * @throws XMLProcessingException
+     */
+    public XMLAdapter( StringReader reader ) throws XMLProcessingException {
+        load( reader, DEFAULT_URL );
+    }
+
+    /**
+     * Creates a new instance that loads its content from the given <code>StringReader</code>.
+     * 
+     * @param reader
+     *            source of the xml content
+     * @param systemId
+     *            this string should represent a URL that is related to the passed reader. If this URL is not available
+     *            or unknown, the string should contain the value of XMLAdapter.DEFAULT_URL
+     * 
+     * @throws XMLProcessingException
+     */
+    public XMLAdapter( StringReader reader, String systemId ) throws XMLProcessingException {
+        load( reader, systemId );
     }
 
     /**
@@ -439,6 +469,51 @@ public class XMLAdapter {
         } catch ( IOException e ) {
             throw new XMLProcessingException( e.getMessage(), e );
         }
+    }
+
+    /**
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>StringReader</code>. Sets the
+     * SystemId, too.
+     * 
+     * @param reader
+     *            source of the XML content
+     * @param systemId
+     *            can not be null. This string should represent a URL that is related to the passed reader. If this URL
+     *            is not available or unknown, the string should contain the value of XMLFragment.DEFAULT_URL
+     * 
+     * @throws XMLProcessingException
+     */
+    public void load( StringReader reader, String systemId )
+                            throws XMLProcessingException {
+        try {
+            if ( systemId == null ) {
+                throw new NullPointerException( "'systemId' must not be null!" );
+            }
+            setSystemId( systemId );
+
+            XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader( reader );
+            StAXOMBuilder builder = new StAXOMBuilder( parser );
+            rootElement = builder.getDocumentElement();
+        } catch ( XMLStreamException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        } catch ( OMException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        } catch ( FactoryConfigurationError e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        }
+    }
+
+    /**
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>StringReader</code> and sets the
+     * system id to the {@link #DEFAULT_URL}
+     * 
+     * @param reader
+     *            to load the xml from.
+     * @throws XMLProcessingException
+     */
+    public void load( StringReader reader )
+                            throws XMLProcessingException {
+        load( reader, DEFAULT_URL );
     }
 
     /**
