@@ -161,21 +161,9 @@ public class ISORecordStore implements RecordStore {
             URLConnection urlConn = null;
 
             /*
-             * if there is no specific typeName requested then there should be responded every recordStore
-             */
-            if ( new QName( "" ).equals( typeName ) ) {
-
-                urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
-
-                urlConn = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" ).openConnection();
-
-                writer.writeAttribute( "parentSchema", "http://www.isotc211.org/2005/gmd/gmd.xsd" );
-
-            }
-            /*
              * if typeName is csw:Record
              */
-            else if ( typeName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) ) ) {
+            if ( typeName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) ) ) {
 
                 urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
 
@@ -207,6 +195,7 @@ public class ISORecordStore implements RecordStore {
             InputStreamReader isr = new InputStreamReader( bais, charset );
 
             readXMLFragment( isr, writer );
+
         } catch ( MalformedURLException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
