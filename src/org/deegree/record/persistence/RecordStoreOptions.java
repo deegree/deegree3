@@ -40,8 +40,6 @@ import java.io.Writer;
 import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.SetOfReturnableElements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class holds all the necessary information that is needed for the database request. <br>
@@ -53,8 +51,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public class RecordStoreOptions {
-
-    private static final Logger LOG = LoggerFactory.getLogger( RecordStoreOptions.class );
 
     private ResultType resultType;
 

@@ -50,50 +50,81 @@ import org.deegree.commons.types.ows.Version;
 public class CSWConstants {
 
     /**
-     * Namespace for elements from the CSW 2.0.2 specification
-     * <p>
+     * Namespace for elements from the CSW 2.0.2 specification <br>
      * Namespace="http://www.opengis.net/cat/csw/2.0.2"
      * */
     public static final String CSW_202_NS = "http://www.opengis.net/cat/csw/2.0.2";
 
-    /** ISO application profile */
+    /**
+     * ISO application profile <br>
+     * "http://www.isotc211.org/2005/gmd"
+     */
     public static final String ISO_19115_NS = "http://www.isotc211.org/2005/gmd";
 
-    /** DC application profile */
-    public static final String ISO_DC_NS = "http://purl.org/dc/elements/1.1/";
+    /**
+     * DC application profile <br>
+     * "http://purl.org/dc/elements/1.1/"
+     */
+    public static final String DC_NS = "http://purl.org/dc/elements/1.1/";
 
-    /** DCT application profile */
-    public static final String ISO_DCT_NS = "http://purl.org/dc/terms/";
+    /**
+     * DCT application profile <br>
+     * "http://purl.org/dc/terms/"
+     */
+    public static final String DCT_NS = "http://purl.org/dc/terms/";
 
-    /** APISO application profile */
+    /**
+     * APISO application profile <br>
+     * "http://www.opengis.net/cat/csw/apiso/1.0"
+     */
     public static final String APISO_NS = "http://www.opengis.net/cat/csw/apiso/1.0";
 
     /**
-     * Namespace for elements from the ISO AP 1.0 specification
-     * <p>
+     * Namespace for elements from the ISO AP 1.0 specification <br>
      * Namespace="http://www.isotc211.org/2005/gmd"
      * */
     public static final String GMD_NS = "http://www.isotc211.org/2005/gmd";
 
-    /** Location of the schema */
+    /**
+     * Location of the schema <br>
+     * "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd"
+     */
     public static final String CSW_202_DISCOVERY_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd";
 
-    /** Location of the schema */
+    /**
+     * Location of the schema <br>
+     * "http://schemas.opengis.net/csw/2.0.2/CSW-publication.xsd"
+     */
     public static final String CSW_202_PUBLICATION_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/CSW-publication.xsd";
 
-    /** Location of the schema */
+    /**
+     * Location of the schema <br>
+     * "http://schemas.opengis.net/csw/2.0.2/record.xsd"
+     */
     public static final String CSW_202_RECORD = "http://schemas.opengis.net/csw/2.0.2/record.xsd";
 
     /** Common namespace prefix for elements from the CSW specification */
     public static final String CSW_PREFIX = "csw";
 
-    /** Common namespace prefix for elements from the ISO AP specification */
+    /**
+     * Common namespace prefix for elements from the ISO AP specification for the types "Dataset", "DatasetCollection"
+     * and "Application"
+     */
     public static final String GMD_PREFIX = "gmd";
 
-    /** Common local part of a qualified name for elements from the CSW specification */
+    /** Common namespace prefix for elements from the ISO AP specification */
+    public static final String APISO_PREFIX = "apiso";
+
+    /**
+     * Common local part of a qualified name for elements from the CSW specification <br>
+     * LOCAL_PART = "Record"
+     */
     public static final String DC_LOCAL_PART = "Record";
 
-    /** Common local part of a qualified name for elements from the ISO AP specification */
+    /**
+     * Common local part of a qualified name for elements from the ISO AP specification <br>
+     * LOCAL_PART = "MD_Metadata"
+     */
     public static final String GMD_LOCAL_PART = "MD_Metadata";
 
     /** CSW protocol version 2.0.2 */

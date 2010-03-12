@@ -35,6 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
+import static org.deegree.protocol.csw.CSWConstants.APISO_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_RECORD;
+import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.DC_LOCAL_PART;
+import static org.deegree.protocol.csw.CSWConstants.DC_NS;
+import static org.deegree.protocol.csw.CSWConstants.GMD_LOCAL_PART;
+import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
+import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
@@ -118,6 +128,11 @@ public class ISORecordStore implements RecordStore {
     private boolean useLegacyPredicates;
 
     /**
+     * shows the encoding of the database that is used
+     */
+    private String encoding;
+
+    /**
      * maps the specific returnable element format to a concrete table in the backend<br>
      * brief, summary, full
      */
@@ -129,13 +144,13 @@ public class ISORecordStore implements RecordStore {
         formatTypeInISORecordStore.put( SetOfReturnableElements.summary, "recordsummary" );
         formatTypeInISORecordStore.put( SetOfReturnableElements.full, "recordfull" );
 
-        typeNames.put( new QName( "", "", "" ), 1 );
-        typeNames.put( new QName( CSWConstants.CSW_202_NS, "Record", "" ), 1 );
-        typeNames.put( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ), 1 );
-        typeNames.put( new QName( "http://purl.org/dc/elements/1.1/", "", "dc" ), 1 );
-        typeNames.put( new QName( CSWConstants.GMD_NS, "MD_Metadata", "" ), 2 );
-        typeNames.put( new QName( CSWConstants.GMD_NS, "MD_Metadata", CSWConstants.GMD_PREFIX ), 2 );
-        typeNames.put( new QName( "http://www.opengis.net/cat/csw/apiso/1.0", "", "apiso" ), 2 );
+        // typeNames.put( new QName( "", "", "" ), 1 );
+        typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, "" ), 1 );
+        typeNames.put( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ), 1 );
+        typeNames.put( new QName( DC_NS, "", "dc" ), 1 );
+        typeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, "" ), 2 );
+        typeNames.put( new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ), 2 );
+        typeNames.put( new QName( APISO_NS, "", APISO_PREFIX ), 2 );
 
     }
 
@@ -163,15 +178,15 @@ public class ISORecordStore implements RecordStore {
             /*
              * if typeName is csw:Record
              */
-            if ( typeName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) ) ) {
+            if ( typeName.equals( new QName( CSW_202_NS, DC_LOCAL_PART, CSW_PREFIX ) ) ) {
 
-                urlConn = new URL( CSWConstants.CSW_202_RECORD ).openConnection();
+                urlConn = new URL( CSW_202_RECORD ).openConnection();
 
             }
             /*
              * if typeName is gmd:MD_Metadata
              */
-            else if ( typeName.equals( new QName( CSWConstants.GMD_NS, "MD_Metadata", CSWConstants.GMD_PREFIX ) ) ) {
+            else if ( typeName.equals( new QName( GMD_NS, GMD_LOCAL_PART, GMD_PREFIX ) ) ) {
 
                 urlConn = new URL( "http://www.isotc211.org/2005/gmd/identification.xsd" ).openConnection();
 
@@ -190,8 +205,7 @@ public class ISORecordStore implements RecordStore {
             urlConn.setDoInput( true );
             bais = new BufferedInputStream( urlConn.getInputStream() );
 
-            // TODO remove hardcoding
-            Charset charset = Charset.forName( "UTF-8" );
+            Charset charset = Charset.forName( encoding );
             InputStreamReader isr = new InputStreamReader( bais, charset );
 
             readXMLFragment( isr, writer );
@@ -236,6 +250,8 @@ public class ISORecordStore implements RecordStore {
         try {
             conn = ConnectionManager.getConnection( connectionId );
 
+            encoding = determinePostGRESEncoding( conn );
+
             String version = determinePostGISVersion( conn );
             if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
                  || version.startsWith( "1.2" ) ) {
@@ -245,10 +261,32 @@ public class ISORecordStore implements RecordStore {
                 LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
             }
         } catch ( SQLException e ) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * @param conn
+     * @return the encoding of the PostGRES database.
+     */
+    private String determinePostGRESEncoding( Connection conn ) {
+        String encoding = "UTF-8";
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery( "SHOW server_encoding" );
+            rs.next();
+            encoding = rs.getString( 1 );
+            LOG.debug( "PostGRES encoding: " + encoding );
+        } catch ( Exception e ) {
+            LOG.warn( "Could not determine PostGRES encoding: " + e.getMessage() + " -- defaulting to UTF-8" );
+            closeSafely( null, stmt, rs );
+        }
+
+        return null;
     }
 
     private String determinePostGISVersion( Connection conn ) {
@@ -1143,10 +1181,11 @@ public class ISORecordStore implements RecordStore {
 
             s.append( " WHERE " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "."
                       + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
-                      + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
+                      + PostGISMappingsISODC.databaseTables.datasets.name() + "."
+                      + PostGISMappingsISODC.commonColumnNames.id.name() );
 
-            s.append( " AND " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "." + "id" + " = "
-                      + i );
+            s.append( " AND " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "."
+                      + PostGISMappingsISODC.commonColumnNames.id.name() + " = " + i );
 
             ResultSet rsInsertedDatasets = conn.createStatement().executeQuery( s.toString() );
 
@@ -1170,10 +1209,8 @@ public class ISORecordStore implements RecordStore {
 
         while ( resultSet.next() ) {
             BufferedInputStream bais = new BufferedInputStream( resultSet.getBinaryStream( 1 ) );
-            // ByteArrayInputStream bais2 = new ByteArrayInputStream( rs.getBytes( 1 ) );
 
-            // TODO remove hardcoding
-            Charset charset = Charset.forName( "UTF-8" );
+            Charset charset = Charset.forName( encoding );
             InputStreamReader isr = null;
             try {
                 isr = new InputStreamReader( bais, charset );
