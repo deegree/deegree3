@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2010 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
@@ -33,49 +33,66 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.gml;
+package org.deegree.commons.xml.om;
 
-import org.deegree.commons.xml.om.XMLNode;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Geometry;
-import org.deegree.gml.dictionary.Definition;
-import org.deegree.gml.props.GMLStdProps;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import com.sun.org.apache.xerces.internal.impl.xs.XSElementDecl;
 
 /**
- * Basic interface for GML objects.
- * <p>
- * Currently, deegree has built-in support for the following types of GML objects:
- * <ul>
- * <li>{@link Feature}</li>
- * <li>{@link Geometry}</li>
- * <li>{@link Definition}</li>
- * <li>{@link CoordinateSystem} (TODO needs integration with the GML package)</li>
- * </ul>
- * 
- * @see Feature
- * @see Geometry
- * @see Definition
- * @see CoordinateSystem
+ * {@link XMLNode} that represents a generic XML element with XML schema type information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface GMLObject extends XMLNode {
+public class XMLElement implements XMLNode {
 
-    /**
-     * Returns the id of the object.
-     * 
-     * @return the id of the object, or <code>null</code> if it doesn't have an id
-     */
-    public String getId();
+    private QName name;
 
-    /**
-     * Returns the standard GML properties (e.g. <code>gml:name</code>).
-     * 
-     * @return the standard GML properties, may be <code><null</code>
-     */
-    public GMLStdProps getGMLProperties();
+    private LinkedHashMap<QName, XMLPrimitive> attributes;
+
+    private List<XMLNode> children;
+
+    private XSElementDecl type;
+
+    public XMLElement( QName name, XSElementDecl type ) {
+        this.name = name;
+        this.type = type;
+    }
+    
+    public QName getName () {
+        return name;
+    }
+    
+    public LinkedHashMap<QName, XMLPrimitive> getAttributes () {
+        return attributes;
+    }
+    
+    public LinkedHashMap<QName, XMLPrimitive> getChildren () {
+        return attributes;
+    }
+
+    public XSElementDecl getXSType() {
+        return type;
+    }
+
+    public void setAttribute( QName name, XMLPrimitive value ) {
+        if ( attributes == null ) {
+            attributes = new LinkedHashMap<QName, XMLPrimitive>();
+        }
+        attributes.put( name, value );
+    }
+
+    public void addChild( XMLNode node ) {
+        if ( children == null ) {
+            children = new ArrayList<XMLNode>();
+        }
+        children.add( node );
+    }
 }

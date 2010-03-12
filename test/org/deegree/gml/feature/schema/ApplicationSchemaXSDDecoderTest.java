@@ -43,6 +43,7 @@ import junit.framework.Assert;
 
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.gml.GMLVersion;
 import org.junit.Test;
@@ -170,4 +171,19 @@ public class ApplicationSchemaXSDDecoderTest {
         LOG.debug( "" + ft );
         // TODO do more thorough testing
     }
+    
+    @Test
+    public void testParsingCustomProperties()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = this.getClass().getResource( "../testdata/schema/CustomProperties.xsd" ).toString();
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        Assert.assertEquals( 1, fts.length );
+        FeatureType ft = fts [0];
+        Assert.assertEquals( 1, ft.getPropertyDeclarations().size() );
+        CustomPropertyType pt = (CustomPropertyType) ft.getPropertyDeclarations().get( 0 );
+        System.out.println (pt.getXSDValueType());
+    }    
 }

@@ -446,11 +446,11 @@ public class ApplicationSchemaXSDDecoder {
                                                        GeometryPropertyType.CoordinateDimension.DIM_2,
                                                        elementDecl.getAbstract(), ptSubstitutions, INLINE );
                     } else {
-                        pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeName, elementDecl.getAbstract(),
+                        pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeDef, elementDecl.getAbstract(),
                                                      ptSubstitutions );
                     }
                 } else {
-                    pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, null, elementDecl.getAbstract(),
+                    pt = new CustomPropertyType( ptName, minOccurs, maxOccurs, typeDef, elementDecl.getAbstract(),
                                                  ptSubstitutions );
                 }
             }
