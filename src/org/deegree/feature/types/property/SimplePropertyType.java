@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.types.PrimitiveType;
 
 /**
@@ -58,32 +59,32 @@ public class SimplePropertyType<T> extends AbstractPropertyType<T> {
 
     private final PrimitiveType primitiveType;
 
-    private final QName xsdTypeName;
-    
+    private final XSSimpleTypeDefinition xsdType;
+
     private String codeList;
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
                                List<PropertyType<?>> substitutions ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.primitiveType = type;
-        this.xsdTypeName = null;
+        this.xsdType = null;
     }
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
-                               List<PropertyType<?>> substitutions, QName xsdTypeName ) {
+                               List<PropertyType<?>> substitutions, XSSimpleTypeDefinition xsdType ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.primitiveType = type;
-        this.xsdTypeName = xsdTypeName;
+        this.xsdType = xsdType;
     }
 
-    public void setCodeList (String codeList) {
+    public void setCodeList( String codeList ) {
         this.codeList = codeList;
     }
 
-    public String getCodeList () {
+    public String getCodeList() {
         return codeList;
-    }    
-    
+    }
+
     /**
      * Returns the primitive type.
      * 
@@ -94,12 +95,12 @@ public class SimplePropertyType<T> extends AbstractPropertyType<T> {
     }
 
     /**
-     * Returns the type name of the XSD type (for custom simple types).
+     * Returns the optional XML schema type definition.
      * 
-     * @return the type name, can be <code>null</code>
+     * @return the XML schema type definition, can be <code>null</code>
      */
-    public QName getXSDTypeName() {
-        return xsdTypeName;
+    public XSSimpleTypeDefinition getXSDType() {
+        return xsdType;
     }
 
     @Override

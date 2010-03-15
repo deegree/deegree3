@@ -44,6 +44,7 @@ import static org.deegree.gml.GMLVersion.GML_2;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.xs.StringList;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.types.PrimitiveType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.types.ApplicationSchema;
@@ -98,6 +101,9 @@ public class ApplicationSchemaXSDEncoder {
 
     // set to "gml:FeatureAssociationType" (GML 2) or "gml:FeaturePropertyType" (GML 3.1 / GML 3.2)
     private String featurePropertyType;
+
+    // stores all custom simple types that occured as types of simple properties
+    private Map<QName, XSSimpleTypeDefinition> customSimpleTypes = new LinkedHashMap<QName, XSSimpleTypeDefinition>();
 
     private Set<QName> exportedFts = new HashSet<QName>();
 
@@ -188,6 +194,11 @@ public class ApplicationSchemaXSDEncoder {
             export( writer, ft );
         }
 
+        // export custom simple type declarations
+        for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
+            export( writer, xsSimpleType );
+        }
+
         // end 'xs:schema'
         writer.writeEndElement();
     }
@@ -252,6 +263,11 @@ public class ApplicationSchemaXSDEncoder {
         // export feature type declarations
         for ( FeatureType ft : fts ) {
             export( writer, ft );
+        }
+
+        // export custom simple type declarations
+        for ( XSSimpleTypeDefinition xsSimpleType : customSimpleTypes.values() ) {
+            export( writer, xsSimpleType );
         }
 
         // end 'xs:schema'
@@ -354,33 +370,7 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         if ( pt instanceof SimplePropertyType ) {
-            PrimitiveType type = ( (SimplePropertyType) pt ).getPrimitiveType();
-            switch ( type ) {
-            case BOOLEAN:
-                writer.writeAttribute( "type", "xs:boolean" );
-                break;
-            case DATE:
-                writer.writeAttribute( "type", "xs:date" );
-                break;
-            case DATE_TIME:
-                writer.writeAttribute( "type", "xs:dateTime" );
-                break;
-            case DECIMAL:
-                writer.writeAttribute( "type", "xs:decimal" );
-                break;
-            case DOUBLE:
-                writer.writeAttribute( "type", "xs:double" );
-                break;
-            case INTEGER:
-                writer.writeAttribute( "type", "xs:integer" );
-                break;
-            case STRING:
-                writer.writeAttribute( "type", "xs:string" );
-                break;
-            case TIME:
-                writer.writeAttribute( "type", "xs:string" );
-                break;
-            }
+            export( writer, (SimplePropertyType) pt, version );
         } else if ( pt instanceof GeometryPropertyType ) {
             // TODO handle restricted types (e.g. 'gml:PointPropertyType')
             writer.writeAttribute( "type", "gml:GeometryPropertyType" );
@@ -432,6 +422,90 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         // end 'xs:element'
+        writer.writeEndElement();
+    }
+
+    private void export( XMLStreamWriter writer, SimplePropertyType pt, GMLVersion version )
+                            throws XMLStreamException {
+
+        XSSimpleTypeDefinition xsdType = pt.getXSDType();
+        if ( xsdType == null ) {
+            // export without XML schema information
+            PrimitiveType type = pt.getPrimitiveType();
+            switch ( type ) {
+            case BOOLEAN:
+                writer.writeAttribute( "type", "xs:boolean" );
+                break;
+            case DATE:
+                writer.writeAttribute( "type", "xs:date" );
+                break;
+            case DATE_TIME:
+                writer.writeAttribute( "type", "xs:dateTime" );
+                break;
+            case DECIMAL:
+                writer.writeAttribute( "type", "xs:decimal" );
+                break;
+            case DOUBLE:
+                writer.writeAttribute( "type", "xs:double" );
+                break;
+            case INTEGER:
+                writer.writeAttribute( "type", "xs:integer" );
+                break;
+            case STRING:
+                writer.writeAttribute( "type", "xs:string" );
+                break;
+            case TIME:
+                writer.writeAttribute( "type", "xs:string" );
+                break;
+            }
+        } else {
+            // reconstruct XML schema type definition
+            String name = xsdType.getName();
+            String ns = xsdType.getNamespace();
+            if ( xsdType.getName() != null ) {
+                if ( XSNS.equals( ns ) ) {
+                    writer.writeAttribute( "type", "xs:" + name );
+                } else {
+                    // TODO handle other namespaces
+                    writer.writeAttribute( "type", "app:" + name );
+                    while ( xsdType != null && !XSNS.equals( xsdType.getNamespace() ) ) {
+                        name = xsdType.getName();
+                        ns = xsdType.getNamespace();
+                        QName qName = new QName( ns, name );
+                        if ( !customSimpleTypes.containsKey( qName ) ) {
+                            customSimpleTypes.put( qName, xsdType );
+                        }
+                        xsdType = (XSSimpleTypeDefinition) xsdType.getBaseType();
+                    }
+                }
+            }
+        }
+    }
+
+    private void export( XMLStreamWriter writer, XSSimpleTypeDefinition xsSimpleType )
+                            throws XMLStreamException {
+
+        writer.writeStartElement( XSNS, "simpleType" );
+        writer.writeAttribute( "name", xsSimpleType.getName() );
+        writer.writeStartElement( XSNS, "restriction" );
+
+        String baseTypeName = xsSimpleType.getBaseType().getName();
+        String baseTypeNs = xsSimpleType.getBaseType().getNamespace();
+        if ( baseTypeName == null ) {
+            LOG.warn( "Custom simple type '{" + xsSimpleType.getNamespace() + "}" + xsSimpleType.getName()
+                      + "' is based on unnamed type. Defaulting to xs:string." );
+            writer.writeAttribute( "base", "xs:string" );
+        } else if ( XSNS.equals( baseTypeNs ) ) {
+            writer.writeAttribute( "base", "xs:" + baseTypeName );
+        } else {
+            writer.writeAttribute( "base", "app:" + baseTypeName );
+        }
+        StringList enumValues = xsSimpleType.getLexicalEnumeration();
+        for ( int i = 0; i < enumValues.getLength(); i++ ) {
+            writer.writeEmptyElement( XSNS, "enumeration" );
+            writer.writeAttribute( "value", enumValues.item( i ) );
+        }
+        writer.writeEndElement();
         writer.writeEndElement();
     }
 }

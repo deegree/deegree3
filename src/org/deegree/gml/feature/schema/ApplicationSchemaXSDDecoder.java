@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
@@ -131,6 +130,8 @@ public class ApplicationSchemaXSDDecoder {
 
     private final GMLVersion gmlVersion;
 
+    private final String gmlNs;
+
     /**
      * @param gmlVersion
      * @param namespaceHints
@@ -152,6 +153,7 @@ public class ApplicationSchemaXSDDecoder {
         }
 
         this.gmlVersion = gmlVersion;
+        gmlNs = gmlVersion.getNamespace();
         analyzer = new GMLSchemaAnalyzer( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
 
@@ -179,10 +181,10 @@ public class ApplicationSchemaXSDDecoder {
 
         for ( QName ftName : ftNameToFtElement.keySet() ) {
             FeatureType ft = buildFeatureType( ftNameToFtElement.get( ftName ) );
-            if ( !CommonNamespaces.GMLNS.equals( ft.getName().getNamespaceURI() ) ) {
-                ftNameToFt.put( ftName, ft );
-            } else {
+            if ( gmlNs.equals( ft.getName().getNamespaceURI() ) ) {
                 LOG.trace( "Skipping GML internal feature type declaration: '" + ftName + "'." );
+            } else {
+                ftNameToFt.put( ftName, ft );
             }
         }
         // resolveFtReferences();
@@ -191,7 +193,7 @@ public class ApplicationSchemaXSDDecoder {
         Map<FeatureType, FeatureType> ftSubstitution = new HashMap<FeatureType, FeatureType>();
         for ( QName ftName : ftNameToSubstitutionGroupName.keySet() ) {
             QName substitutionFtName = ftNameToSubstitutionGroupName.get( ftName );
-            if ( ftName.getNamespaceURI().equals( GMLNS ) || substitutionFtName.getNamespaceURI().equals( GMLNS ) ) {
+            if ( ftName.getNamespaceURI().equals( gmlNs ) || substitutionFtName.getNamespaceURI().equals( gmlNs ) ) {
                 LOG.trace( "Skipping substitution relation: '" + ftName + "' -> '" + substitutionFtName
                            + "' (involves GML internal feature type declaration)." );
                 continue;
@@ -375,20 +377,22 @@ public class ApplicationSchemaXSDDecoder {
         }
 
         // HACK HACK HACK
-        if ( GMLNS.equals( elementDecl.getNamespace() )
+        if ( gmlNs.equals( elementDecl.getNamespace() )
              && ( "boundedBy".equals( elementDecl.getName() ) || "name".equals( elementDecl.getName() )
-                  || "description".equals( elementDecl.getName() ) || "metaDataProperty".equals( elementDecl.getName() ) || ( "location".equals( elementDecl.getName() ) && gmlVersion != GMLVersion.GML_2 ) ) ) {
+                  || "description".equals( elementDecl.getName() ) || "metaDataProperty".equals( elementDecl.getName() )
+                  || "descriptionReference".equals( elementDecl.getName() )
+                  || "identifier".equals( elementDecl.getName() ) || ( "location".equals( elementDecl.getName() ) && gmlVersion != GMLVersion.GML_2 ) ) ) {
             LOG.trace( "Omitting from feature type -- GML standard property." );
         } else {
             XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
             switch ( typeDef.getTypeCategory() ) {
             case XSTypeDefinition.SIMPLE_TYPE: {
-
                 QName typeName = typeDef.getName() != null ? new QName( typeDef.getNamespace(), typeDef.getName() )
                                                           : null;
                 pt = new SimplePropertyType<Object>( ptName, minOccurs, maxOccurs,
                                                      getPrimitiveType( (XSSimpleType) typeDef ),
-                                                     elementDecl.getAbstract(), ptSubstitutions, typeName );
+                                                     elementDecl.getAbstract(), ptSubstitutions,
+                                                     (XSSimpleTypeDefinition) typeDef );
                 ( (SimplePropertyType<?>) pt ).setCodeList( getCodeListId( elementDecl ) );
                 break;
             }
@@ -415,23 +419,23 @@ public class ApplicationSchemaXSDDecoder {
                 if ( typeDef.getName() != null ) {
                     // TODO improve detection of property types
                     QName typeName = createQName( typeDef.getNamespace(), typeDef.getName() );
-                    if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}CodeType" ) ) ) {
+                    if ( typeName.equals( new QName( gmlVersion.getNamespace(), "CodeType" ) ) ) {
                         LOG.trace( "Identified a CodePropertyType." );
                         pt = new CodePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
                                                    ptSubstitutions );
-                    } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}BoundingShapeType" ) ) ) {
+                    } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "BoundingShapeType" ) ) ) {
                         LOG.trace( "Identified an EnvelopePropertyType." );
                         pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
                                                        ptSubstitutions );
-                    } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}MeasureType" ) ) ) {
+                    } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "MeasureType" ) ) ) {
                         LOG.trace( "Identified a MeasurePropertyType (GENERIC)." );
                         pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
                                                       ptSubstitutions );
-                    } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}LengthType" ) ) ) {
+                    } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "LengthType" ) ) ) {
                         LOG.trace( "Identified a MeasurePropertyType (LENGTH)." );
                         pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
                                                       ptSubstitutions );
-                    } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}AngleType" ) ) ) {
+                    } else if ( typeName.equals( new QName( gmlVersion.getNamespace(), "AngleType" ) ) ) {
                         LOG.trace( "Identified a MeasurePropertyType (ANGLE)." );
                         pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs, elementDecl.getAbstract(),
                                                       ptSubstitutions );
@@ -502,8 +506,11 @@ public class ApplicationSchemaXSDDecoder {
         if ( pt != null ) {
             return pt;
         }
-
         pt = buildFeaturePropertyTypeAdv( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
+        if ( pt != null ) {
+            return pt;
+        }
+        pt = buildFeaturePropertyTypeGML32( elementDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
         if ( pt != null ) {
             return pt;
         }
@@ -542,7 +549,7 @@ public class ApplicationSchemaXSDDecoder {
                         if ( ftNameToFtElement.get( elementName ) != null ) {
                             LOG.trace( "Identified a feature property." );
                             pt = null;
-                            if ( GMLNS.equals( elementName.getNamespaceURI() ) ) {
+                            if ( gmlNs.equals( elementName.getNamespaceURI() ) ) {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null,
                                                               elementDecl2.getAbstract(), ptSubstitutions,
                                                               ValueRepresentation.BOTH );
@@ -642,6 +649,34 @@ public class ApplicationSchemaXSDDecoder {
                 FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
                                                                   elementDecl.getAbstract(), ptSubstitutions,
                                                                   ValueRepresentation.BOTH );
+                featurePropertyTypes.add( pt );
+                return pt;
+            }
+        }
+        return null;
+    }
+
+    private FeaturePropertyType buildFeaturePropertyTypeGML32( XSElementDeclaration elementDecl,
+                                                               XSComplexTypeDefinition typeDef, int minOccurs,
+                                                               int maxOccurs, List<PropertyType<?>> ptSubstitutions ) {
+        // handle GML 3.2 schemas (referenced feature type inside annotation element)
+        XSObjectList annotations = elementDecl.getAnnotations();
+        if ( annotations.getLength() > 0 ) {
+            XSAnnotation annotation = (XSAnnotation) annotations.item( 0 );
+            String s = annotation.getAnnotationString();
+            XMLAdapter adapter = new XMLAdapter( new StringReader( s ) );
+            NamespaceContext nsContext = new NamespaceContext();
+            nsContext.addNamespace( "xs", CommonNamespaces.XSNS );
+            nsContext.addNamespace( "gml", gmlNs );
+            QName refElement = adapter.getNodeAsQName( adapter.getRootElement(),
+                                                       new XPath( "xs:appinfo/gml:targetElement/text()", nsContext ),
+                                                       null );
+            if ( refElement != null ) {
+                LOG.trace( "Identified a feature property (GML 3.2 style)." );
+                QName elementName = createQName( elementDecl.getNamespace(), elementDecl.getName() );
+                FeaturePropertyType pt = new FeaturePropertyType( elementName, minOccurs, maxOccurs, refElement,
+                                                                  elementDecl.getAbstract(), ptSubstitutions,
+                                                                  ValueRepresentation.REMOTE );
                 featurePropertyTypes.add( pt );
                 return pt;
             }
