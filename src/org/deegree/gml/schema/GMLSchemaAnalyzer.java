@@ -38,14 +38,23 @@ package org.deegree.gml.schema;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.xerces.impl.xs.XSComplexTypeDecl;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.XSModelAnalyzer;
 import org.deegree.gml.GMLVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Provides  access to the <i>object</i> element declarations of a GML schema (both application and GML core
- * schema objects).
+ * Provides access to the <i>object</i> element declarations of a GML schema (both application and GML core schema
+ * objects).
  * <p>
  * An element declaration is an <i>object</i> element declaration, if it is in one or more of GML's object substitution
  * groups. In the latest version of GML (3.2.1), eight (?) classes of GML objects exist:
@@ -69,6 +78,8 @@ import org.deegree.gml.GMLVersion;
  * @version $Revision:$, $Date:$
  */
 public class GMLSchemaAnalyzer extends XSModelAnalyzer {
+
+    private static final Logger LOG = LoggerFactory.getLogger( GMLSchemaAnalyzer.class );
 
     private static final String GML_PRE_32_NS = CommonNamespaces.GMLNS;
 
@@ -254,14 +265,71 @@ public class GMLSchemaAnalyzer extends XSModelAnalyzer {
             break;
         }
         case GML_32:
-            // GML 3.2 does not have an abstract feature collection element anymore
-            // Every gml:AbstractFeature having a property whose content model extends gml:AbstractFeatureMemberType is
-            // a feature collection. See OGC 07-061, section 6.5
+            List<XSElementDeclaration> featureDecls = getFeatureElementDeclarations( namespace, onlyConcrete );
             fcDecls = new ArrayList<XSElementDeclaration>();
-
-            // TODO
+            for ( XSElementDeclaration featureDecl : featureDecls ) {
+                if ( isGML32FeatureCollection( featureDecl ) ) {
+                    fcDecls.add( featureDecl );
+                }
+            }
+            break;
         }
         return fcDecls;
+    }
+
+    /**
+     * Returns whether the given feature element declaration is a feature collection.
+     * <p>
+     * GML 3.2 does not have an abstract feature collection element anymore (to be precise: it's deprecated). Every
+     * <code>gml:AbstractFeature</code> element that has a property whose content model extends
+     * <code>gml:AbstractFeatureMemberType</code> is a feature collection. See OGC 07-061, section 6.5.
+     * </p>
+     * 
+     * @param featureDecl
+     *            feature element declaration, must not be <code>null</code>
+     * @return true, if the given element declaration is a feature collection, false otherwise
+     */
+    private boolean isGML32FeatureCollection( XSElementDeclaration featureDecl ) {
+        XSComplexTypeDecl type = (XSComplexTypeDecl) featureDecl.getTypeDefinition();
+        List<XSElementDeclaration> propDecls = getPropertyDecls( type );
+        for ( XSElementDeclaration propDecl : propDecls ) {
+            XSTypeDefinition propType = propDecl.getTypeDefinition();
+            if ( propType.derivedFrom( GML_32_NS, "AbstractFeatureMemberType",
+                                       (short) ( XSConstants.DERIVATION_RESTRICTION | XSConstants.DERIVATION_EXTENSION
+                                                 | XSConstants.DERIVATION_UNION | XSConstants.DERIVATION_LIST ) ) ) {
+                return true;
+            }
+            // handle deprecated FeatureCollection types as well (their properties are not based on
+            // AbstractFeatureMemberType, but on FeaturePropertyType)
+            if ( propType.derivedFrom( GML_32_NS, "FeaturePropertyType",
+                                       (short) ( XSConstants.DERIVATION_RESTRICTION | XSConstants.DERIVATION_EXTENSION
+                                                 | XSConstants.DERIVATION_UNION | XSConstants.DERIVATION_LIST ) ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<XSElementDeclaration> getPropertyDecls( XSComplexTypeDecl type ) {
+        List<XSElementDeclaration> propDecls = new ArrayList<XSElementDeclaration>();
+        getPropertyDecls( type.getParticle(), propDecls );
+        return propDecls;
+    }
+
+    private void getPropertyDecls( XSParticle particle, List<XSElementDeclaration> propertyDecls ) {
+        if ( particle != null ) {
+            XSTerm term = particle.getTerm();
+            if ( term instanceof XSElementDeclaration ) {
+                propertyDecls.add( (XSElementDeclaration) term );
+            } else if ( term instanceof XSModelGroup ) {
+                XSObjectList particles = ( (XSModelGroup) term ).getParticles();
+                for ( int i = 0; i < particles.getLength(); i++ ) {
+                    getPropertyDecls( (XSParticle) particles.item( i ), propertyDecls );
+                }
+            } else {
+                LOG.warn( "Unhandled term type: " + term.getClass() );
+            }
+        }
     }
 
     public List<XSElementDeclaration> getGeometryElementDeclarations( String namespace, boolean onlyConcrete ) {
