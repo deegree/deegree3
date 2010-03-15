@@ -258,13 +258,17 @@ public class GeometryUtils {
     public static Envelope createConvertedEnvelope( Envelope sourceEnvelope, CRS targetCRS )
                             throws TransformationException {
         Envelope result = sourceEnvelope;
-        if ( !sourceEnvelope.getCoordinateSystem().equals( targetCRS ) ) {
+        if ( sourceEnvelope != null && sourceEnvelope.getCoordinateSystem() != null
+             && !sourceEnvelope.getCoordinateSystem().equals( targetCRS ) ) {
             try {
                 result = (Envelope) new GeometryTransformer( targetCRS.getWrappedCRS() ).transform( sourceEnvelope );
             } catch ( IllegalArgumentException e ) {
                 throw new TransformationException( "Could not transform to given envelope because: "
                                                    + e.getLocalizedMessage(), e );
             } catch ( UnknownCRSException e ) {
+                throw new TransformationException( "Could not transform to given envelope because: "
+                                                   + e.getLocalizedMessage(), e );
+            } catch ( Exception e ) {
                 throw new TransformationException( "Could not transform to given envelope because: "
                                                    + e.getLocalizedMessage(), e );
             }
