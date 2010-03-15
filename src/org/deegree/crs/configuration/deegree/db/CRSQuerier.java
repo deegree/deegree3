@@ -899,8 +899,7 @@ public class CRSQuerier {
         CRSIdentifiable identifiable = getIdentifiableAttributes( projectedId );
         int projectionID = rs.getInt( 3 );
         Projection proj = getProjection( projectionID );
-        if ( proj == null || proj.getGeographicCRS() == null
-             || proj.getGeographicCRS().getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
+        if ( proj == null || proj.getGeographicCRS() == null ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
                                                                       identifiable.getCode().toString(),
                                                                       getProjection( projectionID ) ) );

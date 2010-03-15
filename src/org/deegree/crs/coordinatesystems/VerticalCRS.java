@@ -36,6 +36,8 @@
 
 package org.deegree.crs.coordinatesystems;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.VERTICAL;
+
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.VerticalDatum;
@@ -72,8 +74,8 @@ public class VerticalCRS extends CoordinateSystem {
     }
 
     @Override
-    public int getType() {
-        return CoordinateSystem.VERTICAL_CRS;
+    public CRSType getType() {
+        return VERTICAL;
     }
 
     /**

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.crs;
 
+import java.util.List;
+
 import org.deegree.crs.configuration.TransformationFactory;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
@@ -129,12 +131,36 @@ public abstract class Transformer {
      */
     protected Transformation createCRSTransformation( CoordinateSystem sourceCRS )
                             throws TransformationException, IllegalArgumentException {
+        return createCRSTransformation( sourceCRS, null );
+    }
+
+    /**
+     * Creates a transformation chain, which can be used to transform incoming coordinates (in the given source CRS)
+     * into this Transformer's targetCRS. The list of transformations can be used to define separate transformations
+     * which <b>must</b> be used into the resulting transformation chain.
+     * 
+     * @param sourceCRS
+     *            in which the coordinates are defined.
+     * @param toBeUsedTransformations
+     *            a list of transformations which must be used on the resulting transformation chain.
+     * 
+     * @return the Transformation chain.
+     * @throws TransformationException
+     * @throws TransformationException
+     *             if no transformation chain could be created.
+     * @throws IllegalArgumentException
+     *             if the given CoordinateSystem is <code>null</code>
+     * 
+     */
+    protected Transformation createCRSTransformation( CoordinateSystem sourceCRS,
+                                                      List<Transformation> toBeUsedTransformations )
+                            throws TransformationException {
         if ( sourceCRS == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
                                                                      "createCRSTransformation( CoordinateSystem )",
                                                                      "sourceCRS" ) );
         }
-        return checkOrCreateTransformation( sourceCRS );
+        return checkOrCreateTransformation( sourceCRS, toBeUsedTransformations );
     }
 
     /**
@@ -182,15 +208,17 @@ public abstract class Transformer {
      * given, a new Transformation will be created using the {@link TransformationFactory}
      * 
      * @param sourceCRS
+     * @param toBeUsedTransformations
      * @return the transformation needed to convert from given source to the constructed target crs.
      * @throws TransformationException
      */
-    private synchronized Transformation checkOrCreateTransformation( CoordinateSystem sourceCRS )
+    private synchronized Transformation checkOrCreateTransformation( CoordinateSystem sourceCRS,
+                                                                     List<Transformation> toBeUsedTransformations )
                             throws TransformationException {
         if ( definedTransformation == null
              || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
                                                                                                                             targetCRS ) ) ) {
-            definedTransformation = CRSRegistry.getTransformation( null, sourceCRS, targetCRS );
+            definedTransformation = CRSRegistry.getTransformation( null, sourceCRS, targetCRS, toBeUsedTransformations );
         }
         return definedTransformation;
     }

@@ -91,29 +91,38 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     private final List<Transformation> transformations;
 
     /**
-     * Defines this CRS as a GeoCentric one.
+     * 
+     * Simple enum defining the currently known Coordinate System types.
+     * 
+     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+     * @author last edited by: $Author: rutger $
+     * 
+     * @version $Revision: $, $Date: $
      */
-    public static final int GEOCENTRIC_CRS = 0;
+    public enum CRSType {
+        /** Defines this CRS as a GeoCentric one. */
+        GEOCENTRIC( "Geocentric CRS" ),
 
-    /**
-     * Defines this CRS as a Geographic one.
-     */
-    public static final int GEOGRAPHIC_CRS = 1;
+        /** Defines this CRS as a Geographic one. */
+        GEOGRAPHIC( "Geographic CRS" ),
+        /** Defines this CRS as a Projected one. */
+        PROJECTED( "Projected CRS" ),
+        /** Defines this CRS as a Compound one. */
+        COMPOUND( "Compound CRS" ),
+        /** Defines this CRS as a Vertical one. */
+        VERTICAL( "Vertical CRS" );
 
-    /**
-     * Defines this CRS as a Projected one.
-     */
-    public static final int PROJECTED_CRS = 2;
+        private String name;
 
-    /**
-     * Defines this CRS as a Compound one.
-     */
-    public static final int COMPOUND_CRS = 3;
+        private CRSType( String name ) {
+            this.name = name;
+        }
 
-    /**
-     * Defines this CRS as a Vertical one.
-     */
-    public static final int VERTICAL_CRS = 4;
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 
     /**
      * @param datum
@@ -206,7 +215,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     /**
      * @return one of the *_CRS types defined in this class.
      */
-    public abstract int getType();
+    public abstract CRSType getType();
 
     /**
      * @param targetCRS
@@ -286,18 +295,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @return either the type as a name or 'Unknown' if the type is not known.
      */
     protected String getTypeName() {
-        switch ( getType() ) {
-        case GEOCENTRIC_CRS:
-            return "Geocentric CRS";
-        case PROJECTED_CRS:
-            return "Projected CRS";
-        case GEOGRAPHIC_CRS:
-            return "Geographic CRS";
-        case COMPOUND_CRS:
-            return "Compound CRS";
-        default:
-            return "Unknown CRS";
-        }
+        return getType().toString();
     }
 
     /**
@@ -365,7 +363,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         if ( usedDatum != null ) {
             code = code * 37 + usedDatum.hashCode();
         }
-        code = code * 37 + getType();
+        code = getType().name().hashCode();
         code = code * 37 + getDimension();
         return (int) ( code >>> 32 ) ^ (int) code;
     }

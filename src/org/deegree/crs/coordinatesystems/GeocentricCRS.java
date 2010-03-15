@@ -36,6 +36,8 @@
 
 package org.deegree.crs.coordinatesystems;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTRIC;
+
 import java.util.List;
 
 import org.deegree.crs.CRSCodeType;
@@ -138,8 +140,8 @@ public class GeocentricCRS extends CoordinateSystem {
     }
 
     @Override
-    public int getType() {
-        return CoordinateSystem.GEOCENTRIC_CRS;
+    public CRSType getType() {
+        return GEOCENTRIC;
     }
 
     @Override

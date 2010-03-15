@@ -36,6 +36,8 @@
 
 package org.deegree.crs.coordinatesystems;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+
 import java.util.List;
 
 import org.deegree.crs.CRSCodeType;
@@ -187,8 +189,8 @@ public class GeographicCRS extends CoordinateSystem {
     }
 
     @Override
-    public int getType() {
-        return GEOGRAPHIC_CRS;
+    public CRSType getType() {
+        return GEOGRAPHIC;
     }
 
 }

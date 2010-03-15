@@ -59,6 +59,7 @@ import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.coordinatesystems.VerticalCRS;
+import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.transformations.helmert.Helmert;
@@ -408,28 +409,45 @@ public class CRSRemover {
             LOG.warn( "The CRS " + crs + " does not have a code. It will not be removed." );
             return;
         }
+        CRSType type = crs.getType();
+        switch ( type ) {
+        case COMPOUND: {
+            CompoundCRS compound = (CompoundCRS) crs;
 
-        if ( crs.getType() == CoordinateSystem.PROJECTED_CRS ) {
-            ProjectedCRS projected = (ProjectedCRS) crs;
+            int internalID = getInternalID( compound );
 
-            int internalID = getInternalID( projected );
+            LOG.info( "Removing Compound CRS " + compound.getCode() );
+            connection.prepareStatement( "DELETE FROM compound_crs WHERE id = " + internalID ).execute();
+            connection.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
+            removeCRS( compound.getUnderlyingCRS() );
+            removeAxis( compound.getHeightAxis() );
+            removeIdentifiableAttributes( internalID );
+        }
+            break;
+        case GEOCENTRIC: {
+            GeocentricCRS geocentric = (GeocentricCRS) crs;
+
+            int internalID = getInternalID( geocentric );
 
             ResultSet compoundRef = connection.prepareStatement(
                                                                  "SELECT * FROM compound_crs " + "WHERE base_crs = "
                                                                                          + internalID ).executeQuery();
             if ( compoundRef.next() ) {
-                LOG.info( "A projected CRS is referenced by compoundCrs(s) still in the database" );
+                LOG.info( "A geocentricCRS is referenced by compoundCRS(s) that " + "are still in the database." );
                 return;
             }
-            LOG.info( "Removing projectedCRS " + projected.getCode() );
-            connection.prepareStatement( "DELETE FROM projected_crs WHERE id = " + internalID ).execute();
-            connection.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
-            removeAxis( projected.getAxis()[0] );
-            removeAxis( projected.getAxis()[1] );
-            removeProjection( projected.getProjection() );
-            removeIdentifiableAttributes( internalID );
 
-        } else if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
+            LOG.info( "Removing the Geocentric CRS: " + geocentric.getCode() );
+            connection.prepareStatement( "DELETE FROM geocentric_crs WHERE id = " + internalID ).execute();
+            connection.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
+            removeGeodeticDatum( geocentric.getGeodeticDatum() );
+            removeAxis( geocentric.getAxis()[0] );
+            removeAxis( geocentric.getAxis()[1] );
+            removeAxis( geocentric.getAxis()[2] );
+            removeIdentifiableAttributes( internalID );
+        }
+            break;
+        case GEOGRAPHIC: {
             GeographicCRS geographic = (GeographicCRS) crs;
 
             int internalID = getInternalID( geographic );
@@ -494,30 +512,30 @@ public class CRSRemover {
             removeAxis( geographic.getAxis()[0] );
             removeAxis( geographic.getAxis()[1] );
             removeIdentifiableAttributes( internalID );
+        }
+            break;
+        case PROJECTED: {
+            ProjectedCRS projected = (ProjectedCRS) crs;
 
-        } else if ( crs.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
-            GeocentricCRS geocentric = (GeocentricCRS) crs;
-
-            int internalID = getInternalID( geocentric );
+            int internalID = getInternalID( projected );
 
             ResultSet compoundRef = connection.prepareStatement(
                                                                  "SELECT * FROM compound_crs " + "WHERE base_crs = "
                                                                                          + internalID ).executeQuery();
             if ( compoundRef.next() ) {
-                LOG.info( "A geocentricCRS is referenced by compoundCRS(s) that " + "are still in the database." );
+                LOG.info( "A projected CRS is referenced by compoundCrs(s) still in the database" );
                 return;
             }
-
-            LOG.info( "Removing the Geocentric CRS: " + geocentric.getCode() );
-            connection.prepareStatement( "DELETE FROM geocentric_crs WHERE id = " + internalID ).execute();
+            LOG.info( "Removing projectedCRS " + projected.getCode() );
+            connection.prepareStatement( "DELETE FROM projected_crs WHERE id = " + internalID ).execute();
             connection.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
-            removeGeodeticDatum( geocentric.getGeodeticDatum() );
-            removeAxis( geocentric.getAxis()[0] );
-            removeAxis( geocentric.getAxis()[1] );
-            removeAxis( geocentric.getAxis()[2] );
+            removeAxis( projected.getAxis()[0] );
+            removeAxis( projected.getAxis()[1] );
+            removeProjection( projected.getProjection() );
             removeIdentifiableAttributes( internalID );
-
-        } else if ( crs.getType() == CoordinateSystem.VERTICAL_CRS ) {
+        }
+            break;
+        case VERTICAL: {
             VerticalCRS vertical = (VerticalCRS) crs;
 
             int internalID = getInternalID( vertical );
@@ -529,17 +547,8 @@ public class CRSRemover {
             removeVerticalDatum( vertical.getVerticalDatum() );
             removeIdentifiableAttributes( internalID );
 
-        } else if ( crs.getType() == CoordinateSystem.COMPOUND_CRS ) {
-            CompoundCRS compound = (CompoundCRS) crs;
-
-            int internalID = getInternalID( compound );
-
-            LOG.info( "Removing Compound CRS " + compound.getCode() );
-            connection.prepareStatement( "DELETE FROM compound_crs WHERE id = " + internalID ).execute();
-            connection.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
-            removeCRS( compound.getUnderlyingCRS() );
-            removeAxis( compound.getHeightAxis() );
-            removeIdentifiableAttributes( internalID );
+        }
+            break;
         }
     }
 

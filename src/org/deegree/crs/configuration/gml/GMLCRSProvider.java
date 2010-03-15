@@ -42,6 +42,9 @@ package org.deegree.crs.configuration.gml;
 // import static org.deegree.commons.xml.XMLTools.getRequiredNodeAsDouble;
 // import static org.deegree.commons.xml.XMLTools.getRequiredNodeAsString;
 import static org.deegree.crs.components.Unit.createUnitFromString;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTRIC;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -316,10 +319,10 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 break;
             case GEOGRAPHIC_GEOCENTRIC:
                 LOG.warn( "The mapping of gml:Transformation to Geographic/Geocentic transformations is not necessary." );
-                if ( targetCRS.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
+                if ( targetCRS.getType() == GEOCENTRIC ) {
                     result = new GeocentricTransform( sourceCRS, (GeocentricCRS) targetCRS );
-                } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
-                    if ( ( (CompoundCRS) targetCRS ).getUnderlyingCRS().getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
+                } else if ( targetCRS.getType() == COMPOUND ) {
+                    if ( ( (CompoundCRS) targetCRS ).getUnderlyingCRS().getType() == GEOCENTRIC ) {
                         result = new GeocentricTransform(
                                                           sourceCRS,
                                                           (GeocentricCRS) ( (CompoundCRS) targetCRS ).getUnderlyingCRS() );
@@ -444,7 +447,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * This methods parses the given element and maps it onto a {@link CompoundCRS}. Currently only gml:CompoundCRS 's
      * consisting of following combination is supported:
      * <ul>
-     * <li> Projected CRS with VerticalCRS</li>
+     * <li>Projected CRS with VerticalCRS</li>
      * </ul>
      * 
      * Geographic crs with a height axis can be mapped in a {@link CompoundCRS} by calling the
@@ -504,7 +507,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         if ( "ProjectedCRS".equals( crsElement1.getLocalName() ) ) {
             if ( "VerticalCRS".equals( crsElement2.getLocalName() ) ) {
                 CoordinateSystem firstRes = parseProjectedCRS( crsElement1 );
-                if ( firstRes.getType() == CoordinateSystem.COMPOUND_CRS ) {
+                if ( firstRes.getType() == COMPOUND ) {
                     underlying = (ProjectedCRS) ( (CompoundCRS) firstRes ).getUnderlyingCRS();
                 } else {
                     underlying = (ProjectedCRS) firstRes;
@@ -519,7 +522,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         } else if ( "VerticalCRS".equals( crsElement1.getLocalName() ) ) {
             if ( "ProjectedCRS".equals( crsElement2.getLocalName() ) ) {
                 CoordinateSystem firstRes = parseProjectedCRS( crsElement2 );
-                if ( firstRes.getType() == CoordinateSystem.COMPOUND_CRS ) {
+                if ( firstRes.getType() == COMPOUND ) {
                     underlying = (ProjectedCRS) ( (CompoundCRS) firstRes ).getUnderlyingCRS();
                 } else {
                     underlying = (ProjectedCRS) firstRes;
@@ -578,14 +581,14 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                                            "No basetype for the projected crs found, each projected crs must have a base crs." );
         }
         GeographicCRS underlyingCRS = null;
-        if ( parsedBaseCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
+        if ( parsedBaseCRS.getType() == COMPOUND ) {
             CoordinateSystem cmpBase = ( (CompoundCRS) parsedBaseCRS ).getUnderlyingCRS();
-            if ( cmpBase.getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
+            if ( cmpBase.getType() != GEOGRAPHIC ) {
                 throw new XMLParsingException( adapter, baseGEOCRSElementProperty,
                                                "Only geographic crs's can be the base type of a projected crs." );
             }
             underlyingCRS = (GeographicCRS) cmpBase;
-        } else if ( parsedBaseCRS.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
+        } else if ( parsedBaseCRS.getType() == GEOGRAPHIC ) {
             underlyingCRS = (GeographicCRS) parsedBaseCRS;
         } else {
             throw new XMLParsingException( adapter, baseGEOCRSElementProperty,
@@ -607,7 +610,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                                                                                                        + "Conversion" ),
                                                  underlyingCRS );
         CoordinateSystem result = new ProjectedCRS( projection, axis, id );
-        if ( parsedBaseCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
+        if ( parsedBaseCRS.getType() == COMPOUND ) {
             result = new CompoundCRS( ( (CompoundCRS) parsedBaseCRS ).getHeightAxis(), result,
                                       ( (CompoundCRS) parsedBaseCRS ).getDefaultHeight(), id );
         }
@@ -618,9 +621,9 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * @param rootElement
      *            containing a gml:GeodeticCRS dom representation.
      * @return a {@link CoordinateSystem} instance initialized with values from the given XML-OM gml:GeodeticCRS
-     *         fragment or <code>null</code> if the given root element is <code>null</code>. Note the result may be
-     *         a {@link CompoundCRS}, a {@link GeographicCRS} or a {@link GeocentricCRS}, depending of the definition
-     *         of the CS type.
+     *         fragment or <code>null</code> if the given root element is <code>null</code>. Note the result may be a
+     *         {@link CompoundCRS}, a {@link GeographicCRS} or a {@link GeocentricCRS}, depending of the definition of
+     *         the CS type.
      * @throws XMLParsingException
      * @throws IOException
      */
@@ -1240,8 +1243,8 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * 
      * @param elementContainingUOMAttribute
      *            an element containing the 'uom' attribute which will be mapped onto a known unit.
-     * @return the mapped {@link Unit} or <code>null</code> if the given uomAttribute is empty or <code>null</code>,
-     *         or no appropriate mapping could be found.
+     * @return the mapped {@link Unit} or <code>null</code> if the given uomAttribute is empty or <code>null</code>, or
+     *         no appropriate mapping could be found.
      * @throws XMLParsingException
      */
     protected Unit parseUnitOfMeasure( OMElement elementContainingUOMAttribute )

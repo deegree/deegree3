@@ -67,6 +67,7 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
+import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.crs.projections.conic.LambertConformalConic;
@@ -132,16 +133,24 @@ public class CRSExporterBase {
                         datums.add( d );
                         ellipsoids.add( d.getEllipsoid() );
 
-                        if ( crs.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
-                            geocentrics.add( (GeocentricCRS) crs );
-                        } else if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                            geographics.add( (GeographicCRS) crs );
-                        } else if ( crs.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                            projecteds.add( (ProjectedCRS) crs );
-                        } else if ( crs.getType() == CoordinateSystem.COMPOUND_CRS ) {
+                        final CRSType type = crs.getType();
+                        switch ( type ) {
+                        case COMPOUND:
                             compounds.add( (CompoundCRS) crs );
+                            break;
+                        case GEOCENTRIC:
+                            geocentrics.add( (GeocentricCRS) crs );
+                            break;
+                        case GEOGRAPHIC:
+                            geographics.add( (GeographicCRS) crs );
+                            break;
+                        case PROJECTED:
+                            projecteds.add( (ProjectedCRS) crs );
+                            break;
+                        case VERTICAL:
+                            // not supported yet
+                            break;
                         }
-
                         primeMeridians.add( d.getPrimeMeridian() );
                         wgs84s.add( d.getWGS84Conversion() );
 

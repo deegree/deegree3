@@ -35,9 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.crs.configuration;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTRIC;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
 import static org.deegree.crs.projections.ProjectionUtils.EPS11;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.vecmath.GMatrix;
 import javax.vecmath.Matrix3d;
@@ -54,6 +61,7 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
+import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.transformations.Transformation;
@@ -136,6 +144,30 @@ public class TransformationFactory {
     public Transformation createFromCoordinateSystems( final CoordinateSystem sourceCRS,
                                                        final CoordinateSystem targetCRS )
                             throws TransformationException, IllegalArgumentException {
+        return createFromCoordinateSystems( sourceCRS, targetCRS, null );
+    }
+
+    /**
+     * Creates a transformation between two coordinate systems. This method will examine the coordinate systems in order
+     * to construct a transformation between them. The given list of transformations is taken into consideration.
+     * 
+     * @param sourceCRS
+     *            Input coordinate system.
+     * @param targetCRS
+     *            Output coordinate system.
+     * @param transformationsToBeUsed
+     * @return A coordinate transformation from <code>sourceCRS</code> to <code>targetCRS</code>.
+     * @throws TransformationException
+     * @throws TransformationException
+     *             if no transformation path has been found.
+     * @throws IllegalArgumentException
+     *             if the sourceCRS or targetCRS are <code>null</code>.
+     * 
+     */
+    public Transformation createFromCoordinateSystems( final CoordinateSystem sourceCRS,
+                                                       final CoordinateSystem targetCRS,
+                                                       List<Transformation> transformationsToBeUsed )
+                            throws TransformationException {
         if ( sourceCRS == null ) {
             throw new IllegalArgumentException( "The source CRS may not be null" );
         }
@@ -145,12 +177,7 @@ public class TransformationFactory {
         // 1) Call crs-config.getTransformation for source and target (caching????)
         // 2) if( helmert, use this class)
         // 3) if direct, do this=????
-        if ( ( sourceCRS.getType() != CoordinateSystem.GEOGRAPHIC_CRS
-               && sourceCRS.getType() != CoordinateSystem.COMPOUND_CRS
-               && sourceCRS.getType() != CoordinateSystem.PROJECTED_CRS && sourceCRS.getType() != CoordinateSystem.GEOCENTRIC_CRS )
-             || ( targetCRS.getType() != CoordinateSystem.GEOGRAPHIC_CRS
-                  && targetCRS.getType() != CoordinateSystem.COMPOUND_CRS
-                  && targetCRS.getType() != CoordinateSystem.PROJECTED_CRS && targetCRS.getType() != CoordinateSystem.GEOCENTRIC_CRS ) ) {
+        if ( !isSupported( sourceCRS ) || !isSupported( targetCRS ) ) {
             throw new TransformationException( sourceCRS, targetCRS,
                                                "Either the target crs type or the source crs type was unknown" );
         }
@@ -162,9 +189,17 @@ public class TransformationFactory {
             return createMatrixTransform( sourceCRS, targetCRS, matrix );
         }
 
-        Transformation result = null;
-        // check if a 'direct' transformation could be loaded from the configuration;
-        result = provider.getTransformation( sourceCRS, targetCRS );
+        List<Transformation> newList = null;
+        if ( transformationsToBeUsed != null ) {
+            newList = new ArrayList<Transformation>( transformationsToBeUsed );
+        }
+
+        // check if the list of required transformations contains a 'direct' transformation.
+        Transformation result = getRequiredTransformation( newList, sourceCRS, targetCRS );
+        if ( result == null ) {
+            // check if a 'direct' transformation could be loaded from the configuration;
+            result = provider.getTransformation( sourceCRS, targetCRS );
+        }
         if ( result == null ) {
             // no configured transformation
 
@@ -174,99 +209,29 @@ public class TransformationFactory {
                 if ( direct != null ) {
                     LOG.debug( "Using direct (polynomial) transformation instead of a helmert transformation: "
                                + direct.getImplementationName() );
-                    // result = new DirectTransform(
-                    // direct,
-                    // sourceCRS,
-                    // new CRSIdentifiable(
-                    // new CRSCodeType[] { CRSCodeType.valueOf( direct.getCode()
-                    // + "-CRSTransformation" ) } ) );
                     result = direct;
                 }
             } else {
-                if ( sourceCRS.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                    /**
-                     * Geographic --> Geographic, Projected, Geocentric or Compound
-                     */
-                    final GeographicCRS source = (GeographicCRS) sourceCRS;
-                    if ( targetCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                        result = createTransformation( source, (ProjectedCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                        result = createTransformation( source, (GeographicCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
-                        result = createTransformation( source, (GeocentricCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
-                        CompoundCRS target = (CompoundCRS) targetCRS;
-                        CompoundCRS sTmp = new CompoundCRS(
-                                                            target.getHeightAxis(),
-                                                            source,
-                                                            target.getDefaultHeight(),
-                                                            new CRSIdentifiable(
-                                                                                 new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
-                                                                                                                          + "_compound" ) } ) );
-                        result = createTransformation( sTmp, target );
-                    }
-                } else if ( sourceCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                    /**
-                     * Projected --> Projected, Geographic, Geocentric or Compound
-                     */
-                    final ProjectedCRS source = (ProjectedCRS) sourceCRS;
-                    if ( targetCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                        result = createTransformation( source, (ProjectedCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                        result = createTransformation( source, (GeographicCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
-                        result = createTransformation( source, (GeocentricCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
-                        CompoundCRS target = (CompoundCRS) targetCRS;
-                        CompoundCRS sTmp = new CompoundCRS(
-                                                            target.getHeightAxis(),
-                                                            source,
-                                                            target.getDefaultHeight(),
-                                                            new CRSIdentifiable(
-                                                                                 new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
-                                                                                                                          + "_compound" ) } ) );
-                        result = createTransformation( sTmp, target );
-                    }
-                } else if ( sourceCRS.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
-                    /**
-                     * Geocentric --> Projected, Geographic, Geocentric or Compound
-                     */
-                    final GeocentricCRS source = (GeocentricCRS) sourceCRS;
-                    if ( targetCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                        result = createTransformation( source, (ProjectedCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                        result = createTransformation( source, (GeographicCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
-                        result = createTransformation( source, (GeocentricCRS) targetCRS );
-                    } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
-                        CompoundCRS target = (CompoundCRS) targetCRS;
-                        CompoundCRS sTmp = new CompoundCRS(
-                                                            target.getHeightAxis(),
-                                                            source,
-                                                            target.getDefaultHeight(),
-                                                            new CRSIdentifiable(
-                                                                                 new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
-                                                                                                                          + "_compound" ) } ) );
-                        result = createTransformation( sTmp, target );
-                    }
-                } else if ( sourceCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
-                    /**
-                     * Compound --> Projected, Geographic, Geocentric or Compound
-                     */
-                    final CompoundCRS source = (CompoundCRS) sourceCRS;
-                    CompoundCRS target = null;
-                    if ( targetCRS.getType() != CoordinateSystem.COMPOUND_CRS ) {
-                        target = new CompoundCRS(
-                                                  source.getHeightAxis(),
-                                                  targetCRS,
-                                                  source.getDefaultHeight(),
-                                                  new CRSIdentifiable(
-                                                                       new CRSCodeType[] { CRSCodeType.valueOf( targetCRS.getCode()
-                                                                                                                + "_compound" ) } ) );
-                    } else {
-                        target = (CompoundCRS) targetCRS;
-                    }
-                    result = createTransformation( source, target );
+                CRSType type = sourceCRS.getType();
+                switch ( type ) {
+                case COMPOUND:
+                    /** Compound --> Projected, Geographic, Geocentric or Compound */
+                    result = createFromCompound( (CompoundCRS) sourceCRS, targetCRS );
+                    break;
+                case GEOCENTRIC:
+                    /** Geocentric --> Projected, Geographic, Geocentric or Compound */
+                    result = createFromGeocentric( (GeocentricCRS) sourceCRS, targetCRS );
+                    break;
+                case GEOGRAPHIC:
+                    /** Geographic --> Geographic, Projected, Geocentric or Compound */
+                    result = createFromGeographic( (GeographicCRS) sourceCRS, targetCRS );
+                    break;
+                case PROJECTED:
+                    /** Projected --> Projected, Geographic, Geocentric or Compound */
+                    result = createFromProjected( (ProjectedCRS) sourceCRS, targetCRS );
+                    break;
+                case VERTICAL:
+                    break;
                 }
             }
         }
@@ -294,6 +259,154 @@ public class TransformationFactory {
         }
         return result;
 
+    }
+
+    /**
+     * Iterates over the given transformations and removes a 'fitting' transformation from the list.
+     * 
+     * @param requiredTransformations
+     * @param sourceCRS
+     * @param targetCRS
+     * @return the 'required' transformation or <code>null</code> if no fitting transfromation was found.
+     */
+    private Transformation getRequiredTransformation( List<Transformation> requiredTransformations,
+                                                      CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+        Transformation result = null;
+        if ( requiredTransformations != null && !requiredTransformations.isEmpty() ) {
+            Iterator<Transformation> it = requiredTransformations.iterator();
+            while ( it.hasNext() && result == null ) {
+                Transformation t = it.next();
+                if ( t != null ) {
+                    boolean matches = ( sourceCRS != null ) ? sourceCRS.equals( t.getSourceCRS() )
+                                                           : t.getSourceCRS() == null;
+                    matches = matches && ( targetCRS != null ) ? targetCRS.equals( t.getTargetCRS() )
+                                                              : t.getTargetCRS() == null;
+                    matches = matches && !t.isIdentity();
+                    if ( matches ) {
+                        result = t;
+                    }
+                }
+            }
+            if ( result != null ) {
+                requiredTransformations.remove( result );
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param crs
+     * @return true if the crs is one of the Types defined in CoordinateSystem.
+     */
+    private boolean isSupported( CoordinateSystem crs ) {
+        CRSType type = crs.getType();
+        return type == COMPOUND || type == GEOCENTRIC || type == GEOGRAPHIC || type == CRSType.PROJECTED;
+    }
+
+    private Transformation createFromCompound( CompoundCRS sourceCRS, CoordinateSystem targetCRS )
+                            throws TransformationException {
+        CompoundCRS target = null;
+        if ( targetCRS.getType() != COMPOUND ) {
+            target = new CompoundCRS( sourceCRS.getHeightAxis(), targetCRS, sourceCRS.getDefaultHeight(),
+                                      new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( targetCRS.getCode()
+                                                                                                    + "_compound" ) } ) );
+        } else {
+            target = (CompoundCRS) targetCRS;
+        }
+        return createTransformation( sourceCRS, target );
+    }
+
+    private Transformation createFromGeocentric( GeocentricCRS sourceCRS, CoordinateSystem targetCRS )
+                            throws TransformationException {
+        Transformation result = null;
+        CRSType type = targetCRS.getType();
+        switch ( type ) {
+        case COMPOUND:
+            CompoundCRS target = (CompoundCRS) targetCRS;
+            CompoundCRS sTmp = new CompoundCRS(
+                                                target.getHeightAxis(),
+                                                sourceCRS,
+                                                target.getDefaultHeight(),
+                                                new CRSIdentifiable(
+                                                                     new CRSCodeType[] { CRSCodeType.valueOf( sourceCRS.getCode()
+                                                                                                              + "_compound" ) } ) );
+            result = createTransformation( sTmp, target );
+            break;
+        case GEOCENTRIC:
+            result = createTransformation( sourceCRS, (GeocentricCRS) targetCRS );
+            break;
+        case GEOGRAPHIC:
+            result = createTransformation( sourceCRS, (GeographicCRS) targetCRS );
+            break;
+        case PROJECTED:
+            result = createTransformation( sourceCRS, (ProjectedCRS) targetCRS );
+            break;
+        case VERTICAL:
+            break;
+        }
+        return result;
+    }
+
+    private Transformation createFromProjected( ProjectedCRS sourceCRS, CoordinateSystem targetCRS )
+                            throws TransformationException {
+        Transformation result = null;
+        CRSType type = targetCRS.getType();
+        switch ( type ) {
+        case COMPOUND:
+            CompoundCRS target = (CompoundCRS) targetCRS;
+            CompoundCRS sTmp = new CompoundCRS(
+                                                target.getHeightAxis(),
+                                                sourceCRS,
+                                                target.getDefaultHeight(),
+                                                new CRSIdentifiable(
+                                                                     new CRSCodeType[] { CRSCodeType.valueOf( sourceCRS.getCode()
+                                                                                                              + "_compound" ) } ) );
+            result = createTransformation( sTmp, target );
+            break;
+        case GEOCENTRIC:
+            result = createTransformation( sourceCRS, (GeocentricCRS) targetCRS );
+            break;
+        case GEOGRAPHIC:
+            result = createTransformation( sourceCRS, (GeographicCRS) targetCRS );
+            break;
+        case PROJECTED:
+            result = createTransformation( sourceCRS, (ProjectedCRS) targetCRS );
+            break;
+        case VERTICAL:
+            break;
+        }
+        return result;
+    }
+
+    private Transformation createFromGeographic( GeographicCRS sourceCRS, CoordinateSystem targetCRS )
+                            throws TransformationException {
+        Transformation result = null;
+        CRSType type = targetCRS.getType();
+        switch ( type ) {
+        case COMPOUND:
+            CompoundCRS target = (CompoundCRS) targetCRS;
+            CompoundCRS sTmp = new CompoundCRS(
+                                                target.getHeightAxis(),
+                                                sourceCRS,
+                                                target.getDefaultHeight(),
+                                                new CRSIdentifiable(
+                                                                     new CRSCodeType[] { CRSCodeType.valueOf( sourceCRS.getCode()
+                                                                                                              + "_compound" ) } ) );
+            result = createTransformation( sTmp, target );
+            break;
+        case GEOCENTRIC:
+            result = createTransformation( sourceCRS, (GeocentricCRS) targetCRS );
+            break;
+        case GEOGRAPHIC:
+            result = createTransformation( sourceCRS, (GeographicCRS) targetCRS );
+            break;
+        case PROJECTED:
+            result = createTransformation( sourceCRS, (ProjectedCRS) targetCRS );
+            break;
+        case VERTICAL:
+            break;
+        }
+        return result;
     }
 
     /**
@@ -383,24 +496,24 @@ public class TransformationFactory {
         LOG.debug( "Creating compound( " + sourceCRS.getUnderlyingCRS().getCode() + ") ->compound transformation( "
                    + targetCRS.getUnderlyingCRS().getCode() + "): from (source): " + sourceCRS.getCode()
                    + " to(target): " + targetCRS.getCode() );
-        final int sourceType = sourceCRS.getUnderlyingCRS().getType();
-        final int targetType = targetCRS.getUnderlyingCRS().getType();
+        final CRSType sourceType = sourceCRS.getUnderlyingCRS().getType();
+        final CRSType targetType = targetCRS.getUnderlyingCRS().getType();
         Transformation result = null;
         // basic check for simple (invert) projections
-        if ( sourceType == CoordinateSystem.PROJECTED_CRS && targetType == CoordinateSystem.GEOGRAPHIC_CRS ) {
+        if ( sourceType == PROJECTED && targetType == GEOGRAPHIC ) {
             if ( ( ( (ProjectedCRS) sourceCRS.getUnderlyingCRS() ).getGeographicCRS() ).equals( targetCRS.getUnderlyingCRS() ) ) {
                 result = new ProjectionTransform( (ProjectedCRS) sourceCRS.getUnderlyingCRS() );
                 result.inverse();
             }
         }
-        if ( sourceType == CoordinateSystem.GEOGRAPHIC_CRS && targetType == CoordinateSystem.PROJECTED_CRS ) {
+        if ( sourceType == GEOGRAPHIC && targetType == PROJECTED ) {
             if ( ( ( (ProjectedCRS) targetCRS.getUnderlyingCRS() ).getGeographicCRS() ).equals( sourceCRS.getUnderlyingCRS() ) ) {
                 result = new ProjectionTransform( (ProjectedCRS) targetCRS.getUnderlyingCRS() );
             }
         }
         if ( result == null ) {
             GeocentricCRS sourceGeocentric = null;
-            if ( sourceType == CoordinateSystem.GEOCENTRIC_CRS ) {
+            if ( sourceType == GEOCENTRIC ) {
                 sourceGeocentric = (GeocentricCRS) sourceCRS.getUnderlyingCRS();
             } else {
                 sourceGeocentric = new GeocentricCRS(
@@ -409,7 +522,7 @@ public class TransformationFactory {
                                                       sourceCRS.getName() + "_Geocentric" );
             }
             GeocentricCRS targetGeocentric = null;
-            if ( targetType == CoordinateSystem.GEOCENTRIC_CRS ) {
+            if ( targetType == GEOCENTRIC ) {
                 targetGeocentric = (GeocentricCRS) targetCRS.getUnderlyingCRS();
             } else {
                 targetGeocentric = new GeocentricCRS(
@@ -427,13 +540,13 @@ public class TransformationFactory {
             GeographicCRS sourceGeographic = null;
             GeographicCRS targetGeographic = null;
             switch ( sourceType ) {
-            case CoordinateSystem.GEOCENTRIC_CRS:
+            case GEOCENTRIC:
                 break;
-            case CoordinateSystem.PROJECTED_CRS:
+            case PROJECTED:
                 sourceTransformationChain = new ProjectionTransform( (ProjectedCRS) sourceCRS.getUnderlyingCRS() );
                 sourceTransformationChain.inverse();
                 sourceGeographic = ( (ProjectedCRS) sourceCRS.getUnderlyingCRS() ).getGeographicCRS();
-            case CoordinateSystem.GEOGRAPHIC_CRS:
+            case GEOGRAPHIC:
                 if ( sourceGeographic == null ) {
                     sourceGeographic = (GeographicCRS) sourceCRS.getUnderlyingCRS();
                 }
@@ -464,12 +577,12 @@ public class TransformationFactory {
                 break;
             }
             switch ( targetType ) {
-            case CoordinateSystem.GEOCENTRIC_CRS:
+            case GEOCENTRIC:
                 break;
-            case CoordinateSystem.PROJECTED_CRS:
+            case PROJECTED:
                 targetTransformationChain = new ProjectionTransform( (ProjectedCRS) targetCRS.getUnderlyingCRS() );
                 targetGeographic = ( (ProjectedCRS) targetCRS.getUnderlyingCRS() ).getGeographicCRS();
-            case CoordinateSystem.GEOGRAPHIC_CRS:
+            case GEOGRAPHIC:
                 if ( targetGeographic == null ) {
                     targetGeographic = (GeographicCRS) targetCRS.getUnderlyingCRS();
                 }
@@ -759,7 +872,7 @@ public class TransformationFactory {
     private Transformation getToWGSTransformation( CoordinateSystem sourceCRS ) {
         Transformation transform = sourceCRS.getGeodeticDatum().getWGS84Conversion();
         if ( isIdentity( transform ) ) {
-            if ( sourceCRS.getType() != CoordinateSystem.GEOCENTRIC_CRS ) {
+            if ( sourceCRS.getType() != GEOCENTRIC ) {
                 transform = provider.getTransformation( sourceCRS, GeographicCRS.WGS84 );
             } else {
                 transform = provider.getTransformation( sourceCRS, GeocentricCRS.WGS84 );
@@ -1261,4 +1374,5 @@ public class TransformationFactory {
         }
         return matrix;
     }
+
 }

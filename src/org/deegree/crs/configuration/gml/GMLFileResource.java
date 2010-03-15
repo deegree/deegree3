@@ -36,6 +36,10 @@
 
 package org.deegree.crs.configuration.gml;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,17 +144,17 @@ public class GMLFileResource extends XMLFileResource {
      */
     private GeographicCRS getGeographicCRS( CoordinateSystem crs ) {
         GeographicCRS result = null;
-        if ( crs.getType() == CoordinateSystem.COMPOUND_CRS ) {
-            if ( ( (CompoundCRS) crs ).getUnderlyingCRS().getType() == CoordinateSystem.PROJECTED_CRS ) {
+        if ( crs.getType() == COMPOUND ) {
+            if ( ( (CompoundCRS) crs ).getUnderlyingCRS().getType() == PROJECTED ) {
                 result = ( (ProjectedCRS) ( (CompoundCRS) crs ).getUnderlyingCRS() ).getGeographicCRS();
-            } else if ( ( (CompoundCRS) crs ).getUnderlyingCRS().getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
+            } else if ( ( (CompoundCRS) crs ).getUnderlyingCRS().getType() == GEOGRAPHIC ) {
                 result = (GeographicCRS) crs;
             } else {
                 LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
             }
-        } else if ( crs.getType() == CoordinateSystem.PROJECTED_CRS ) {
+        } else if ( crs.getType() == PROJECTED ) {
             result = ( (ProjectedCRS) crs ).getGeographicCRS();
-        } else if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
+        } else if ( crs.getType() == GEOGRAPHIC ) {
             result = (GeographicCRS) crs;
         } else {
             LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );

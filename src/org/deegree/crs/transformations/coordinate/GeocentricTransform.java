@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.transformations.coordinate;
 
@@ -51,19 +51,20 @@ import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
+import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The <code>GeocentricTransform</code> class is used to create a transformation between a geocentric CRS (having
  * lat-lon coordinates) and it's geodetic CRS (having x-y-z) coordinates and vice versa.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class GeocentricTransform extends CRSTransformation {
@@ -128,7 +129,7 @@ public class GeocentricTransform extends CRSTransformation {
      */
     public GeocentricTransform( CoordinateSystem source, GeocentricCRS target, CRSIdentifiable id ) {
         super( source, target, id );
-        this.hasHeight = ( source.getType() == CoordinateSystem.COMPOUND_CRS );
+        this.hasHeight = ( source.getType() == CRSType.COMPOUND );
         defaultHeightValue = ( hasHeight ) ? ( (CompoundCRS) source ).getDefaultHeight() : 0;
         Ellipsoid ellipsoid = source.getGeodeticDatum().getEllipsoid();
         semiMajorAxis = Unit.METRE.convert( ellipsoid.getSemiMajorAxis(), ellipsoid.getUnits() );
@@ -147,7 +148,8 @@ public class GeocentricTransform extends CRSTransformation {
      *            the geocentric crs.
      */
     public GeocentricTransform( CoordinateSystem source, GeocentricCRS target ) {
-        this( source, target, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(), target.getCode().toString() ) ) ) );
+        this( source, target, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(),
+                                                                                      target.getCode().toString() ) ) ) );
     }
 
     @Override
@@ -172,7 +174,7 @@ public class GeocentricTransform extends CRSTransformation {
      * Converts geocentric coordinates (x, y, z) to geodetic coordinates (longitude, latitude, height), according to the
      * current ellipsoid parameters. The method used here is derived from "An Improved Algorithm for Geocentric to
      * Geodetic Coordinate Conversion", by Ralph Toms, Feb 1996 UCRL-JC-123138.
-     *
+     * 
      * @param srcPts
      *            the points which must be transformed.
      */
@@ -223,7 +225,7 @@ public class GeocentricTransform extends CRSTransformation {
 
     /**
      * Converts geographic (longitude, latitude, height) to cartesian (x,y,z) coordinates.
-     *
+     * 
      * @param srcPts
      *            to convert.
      */

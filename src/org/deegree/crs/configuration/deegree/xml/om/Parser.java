@@ -36,6 +36,9 @@
 
 package org.deegree.crs.configuration.deegree.xml.om;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -577,7 +580,7 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
                                                                       "usedGeographicCRS", id.getCode() ) );
         }
         GeographicCRS geoCRS = (GeographicCRS) getProvider().getCRSByCode( CRSCodeType.valueOf( usedGeographicCRS ) );
-        if ( geoCRS == null || geoCRS.getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
+        if ( geoCRS == null || geoCRS.getType() != GEOGRAPHIC ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
                                                                       id.getCode(), usedGeographicCRS ) );
         }
@@ -671,7 +674,7 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
         }
         CoordinateSystem usedCoordinateSystem = getProvider().getCRSByCode( CRSCodeType.valueOf( usedCRS ) );
         if ( usedCoordinateSystem == null
-             || ( usedCoordinateSystem.getType() != CoordinateSystem.GEOGRAPHIC_CRS && usedCoordinateSystem.getType() != CoordinateSystem.PROJECTED_CRS ) ) {
+             || ( usedCoordinateSystem.getType() != GEOGRAPHIC && usedCoordinateSystem.getType() != PROJECTED ) ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_COMPOUND_FALSE_CRSREF", id.getCode(),
                                                                       usedCRS ) );
         }

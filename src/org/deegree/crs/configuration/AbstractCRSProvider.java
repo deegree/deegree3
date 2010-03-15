@@ -36,6 +36,8 @@
 
 package org.deegree.crs.configuration;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
 import static org.deegree.crs.utilities.MappingUtils.matchEPSGString;
 
 import java.io.IOException;
@@ -254,13 +256,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
              * Adding the used underlying crs's to the cache.
              */
             addIdToCache( result, false );
-            if ( result.getType() == CoordinateSystem.COMPOUND_CRS ) {
+            if ( result.getType() == COMPOUND ) {
                 addIdToCache( ( (CompoundCRS) result ).getUnderlyingCRS(), false );
-                if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == CoordinateSystem.PROJECTED_CRS ) {
+                if ( ( (CompoundCRS) result ).getUnderlyingCRS().getType() == PROJECTED ) {
                     addIdToCache( ( (ProjectedCRS) ( (CompoundCRS) result ).getUnderlyingCRS() ).getGeographicCRS(),
                                   false );
                 }
-            } else if ( result.getType() == CoordinateSystem.PROJECTED_CRS ) {
+            } else if ( result.getType() == PROJECTED ) {
                 addIdToCache( ( (ProjectedCRS) result ).getGeographicCRS(), false );
             }
         }

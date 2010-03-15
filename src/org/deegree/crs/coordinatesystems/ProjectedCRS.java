@@ -36,6 +36,8 @@
 
 package org.deegree.crs.coordinatesystems;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+
 import java.util.List;
 
 import org.deegree.crs.CRSCodeType;
@@ -174,8 +176,8 @@ public class ProjectedCRS extends CoordinateSystem {
     }
 
     @Override
-    public final int getType() {
-        return PROJECTED_CRS;
+    public final CRSType getType() {
+        return PROJECTED;
     }
 
     /**

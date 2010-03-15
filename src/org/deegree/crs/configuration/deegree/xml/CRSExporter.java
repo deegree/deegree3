@@ -40,6 +40,8 @@ package org.deegree.crs.configuration.deegree.xml;
 
 import static java.lang.Math.toDegrees;
 import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
 import static org.deegree.crs.projections.ProjectionUtils.EPS11;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -77,6 +79,7 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
+import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.deegree.crs.projections.azimuthal.StereographicAlternative;
@@ -103,7 +106,7 @@ public class CRSExporter extends CRSExporterBase {
 
     private static final Logger LOG = getLogger( CRSExporter.class );
 
-    private final String id;
+    private final String db_id;
 
     /**
      * @param properties
@@ -116,13 +119,13 @@ public class CRSExporter extends CRSExporterBase {
             if ( user != null ) {
                 String pass = properties.getProperty( "DB_PASSWORD" );
                 String con = properties.getProperty( "DB_CONNECTION" );
-                id = "epsg_db_id";
-                ConnectionManager.addConnection( id, DatabaseType.POSTGIS, con, user, pass, 1, 10 );
+                db_id = "epsg_db_id";
+                ConnectionManager.addConnection( db_id, DatabaseType.POSTGIS, con, user, pass, 1, 10 );
             } else {
-                id = null;
+                db_id = null;
             }
         } else {
-            id = null;
+            db_id = null;
         }
 
     }
@@ -163,11 +166,18 @@ public class CRSExporter extends CRSExporterBase {
                         datums.add( d );
                         ellipsoids.add( d.getEllipsoid() );
 
-                        if ( crs.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
+                        final CRSType type = crs.getType();
+                        switch ( type ) {
+                        case COMPOUND:
+                            compounds.add( (CompoundCRS) crs );
+                            break;
+                        case GEOCENTRIC:
                             geocentrics.add( (GeocentricCRS) crs );
-                        } else if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
+                            break;
+                        case GEOGRAPHIC:
                             geographics.add( (GeographicCRS) crs );
-                        } else if ( crs.getType() == CoordinateSystem.PROJECTED_CRS ) {
+                            break;
+                        case PROJECTED: {
                             final ProjectedCRS proj = (ProjectedCRS) crs;
                             final Projection projection = proj.getProjection();
                             String id = projection.getCode().getOriginal();
@@ -185,9 +195,11 @@ public class CRSExporter extends CRSExporterBase {
 
                             projecteds.add( proj );
                             projections.add( projection );
-
-                        } else if ( crs.getType() == CoordinateSystem.COMPOUND_CRS ) {
-                            compounds.add( (CompoundCRS) crs );
+                        }
+                            break;
+                        case VERTICAL:
+                            // not yet supported
+                            break;
                         }
 
                         if ( d.getPrimeMeridian() != null ) {
@@ -199,10 +211,10 @@ public class CRSExporter extends CRSExporterBase {
                         if ( h != null ) {
                             if ( h.getSourceCRS() == null ) {
                                 CoordinateSystem src = crs;
-                                if ( src.getType() == CoordinateSystem.COMPOUND_CRS ) {
+                                if ( src.getType() == COMPOUND ) {
                                     src = ( (CompoundCRS) crs ).getUnderlyingCRS();
                                 }
-                                if ( src.getType() == CoordinateSystem.PROJECTED_CRS ) {
+                                if ( src.getType() == PROJECTED ) {
                                     src = ( (ProjectedCRS) crs ).getGeographicCRS();
                                 }
                                 h.setSourceCRS( src );
@@ -249,14 +261,14 @@ public class CRSExporter extends CRSExporterBase {
      * @param d
      */
     private void updateDatum( CoordinateSystem crs, GeodeticDatum d ) {
-        if ( id != null ) {
+        if ( db_id != null ) {
             int epsgCode = getEPSGCode( d );
             if ( epsgCode == -1 ) {
                 CoordinateSystem bCRS = crs;
-                if ( crs.getType() == CoordinateSystem.COMPOUND_CRS ) {
+                if ( crs.getType() == COMPOUND ) {
                     bCRS = ( (CompoundCRS) crs ).getUnderlyingCRS();
                 }
-                if ( bCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
+                if ( bCRS.getType() == PROJECTED ) {
                     bCRS = ( (ProjectedCRS) bCRS ).getGeographicCRS();
                 }
 
@@ -264,7 +276,7 @@ public class CRSExporter extends CRSExporterBase {
                 if ( crsCode != -1 ) {
                     Connection connection = null;
                     try {
-                        connection = ConnectionManager.getConnection( id );
+                        connection = ConnectionManager.getConnection( db_id );
                         PreparedStatement ps = connection.prepareStatement( "SELECT a.datum_code,b.datum_name,b.remarks,b.revision_date,b.ellipsoid_code,c.ellipsoid_name,c.remarks,c.revision_date,c.semi_major_axis,c.inv_flattening,c.semi_minor_axis,c.uom_code from epsg_coordinatereferencesystem as a JOIN epsg_datum as b ON a.datum_code=b.datum_code JOIN epsg_ellipsoid as c ON b.ellipsoid_code=c.ellipsoid_code where coord_ref_sys_code=?" );
                         ps.setInt( 1, crsCode );
                         ResultSet rs = ps.executeQuery();
@@ -403,12 +415,12 @@ public class CRSExporter extends CRSExporterBase {
      * @param pm
      */
     private void updatePM( PrimeMeridian pm ) {
-        if ( id != null ) {
+        if ( db_id != null ) {
             int epsgCode = getEPSGCode( pm );
             if ( epsgCode != -1 ) {
                 Connection connection = null;
                 try {
-                    connection = ConnectionManager.getConnection( id );
+                    connection = ConnectionManager.getConnection( db_id );
                     PreparedStatement ps = connection.prepareStatement( "SELECT prime_meridian_name,greenwich_longitude from epsg_primemeridian where prime_meridian_code=?" );
                     ps.setInt( 1, epsgCode );
                     ResultSet rs = ps.executeQuery();
@@ -475,7 +487,7 @@ public class CRSExporter extends CRSExporterBase {
     }
 
     private void updateBoundingBox( CoordinateSystem crs ) {
-        if ( id != null ) {
+        if ( db_id != null ) {
             double[] areaOfUseBBox = crs.getAreaOfUseBBox();
             if ( Math.abs( areaOfUseBBox[0] + 180 ) < 1E-8 && Math.abs( areaOfUseBBox[1] + 90 ) < 1E-8
                  && Math.abs( areaOfUseBBox[2] - 180 ) < 1E-8 && Math.abs( areaOfUseBBox[3] - 90 ) < 1E-8 ) {
@@ -483,7 +495,7 @@ public class CRSExporter extends CRSExporterBase {
                 if ( epsgCode != -1 ) {
                     Connection connection = null;
                     try {
-                        connection = ConnectionManager.getConnection( id );
+                        connection = ConnectionManager.getConnection( db_id );
                         PreparedStatement ps = connection.prepareStatement( "SELECT b.area_of_use, b.area_west_bound_lon, b.area_south_bound_lat,b.area_east_bound_lon,b.area_north_bound_lat from epsg_coordinatereferencesystem as a JOIN epsg_area as b on a.area_of_use_code=b.area_code where a.coord_ref_sys_code=?" );
                         ps.setInt( 1, epsgCode );
                         ResultSet rs = ps.executeQuery();
@@ -528,12 +540,12 @@ public class CRSExporter extends CRSExporterBase {
     private void updateProjectionId( ProjectedCRS proj, Projection projection ) {
         CRSCodeType oldCode = proj.getCode();
         CRSCodeType newCodeType = new CRSCodeType( "projection_for_" + oldCode.getOriginal() );
-        if ( id != null ) {
+        if ( db_id != null ) {
             int epsgCode = getEPSGCode( proj );
             if ( epsgCode != -1 ) {
                 Connection connection = null;
                 try {
-                    connection = ConnectionManager.getConnection( id );
+                    connection = ConnectionManager.getConnection( db_id );
                     PreparedStatement ps = connection.prepareStatement( "select projection_conv_code from epsg_coordinatereferencesystem where coord_ref_sys_code=?" );
                     ps.setInt( 1, epsgCode );
                     ResultSet rs = ps.executeQuery();

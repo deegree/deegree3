@@ -66,6 +66,7 @@ import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.coordinatesystems.VerticalCRS;
+import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.crs.exceptions.CRSException;
 import org.deegree.crs.exceptions.CRSExportingException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -81,9 +82,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>CRSDBExporter</code> class inserts a CRS object in the database. In order not to introduce an object
- * twice, the codetype( sometimes - when the code is not provided - the objects's data) is checked not to exist already
- * in the database.
+ * The <code>CRSDBExporter</code> class inserts a CRS object in the database. In order not to introduce an object twice,
+ * the codetype( sometimes - when the code is not provided - the objects's data) is checked not to exist already in the
+ * database.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -632,7 +633,8 @@ public class CRSDBExporter {
                                                                             + helmert.ey + " AND z_axis_rotation = "
                                                                             + helmert.ez + " AND scale_difference = "
                                                                             + helmert.ppm + " AND ref_id = id "
-                                                                            + "AND original = '" + helmert.getCode().getOriginal() + "'" ).executeQuery();
+                                                                            + "AND original = '"
+                                                                            + helmert.getCode().getOriginal() + "'" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -1127,16 +1129,19 @@ public class CRSDBExporter {
      */
     protected int export( CoordinateSystem crs )
                             throws SQLException, CRSException {
-        if ( crs.getType() == CoordinateSystem.COMPOUND_CRS )
+        final CRSType type = crs.getType();
+        switch ( type ) {
+        case COMPOUND:
             return export( (CompoundCRS) crs );
-        if ( crs.getType() == CoordinateSystem.GEOCENTRIC_CRS )
+        case GEOCENTRIC:
             return export( (GeocentricCRS) crs );
-        if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS )
+        case GEOGRAPHIC:
             return export( (GeographicCRS) crs );
-        if ( crs.getType() == CoordinateSystem.PROJECTED_CRS )
+        case PROJECTED:
             return export( (ProjectedCRS) crs );
-        if ( crs.getType() == CoordinateSystem.VERTICAL_CRS )
+        case VERTICAL:
             return export( (VerticalCRS) crs );
+        }
         throw new CRSExportingException( "Unknown type of CRS encountered: " + crs );
     }
 

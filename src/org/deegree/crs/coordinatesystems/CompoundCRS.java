@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,24 +32,26 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.coordinatesystems;
+
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
 
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Unit;
 
 /**
- * A <code>CompoundCRS</code> is a {@link GeographicCRS} with a third axis (the height axis) attached. This axis
- * denotes a vertical axis, which defines a unit for a given height above or below the datums surface.
- *
+ * A <code>CompoundCRS</code> is a {@link GeographicCRS} with a third axis (the height axis) attached. This axis denotes
+ * a vertical axis, which defines a unit for a given height above or below the datums surface.
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class CompoundCRS extends CoordinateSystem {
 
@@ -75,9 +77,8 @@ public class CompoundCRS extends CoordinateSystem {
     public CompoundCRS( Axis heightAxis, CoordinateSystem underlyingCRS, double defaultHeight, CRSIdentifiable identity )
                             throws IllegalArgumentException {
         super( underlyingCRS.getGeodeticDatum(), underlyingCRS.getAxis(), identity );
-        int tmp = underlyingCRS.getType();
-        if ( tmp != CoordinateSystem.GEOCENTRIC_CRS && tmp != CoordinateSystem.PROJECTED_CRS
-             && tmp != CoordinateSystem.GEOGRAPHIC_CRS ) {
+        CRSType tmp = underlyingCRS.getType();
+        if ( tmp != CRSType.GEOCENTRIC && tmp != CRSType.PROJECTED && tmp != CRSType.GEOGRAPHIC ) {
             throw new IllegalArgumentException(
                                                 "A compound crs can only have a geographic, projected or geocentric crs as underlying coordinate system." );
         }
@@ -96,8 +97,8 @@ public class CompoundCRS extends CoordinateSystem {
     }
 
     @Override
-    public final int getType() {
-        return COMPOUND_CRS;
+    public final CRSType getType() {
+        return COMPOUND;
     }
 
     /**

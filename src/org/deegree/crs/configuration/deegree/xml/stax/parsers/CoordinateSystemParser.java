@@ -39,6 +39,8 @@ package org.deegree.crs.configuration.deegree.xml.stax.parsers;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredText;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.nextElement;
 import static org.deegree.crs.configuration.deegree.xml.stax.Parser.CRS_NS;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,7 +83,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class CoordinateSystemParser extends DefinitionParser {
@@ -335,7 +337,7 @@ public class CoordinateSystemParser extends DefinitionParser {
                                                                       "UsedGeographicCRS", id.getCode() ) );
         }
         GeographicCRS geoCRS = (GeographicCRS) getProvider().getCRSByCode( CRSCodeType.valueOf( usedGeographicCRS ) );
-        if ( geoCRS == null || geoCRS.getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
+        if ( geoCRS == null || geoCRS.getType() != GEOGRAPHIC ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
                                                                       id.getCode(), usedGeographicCRS ) );
         }
@@ -428,7 +430,7 @@ public class CoordinateSystemParser extends DefinitionParser {
 
         CoordinateSystem usedCoordinateSystem = getProvider().getCRSByCode( CRSCodeType.valueOf( usedCRS ) );
         if ( usedCoordinateSystem == null
-             || ( usedCoordinateSystem.getType() != CoordinateSystem.GEOGRAPHIC_CRS && usedCoordinateSystem.getType() != CoordinateSystem.PROJECTED_CRS ) ) {
+             || ( usedCoordinateSystem.getType() != GEOGRAPHIC && usedCoordinateSystem.getType() != PROJECTED ) ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_COMPOUND_FALSE_CRSREF", id.getCode(),
                                                                       usedCRS ) );
         }
