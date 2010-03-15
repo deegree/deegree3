@@ -1210,7 +1210,7 @@ public class ISORecordStore implements RecordStore {
         while ( resultSet.next() ) {
             BufferedInputStream bais = new BufferedInputStream( resultSet.getBinaryStream( 1 ) );
 
-            Charset charset = Charset.forName( encoding );
+            Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
             InputStreamReader isr = null;
             try {
                 isr = new InputStreamReader( bais, charset );
