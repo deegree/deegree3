@@ -205,7 +205,7 @@ public class ISORecordStore implements RecordStore {
             urlConn.setDoInput( true );
             bais = new BufferedInputStream( urlConn.getInputStream() );
 
-            Charset charset = Charset.forName( encoding );
+            Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
             InputStreamReader isr = new InputStreamReader( bais, charset );
 
             readXMLFragment( isr, writer );
@@ -935,8 +935,11 @@ public class ISORecordStore implements RecordStore {
             // throw new IllegalArgumentException( message );
             // }
 
+            Iterator delIter = qNameSet.iterator();
+
             for ( QName qName : typeNames.keySet() ) {
-                if ( qName.equals( qNameSet.iterator().next() ) ) {
+                QName qname = (QName) delIter.next();
+                if ( qName.equals( qname ) ) {
                     formatNumber = typeNames.get( qName );
                 }
             }
