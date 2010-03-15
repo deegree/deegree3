@@ -36,6 +36,9 @@
 
 package org.deegree.coverage.raster.io.imageio.geotiff;
 
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -309,7 +312,7 @@ public class GeoTiffWriter {
             int epsg = -1;
             for ( String id : identifiers ) {
                 LOG.debug( "trying to find EPSG code: " + id );
-                if ( id.startsWith( "EPSG:" ) ) {
+                if ( id.toUpperCase().startsWith( "EPSG:" ) ) {
                     try {
                         epsg = Integer.parseInt( id.substring( 5 ) );
                         break;
@@ -320,11 +323,11 @@ public class GeoTiffWriter {
             }
             if ( epsg != -1 ) {
                 int[] keyEntry = new int[] { 0, 1, epsg };
-                if ( crs2.getType() == org.deegree.crs.coordinatesystems.CoordinateSystem.GEOGRAPHIC_CRS ) {
+                if ( crs2.getType() == GEOGRAPHIC ) {
                     addKeyToGeoKeyDirectoryTag( GeoTiffKey.GTModelTypeGeoKey, new int[] { 0, 1,
                                                                                          ValueModelTypeGeographic } );
                     addKeyToGeoKeyDirectoryTag( GeoTiffKey.GeographicTypeGeoKey, keyEntry );
-                } else if ( crs2.getType() == org.deegree.crs.coordinatesystems.CoordinateSystem.PROJECTED_CRS ) {
+                } else if ( crs2.getType() == PROJECTED ) {
                     addKeyToGeoKeyDirectoryTag( GeoTiffKey.GTModelTypeGeoKey,
                                                 new int[] { 0, 1, ValueModelTypeProjected } );
                     addKeyToGeoKeyDirectoryTag( GeoTiffKey.ProjectedCSTypeGeoKey, keyEntry );
