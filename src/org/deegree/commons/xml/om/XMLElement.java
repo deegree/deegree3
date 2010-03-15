@@ -41,7 +41,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import com.sun.org.apache.xerces.internal.impl.xs.XSElementDecl;
+import com.sun.xml.xsom.XSElementDecl;
+
+//import com.sun.org.apache.xerces.internal.impl.xs.XSElementDecl;
 
 /**
  * {@link XMLNode} that represents a generic XML element with XML schema type information.
@@ -65,16 +67,16 @@ public class XMLElement implements XMLNode {
         this.name = name;
         this.type = type;
     }
-    
-    public QName getName () {
+
+    public QName getName() {
         return name;
     }
-    
-    public LinkedHashMap<QName, XMLPrimitive> getAttributes () {
+
+    public LinkedHashMap<QName, XMLPrimitive> getAttributes() {
         return attributes;
     }
-    
-    public LinkedHashMap<QName, XMLPrimitive> getChildren () {
+
+    public LinkedHashMap<QName, XMLPrimitive> getChildren() {
         return attributes;
     }
 
