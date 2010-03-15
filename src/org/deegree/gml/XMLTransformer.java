@@ -46,6 +46,8 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -116,6 +118,7 @@ public class XMLTransformer extends GeometryTransformer {
      * @param testValidArea
      *            true if the incoming geometries should be checked against the valid domain of the crs they are defined
      *            in.
+     * @param requestedTransformation
      * @throws XMLStreamException
      * @throws XMLParsingException
      * @throws IllegalArgumentException
@@ -124,7 +127,7 @@ public class XMLTransformer extends GeometryTransformer {
      * @throws TransformationException
      */
     public void transform( XMLStreamReader reader, XMLStreamWriter writer, CoordinateSystem sourceCRS,
-                           GMLVersion gmlVersion, boolean testValidArea )
+                           GMLVersion gmlVersion, boolean testValidArea, List<Transformation> requestedTransformation )
                             throws XMLStreamException, XMLParsingException, IllegalArgumentException,
                             OutsideCRSDomainException, UnknownCRSException, TransformationException {
 
@@ -137,7 +140,32 @@ public class XMLTransformer extends GeometryTransformer {
 
         GMLStreamReader gmlReader = createGMLStreamReader( gmlVersion, reader );
         GMLStreamWriter gmlWriter = createGMLStreamWriter( gmlVersion, writer );
-        transformStream( gmlReader, gmlWriter, sourceCRS, testValidArea );
+        transformStream( gmlReader, gmlWriter, sourceCRS, testValidArea, requestedTransformation );
+    }
+
+    /**
+     * Transforms the given input stream, and streams the input into the output directly. If a geometry is found, the
+     * geometry is transformed into the target crs. All other events are just copied.
+     * 
+     * @param reader
+     *            an XMLStream containing some GML Geometries.
+     * @param writer
+     *            the output will be written to this writer, the writer have been opened (
+     *            {@link XMLStreamWriter#writeStartDocument()}. No {@link XMLStreamWriter#writeEndDocument()} will be
+     *            written as well.
+     * @param gmlVersion
+     *            the version of the expected geometries.
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws IllegalArgumentException
+     * @throws OutsideCRSDomainException
+     * @throws UnknownCRSException
+     * @throws TransformationException
+     */
+    public void transform( XMLStreamReader reader, XMLStreamWriter writer, GMLVersion gmlVersion )
+                            throws XMLStreamException, XMLParsingException, IllegalArgumentException,
+                            OutsideCRSDomainException, UnknownCRSException, TransformationException {
+        transform( reader, writer, null, gmlVersion, false, null );
     }
 
     /**
@@ -156,7 +184,7 @@ public class XMLTransformer extends GeometryTransformer {
      *             if a read geometry was outside the domain of validity of the crs it was defined in.
      */
     private void transformStream( GMLStreamReader gmlReader, GMLStreamWriter gmlWriter, CoordinateSystem sourceCRS,
-                                  boolean testValidArea )
+                                  boolean testValidArea, List<Transformation> toBeUsedTransformations )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             IllegalArgumentException, TransformationException, OutsideCRSDomainException {
         XMLStreamReader input = gmlReader.getXMLReader();
@@ -209,7 +237,7 @@ public class XMLTransformer extends GeometryTransformer {
                             }
                             geomCRS = sourceCRS;
                         }
-                        geom = super.transform( geom, geomCRS, testValidArea );
+                        geom = super.transform( geom, geomCRS, testValidArea, toBeUsedTransformations );
                         // write transformed geometry
                         gmlWriter.write( geom );
                     }
