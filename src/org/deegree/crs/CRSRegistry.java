@@ -37,6 +37,8 @@ package org.deegree.crs;
 
 import static java.lang.System.currentTimeMillis;
 
+import java.util.List;
+
 import javax.vecmath.Point2d;
 
 import org.deegree.crs.components.Axis;
@@ -180,10 +182,34 @@ public class CRSRegistry {
     public synchronized static Transformation getTransformation( String providerName, CoordinateSystem sourceCRS,
                                                                  CoordinateSystem targetCRS )
                             throws IllegalArgumentException, TransformationException {
+        return getTransformation( providerName, sourceCRS, targetCRS, null );
+    }
+
+    /**
+     * Retrieve a {@link Transformation} (chain) which transforms coordinates from the given source into the given
+     * target crs. If no such {@link Transformation} could be found or the implementation does not support inverse
+     * lookup of transformations <code>null<code> will be returned.
+     * 
+     * @param providerName
+     *            to use.
+     * @param sourceCRS
+     *            start of the transformation (chain)
+     * @param targetCRS
+     *            end point of the transformation (chain).
+     * @param transformationsToBeUsed
+     *            a list of transformations which must be used on the resulting transformation chain.
+     * @return the given {@link Transformation} or <code>null<code> if no such transformation was found.
+     * @throws TransformationException
+     * @throws IllegalArgumentException
+     */
+    public synchronized static Transformation getTransformation( String providerName, CoordinateSystem sourceCRS,
+                                                                 CoordinateSystem targetCRS,
+                                                                 List<Transformation> transformationsToBeUsed )
+                            throws IllegalArgumentException, TransformationException {
         CRSConfiguration crsConfiguration = CRSConfiguration.getCRSConfiguration( providerName );
 
         TransformationFactory fac = crsConfiguration.getTransformationFactory();
-        return fac.createFromCoordinateSystems( sourceCRS, targetCRS );
+        return fac.createFromCoordinateSystems( sourceCRS, targetCRS, transformationsToBeUsed );
     }
 
     /**
