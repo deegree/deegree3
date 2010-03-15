@@ -55,9 +55,11 @@ import java.awt.geom.Path2D.Double;
 
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
+import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
-import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
@@ -179,33 +181,37 @@ public class Java2DTextRenderer implements TextRenderer {
 
         if ( geom instanceof Point ) {
             render( styling, font, text, (Point) geom );
-        } else if ( geom instanceof Surface ) {
+        } else if ( geom instanceof Surface && styling.linePlacement != null ) {
             Surface surface = (Surface) geom;
-            if ( styling.linePlacement != null ) {
-                for ( SurfacePatch patch : surface.getPatches() ) {
-                    if ( patch instanceof PolygonPatch ) {
-                        PolygonPatch polygonPatch = (PolygonPatch) patch;
-                        for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                            render( styling, font, text, curve );
-                        }
-                    } else {
-                        throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
+            for ( SurfacePatch patch : surface.getPatches() ) {
+                if ( patch instanceof PolygonPatch ) {
+                    PolygonPatch polygonPatch = (PolygonPatch) patch;
+                    for ( Curve curve : polygonPatch.getBoundaryRings() ) {
+                        render( styling, font, text, curve );
                     }
+                } else {
+                    throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
                 }
-            } else {
-                render( styling, font, text, surface.getCentroid() );
             }
-        } else if ( geom instanceof Curve ) {
-            if ( styling.linePlacement != null ) {
-                render( styling, font, text, (Curve) geom );
-            }
-        } else if ( geom instanceof MultiSurface || geom instanceof MultiCurve ) {
-            // TODO think about whether this is wanted (vs. explicit centroid geometry function and multi-rendering
-            // here)
+        } else if ( geom instanceof Curve && styling.linePlacement != null ) {
+            render( styling, font, text, (Curve) geom );
+        } else if ( geom instanceof GeometricPrimitive ) {
             render( styling, font, text, geom.getCentroid() );
         } else if ( geom instanceof MultiPoint ) {
             for ( Point p : (MultiPoint) geom ) {
                 render( styling, font, text, p );
+            }
+        } else if ( geom instanceof MultiCurve && styling.linePlacement != null ) {
+            for ( Curve c : (MultiCurve) geom ) {
+                render( styling, font, text, c );
+            }
+        } else if ( geom instanceof MultiLineString && styling.linePlacement != null ) {
+            for ( Curve c : (MultiLineString) geom ) {
+                render( styling, font, text, c );
+            }
+        } else if ( geom instanceof MultiGeometry<?> ) {
+            for ( Geometry g : (MultiGeometry<?>) geom ) {
+                render( styling, text, g );
             }
         } else {
             LOG.warn( "Trying to use unsupported geometry type '{}' for text rendering.",

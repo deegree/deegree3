@@ -87,6 +87,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.expression.Sub;
+import org.deegree.filter.function.geometry.Centroid;
 import org.deegree.filter.function.geometry.IsCurve;
 import org.deegree.filter.function.geometry.IsPoint;
 import org.deegree.filter.function.geometry.IsSurface;
@@ -497,6 +498,9 @@ public class Filter110XMLDecoder {
         }
         if ( name.equals( "IsSurface" ) ) {
             return new IsSurface( params );
+        }
+        if ( name.equals( "Centroid" ) ) {
+            return new Centroid( params );
         }
 
         return new Function( name, params );
