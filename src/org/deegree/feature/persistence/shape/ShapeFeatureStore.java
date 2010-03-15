@@ -192,13 +192,14 @@ public class ShapeFeatureStore implements FeatureStore {
                 LOG.debug( "No crs configured, and no .prj found, assuming EPSG:4326." );
                 crs = new CRS( "EPSG:4326" );
             }
-            try {
-                transformer = new GeometryTransformer( crs.getWrappedCRS() );
-            } catch ( IllegalArgumentException e ) {
-                LOG.error( "Unknown error", e );
-            } catch ( UnknownCRSException e ) {
-                LOG.error( "Unknown error", e );
-            }
+        }
+
+        try {
+            transformer = new GeometryTransformer( crs.getWrappedCRS() );
+        } catch ( IllegalArgumentException e ) {
+            LOG.error( "Unknown error", e );
+        } catch ( UnknownCRSException e ) {
+            LOG.error( "Unknown error", e );
         }
 
         shpFile = new File( name + ".SHP" );
