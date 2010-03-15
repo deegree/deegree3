@@ -285,19 +285,21 @@ public class GeometryTransformer extends Transformer {
      *            the source CRS for the geometry. overwrites the CRS of the geometry.
      * @param testValidArea
      *            true if the geometry should be be checked of the valid area of the source crs.
+     * @param toBeUsedTransformations
      * @return the same geometry in a different crs.
      * @throws IllegalArgumentException
      *             if the coordinates system of the geometry is <code>null</code>
      * @throws TransformationException
      *             if the transformation between the source and target crs cannot be created.
      */
-    public Geometry transform( Geometry geom, CoordinateSystem sourceCRS, boolean testValidArea )
+    public Geometry transform( Geometry geom, CoordinateSystem sourceCRS, boolean testValidArea,
+                               List<Transformation> toBeUsedTransformations )
                             throws IllegalArgumentException, TransformationException {
         Envelope sourceEnv = null;
         if ( testValidArea ) {
             sourceEnv = createValidDomain( sourceCRS );
         }
-        return transform( geom, createCRSTransformation( sourceCRS ), sourceEnv );
+        return transform( geom, createCRSTransformation( sourceCRS, toBeUsedTransformations ), sourceEnv );
     }
 
     /**
