@@ -52,7 +52,7 @@ import org.deegree.filter.OperatorFilter;
  * <p>
  * Please note that a transaction must always be ended by calling either {@link #commit()} or {@link #rollback()}.
  * </p>
- *
+ * 
  * @see FeatureStore#acquireTransaction()
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -80,8 +80,8 @@ public interface FeatureStoreTransaction {
 
         /** Always generate new ids. */
         GENERATE_NEW
-    }    
-    
+    }
+
     /**
      * Returns the underlying {@link FeatureStore} instance.
      * 
@@ -167,7 +167,7 @@ public interface FeatureStoreTransaction {
      *            optional lock object, may be <code>null</code>
      * @return number of deleted feature instances
      * @throws FeatureStoreException
-     *             if the deletion fails
+     *             if the deletion fails (*not* if a specified id does not exist)
      */
     public int performDelete( IdFilter filter, Lock lock )
                             throws FeatureStoreException;

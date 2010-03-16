@@ -390,7 +390,7 @@ public class MemoryFeatureStore implements FeatureStore {
                             throws FeatureStoreException {
         Object o = idToObject.remove( id );
         if ( o == null ) {
-            throw new FeatureStoreException( "Cannot remove feature/geometry with id '" + id + "': no such object." );
+            return;
         }
         if ( o instanceof Feature ) {
             Feature feature = (Feature) o;
