@@ -182,8 +182,6 @@ public class ApplicationSchemaXSDDecoderTest {
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 1, fts.length );
         FeatureType ft = fts [0];
-        Assert.assertEquals( 1, ft.getPropertyDeclarations().size() );
-        CustomPropertyType pt = (CustomPropertyType) ft.getPropertyDeclarations().get( 0 );
-        System.out.println (pt.getXSDValueType());
+        Assert.assertEquals( 4, ft.getPropertyDeclarations().size() );
     }    
 }

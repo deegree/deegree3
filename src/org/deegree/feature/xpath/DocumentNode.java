@@ -35,20 +35,19 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-
 /**
- * TODO add documentation here
+ * {@link XPathNode} that represents an XML document node.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  *
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-class DocumentNode implements Node {
+class DocumentNode implements XPathNode {
 
-    private final FeatureNode rootNode;
+    private final GMLObjectNode rootNode;
 
-    DocumentNode (FeatureNode rootNode) {
+    DocumentNode (GMLObjectNode rootNode) {
         this.rootNode = rootNode;
     }
 
@@ -57,11 +56,11 @@ class DocumentNode implements Node {
     }
 
     @Override
-    public Node getParent() {
+    public XPathNode getParent() {
         return null;
     }
     
-    public FeatureNode getRootNode () {
+    public GMLObjectNode getRootNode () {
         return rootNode;
     }
 }

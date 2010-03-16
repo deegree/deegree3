@@ -43,6 +43,7 @@ import static org.deegree.gml.GMLVersion.GML_2;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -53,6 +54,11 @@ import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
+import org.deegree.commons.xml.om.GenericXMLElement;
+import org.deegree.commons.xml.om.GenericXMLElementContent;
+import org.deegree.commons.xml.om.ObjectNode;
+import org.deegree.commons.xml.om.PrimitiveValue;
+import org.deegree.commons.xml.stax.StAXExportingHelper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -60,7 +66,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
-import org.deegree.feature.types.GenericCustomPropertyValue;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
@@ -75,8 +80,8 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.generic.GenericCustomPropertyWriter;
 import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.gml.geometry.GML3GeometryWriter;
 import org.deegree.gml.geometry.GMLGeometryWriter;
@@ -181,7 +186,7 @@ public class GMLFeatureWriter {
                 // TODO what about non-simple property names
                 QName qName = xlinkProp.getPropertyName().getAsQName();
                 if ( qName != null ) {
-//                    this.propNames.add( qName );
+                    // this.propNames.add( qName );
                 }
             }
         }
@@ -433,8 +438,53 @@ public class GMLFeatureWriter {
                 writer.writeEndElement();
             }
         } else if ( propertyType instanceof CustomPropertyType ) {
+            if ( property.getValue() != null ) {
+                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                export( (ObjectNode) property.getValue(), inlineLevels );
+                writer.writeEndElement();
+            }
+        }
+    }
 
-            GenericCustomPropertyWriter.export( (GenericCustomPropertyValue) value, writer );
+    private void export( ObjectNode genericXML, int inlineLevels )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        if ( genericXML instanceof GMLObject ) {
+            if ( genericXML instanceof Feature ) {
+                export( (Feature) genericXML, inlineLevels - 1 );
+            } else if ( genericXML instanceof Geometry ) {
+                geometryWriter.export( (Geometry) genericXML );
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        } else if ( genericXML instanceof GenericXMLElement ) {
+            GenericXMLElement xmlContent = (GenericXMLElement) genericXML;
+            QName elName = xmlContent.getName();
+            writer.writeStartElement( elName.getPrefix(), elName.getLocalPart(), elName.getNamespaceURI() );
+            if ( xmlContent.getAttributes() != null ) {
+                for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
+                    StAXExportingHelper.writeAttribute( writer, attr.getKey(), attr.getValue().getText() );
+                }
+            }
+            if ( xmlContent.getChildren() != null ) {
+                for ( ObjectNode childNode : xmlContent.getChildren() ) {
+                    export( childNode, inlineLevels );
+                }
+            }
+            writer.writeEndElement();
+        } else if ( genericXML instanceof GenericXMLElementContent ) {
+            GenericXMLElementContent xmlContent = (GenericXMLElementContent) genericXML;
+            if ( xmlContent.getAttributes() != null ) {
+                for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
+                    StAXExportingHelper.writeAttribute( writer, attr.getKey(), attr.getValue().getText() );
+                }
+            }
+            if ( xmlContent.getChildren() != null ) {
+                for ( ObjectNode childNode : xmlContent.getChildren() ) {
+                    export( childNode, inlineLevels );
+                }
+            }
+        } else if ( genericXML instanceof PrimitiveValue ) {
+            writer.writeCharacters( ( (PrimitiveValue) genericXML ).getText() );
         }
     }
 

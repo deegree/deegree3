@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- - Department of Geography, University of Bonn -
+ Department of Geography, University of Bonn
  and
- - lat/lon GmbH -
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,39 +33,24 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.xml.om;
-
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
+package org.deegree.feature.xpath;
 
 /**
- * An XML text node or an XML attribute value with type information.
+ * Base interface for XML nodes that have to be represented during XPath-evaluation.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
  * 
- * @version $Revision$, $Date$
+ * @version $Revision:$, $Date:$
  */
-public class XMLPrimitive implements XMLNode {
+public interface XPathNode {
 
-    private final String value;
+    /**
+     * Returns the parent node.
+     * 
+     * @return the parent node or <code>null</code> if this is the root node
+     */
+    public XPathNode getParent();
 
-    private final XSSimpleTypeDefinition xsdType;
-
-    public XMLPrimitive( String s, XSSimpleTypeDefinition xsdType ) {
-        this.value = s;
-        this.xsdType = xsdType;
-    }
-
-    public String getText() {
-        return value;
-    }
-
-    public XSSimpleTypeDefinition getType() {
-        return xsdType;
-    }
-
-    @Override
-    public String toString() {
-        return "{value='" + value + "',type={" + xsdType + "}}";
-    }
+    public boolean isElement();
 }

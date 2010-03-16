@@ -36,6 +36,7 @@
 package org.deegree.feature.xpath;
 
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.gml.GMLVersion;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
@@ -43,9 +44,10 @@ import org.jaxen.JaxenException;
 /**
  * <a href="http://jaxen.codehaus.org/">Jaxen</a> XPath implementation for {@link Feature} objects.
  * <p>
- * This is the main entry point for matching an XPath expression against a {@link Feature}. Let <code>fc</code> be a
- * {@link Feature} that you want to match against. Create a compiled XPath object, then match it against one or more
- * context nodes using the {@link #selectNodes(Object)} method, as in the following example:
+ * This is the entry point for matching an XPath expression against a {@link Feature}. Let <code>fc</code> be a
+ * {@link FeatureCollection} that you want to match against. Create a compiled XPath object, then match it against one
+ * or more context nodes using the {@link #selectNodes(Object)} method, as in the following example (which features the
+ * infamous Philosoper feature type):
  * </p>
  * 
  * <pre>
@@ -54,7 +56,7 @@ import org.jaxen.JaxenException;
  * List&lt;?&gt; selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
  * </pre>
  * 
- * @see FeatureNode
+ * @see GMLObjectNode
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

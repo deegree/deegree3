@@ -42,11 +42,13 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.feature.xpath.AttributeNode;
-import org.deegree.feature.xpath.CustomElementNode;
-import org.deegree.feature.xpath.FeatureNode;
 import org.deegree.feature.xpath.FeatureXPath;
+import org.deegree.feature.xpath.GMLObjectNode;
 import org.deegree.feature.xpath.PropertyNode;
+import org.deegree.feature.xpath.TextNode;
+import org.deegree.feature.xpath.XMLElementNode;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -78,15 +80,18 @@ abstract class AbstractFeature implements Feature {
                             throws JaxenException {
 
         // simple property with just a simple element step?
-        QName simplePropName = propName.getAsQName();
-        if ( simplePropName != null ) {
-            return getPropertyValues( simplePropName, version );
-        }
+        
+        // TODO reactivate this code path (speed!)
+        
+//        QName simplePropName = propName.getAsQName();
+//        if ( simplePropName != null ) {
+//            return getPropertyValues( simplePropName, version );
+//        }
 
         // no. activate the full xpath machinery
         XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
         xpath.setNamespaceContext( propName.getNsContext() );
-        List<?> selectedNodes = xpath.selectNodes( new FeatureNode( null, this ) );
+        List<?> selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, this, version ) );
 
         Object[] resultValues = new Object[selectedNodes.size()];
         int i = 0;
@@ -96,13 +101,15 @@ abstract class AbstractFeature implements Feature {
                 resultValues[i++] = prop.getValue();
             } else if ( node instanceof AttributeNode ) {
                 resultValues[i++] = ( (AttributeNode) node ).getValue();
-            } else if ( node instanceof CustomElementNode ) {
-                resultValues[i++] = ( (CustomElementNode) node ).getElement();
-            } else if ( node instanceof FeatureNode ) {
-                resultValues[i++] = ( (FeatureNode) node ).getFeature();
+            } else if ( node instanceof XMLElementNode ) {
+                resultValues[i++] = ( (XMLElementNode) node ).getElement();
+            } else if ( node instanceof GMLObjectNode<?> ) {
+                resultValues[i++] = ( (GMLObjectNode<?>) node ).getGMLObject();
+            } else if ( node instanceof TextNode ){
+                resultValues[i++] = ((TextNode) node).getValue();
             } else {
                 // TODO is node.toString() o.k. for all other node types?
-                resultValues[i++] = node.toString();
+                resultValues[i++] = new PrimitiveValue( node.toString());
             }
         }
         return resultValues;

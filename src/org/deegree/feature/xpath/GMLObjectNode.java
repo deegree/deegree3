@@ -35,34 +35,52 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.feature.Feature;
+import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLObject;
+import org.deegree.gml.GMLVersion;
 
 /**
- * TODO add documentation here
+ * {@link ElementNode} that wraps a {@link GMLObject}.
+ * 
+ * @param <T>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class FeatureNode extends ElementNode {
+public class GMLObjectNode<T extends GMLObject> extends ElementNode {
 
-    private Node parentNode;
+    private XPathNode parentNode;
 
-    private Feature feature;
+    private T object;
 
-    public FeatureNode( Node parentNode, Feature feature ) {
-        super( feature.getName() );
+    public GMLObjectNode( XPathNode parentNode, T object, GMLVersion version ) {
+        super( getName( object, version ) );
         this.parentNode = parentNode;
-        this.feature = feature;
+        this.object = object;
+    }
+
+    private static QName getName( GMLObject object, GMLVersion version ) {
+        if ( object instanceof Feature ) {
+            return ( (Feature) object ).getName();
+        } else if ( object instanceof Geometry ) {
+            // TODO
+            return new QName( version.getNamespace(), "Geometry" );
+        }
+        throw new IllegalArgumentException( "Creating GMLObjectNode from " + object.getClass()
+                                            + " needs implementation." );
     }
 
     @Override
-    public Node getParent() {
+    public XPathNode getParent() {
         return parentNode;
     }
 
-    public Feature getFeature() {
-        return feature;
+    public T getGMLObject() {
+        return object;
     }
 }

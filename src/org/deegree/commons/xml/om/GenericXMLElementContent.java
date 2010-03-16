@@ -46,32 +46,32 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSTypeDefinition;
 
 /**
- * {@link XMLNode} that represents the content of a generic XML element with associated XML schema type information.
+ * {@link ObjectNode} that represents the content of a generic XML element with associated XML schema type information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class XMLElementContent implements XMLNode {
+public class GenericXMLElementContent implements ObjectNode {
 
-    private Map<QName, XMLPrimitive> attrs;
+    private Map<QName, PrimitiveValue> attrs;
 
-    private List<XMLNode> children;
+    private List<ObjectNode> children;
 
     private XSTypeDefinition type;
 
-    public XMLElementContent( XSTypeDefinition type, Map<QName, XMLPrimitive> attrs, List<XMLNode> children ) {
+    public GenericXMLElementContent( XSTypeDefinition type, Map<QName, PrimitiveValue> attrs, List<ObjectNode> children ) {
         this.type = type;
         this.attrs = attrs;
         this.children = children;
     }
 
-    public Map<QName, XMLPrimitive> getAttributes() {
+    public Map<QName, PrimitiveValue> getAttributes() {
         return attrs;
     }
 
-    public List<XMLNode> getChildren() {
+    public List<ObjectNode> getChildren() {
         return children;
     }
 
@@ -79,16 +79,16 @@ public class XMLElementContent implements XMLNode {
         return type;
     }
 
-    public void setAttribute( QName name, XMLPrimitive value ) {
+    public void setAttribute( QName name, PrimitiveValue value ) {
         if ( attrs == null ) {
-            attrs = new LinkedHashMap<QName, XMLPrimitive>();
+            attrs = new LinkedHashMap<QName, PrimitiveValue>();
         }
         attrs.put( name, value );
     }
 
-    public void addChild( XMLNode node ) {
+    public void addChild( ObjectNode node ) {
         if ( children == null ) {
-            children = new ArrayList<XMLNode>();
+            children = new ArrayList<ObjectNode>();
         }
         children.add( node );
     }
@@ -99,13 +99,13 @@ public class XMLElementContent implements XMLNode {
         s += "type=" + type;
         if ( attrs != null ) {
             s += ",attributes={";
-            for ( Entry<QName, XMLPrimitive> attr : attrs.entrySet() ) {
+            for ( Entry<QName, PrimitiveValue> attr : attrs.entrySet() ) {
                 s += attr.getKey() + "=" + attr.getValue();
             }
         }
         if ( children != null ) {
             s += "},children={";
-            for ( XMLNode child : children ) {
+            for ( ObjectNode child : children ) {
                 s += child;
             }
         }

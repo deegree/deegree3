@@ -35,22 +35,23 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.commons.xml.om.PrimitiveValue;
 
 /**
- * TODO add documentation here
+ * {@link XPathNode} that represents an XML text node.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public class TextNode implements Node {
+public class TextNode implements XPathNode {
 
     private PropertyNode parent;
 
-    private String value;
+    private PrimitiveValue value;
 
-    TextNode (PropertyNode parent, String value) {
+    TextNode (PropertyNode parent, PrimitiveValue value) {
         this.parent = parent;
         this.value = value;
     }
@@ -61,11 +62,11 @@ public class TextNode implements Node {
     }
 
     @Override
-    public Node getParent() {
+    public XPathNode getParent() {
         return parent;
     }
 
-    public String getValue () {
+    public PrimitiveValue getValue () {
         return value;
     }
 }

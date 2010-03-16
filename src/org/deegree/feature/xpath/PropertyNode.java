@@ -38,7 +38,7 @@ package org.deegree.feature.xpath;
 import org.deegree.feature.Property;
 
 /**
- * TODO add documentation here
+ * {@link ElementNode} that wraps a {@link Property} of a feature.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -47,23 +47,25 @@ import org.deegree.feature.Property;
  */
 public class PropertyNode extends ElementNode {
 
-    private FeatureNode parent;
+    private GMLObjectNode parent;
 
     private Property<?> prop;
 
-    PropertyNode( FeatureNode parent, final Property<?> prop ) {
+    PropertyNode( GMLObjectNode parent, final Property<?> prop ) {
         super( prop.getName() );
         this.parent = parent;
         this.prop = prop;
     }
 
     @Override
-    public Node getParent() {
+    public XPathNode getParent() {
         return parent;
     }
 
     /**
-     * @return the modified property which converts values to strings
+     * The wrapped property.
+     * 
+     * @return wrapped property
      */
     public Property<?> getProperty() {
         return prop;

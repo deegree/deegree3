@@ -43,6 +43,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -71,10 +72,10 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.om.XMLElement;
-import org.deegree.commons.xml.om.XMLElementContent;
-import org.deegree.commons.xml.om.XMLNode;
-import org.deegree.commons.xml.om.XMLPrimitive;
+import org.deegree.commons.xml.om.GenericXMLElement;
+import org.deegree.commons.xml.om.GenericXMLElementContent;
+import org.deegree.commons.xml.om.ObjectNode;
+import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -489,23 +490,24 @@ public class GMLFeatureReader extends XMLAdapter {
         return property;
     }
 
-    private Property<XMLNode> parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl,
+    private Property<ObjectNode> parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl,
                                                    CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        XMLNode value = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
+        ObjectNode value = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
 
-        if ( value instanceof XMLElement ) {
-            // unwrap the element -> just content
-            XMLElement xmlEl = (XMLElement) value;
-            value = new XMLElementContent( xmlEl.getXSType(), xmlEl.getAttributes(), xmlEl.getChildren() );
+        if ( value instanceof GenericXMLElement ) {
+            // unwrap the element -> we just want a node that represents the element's value
+            GenericXMLElement xmlEl = (GenericXMLElement) value;
+            value = new GenericXMLElementContent( xmlEl.getXSType(), xmlEl.getAttributes(), xmlEl.getChildren() );
         }
         return new GenericProperty( propDecl, value );
     }
 
-    private XMLNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSTypeDefinition xsdValueType, CRS crs )
+    private ObjectNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSTypeDefinition xsdValueType, CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
-        XMLNode node = null;
+        ObjectNode node = null;
+        System.out.println( xmlStream.getName() );
         if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
             node = parseGenericXMLElement( xmlStream, (XSSimpleTypeDefinition) xsdValueType );
         } else {
@@ -514,18 +516,19 @@ public class GMLFeatureReader extends XMLAdapter {
         return node;
     }
 
-    private XMLPrimitive parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSSimpleTypeDefinition xsdValueType )
+    private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSSimpleTypeDefinition xsdValueType )
                             throws XMLStreamException {
-        String value = xmlStream.getElementText();
-        return new XMLPrimitive( value, xsdValueType );
+        // TODO element has simple type information and primitive type as well?
+        ObjectNode child = new PrimitiveValue( xmlStream.getElementText(), xsdValueType );
+        return new GenericXMLElement( xmlStream.getName(), xsdValueType, null, Collections.singletonList( child ) );
     }
 
-    private XMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSComplexTypeDefinition xsdValueType,
+    private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSComplexTypeDefinition xsdValueType,
                                                CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        Map<QName, XMLPrimitive> attrs = parseAttributes( xmlStream, xsdValueType );
-        List<XMLNode> children = new ArrayList<XMLNode>();
+        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, xsdValueType );
+        List<ObjectNode> children = new ArrayList<ObjectNode>();
 
         // TODO respect order + multiplicity of child elements
         Map<QName, XSElementDeclaration> childElementDecls = getChildElementDecls( xsdValueType );
@@ -534,6 +537,7 @@ public class GMLFeatureReader extends XMLAdapter {
         while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
             if ( eventType == START_ELEMENT ) {
                 QName childElName = xmlStream.getName();
+                System.out.println( "Child: " + childElName );
                 if ( geomReader.isGeometryElement( xmlStream ) ) {
                     children.add( geomReader.parse( xmlStream, crs ) );
                 } else {
@@ -541,14 +545,18 @@ public class GMLFeatureReader extends XMLAdapter {
                         String msg = "Element '" + childElName + "' is not allowed at this position.";
                         throw new XMLParsingException( xmlStream, msg );
                     }
-                    children.add( parseGenericXMLElement( xmlStream,
-                                                          childElementDecls.get( childElName ).getTypeDefinition(), crs ) );
+                    ObjectNode child = parseGenericXMLElement( xmlStream,
+                                                            childElementDecls.get( childElName ).getTypeDefinition(),
+                                                            crs );
+                    System.out.println( "adding: " + childElName + ", " + child.getClass().getName() );
+                    children.add( child );
                 }
             } else {
                 // TOOD text nodes
             }
         }
-        return new XMLElement( xmlStream.getName(), xsdValueType, attrs, children );
+        System.out.println( "creating element: " + xmlStream.getName() );
+        return new GenericXMLElement( xmlStream.getName(), xsdValueType, attrs, children );
     }
 
     private Map<QName, XSElementDeclaration> getChildElementDecls( XSComplexTypeDefinition type ) {
@@ -575,7 +583,7 @@ public class GMLFeatureReader extends XMLAdapter {
         }
     }
 
-    private Map<QName, XMLPrimitive> parseAttributes( XMLStreamReader xmlStream, XSComplexTypeDefinition xsdValueType ) {
+    private Map<QName, PrimitiveValue> parseAttributes( XMLStreamReader xmlStream, XSComplexTypeDefinition xsdValueType ) {
 
         Map<QName, XSAttributeDeclaration> attrDecls = new HashMap<QName, XSAttributeDeclaration>();
         for ( int i = 0; i < xsdValueType.getAttributeUses().getLength(); i++ ) {
@@ -584,7 +592,7 @@ public class GMLFeatureReader extends XMLAdapter {
             attrDecls.put( name, attrDecl );
         }
 
-        Map<QName, XMLPrimitive> attrs = new LinkedHashMap<QName, XMLPrimitive>();
+        Map<QName, PrimitiveValue> attrs = new LinkedHashMap<QName, PrimitiveValue>();
         for ( int i = 0; i < xmlStream.getAttributeCount(); i++ ) {
             QName name = xmlStream.getAttributeName( i );
             XSAttributeDeclaration attrDecl = attrDecls.get( name );
@@ -595,7 +603,7 @@ public class GMLFeatureReader extends XMLAdapter {
             if ( !XSINS.equals( name.getNamespaceURI() ) ) {
                 String value = xmlStream.getAttributeValue( i );
                 // TODO evaluate and check primitive type information
-                XMLPrimitive xmlValue = new XMLPrimitive( value, attrDecl.getTypeDefinition() );
+                PrimitiveValue xmlValue = new PrimitiveValue( value, attrDecl.getTypeDefinition() );
                 attrs.put( name, xmlValue );
             }
         }

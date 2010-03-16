@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import static org.jaxen.JaxenConstants.EMPTY_ITERATOR;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,11 +47,15 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.uom.Measure;
+import org.deegree.commons.xml.om.GenericXMLElement;
+import org.deegree.commons.xml.om.GenericXMLElementContent;
+import org.deegree.commons.xml.om.ObjectNode;
+import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
-import org.deegree.feature.types.GenericCustomPropertyValue;
+import org.deegree.gml.GMLObject;
+import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.FeatureReference;
 import org.jaxen.DefaultNavigator;
 import org.jaxen.JaxenConstants;
 import org.jaxen.XPath;
@@ -57,7 +63,7 @@ import org.jaxen.saxpath.SAXPathException;
 import org.jaxen.util.SingleObjectIterator;
 
 /**
- * TODO add documentation here
+ * <a href="http://jaxen.codehaus.org/">Jaxen</a> {@link DefaultNavigator} implementation for {@link Feature} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -72,64 +78,68 @@ class FeatureNavigator extends DefaultNavigator {
 
     private GMLVersion version;
 
+    private String gmlNs;
+
     /**
-     * Creates a new {@link FeatureNavigator} instance with a {@link Feature} that is the root of the navigation
+     * Creates a new {@link FeatureNavigator} instance with a {@link Feature} that acts as the root of the navigation
      * hierarchy.
      * 
      * @param rootFeature
-     *            root of the navigation hierarchy (document node), can be null
+     *            root of the navigation hierarchy (child of the document node), can be <code>null</code>
      * @param version
      *            determines the names and types of the standard GML properties, can be <code>null</code> (if no
      *            properties such as "gml:name" are used)
      */
     FeatureNavigator( Feature rootFeature, GMLVersion version ) {
         if ( rootFeature != null ) {
-            this.documentNode = new DocumentNode( new FeatureNode( null, rootFeature ) );
+            this.documentNode = new DocumentNode( new GMLObjectNode<Feature>( null, rootFeature, version ) );
         }
         this.version = version;
+        this.gmlNs = version.getNamespace();
     }
 
     /**
-     * Returns an iterator over all attributes of an element node.
+     * Returns an iterator over the attributes of an {@link ElementNode}.
      * 
      * @param node
-     *            the context node for the attribute axis
-     * @return a possibly-empty iterator (not null)
+     *            the context node for the attribute axis (an {@link ElementNode}, otherwise returns emtpy iterator)
+     * @return a possibly empty iterator (never <code>null</code>)
      */
     @SuppressWarnings("unchecked")
     @Override
     public Iterator<AttributeNode> getAttributeAxisIterator( Object node ) {
-        if ( node instanceof FeatureNode ) {
-            FeatureNode featureNode = (FeatureNode) node;
-            if ( featureNode.getFeature().getId() != null ) {
-                AttributeNode gmlIdAttrNode = new AttributeNode( featureNode, new QName( "http://www.opengis.net/gml",
-                                                                                         "id" ),
-                                                                 featureNode.getFeature().getId() );
+        if ( node instanceof GMLObjectNode ) {
+            GMLObjectNode gmlObjectNode = (GMLObjectNode) node;
+            GMLObject object = gmlObjectNode.getGMLObject();
+            if ( object.getId() != null ) {
+                PrimitiveValue id = new PrimitiveValue( object.getId() );
+                AttributeNode gmlIdAttrNode = new AttributeNode( gmlObjectNode, new QName( gmlNs, "id" ), id );
                 return new SingleObjectIterator( gmlIdAttrNode );
             }
         } else if ( node instanceof PropertyNode ) {
             Object value = ( (PropertyNode) node ).getProperty().getValue();
-            if ( value instanceof GenericCustomPropertyValue ) {
-                GenericCustomPropertyValue genericValue = (GenericCustomPropertyValue) value;
-                Map<QName, String> attributes = genericValue.getAttributes();
+            if ( value instanceof GenericXMLElementContent ) {
+                GenericXMLElementContent genericValue = (GenericXMLElementContent) value;
+                Map<QName, PrimitiveValue> attributes = genericValue.getAttributes();
                 List<AttributeNode> attrNodes = new ArrayList<AttributeNode>( attributes.size() );
-                for ( Entry<QName, String> attribute : attributes.entrySet() ) {
-                    attrNodes.add( new AttributeNode( (Node) node, attribute.getKey(), attribute.getValue() ) );
+                for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
+                    attrNodes.add( new AttributeNode( (PropertyNode) node, attribute.getKey(), attribute.getValue() ) );
                 }
                 return attrNodes.iterator();
             } else if ( value instanceof Measure ) {
-                return new SingleObjectIterator( new AttributeNode( (PropertyNode) node, new QName( "uom" ),
-                                                                    ( (Measure) value ).getUomUri() ) );
+                PrimitiveValue uom = new PrimitiveValue( ( (Measure) value ).getUomUri() );
+                return new SingleObjectIterator( new AttributeNode( (PropertyNode) node, new QName( "uom" ), uom ) );
             } else if ( value instanceof CodeType ) {
+                PrimitiveValue codeSpace = new PrimitiveValue( ( (CodeType) value ).getCodeSpace() );
                 return new SingleObjectIterator( new AttributeNode( (PropertyNode) node, new QName( "codeSpace" ),
-                                                                    ( (CodeType) value ).getCodeSpace() ) );
+                                                                    codeSpace ) );
             }
-        } else if ( node instanceof CustomElementNode ) {
-            GenericCustomPropertyValue value = ( (CustomElementNode) node ).getElement();
-            Map<QName, String> attributes = value.getAttributes();
+        } else if ( node instanceof XMLElementNode ) {
+            GenericXMLElement value = ( (XMLElementNode) node ).getElement();
+            Map<QName, PrimitiveValue> attributes = value.getAttributes();
             List<AttributeNode> attrNodes = new ArrayList<AttributeNode>( attributes.size() );
-            for ( Entry<QName, String> attribute : attributes.entrySet() ) {
-                attrNodes.add( new AttributeNode( (Node) node, attribute.getKey(), attribute.getValue() ) );
+            for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
+                attrNodes.add( new AttributeNode( (XMLElementNode) node, attribute.getKey(), attribute.getValue() ) );
             }
             return attrNodes.iterator();
         }
@@ -140,8 +150,9 @@ class FeatureNavigator extends DefaultNavigator {
      * Returns the local name of an attribute node.
      * 
      * @param node
-     *            the attribute node
-     * @return a string representing the unqualified local name if the node is an attribute, or null otherwise
+     *            attribute node, must not be null
+     * @return a string representing the unqualified local name if the node is an attribute, or <code>null</code>
+     *         otherwise
      */
     @Override
     public String getAttributeName( Object node ) {
@@ -157,8 +168,8 @@ class FeatureNavigator extends DefaultNavigator {
      * Returns the namespace URI of an attribute node.
      * 
      * @param node
-     *            the attribute node
-     * @return the namespace if the argument is an attribute, or null otherwise
+     *            attribute node, must not be null
+     * @return namespace if the argument is an attribute, or <code>null</code> otherwise
      */
     @Override
     public String getAttributeNamespaceUri( Object node ) {
@@ -174,9 +185,9 @@ class FeatureNavigator extends DefaultNavigator {
      * Returns the qualified (=prefixed) name of an attribute node.
      * 
      * @param node
-     *            the attribute node
+     *            attribute node, must not be null
      * @return a string representing the qualified (i.e. possibly prefixed) name if the argument is an attribute, or
-     *         null otherwise
+     *         <code>null</code> otherwise
      */
     @Override
     public String getAttributeQName( Object node ) {
@@ -192,15 +203,14 @@ class FeatureNavigator extends DefaultNavigator {
      * Returns the string value of an attribute node.
      * 
      * @param node
-     *            the attribute node
-     * @return the text of the attribute value if the node is an attribute, null otherwise
+     *            attribute node, must not be null
+     * @return the text of the attribute value if the node is an attribute, <code>null</code> otherwise
      */
     @Override
     public String getAttributeStringValue( Object node ) {
-
         String value = null;
         if ( isAttribute( node ) ) {
-            value = ( (AttributeNode) node ).getValue();
+            value = ( (AttributeNode) node ).getValue().getText();
         }
         return value;
     }
@@ -209,44 +219,61 @@ class FeatureNavigator extends DefaultNavigator {
      * Returns an iterator over all children of the given node.
      * 
      * @param node
-     *            the context node for the child axis
-     * @return a possibly-empty iterator (not null)
+     *            the context node for the child axis, never <code>null</code>
+     * @return a possibly empty iterator, never <code>null</code>
      */
     @SuppressWarnings("unchecked")
     @Override
     public Iterator<?> getChildAxisIterator( Object node ) {
-        Iterator<?> iter = JaxenConstants.EMPTY_ITERATOR;
-        if ( node instanceof FeatureNode ) {
-            iter = new PropertyNodeIterator( (FeatureNode) node, version );
+        Iterator<?> iter = EMPTY_ITERATOR;
+        if ( node instanceof GMLObjectNode ) {
+            if ( ( (GMLObjectNode) node ).getGMLObject() instanceof Feature ) {
+                iter = new PropertyNodeIterator( (GMLObjectNode) node, version );
+            }
         } else if ( node instanceof DocumentNode ) {
             iter = new SingleObjectIterator( ( (DocumentNode) node ).getRootNode() );
         } else if ( node instanceof PropertyNode ) {
             Property prop = ( (PropertyNode) node ).getProperty();
             Object propValue = prop.getValue();
-            if ( propValue instanceof Feature ) {
-                // TODO clear strategy for feature references (remote + local)
-                if ( !( propValue instanceof FeatureReference ) || ( (FeatureReference) propValue ).isLocal() ) {
-                    iter = new SingleObjectIterator( new FeatureNode( (PropertyNode) node, (Feature) propValue ) );
+            if ( propValue instanceof GMLObject ) {
+                // TODO clear strategy for GML object references (remote + local)
+                if ( !( propValue instanceof GMLReference ) || ( (GMLReference) propValue ).isLocal() ) {
+                    iter = new SingleObjectIterator( new GMLObjectNode( (PropertyNode) node, (GMLObject) propValue,
+                                                                        version ) );
                 }
-            } else if ( propValue instanceof GenericCustomPropertyValue ) {
-                // TODO handle text node children
-                List<GenericCustomPropertyValue> childNodes = ( (GenericCustomPropertyValue) propValue ).getChildNodes();
-                List<CustomElementNode> propNodes = new ArrayList<CustomElementNode>( childNodes.size() );
-                for ( GenericCustomPropertyValue childNode : childNodes ) {
-                    propNodes.add( new CustomElementNode( (Node) node, childNode ) );
+            } else if ( propValue instanceof GenericXMLElementContent ) {
+                List<ObjectNode> xmlNodes = ( (GenericXMLElementContent) propValue ).getChildren();
+                List<XPathNode> xpathNodes = new ArrayList<XPathNode>( xmlNodes.size() );
+                for ( ObjectNode xmlNode : xmlNodes ) {
+                    if ( xmlNode instanceof GenericXMLElement ) {
+                        xpathNodes.add( new XMLElementNode( (XPathNode) node, (GenericXMLElement) xmlNode ) );
+                    } else if ( xmlNode instanceof GMLObject ) {
+                        xpathNodes.add( new GMLObjectNode<GMLObject>( (XPathNode) node, (GMLObject) xmlNode, version ) );
+                    } else if ( xmlNode instanceof PrimitiveValue ) {
+                        xpathNodes.add( new TextNode( (PropertyNode) node, (PrimitiveValue) xmlNode ) );
+                    }
                 }
-                iter = propNodes.iterator();
-            } else if ( propValue instanceof String ) {
-                iter = new SingleObjectIterator( new TextNode( (PropertyNode) node, (String) propValue ) );
+                iter = xpathNodes.iterator();
+            } else if ( propValue instanceof PrimitiveValue ) {
+                iter = new SingleObjectIterator( new TextNode( (PropertyNode) node, (PrimitiveValue) propValue ) );
+            } else {
+                // TODO remove this case
+                iter = new SingleObjectIterator( new TextNode( (PropertyNode) node,
+                                                               new PrimitiveValue( propValue.toString() ) ) );
             }
-        } else if ( node instanceof CustomElementNode ) {
-            // TODO handle text node children
-            List<GenericCustomPropertyValue> childNodes = ( (CustomElementNode) node ).getElement().getChildNodes();
-            List<CustomElementNode> propNodes = new ArrayList<CustomElementNode>( childNodes.size() );
-            for ( GenericCustomPropertyValue childNode : childNodes ) {
-                propNodes.add( new CustomElementNode( (Node) node, childNode ) );
+        } else if ( node instanceof XMLElementNode ) {
+            List<ObjectNode> xmlNodes = ( (XMLElementNode) node ).getElement().getChildren();
+            List<XPathNode> xpathNodes = new ArrayList<XPathNode>( xmlNodes.size() );
+            for ( ObjectNode xmlNode : xmlNodes ) {
+                if ( xmlNode instanceof GenericXMLElement ) {
+                    xpathNodes.add( new XMLElementNode( (XPathNode) node, (GenericXMLElement) xmlNode ) );
+                } else if ( xmlNode instanceof GMLObject ) {
+                    xpathNodes.add( new GMLObjectNode<GMLObject>( (XPathNode) node, (GMLObject) xmlNode, version ) );
+                } else if ( xmlNode instanceof PrimitiveValue ) {
+                    xpathNodes.add( new TextNode( (PropertyNode) node, (PrimitiveValue) xmlNode ) );
+                }
             }
-            iter = propNodes.iterator();
+            iter = xpathNodes.iterator();
         }
         return iter;
     }
@@ -369,15 +396,15 @@ class FeatureNavigator extends DefaultNavigator {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Iterator<Node> getParentAxisIterator( Object contextNode ) {
-        return new SingleObjectIterator( ( (Node) contextNode ).getParent() );
+    public Iterator<XPathNode> getParentAxisIterator( Object contextNode ) {
+        return new SingleObjectIterator( ( (XPathNode) contextNode ).getParent() );
     }
 
     @Override
     public String getTextStringValue( Object obj ) {
         String value = null;
         if ( obj instanceof TextNode ) {
-            value = ( (TextNode) obj ).getValue();
+            value = ( (TextNode) obj ).getValue().getText();
         }
         return value;
     }

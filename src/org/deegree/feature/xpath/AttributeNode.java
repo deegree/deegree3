@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,30 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.xml.om.PrimitiveValue;
+
 /**
- * TODO add documentation here
- *
+ * {@link XPathNode} that represents an XML attribute node.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class AttributeNode implements Node {
+public class AttributeNode implements XPathNode {
 
-    private Node parentNode;
+    private ElementNode parentNode;
 
     private QName name;
 
-    private String value;
+    private PrimitiveValue value;
 
-    AttributeNode (Node parentNode, QName attrName, String value) {
+    AttributeNode( ElementNode parentNode, QName attrName, PrimitiveValue value ) {
         this.parentNode = parentNode;
         this.name = attrName;
         this.value = value;
@@ -65,7 +67,7 @@ public class AttributeNode implements Node {
     }
 
     @Override
-    public Node getParent() {
+    public ElementNode getParent() {
         return parentNode;
     }
 
@@ -76,7 +78,7 @@ public class AttributeNode implements Node {
     public String getPrefixedName() {
         String prefixedName = "";
         String prefix = name.getPrefix();
-        if (prefix != null && prefix.length() > 0) {
+        if ( prefix != null && prefix.length() > 0 ) {
             prefixedName = prefix + ":";
         }
         prefixedName += name.getLocalPart();
@@ -87,12 +89,12 @@ public class AttributeNode implements Node {
         return name.getNamespaceURI();
     }
 
-    public String getValue() {
+    public PrimitiveValue getValue() {
         return value;
     }
-    
+
     @Override
-    public String toString () {
-        return value;
+    public String toString() {
+        return value.getText();
     }
 }

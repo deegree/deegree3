@@ -100,7 +100,7 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "*", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertNotNull( selectedNodes );
         Assert.assertEquals( 7, selectedNodes.size() );
     }
@@ -111,7 +111,7 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "gml:featureMember", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 7, selectedNodes.size() );
     }
 
@@ -121,7 +121,7 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 7, selectedNodes.size() );
     }
 
@@ -131,10 +131,10 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 1, selectedNodes.size() );
-        FeatureNode featureNode = (FeatureNode) selectedNodes.get( 0 );
-        Feature feature = featureNode.getFeature();
+        GMLObjectNode featureNode = (GMLObjectNode) selectedNodes.get( 0 );
+        Feature feature = (Feature) featureNode.getGMLObject();
         Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
     }
 
@@ -144,7 +144,7 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher/app:name", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 1, selectedNodes.size() );
         PropertyNode propNode = (PropertyNode) selectedNodes.get( 0 );
         Property prop = propNode.getProperty();
@@ -157,10 +157,10 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher/app:name/text()", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 1, selectedNodes.size() );
         TextNode textNode = (TextNode) selectedNodes.get( 0 );
-        Assert.assertEquals( "Karl Marx", textNode.getValue() );
+        Assert.assertEquals( "Karl Marx", textNode.getValue().getText() );
     }
 
     @SuppressWarnings("unchecked")
@@ -171,7 +171,7 @@ public class FeatureXPathTest {
                                         "gml:featureMember/app:Philosopher[app:name='Albert Camus' and app:placeOfBirth/*/app:name='Mondovi']/app:placeOfBirth/app:Place/app:name",
                                         GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 1, selectedNodes.size() );
         PropertyNode propNode = (PropertyNode) selectedNodes.get( 0 );
         Property prop = propNode.getProperty();
@@ -185,18 +185,18 @@ public class FeatureXPathTest {
         XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher/app:placeOfBirth/app:Place",
                                         GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 1, selectedNodes.size() );
-        FeatureNode featureNode = (FeatureNode) selectedNodes.get( 0 );
-        Feature feature = featureNode.getFeature();
+        GMLObjectNode featureNode = (GMLObjectNode) selectedNodes.get( 0 );
+        Feature feature = (Feature) featureNode.getGMLObject();
         Assert.assertEquals( "PLACE_2", feature.getId() );
 
         xpath = new FeatureXPath( "../..", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
         selectedNodes = xpath.selectNodes( featureNode );
         Assert.assertEquals( 1, selectedNodes.size() );
-        featureNode = (FeatureNode) selectedNodes.get( 0 );
-        feature = featureNode.getFeature();
+        featureNode = (GMLObjectNode) selectedNodes.get( 0 );
+        feature = (Feature) featureNode.getGMLObject();
         Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
     }
 
@@ -208,9 +208,9 @@ public class FeatureXPathTest {
         XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[app:id < 3]/app:name", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
 
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Set<String> names = new HashSet<String>();
-        for ( Node node : selectedNodes ) {
+        for ( XPathNode node : selectedNodes ) {
             names.add( (String) ( (PropertyNode) node ).getProperty().getValue() );
         }
         Assert.assertEquals( 2, names.size() );
@@ -236,10 +236,10 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[@gml:id='PHILOSOPHER_1']", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 1, selectedNodes.size() );
-        FeatureNode featureNode = (FeatureNode) selectedNodes.get( 0 );
-        Feature feature = featureNode.getFeature();
+        GMLObjectNode featureNode = (GMLObjectNode) selectedNodes.get( 0 );
+        Feature feature = (Feature) featureNode.getGMLObject();
         Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
     }
 
@@ -249,10 +249,10 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[gml:name='JEAN_PAUL']", GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 1, selectedNodes.size() );
-        FeatureNode featureNode = (FeatureNode) selectedNodes.get( 0 );
-        Feature feature = featureNode.getFeature();
+        GMLObjectNode featureNode = (GMLObjectNode) selectedNodes.get( 0 );
+        Feature feature = (Feature) featureNode.getGMLObject();
         Assert.assertEquals( "PHILOSOPHER_6", feature.getId() );
     }
 
@@ -262,7 +262,7 @@ public class FeatureXPathTest {
                             throws JaxenException {
         XPath xpath = new FeatureXPath( "/gml:FeatureCollection/gml:featureMember", fc, GMLVersion.GML_31 );
         xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 7, selectedNodes.size() );
     }
 }

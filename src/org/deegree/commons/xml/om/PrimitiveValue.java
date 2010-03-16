@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,36 +33,45 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.xpath;
+package org.deegree.commons.xml.om;
 
-import org.deegree.feature.types.GenericCustomPropertyValue;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
 
 /**
- * TODO add documentation here
+ * {@link ObjectNode} that represents a primitive value, e.g. an XML text node or an XML attribute value with type
+ * information.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class CustomElementNode extends ElementNode {
+public class PrimitiveValue implements ObjectNode {
 
-    private Node parentNode;
+    private final String value;
 
-    private GenericCustomPropertyValue element;
+    private final XSSimpleTypeDefinition xsdType;
 
-    public CustomElementNode( Node parentNode, GenericCustomPropertyValue element ) {
-        super( element.getName() );
-        this.parentNode = parentNode;
-        this.element = element;
+    public PrimitiveValue( String value ) {
+        this.value = value;
+        this.xsdType = null;
+    }
+
+    public PrimitiveValue( String s, XSSimpleTypeDefinition xsdType ) {
+        this.value = s;
+        this.xsdType = xsdType;
+    }
+
+    public String getText() {
+        return value;
+    }
+
+    public XSSimpleTypeDefinition getType() {
+        return xsdType;
     }
 
     @Override
-    public Node getParent() {
-        return parentNode;
-    }
-
-    public GenericCustomPropertyValue getElement() {
-        return element;
+    public String toString() {
+        return "{value='" + value + "',type={" + xsdType + "}}";
     }
 }

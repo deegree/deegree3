@@ -39,11 +39,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.gml.GMLVersion;
 
 /**
- * TODO add documentation here
+ * {@link Iterator} over property nodes of a feature node.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -52,20 +53,20 @@ import org.deegree.gml.GMLVersion;
  */
 class PropertyNodeIterator implements Iterator<PropertyNode> {
 
-    private FeatureNode parent;
+    private GMLObjectNode<Feature> parent;
 
     private Iterator<Property<?>> stdProps;
 
     private Iterator<Property<?>> props;
 
-    PropertyNodeIterator( FeatureNode parent, GMLVersion version ) {
+    PropertyNodeIterator( GMLObjectNode<Feature> parent, GMLVersion version ) {
         this.parent = parent;
-        this.props = Arrays.asList( parent.getFeature().getProperties(version) ).iterator();
+        this.props = Arrays.asList( parent.getGMLObject().getProperties( version ) ).iterator();
     }
 
     @Override
     public boolean hasNext() {
-        return (stdProps != null && stdProps.hasNext()) || props.hasNext();
+        return ( stdProps != null && stdProps.hasNext() ) || props.hasNext();
     }
 
     @Override

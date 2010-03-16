@@ -44,7 +44,7 @@ import org.deegree.commons.types.datetime.Time;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.Pair;
-import org.deegree.feature.types.GenericCustomPropertyValue;
+import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
@@ -76,8 +76,8 @@ public abstract class ComparisonOperator implements Operator {
 
     public boolean getMatchCase() {
         return matchCase;
-    }     
-    
+    }
+
     public abstract SubType getSubType();
 
     /**
@@ -128,8 +128,8 @@ public abstract class ComparisonOperator implements Operator {
             } else if ( value1 instanceof Measure ) {
                 result = new Pair<Object, Object>( value1, new Measure( value2.toString(),
                                                                         ( (Measure) value1 ).getUomUri() ) );
-            } else if ( value1 instanceof GenericCustomPropertyValue ) {
-                result = new Pair<Object, Object>( value1, new GenericCustomPropertyValue( value2.toString() ) );
+            } else if ( value1 instanceof PrimitiveValue ) {
+                result = new Pair<Object, Object>( value1, new PrimitiveValue( value2.toString() ) );
             }
         } else if ( !( value2 instanceof String ) ) {
             if ( value2 instanceof Number ) {
@@ -158,8 +158,8 @@ public abstract class ComparisonOperator implements Operator {
             } else if ( value1 instanceof Measure ) {
                 result = new Pair<Object, Object>( new Measure( value1.toString(), ( (Measure) value2 ).getUomUri() ),
                                                    value2 );
-            } else if ( value1 instanceof GenericCustomPropertyValue ) {
-                result = new Pair<Object, Object>( value2, new GenericCustomPropertyValue( value1.toString() ) );
+            } else if ( value1 instanceof PrimitiveValue ) {
+                result = new Pair<Object, Object>( value2, new PrimitiveValue( value1.toString() ) );
             }
         }
 

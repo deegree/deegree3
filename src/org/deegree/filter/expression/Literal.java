@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
-import org.deegree.feature.types.GenericCustomPropertyValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.MatchableObject;
 
@@ -43,7 +42,7 @@ import org.deegree.filter.MatchableObject;
  * {@link Expression} that has a constant value.
  * 
  * @param <T>
- *            besides primitive types, this may also be {@link GenericCustomPropertyValue}
+ *            TODO which types are allowed here?
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
@@ -90,7 +89,7 @@ public class Literal<T> implements Expression {
         String s = indent + "-Literal ('" + value + "')\n";
         return s;
     }
-    
+
     @Override
     public Expression[] getParams() {
         return new Expression[0];
