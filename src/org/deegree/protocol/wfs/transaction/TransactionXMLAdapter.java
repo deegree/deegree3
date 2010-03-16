@@ -44,6 +44,7 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAs
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.requireNextTag;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
@@ -95,13 +96,49 @@ public class TransactionXMLAdapter {
         Version version = parseVersion( getRequiredAttributeValue( xmlStream, "version" ) );
 
         Transaction result = null;
-        if ( VERSION_110.equals( version ) ) {
+        if ( VERSION_100.equals( version ) ) {
+            result = parse100( xmlStream );
+        } else if ( VERSION_110.equals( version ) ) {
             result = parse110( xmlStream );
         } else {
             String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
             throw new InvalidParameterValueException( msg );
         }
         return result;
+    }
+
+    private static Transaction parse100( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        xmlStream.require( START_ELEMENT, WFS_NS, "Transaction" );
+
+        // optional: '@handle'
+        String handle = getAttributeValue( xmlStream, "handle" );
+
+        // optional: '@releaseAction'
+        ReleaseAction releaseAction = null;
+        String releaseActionString = getAttributeValue( xmlStream, "releaseAction" );
+        if ( releaseActionString != null ) {
+            if ( "SOME".equals( releaseActionString ) ) {
+                releaseAction = ReleaseAction.SOME;
+            } else if ( "ALL".equals( releaseActionString ) ) {
+                releaseAction = ReleaseAction.ALL;
+            } else {
+                String msg = "Invalid value (=" + releaseActionString
+                             + ") for release action parameter. Valid values are 'ALL' or 'SOME'.";
+                throw new InvalidParameterValueException( msg, "releaseAction" );
+            }
+        }
+
+        // optional: 'wfs:LockId'
+        String lockId = null;
+        requireNextTag( xmlStream, START_ELEMENT );
+        if ( xmlStream.getName().equals( new QName( WFSConstants.WFS_NS, "LockId" ) ) ) {
+            lockId = xmlStream.getElementText().trim();
+            requireNextTag( xmlStream, START_ELEMENT );
+        }
+
+        LazyOperationsIterable iterable = new LazyOperationsIterable( VERSION_100, xmlStream );
+        return new Transaction( VERSION_100, handle, lockId, releaseAction, iterable );
     }
 
     /**
@@ -147,6 +184,31 @@ public class TransactionXMLAdapter {
 
         LazyOperationsIterable iterable = new LazyOperationsIterable( VERSION_110, xmlStream );
         return new Transaction( VERSION_110, handle, lockId, releaseAction, iterable );
+    }
+
+    static TransactionOperation parseOperation100( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        if ( !WFS_NS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Unexpected element: " + xmlStream.getName()
+                         + "' is not a WFS 1.0.0 operation element. Not in the wfs namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        TransactionOperation operation = null;
+        String localName = xmlStream.getLocalName();
+        if ( "Delete".equals( localName ) ) {
+            operation = parseDelete110( xmlStream );
+            xmlStream.nextTag();
+            xmlStream.require( END_ELEMENT, WFS_NS, "Delete" );
+            xmlStream.nextTag();
+        } else if ( "Insert".equals( localName ) ) {
+            operation = parseInsert100( xmlStream );
+        } else if ( "Native".equals( localName ) ) {
+            operation = parseNative110( xmlStream );
+        } else if ( "Update".equals( localName ) ) {
+            operation = parseUpdate100( xmlStream );
+        }
+        return operation;
     }
 
     static TransactionOperation parseOperation110( XMLStreamReader xmlStream )
@@ -218,6 +280,26 @@ public class TransactionXMLAdapter {
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Insert&gt;)
      * @return corresponding {@link Insert} object
      * @throws XMLStreamException
+     */
+    static Insert parseInsert100( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        // optional: '@handle'
+        String handle = xmlStream.getAttributeValue( null, "handle" );
+
+        if ( xmlStream.nextTag() != START_ELEMENT ) {
+            throw new XMLParsingException( xmlStream, Messages.get( "WFS_INSERT_MISSING_FEATURE_ELEMENT" ) );
+        }
+        return new Insert( handle, null, null, null, xmlStream );
+    }
+
+    /**
+     * Returns the object representation of a <code>wfs:Insert</code> element. NOTE: Does *not* consume all
+     * corresponding events from the given <code>XMLStream</code>.
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Insert&gt;)
+     * @return corresponding {@link Insert} object
+     * @throws XMLStreamException
      * @throws XMLParsingException
      */
     static Insert parseInsert110( XMLStreamReader xmlStream )
@@ -255,6 +337,21 @@ public class TransactionXMLAdapter {
         return new Insert( handle, idGen, inputFormat, srsName, xmlStream );
     }
 
+    private static TransactionOperation parseUpdate100( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        // optional: '@handle'
+        String handle = xmlStream.getAttributeValue( null, "handle" );
+
+        // required: '@typeName'
+        QName ftName = getAttributeValueAsQName( xmlStream, null, "typeName" );
+
+        // skip to first "wfs:Property" element
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
+
+        return new Update( handle, VERSION_100, ftName, null, null, xmlStream );
+    }
+
     static Update parseUpdate110( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
@@ -275,6 +372,25 @@ public class TransactionXMLAdapter {
         xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
 
         return new Update( handle, VERSION_110, ftName, inputFormat, srsName, xmlStream );
+    }
+
+    public static PropertyReplacement parseProperty100( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, WFS_NS, "Name" );
+        QName propName = getElementTextAsQName( xmlStream );
+        xmlStream.nextTag();
+
+        PropertyReplacement replacement = null;
+        if ( new QName( WFS_NS, "Value" ).equals( xmlStream.getName() ) ) {
+            replacement = new PropertyReplacement( propName, xmlStream );
+        } else {
+            xmlStream.require( END_ELEMENT, WFS_NS, "Property" );
+            replacement = new PropertyReplacement( propName, null );
+            xmlStream.nextTag();
+        }
+        return replacement;
     }
 
     static PropertyReplacement parseProperty110( XMLStreamReader xmlStream )

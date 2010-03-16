@@ -93,14 +93,23 @@ class LazyOperationsIterable implements Iterable<TransactionOperation> {
                     throw new NoSuchElementException();
                 }
                 TransactionOperation operation = null;
-                if ( version == WFSConstants.VERSION_110 ) {
+                if ( version.equals( WFSConstants.VERSION_100 ) ) {
+                    try {
+                        operation = TransactionXMLAdapter.parseOperation100( xmlStream );
+                    } catch ( XMLStreamException e ) {
+                        throw new XMLParsingException( xmlStream, "Error parsing transaction operation: "
+                                                                  + e.getMessage() );
+                    }
+                } else if ( version.equals( WFSConstants.VERSION_110 ) ) {
                     try {
                         operation = TransactionXMLAdapter.parseOperation110( xmlStream );
-                    }  catch ( XMLStreamException e ) {
-                       throw new XMLParsingException( xmlStream, "Error parsing transaction operation: " + e.getMessage() );
+                    } catch ( XMLStreamException e ) {
+                        throw new XMLParsingException( xmlStream, "Error parsing transaction operation: "
+                                                                  + e.getMessage() );
                     }
                 } else {
-                    throw new UnsupportedOperationException ("Only WFS 1.1.0 transaction are implemented at the moment.");
+                    throw new UnsupportedOperationException(
+                                                             "Only WFS 1.1.0 transaction are implemented at the moment." );
                 }
                 return operation;
             }

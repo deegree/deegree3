@@ -51,6 +51,7 @@ import org.deegree.commons.types.ows.Version;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Filter;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.WFSConstants;
 
@@ -160,7 +161,14 @@ public class Update extends TransactionOperation {
                     throw new NoSuchElementException();
                 }
                 PropertyReplacement replacement = null;
-                if ( version == WFSConstants.VERSION_110 ) {
+                if ( version.equals( WFSConstants.VERSION_100 ) ) {
+                    try {
+                        replacement = TransactionXMLAdapter.parseProperty100( xmlStream );
+                    } catch ( XMLStreamException e ) {
+                        throw new XMLParsingException( xmlStream, "Error parsing transaction operation: "
+                                                                  + e.getMessage() );
+                    }
+                } else if ( version.equals( WFSConstants.VERSION_110 ) ) {
                     try {
                         replacement = TransactionXMLAdapter.parseProperty110( xmlStream );
                     } catch ( XMLStreamException e ) {
@@ -201,7 +209,11 @@ public class Update extends TransactionOperation {
         Filter filter = null;
         if ( xmlStream.isStartElement() ) {
             xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
-            filter = Filter110XMLDecoder.parse( xmlStream );
+            if ( version.equals( WFSConstants.VERSION_100 ) ) {
+                filter = Filter100XMLDecoder.parse( xmlStream );
+            } else if ( version.equals( WFSConstants.VERSION_110 ) ) {
+                filter = Filter110XMLDecoder.parse( xmlStream );
+            }
             xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
             // contract: skip to wfs:Update END_ELEMENT
             xmlStream.nextTag();
