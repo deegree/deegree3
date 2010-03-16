@@ -105,7 +105,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
         GetFeatureWithLock result = null;
 
         if ( VERSION_100.equals( version ) ) {
-            result = parse110();
+            result = parse100();
         } else if ( VERSION_110.equals( version ) )
             result = parse110();
         else {
@@ -336,7 +336,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
 
-        return new GetFeatureWithLock( VERSION_110, handle, null, outputFormat, maxFeatures, null, null, queryArray,
+        return new GetFeatureWithLock( VERSION_100, handle, null, outputFormat, maxFeatures, null, null, queryArray,
                                        expiry );
     }
 }
