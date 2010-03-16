@@ -44,5 +44,5 @@ package org.deegree.commons.xml.om;
  * @version $Revision$, $Date$
  */
 public interface XMLNode {
-
+    // just a marker interface
 }

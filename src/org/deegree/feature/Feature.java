@@ -62,7 +62,7 @@ import org.deegree.gml.GMLVersion;
  * <p>
  * <h4>Notes on the representation of GML features</h4>
  * <p>
- * The interface supports two modes of operation: GML-agnostic and GML (and version) specific. Blabla...
+ * The interface supports two views on the features' properties: GML-agnostic and GML (and version) specific. Blabla...
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

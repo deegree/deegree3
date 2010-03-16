@@ -433,6 +433,7 @@ public class GMLFeatureWriter {
                 writer.writeEndElement();
             }
         } else if ( propertyType instanceof CustomPropertyType ) {
+
             GenericCustomPropertyWriter.export( (GenericCustomPropertyValue) value, writer );
         }
     }

@@ -43,8 +43,8 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.types.PrimitiveType;
 
 /**
- * A {@link PropertyType} that defines a property with a primitive value, i.e. the value can be expressed as a single
- * {@link String}.
+ * A {@link PropertyType} that defines a property with a primitive value, i.e. a value that can be represented as a
+ * single {@link String}.
  * 
  * @see PrimitiveType
  * 

@@ -32,17 +32,40 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.om;
 
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+
 /**
- * Interface for all 
+ * An XML text node or an XML attribute value with type information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface XMLPrimitive extends XMLNode {
+public class XMLPrimitive implements XMLNode {
 
+    private final String value;
+
+    private final XSSimpleTypeDefinition xsdType;
+
+    public XMLPrimitive( String s, XSSimpleTypeDefinition xsdType ) {
+        this.value = s;
+        this.xsdType = xsdType;
+    }
+
+    public String getText() {
+        return value;
+    }
+
+    public XSSimpleTypeDefinition getType() {
+        return xsdType;
+    }
+
+    @Override
+    public String toString() {
+        return "{value='" + value + "',type={" + xsdType + "}}";
+    }
 }

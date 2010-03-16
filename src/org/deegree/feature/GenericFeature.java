@@ -52,12 +52,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Allows the representation of arbitrary {@link Feature}s.
- * <p>
- * Please note that it may be more efficient to use the {@link GenericSimpleFeature} class if the feature to be
- * represented does not contain multiple properties or nested features ("complex properties").
- * </p>
- * 
- * @see GenericSimpleFeature
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.om;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,16 +46,14 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSTypeDefinition;
 
 /**
- * {@link XMLNode} that represents a generic XML element with associated XML schema type information.
+ * {@link XMLNode} that represents the content of a generic XML element with associated XML schema type information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class XMLElement extends XMLElementContent {
-
-    private QName name;
+public class XMLElementContent implements XMLNode {
 
     private Map<QName, XMLPrimitive> attrs;
 
@@ -61,17 +61,41 @@ public class XMLElement extends XMLElementContent {
 
     private XSTypeDefinition type;
 
-    public XMLElement( QName name, XSTypeDefinition type, Map<QName, XMLPrimitive> attrs, List<XMLNode> children ) {
-        super (type, attrs, children);
+    public XMLElementContent( XSTypeDefinition type, Map<QName, XMLPrimitive> attrs, List<XMLNode> children ) {
+        this.type = type;
+        this.attrs = attrs;
+        this.children = children;
     }
 
-    public QName getName() {
-        return name;
+    public Map<QName, XMLPrimitive> getAttributes() {
+        return attrs;
+    }
+
+    public List<XMLNode> getChildren() {
+        return children;
+    }
+
+    public XSTypeDefinition getXSType() {
+        return type;
+    }
+
+    public void setAttribute( QName name, XMLPrimitive value ) {
+        if ( attrs == null ) {
+            attrs = new LinkedHashMap<QName, XMLPrimitive>();
+        }
+        attrs.put( name, value );
+    }
+
+    public void addChild( XMLNode node ) {
+        if ( children == null ) {
+            children = new ArrayList<XMLNode>();
+        }
+        children.add( node );
     }
 
     @Override
     public String toString() {
-        String s = name + "{";
+        String s = "{";
         s += "type=" + type;
         if ( attrs != null ) {
             s += ",attributes={";

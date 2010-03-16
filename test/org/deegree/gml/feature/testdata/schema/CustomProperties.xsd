@@ -10,6 +10,9 @@
       <extension base="gml:AbstractFeatureType">
         <sequence>
           <element name="custom1" type="app:SimpleContentPropertyType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="custom2" type="app:SequenceChoicePropertyType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="custom3" type="app:ChoiceGeometryPropertyType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="custom4" type="app:AuditTrailPropertyType" minOccurs="0" maxOccurs="unbounded" />
         </sequence>
       </extension>
     </complexContent>
@@ -42,5 +45,25 @@
       <element ref="gml:MultiSurface" />
     </choice>
   </complexType>
+  
+  <complexType name="AuditTrailPropertyType">
+    <sequence>
+      <element name="Event" type="app:EventType" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>  
+  <complexType name="EventType">
+    <sequence>
+      <element name="action" type="app:ActionType" />
+      <element name="timestamp" type="dateTime" />
+      <element name="userid" type="string" />
+    </sequence>
+  </complexType> 
+  <simpleType name="ActionType">
+    <restriction base="string">
+      <enumeration value="Insert"/>
+      <enumeration value="Update"/>
+      <enumeration value="Delete"/>
+    </restriction>
+  </simpleType>
 
 </schema>

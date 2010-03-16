@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.net.MalformedURLException;
@@ -43,13 +45,25 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.types.XMLValueMangler;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
@@ -57,6 +71,10 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.om.XMLElement;
+import org.deegree.commons.xml.om.XMLElementContent;
+import org.deegree.commons.xml.om.XMLNode;
+import org.deegree.commons.xml.om.XMLPrimitive;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -82,7 +100,6 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.generic.GenericCustomPropertyReader;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.gml.feature.schema.DefaultGMLTypes;
 import org.deegree.gml.geometry.GML2GeometryReader;
@@ -115,8 +132,6 @@ public class GMLFeatureReader extends XMLAdapter {
     // private XSModel xsModel;
 
     private final GeometryFactory geomFac;
-
-    private final Map<PropertyType, CustomPropertyReader<?>> ptToParser = new HashMap<PropertyType, CustomPropertyReader<?>>();
 
     private final GMLDocumentIdContext idContext;
 
@@ -188,16 +203,6 @@ public class GMLFeatureReader extends XMLAdapter {
 
     public void setGeometryReader( GMLGeometryReader geomReader ) {
         this.geomReader = geomReader;
-    }
-
-    /**
-     * Registers a {@link CustomPropertyReader} that is invoked to parse properties of a certain type.
-     * 
-     * @param pt
-     * @param parser
-     */
-    public void registerCustomPropertyParser( PropertyType pt, CustomPropertyReader<?> parser ) {
-        this.ptToParser.put( pt, parser );
     }
 
     /**
@@ -397,100 +402,216 @@ public class GMLFeatureReader extends XMLAdapter {
         LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
         LOG.debug( "- property declaration: " + propDecl );
 
-        CustomPropertyReader<?> parser = ptToParser.get( propDecl );
-
-        if ( parser == null ) {
-            if ( propDecl instanceof SimplePropertyType ) {
-                property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
-                                                 xmlStream.getElementText().trim() );
-            } else if ( propDecl instanceof GeometryPropertyType ) {
-                String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-                if ( href != null ) {
-                    // TODO respect geometry type information (Point, Surface, etc.)
-                    GeometryReference<Geometry> refGeometry = null;
-                    if ( specialResolver != null ) {
-                        refGeometry = new GeometryReference<Geometry>( specialResolver, href, xmlStream.getSystemId() );
-                    } else {
-                        refGeometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
-                    }
-                    idContext.addReference( refGeometry );
-                    property = new GenericProperty<Geometry>( propDecl, propName, refGeometry );
-                    xmlStream.nextTag();
+        if ( propDecl instanceof SimplePropertyType ) {
+            property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
+                                             xmlStream.getElementText().trim() );
+        } else if ( propDecl instanceof GeometryPropertyType ) {
+            String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+            if ( href != null ) {
+                // TODO respect geometry type information (Point, Surface, etc.)
+                GeometryReference<Geometry> refGeometry = null;
+                if ( specialResolver != null ) {
+                    refGeometry = new GeometryReference<Geometry>( specialResolver, href, xmlStream.getSystemId() );
                 } else {
-                    xmlStream.nextTag();
-                    Geometry geometry = null;
-                    geometry = geomReader.parse( xmlStream, crs );
-                    property = new GenericProperty<Geometry>( propDecl, propName, geometry );
-                    xmlStream.nextTag();
+                    refGeometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
                 }
-            } else if ( propDecl instanceof FeaturePropertyType ) {
-                String uri = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-                if ( uri != null ) {
-                    FeatureReference refFeature = null;
-                    if ( specialResolver != null ) {
-                        refFeature = new FeatureReference( specialResolver, uri, xmlStream.getSystemId() );
-                    } else {
-                        refFeature = new FeatureReference( idContext, uri, xmlStream.getSystemId() );
-                    }
-                    idContext.addReference( refFeature );
-                    property = new GenericProperty<Feature>( propDecl, propName, refFeature );
-                    xmlStream.nextTag();
+                idContext.addReference( refGeometry );
+                property = new GenericProperty<Geometry>( propDecl, propName, refGeometry );
+                xmlStream.nextTag();
+            } else {
+                xmlStream.nextTag();
+                Geometry geometry = null;
+                geometry = geomReader.parse( xmlStream, crs );
+                property = new GenericProperty<Geometry>( propDecl, propName, geometry );
+                xmlStream.nextTag();
+            }
+        } else if ( propDecl instanceof FeaturePropertyType ) {
+            String uri = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+            if ( uri != null ) {
+                FeatureReference refFeature = null;
+                if ( specialResolver != null ) {
+                    refFeature = new FeatureReference( specialResolver, uri, xmlStream.getSystemId() );
                 } else {
-                    // inline feature
-                    if ( xmlStream.nextTag() != START_ELEMENT ) {
-                        String msg = Messages.getMessage( "ERROR_INVALID_FEATURE_PROPERTY", propName );
+                    refFeature = new FeatureReference( idContext, uri, xmlStream.getSystemId() );
+                }
+                idContext.addReference( refFeature );
+                property = new GenericProperty<Feature>( propDecl, propName, refFeature );
+                xmlStream.nextTag();
+            } else {
+                // inline feature
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = Messages.getMessage( "ERROR_INVALID_FEATURE_PROPERTY", propName );
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                // TODO make this check (no constraints on contained feature type) better
+                if ( ( (FeaturePropertyType) propDecl ).getFTName() != null ) {
+                    FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
+                    FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
+                    if ( !schema.isSubType( expectedFt, presentFt ) ) {
+                        String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE", expectedFt.getName(),
+                                                          propName, presentFt.getName() );
                         throw new XMLParsingException( xmlStream, msg );
                     }
-                    // TODO make this check (no constraints on contained feature type) better
-                    if ( ( (FeaturePropertyType) propDecl ).getFTName() != null ) {
-                        FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
-                        FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
-                        if ( !schema.isSubType( expectedFt, presentFt ) ) {
-                            String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE",
-                                                              expectedFt.getName(), propName, presentFt.getName() );
-                            throw new XMLParsingException( xmlStream, msg );
-                        }
-                    }
-                    Feature subFeature = parseFeature( xmlStream, crs );
-                    property = new GenericProperty<Feature>( propDecl, propName, subFeature );
-                    xmlStream.skipElement();
                 }
-            } else if ( propDecl instanceof CustomPropertyType ) {
-                Object value = new GenericCustomPropertyReader().parse( xmlStream );
-                property = new GenericProperty<Object>( propDecl, propName, value );
-            } else if ( propDecl instanceof EnvelopePropertyType ) {
-                Envelope env = null;
-                xmlStream.nextTag();
-                if ( xmlStream.getName().equals( new QName( gmlNs, "Null" ) ) ) {
-                    // TODO
-                    StAXParsingHelper.skipElement( xmlStream );
-                } else {
-                    env = geomReader.parseEnvelope( xmlStream, crs );
-                    property = new GenericProperty<Object>( propDecl, propName, env );
-                }
-                xmlStream.nextTag();
-            } else if ( propDecl instanceof CodePropertyType ) {
-                String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
-                String code = xmlStream.getElementText().trim();
-                Object value = new CodeType( code, codeSpace );
-                property = new GenericProperty<Object>( propDecl, propName, value );
-            } else if ( propDecl instanceof MeasurePropertyType ) {
-                String uom = xmlStream.getAttributeValue( null, "uom" );
-                Object value = new Measure( xmlStream.getElementText(), uom );
-                property = new GenericProperty<Object>( propDecl, propName, value );
-            } else if ( propDecl instanceof StringOrRefPropertyType ) {
-                String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-                String string = xmlStream.getElementText().trim();
-                property = new GenericProperty<Object>( propDecl, propName, new StringOrRef( string, ref ) );
+                Feature subFeature = parseFeature( xmlStream, crs );
+                property = new GenericProperty<Feature>( propDecl, propName, subFeature );
+                xmlStream.skipElement();
             }
-        } else {
-            LOG.trace( "************ Parsing property using custom parser." );
-            Object value = parser.parse( xmlStream );
+        } else if ( propDecl instanceof CustomPropertyType ) {
+            property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs );
+        } else if ( propDecl instanceof EnvelopePropertyType ) {
+            Envelope env = null;
+            xmlStream.nextTag();
+            if ( xmlStream.getName().equals( new QName( gmlNs, "Null" ) ) ) {
+                // TODO
+                StAXParsingHelper.skipElement( xmlStream );
+            } else {
+                env = geomReader.parseEnvelope( xmlStream, crs );
+                property = new GenericProperty<Object>( propDecl, propName, env );
+            }
+            xmlStream.nextTag();
+        } else if ( propDecl instanceof CodePropertyType ) {
+            String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
+            String code = xmlStream.getElementText().trim();
+            Object value = new CodeType( code, codeSpace );
             property = new GenericProperty<Object>( propDecl, propName, value );
+        } else if ( propDecl instanceof MeasurePropertyType ) {
+            String uom = xmlStream.getAttributeValue( null, "uom" );
+            Object value = new Measure( xmlStream.getElementText(), uom );
+            property = new GenericProperty<Object>( propDecl, propName, value );
+        } else if ( propDecl instanceof StringOrRefPropertyType ) {
+            String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+            String string = xmlStream.getElementText().trim();
+            property = new GenericProperty<Object>( propDecl, propName, new StringOrRef( string, ref ) );
         }
 
         LOG.debug( " - parsing property (end): " + xmlStream.getCurrentEventInfo() );
         return property;
+    }
+
+    private Property<XMLNode> parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl,
+                                                   CRS crs )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        XMLNode value = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
+
+        if ( value instanceof XMLElement ) {
+            // unwrap the element -> just content
+            XMLElement xmlEl = (XMLElement) value;
+            value = new XMLElementContent( xmlEl.getXSType(), xmlEl.getAttributes(), xmlEl.getChildren() );
+        }
+        return new GenericProperty( propDecl, value );
+    }
+
+    private XMLNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSTypeDefinition xsdValueType, CRS crs )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+        XMLNode node = null;
+        if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
+            node = parseGenericXMLElement( xmlStream, (XSSimpleTypeDefinition) xsdValueType );
+        } else {
+            node = parseGenericXMLElement( xmlStream, (XSComplexTypeDefinition) xsdValueType, crs );
+        }
+        return node;
+    }
+
+    private XMLPrimitive parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSSimpleTypeDefinition xsdValueType )
+                            throws XMLStreamException {
+        String value = xmlStream.getElementText();
+        return new XMLPrimitive( value, xsdValueType );
+    }
+
+    private XMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSComplexTypeDefinition xsdValueType,
+                                               CRS crs )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        Map<QName, XMLPrimitive> attrs = parseAttributes( xmlStream, xsdValueType );
+        List<XMLNode> children = new ArrayList<XMLNode>();
+
+        // TODO respect order + multiplicity of child elements
+        Map<QName, XSElementDeclaration> childElementDecls = getChildElementDecls( xsdValueType );
+
+        int eventType = 0;
+        while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
+            if ( eventType == START_ELEMENT ) {
+                QName childElName = xmlStream.getName();
+                if ( geomReader.isGeometryElement( xmlStream ) ) {
+                    children.add( geomReader.parse( xmlStream, crs ) );
+                } else {
+                    if ( !childElementDecls.containsKey( childElName ) ) {
+                        String msg = "Element '" + childElName + "' is not allowed at this position.";
+                        throw new XMLParsingException( xmlStream, msg );
+                    }
+                    children.add( parseGenericXMLElement( xmlStream,
+                                                          childElementDecls.get( childElName ).getTypeDefinition(), crs ) );
+                }
+            } else {
+                // TOOD text nodes
+            }
+        }
+        return new XMLElement( xmlStream.getName(), xsdValueType, attrs, children );
+    }
+
+    private Map<QName, XSElementDeclaration> getChildElementDecls( XSComplexTypeDefinition type ) {
+        Map<QName, XSElementDeclaration> propDecls = new HashMap<QName, XSElementDeclaration>();
+        getChildElementDecls( type.getParticle(), propDecls );
+        return propDecls;
+    }
+
+    private void getChildElementDecls( XSParticle particle, Map<QName, XSElementDeclaration> propDecls ) {
+        if ( particle != null ) {
+            XSTerm term = particle.getTerm();
+            if ( term instanceof XSElementDeclaration ) {
+                XSElementDeclaration childElDecl = (XSElementDeclaration) term;
+                QName name = new QName( childElDecl.getNamespace(), childElDecl.getName() );
+                propDecls.put( name, (XSElementDeclaration) term );
+            } else if ( term instanceof XSModelGroup ) {
+                XSObjectList particles = ( (XSModelGroup) term ).getParticles();
+                for ( int i = 0; i < particles.getLength(); i++ ) {
+                    getChildElementDecls( (XSParticle) particles.item( i ), propDecls );
+                }
+            } else {
+                LOG.warn( "Unhandled term type: " + term.getClass() );
+            }
+        }
+    }
+
+    private Map<QName, XMLPrimitive> parseAttributes( XMLStreamReader xmlStream, XSComplexTypeDefinition xsdValueType ) {
+
+        Map<QName, XSAttributeDeclaration> attrDecls = new HashMap<QName, XSAttributeDeclaration>();
+        for ( int i = 0; i < xsdValueType.getAttributeUses().getLength(); i++ ) {
+            XSAttributeDeclaration attrDecl = ( (XSAttributeUse) xsdValueType.getAttributeUses().item( i ) ).getAttrDeclaration();
+            QName name = new QName( attrDecl.getNamespace(), attrDecl.getName() );
+            attrDecls.put( name, attrDecl );
+        }
+
+        Map<QName, XMLPrimitive> attrs = new LinkedHashMap<QName, XMLPrimitive>();
+        for ( int i = 0; i < xmlStream.getAttributeCount(); i++ ) {
+            QName name = xmlStream.getAttributeName( i );
+            XSAttributeDeclaration attrDecl = attrDecls.get( name );
+            if ( attrDecl == null && !XSINS.equals( name.getNamespaceURI() ) ) {
+                String msg = "Attribute '" + name + "' is not allowed at this position.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            if ( !XSINS.equals( name.getNamespaceURI() ) ) {
+                String value = xmlStream.getAttributeValue( i );
+                // TODO evaluate and check primitive type information
+                XMLPrimitive xmlValue = new XMLPrimitive( value, attrDecl.getTypeDefinition() );
+                attrs.put( name, xmlValue );
+            }
+        }
+
+        for ( int i = 0; i < xsdValueType.getAttributeUses().getLength(); i++ ) {
+            XSAttributeUse attrUse = (XSAttributeUse) xsdValueType.getAttributeUses().item( i );
+            if ( attrUse.getRequired() ) {
+                XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
+                QName name = new QName( attrDecl.getNamespace(), attrDecl.getName() );
+                if ( !attrs.containsKey( name ) ) {
+                    String msg = "Required attribute '" + name + "' is missing.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+            }
+        }
+        return attrs;
     }
 
     private Property<?> createSimpleProperty( XMLStreamReader xmlStream, SimplePropertyType propDecl, String s )

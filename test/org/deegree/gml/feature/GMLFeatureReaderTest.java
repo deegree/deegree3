@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileWriter;
@@ -52,8 +54,11 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
+import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.om.XMLElementContent;
+import org.deegree.commons.xml.om.XMLPrimitive;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.TransformationException;
@@ -295,5 +300,41 @@ public class GMLFeatureReaderTest {
         gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
         fc = (FeatureCollection) gmlReader.readFeature();
         gmlReader.getIdContext().resolveLocalRefs();
+    }
+
+    @Test
+    public void testParsingCustomProps()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException, ReferenceResolvingException {
+
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "CustomProperties.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+        Feature feature = fc.iterator().next();
+
+        Property custom1Prop = feature.getProperty( new QName( "http://www.deegree.org/app", "custom1" ) );
+        assertTrue( custom1Prop.getValue() instanceof XMLElementContent );
+        XMLElementContent custom1PropValue = (XMLElementContent) custom1Prop.getValue();
+        assertNotNull( custom1PropValue.getXSType() );
+        assertTrue( custom1PropValue.getXSType() instanceof XSComplexTypeDefinition );
+        Assert.assertEquals( 2, custom1PropValue.getAttributes().size() );
+        XMLPrimitive mimeTypeAttr = custom1PropValue.getAttributes().get( new QName( "mimeType" ) );
+        Assert.assertEquals( "img/gif", mimeTypeAttr.getText() );
+        Assert.assertEquals( "string", mimeTypeAttr.getType().getName() );
+        XMLPrimitive lengthAttr = custom1PropValue.getAttributes().get( new QName( "length" ) );
+        Assert.assertEquals( "5657", lengthAttr.getText() );
+        Assert.assertEquals( "positiveInteger", lengthAttr.getType().getName() );
+        // assertNull (custom1PropValue.getChildren());
+
+        // System.out.println( "type: " + custom1Prop.getType() );
+        // System.out.println( "value: " + custom1Prop.getValue() );
+        // Property custom2Prop = feature.getProperty( new QName( "http://www.deegree.org/app", "custom2" ) );
+        // System.out.println( "type: " + custom2Prop.getType() );
+        // System.out.println( "value: " + custom2Prop.getValue() );
+        // Property custom3Prop = feature.getProperty( new QName( "http://www.deegree.org/app", "custom3" ) );
+        // System.out.println( "type: " + custom3Prop.getType() );
+        // System.out.println( "value: " + custom3Prop.getValue() );
     }
 }
