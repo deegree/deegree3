@@ -442,7 +442,13 @@ public class SymbologyParser {
             }
 
             if ( in.getLocalName().equals( "WellKnownName" ) ) {
-                base.wellKnown = SimpleMark.valueOf( in.getElementText().toUpperCase() );
+                String wkn = in.getElementText();
+                try {
+                    base.wellKnown = SimpleMark.valueOf( wkn.toUpperCase() );
+                } catch ( IllegalArgumentException e ) {
+                    LOG.warn( "Specified unsupported WellKnownName of '{}', using square instead.", wkn );
+                    base.wellKnown = SimpleMark.SQUARE;
+                }
             } else
                 sym: if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
                     LOG.debug( "Loading mark from external file." );
