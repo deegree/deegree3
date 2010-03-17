@@ -54,10 +54,13 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sql.postgis.PostGISMapping;
 import org.deegree.filter.sql.postgis.PropertyNameMapping;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.WKBWriter;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
 import org.slf4j.Logger;
+
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Implementation of the {@link PostGISMapping}. It's the base class for access to the backend. Is there any change in
@@ -497,8 +500,95 @@ public class PostGISMappingsISODC implements PostGISMapping {
     @Override
     public byte[] getPostGISValue( Geometry literal, PropertyName propName )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return null;
+        byte[] pgValue = null;
+
+        Expr xpath = propName.getAsXPath();
+        LOG.info( "Expression? " + xpath );
+        if ( !( xpath instanceof LocationPath ) ) {
+            LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                       + "': the root expression is not a LocationPath." );
+            return null;
+        }
+        List<QName> steps = new ArrayList<QName>();
+
+        for ( Object step : ( (LocationPath) xpath ).getSteps() ) {
+            if ( !( step instanceof NameStep ) ) {
+                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                           + "': contains an expression that is not a NameStep." );
+                return null;
+            }
+            NameStep namestep = (NameStep) step;
+            if ( namestep.getPredicates() != null && !namestep.getPredicates().isEmpty() ) {
+                LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                           + "': contains a NameStep with a predicate (needs implementation)." );
+                return null;
+            }
+            String prefix = namestep.getPrefix();
+            String localPart = namestep.getLocalName();
+            String namespace = propName.getNsContext().translateNamespacePrefixToUri( prefix );
+            steps.add( new QName( namespace, localPart, prefix ) );
+        }
+        if ( steps.size() < 1 || steps.size() > 2 ) {
+            LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
+                       + "': must contain one or two NameSteps (needs implementation)." );
+            return null;
+        }
+        LOG.info( "steps? " + steps );
+        QName requestedProperty = null;
+        if ( steps.size() == 1 ) {
+            // step must be equal to a property name of the queried feature
+            // if ( ft.getPropertyDeclaration( steps.get( 0 ) ) == null ) {
+            // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+            // + "'. The queried feature type '" + ft.getName()
+            // + "' does not have a property with this name.";
+            // throw new FilterEvaluationException( msg );
+            // }
+            requestedProperty = steps.get( 0 );
+        } else {
+            // 1. step must be equal to the name or alias of the queried feature
+            // if ( !ft.getName().equals( steps.get( 0 ) ) ) {
+            // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+            // + "'. The first step does not equal the queried feature type '" + ft.getName() + "'.";
+            // throw new FilterEvaluationException( msg );
+            // }
+            // // 2. step must be equal to a property name of the queried feature
+            // if ( ft.getPropertyDeclaration( steps.get( 1 ) ) == null ) {
+            // String msg = "Filter contains an invalid PropertyName '" + propName.getPropertyName()
+            // + "'. The second step does not equal any property of the queried feature type '"
+            // + ft.getName() + "'.";
+            // throw new FilterEvaluationException( msg );
+            // }
+            requestedProperty = steps.get( 1 );
+        }
+
+        LOG.info( "RequestedProperty: " + requestedProperty.toString() );
+
+        String column = getMapping( new PropertyName( requestedProperty ) ).getColumn();
+        LOG.info( "column: " + column );
+
+        if ( column == null ) {
+            throw new FilterEvaluationException( column + " doesn't exist!" );
+            // pgValue = literal.getValue().toString();
+        }
+        // pgValue = literal.getValue().toString();
+        // // TODO implement properly
+        // PropertyType pt = mapping.first;
+        // if ( pt instanceof SimplePropertyType<?> ) {
+        // Object internalValue = XMLValueMangler.xmlToInternal(
+        // literal.getValue().toString(),
+        // ( (SimplePropertyType<?>) pt ).getPrimitiveType() );
+        // pgValue = SQLValueMangler.internalToSQL( internalValue );
+        // } else {
+        // pgValue = literal.getValue().toString();
+        // }
+
+        try {
+            pgValue = WKBWriter.write( literal );
+        } catch ( ParseException e ) {
+            throw new FilterEvaluationException( e.getMessage() );
+        }
+        return pgValue;
+
     }
 
     /**

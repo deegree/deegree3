@@ -590,6 +590,8 @@ public class ISORecordStore implements RecordStore {
         String COUNT_PRE;
         String COUNT_SUF;
 
+        // correctPropertyNameMappings( builder.getPropNameMappingList() );
+
         StringBuilder stringWriter = builder.getWhereClause();
 
         /*
@@ -673,9 +675,11 @@ public class ISORecordStore implements RecordStore {
          * the parameter identified in the WHERE-builder replaces the "?" in the statement
          */
         if ( builder != null && builder.getWhereClause().length() > 0 ) {
+            int i = 0;
             for ( Object arg : builder.getWhereParams() ) {
+                i++;
                 LOG.info( "Setting argument: " + arg );
-                stmt.setObject( 1, arg );
+                stmt.setObject( i, arg );
 
             }
         }
@@ -683,6 +687,18 @@ public class ISORecordStore implements RecordStore {
         LOG.info( "rs: " + stmt );
         return stmt;
     }
+
+    // /**
+    // * @param propNameMappingList
+    // */
+    // private void correctPropertyNameMappings( List<PropertyNameMapping> propNameMappingList ) {
+    //
+    // List<PropertyNameMapping> propNameMappingList2 = new ArrayList<PropertyNameMapping>();
+    // propNameMappingList2.addAll( propNameMappingList );
+    //
+    //        
+    //
+    // }
 
     /*
      * (non-Javadoc)
