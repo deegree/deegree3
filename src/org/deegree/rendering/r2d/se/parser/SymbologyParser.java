@@ -56,6 +56,8 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.skipElement;
 import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
+import static org.deegree.rendering.r2d.styling.components.Stroke.LineCap.BUTT;
+import static org.deegree.rendering.r2d.styling.components.Stroke.LineJoin.ROUND;
 import static org.deegree.rendering.r2d.styling.components.UOM.Foot;
 import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
 import static org.deegree.rendering.r2d.styling.components.UOM.Pixel;
@@ -315,14 +317,24 @@ public class SymbologyParser {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
                         public void update( Stroke obj, String val ) {
-                            obj.linejoin = LineJoin.valueOf( val.toUpperCase() );
+                            try {
+                                obj.linejoin = LineJoin.valueOf( val.toUpperCase() );
+                            } catch ( IllegalArgumentException e ) {
+                                LOG.warn( "Used invalid value '{}' for line join.", val );
+                                obj.linejoin = ROUND;
+                            }
                         }
                     }, contn );
                 } else if ( name.equals( "stroke-linecap" ) ) {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
                         public void update( Stroke obj, String val ) {
-                            obj.linecap = LineCap.valueOf( val.toUpperCase() );
+                            try {
+                                obj.linecap = LineCap.valueOf( val.toUpperCase() );
+                            } catch ( IllegalArgumentException e ) {
+                                LOG.warn( "Used invalid value '{}' for line cap.", val );
+                                obj.linecap = BUTT;
+                            }
                         }
                     }, contn );
                 } else if ( name.equals( "stroke-dasharray" ) ) {
