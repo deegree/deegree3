@@ -118,16 +118,6 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     }
 
     @Override
-    public Object getPropertyValue( QName propName ) {
-        return getReferencedObject().getPropertyValue( propName );
-    }
-
-    @Override
-    public Object[] getPropertyValues( QName propName ) {
-        return getReferencedObject().getPropertyValues( propName );
-    }
-
-    @Override
     public FeatureType getType() {
         return getReferencedObject().getType();
     }
@@ -161,16 +151,6 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     @Override
     public Property<?> getProperty( QName propName, GMLVersion version ) {
         return getReferencedObject().getProperty( propName, version );
-    }
-
-    @Override
-    public Object getPropertyValue( QName propName, GMLVersion version ) {
-        return getReferencedObject().getPropertyValue( propName, version );
-    }
-
-    @Override
-    public Object[] getPropertyValues( QName propName, GMLVersion version ) {
-        return getReferencedObject().getPropertyValues( propName, version );
     }
 
     @Override

@@ -102,6 +102,21 @@ public class ApplicationSchemaXSDDecoderTest {
         PropertyType<?> pt = buildingFt.getPropertyDeclaration( QName.valueOf( "{http://www.opengis.net/citygml/1.0}_GenericApplicationPropertyOfCityObject" ) );
         Assert.assertEquals( 8, pt.getSubstitutions().length );
     }
+    
+//    @Test
+//    public void testParsingGeoSciML()
+//                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+//                            IllegalAccessException {
+//
+//        String schemaURL = "http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd";
+//        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
+//        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
+//        FeatureType[] fts = schema.getFeatureTypes();
+//        for ( FeatureType ft : fts ) {
+//            System.out.println (ft.getName());
+//        }
+//        System.out.println (fts.length);
+//    }
 
     @Test
     public void testParsingCite110SF0()

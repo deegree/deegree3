@@ -95,6 +95,6 @@ public class AttributeNode implements XPathNode {
 
     @Override
     public String toString() {
-        return value.getText();
+        return value.getAsText();
     }
 }

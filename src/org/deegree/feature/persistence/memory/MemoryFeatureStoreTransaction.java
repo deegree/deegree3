@@ -330,7 +330,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                     for ( Property<?> prop : replacementProps ) {
                         // check compatibility (CRS) for geometry replacements (CITE wfs:wfs-1.1.0-Transaction-tc7.2)
                         if ( prop.getValue() instanceof Geometry ) {
-                            Geometry geom = (Geometry) feature.getPropertyValue( prop.getType().getName() );
+                            Geometry geom = (Geometry) feature.getProperty( prop.getType().getName() ).getValue();
                             if ( geom != null ) {
                                 if ( geom.getCoordinateDimension() != ( (Geometry) prop.getValue() ).getCoordinateDimension() ) {
                                     throw new InvalidParameterValueException( "Cannot replace given geometry property '" + prop.getType().getName() + "' with given value (wrong dimension).");

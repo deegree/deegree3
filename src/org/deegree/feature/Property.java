@@ -77,6 +77,15 @@ public interface Property<T> {
     public PropertyType<T> getType();
 
     /**
+     * Returns whether the property is nilled.
+     * 
+     * TODO Does this always correspond to a value of <code>null</code>?
+     * 
+     * @return true, if the property is nilled, false otherwise
+     */
+    public boolean isNilled();
+
+    /**
      * Returns the value of this property.
      * 
      * @return the value of this property, or <code>null</code> if it is nilled

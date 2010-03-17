@@ -59,10 +59,11 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.types.GenericCustomPropertyValue;
+import org.deegree.feature.RemoveMeAfterRefactoring;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
@@ -122,7 +123,6 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.generic.GenericCustomPropertyReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -697,20 +697,10 @@ public class Filter110XMLDecoder {
 
     private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        // TODO outfactor generic XML representation and parser to commons
-        GenericCustomPropertyReader literalParser = new GenericCustomPropertyReader();
-        GenericCustomPropertyValue value = literalParser.parse( new XMLStreamReaderWrapper( xmlStream, null ) );
 
-        List<GenericCustomPropertyValue> childNodes = value.getChildNodes();
-        if ( childNodes.size() == 0 ) {
-            List<String> textNodes = value.getTextNodes();
-            if ( textNodes.size() >= 1 ) {
-                // ms: TODO clean up
-                return new Literal<String>( textNodes.get( 0 ) );
-            }
-            return new Literal<String>( "" );
-        }
-        return new Literal<GenericCustomPropertyValue>( value );
+        LOG.warn( "Parsing of custom literals needs implementation: " + RemoveMeAfterRefactoring.class );
+        String s = xmlStream.getElementText();
+        return new Literal<PrimitiveValue>( new PrimitiveValue( s ) );
     }
 
     private static PropertyName parsePropertyName( XMLStreamReader xmlStream, boolean permitEmpty )

@@ -321,11 +321,11 @@ public class GMLFeatureReaderTest {
         assertTrue( custom1PropValue.getXSType() instanceof XSComplexTypeDefinition );
         Assert.assertEquals( 2, custom1PropValue.getAttributes().size() );
         PrimitiveValue mimeTypeAttr = custom1PropValue.getAttributes().get( new QName( "mimeType" ) );
-        Assert.assertEquals( "img/gif", mimeTypeAttr.getText() );
-        Assert.assertEquals( "string", mimeTypeAttr.getType().getName() );
+        Assert.assertEquals( "img/gif", mimeTypeAttr.getAsText() );
+        Assert.assertEquals( "string", mimeTypeAttr.getXSType().getName() );
         PrimitiveValue lengthAttr = custom1PropValue.getAttributes().get( new QName( "length" ) );
-        Assert.assertEquals( "5657", lengthAttr.getText() );
-        Assert.assertEquals( "positiveInteger", lengthAttr.getType().getName() );
+        Assert.assertEquals( "5657", lengthAttr.getAsText() );
+        Assert.assertEquals( "positiveInteger", lengthAttr.getXSType().getName() );
         // assertNull (custom1PropValue.getChildren());
 
         // System.out.println( "type: " + custom1Prop.getType() );

@@ -39,8 +39,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 
-import org.apache.xerces.impl.dv.XSSimpleType;
 import org.apache.xerces.xs.XSConstants;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.types.datetime.DateTime;
 import org.deegree.commons.types.datetime.Time;
@@ -159,7 +159,7 @@ public class XMLValueMangler {
      * @param xsdTypeDef
      * @return best matching {@link PrimitiveType}, never <code>null</code>
      */
-    public static PrimitiveType getPrimitiveType( XSSimpleType xsdTypeDef ) {
+    public static PrimitiveType getPrimitiveType( XSSimpleTypeDefinition xsdTypeDef ) {
 
         switch ( xsdTypeDef.getBuiltInKind() ) {
 

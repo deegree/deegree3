@@ -49,7 +49,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.XMLValueMangler;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
@@ -367,10 +366,11 @@ public class GMLFeatureWriter {
         if ( propertyType instanceof FeaturePropertyType ) {
             exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, inlineLevels );
         } else if ( propertyType instanceof SimplePropertyType<?> ) {
+            // must be a primitive value
+            PrimitiveValue pValue = (PrimitiveValue) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            String xml = XMLValueMangler.internalToXML( value );
-            if ( value != null ) {
-                writer.writeCharacters( xml );
+            if ( pValue != null ) {
+                writer.writeCharacters( pValue.getAsText() );
             }
             writer.writeEndElement();
         } else if ( propertyType instanceof GeometryPropertyType ) {
@@ -462,7 +462,7 @@ public class GMLFeatureWriter {
             writer.writeStartElement( elName.getPrefix(), elName.getLocalPart(), elName.getNamespaceURI() );
             if ( xmlContent.getAttributes() != null ) {
                 for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
-                    StAXExportingHelper.writeAttribute( writer, attr.getKey(), attr.getValue().getText() );
+                    StAXExportingHelper.writeAttribute( writer, attr.getKey(), attr.getValue().getAsText() );
                 }
             }
             if ( xmlContent.getChildren() != null ) {
@@ -475,7 +475,7 @@ public class GMLFeatureWriter {
             GenericXMLElementContent xmlContent = (GenericXMLElementContent) genericXML;
             if ( xmlContent.getAttributes() != null ) {
                 for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
-                    StAXExportingHelper.writeAttribute( writer, attr.getKey(), attr.getValue().getText() );
+                    StAXExportingHelper.writeAttribute( writer, attr.getKey(), attr.getValue().getAsText() );
                 }
             }
             if ( xmlContent.getChildren() != null ) {
@@ -484,7 +484,7 @@ public class GMLFeatureWriter {
                 }
             }
         } else if ( genericXML instanceof PrimitiveValue ) {
-            writer.writeCharacters( ( (PrimitiveValue) genericXML ).getText() );
+            writer.writeCharacters( ( (PrimitiveValue) genericXML ).getAsText() );
         }
     }
 

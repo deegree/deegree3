@@ -37,12 +37,9 @@ package org.deegree.rendering.r2d.utils;
 
 import static java.util.Arrays.asList;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.crs.CRS;
-import org.deegree.feature.GenericSimpleFeature;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.LinearRing;
@@ -60,12 +57,6 @@ import org.deegree.geometry.standard.points.PointsList;
  * @version $Revision$, $Date$
  */
 public class Raster2Feature {
-
-    public static GenericSimpleFeature transformToFeature( AbstractRaster raster ) {
-        GenericSimpleFeature feature = new GenericSimpleFeature();
-        feature.setPropertyValue( new QName( "outlinePolygon" ), createPolygonGeometry( raster ) );
-        return feature;
-    }
 
     /**
      * Return the bounding geometry of a raster as a polygon (but is actually a rectangle).

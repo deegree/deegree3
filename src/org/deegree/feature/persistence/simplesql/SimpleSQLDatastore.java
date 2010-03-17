@@ -56,8 +56,6 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -80,6 +78,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
+import org.deegree.feature.SimpleProperty;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -456,13 +455,14 @@ public class SimpleSQLDatastore implements FeatureStore {
                                         Object obj = set.getObject( pt.getName().getLocalPart() );
                                         if ( obj != null ) {
                                             if ( obj instanceof Integer ) {
-                                                BigInteger theInt = new BigInteger( ( (Integer) obj ).toString() );
-                                                props.add( new GenericProperty( pt, theInt ) );
+                                                props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
+                                                                               PrimitiveType.INTEGER ) );
                                             } else if ( obj instanceof Double ) {
-                                                BigDecimal dec = new BigDecimal( (Double) obj );
-                                                props.add( new GenericProperty( pt, dec ) );
+                                                props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
+                                                                               PrimitiveType.DOUBLE ) );
                                             } else {
-                                                props.add( new GenericProperty( pt, obj ) );
+                                                props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
+                                                                               PrimitiveType.STRING ) );
                                             }
                                         }
                                     }

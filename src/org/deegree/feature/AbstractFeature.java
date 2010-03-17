@@ -80,13 +80,13 @@ abstract class AbstractFeature implements Feature {
                             throws JaxenException {
 
         // simple property with just a simple element step?
-        
+
         // TODO reactivate this code path (speed!)
-        
-//        QName simplePropName = propName.getAsQName();
-//        if ( simplePropName != null ) {
-//            return getPropertyValues( simplePropName, version );
-//        }
+
+        // QName simplePropName = propName.getAsQName();
+        // if ( simplePropName != null ) {
+        // return getPropertyValues( simplePropName, version );
+        // }
 
         // no. activate the full xpath machinery
         XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
@@ -105,11 +105,11 @@ abstract class AbstractFeature implements Feature {
                 resultValues[i++] = ( (XMLElementNode) node ).getElement();
             } else if ( node instanceof GMLObjectNode<?> ) {
                 resultValues[i++] = ( (GMLObjectNode<?>) node ).getGMLObject();
-            } else if ( node instanceof TextNode ){
-                resultValues[i++] = ((TextNode) node).getValue();
+            } else if ( node instanceof TextNode ) {
+                resultValues[i++] = ( (TextNode) node ).getValue();
             } else {
                 // TODO is node.toString() o.k. for all other node types?
-                resultValues[i++] = new PrimitiveValue( node.toString());
+                resultValues[i++] = new PrimitiveValue( node.toString() );
             }
         }
         return resultValues;
@@ -182,28 +182,6 @@ abstract class AbstractFeature implements Feature {
             }
         }
         return getProperty( propName );
-    }
-
-    @Override
-    public Object getPropertyValue( QName propName, GMLVersion version ) {
-        if ( standardProps != null ) {
-            Object propValue = standardProps.getPropertyValue( propName, version );
-            if ( propValue != null ) {
-                return propValue;
-            }
-        }
-        return getPropertyValue( propName );
-    }
-
-    @Override
-    public Object[] getPropertyValues( QName propName, GMLVersion version ) {
-        if ( standardProps != null ) {
-            Object[] propValues = standardProps.getPropertiesValues( propName, version );
-            if ( propValues != null ) {
-                return propValues;
-            }
-        }
-        return getPropertyValues( propName );
     }
 
     @Override

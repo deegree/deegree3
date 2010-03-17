@@ -129,50 +129,6 @@ public interface Feature extends MatchableObject, GMLObject {
     public Property<?>[] getProperties( GMLVersion version );
 
     /**
-     * Returns the values of the properties with the given name, in order.
-     * 
-     * @param propName
-     *            name of the requested property
-     * @return the values of the properties with the given name, in order
-     */
-    public Object[] getPropertyValues( QName propName );
-
-    /**
-     * Returns the values of the properties with the given name, in order.
-     * 
-     * @param propName
-     *            name of the requested property
-     * @param version
-     *            determines the names and types of the standard GML properties, must not be <code>null</code>
-     * @return the values of the properties with the given name, in order
-     */
-    public Object[] getPropertyValues( QName propName, GMLVersion version );
-
-    /**
-     * Returns the values of the property with the given name.
-     * 
-     * @param propName
-     *            name of the requested property
-     * @return the values of the properties with the given name
-     * @throws IllegalArgumentException
-     *             if the feature has more than one property with the given name
-     */
-    public Object getPropertyValue( QName propName );
-
-    /**
-     * Returns the values of the property with the given name.
-     * 
-     * @param propName
-     *            name of the requested property
-     * @param version
-     *            determines the names and types of the standard GML properties, must not be <code>null</code>
-     * @return the values of the properties with the given name
-     * @throws IllegalArgumentException
-     *             if the feature has more than one property with the given name
-     */
-    public Object getPropertyValue( QName propName, GMLVersion version );
-
-    /**
      * Returns the properties with the given name, in order.
      * 
      * @param propName

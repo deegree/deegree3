@@ -36,9 +36,12 @@
 
 package org.deegree.feature.persistence.shape;
 
-import static java.lang.Double.valueOf;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MILLISECOND;
+import static org.deegree.commons.types.PrimitiveType.BOOLEAN;
+import static org.deegree.commons.types.PrimitiveType.DATE;
+import static org.deegree.commons.types.PrimitiveType.INTEGER;
+import static org.deegree.commons.types.PrimitiveType.STRING;
 import static org.deegree.commons.utils.EncodingGuesser.guess;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
@@ -48,10 +51,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -60,10 +60,10 @@ import java.util.LinkedList;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.types.PrimitiveType;
-import org.deegree.commons.types.datetime.Date;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
+import org.deegree.feature.SimpleProperty;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -271,37 +271,14 @@ public class DBFReader {
             switch ( field.type ) {
             case 'C': {
                 in.readFully( bs );
-                property = new GenericProperty<String>( field.propertyType, getString( bs, encoding ).trim() );
+                property = new SimpleProperty( field.propertyType, getString( bs, encoding ).trim(), STRING );
                 break;
             }
             case 'N':
             case 'F': {
                 in.readFully( bs );
-                String val = getString( bs, encoding ).trim();
-                switch ( field.propertyType.getPrimitiveType() ) {
-                case DECIMAL: {
-                    BigDecimal dec = null;
-                    try {
-                        dec = val.isEmpty() ? null : new BigDecimal( val );
-                    } catch ( NumberFormatException e ) {
-                        dec = new BigDecimal( 0 );
-                        LOG.debug( "Value '{}' for '{}' could not be parsed as decimal value!", val,
-                                   field.propertyType.getName() );
-                        // needs a stack trace on trace? this will output a LOT of stack traces...
-                    }
-                    property = new GenericProperty<BigDecimal>( field.propertyType, dec );
-                    break;
-                }
-                case DOUBLE: {
-                    property = new GenericProperty<Double>( field.propertyType, val.isEmpty() ? null : valueOf( val ) );
-                    break;
-                }
-                case INTEGER: {
-                    property = new GenericProperty<BigInteger>( field.propertyType, val.isEmpty() ? null
-                                                                                                 : new BigInteger( val ) );
-                    break;
-                }
-                }
+                property = new SimpleProperty( field.propertyType, getString( bs, encoding ).trim(),
+                                               field.propertyType.getPrimitiveType() );
                 break;
             }
             case 'L': {
@@ -313,34 +290,29 @@ public class DBFReader {
                 if ( c == 'N' || c == 'n' || c == 'F' || c == 'f' ) {
                     b = false;
                 }
-                property = new GenericProperty<Boolean>( field.propertyType, b );
+                // TODO avoid string conversion
+                property = new SimpleProperty( field.propertyType, "" + b, BOOLEAN );
                 break;
             }
             case 'D': {
                 in.readFully( bs );
                 String val = new String( bs, 0, 4 ).trim();
                 if ( val.isEmpty() ) {
-                    property = new GenericProperty<Date>( field.propertyType, null );
+                    property = new SimpleProperty( field.propertyType, null, DATE );
                 } else {
                     int year = Integer.valueOf( val );
                     int month = Integer.valueOf( new String( bs, 4, 2 ) );
                     int day = Integer.valueOf( new String( bs, 6, 2 ) );
                     Calendar cal = new GregorianCalendar( year, month, day );
-                    Date date = null;
-                    try {
-                        date = new Date( DateUtils.formatISO8601Date( cal ) );
-                    } catch ( ParseException e ) {
-                        LOG.warn( "Internal problem when handling date fields. Please report this as a bug." );
-                        LOG.debug( "Stack trace: ", e );
-                    }
-                    property = new GenericProperty<Date>( field.propertyType, date );
+                    property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ), DATE );
                 }
                 break;
             }
             case 'I': {
                 int ival = in.readUnsignedByte() + ( in.readUnsignedByte() << 8 ) + ( in.readUnsignedByte() << 16 )
                            + ( in.readUnsignedByte() << 24 );
-                property = new GenericProperty<Integer>( field.propertyType, ival );
+                // TODO avoid string conversion
+                property = new SimpleProperty( field.propertyType, "" + ival, INTEGER );
                 break;
             }
             case '@': {
@@ -351,7 +323,8 @@ public class DBFReader {
                 Calendar cal = new GregorianCalendar( -4713, 1, 1 );
                 cal.add( DAY_OF_MONTH, days ); // it's lenient by default
                 cal.add( MILLISECOND, millis );
-                property = new GenericProperty<Calendar>( field.propertyType, cal );
+                // TODO check this
+                property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ), DATE );
                 break;
             }
             case 'T':

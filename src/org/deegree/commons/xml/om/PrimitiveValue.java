@@ -35,7 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.om;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.deegree.commons.types.PrimitiveType;
+import org.deegree.commons.types.XMLValueMangler;
+import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.types.datetime.DateTime;
+import org.deegree.commons.types.datetime.Time;
+import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.utils.Pair;
 
 /**
  * {@link ObjectNode} that represents a primitive value, e.g. an XML text node or an XML attribute value with type
@@ -46,32 +57,176 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
  * 
  * @version $Revision$, $Date$
  */
-public class PrimitiveValue implements ObjectNode {
+public class PrimitiveValue implements ObjectNode, Comparable<PrimitiveValue> {
 
-    private final String value;
+    private final Object value;
+
+    private final String textValue;
 
     private final XSSimpleTypeDefinition xsdType;
 
-    public PrimitiveValue( String value ) {
-        this.value = value;
+    private final PrimitiveType type;
+
+    /**
+     * @param value
+     * @param type
+     * @throws IllegalArgumentException
+     */
+    public PrimitiveValue( String value, PrimitiveType type ) throws IllegalArgumentException {
+        this.value = XMLValueMangler.xmlToInternal( value, type );
+        this.textValue = value;
         this.xsdType = null;
+        this.type = type;
     }
 
-    public PrimitiveValue( String s, XSSimpleTypeDefinition xsdType ) {
-        this.value = s;
+    /**
+     * @param value
+     * @param xsdType
+     * @throws IllegalArgumentException
+     */
+    public PrimitiveValue( String value, XSSimpleTypeDefinition xsdType ) throws IllegalArgumentException {
+        this.textValue = value;
         this.xsdType = xsdType;
+        this.type = XMLValueMangler.getPrimitiveType( xsdType );
+        this.value = XMLValueMangler.xmlToInternal( value, type );
     }
 
-    public String getText() {
+    /**
+     * @param value
+     * @throws IllegalArgumentException
+     */
+    public PrimitiveValue( Object value ) throws IllegalArgumentException {
+        this.textValue = XMLValueMangler.internalToXML( value );
+        this.xsdType = null;
+        this.type = PrimitiveType.determinePrimitiveType( value );
+        this.value = value;
+    }
+
+    /**
+     * Returns the canonical object representation of the value.
+     * 
+     * @return the canonical object representation of the value, never <code>null</code>
+     */
+    public Object getValue() {
         return value;
     }
 
-    public XSSimpleTypeDefinition getType() {
+    /**
+     * Returns the text representation of the value.
+     * 
+     * @return the text representation of the value, never <code>null</code>
+     */
+    public String getAsText() {
+        return textValue;
+    }
+
+    /**
+     * Returns the type of the value.
+     * 
+     * @return the type of the value, never <code>null</code>
+     */
+    public PrimitiveType getType() {
+        return type;
+    }
+
+    /**
+     * Returns the XML schema type for the value.
+     * 
+     * @return the XML schema type for the value, can be <code>null</code>
+     */
+    public XSSimpleTypeDefinition getXSType() {
         return xsdType;
     }
 
     @Override
+    public int compareTo( PrimitiveValue o ) {
+        Pair<Object, Object> comparables = makeComparable( value, o.value );
+        return ( (Comparable) comparables.first ).compareTo( ( (Comparable) comparables.second ) );
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        // TODO make this failproof
+        if ( o instanceof PrimitiveValue ) {
+            return ( (PrimitiveValue) o ).getAsText().equals( getAsText() );
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "{value='" + value + "',type={" + xsdType + "}}";
+        return textValue;
+    }
+
+    private Pair<Object, Object> makeComparable( Object value1, Object value2 )
+                            throws IllegalArgumentException {
+        Pair<Object, Object> result = new Pair<Object, Object>( value1, value2 );
+        if ( !( value1 instanceof String ) ) {
+            if ( value1 instanceof Number ) {
+                result = new Pair<Object, Object>( value1, new BigDecimal( value2.toString() ) );
+            } else if ( value1 instanceof Date ) {
+                try {
+                    result = new Pair<Object, Object>( value1, new Date( value2.toString() ) );
+                } catch ( ParseException e ) {
+                    throw new IllegalArgumentException( e.getMessage() );
+                }
+            } else if ( value1 instanceof DateTime ) {
+                try {
+                    result = new Pair<Object, Object>( value1, new DateTime( value2.toString() ) );
+                } catch ( ParseException e ) {
+                    throw new IllegalArgumentException( e.getMessage() );
+                }
+            } else if ( value1 instanceof Time ) {
+                try {
+                    result = new Pair<Object, Object>( value1, new Time( value2.toString() ) );
+                } catch ( ParseException e ) {
+                    throw new IllegalArgumentException( e.getMessage() );
+                }
+            } else if ( value1 instanceof CodeType ) {
+                result = new Pair<Object, Object>( value1, new CodeType( value2.toString(),
+                                                                         ( (CodeType) value1 ).getCodeSpace() ) );
+            } else if ( value1 instanceof Measure ) {
+                result = new Pair<Object, Object>( value1, new Measure( value2.toString(),
+                                                                        ( (Measure) value1 ).getUomUri() ) );
+            }
+        } else if ( !( value2 instanceof String ) ) {
+            if ( value2 instanceof Number ) {
+                result = new Pair<Object, Object>( new BigDecimal( value1.toString() ), value2 );
+            } else if ( value2 instanceof Date ) {
+                try {
+                    result = new Pair<Object, Object>( new Date( value1.toString() ), value2 );
+                } catch ( ParseException e ) {
+                    throw new IllegalArgumentException( e.getMessage() );
+                }
+            } else if ( value2 instanceof DateTime ) {
+                try {
+                    result = new Pair<Object, Object>( new DateTime( value1.toString() ), value2 );
+                } catch ( ParseException e ) {
+                    throw new IllegalArgumentException( e.getMessage() );
+                }
+            } else if ( value2 instanceof Time ) {
+                try {
+                    result = new Pair<Object, Object>( new Time( value1.toString() ), value2 );
+                } catch ( ParseException e ) {
+                    throw new IllegalArgumentException( e.getMessage() );
+                }
+            } else if ( value1 instanceof CodeType ) {
+                result = new Pair<Object, Object>( new CodeType( value1.toString(),
+                                                                 ( (CodeType) value2 ).getCodeSpace() ), value2 );
+            } else if ( value1 instanceof Measure ) {
+                result = new Pair<Object, Object>( new Measure( value1.toString(), ( (Measure) value2 ).getUomUri() ),
+                                                   value2 );
+            }
+        }
+
+        // TODO create comparable numbers in a more efficient manner
+        if ( result.first instanceof Number && !( result.first instanceof BigDecimal ) ) {
+            result.first = new BigDecimal( result.first.toString() );
+        }
+        if ( result.second instanceof Number && !( result.second instanceof BigDecimal ) ) {
+            result.second = new BigDecimal( result.second.toString() );
+        }
+
+        return result;
     }
 }

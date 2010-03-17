@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
+import static org.deegree.commons.types.PrimitiveType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
@@ -51,10 +52,11 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
+import org.deegree.feature.SimpleProperty;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Envelope;
@@ -169,10 +171,10 @@ public class StandardGMLFeatureProps extends GMLStdProps {
         switch ( version ) {
         case GML_2:
             if ( description != null ) {
-                props.add( new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() ) );
+                props.add( new SimpleProperty( PT_DESCRIPTION_GML2, description.getString(), STRING ) );
             }
             if ( names.length > 0 ) {
-                props.add( new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() ) );
+                props.add( new SimpleProperty( PT_NAME_GML2, names[0].getCode(), STRING ) );
             }
             if ( boundedBy != null ) {
                 props.add( new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy ) );
@@ -530,10 +532,10 @@ public class StandardGMLFeatureProps extends GMLStdProps {
                 QName propName = property.getName();
                 if ( GMLNS.equals( propName.getNamespaceURI() ) ) {
                     if ( PT_DESCRIPTION_GML2.getName().equals( propName ) ) {
-                        description = new StringOrRef( (String) property.getValue(), null );
+                        description = new StringOrRef( ( (PrimitiveValue) property.getValue() ).getAsText(), null );
                         firstCustomPropIndex++;
                     } else if ( PT_NAME_GML2.getName().equals( propName ) ) {
-                        names.add( new CodeType( (String) property.getValue() ) );
+                        names.add( new CodeType( ( (PrimitiveValue) property.getValue() ).getAsText() ) );
                         firstCustomPropIndex++;
                     } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
                         boundedBy = (Envelope) property.getValue();

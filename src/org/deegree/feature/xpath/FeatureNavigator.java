@@ -210,7 +210,7 @@ class FeatureNavigator extends DefaultNavigator {
     public String getAttributeStringValue( Object node ) {
         String value = null;
         if ( isAttribute( node ) ) {
-            value = ( (AttributeNode) node ).getValue().getText();
+            value = ( (AttributeNode) node ).getValue().getAsText();
         }
         return value;
     }
@@ -404,7 +404,7 @@ class FeatureNavigator extends DefaultNavigator {
     public String getTextStringValue( Object obj ) {
         String value = null;
         if ( obj instanceof TextNode ) {
-            value = ( (TextNode) obj ).getValue().getText();
+            value = ( (TextNode) obj ).getValue().getAsText();
         }
         return value;
     }

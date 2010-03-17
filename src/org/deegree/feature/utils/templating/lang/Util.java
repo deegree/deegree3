@@ -41,6 +41,7 @@ import static java.util.Collections.singletonList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
@@ -99,7 +100,7 @@ public class Util {
                                 continue;
                             }
                             if ( cnt == 1 ) {
-                                tmp.add( (T) new GenericProperty( pt, next.toString() ) );
+                                tmp.add( (T) new GenericProperty( pt, new PrimitiveValue( next.toString() ) ) );
                                 next = new StringBuilder();
                                 cnt = 0;
                                 continue;
@@ -111,7 +112,7 @@ public class Util {
                                 cnt = 0;
                                 continue;
                             }
-                            tmp.add( (T) new GenericProperty( pt, next.toString() ) );
+                            tmp.add( (T) new GenericProperty( pt, new PrimitiveValue( next.toString() ) ) );
                             next = new StringBuilder();
                             cnt = 0;
                         }
@@ -123,7 +124,7 @@ public class Util {
                         }
                         // add last piece if not empty
                         if ( next.length() != 0 ) {
-                            tmp.add( (T) new GenericProperty( pt, next.toString() ) );
+                            tmp.add( (T) new GenericProperty( pt, new PrimitiveValue( next.toString() ) ) );
                         }
                     } else {
                         tmp = singletonList( o );

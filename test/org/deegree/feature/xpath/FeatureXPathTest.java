@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
@@ -148,7 +149,7 @@ public class FeatureXPathTest {
         Assert.assertEquals( 1, selectedNodes.size() );
         PropertyNode propNode = (PropertyNode) selectedNodes.get( 0 );
         Property prop = propNode.getProperty();
-        Assert.assertEquals( "Karl Marx", prop.getValue() );
+        Assert.assertEquals( "Karl Marx", ( (PrimitiveValue) prop.getValue() ).getAsText() );
     }
 
     @SuppressWarnings("unchecked")
@@ -160,7 +161,7 @@ public class FeatureXPathTest {
         List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Assert.assertEquals( 1, selectedNodes.size() );
         TextNode textNode = (TextNode) selectedNodes.get( 0 );
-        Assert.assertEquals( "Karl Marx", textNode.getValue().getText() );
+        Assert.assertEquals( "Karl Marx", textNode.getValue().getAsText() );
     }
 
     @SuppressWarnings("unchecked")
@@ -175,7 +176,7 @@ public class FeatureXPathTest {
         Assert.assertEquals( 1, selectedNodes.size() );
         PropertyNode propNode = (PropertyNode) selectedNodes.get( 0 );
         Property prop = propNode.getProperty();
-        Assert.assertEquals( "Mondovi", prop.getValue() );
+        Assert.assertEquals( "Mondovi", prop.getValue().toString() );
     }
 
     @SuppressWarnings("unchecked")
@@ -211,7 +212,7 @@ public class FeatureXPathTest {
         List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
         Set<String> names = new HashSet<String>();
         for ( XPathNode node : selectedNodes ) {
-            names.add( (String) ( (PropertyNode) node ).getProperty().getValue() );
+            names.add( ( (PropertyNode) node ).getProperty().getValue().toString() );
         }
         Assert.assertEquals( 2, names.size() );
         Assert.assertTrue( names.contains( "Friedrich Engels" ) );

@@ -291,32 +291,6 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         return prop;
     }
 
-    @Override
-    public Object getPropertyValue( QName propName ) {
-        Object value = null;
-        for ( Property<?> property : nonMemberProps ) {
-            if ( propName.equals( property.getName() ) ) {
-                if ( value != null ) {
-                    String msg = "Feature has more than one property with name '" + propName + "'.";
-                    throw new IllegalArgumentException( msg );
-                }
-                value = property.getValue();
-            }
-        }
-        return value;
-    }
-
-    @Override
-    public Object[] getPropertyValues( QName propName ) {
-        List<Object> propValues = new ArrayList<Object>( nonMemberProps.size() );
-        for ( Property<?> property : nonMemberProps ) {
-            if ( propName.equals( property.getName() ) ) {
-                propValues.add( property.getValue() );
-            }
-        }
-        return propValues.toArray( new Object[propValues.size()] );
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public Property<Geometry>[] getGeometryProperties() {

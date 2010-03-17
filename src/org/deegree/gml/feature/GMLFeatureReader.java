@@ -65,7 +65,6 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.commons.types.XMLValueMangler;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.types.ows.StringOrRef;
 import org.deegree.commons.uom.Measure;
@@ -83,6 +82,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
+import org.deegree.feature.SimpleProperty;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -491,7 +491,7 @@ public class GMLFeatureReader extends XMLAdapter {
     }
 
     private Property<ObjectNode> parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl,
-                                                   CRS crs )
+                                                      CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
         ObjectNode value = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
@@ -516,15 +516,16 @@ public class GMLFeatureReader extends XMLAdapter {
         return node;
     }
 
-    private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSSimpleTypeDefinition xsdValueType )
+    private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream,
+                                                      XSSimpleTypeDefinition xsdValueType )
                             throws XMLStreamException {
         // TODO element has simple type information and primitive type as well?
         ObjectNode child = new PrimitiveValue( xmlStream.getElementText(), xsdValueType );
         return new GenericXMLElement( xmlStream.getName(), xsdValueType, null, Collections.singletonList( child ) );
     }
 
-    private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSComplexTypeDefinition xsdValueType,
-                                               CRS crs )
+    private GenericXMLElement parseGenericXMLElement( XMLStreamReaderWrapper xmlStream,
+                                                      XSComplexTypeDefinition xsdValueType, CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, xsdValueType );
@@ -545,9 +546,10 @@ public class GMLFeatureReader extends XMLAdapter {
                         String msg = "Element '" + childElName + "' is not allowed at this position.";
                         throw new XMLParsingException( xmlStream, msg );
                     }
-                    ObjectNode child = parseGenericXMLElement( xmlStream,
-                                                            childElementDecls.get( childElName ).getTypeDefinition(),
-                                                            crs );
+                    ObjectNode child = parseGenericXMLElement(
+                                                               xmlStream,
+                                                               childElementDecls.get( childElName ).getTypeDefinition(),
+                                                               crs );
                     System.out.println( "adding: " + childElName + ", " + child.getClass().getName() );
                     children.add( child );
                 }
@@ -622,17 +624,17 @@ public class GMLFeatureReader extends XMLAdapter {
         return attrs;
     }
 
-    private Property<?> createSimpleProperty( XMLStreamReader xmlStream, SimplePropertyType propDecl, String s )
+    private SimpleProperty createSimpleProperty( XMLStreamReader xmlStream, SimplePropertyType pt, String s )
                             throws XMLParsingException {
 
-        Object propValue = null;
+        SimpleProperty prop = null;
         try {
-            propValue = XMLValueMangler.xmlToInternal( s, propDecl.getPrimitiveType() );
+            prop = new SimpleProperty( pt, s, pt.getPrimitiveType() );
         } catch ( IllegalArgumentException e ) {
-            String msg = "Property '" + propDecl.getName() + "' is not valid: " + e.getMessage();
+            String msg = "Property '" + pt.getName() + "' is not valid: " + e.getMessage();
             throw new XMLParsingException( xmlStream, msg );
         }
-        return new GenericProperty<Object>( propDecl, null, propValue );
+        return prop;
     }
 
     /**

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,50 +32,62 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.geometry.Geometry;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.deegree.commons.types.PrimitiveType;
+import org.deegree.commons.xml.om.PrimitiveValue;
+import org.deegree.feature.types.property.SimplePropertyType;
 
 /**
- * A {@link Feature} that does not allow nested features ("complex properties") or properties that occur multiple times.
- *
+ * TODO add documentation here
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public interface SimpleFeature extends Feature {
+public class SimpleProperty implements Property<PrimitiveValue> {
 
-    /**
-     * Returns the value of the specified property.
-     *
-     * @param propName
-     *            name of the property
-     * @return property value
-     */
-    public Object getPropertyValue( QName propName );
+    private SimplePropertyType pt;
 
-    /**
-     * Sets the value of the specified property.
-     *
-     * @param propName
-     *            name of the property to set
-     * @param value new value of the property
-     */
-    public void setPropertyValue( QName propName, Object value );
+    private PrimitiveValue value;
 
-    /**
-     * Returns the value of the geometry property.
-     * <p>
-     * NOTE: A simple feature may contain only one geometry property.
-     * </p>
-     *
-     * @param propName
-     *            name of the property
-     * @return geometry property value
-     */
-    public Geometry getGeometryPropertyValue( QName propName );
+    public SimpleProperty( SimplePropertyType pt, String value, PrimitiveType type ) {
+        this.pt = pt;
+        this.value = new PrimitiveValue( value, type );
+    }
+
+    public SimpleProperty( SimplePropertyType pt, String value, XSSimpleTypeDefinition xsdType ) {
+        this.pt = pt;
+        this.value = new PrimitiveValue( value, xsdType );
+    }
+
+    @Override
+    public QName getName() {
+        return pt.getName();
+    }
+
+    @Override
+    public boolean isNilled() {
+        return value == null;
+    }
+
+    @Override
+    public PrimitiveValue getValue() {
+        return value;
+    }
+
+    @Override
+    public SimplePropertyType getType() {
+        return pt;
+    }
+
+    @Override
+    public String toString() {
+        return value == null ? "null" : value.toString();
+    }
 }

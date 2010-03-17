@@ -64,7 +64,7 @@ public class GenericProperty<T> implements Property<T> {
      * @param declaration
      *            type information
      * @param value
-     *            property value
+     *            property value, can be <code>null</code> (property is nilled)
      */
     public GenericProperty( PropertyType<T> declaration, T value ) {
         this( declaration, null, value );
@@ -103,6 +103,11 @@ public class GenericProperty<T> implements Property<T> {
     @Override
     public QName getName() {
         return name;
+    }
+
+    @Override
+    public boolean isNilled() {
+        return value == null;
     }
 
     @Override
