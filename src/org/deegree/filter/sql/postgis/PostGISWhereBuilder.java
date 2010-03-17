@@ -132,6 +132,7 @@ public class PostGISWhereBuilder {
         this.mapping = mapping;
         this.filter = filter;
         this.useLegacyPredicates = useLegacyPredicates;
+        propNameMappingList = new ArrayList<PropertyNameMapping>();
         if ( filter != null ) {
             buildWhere( filter.getOperator() );
         }
@@ -213,7 +214,7 @@ public class PostGISWhereBuilder {
 
     private void buildWhere( Operator op )
                             throws FilterEvaluationException {
-        propNameMappingList = new ArrayList<PropertyNameMapping>();
+
         switch ( op.getType() ) {
         case COMPARISON: {
             buildWhere( (ComparisonOperator) op );
@@ -557,7 +558,7 @@ public class PostGISWhereBuilder {
 
         PropertyNameMapping propMapping = mapping.getMapping( propName );
         if ( propMapping != null ) {
-            propNameMappingList.add( propMapping );
+            addToPropNameMappingList( propMapping );
             whereClause.append( propMapping.getTable() );
             whereClause.append( '.' );
             whereClause.append( propMapping.getColumn() );
@@ -617,7 +618,7 @@ public class PostGISWhereBuilder {
         case PROPERTY_NAME: {
             PropertyNameMapping propMapping = mapping.getMapping( (PropertyName) expr );
             if ( propMapping != null ) {
-                propNameMappingList.add( propMapping );
+                addToPropNameMappingList( propMapping );
                 if ( lowerCase ) {
                     whereClause.append( "LOWER(" );
                     whereClause.append( propMapping.getTable() );
@@ -664,5 +665,23 @@ public class PostGISWhereBuilder {
                 orderBy.append( " DESC" );
             }
         }
+    }
+
+    /**
+     * Prevents the propNameMappingList to add duplicate tables.
+     * 
+     * @param propMapping
+     */
+    private void addToPropNameMappingList( PropertyNameMapping propMapping ) {
+
+        if ( propNameMappingList != null ) {
+            for ( PropertyNameMapping propName : propNameMappingList ) {
+                if ( propName.getTable().equals( propMapping.getTable() ) ) {
+                    return;
+                }
+            }
+        }
+        propNameMappingList.add( propMapping );
+
     }
 }
