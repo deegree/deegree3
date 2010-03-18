@@ -33,10 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.xml.om;
+package org.deegree.commons.tom;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,56 +44,35 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSTypeDefinition;
 
 /**
- * {@link ObjectNode} that represents the content of a generic XML element with associated XML schema type information.
+ * {@link TypedObjectNode} that represents a generic XML element with associated XML schema type information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GenericXMLElementContent implements ObjectNode {
+public class GenericXMLElement extends GenericXMLElementContent {
+
+    private QName name;
 
     private Map<QName, PrimitiveValue> attrs;
 
-    private List<ObjectNode> children;
+    private List<TypedObjectNode> children;
 
     private XSTypeDefinition type;
 
-    public GenericXMLElementContent( XSTypeDefinition type, Map<QName, PrimitiveValue> attrs, List<ObjectNode> children ) {
-        this.type = type;
-        this.attrs = attrs;
-        this.children = children;
+    public GenericXMLElement( QName name, XSTypeDefinition type, Map<QName, PrimitiveValue> attrs, List<TypedObjectNode> children ) {
+        super (type, attrs, children);
+        this.name = name;
     }
 
-    public Map<QName, PrimitiveValue> getAttributes() {
-        return attrs;
-    }
-
-    public List<ObjectNode> getChildren() {
-        return children;
-    }
-
-    public XSTypeDefinition getXSType() {
-        return type;
-    }
-
-    public void setAttribute( QName name, PrimitiveValue value ) {
-        if ( attrs == null ) {
-            attrs = new LinkedHashMap<QName, PrimitiveValue>();
-        }
-        attrs.put( name, value );
-    }
-
-    public void addChild( ObjectNode node ) {
-        if ( children == null ) {
-            children = new ArrayList<ObjectNode>();
-        }
-        children.add( node );
+    public QName getName() {
+        return name;
     }
 
     @Override
     public String toString() {
-        String s = "{";
+        String s = name + "{";
         s += "type=" + type;
         if ( attrs != null ) {
             s += ",attributes={";
@@ -105,7 +82,7 @@ public class GenericXMLElementContent implements ObjectNode {
         }
         if ( children != null ) {
             s += "},children={";
-            for ( ObjectNode child : children ) {
+            for ( TypedObjectNode child : children ) {
                 s += child;
             }
         }

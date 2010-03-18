@@ -36,7 +36,7 @@
 
 package org.deegree.protocol.wpvs;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 
 /**
  * Important constants from the WPVS specifications.

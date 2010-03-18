@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
-import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.StringOrRef;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.gml.GMLObject;
 
 /**

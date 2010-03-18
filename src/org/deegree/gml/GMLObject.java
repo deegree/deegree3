@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
-import org.deegree.commons.xml.om.ObjectNode;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
@@ -63,7 +63,7 @@ import org.deegree.gml.props.GMLStdProps;
  * 
  * @version $Revision$, $Date$
  */
-public interface GMLObject extends ObjectNode {
+public interface GMLObject extends TypedObjectNode {
 
     /**
      * Returns the id of the object.

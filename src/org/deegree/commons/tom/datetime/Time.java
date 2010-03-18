@@ -33,46 +33,47 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.commons.types.datetime;
+package org.deegree.commons.tom.datetime;
 
 import java.text.ParseException;
 
 import org.deegree.commons.utils.time.DateUtils;
 
 /**
- * Represents an <code>xs:dateTime</code> instance. 
+ * Represents an ISO 8601 time instance. 
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DateTime implements Comparable<DateTime> {
+public class Time implements Comparable<Time>{
 
     private final String isoDate;
 
     private final java.util.Date date;
 
-    public DateTime( String isoDate ) throws ParseException {
+    public Time( String isoDate ) throws ParseException {
         this.isoDate = isoDate;
         date = DateUtils.parseISO8601Date( isoDate );
     }
 
     @Override
-    public int compareTo( DateTime o ) {
+    public int compareTo( Time o ) {
         return this.date.compareTo( o.date );
     }
 
     @Override
     public boolean equals( Object o ) {
-        if ( !( o instanceof Date ) ) {
+        if ( !( o instanceof Time ) ) {
             return false;
         }
-        return this.date.equals( ( (DateTime) o ).date );
+        return this.date.equals( ( (Time) o ).date );
     }
 
     @Override
     public String toString() {
         return isoDate;
-    }    
+    }
+    
 }

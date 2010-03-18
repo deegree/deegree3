@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
-import org.deegree.commons.types.datetime.Date;
-import org.deegree.commons.types.datetime.DateTime;
-import org.deegree.commons.types.datetime.Time;
+import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.Time;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;

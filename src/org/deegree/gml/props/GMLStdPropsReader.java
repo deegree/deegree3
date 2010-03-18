@@ -46,8 +46,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.StringOrRef;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.gml.GMLVersion;

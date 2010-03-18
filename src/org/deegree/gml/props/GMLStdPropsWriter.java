@@ -40,8 +40,8 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.StringOrRef;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.gml.GMLVersion;
 
 /**

@@ -39,8 +39,8 @@ package org.deegree.protocol.wps.describeprocess;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wps.WPSRequest;
 
 /**

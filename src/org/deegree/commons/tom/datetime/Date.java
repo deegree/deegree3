@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.types.datetime;
+package org.deegree.commons.tom.datetime;
 
 import java.text.ParseException;
 

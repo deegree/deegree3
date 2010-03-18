@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.lockfeature;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**

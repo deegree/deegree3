@@ -50,7 +50,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.PrimitiveType;
+import org.deegree.commons.tom.PrimitiveType;
 import org.deegree.feature.types.jaxb.AbstractPropertyDecl;
 import org.deegree.feature.types.jaxb.ApplicationSchemaDecl;
 import org.deegree.feature.types.jaxb.FeaturePropertyDecl;

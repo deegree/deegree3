@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 
 /**
  * Abstract base class for WFS request beans.

@@ -43,7 +43,7 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;

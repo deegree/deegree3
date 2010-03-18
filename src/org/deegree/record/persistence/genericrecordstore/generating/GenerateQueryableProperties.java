@@ -45,7 +45,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 
-import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.tom.datetime.Date;
 import org.deegree.crs.CRS;
 import org.deegree.record.persistence.genericrecordstore.PostGISMappingsISODC;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;

@@ -45,12 +45,12 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.tom.GenericXMLElement;
+import org.deegree.commons.tom.GenericXMLElementContent;
+import org.deegree.commons.tom.PrimitiveValue;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.uom.Measure;
-import org.deegree.commons.xml.om.GenericXMLElement;
-import org.deegree.commons.xml.om.GenericXMLElementContent;
-import org.deegree.commons.xml.om.ObjectNode;
-import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.gml.GMLObject;
@@ -242,9 +242,9 @@ class FeatureNavigator extends DefaultNavigator {
                                                                         version ) );
                 }
             } else if ( propValue instanceof GenericXMLElementContent ) {
-                List<ObjectNode> xmlNodes = ( (GenericXMLElementContent) propValue ).getChildren();
+                List<TypedObjectNode> xmlNodes = ( (GenericXMLElementContent) propValue ).getChildren();
                 List<XPathNode> xpathNodes = new ArrayList<XPathNode>( xmlNodes.size() );
-                for ( ObjectNode xmlNode : xmlNodes ) {
+                for ( TypedObjectNode xmlNode : xmlNodes ) {
                     if ( xmlNode instanceof GenericXMLElement ) {
                         xpathNodes.add( new XMLElementNode( (XPathNode) node, (GenericXMLElement) xmlNode ) );
                     } else if ( xmlNode instanceof GMLObject ) {
@@ -262,9 +262,9 @@ class FeatureNavigator extends DefaultNavigator {
                                                                new PrimitiveValue( propValue.toString() ) ) );
             }
         } else if ( node instanceof XMLElementNode ) {
-            List<ObjectNode> xmlNodes = ( (XMLElementNode) node ).getElement().getChildren();
+            List<TypedObjectNode> xmlNodes = ( (XMLElementNode) node ).getElement().getChildren();
             List<XPathNode> xpathNodes = new ArrayList<XPathNode>( xmlNodes.size() );
-            for ( ObjectNode xmlNode : xmlNodes ) {
+            for ( TypedObjectNode xmlNode : xmlNodes ) {
                 if ( xmlNode instanceof GenericXMLElement ) {
                     xpathNodes.add( new XMLElementNode( (XPathNode) node, (GenericXMLElement) xmlNode ) );
                 } else if ( xmlNode instanceof GMLObject ) {

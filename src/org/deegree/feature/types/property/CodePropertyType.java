@@ -39,7 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.tom.ows.CodeType;
 
 /**
  * {@link PropertyType} that defines a property with a {@link CodeType} value.

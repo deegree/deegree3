@@ -38,7 +38,7 @@ package org.deegree.protocol.wcs.capabilities;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;

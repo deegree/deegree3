@@ -37,7 +37,7 @@ package org.deegree.protocol.wfs.describefeaturetype;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**

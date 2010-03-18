@@ -33,14 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.types;
+package org.deegree.commons.tom;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import org.deegree.commons.types.datetime.Date;
-import org.deegree.commons.types.datetime.DateTime;
-import org.deegree.commons.types.datetime.Time;
+import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.Time;
 
 /**
  * Primitive type system for object properties (e.g. for {@link org.deegree.feature.Feature} instances).

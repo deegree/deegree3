@@ -36,7 +36,7 @@
 
 package org.deegree.protocol.wms;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 
 /**
  * Important constants from the WMS specifications.

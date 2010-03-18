@@ -33,16 +33,20 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.xml.om;
+package org.deegree.commons.tom;
 
 /**
- * Base interface for deegree object nodes with type information.
+ * Base interface of deegree's "Typed Object Model".
+ * 
+ * @see org.deegree.gml.GMLObject
+ * @see org.deegree.feature.Feature
+ * @see org.deegree.geometry.Geometry
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface ObjectNode {
+public interface TypedObjectNode {
     // just a marker interface
 }

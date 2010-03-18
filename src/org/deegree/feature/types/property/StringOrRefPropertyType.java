@@ -39,7 +39,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.ows.StringOrRef;
+import org.deegree.commons.tom.ows.StringOrRef;
 
 /**
  * {@link PropertyType} that defines a property with a {@link StringOrRef} value.

@@ -38,7 +38,7 @@ package org.deegree.protocol.wfs.transaction;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.types.ows.Version.parseVersion;
+import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQName;
@@ -52,7 +52,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.CommonNamespaces;

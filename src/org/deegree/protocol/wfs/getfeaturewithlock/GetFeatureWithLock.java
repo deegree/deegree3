@@ -36,7 +36,7 @@
 
 package org.deegree.protocol.wfs.getfeaturewithlock;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.Query;
 import org.deegree.protocol.wfs.getfeature.ResultType;

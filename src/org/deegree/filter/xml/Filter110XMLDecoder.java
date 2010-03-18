@@ -55,11 +55,11 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;

@@ -46,7 +46,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.List;
 
-import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.tom.datetime.Date;
 import org.deegree.record.persistence.genericrecordstore.generating.BuildRecordXMLRepresentation;
 import org.deegree.record.persistence.genericrecordstore.generating.GenerateQueryableProperties;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;

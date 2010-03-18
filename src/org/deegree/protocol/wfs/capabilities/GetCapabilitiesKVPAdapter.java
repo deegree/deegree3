@@ -37,7 +37,7 @@ package org.deegree.protocol.wfs.capabilities;
 
 import java.util.Map;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesKVPParser;

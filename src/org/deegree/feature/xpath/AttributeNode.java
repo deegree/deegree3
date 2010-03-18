@@ -37,7 +37,7 @@ package org.deegree.feature.xpath;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.xml.om.PrimitiveValue;
+import org.deegree.commons.tom.PrimitiveValue;
 
 /**
  * {@link XPathNode} that represents an XML attribute node.

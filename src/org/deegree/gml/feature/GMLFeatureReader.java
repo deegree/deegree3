@@ -65,16 +65,16 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.StringOrRef;
+import org.deegree.commons.tom.GenericXMLElement;
+import org.deegree.commons.tom.GenericXMLElementContent;
+import org.deegree.commons.tom.PrimitiveValue;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.om.GenericXMLElement;
-import org.deegree.commons.xml.om.GenericXMLElementContent;
-import org.deegree.commons.xml.om.ObjectNode;
-import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -499,10 +499,10 @@ public class GMLFeatureReader extends XMLAdapter {
 		return property;
 	}
 
-	private Property<ObjectNode> parseCustomProperty(XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl,
+	private Property<TypedObjectNode> parseCustomProperty(XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl,
 			CRS crs) throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
-		ObjectNode value = parseGenericXMLElement(xmlStream, propDecl.getXSDValueType(), crs);
+		TypedObjectNode value = parseGenericXMLElement(xmlStream, propDecl.getXSDValueType(), crs);
 
 		if (value instanceof GenericXMLElement) {
 			// unwrap the element -> we just want a node that represents the
@@ -513,9 +513,9 @@ public class GMLFeatureReader extends XMLAdapter {
 		return new GenericProperty(propDecl, value);
 	}
 
-	private ObjectNode parseGenericXMLElement(XMLStreamReaderWrapper xmlStream, XSTypeDefinition xsdValueType, CRS crs)
+	private TypedObjectNode parseGenericXMLElement(XMLStreamReaderWrapper xmlStream, XSTypeDefinition xsdValueType, CRS crs)
 			throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
-		ObjectNode node = null;
+		TypedObjectNode node = null;
 		System.out.println(xmlStream.getName());
 		if (xsdValueType.getTypeCategory() == SIMPLE_TYPE) {
 			node = parseGenericXMLElement(xmlStream, (XSSimpleTypeDefinition) xsdValueType);
@@ -528,7 +528,7 @@ public class GMLFeatureReader extends XMLAdapter {
 	private GenericXMLElement parseGenericXMLElement(XMLStreamReaderWrapper xmlStream,
 			XSSimpleTypeDefinition xsdValueType) throws XMLStreamException {
 		// TODO element has simple type information and primitive type as well?
-		ObjectNode child = new PrimitiveValue(xmlStream.getElementText(), xsdValueType);
+		TypedObjectNode child = new PrimitiveValue(xmlStream.getElementText(), xsdValueType);
 		return new GenericXMLElement(xmlStream.getName(), xsdValueType, null, Collections.singletonList(child));
 	}
 
@@ -537,7 +537,7 @@ public class GMLFeatureReader extends XMLAdapter {
 			XMLParsingException, UnknownCRSException {
 
 		Map<QName, PrimitiveValue> attrs = parseAttributes(xmlStream, xsdValueType);
-		List<ObjectNode> children = new ArrayList<ObjectNode>();
+		List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
 
 		// TODO respect order + multiplicity of child elements
 		Map<QName, XSElementDeclaration> childElementDecls = getAllowedChildElementDecls(xsdValueType);
@@ -554,7 +554,7 @@ public class GMLFeatureReader extends XMLAdapter {
 						String msg = "Element '" + childElName + "' is not allowed at this position.";
 						throw new XMLParsingException(xmlStream, msg);
 					}
-					ObjectNode child = parseGenericXMLElement(xmlStream, childElementDecls.get(childElName)
+					TypedObjectNode child = parseGenericXMLElement(xmlStream, childElementDecls.get(childElName)
 							.getTypeDefinition(), crs);
 					System.out.println("adding: " + childElName + ", " + child.getClass().getName());
 					children.add(child);

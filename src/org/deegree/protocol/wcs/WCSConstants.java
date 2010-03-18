@@ -36,7 +36,7 @@
 
 package org.deegree.protocol.wcs;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 
 /**

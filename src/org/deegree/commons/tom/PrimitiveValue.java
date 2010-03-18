@@ -33,23 +33,21 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.xml.om;
+package org.deegree.commons.tom;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.deegree.commons.types.PrimitiveType;
-import org.deegree.commons.types.XMLValueMangler;
-import org.deegree.commons.types.datetime.Date;
-import org.deegree.commons.types.datetime.DateTime;
-import org.deegree.commons.types.datetime.Time;
-import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.Time;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.Pair;
 
 /**
- * {@link ObjectNode} that represents a primitive value, e.g. an XML text node or an XML attribute value with type
+ * {@link TypedObjectNode} that represents a primitive value, e.g. an XML text node or an XML attribute value with type
  * information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -57,7 +55,7 @@ import org.deegree.commons.utils.Pair;
  * 
  * @version $Revision$, $Date$
  */
-public class PrimitiveValue implements ObjectNode, Comparable<PrimitiveValue> {
+public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValue> {
 
     private final Object value;
 

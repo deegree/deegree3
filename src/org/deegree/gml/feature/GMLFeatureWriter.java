@@ -49,14 +49,14 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.StringOrRef;
+import org.deegree.commons.tom.GenericXMLElement;
+import org.deegree.commons.tom.GenericXMLElementContent;
+import org.deegree.commons.tom.PrimitiveValue;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
-import org.deegree.commons.xml.om.GenericXMLElement;
-import org.deegree.commons.xml.om.GenericXMLElementContent;
-import org.deegree.commons.xml.om.ObjectNode;
-import org.deegree.commons.xml.om.PrimitiveValue;
 import org.deegree.commons.xml.stax.StAXExportingHelper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
@@ -440,13 +440,13 @@ public class GMLFeatureWriter {
         } else if ( propertyType instanceof CustomPropertyType ) {
             if ( property.getValue() != null ) {
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                export( (ObjectNode) property.getValue(), inlineLevels );
+                export( (TypedObjectNode) property.getValue(), inlineLevels );
                 writer.writeEndElement();
             }
         }
     }
 
-    private void export( ObjectNode genericXML, int inlineLevels )
+    private void export( TypedObjectNode genericXML, int inlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( genericXML instanceof GMLObject ) {
             if ( genericXML instanceof Feature ) {
@@ -466,7 +466,7 @@ public class GMLFeatureWriter {
                 }
             }
             if ( xmlContent.getChildren() != null ) {
-                for ( ObjectNode childNode : xmlContent.getChildren() ) {
+                for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
                     export( childNode, inlineLevels );
                 }
             }
@@ -479,7 +479,7 @@ public class GMLFeatureWriter {
                 }
             }
             if ( xmlContent.getChildren() != null ) {
-                for ( ObjectNode childNode : xmlContent.getChildren() ) {
+                for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
                     export( childNode, inlineLevels );
                 }
             }

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.commons.types.ows;
+package org.deegree.commons.tom.ows;
 
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 

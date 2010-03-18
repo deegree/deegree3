@@ -36,14 +36,14 @@
 
 package org.deegree.gml.props;
 
-import static org.deegree.commons.types.PrimitiveType.STRING;
+import static org.deegree.commons.tom.PrimitiveType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.types.ows.StringOrRef;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;

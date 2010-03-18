@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.commons.types.ows;
+package org.deegree.commons.tom.ows;
 
 /**
  * Text string with the language of the string identified as recommended in the XML 1.0 W3C Recommendation, section

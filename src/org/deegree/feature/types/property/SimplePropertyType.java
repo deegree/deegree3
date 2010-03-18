@@ -40,7 +40,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.deegree.commons.types.PrimitiveType;
+import org.deegree.commons.tom.PrimitiveType;
 
 /**
  * A {@link PropertyType} that defines a property with a primitive value, i.e. a value that can be represented as a

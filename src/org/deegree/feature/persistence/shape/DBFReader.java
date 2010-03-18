@@ -38,10 +38,10 @@ package org.deegree.feature.persistence.shape;
 
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MILLISECOND;
-import static org.deegree.commons.types.PrimitiveType.BOOLEAN;
-import static org.deegree.commons.types.PrimitiveType.DATE;
-import static org.deegree.commons.types.PrimitiveType.INTEGER;
-import static org.deegree.commons.types.PrimitiveType.STRING;
+import static org.deegree.commons.tom.PrimitiveType.BOOLEAN;
+import static org.deegree.commons.tom.PrimitiveType.DATE;
+import static org.deegree.commons.tom.PrimitiveType.INTEGER;
+import static org.deegree.commons.tom.PrimitiveType.STRING;
 import static org.deegree.commons.utils.EncodingGuesser.guess;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
@@ -59,7 +59,7 @@ import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.types.PrimitiveType;
+import org.deegree.commons.tom.PrimitiveType;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;

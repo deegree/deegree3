@@ -37,7 +37,7 @@ package org.deegree.record.persistence.genericrecordstore.parsing;
 
 import java.util.List;
 
-import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.tom.datetime.Date;
 import org.deegree.crs.CRS;
 import org.deegree.record.persistence.neededdatastructures.BoundingBox;
 import org.deegree.record.persistence.neededdatastructures.Format;

@@ -33,11 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.types;
+package org.deegree.commons.tom;
 
 import java.math.BigDecimal;
 
-import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.utils.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

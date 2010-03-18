@@ -38,17 +38,17 @@ package org.deegree.feature;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.deegree.commons.types.PrimitiveType;
-import org.deegree.commons.xml.om.PrimitiveValue;
+import org.deegree.commons.tom.PrimitiveType;
+import org.deegree.commons.tom.PrimitiveValue;
 import org.deegree.feature.types.property.SimplePropertyType;
 
 /**
  * TODO add documentation here
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
 public class SimpleProperty implements Property<PrimitiveValue> {
 

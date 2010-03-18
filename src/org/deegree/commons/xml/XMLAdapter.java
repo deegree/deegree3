@@ -75,7 +75,7 @@ import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.i18n.Messages;
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.XMLStreamReaderDoc;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;

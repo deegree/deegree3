@@ -44,7 +44,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.deegree.commons.types.datetime.Date;
+import org.deegree.commons.tom.datetime.Date;
 import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
 import org.deegree.record.persistence.genericrecordstore.parsing.ReturnableProperties;
 import org.deegree.record.persistence.neededdatastructures.Format;

@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 
-import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.tom.ows.Version;
 import org.junit.Test;
 
 /**

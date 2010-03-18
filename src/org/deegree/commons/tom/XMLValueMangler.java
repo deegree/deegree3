@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.types;
+package org.deegree.commons.tom;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -41,9 +41,9 @@ import java.text.ParseException;
 
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.deegree.commons.types.datetime.Date;
-import org.deegree.commons.types.datetime.DateTime;
-import org.deegree.commons.types.datetime.Time;
+import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.datetime.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

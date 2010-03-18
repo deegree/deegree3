@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.protocol.wps.WPSConstants;

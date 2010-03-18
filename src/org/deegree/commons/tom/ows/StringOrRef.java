@@ -1,10 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2009 by:
+ - Department of Geography, University of Bonn -
  and
- lat/lon GmbH
+ - lat/lon GmbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,60 +33,56 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.xml.om;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.namespace.QName;
-
-import org.apache.xerces.xs.XSTypeDefinition;
+package org.deegree.commons.tom.ows;
 
 /**
- * {@link ObjectNode} that represents a generic XML element with associated XML schema type information.
+ * A simple text description or a reference to an external description.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class GenericXMLElement extends GenericXMLElementContent {
+public class StringOrRef {
 
-    private QName name;
+    private String string;
 
-    private Map<QName, PrimitiveValue> attrs;
+    private String ref;
 
-    private List<ObjectNode> children;
-
-    private XSTypeDefinition type;
-
-    public GenericXMLElement( QName name, XSTypeDefinition type, Map<QName, PrimitiveValue> attrs, List<ObjectNode> children ) {
-        super (type, attrs, children);
-        this.name = name;
+    public StringOrRef( String s, String ref ) {
+        this.string = s;
+        this.ref = ref;
     }
 
-    public QName getName() {
-        return name;
+    public String getString() {
+        return string;
+    }
+
+    public String getRef() {
+        return ref;
     }
 
     @Override
-    public String toString() {
-        String s = name + "{";
-        s += "type=" + type;
-        if ( attrs != null ) {
-            s += ",attributes={";
-            for ( Entry<QName, PrimitiveValue> attr : attrs.entrySet() ) {
-                s += attr.getKey() + "=" + attr.getValue();
+    public boolean equals( Object o ) {
+        if ( o instanceof StringOrRef ) {
+            StringOrRef that = (StringOrRef) o;
+            if (string != null) {
+                return string.equals( that.string );
+            } else if (that.string != null) {
+                return that.string.equals( string );
+            } else {
+                return true;
             }
+            // TODO ref?
+        } else if ( o instanceof String ) {
+            return o.equals( string );
         }
-        if ( children != null ) {
-            s += "},children={";
-            for ( ObjectNode child : children ) {
-                s += child;
-            }
-        }
-        s += "}}";
-        return s;
+        return false;
+    }
+    
+    @Override
+    // TODO clarify how PropertyIsEqualTo depends on this methods (which currently requires to return the text node)
+    public String toString () {
+        return string;
     }
 }
