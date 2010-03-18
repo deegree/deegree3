@@ -58,8 +58,8 @@ public class Name {
         if ( o instanceof Feature ) {
             sb.append( ( (Feature) o ).getName().getLocalPart() );
         }
-        if ( o instanceof Property<?> ) {
-            sb.append( ( (Property<?>) o ).getName().getLocalPart() );
+        if ( o instanceof Property ) {
+            sb.append( ( (Property) o ).getName().getLocalPart() );
         }
     }
 

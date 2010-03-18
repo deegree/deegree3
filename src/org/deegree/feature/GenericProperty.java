@@ -37,26 +37,25 @@ package org.deegree.feature;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 
 /**
  * TODO add documentation here
  * 
- * @param <T>
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class GenericProperty<T> implements Property<T> {
+public class GenericProperty implements Property {
 
-    private PropertyType<T> declaration;
+    private PropertyType declaration;
 
     private QName name;
 
-    private T value;
+    private TypedObjectNode value;
 
     /**
      * Creates a new {@link GenericProperty} instance that is of type {@link SimplePropertyType}.
@@ -66,7 +65,7 @@ public class GenericProperty<T> implements Property<T> {
      * @param value
      *            property value, can be <code>null</code> (property is nilled)
      */
-    public GenericProperty( PropertyType<T> declaration, T value ) {
+    public GenericProperty( PropertyType declaration, TypedObjectNode value ) {
         this( declaration, null, value );
     }
 
@@ -80,7 +79,7 @@ public class GenericProperty<T> implements Property<T> {
      * @param value
      *            property value
      */
-    public GenericProperty( PropertyType<T> declaration, QName name, T value ) {
+    public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value ) {
         this.declaration = declaration;
         this.name = name;
         if ( name == null ) {
@@ -111,12 +110,12 @@ public class GenericProperty<T> implements Property<T> {
     }
 
     @Override
-    public T getValue() {
+    public TypedObjectNode getValue() {
         return value;
     }
 
     @Override
-    public PropertyType<T> getType() {
+    public PropertyType getType() {
         return declaration;
     }
 

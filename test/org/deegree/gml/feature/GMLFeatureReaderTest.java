@@ -145,7 +145,7 @@ public class GMLFeatureReaderTest {
 
         for ( Feature feature : fc ) {
             if ( "f094".equals( feature.getId() ) ) {
-                Property<?> decimalProp = feature.getProperty( new QName( "http://cite.opengeospatial.org/gmlsf",
+                Property decimalProp = feature.getProperty( new QName( "http://cite.opengeospatial.org/gmlsf",
                                                                           "decimalProperty" ) );
                 LOG.debug( "decimal prop: " + decimalProp );
             }
@@ -171,7 +171,7 @@ public class GMLFeatureReaderTest {
 
         for ( Feature feature : fc ) {
             LOG.debug( feature.getId() );
-            for ( Property<?> prop : feature.getProperties( GMLVersion.GML_31 ) ) {
+            for ( Property prop : feature.getProperties( GMLVersion.GML_31 ) ) {
                 LOG.debug( "prop name: " + prop.getName() );
             }
             break;

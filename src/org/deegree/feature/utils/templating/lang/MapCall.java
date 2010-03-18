@@ -89,8 +89,8 @@ public class MapCall {
             if ( o instanceof Feature ) {
                 key = ( (Feature) o ).getName().getLocalPart();
             }
-            if ( o instanceof Property<?> ) {
-                key = ( (Property<?>) o ).getName().getLocalPart();
+            if ( o instanceof Property ) {
+                key = ( (Property) o ).getName().getLocalPart();
             }
             break;
         case Value:
@@ -98,8 +98,8 @@ public class MapCall {
                 LOG.warn( "Map template call calling map '{}' tries to use value of a feature.", name );
                 return;
             }
-            if ( o instanceof Property<?> ) {
-                Object v = ( (Property<?>) o ).getValue();
+            if ( o instanceof Property ) {
+                Object v = ( (Property) o ).getValue();
                 try {
                     key = v == null ? null : v.toString();
                 } catch ( UnsupportedOperationException e ) {

@@ -127,7 +127,7 @@ public interface FeatureType {
      *            properties)
      * @return a new <code>Feature</code> instance
      */
-    public Feature newFeature( String fid, List<Property<?>> props, GMLVersion version );
+    public Feature newFeature( String fid, List<Property> props, GMLVersion version );
 
     /**
      * Returns the {@link ApplicationSchema} that this feature type belongs to.

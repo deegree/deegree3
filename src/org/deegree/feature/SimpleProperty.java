@@ -50,7 +50,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
  * 
  * @version $Revision$, $Date$
  */
-public class SimpleProperty implements Property<PrimitiveValue> {
+public class SimpleProperty implements Property {
 
     private SimplePropertyType pt;
 

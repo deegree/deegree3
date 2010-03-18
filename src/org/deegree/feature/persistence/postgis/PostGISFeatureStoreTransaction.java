@@ -440,7 +440,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FilterEvaluationException {
         LinkedHashMap<String, Object> columnsToValues = new LinkedHashMap<String, Object>();
 
-        for ( Property<?> prop : feature.getProperties() ) {
+        for ( Property prop : feature.getProperties() ) {
             PropertyMappingType propMapping = ftMapping.getPropertyHints( prop.getName() );
             String dbColumn = null;
             if ( propMapping != null ) {
@@ -489,7 +489,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
                     fids.add( feature.getId() );
                 }
             }
-            for ( Property<?> property : feature.getProperties() ) {
+            for ( Property property : feature.getProperties() ) {
                 Object propertyValue = property.getValue();
                 if ( propertyValue instanceof Feature ) {
                     if ( !( propertyValue instanceof FeatureReference ) && !features.contains( propertyValue ) ) {
@@ -535,7 +535,7 @@ public class PostGISFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, Lock lock )
+    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException {
         // TODO Auto-generated method stub
         return 0;

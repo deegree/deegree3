@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.ows;
 
+import org.deegree.commons.tom.TypedObjectNode;
+
 /**
  * A simple text description or a reference to an external description.
  * 
@@ -43,7 +45,7 @@ package org.deegree.commons.tom.ows;
  * 
  * @version $Revision$, $Date$
  */
-public class StringOrRef {
+public class StringOrRef implements TypedObjectNode {
 
     private String string;
 

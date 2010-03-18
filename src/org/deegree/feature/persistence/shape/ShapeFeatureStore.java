@@ -394,7 +394,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
         while ( !list.isEmpty() ) {
             Pair<Integer, Geometry> pair = list.poll();
-            HashMap<SimplePropertyType, Property<?>> entry;
+            HashMap<SimplePropertyType, Property> entry;
             if ( dbf != null ) {
                 synchronized ( dbf ) {
                     try {
@@ -406,15 +406,15 @@ public class ShapeFeatureStore implements FeatureStore {
                     }
                 }
             } else {
-                entry = new HashMap<SimplePropertyType, Property<?>>();
+                entry = new HashMap<SimplePropertyType, Property>();
             }
-            LinkedList<Property<?>> props = new LinkedList<Property<?>>();
+            LinkedList<Property> props = new LinkedList<Property>();
             for ( PropertyType t : fields ) {
                 if ( entry.containsKey( t ) ) {
                     props.add( entry.get( t ) );
                 }
             }
-            props.add( new GenericProperty<Geometry>( geom, pair.second ) );
+            props.add( new GenericProperty( geom, pair.second ) );
             Feature feat = ft.newFeature( "shp_" + pair.first, props, null );
 
             if ( filter == null || filter.evaluate( feat ) ) {

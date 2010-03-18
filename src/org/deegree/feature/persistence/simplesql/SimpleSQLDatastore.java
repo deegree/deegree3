@@ -429,7 +429,7 @@ public class SimpleSQLDatastore implements FeatureStore {
                         }
                         try {
                             if ( set.next() ) {
-                                LinkedList<Property<?>> props = new LinkedList<Property<?>>();
+                                LinkedList<Property> props = new LinkedList<Property>();
                                 for ( PropertyType<?> pt : featureType.getPropertyDeclarations() ) {
                                     if ( pt instanceof GeometryPropertyType ) {
                                         if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE ) {

@@ -42,6 +42,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.feature.Feature;
@@ -187,7 +188,7 @@ public class GMLStdProps {
         PT_NAME_GML32 = new CodePropertyType( new QName( GML3_2_NS, "name" ), 0, -1, false, null );        
     }
 
-    protected Object[] metadata;
+    protected TypedObjectNode[] metadata;
 
     protected StringOrRef description;
 
@@ -207,9 +208,9 @@ public class GMLStdProps {
      * @param names
      *            names, may be <code>null</code>
      */
-    public GMLStdProps( Object[] metadata, StringOrRef description, CodeType identifier, CodeType[] names ) {
+    public GMLStdProps( TypedObjectNode[] metadata, StringOrRef description, CodeType identifier, CodeType[] names ) {
         if ( metadata == null ) {
-            this.metadata = new Object[0];
+            this.metadata = new TypedObjectNode[0];
         } else {
             this.metadata = metadata;
         }

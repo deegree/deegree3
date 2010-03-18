@@ -58,9 +58,9 @@ public class Value {
      * @param o
      */
     public void eval( StringBuilder sb, Object o ) {
-        if ( o instanceof Property<?> ) {
+        if ( o instanceof Property ) {
             try {
-                sb.append( ( (Property<?>) o ).getValue() );
+                sb.append( ( (Property) o ).getValue() );
             } catch ( UnsupportedOperationException e ) {
                 LOG.error( "The error '{}' occurred while converting a property to a string, "
                            + "probably the WKT writer cannot convert a geometry.", e.getLocalizedMessage() );

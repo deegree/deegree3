@@ -153,9 +153,9 @@ public class Symbolizer<T extends Copyable<T>> {
                 LOG.warn( "Could not evaluate a geometry expression." );
             }
         } else {
-            Property<Geometry>[] geoms = f.getGeometryProperties();
+            Property[] geoms = f.getGeometryProperties();
             if ( geoms.length > 0 ) {
-                geom = geoms[0].getValue();
+                geom = (Geometry) geoms[0].getValue();
             } else {
                 LOG.warn( "Style was applied to feature without geometry property." );
             }

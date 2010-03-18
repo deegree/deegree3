@@ -46,6 +46,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -74,7 +75,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     private List<Feature> memberFeatures = new ArrayList<Feature>();
 
-    private List<Property<?>> nonMemberProps = new ArrayList<Property<?>>();
+    private List<Property> nonMemberProps = new ArrayList<Property>();
 
     private PropertyType featureMemberDecl;
 
@@ -91,10 +92,10 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * @param fid
      * @param props
      */
-    public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property<?>> props, GMLVersion version ) {
+    public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property> props, GMLVersion version ) {
         this.ft = ft;
         this.fid = fid;
-        for ( Property<?> prop : props ) {
+        for ( Property prop : props ) {
             // TODO do this a better way
             Object propValue = prop.getValue();
             if ( propValue instanceof Feature ) {
@@ -159,14 +160,14 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     }
 
     @Override
-    public Property<?>[] getProperties() {
-        Property<?>[] props = new Property<?>[nonMemberProps.size() + memberFeatures.size()];
+    public Property[] getProperties() {
+        Property[] props = new Property[nonMemberProps.size() + memberFeatures.size()];
         int i = 0;
-        for ( Property<?> property : nonMemberProps ) {
+        for ( Property property : nonMemberProps ) {
             props[i++] = property;
         }
         for ( Feature feature : memberFeatures ) {
-            props[i++] = new GenericProperty<Feature>( featureMemberDecl, null, feature );
+            props[i++] = new GenericProperty( featureMemberDecl, null, feature );
         }
         return props;
     }
@@ -177,7 +178,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     }
 
     @Override
-    public void setProperties( List<Property<?>> props )
+    public void setProperties( List<Property> props )
                             throws IllegalArgumentException {
         // TODO Auto-generated method stub
     }
@@ -254,7 +255,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     }
 
     @Override
-    public void setPropertyValue( QName propName, int occurrence, Object value ) {
+    public void setPropertyValue( QName propName, int occurrence, TypedObjectNode value ) {
         LOG.debug( "Setting property value for " + occurrence + ". " + propName + " property" );
         if ( !propName.equals( FEATURE_MEMBER ) ) {
             throw new RuntimeException( "Only property '" + FEATURE_MEMBER + " may be set." );
@@ -266,20 +267,20 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     // TODO also allow the retrieval of featureMember properties in the methods below
 
     @Override
-    public Property<?>[] getProperties( QName propName ) {
-        List<Property<?>> namedProps = new ArrayList<Property<?>>( nonMemberProps.size() );
-        for ( Property<?> property : nonMemberProps ) {
+    public Property[] getProperties( QName propName ) {
+        List<Property> namedProps = new ArrayList<Property>( nonMemberProps.size() );
+        for ( Property property : nonMemberProps ) {
             if ( propName.equals( property.getName() ) ) {
                 namedProps.add( property );
             }
         }
-        return namedProps.toArray( new Property<?>[namedProps.size()] );
+        return namedProps.toArray( new Property[namedProps.size()] );
     }
 
     @Override
-    public Property<?> getProperty( QName propName ) {
-        Property<?> prop = null;
-        for ( Property<?> property : nonMemberProps ) {
+    public Property getProperty( QName propName ) {
+        Property prop = null;
+        for ( Property property : nonMemberProps ) {
             if ( propName.equals( property.getName() ) ) {
                 if ( prop != null ) {
                     String msg = "Feature has more than one property with name '" + propName + "'.";
@@ -293,11 +294,11 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Property<Geometry>[] getGeometryProperties() {
-        List<Property<Geometry>> geoProps = new ArrayList<Property<Geometry>>( nonMemberProps.size() );
-        for ( Property<?> property : nonMemberProps ) {
+    public Property[] getGeometryProperties() {
+        List<Property> geoProps = new ArrayList<Property>( nonMemberProps.size() );
+        for ( Property property : nonMemberProps ) {
             if ( property.getValue() instanceof Geometry ) {
-                geoProps.add( (Property<Geometry>) property );
+                geoProps.add( (Property) property );
             }
         }
         return geoProps.toArray( new Property[geoProps.size()] );

@@ -131,7 +131,7 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property<?>> props, GMLVersion version ) {
+    public Feature newFeature( String fid, List<Property> props, GMLVersion version ) {
         return new GenericFeature( this, fid, props, version );
     }
 

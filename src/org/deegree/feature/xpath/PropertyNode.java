@@ -49,9 +49,9 @@ public class PropertyNode extends ElementNode {
 
     private GMLObjectNode parent;
 
-    private Property<?> prop;
+    private Property prop;
 
-    PropertyNode( GMLObjectNode parent, final Property<?> prop ) {
+    PropertyNode( GMLObjectNode parent, final Property prop ) {
         super( prop.getName() );
         this.parent = parent;
         this.prop = prop;
@@ -67,7 +67,7 @@ public class PropertyNode extends ElementNode {
      * 
      * @return wrapped property
      */
-    public Property<?> getProperty() {
+    public Property getProperty() {
         return prop;
     }
 }

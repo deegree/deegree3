@@ -82,11 +82,11 @@ public class Link {
      * @param o
      */
     public void eval( StringBuilder sb, Object o ) {
-        if ( !( o instanceof Property<?> ) ) {
+        if ( !( o instanceof Property ) ) {
             LOG.warn( "Trying to get value as link while current object is a feature." );
             return;
         }
-        String val = ( (Property<?>) o ).getValue().toString();
+        String val = ( (Property) o ).getValue().toString();
         if ( val == null || val.isEmpty() ) {
             return;
         }

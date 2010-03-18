@@ -46,6 +46,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -114,7 +115,7 @@ public class GMLStdPropsReader {
         int event = xmlStream.nextTag();
 
         // 'gml:metaDataProperty' (0...unbounded)
-        Object[] metadata = null;
+        TypedObjectNode[] metadata = null;
         while ( event == START_ELEMENT && new QName( GMLNS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
             readMetadataProperty( xmlStream );
             xmlStream.nextTag();
@@ -143,7 +144,7 @@ public class GMLStdPropsReader {
         int event = xmlStream.nextTag();
 
         // 'gml:metaDataProperty' (0...unbounded)
-        Object[] metadata = null;
+        TypedObjectNode[] metadata = null;
         while ( event == START_ELEMENT && new QName( GMLNS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
             readMetadataProperty( xmlStream );
             xmlStream.nextTag();
@@ -172,7 +173,7 @@ public class GMLStdPropsReader {
         int event = xmlStream.nextTag();
 
         // 'gml:metaDataProperty' (0...unbounded)
-        Object[] metadata = null;
+        TypedObjectNode[] metadata = null;
         while ( event == START_ELEMENT && new QName( GML3_2_NS, "metaDataProperty" ).equals( xmlStream.getName() ) ) {
             readMetadataProperty( xmlStream );
             xmlStream.nextTag();

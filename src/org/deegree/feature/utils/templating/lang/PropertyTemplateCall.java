@@ -81,10 +81,10 @@ public class PropertyTemplateCall {
     }
 
     private void eval( StringBuilder sb, TemplateDefinition t, Object obj, HashMap<String, Object> defs,
-                       List<Property<?>> list, Feature parent, boolean geometries ) {
-        Property<?> p = null;
-        if ( obj instanceof Property<?> ) {
-            p = (Property<?>) obj;
+                       List<Property> list, Feature parent, boolean geometries ) {
+        Property p = null;
+        if ( obj instanceof Property ) {
+            p = (Property) obj;
         }
         if ( p != null ) {
             if ( visited.contains( p ) ) {
@@ -151,8 +151,8 @@ public class PropertyTemplateCall {
         }
         TemplateDefinition t = (TemplateDefinition) def;
 
-        if ( obj instanceof Property<?> ) {
-            eval( sb, t, obj, defs, Collections.<Property<?>> singletonList( (Property<?>) obj ), null, geometries );
+        if ( obj instanceof Property ) {
+            eval( sb, t, obj, defs, Collections.<Property> singletonList( (Property) obj ), null, geometries );
             return;
         }
         if ( obj instanceof FeatureCollection ) {
@@ -160,11 +160,11 @@ public class PropertyTemplateCall {
             return;
         }
 
-        List<Property<?>> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate, geometries );
+        List<Property> props = getMatchingObjects( ( (Feature) obj ).getProperties(), patterns, negate, geometries );
 
         LOG.debug( "Property template call '{}' matches objects '{}'.", name, props );
 
-        for ( Property<?> p : props ) {
+        for ( Property p : props ) {
             eval( sb, t, p, defs, props, (Feature) obj, geometries );
         }
     }

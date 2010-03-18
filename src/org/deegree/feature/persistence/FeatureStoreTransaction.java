@@ -139,7 +139,7 @@ public interface FeatureStoreTransaction {
      * @throws FeatureStoreException
      *             if the update fails
      */
-    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, Lock lock )
+    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException;
 
     /**

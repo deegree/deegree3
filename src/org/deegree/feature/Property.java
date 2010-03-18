@@ -37,6 +37,7 @@ package org.deegree.feature;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
@@ -46,15 +47,12 @@ import org.deegree.feature.types.property.PropertyType;
  * 
  * @see Feature
  * 
- * @param <T>
- *            The class of the <code>Property</code>'s value.
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface Property<T> {
+public interface Property {
 
     /**
      * Returns the name of the property.
@@ -74,7 +72,7 @@ public interface Property<T> {
      * 
      * @return the type information, never <code>null</code>
      */
-    public PropertyType<T> getType();
+    public PropertyType getType();
 
     /**
      * Returns whether the property is nilled.
@@ -90,5 +88,5 @@ public interface Property<T> {
      * 
      * @return the value of this property, or <code>null</code> if it is nilled
      */
-    public T getValue();
+    public TypedObjectNode getValue();
 }

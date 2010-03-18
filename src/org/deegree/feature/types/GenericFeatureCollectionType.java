@@ -123,7 +123,7 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property<?>> props, GMLVersion version ) {
+    public Feature newFeature( String fid, List<Property> props, GMLVersion version ) {
         return new GenericFeatureCollection( this, fid, props, version );
     }
 

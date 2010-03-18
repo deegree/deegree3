@@ -329,7 +329,7 @@ public class GMLFeatureWriter {
                     writer.writeAttribute( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
                 }
             }
-            for ( Property<?> prop : feature.getProperties( version ) ) {
+            for ( Property prop : feature.getProperties( version ) ) {
                 // // hack to work around CITE 1.1.0 problems (BTW, export Envelopes?)
                 // if (prop.getType() instanceof EnvelopePropertyType) {
                 // continue;
@@ -347,7 +347,7 @@ public class GMLFeatureWriter {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
-    protected void export( Property<?> property, int inlineLevels )
+    protected void export( Property property, int inlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();

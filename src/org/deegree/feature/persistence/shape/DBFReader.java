@@ -249,9 +249,9 @@ public class DBFReader {
      * @return a map with the property types mapped to their value (which might be null)
      * @throws IOException
      */
-    public HashMap<SimplePropertyType, Property<?>> getEntry( int num )
+    public HashMap<SimplePropertyType, Property> getEntry( int num )
                             throws IOException {
-        HashMap<SimplePropertyType, Property<?>> map = new HashMap<SimplePropertyType, Property<?>>();
+        HashMap<SimplePropertyType, Property> map = new HashMap<SimplePropertyType, Property>();
 
         long pos = headerLength + num * recordLength;
         if ( pos != in.getFilePointer() ) {
@@ -265,7 +265,7 @@ public class DBFReader {
         for ( String name : fieldOrder ) {
             Field field = fields.get( name );
 
-            Property<?> property = null;
+            Property property = null;
 
             byte[] bs = new byte[field.length];
             switch ( field.type ) {

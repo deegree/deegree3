@@ -39,10 +39,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLVersion;
 
@@ -117,7 +117,7 @@ public interface Feature extends MatchableObject, GMLObject {
      * 
      * @return all properties, excluding standard GML properties
      */
-    public Property<?>[] getProperties();
+    public Property[] getProperties();
 
     /**
      * Returns all properties in order, including standard GML properties.
@@ -126,7 +126,7 @@ public interface Feature extends MatchableObject, GMLObject {
      *            determines the names and types of the standard GML properties, must not be <code>null</code>
      * @return all properties, including standard GML properties
      */
-    public Property<?>[] getProperties( GMLVersion version );
+    public Property[] getProperties( GMLVersion version );
 
     /**
      * Returns the properties with the given name, in order.
@@ -135,7 +135,7 @@ public interface Feature extends MatchableObject, GMLObject {
      *            name of the requested properties
      * @return the properties with the given name, in order
      */
-    public Property<?>[] getProperties( QName propName );
+    public Property[] getProperties( QName propName );
 
     /**
      * Returns the properties with the given name, in order.
@@ -146,7 +146,7 @@ public interface Feature extends MatchableObject, GMLObject {
      *            determines the names and types of the standard GML properties, must not be <code>null</code>
      * @return the properties with the given name, in order
      */
-    public Property<?>[] getProperties( QName propName, GMLVersion version );
+    public Property[] getProperties( QName propName, GMLVersion version );
 
     /**
      * Returns the property with the given name.
@@ -157,7 +157,7 @@ public interface Feature extends MatchableObject, GMLObject {
      * @throws IllegalArgumentException
      *             if the feature has more than one property with the given name
      */
-    public Property<?> getProperty( QName propName );
+    public Property getProperty( QName propName );
 
     /**
      * Returns the property with the given name.
@@ -170,14 +170,14 @@ public interface Feature extends MatchableObject, GMLObject {
      * @throws IllegalArgumentException
      *             if the feature has more than one property with the given name
      */
-    public Property<?> getProperty( QName propName, GMLVersion version );
+    public Property getProperty( QName propName, GMLVersion version );
 
     /**
      * Returns all geometry-valued properties in order.
      * 
      * @return all geometry properties
      */
-    public Property<Geometry>[] getGeometryProperties();
+    public Property[] getGeometryProperties();
 
     /**
      * Returns the envelope of the feature.
@@ -199,7 +199,7 @@ public interface Feature extends MatchableObject, GMLObject {
      * @throws IllegalArgumentException
      *             if the property names or values are not compatible with the feature type
      */
-    public void setPropertyValue( QName propName, int occurence, Object value );
+    public void setPropertyValue( QName propName, int occurence, TypedObjectNode value );
 
     /**
      * Sets the value of a specific occurrence of a property with a given name (or removes the property from the
@@ -217,7 +217,7 @@ public interface Feature extends MatchableObject, GMLObject {
      * @throws IllegalArgumentException
      *             if the property names or values are not compatible with the feature type
      */
-    public void setPropertyValue( QName propName, int occurence, Object value, GMLVersion version );
+    public void setPropertyValue( QName propName, int occurence, TypedObjectNode value, GMLVersion version );
 
     /**
      * Called during construction to initialize the properties of the feature.
@@ -226,7 +226,7 @@ public interface Feature extends MatchableObject, GMLObject {
      * @throws IllegalArgumentException
      *             if the property names or values are not compatible with the feature type
      */
-    public void setProperties( List<Property<?>> props )
+    public void setProperties( List<Property> props )
                             throws IllegalArgumentException;
 
     /**
@@ -238,6 +238,6 @@ public interface Feature extends MatchableObject, GMLObject {
      * @throws IllegalArgumentException
      *             if the property names or values are not compatible with the feature type
      */
-    public void setProperties( List<Property<?>> props, GMLVersion version )
+    public void setProperties( List<Property> props, GMLVersion version )
                             throws IllegalArgumentException;
 }

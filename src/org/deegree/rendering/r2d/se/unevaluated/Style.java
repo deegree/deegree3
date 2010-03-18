@@ -178,10 +178,10 @@ public class Style {
         if ( useDefault ) {
             LinkedList<Triple<Styling, Geometry, String>> list = new LinkedList<Triple<Styling, Geometry, String>>();
 
-            Property<Geometry>[] geoms = f.getGeometryProperties();
+            Property[] geoms = f.getGeometryProperties();
             if ( geoms != null ) {
-                for ( Property<Geometry> p : geoms ) {
-                    Geometry geom = p.getValue();
+                for ( Property p : geoms ) {
+                    Geometry geom = (Geometry) p.getValue();
                     if ( geom instanceof Point || geom instanceof MultiPoint ) {
                         list.add( new Triple<Styling, Geometry, String>( defaultPointStyle, geom, null ) );
                     } else if ( geom instanceof Curve || geom instanceof MultiCurve || geom instanceof MultiLineString ) {

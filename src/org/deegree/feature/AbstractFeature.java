@@ -41,6 +41,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.xpath.AttributeNode;
@@ -97,7 +98,7 @@ abstract class AbstractFeature implements Feature {
         int i = 0;
         for ( Object node : selectedNodes ) {
             if ( node instanceof PropertyNode ) {
-                Property<?> prop = ( (PropertyNode) node ).getProperty();
+                Property prop = ( (PropertyNode) node ).getProperty();
                 resultValues[i++] = prop.getValue();
             } else if ( node instanceof AttributeNode ) {
                 resultValues[i++] = ( (AttributeNode) node ).getValue();
@@ -133,7 +134,7 @@ abstract class AbstractFeature implements Feature {
      */
     protected Envelope calcEnvelope() {
         Envelope featureBBox = null;
-        for ( Property<?> prop : this.getProperties() ) {
+        for ( Property prop : this.getProperties() ) {
             Object propValue = prop.getValue();
             Envelope propBBox = null;
             if ( propValue instanceof Geometry ) {
@@ -152,20 +153,20 @@ abstract class AbstractFeature implements Feature {
     }
 
     @Override
-    public Property<?>[] getProperties( GMLVersion version ) {
+    public Property[] getProperties( GMLVersion version ) {
         if ( standardProps != null ) {
-            List<Property<?>> props = new LinkedList<Property<?>>();
+            List<Property> props = new LinkedList<Property>();
             props.addAll( standardProps.getProperties( version ) );
             props.addAll( Arrays.asList( getProperties() ) );
-            return props.toArray( new Property<?>[props.size()] );
+            return props.toArray( new Property[props.size()] );
         }
         return getProperties();
     }
 
     @Override
-    public Property<?>[] getProperties( QName propName, GMLVersion version ) {
+    public Property[] getProperties( QName propName, GMLVersion version ) {
         if ( standardProps != null ) {
-            Property<?>[] gmlProp = standardProps.getProperties( propName, version );
+            Property[] gmlProp = standardProps.getProperties( propName, version );
             if ( gmlProp != null ) {
                 return gmlProp;
             }
@@ -174,9 +175,9 @@ abstract class AbstractFeature implements Feature {
     }
 
     @Override
-    public Property<?> getProperty( QName propName, GMLVersion version ) {
+    public Property getProperty( QName propName, GMLVersion version ) {
         if ( standardProps != null ) {
-            Property<?> gmlProp = standardProps.getProperty( propName, version );
+            Property gmlProp = standardProps.getProperty( propName, version );
             if ( gmlProp != null ) {
                 return gmlProp;
             }
@@ -185,15 +186,15 @@ abstract class AbstractFeature implements Feature {
     }
 
     @Override
-    public void setProperties( List<Property<?>> props, GMLVersion version )
+    public void setProperties( List<Property> props, GMLVersion version )
                             throws IllegalArgumentException {
-        Pair<StandardGMLFeatureProps, List<Property<?>>> pair = StandardGMLFeatureProps.create( props, version );
+        Pair<StandardGMLFeatureProps, List<Property>> pair = StandardGMLFeatureProps.create( props, version );
         this.standardProps = pair.first;
         setProperties( pair.second );
     }
 
     @Override
-    public void setPropertyValue( QName propName, int occurence, Object value, GMLVersion version ) {
+    public void setPropertyValue( QName propName, int occurence, TypedObjectNode value, GMLVersion version ) {
         if ( standardProps == null || !standardProps.setPropertyValue( propName, occurence, value, version ) ) {
             setPropertyValue( propName, occurence, value );
         }

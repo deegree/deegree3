@@ -55,9 +55,9 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
 
     private GMLObjectNode<Feature> parent;
 
-    private Iterator<Property<?>> stdProps;
+    private Iterator<Property> stdProps;
 
-    private Iterator<Property<?>> props;
+    private Iterator<Property> props;
 
     PropertyNodeIterator( GMLObjectNode<Feature> parent, GMLVersion version ) {
         this.parent = parent;
@@ -74,7 +74,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
         if ( !hasNext() ) {
             throw new NoSuchElementException();
         }
-        Property<?> prop = null;
+        Property prop = null;
         if ( stdProps != null && stdProps.hasNext() ) {
             prop = stdProps.next();
         } else {

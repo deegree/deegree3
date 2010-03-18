@@ -67,15 +67,15 @@ public class Util {
             // hack to split pseudo multiple properties into actual multiple properties...
             // yes, it's ugly, thanks a bunch for noticing
             List<T> tmp;
-            if ( o instanceof Property<?> ) {
-                Property<?> p = (Property<?>) o;
+            if ( o instanceof Property ) {
+                Property p = (Property) o;
 
                 if ( p.getValue() instanceof Geometry && !geometries ) {
                     continue;
                 }
 
-                if ( p.getValue() instanceof String ) {
-                    String s = (String) p.getValue();
+                if ( p.getValue() instanceof PrimitiveValue ) {
+                    String s = p.getValue().toString();
                     // skip empty string properties completely
                     if ( s.isEmpty() ) {
                         continue;
@@ -137,7 +137,7 @@ public class Util {
             }
 
             for ( T o2 : tmp ) {
-                String nm = o2 instanceof Property<?> ? ( (Property<?>) o2 ).getName().getLocalPart()
+                String nm = o2 instanceof Property ? ( (Property) o2 ).getName().getLocalPart()
                                                      : ( (Feature) o2 ).getName().getLocalPart();
                 if ( negate ) {
                     list.add( o2 );

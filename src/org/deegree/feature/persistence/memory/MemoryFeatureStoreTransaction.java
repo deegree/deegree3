@@ -272,7 +272,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                         fids.add( feature.getId() );
                     }
                 }
-                for ( Property<?> property : feature.getProperties() ) {
+                for ( Property property : feature.getProperties() ) {
                     Object propertyValue = property.getValue();
                     if ( propertyValue instanceof Feature ) {
                         if ( !( propertyValue instanceof FeatureReference )
@@ -297,7 +297,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, Lock lock )
+    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, Lock lock )
                             throws FeatureStoreException {
 
         String lockId = lock != null ? lock.getId() : null;
@@ -327,7 +327,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
                 updated = newFc.size();
                 for ( Feature feature : newFc ) {
-                    for ( Property<?> prop : replacementProps ) {
+                    for ( Property prop : replacementProps ) {
                         // check compatibility (CRS) for geometry replacements (CITE wfs:wfs-1.1.0-Transaction-tc7.2)
                         if ( prop.getValue() instanceof Geometry ) {
                             Geometry geom = (Geometry) feature.getProperty( prop.getType().getName() ).getValue();

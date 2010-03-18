@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -66,7 +67,7 @@ public class GenericFeature extends AbstractFeature {
 
     private GenericFeatureType ft;
 
-    private List<Property<?>> props;
+    private List<Property> props;
 
     /**
      * Creates a new {@link GenericFeature} instance.
@@ -81,15 +82,15 @@ public class GenericFeature extends AbstractFeature {
      *            GML version (determines the names/types of the standard properties), or <code>null</code> (then no
      *            standard GML properties are allowed)
      */
-    public GenericFeature( GenericFeatureType ft, String fid, List<Property<?>> props, GMLVersion version ) {
+    public GenericFeature( GenericFeatureType ft, String fid, List<Property> props, GMLVersion version ) {
         this.ft = ft;
         this.fid = fid;
         if ( version == null ) {
-            this.props = new ArrayList<Property<?>>( props );
+            this.props = new ArrayList<Property>( props );
         } else {
-            Pair<StandardGMLFeatureProps, List<Property<?>>> pair = StandardGMLFeatureProps.create( props, version );
+            Pair<StandardGMLFeatureProps, List<Property>> pair = StandardGMLFeatureProps.create( props, version );
             standardProps = pair.first;
-            this.props = new ArrayList<Property<?>>( pair.second );
+            this.props = new ArrayList<Property>( pair.second );
         }
     }
 
@@ -114,18 +115,18 @@ public class GenericFeature extends AbstractFeature {
     }
 
     @Override
-    public Property<?>[] getProperties() {
-        return props.toArray( new Property<?>[props.size()] );
+    public Property[] getProperties() {
+        return props.toArray( new Property[props.size()] );
     }
 
     @Override
-    public void setProperties( List<Property<?>> props )
+    public void setProperties( List<Property> props )
                             throws IllegalArgumentException {
-        this.props = new ArrayList<Property<?>>( props );
+        this.props = new ArrayList<Property>( props );
     }
 
     @Override
-    public void setPropertyValue( QName propName, int occurrence, Object value ) {
+    public void setPropertyValue( QName propName, int occurrence, TypedObjectNode value ) {
 
         LOG.debug( "Setting property value for " + occurrence + ". " + propName + " property" );
 
@@ -145,12 +146,12 @@ public class GenericFeature extends AbstractFeature {
 
         int num = 0;
         for ( int i = 0; i < props.size(); i++ ) {
-            Property<?> prop = props.get( i );
+            Property prop = props.get( i );
             // TODO this is not sufficient (prop name must not be equal to prop type name)
             if ( prop.getName().equals( propName ) ) {
                 if ( num++ == occurrence ) {
                     if ( value != null ) {
-                        props.set( i, new GenericProperty<Object>( pt, propName, value ) );
+                        props.set( i, new GenericProperty( pt, propName, value ) );
                     } else {
                         props.remove( i );
                     }
@@ -162,20 +163,20 @@ public class GenericFeature extends AbstractFeature {
     }
 
     @Override
-    public Property<?>[] getProperties( QName propName ) {
-        List<Property<?>> namedProps = new ArrayList<Property<?>>( props.size() );
-        for ( Property<?> property : props ) {
+    public Property[] getProperties( QName propName ) {
+        List<Property> namedProps = new ArrayList<Property>( props.size() );
+        for ( Property property : props ) {
             if ( propName.equals( property.getName() ) ) {
                 namedProps.add( property );
             }
         }
-        return namedProps.toArray( new Property<?>[namedProps.size()] );
+        return namedProps.toArray( new Property[namedProps.size()] );
     }
 
     @Override
-    public Property<?> getProperty( QName propName ) {
-        Property<?> prop = null;
-        for ( Property<?> property : props ) {
+    public Property getProperty( QName propName ) {
+        Property prop = null;
+        for ( Property property : props ) {
             if ( propName.equals( property.getName() ) ) {
                 if ( prop != null ) {
                     String msg = "Feature has more than one property with name '" + propName + "'.";
@@ -189,11 +190,11 @@ public class GenericFeature extends AbstractFeature {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Property<Geometry>[] getGeometryProperties() {
-        List<Property<Geometry>> geoProps = new ArrayList<Property<Geometry>>( props.size() );
-        for ( Property<?> property : props ) {
+    public Property[] getGeometryProperties() {
+        List<Property> geoProps = new ArrayList<Property>( props.size() );
+        for ( Property property : props ) {
             if ( property.getValue() instanceof Geometry ) {
-                geoProps.add( (Property<Geometry>) property );
+                geoProps.add( property );
             }
         }
         return geoProps.toArray( new Property[geoProps.size()] );

@@ -49,6 +49,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -134,8 +135,8 @@ public class StandardGMLFeatureProps extends GMLStdProps {
      * @param boundedBy
      *            bounding box, may be <code>null</code>
      */
-    public StandardGMLFeatureProps( Object[] metadata, StringOrRef description, CodeType identifier, CodeType[] names,
-                                    Envelope boundedBy ) {
+    public StandardGMLFeatureProps( TypedObjectNode[] metadata, StringOrRef description, CodeType identifier,
+                                    CodeType[] names, Envelope boundedBy ) {
         super( metadata, description, identifier, names );
         this.boundedBy = boundedBy;
     }
@@ -166,8 +167,8 @@ public class StandardGMLFeatureProps extends GMLStdProps {
      *            GML version, must not be <code>null</code>
      * @return corresponding {@link Property} instances, may be empty, but never <code>null</code>
      */
-    public Collection<Property<?>> getProperties( GMLVersion version ) {
-        List<Property<?>> props = new ArrayList<Property<?>>();
+    public Collection<Property> getProperties( GMLVersion version ) {
+        List<Property> props = new ArrayList<Property>();
         switch ( version ) {
         case GML_2:
             if ( description != null ) {
@@ -177,47 +178,47 @@ public class StandardGMLFeatureProps extends GMLStdProps {
                 props.add( new SimpleProperty( PT_NAME_GML2, names[0].getCode(), STRING ) );
             }
             if ( boundedBy != null ) {
-                props.add( new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy ) );
+                props.add( new GenericProperty( PT_BOUNDED_BY_GML2, boundedBy ) );
             }
             break;
         case GML_30:
         case GML_31:
             if ( metadata != null ) {
-                for ( Object metadataItem : metadata ) {
-                    props.add( new GenericProperty<Object>( PT_META_DATA_PROPERTY_GML31, metadataItem ) );
+                for ( TypedObjectNode metadataItem : metadata ) {
+                    props.add( new GenericProperty( PT_META_DATA_PROPERTY_GML31, metadataItem ) );
                 }
             }
             if ( description != null ) {
-                props.add( new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML31, description ) );
+                props.add( new GenericProperty( PT_DESCRIPTION_GML31, description ) );
             }
             if ( names != null ) {
                 for ( CodeType name : names ) {
-                    props.add( new GenericProperty<CodeType>( PT_NAME_GML31, name ) );
+                    props.add( new GenericProperty( PT_NAME_GML31, name ) );
                 }
             }
             if ( boundedBy != null ) {
-                props.add( new GenericProperty<Envelope>( PT_BOUNDED_BY_GML31, boundedBy ) );
+                props.add( new GenericProperty( PT_BOUNDED_BY_GML31, boundedBy ) );
             }
             break;
         case GML_32:
             if ( metadata != null ) {
-                for ( Object metadataItem : metadata ) {
-                    props.add( new GenericProperty<Object>( PT_META_DATA_PROPERTY_GML32, metadataItem ) );
+                for ( TypedObjectNode metadataItem : metadata ) {
+                    props.add( new GenericProperty( PT_META_DATA_PROPERTY_GML32, metadataItem ) );
                 }
             }
             if ( description != null ) {
-                props.add( new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML32, description ) );
+                props.add( new GenericProperty( PT_DESCRIPTION_GML32, description ) );
             }
             if ( names != null ) {
                 for ( CodeType name : names ) {
-                    props.add( new GenericProperty<CodeType>( PT_NAME_GML32, name ) );
+                    props.add( new GenericProperty( PT_NAME_GML32, name ) );
                 }
             }
             if ( identifier != null ) {
-                props.add( new GenericProperty<CodeType>( PT_IDENTIFIER_GML32, identifier ) );
+                props.add( new GenericProperty( PT_IDENTIFIER_GML32, identifier ) );
             }
             if ( boundedBy != null ) {
-                props.add( new GenericProperty<Envelope>( PT_BOUNDED_BY_GML32, boundedBy ) );
+                props.add( new GenericProperty( PT_BOUNDED_BY_GML32, boundedBy ) );
             }
             break;
         }
@@ -233,29 +234,29 @@ public class StandardGMLFeatureProps extends GMLStdProps {
      *            GML version, must not be <code>null</code>
      * @return corresponding {@link Property} instance or <code>null</code> if no such property exists
      */
-    public Property<?> getProperty( QName propName, GMLVersion version ) {
-        Property<?> prop = null;
+    public Property getProperty( QName propName, GMLVersion version ) {
+        Property prop = null;
         switch ( version ) {
         case GML_2:
             if ( PT_DESCRIPTION_GML2.getName().equals( propName ) && description != null ) {
-                prop = new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() );
+                prop = new GenericProperty( PT_DESCRIPTION_GML2, new PrimitiveValue( description.getString() ) );
             } else if ( PT_NAME_GML2.getName().equals( propName ) && names != null && names.length > 0 ) {
-                prop = new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() );
+                prop = new GenericProperty( PT_NAME_GML2, new PrimitiveValue( names[0].getCode() ) );
             } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) && boundedBy != null ) {
-                prop = new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy );
+                prop = new GenericProperty( PT_BOUNDED_BY_GML2, boundedBy );
             }
             break;
         case GML_30:
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
-                prop = new GenericProperty<Object>( PT_META_DATA_PROPERTY_GML31, metadata[0] );
+                prop = new GenericProperty( PT_META_DATA_PROPERTY_GML31, metadata[0] );
             } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) && description != null ) {
-                prop = new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML31, description );
+                prop = new GenericProperty( PT_DESCRIPTION_GML31, description );
             } else if ( PT_NAME_GML31.getName().equals( propName ) && names.length > 0 ) {
-                prop = new GenericProperty<CodeType>( PT_NAME_GML31, names[0] );
+                prop = new GenericProperty( PT_NAME_GML31, names[0] );
             } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
                 if ( boundedBy != null ) {
-                    prop = new GenericProperty<Envelope>( PT_BOUNDED_BY_GML31, boundedBy );
+                    prop = new GenericProperty( PT_BOUNDED_BY_GML31, boundedBy );
                 }
             }
             break;
@@ -315,35 +316,36 @@ public class StandardGMLFeatureProps extends GMLStdProps {
      *            GML version, must not be <code>null</code>
      * @return corresponding {@link Property} instances or <code>null</code> if no such property exists
      */
-    public Property<?>[] getProperties( QName propName, GMLVersion version ) {
-        Property<?>[] props = null;
+    public Property[] getProperties( QName propName, GMLVersion version ) {
+        Property[] props = null;
         switch ( version ) {
         case GML_2:
             if ( PT_DESCRIPTION_GML2.getName().equals( propName ) && description != null ) {
-                props = new Property<?>[] { new GenericProperty<String>( PT_DESCRIPTION_GML2, description.getString() ) };
+                props = new Property[] { new GenericProperty( PT_DESCRIPTION_GML2,
+                                                              new PrimitiveValue( description.getString() ) ) };
             } else if ( PT_NAME_GML2.getName().equals( propName ) && names != null && names.length > 0 ) {
-                props = new Property<?>[] { new GenericProperty<String>( PT_NAME_GML2, names[0].getCode() ) };
+                props = new Property[] { new GenericProperty( PT_NAME_GML2, new PrimitiveValue( names[0].getCode() ) ) };
             } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) && boundedBy != null ) {
-                props = new Property<?>[] { new GenericProperty<Envelope>( PT_BOUNDED_BY_GML2, boundedBy ) };
+                props = new Property[] { new GenericProperty( PT_BOUNDED_BY_GML2, boundedBy ) };
             }
             break;
         case GML_30:
         case GML_31:
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) && metadata.length > 0 ) {
-                props = new Property<?>[metadata.length];
+                props = new Property[metadata.length];
                 for ( int i = 0; i < metadata.length; i++ ) {
-                    props[i] = new GenericProperty<Object>( PT_NAME_GML31, metadata[i] );
+                    props[i] = new GenericProperty( PT_NAME_GML31, metadata[i] );
                 }
             } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) && description != null ) {
-                props = new Property<?>[] { new GenericProperty<StringOrRef>( PT_DESCRIPTION_GML31, description ) };
+                props = new Property[] { new GenericProperty( PT_DESCRIPTION_GML31, description ) };
             } else if ( PT_NAME_GML31.getName().equals( propName ) && names.length > 0 ) {
-                props = new Property<?>[names.length];
+                props = new Property[names.length];
                 for ( int i = 0; i < names.length; i++ ) {
-                    props[i] = new GenericProperty<CodeType>( PT_NAME_GML31, names[i] );
+                    props[i] = new GenericProperty( PT_NAME_GML31, names[i] );
                 }
             } else if ( PT_BOUNDED_BY_GML2.getName().equals( propName ) ) {
                 if ( boundedBy != null ) {
-                    props = new Property<?>[] { new GenericProperty<Envelope>( PT_BOUNDED_BY_GML31, boundedBy ) };
+                    props = new Property[] { new GenericProperty( PT_BOUNDED_BY_GML31, boundedBy ) };
                 }
             }
             break;
@@ -447,18 +449,18 @@ public class StandardGMLFeatureProps extends GMLStdProps {
     }
 
     // TODO respect occurence
-    public boolean setPropertyValue( QName propName, int occurence, Object value, GMLVersion version ) {
+    public boolean setPropertyValue( QName propName, int occurence, TypedObjectNode value, GMLVersion version ) {
 
         switch ( version ) {
         case GML_2: {
             if ( PT_DESCRIPTION_GML2.getName().equals( propName ) ) {
-                description = new StringOrRef( (String) value, null );
+                description = new StringOrRef( value + "", null );
             } else if ( PT_NAME_GML2.getName().equals( propName ) ) {
                 if ( names == null || names.length == 0 ) {
                     names = new CodeType[1];
                 }
                 if ( value != null ) {
-                    names[0] = new CodeType( (String) value, null );
+                    names[0] = new CodeType( value + "", null );
                 } else {
                     // remove first if present
                     List<CodeType> subList = Arrays.asList( names ).subList( names.length > 0 ? 1 : 0, names.length );
@@ -473,15 +475,15 @@ public class StandardGMLFeatureProps extends GMLStdProps {
         case GML_31: {
             if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) ) {
                 if ( metadata == null || metadata.length == 0 ) {
-                    metadata = new Object[1];
+                    metadata = new TypedObjectNode[1];
                 }
                 if ( value != null ) {
                     metadata[0] = value;
                 } else {
                     // remove first if present
-                    List<Object> subList = Arrays.asList( metadata ).subList( metadata.length > 0 ? 1 : 0,
+                    List<TypedObjectNode> subList = Arrays.asList( metadata ).subList( metadata.length > 0 ? 1 : 0,
                                                                               metadata.length );
-                    metadata = subList.toArray( new CodeType[subList.size()] );
+                    metadata = subList.toArray( new TypedObjectNode[subList.size()] );
                 }
             } else if ( PT_DESCRIPTION_GML31.getName().equals( propName ) ) {
                 description = (StringOrRef) value;
@@ -517,7 +519,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
      *            GML version, must not be <code>null</code>
      * @return created instance and remaining (non-default) properties
      */
-    public static Pair<StandardGMLFeatureProps, List<Property<?>>> create( List<Property<?>> props, GMLVersion version ) {
+    public static Pair<StandardGMLFeatureProps, List<Property>> create( List<Property> props, GMLVersion version ) {
 
         List<Object> metadata = new LinkedList<Object>();
         StringOrRef description = null;
@@ -528,7 +530,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
 
         switch ( version ) {
         case GML_2: {
-            for ( Property<?> property : props ) {
+            for ( Property property : props ) {
                 QName propName = property.getName();
                 if ( GMLNS.equals( propName.getNamespaceURI() ) ) {
                     if ( PT_DESCRIPTION_GML2.getName().equals( propName ) ) {
@@ -549,7 +551,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
         }
         case GML_30:
         case GML_31: {
-            for ( Property<?> property : props ) {
+            for ( Property property : props ) {
                 QName propName = property.getName();
                 if ( GMLNS.equals( propName.getNamespaceURI() ) ) {
                     if ( PT_META_DATA_PROPERTY_GML31.getName().equals( propName ) ) {
@@ -572,7 +574,7 @@ public class StandardGMLFeatureProps extends GMLStdProps {
             break;
         }
         case GML_32: {
-            for ( Property<?> property : props ) {
+            for ( Property property : props ) {
                 QName propName = property.getName();
                 if ( GML3_2_NS.equals( propName.getNamespaceURI() ) ) {
                     if ( PT_META_DATA_PROPERTY_GML32.getName().equals( propName ) ) {
@@ -603,12 +605,12 @@ public class StandardGMLFeatureProps extends GMLStdProps {
         }
         }
         StandardGMLFeatureProps gmlProps = new StandardGMLFeatureProps(
-                                                                        metadata.toArray( new Object[metadata.size()] ),
+                                                                        metadata.toArray( new TypedObjectNode[metadata.size()] ),
                                                                         description, identifier,
                                                                         names.toArray( new CodeType[names.size()] ),
                                                                         boundedBy );
-        List<Property<?>> nonGMLProps = props.subList( firstCustomPropIndex, props.size() );
-        return new Pair<StandardGMLFeatureProps, List<Property<?>>>( gmlProps, nonGMLProps );
+        List<Property> nonGMLProps = props.subList( firstCustomPropIndex, props.size() );
+        return new Pair<StandardGMLFeatureProps, List<Property>>( gmlProps, nonGMLProps );
     }
 
     @Override

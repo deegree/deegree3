@@ -36,6 +36,7 @@
 
 package org.deegree.commons.tom.ows;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
@@ -48,7 +49,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
  *
  * @version $Revision: $, $Date: $
  */
-public class CodeType {
+public class CodeType implements TypedObjectNode {
 
     private String code;
 
