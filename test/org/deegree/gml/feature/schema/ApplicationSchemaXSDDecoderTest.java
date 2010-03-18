@@ -108,7 +108,7 @@ public class ApplicationSchemaXSDDecoderTest {
 //                            throws ClassCastException, ClassNotFoundException, InstantiationException,
 //                            IllegalAccessException {
 //
-//        String schemaURL = "http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd";
+//        String schemaURL = "file:/home/markus/workspace/geosciml/xsd/geosciml.xsd";
 //        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, null, schemaURL );
 //        ApplicationSchema schema = adapter.extractFeatureTypeSchema();
 //        FeatureType[] fts = schema.getFeatureTypes();

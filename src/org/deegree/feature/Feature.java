@@ -187,7 +187,7 @@ public interface Feature extends MatchableObject, GMLObject {
     public Envelope getEnvelope();
 
     /**
-     * Sets the value of a specific occurence of a property with a given name (or removes the property feature).
+     * Sets the value of a specific occurrence of a property with a given name (or removes the property feature).
      * 
      * @param propName
      *            property name
@@ -202,7 +202,7 @@ public interface Feature extends MatchableObject, GMLObject {
     public void setPropertyValue( QName propName, int occurence, Object value );
 
     /**
-     * Sets the value of a specific occurence of a property with a given name (or removes the property from the
+     * Sets the value of a specific occurrence of a property with a given name (or removes the property from the
      * feature).
      * 
      * @param propName

@@ -127,7 +127,7 @@ public class XSModelAnalyzer {
      * @param namespace
      *            only element declarations in this namespace are returned, set to <code>null</code> for all namespaces
      * @param transitive
-     *            if true, also substitutions for substitutions (and so one) are included
+     *            if true, also substitutions for substitutions (and so on) are included
      * @param onlyConcrete
      *            if true, only concrete (non-abstract) declarations are returned
      * @return the declarations of all substitution elements in the requested namespace
