@@ -55,7 +55,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.xs.StringList;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.deegree.commons.tom.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;

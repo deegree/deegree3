@@ -37,6 +37,8 @@ package org.deegree.commons.uom;
 
 import java.math.BigDecimal;
 
+import org.deegree.commons.tom.TypedObjectNode;
+
 /**
  * Number with a scale.
  * 
@@ -45,7 +47,7 @@ import java.math.BigDecimal;
  * 
  * @version $Revision:$, $Date:$
  */
-public class Measure {
+public class Measure implements TypedObjectNode {
 
     private BigDecimal value;
 

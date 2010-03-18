@@ -41,7 +41,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.PrimitiveValue;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.xpath.AttributeNode;
 import org.deegree.feature.xpath.FeatureXPath;

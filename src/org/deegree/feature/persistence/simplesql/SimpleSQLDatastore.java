@@ -46,9 +46,9 @@ import static java.sql.Types.OTHER;
 import static java.sql.Types.SMALLINT;
 import static java.sql.Types.VARCHAR;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
-import static org.deegree.commons.tom.PrimitiveType.BOOLEAN;
-import static org.deegree.commons.tom.PrimitiveType.DECIMAL;
-import static org.deegree.commons.tom.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.PrimitiveType.DECIMAL;
+import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
@@ -68,7 +68,7 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;

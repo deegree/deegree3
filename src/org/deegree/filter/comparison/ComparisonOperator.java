@@ -38,11 +38,11 @@ package org.deegree.filter.comparison;
 import java.math.BigDecimal;
 import java.text.ParseException;
 
-import org.deegree.commons.tom.PrimitiveValue;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Time;
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;

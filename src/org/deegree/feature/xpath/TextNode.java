@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import org.deegree.commons.tom.PrimitiveValue;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
  * {@link XPathNode} that represents an XML text node.

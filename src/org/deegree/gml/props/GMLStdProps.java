@@ -36,7 +36,7 @@
 
 package org.deegree.gml.props;
 
-import static org.deegree.commons.tom.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 

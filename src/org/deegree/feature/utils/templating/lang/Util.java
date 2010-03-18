@@ -41,7 +41,7 @@ import static java.util.Collections.singletonList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.commons.tom.PrimitiveValue;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;

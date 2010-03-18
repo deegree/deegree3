@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import org.deegree.commons.tom.GenericXMLElement;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 
 /**
  * {@link ElementNode} that wraps an {@link ElementNode}.

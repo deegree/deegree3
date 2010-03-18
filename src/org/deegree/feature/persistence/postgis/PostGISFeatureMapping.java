@@ -40,8 +40,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.SQLValueMangler;
-import org.deegree.commons.tom.XMLValueMangler;
+import org.deegree.commons.tom.primitive.SQLValueMangler;
+import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.postgis.jaxbconfig.GeometryPropertyMappingType;
 import org.deegree.feature.persistence.postgis.jaxbconfig.PropertyMappingType;

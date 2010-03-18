@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.tom;
+package org.deegree.commons.tom.primitive;
 
 import java.math.BigDecimal;
 

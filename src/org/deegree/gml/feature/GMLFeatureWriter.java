@@ -49,12 +49,12 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.tom.GenericXMLElement;
-import org.deegree.commons.tom.GenericXMLElementContent;
-import org.deegree.commons.tom.PrimitiveValue;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.stax.StAXExportingHelper;

@@ -38,8 +38,8 @@ package org.deegree.feature;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.deegree.commons.tom.PrimitiveType;
-import org.deegree.commons.tom.PrimitiveValue;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.types.property.SimplePropertyType;
 
 /**

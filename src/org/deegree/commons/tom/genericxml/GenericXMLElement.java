@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.tom;
+package org.deegree.commons.tom.genericxml;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +42,8 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
  * {@link TypedObjectNode} that represents a generic XML element with associated XML schema type information.

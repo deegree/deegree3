@@ -33,12 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.tom;
+package org.deegree.commons.tom.primitive;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Time;
@@ -49,6 +50,8 @@ import org.deegree.commons.utils.Pair;
 /**
  * {@link TypedObjectNode} that represents a primitive value, e.g. an XML text node or an XML attribute value with type
  * information.
+ * 
+ * @see PrimitiveType
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

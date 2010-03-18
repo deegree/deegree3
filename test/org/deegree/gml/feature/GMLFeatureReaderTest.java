@@ -55,8 +55,8 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.deegree.commons.tom.GenericXMLElementContent;
-import org.deegree.commons.tom.PrimitiveValue;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;

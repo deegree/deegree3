@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
-import static org.deegree.commons.tom.PrimitiveType.STRING;
+import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
@@ -49,9 +49,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.PrimitiveValue;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;

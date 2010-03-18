@@ -49,7 +49,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.postgis.jaxbconfig.AbstractPropertyDecl;
 import org.deegree.feature.persistence.postgis.jaxbconfig.ApplicationSchemaDecl;

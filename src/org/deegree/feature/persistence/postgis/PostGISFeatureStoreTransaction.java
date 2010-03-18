@@ -52,7 +52,7 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.SQLValueMangler;
+import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.crs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
