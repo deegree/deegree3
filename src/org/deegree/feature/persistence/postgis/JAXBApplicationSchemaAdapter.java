@@ -150,14 +150,14 @@ public class JAXBApplicationSchemaAdapter {
         return ptAndMapping;
     }
 
-    private static Pair<SimplePropertyType<?>, SimplePropertyMappingType> toSimplePropertyType( QName propName,
+    private static Pair<SimplePropertyType, SimplePropertyMappingType> toSimplePropertyType( QName propName,
 
     SimplePropertyDecl jaxbPropertyDecl ) {
         int minOccurs = getMinOccurs( jaxbPropertyDecl );
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         // identical types due to convention
         PrimitiveType type = PrimitiveType.valueOf( jaxbPropertyDecl.getType().name() );
-        return new Pair<SimplePropertyType<?>, SimplePropertyMappingType>( new SimplePropertyType<Object>( propName,
+        return new Pair<SimplePropertyType, SimplePropertyMappingType>( new SimplePropertyType( propName,
                                                                                                            minOccurs,
                                                                                                            maxOccurs,
                                                                                                            type, false,
@@ -280,7 +280,7 @@ public class JAXBApplicationSchemaAdapter {
         AbstractPropertyDecl propDecl = null;
         QName elName = null;
 
-        if ( pt instanceof SimplePropertyType<?> ) {
+        if ( pt instanceof SimplePropertyType ) {
             propDecl = new SimplePropertyDecl();
             elName = QName.valueOf( "{http://www.deegree.org/feature/featuretype}SimpleProperty" );
             ( (SimplePropertyDecl) propDecl ).setSimplePropertyMapping( (SimplePropertyMappingType) propertyHints );

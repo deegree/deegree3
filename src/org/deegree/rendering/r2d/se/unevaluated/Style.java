@@ -52,7 +52,7 @@ import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.function.geometry.IsCurve;
 import org.deegree.filter.function.geometry.IsPoint;

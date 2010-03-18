@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature;
+package org.deegree.feature.property;
 
 import javax.xml.namespace.QName;
 

@@ -40,6 +40,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;

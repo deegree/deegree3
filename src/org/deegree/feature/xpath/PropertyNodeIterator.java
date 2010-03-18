@@ -40,7 +40,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.deegree.feature.Feature;
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 import org.deegree.gml.GMLVersion;
 
 /**

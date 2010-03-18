@@ -38,7 +38,7 @@ package org.deegree.feature.utils.templating.lang;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 import org.slf4j.Logger;
 
 /**

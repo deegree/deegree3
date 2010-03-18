@@ -76,9 +76,6 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
-import org.deegree.feature.GenericProperty;
-import org.deegree.feature.Property;
-import org.deegree.feature.SimpleProperty;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
@@ -88,6 +85,9 @@ import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.FilteredFeatureResultSet;
 import org.deegree.feature.persistence.query.IteratorResultSet;
 import org.deegree.feature.persistence.query.Query;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
+import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -264,28 +264,28 @@ public class SimpleSQLDatastore implements FeatureStore {
             stmt.execute();
             set = stmt.getResultSet();
             ResultSetMetaData md = set.getMetaData();
-            LinkedList<PropertyType<?>> ps = new LinkedList<PropertyType<?>>();
+            LinkedList<PropertyType> ps = new LinkedList<PropertyType>();
             for ( int i = 1; i <= md.getColumnCount(); ++i ) {
                 String name = md.getColumnLabel( i );
 
-                PropertyType<?> pt;
+                PropertyType pt;
                 int colType = md.getColumnType( i );
                 switch ( colType ) {
                 case VARCHAR:
                 case CHAR:
-                    pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, STRING, false, null );
+                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, STRING, false, null );
                     break;
                 case INTEGER:
                 case SMALLINT:
-                    pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER,
+                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER,
                                                          false, null );
                     break;
                 case BIT:
-                    pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, BOOLEAN, false, null );
+                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, BOOLEAN, false, null );
                     break;
                 case NUMERIC:
                 case DOUBLE:
-                    pt = new SimplePropertyType<String>( new QName( namespace, name ), 0, 1, DECIMAL, false, null );
+                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, DECIMAL, false, null );
                     break;
                 case OTHER:
                 case BINARY:
@@ -430,7 +430,7 @@ public class SimpleSQLDatastore implements FeatureStore {
                         try {
                             if ( set.next() ) {
                                 LinkedList<Property> props = new LinkedList<Property>();
-                                for ( PropertyType<?> pt : featureType.getPropertyDeclarations() ) {
+                                for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
                                     if ( pt instanceof GeometryPropertyType ) {
                                         if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE ) {
                                             byte[] bs = set.getBytes( pt.getName().getLocalPart() );

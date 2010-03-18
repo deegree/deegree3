@@ -43,8 +43,8 @@ import java.util.List;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
-import org.deegree.feature.GenericProperty;
-import org.deegree.feature.Property;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
 
@@ -80,7 +80,7 @@ public class Util {
                     if ( s.isEmpty() ) {
                         continue;
                     }
-                    PropertyType<?> pt = p.getType();
+                    PropertyType pt = p.getType();
                     // this is some great parsing really, maybe GML 4 does not need multiple properties at all and can
                     // revert to this?
                     if ( s.startsWith( "[" ) && s.endsWith( "]" ) ) {

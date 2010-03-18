@@ -52,7 +52,7 @@ import org.deegree.commons.uom.Measure;
 public class MeasurePropertyType extends AbstractPropertyType {
 
     public MeasurePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                List<PropertyType<?>> substitutions ) {
+                                List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
     }
 

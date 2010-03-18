@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature;
+package org.deegree.feature.property;
 
 import javax.xml.namespace.QName;
 
@@ -87,12 +87,12 @@ public class GenericProperty implements Property {
         }
         this.value = value;
 
-        if ( declaration instanceof SimplePropertyType<?> ) {
+        if ( declaration instanceof SimplePropertyType ) {
             if ( value != null
-                 && value.getClass() != ( (SimplePropertyType<?>) declaration ).getPrimitiveType().getValueClass() ) {
+                 && value.getClass() != ( (SimplePropertyType) declaration ).getPrimitiveType().getValueClass() ) {
                 String msg = "Invalid simple property (PrimitiveType="
-                             + ( (SimplePropertyType<?>) declaration ).getPrimitiveType().name() + "): required class="
-                             + ( (SimplePropertyType<?>) declaration ).getPrimitiveType().getValueClass()
+                             + ( (SimplePropertyType) declaration ).getPrimitiveType().name() + "): required class="
+                             + ( (SimplePropertyType) declaration ).getPrimitiveType().getValueClass()
                              + ", but given '" + value.getClass() + ".";
                 throw new IllegalArgumentException( msg );
             }

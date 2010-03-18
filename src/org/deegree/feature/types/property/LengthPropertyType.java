@@ -42,7 +42,7 @@ import javax.xml.namespace.QName;
 public class LengthPropertyType extends MeasurePropertyType {
 
     public LengthPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                               List<PropertyType<?>> substitutions ) {
+                               List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
     }
 

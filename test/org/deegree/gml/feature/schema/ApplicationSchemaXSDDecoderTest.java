@@ -99,7 +99,7 @@ public class ApplicationSchemaXSDDecoderTest {
         Assert.assertEquals( 54, fts.length );
 
         FeatureType buildingFt = schema.getFeatureType( QName.valueOf( "{http://www.opengis.net/citygml/building/1.0}Building" ) );
-        PropertyType<?> pt = buildingFt.getPropertyDeclaration( QName.valueOf( "{http://www.opengis.net/citygml/1.0}_GenericApplicationPropertyOfCityObject" ) );
+        PropertyType pt = buildingFt.getPropertyDeclaration( QName.valueOf( "{http://www.opengis.net/citygml/1.0}_GenericApplicationPropertyOfCityObject" ) );
         Assert.assertEquals( 8, pt.getSubstitutions().length );
     }
     

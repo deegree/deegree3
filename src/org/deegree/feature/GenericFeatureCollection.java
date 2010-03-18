@@ -47,6 +47,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.property.FeaturePropertyType;

@@ -44,15 +44,12 @@ import org.deegree.feature.types.FeatureType;
  * 
  * @see FeatureType
  * 
- * @param <T>
- *            type of the values
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface PropertyType<T> {
+public interface PropertyType {
 
     /**
      * Returns the name of the property.
@@ -91,5 +88,5 @@ public interface PropertyType<T> {
      * @return the possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at
      *         least one entry
      */
-    public PropertyType<?>[] getSubstitutions();
+    public PropertyType[] getSubstitutions();
 }

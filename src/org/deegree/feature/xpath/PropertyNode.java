@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 
 /**
  * {@link ElementNode} that wraps a {@link Property} of a feature.

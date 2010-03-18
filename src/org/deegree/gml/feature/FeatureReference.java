@@ -42,7 +42,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;

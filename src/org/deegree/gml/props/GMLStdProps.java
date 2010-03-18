@@ -136,10 +136,10 @@ import org.deegree.gml.GMLObject;
 public class GMLStdProps {
 
     /** GML 2 standard property type 'gml:description' */
-    public static final SimplePropertyType<String> PT_DESCRIPTION_GML2;
+    public static final SimplePropertyType PT_DESCRIPTION_GML2;
 
     /** GML 2 standard property type 'gml:name' */
-    public static final SimplePropertyType<String> PT_NAME_GML2;
+    public static final SimplePropertyType PT_NAME_GML2;
 
     /** GML 3.0/3.1 standard property type 'gml:metaDataProperty' */
     public static final CustomPropertyType PT_META_DATA_PROPERTY_GML31;
@@ -166,9 +166,9 @@ public class GMLStdProps {
     public static final CodePropertyType PT_NAME_GML32;    
     
     static {
-        PT_DESCRIPTION_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "description" ), 0, 1, STRING, false,
+        PT_DESCRIPTION_GML2 = new SimplePropertyType( new QName( GMLNS, "description" ), 0, 1, STRING, false,
                                                               null );
-        PT_NAME_GML2 = new SimplePropertyType<String>( new QName( GMLNS, "name" ), 0, 1, STRING, false, null );
+        PT_NAME_GML2 = new SimplePropertyType( new QName( GMLNS, "name" ), 0, 1, STRING, false, null );
 
         // TODO correct this (should be a MetaDataPropertyType)
         PT_META_DATA_PROPERTY_GML31 = new CustomPropertyType( new QName( GMLNS, "metaDataProperty" ), 0, -1, null,

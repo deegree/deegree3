@@ -48,14 +48,12 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
  * 
  * @see PrimitiveType
  * 
- * @param <T>
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class SimplePropertyType<T> extends AbstractPropertyType<T> {
+public class SimplePropertyType extends AbstractPropertyType {
 
     private final PrimitiveType primitiveType;
 
@@ -64,14 +62,14 @@ public class SimplePropertyType<T> extends AbstractPropertyType<T> {
     private String codeList;
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
-                               List<PropertyType<?>> substitutions ) {
+                               List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.primitiveType = type;
         this.xsdType = null;
     }
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, PrimitiveType type, boolean isAbstract,
-                               List<PropertyType<?>> substitutions, XSSimpleTypeDefinition xsdType ) {
+                               List<PropertyType> substitutions, XSSimpleTypeDefinition xsdType ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.primitiveType = type;
         this.xsdType = xsdType;

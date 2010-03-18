@@ -128,10 +128,10 @@ class PostGISFeatureMapping implements PostGISMapping {
             } else {
                 // TODO implement properly
                 PropertyType pt = mapping.first;
-                if ( pt instanceof SimplePropertyType<?> ) {
+                if ( pt instanceof SimplePropertyType ) {
                     Object internalValue = XMLValueMangler.xmlToInternal(
                                                                           literal.getValue().toString(),
-                                                                          ( (SimplePropertyType<?>) pt ).getPrimitiveType() );
+                                                                          ( (SimplePropertyType) pt ).getPrimitiveType() );
                     pgValue = SQLValueMangler.internalToSQL( internalValue );
                 } else {
                     pgValue = literal.getValue().toString();

@@ -62,7 +62,7 @@ import org.deegree.gml.geometry.GMLGeometryReader;
  * <p>
  * Instances of this class are not thread-safe.
  * </p>
- * 
+ *
  * @see GMLObject
  * @see GMLInputFactory
  * 

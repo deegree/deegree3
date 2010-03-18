@@ -65,7 +65,7 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;

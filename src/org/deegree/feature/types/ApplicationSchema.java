@@ -128,7 +128,7 @@ public class ApplicationSchema {
 
 		// resolve values in feature property declarations
 		for (FeatureType ft : fts) {
-			for (PropertyType<?> pt : ft.getPropertyDeclarations()) {
+			for (PropertyType pt : ft.getPropertyDeclarations()) {
 				if (pt instanceof FeaturePropertyType) {
 					QName referencedFtName = ((FeaturePropertyType) pt).getFTName();
 					if (referencedFtName != null) {
@@ -322,13 +322,13 @@ public class ApplicationSchema {
 	 * @return list of property declarations, may be empty, but never
 	 *         <code>null</code>
 	 */
-	public List<PropertyType<?>> getNewPropertyDeclarations(FeatureType ft) {
+	public List<PropertyType> getNewPropertyDeclarations(FeatureType ft) {
 
-		List<PropertyType<?>> propDecls = ft.getPropertyDeclarations();
+		List<PropertyType> propDecls = ft.getPropertyDeclarations();
 		FeatureType parentFt = getParentFt(ft);
 		int firstNewIdx = 0;
 		if (parentFt != null) {
-			for (PropertyType<?> parentPropDecl : parentFt.getPropertyDeclarations()) {
+			for (PropertyType parentPropDecl : parentFt.getPropertyDeclarations()) {
 				if (parentPropDecl.getName().equals(propDecls.get(firstNewIdx).getName())) {
 					firstNewIdx++;
 				} else {

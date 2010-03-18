@@ -55,7 +55,7 @@ import javax.xml.namespace.QName;
  * 
  * @version $Revision:$, $Date:$
  */
-public abstract class AbstractPropertyType<T> implements PropertyType<T> {
+public abstract class AbstractPropertyType implements PropertyType {
 
     /** The name of the property. */
     protected QName name;
@@ -70,7 +70,7 @@ public abstract class AbstractPropertyType<T> implements PropertyType<T> {
      * The possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at least one
      * entry.
      */
-    protected PropertyType<?>[] substitutions;
+    protected PropertyType[] substitutions;
 
     private boolean isAbstract;
 
@@ -89,16 +89,16 @@ public abstract class AbstractPropertyType<T> implements PropertyType<T> {
      *            the possible concrete substitutions, can be <code>null</code>
      */
     protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                    List<PropertyType<?>> substitutions ) {
+                                    List<PropertyType> substitutions ) {
         this.name = name;
         this.minOccurs = minOccurs;
         this.maxOccurs = maxOccurs;
         this.isAbstract = isAbstract;
         if ( substitutions != null ) {
             substitutions.add( this );
-            this.substitutions = substitutions.toArray( new PropertyType<?>[substitutions.size()] );
+            this.substitutions = substitutions.toArray( new PropertyType[substitutions.size()] );
         } else {
-            this.substitutions = new PropertyType<?>[] { this };
+            this.substitutions = new PropertyType[] { this };
         }
     }
 
@@ -123,7 +123,7 @@ public abstract class AbstractPropertyType<T> implements PropertyType<T> {
     }
 
     @Override
-    public PropertyType<?>[] getSubstitutions() {
+    public PropertyType[] getSubstitutions() {
         return substitutions;
     }
 }

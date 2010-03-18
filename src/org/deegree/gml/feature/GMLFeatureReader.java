@@ -80,10 +80,10 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.GenericProperty;
-import org.deegree.feature.Property;
-import org.deegree.feature.SimpleProperty;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
+import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -254,7 +254,7 @@ public class GMLFeatureReader extends XMLAdapter {
         LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo() );
 
         // parse properties
-        Iterator<PropertyType<?>> declIter = ft.getPropertyDeclarations( version ).iterator();
+        Iterator<PropertyType> declIter = ft.getPropertyDeclarations( version ).iterator();
 
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
@@ -366,10 +366,10 @@ public class GMLFeatureReader extends XMLAdapter {
         return schema;
     }
 
-    private PropertyType<?> findConcretePropertyType( QName elemName, PropertyType<?> pt ) {
+    private PropertyType findConcretePropertyType( QName elemName, PropertyType pt ) {
         LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
 
-        for ( PropertyType<?> substitutionPt : pt.getSubstitutions() ) {
+        for ( PropertyType substitutionPt : pt.getSubstitutions() ) {
             // TODO !substitutionPt.isAbstract()
             if ( elemName.equals( substitutionPt.getName() ) ) {
                 LOG.debug( "Yep. Substitutable for '" + substitutionPt.getName() + "'" );

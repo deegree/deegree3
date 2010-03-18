@@ -54,7 +54,7 @@ public class CustomPropertyType extends AbstractPropertyType {
     private XSTypeDefinition xsdType;
 
     public CustomPropertyType( QName name, int minOccurs, int maxOccurs, XSTypeDefinition xsdType, boolean isAbstract,
-                               List<PropertyType<?>> substitutions ) {
+                               List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.xsdType = xsdType;
     }

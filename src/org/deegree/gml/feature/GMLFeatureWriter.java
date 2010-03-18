@@ -64,7 +64,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
@@ -351,7 +351,7 @@ public class GMLFeatureWriter {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
-        PropertyType<?> propertyType = property.getType();
+        PropertyType propertyType = property.getType();
         if ( propertyType.getMinOccurs() == 0 ) {
             LOG.debug( "Optional property '" + propName + "', checking if it is requested." );
             if ( !isPropertyRequested( propName ) ) {
@@ -365,7 +365,7 @@ public class GMLFeatureWriter {
         Object value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
             exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, inlineLevels );
-        } else if ( propertyType instanceof SimplePropertyType<?> ) {
+        } else if ( propertyType instanceof SimplePropertyType ) {
             // must be a primitive value
             PrimitiveValue pValue = (PrimitiveValue) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );

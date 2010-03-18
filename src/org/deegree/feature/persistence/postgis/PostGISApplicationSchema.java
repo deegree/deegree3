@@ -239,7 +239,7 @@ public class PostGISApplicationSchema {
         writer.println( "CREATE TABLE " + tableName + " (" );
         writer.print( "    id integer PRIMARY KEY REFERENCES GML_OBJECTS ON DELETE CASCADE" );
         comments.add( new Pair<String, String>( "id", "Internal id" ) );
-        for ( PropertyType<?> pt : ft.getPropertyDeclarations() ) {
+        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             PropertyMappingType propMapping = ftMapping.getPropertyHints( pt.getName() );
             if ( propMapping instanceof SimplePropertyMappingType ) {
                 SimplePropertyMappingType simplePropMapping = (SimplePropertyMappingType) propMapping;

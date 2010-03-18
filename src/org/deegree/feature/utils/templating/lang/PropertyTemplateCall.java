@@ -46,7 +46,7 @@ import java.util.List;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 import org.slf4j.Logger;
 
 /**

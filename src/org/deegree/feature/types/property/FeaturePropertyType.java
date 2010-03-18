@@ -51,7 +51,7 @@ import org.deegree.feature.types.FeatureType;
  * 
  * @version $Revision:$, $Date:$
  */
-public class FeaturePropertyType extends AbstractPropertyType<Feature> {
+public class FeaturePropertyType extends AbstractPropertyType {
 
     private QName valueFtName;
 
@@ -60,7 +60,7 @@ public class FeaturePropertyType extends AbstractPropertyType<Feature> {
     private final ValueRepresentation representation;
 
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, QName valueFtName, boolean isAbstract,
-                                List<PropertyType<?>> substitutions, ValueRepresentation representation ) {
+                                List<PropertyType> substitutions, ValueRepresentation representation ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.valueFtName = valueFtName;
         this.representation = representation;

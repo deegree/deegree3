@@ -52,7 +52,7 @@ import org.deegree.commons.tom.ows.StringOrRef;
 public class StringOrRefPropertyType extends AbstractPropertyType {
 
     public StringOrRefPropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                                    List<PropertyType<?>> substitutions ) {
+                                    List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
     }
 

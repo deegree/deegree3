@@ -49,7 +49,7 @@ import org.deegree.geometry.Geometry;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GeometryPropertyType extends AbstractPropertyType<Geometry> {
+public class GeometryPropertyType extends AbstractPropertyType {
 
     public enum GeometryType {
         /** Any kind of geometry (primitive, composite or aggregate). */
@@ -72,7 +72,7 @@ public class GeometryPropertyType extends AbstractPropertyType<Geometry> {
 
     public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, GeometryType geomType,
                                  CoordinateDimension dim, boolean isAbstract,
-                                 List<PropertyType<?>> substitutions, ValueRepresentation representation  ) {
+                                 List<PropertyType> substitutions, ValueRepresentation representation  ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
         this.geomType = geomType;
         this.dim = dim;

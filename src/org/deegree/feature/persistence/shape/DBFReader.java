@@ -61,9 +61,9 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.feature.GenericProperty;
-import org.deegree.feature.Property;
-import org.deegree.feature.SimpleProperty;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
+import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;

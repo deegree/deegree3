@@ -52,7 +52,7 @@ import org.deegree.commons.tom.ows.CodeType;
 public class CodePropertyType extends AbstractPropertyType {
 
     public CodePropertyType( QName name, int minOccurs, int maxOccurs, boolean isAbstract,
-                             List<PropertyType<?>> substitutions ) {
+                             List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, isAbstract, substitutions );
     }
 

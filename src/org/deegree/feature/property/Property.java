@@ -33,17 +33,19 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature;
+package org.deegree.feature.property;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.PropertyType;
 
 /**
  * A spatial or non-spatial property of a {@link Feature}.
  * <p>
  * Encapsulates a (qualified) name, type information and a value of a certain type.
+ * </p>
  * 
  * @see Feature
  * 

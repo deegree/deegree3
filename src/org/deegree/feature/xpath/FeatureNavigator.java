@@ -52,7 +52,7 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
-import org.deegree.feature.Property;
+import org.deegree.feature.property.Property;
 import org.deegree.gml.GMLObject;
 import org.deegree.gml.GMLReference;
 import org.deegree.gml.GMLVersion;

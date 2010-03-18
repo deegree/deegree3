@@ -55,9 +55,9 @@ import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
-import org.deegree.feature.GenericProperty;
-import org.deegree.feature.Property;
-import org.deegree.feature.SimpleProperty;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.property.Property;
+import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Envelope;
@@ -77,19 +77,19 @@ import org.deegree.gml.props.GMLStdProps;
 public class StandardGMLFeatureProps extends GMLStdProps {
 
     /** GML 2 standard property type 'gml:boundedBy' */
-    public static final PropertyType<Envelope> PT_BOUNDED_BY_GML2;
+    public static final PropertyType PT_BOUNDED_BY_GML2;
 
     /** GML 3.0/3.1 standard property type 'gml:boundedBy' */
-    public static final PropertyType<Envelope> PT_BOUNDED_BY_GML31;
+    public static final PropertyType PT_BOUNDED_BY_GML31;
 
     /** GML 3.2 standard property type 'gml:boundedBy' */
-    public static final PropertyType<Envelope> PT_BOUNDED_BY_GML32;
+    public static final PropertyType PT_BOUNDED_BY_GML32;
 
-    private final static Map<QName, PropertyType<?>> GML2PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
+    private final static Map<QName, PropertyType> GML2PropNameToPropType = new LinkedHashMap<QName, PropertyType>();
 
-    private final static Map<QName, PropertyType<?>> GML31PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
+    private final static Map<QName, PropertyType> GML31PropNameToPropType = new LinkedHashMap<QName, PropertyType>();
 
-    private final static Map<QName, PropertyType<?>> GML32PropNameToPropType = new LinkedHashMap<QName, PropertyType<?>>();
+    private final static Map<QName, PropertyType> GML32PropNameToPropType = new LinkedHashMap<QName, PropertyType>();
 
     static {
         // TODO correct this (this should be a BoundingShapeType which permits BBOX or NULL)
@@ -403,9 +403,9 @@ public class StandardGMLFeatureProps extends GMLStdProps {
      *            GML version, must not be <code>null</code>
      * @return standard GML property types, in expected order
      */
-    public static Collection<PropertyType<?>> getPropertyTypes( GMLVersion version ) {
+    public static Collection<PropertyType> getPropertyTypes( GMLVersion version ) {
 
-        Collection<PropertyType<?>> pts = null;
+        Collection<PropertyType> pts = null;
         switch ( version ) {
         case GML_2:
             pts = GML2PropNameToPropType.values();
@@ -430,8 +430,8 @@ public class StandardGMLFeatureProps extends GMLStdProps {
      *            GML version, must not be <code>null</code>
      * @return standard GML property type, or <code>null</code> if no such property type exists
      */
-    public static PropertyType<?> getPropertyType( QName propName, GMLVersion version ) {
-        PropertyType<?> pt = null;
+    public static PropertyType getPropertyType( QName propName, GMLVersion version ) {
+        PropertyType pt = null;
         switch ( version ) {
         case GML_2:
             pt = GML2PropNameToPropType.get( propName );
