@@ -48,7 +48,8 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
- * {@link TypedObjectNode} that represents the content of a generic XML element with associated XML schema type information.
+ * {@link TypedObjectNode} that represents the content of a generic XML element with associated XML schema type
+ * information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -57,13 +58,14 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  */
 public class GenericXMLElementContent implements TypedObjectNode {
 
-    private Map<QName, PrimitiveValue> attrs;
+    protected Map<QName, PrimitiveValue> attrs;
 
-    private List<TypedObjectNode> children;
+    protected List<TypedObjectNode> children;
 
-    private XSTypeDefinition type;
+    protected XSTypeDefinition type;
 
-    public GenericXMLElementContent( XSTypeDefinition type, Map<QName, PrimitiveValue> attrs, List<TypedObjectNode> children ) {
+    public GenericXMLElementContent( XSTypeDefinition type, Map<QName, PrimitiveValue> attrs,
+                                     List<TypedObjectNode> children ) {
         this.type = type;
         this.attrs = attrs;
         this.children = children;
@@ -97,21 +99,12 @@ public class GenericXMLElementContent implements TypedObjectNode {
 
     @Override
     public String toString() {
-        String s = "{";
-        s += "type=" + type;
-        if ( attrs != null ) {
-            s += ",attributes={";
-            for ( Entry<QName, PrimitiveValue> attr : attrs.entrySet() ) {
-                s += attr.getKey() + "=" + attr.getValue();
-            }
-        }
+        String s = "";
         if ( children != null ) {
-            s += "},children={";
             for ( TypedObjectNode child : children ) {
-                s += child;
+                s += child.toString();
             }
         }
-        s += "}}";
         return s;
     }
 }

@@ -149,27 +149,19 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
     public boolean equals( Object o ) {
 
         // TODO make this failproof
-        PrimitiveValue that = null;
-        if ( o instanceof PrimitiveValue && ( (PrimitiveValue) o ).type == type ) {
-            that = (PrimitiveValue) o;
-        } else {
-            try {
-                that = new PrimitiveValue( o.toString(), type );
-            } catch ( IllegalArgumentException e ) {
-                return false;
-            }
+        Object thatValue = o;
+        if ( o instanceof PrimitiveValue  ) {
+            thatValue = ((PrimitiveValue) o).value;
         }
+        
+        Pair<Object,Object> comparablePair = makeComparable( value, thatValue );
 
         // NOTE: don't use #equals() for BigDecimal, because new BigDecimal("155.00") is not equal to
         // new BigDecimal("155")
-        if ( value instanceof BigDecimal ) {
-            if ( ( (BigDecimal) value ).compareTo( (BigDecimal) that.value ) == 0 ) {
-                return true;
-            } else {
-                return value.equals( that.value );
-            }
+        if ( comparablePair.first instanceof BigDecimal ) {
+            return ( ( (BigDecimal) comparablePair.first ).compareTo( (BigDecimal) comparablePair.second ) == 0 );
         }
-        return value.equals( that.value );
+        return comparablePair.first.equals( comparablePair.second );
     }
 
     @Override
@@ -177,7 +169,7 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
         return textValue;
     }
 
-    private Pair<Object, Object> makeComparable( Object value1, Object value2 )
+    public static Pair<Object, Object> makeComparable( Object value1, Object value2 )
                             throws IllegalArgumentException {
         Pair<Object, Object> result = new Pair<Object, Object>( value1, value2 );
         if ( !( value1 instanceof String ) ) {

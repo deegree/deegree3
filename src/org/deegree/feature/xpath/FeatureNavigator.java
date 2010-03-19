@@ -126,10 +126,10 @@ class FeatureNavigator extends DefaultNavigator {
                     attrNodes.add( new AttributeNode( (PropertyNode) node, attribute.getKey(), attribute.getValue() ) );
                 }
                 return attrNodes.iterator();
-            } else if ( value instanceof Measure ) {
+            } else if ( value instanceof Measure && ( (Measure) value ).getUomUri() != null ) {
                 PrimitiveValue uom = new PrimitiveValue( ( (Measure) value ).getUomUri() );
                 return new SingleObjectIterator( new AttributeNode( (PropertyNode) node, new QName( "uom" ), uom ) );
-            } else if ( value instanceof CodeType ) {
+            } else if ( value instanceof CodeType && ( (CodeType) value ).getCodeSpace() != null ) {
                 PrimitiveValue codeSpace = new PrimitiveValue( ( (CodeType) value ).getCodeSpace() );
                 return new SingleObjectIterator( new AttributeNode( (PropertyNode) node, new QName( "codeSpace" ),
                                                                     codeSpace ) );
@@ -137,11 +137,13 @@ class FeatureNavigator extends DefaultNavigator {
         } else if ( node instanceof XMLElementNode ) {
             GenericXMLElement value = ( (XMLElementNode) node ).getValue();
             Map<QName, PrimitiveValue> attributes = value.getAttributes();
-            List<AttributeNode> attrNodes = new ArrayList<AttributeNode>( attributes.size() );
-            for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
-                attrNodes.add( new AttributeNode( (XMLElementNode) node, attribute.getKey(), attribute.getValue() ) );
+            if ( attributes != null ) {
+                List<AttributeNode> attrNodes = new ArrayList<AttributeNode>( attributes.size() );
+                for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
+                    attrNodes.add( new AttributeNode( (XMLElementNode) node, attribute.getKey(), attribute.getValue() ) );
+                }
+                return attrNodes.iterator();
             }
-            return attrNodes.iterator();
         }
         return JaxenConstants.EMPTY_ITERATOR;
     }
@@ -270,7 +272,7 @@ class FeatureNavigator extends DefaultNavigator {
                 } else if ( xmlNode instanceof GMLObject ) {
                     xpathNodes.add( new GMLObjectNode<GMLObject>( (XPathNode) node, (GMLObject) xmlNode, version ) );
                 } else if ( xmlNode instanceof PrimitiveValue ) {
-                    xpathNodes.add( new TextNode( (PropertyNode) node, (PrimitiveValue) xmlNode ) );
+                    xpathNodes.add( new TextNode( (ElementNode<TypedObjectNode>) node, (PrimitiveValue) xmlNode ) );
                 }
             }
             iter = xpathNodes.iterator();

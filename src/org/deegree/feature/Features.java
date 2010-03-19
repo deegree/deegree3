@@ -35,15 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.time.DateUtils;
+import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
@@ -85,14 +84,14 @@ public class Features {
                         PropertyName propName = sortCrit.getSortProperty();
                         try {
                             // TODO handle multi properties correctly
-                            Object[] values1 = f1.evalXPath( propName, GMLVersion.GML_31 );
-                            Object[] values2 = f2.evalXPath( propName, GMLVersion.GML_31 );
-                            for ( Object value1 : values1 ) {
+                            TypedObjectNode[] values1 = f1.evalXPath( propName, GMLVersion.GML_31 );
+                            TypedObjectNode[] values2 = f2.evalXPath( propName, GMLVersion.GML_31 );
+                            for ( TypedObjectNode value1 : values1 ) {
                                 if ( value1 != null ) {
-                                    for ( Object value2 : values2 ) {
+                                    for ( TypedObjectNode value2 : values2 ) {
                                         if ( value2 != null ) {
-                                            Pair<Object, Object> comparablePair = makeComparable( value1, value2 );
-                                            order = ( (Comparable<Object>) comparablePair.first ).compareTo( comparablePair.second );
+                                            Pair<Object, Object> comparablePair = getPrimitives( value1, value2 );
+                                            order = ( (Comparable) comparablePair.first ).compareTo( comparablePair.second );
                                             if ( !sortCrit.getSortOrder() ) {
                                                 order *= -1;
                                             }
@@ -115,30 +114,30 @@ public class Features {
         return sortedFc;
     }
 
-    private static Pair<Object, Object> makeComparable( Object value1, Object value2 )
+    /**
+     * Creates a pair of {@link PrimitiveValue} instances from the given {@link TypedObjectNode} while trying to
+     * preserve primitive type information.
+     * 
+     * @param value1
+     * @param value2
+     * @return
+     * @throws FilterEvaluationException
+     */
+    private static Pair<Object, Object> getPrimitives( Object value1, Object value2 )
                             throws FilterEvaluationException {
-        Pair<Object, Object> result = new Pair<Object, Object>( value1, value2 );
-        if ( !( value1 instanceof String ) ) {
-            if ( value1 instanceof Number ) {
-                result = new Pair<Object, Object>( value1, new BigDecimal( value2.toString() ) );
-            } else if ( value1 instanceof Date ) {
-                try {
-                    result = new Pair<Object, Object>( value1, DateUtils.parseISO8601Date( value2.toString() ) );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            }
-        } else if ( !( value2 instanceof String ) ) {
-            if ( value2 instanceof Number ) {
-                result = new Pair<Object, Object>( new BigDecimal( value1.toString() ), value2 );
-            } else if ( value2 instanceof Date ) {
-                try {
-                    result = new Pair<Object, Object>( DateUtils.parseISO8601Date( value1.toString() ), value2 );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            }
+
+        if ( value1 instanceof Property ) {
+            value1 = ( (Property) value1 ).getValue();
         }
-        return result;
+        if ( !( value1 instanceof PrimitiveValue ) ) {
+            value1 = value1.toString();
+        }
+        if ( value2 instanceof Property ) {
+            value2 = ( (Property) value2 ).getValue();
+        }
+        if ( !( value2 instanceof PrimitiveValue ) ) {
+            value2 = value2.toString();
+        }
+        return PrimitiveValue.makeComparable( value1, value2 );
     }
 }

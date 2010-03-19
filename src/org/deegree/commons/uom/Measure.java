@@ -99,6 +99,6 @@ public class Measure implements TypedObjectNode {
 
     @Override
     public String toString() {
-        return value + ( uomURI == null ? "" : " " + uomURI );
+        return value + "";
     }
 }

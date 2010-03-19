@@ -47,11 +47,11 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  */
 public class TextNode implements XPathNode {
 
-    private PropertyNode parent;
+    private ElementNode parent;
 
     private PrimitiveValue value;
 
-    TextNode (PropertyNode parent, PrimitiveValue value) {
+    TextNode (ElementNode parent, PrimitiveValue value) {
         this.parent = parent;
         this.value = value;
     }
@@ -62,7 +62,7 @@ public class TextNode implements XPathNode {
     }
 
     @Override
-    public XPathNode getParent() {
+    public ElementNode getParent() {
         return parent;
     }
 
