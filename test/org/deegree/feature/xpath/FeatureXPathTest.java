@@ -35,16 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import static java.lang.Boolean.TRUE;
+import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.PrimitiveType.DOUBLE;
+import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
+import junit.framework.Assert;
+
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.Property;
+import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -52,8 +65,6 @@ import org.deegree.gml.feature.GMLFeatureReaderTest;
 import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
-import org.jaxen.XPath;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -95,175 +106,217 @@ public class FeatureXPathTest {
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath1()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "*", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertNotNull( selectedNodes );
-        Assert.assertEquals( 7, selectedNodes.size() );
+        String xpath = "*";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 7, result.length );
+        for ( TypedObjectNode object : result ) {
+            assertTrue( object instanceof Property );
+        }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath2()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 7, selectedNodes.size() );
+        String xpath = "gml:featureMember";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 7, result.length );
+        for ( TypedObjectNode object : result ) {
+            assertTrue( object instanceof Property );
+        }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath3()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 7, selectedNodes.size() );
+        String xpath = "gml:featureMember/app:Philosopher";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 7, result.length );
+        for ( TypedObjectNode object : result ) {
+            assertTrue( object instanceof Feature );
+        }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath4()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 1, selectedNodes.size() );
-        GMLObjectNode featureNode = (GMLObjectNode) selectedNodes.get( 0 );
-        Feature feature = (Feature) featureNode.getGMLObject();
-        Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
+        String xpath = "gml:featureMember[1]/app:Philosopher";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertEquals( 1, result.length );
+        Feature feature = (Feature) result[0];
+        assertEquals( "PHILOSOPHER_1", feature.getId() );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath5()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher/app:name", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 1, selectedNodes.size() );
-        PropertyNode propNode = (PropertyNode) selectedNodes.get( 0 );
-        Property prop = propNode.getProperty();
-        Assert.assertEquals( "Karl Marx", ( (PrimitiveValue) prop.getValue() ).getAsText() );
+        String xpath = "gml:featureMember[1]/app:Philosopher/app:name";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertEquals( 1, result.length );
+        SimpleProperty prop = (SimpleProperty) result[0];
+        PrimitiveValue name = prop.getValue();
+        assertEquals( STRING, name.getType() );
+        assertEquals( "Karl Marx", name.getAsText() );
+        assertTrue( name.getValue() instanceof String );
+        // assertEquals( STRING, name.getXSType().getName() );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath6()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher/app:name/text()", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 1, selectedNodes.size() );
-        TextNode textNode = (TextNode) selectedNodes.get( 0 );
-        Assert.assertEquals( "Karl Marx", textNode.getValue().getAsText() );
+        String xpath = "gml:featureMember[1]/app:Philosopher/app:name/text()";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertEquals( 1, result.length );
+        PrimitiveValue name = (PrimitiveValue) result[0];
+        assertEquals( STRING, name.getType() );
+        assertEquals( "Karl Marx", name.getAsText() );
+        assertTrue( name.getValue() instanceof String );
+        // assertEquals( STRING, name.getXSType().getName() );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath7()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath(
-                                        "gml:featureMember/app:Philosopher[app:name='Albert Camus' and app:placeOfBirth/*/app:name='Mondovi']/app:placeOfBirth/app:Place/app:name",
-                                        GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 1, selectedNodes.size() );
-        PropertyNode propNode = (PropertyNode) selectedNodes.get( 0 );
-        Property prop = propNode.getProperty();
-        Assert.assertEquals( "Mondovi", prop.getValue().toString() );
+        String xpath = "gml:featureMember/app:Philosopher[app:name='Albert Camus' and app:placeOfBirth/*/app:name='Mondovi']/app:placeOfBirth/app:Place/app:name";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertEquals( 1, result.length );
+        SimpleProperty prop = (SimpleProperty) result[0];
+        PrimitiveValue name = prop.getValue();
+        assertEquals( STRING, name.getType() );
+        assertEquals( "Mondovi", name.getAsText() );
+        assertTrue( name.getValue() instanceof String );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath8()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember[1]/app:Philosopher/app:placeOfBirth/app:Place",
-                                        GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 1, selectedNodes.size() );
-        GMLObjectNode featureNode = (GMLObjectNode) selectedNodes.get( 0 );
-        Feature feature = (Feature) featureNode.getGMLObject();
-        Assert.assertEquals( "PLACE_2", feature.getId() );
-
-        xpath = new FeatureXPath( "../..", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        selectedNodes = xpath.selectNodes( featureNode );
-        Assert.assertEquals( 1, selectedNodes.size() );
-        featureNode = (GMLObjectNode) selectedNodes.get( 0 );
-        feature = (Feature) featureNode.getGMLObject();
-        Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
+        String xpath = "gml:featureMember[1]/app:Philosopher/app:placeOfBirth/app:Place/../..";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertEquals( 1, result.length );
+        Feature feature = (Feature) result[0];
+        assertEquals( "PHILOSOPHER_1", feature.getId() );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath9()
                             throws JaxenException {
 
-        XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[app:id < 3]/app:name", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
+        String xpath = "gml:featureMember/app:Philosopher[app:id < 3]/app:name";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
         Set<String> names = new HashSet<String>();
-        for ( XPathNode node : selectedNodes ) {
-            names.add( ( (PropertyNode) node ).getProperty().getValue().toString() );
+        for ( TypedObjectNode node : result ) {
+            names.add( ( (SimpleProperty) node ).getValue().toString() );
         }
         Assert.assertEquals( 2, names.size() );
         Assert.assertTrue( names.contains( "Friedrich Engels" ) );
         Assert.assertTrue( names.contains( "Karl Marx" ) );
     }
 
-    // @SuppressWarnings("unchecked")
     // @Test
     // public void testXPath10()
     // throws JaxenException {
-    // XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name" );
-    // xpath.setNamespaceContext( nsContext );
-    // List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
-    // for ( Node node : selectedNodes ) {
-    // LOG.debug( ( (PropertyNode) node ).getProperty().getValue() );
+    // String xpath = "gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name";
+    // TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+    // for ( TypedObjectNode node : result ) {
+    // System.out.println (node);
     // }
     // }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath11()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[@gml:id='PHILOSOPHER_1']", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 1, selectedNodes.size() );
-        GMLObjectNode featureNode = (GMLObjectNode) selectedNodes.get( 0 );
-        Feature feature = (Feature) featureNode.getGMLObject();
-        Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
+        String xpath = "gml:featureMember/app:Philosopher[@gml:id='PHILOSOPHER_1']";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertEquals( 1, result.length );
+        Feature feature = (Feature) result[0];
+        assertEquals( "PHILOSOPHER_1", feature.getId() );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath12()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[gml:name='JEAN_PAUL']", GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 1, selectedNodes.size() );
-        GMLObjectNode featureNode = (GMLObjectNode) selectedNodes.get( 0 );
-        Feature feature = (Feature) featureNode.getGMLObject();
-        Assert.assertEquals( "PHILOSOPHER_6", feature.getId() );
+        String xpath = "gml:featureMember/app:Philosopher[gml:name='JEAN_PAUL']";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertEquals( 1, result.length );
+        Feature feature = (Feature) result[0];
+        assertEquals( "PHILOSOPHER_6", feature.getId() );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testXPath13()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "/gml:FeatureCollection/gml:featureMember", fc, GMLVersion.GML_31 );
-        xpath.setNamespaceContext( nsContext );
-        List<XPathNode> selectedNodes = xpath.selectNodes( new GMLObjectNode( null, fc, GMLVersion.GML_31 ) );
-        Assert.assertEquals( 7, selectedNodes.size() );
+        String xpath = "/gml:FeatureCollection/gml:featureMember";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 7, result.length );
+        for ( TypedObjectNode object : result ) {
+            assertTrue( object instanceof Property );
+        }
+    }
+
+    @Test
+    public void testXPath14()
+                            throws JaxenException {
+        String xpath = "true()";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 1, result.length );
+        PrimitiveValue value = (PrimitiveValue) result[0];
+        assertEquals( BOOLEAN, value.getType() );
+        assertEquals( TRUE, value.getValue() );
+    }
+
+    @Test
+    public void testXPath15()
+                            throws JaxenException {
+        String xpath = "count(gml:featureMember/app:Philosopher)";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 1, result.length );
+        PrimitiveValue value = (PrimitiveValue) result[0];
+        assertEquals( DOUBLE, value.getType() );
+        assertEquals( new Double( 7.0 ), value.getValue() );
+    }
+
+    @Test
+    public void testXPath16()
+                            throws JaxenException {
+        String xpath = "string(gml:featureMember/app:Philosopher/app:name)";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 1, result.length );
+        PrimitiveValue value = (PrimitiveValue) result[0];
+        assertEquals( STRING, value.getType() );
+        assertEquals( "Albert Camus", value.getValue() );
+    }
+
+    @Test
+    public void testXPath17()
+                            throws JaxenException {
+        String xpath = "/";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 1, result.length );
+        FeatureCollection fc2 = (FeatureCollection) result[0];
+        assertTrue( fc == fc2 );
+    }
+
+    @Test
+    public void testXPath18()
+                            throws JaxenException {
+        String xpath = "gml:featureMember/app:Philosopher/@gml:id";
+        TypedObjectNode[] result = fc.evalXPath( new PropertyName( xpath, nsContext ), GML_31 );
+        assertNotNull( result );
+        assertEquals( 7, result.length );
+        for ( TypedObjectNode typedObjectNode : result ) {
+            PrimitiveValue value = (PrimitiveValue) typedObjectNode;
+            assertEquals( STRING, value.getType() );
+            assertTrue( value.getValue().toString().startsWith( "PHILOSOPHER_" ) );
+        }
     }
 }

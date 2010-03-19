@@ -61,7 +61,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
 
     PropertyNodeIterator( GMLObjectNode<Feature> parent, GMLVersion version ) {
         this.parent = parent;
-        this.props = Arrays.asList( parent.getGMLObject().getProperties( version ) ).iterator();
+        this.props = Arrays.asList( parent.getValue().getProperties( version ) ).iterator();
     }
 
     @Override

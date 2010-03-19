@@ -45,20 +45,20 @@ import org.deegree.gml.GMLVersion;
 /**
  * {@link ElementNode} that wraps a {@link GMLObject}.
  * 
- * @param <T>
+ * @param <V>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLObjectNode<T extends GMLObject> extends ElementNode {
+public class GMLObjectNode<V extends GMLObject> extends ElementNode<V> {
 
     private XPathNode parentNode;
 
-    private T object;
+    private V object;
 
-    public GMLObjectNode( XPathNode parentNode, T object, GMLVersion version ) {
+    public GMLObjectNode( XPathNode parentNode, V object, GMLVersion version ) {
         super( getName( object, version ) );
         this.parentNode = parentNode;
         this.object = object;
@@ -80,7 +80,8 @@ public class GMLObjectNode<T extends GMLObject> extends ElementNode {
         return parentNode;
     }
 
-    public T getGMLObject() {
+    @Override
+    public V getValue() {
         return object;
     }
 }

@@ -37,6 +37,7 @@ package org.deegree.filter.expression;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -186,12 +187,12 @@ public class PropertyName implements Expression {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject obj )
+    public TypedObjectNode[] evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
-        Object[] values;
+        TypedObjectNode[] values;
         try {
             // TODO outfactor GML version
-            values = obj.getPropertyValues( this, GMLVersion.GML_31 );
+            values = obj.evalXPath( this, GMLVersion.GML_31 );
         } catch ( JaxenException e ) {
             e.printStackTrace();
             throw new FilterEvaluationException( e.getMessage() );

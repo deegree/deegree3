@@ -85,8 +85,8 @@ public class Features {
                         PropertyName propName = sortCrit.getSortProperty();
                         try {
                             // TODO handle multi properties correctly
-                            Object[] values1 = f1.getPropertyValues( propName, GMLVersion.GML_31 );
-                            Object[] values2 = f2.getPropertyValues( propName, GMLVersion.GML_31 );
+                            Object[] values1 = f1.evalXPath( propName, GMLVersion.GML_31 );
+                            Object[] values2 = f2.evalXPath( propName, GMLVersion.GML_31 );
                             for ( Object value1 : values1 ) {
                                 if ( value1 != null ) {
                                     for ( Object value2 : values2 ) {

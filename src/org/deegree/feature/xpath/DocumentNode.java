@@ -35,6 +35,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.gml.GMLObject;
+
 /**
  * {@link XPathNode} that represents an XML document node.
  *
@@ -43,7 +45,7 @@ package org.deegree.feature.xpath;
  *
  * @version $Revision$, $Date$
  */
-class DocumentNode implements XPathNode {
+class DocumentNode implements XPathNode<GMLObject> {
 
     private final GMLObjectNode rootNode;
 
@@ -62,5 +64,10 @@ class DocumentNode implements XPathNode {
     
     public GMLObjectNode getRootNode () {
         return rootNode;
+    }
+
+    @Override
+    public GMLObject getValue() {
+        return rootNode.getValue();
     }
 }

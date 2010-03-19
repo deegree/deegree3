@@ -43,6 +43,8 @@ import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -73,7 +75,7 @@ public class StringPosition extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f ) {
+    public TypedObjectNode[] evaluate( MatchableObject f ) {
         StringBuffer sb = new StringBuffer( value.toString().trim() );
         if ( contn != null ) {
             contn.evaluate( sb, f );
@@ -87,7 +89,9 @@ public class StringPosition extends Function {
         }
         String lookup = sb.toString();
 
-        return new Object[] { ( ( forward ? val.indexOf( lookup ) : val.lastIndexOf( lookup ) ) + 1 ) + "" };
+        return new TypedObjectNode[] { new PrimitiveValue( ( ( forward ? val.indexOf( lookup )
+                                                                      : val.lastIndexOf( lookup ) ) + 1 )
+                                                           + "" ) };
     }
 
     /**

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.FilterEvaluationException;
@@ -122,7 +123,7 @@ public class BBOX extends SpatialOperator {
                 }
             }
         }
-        for ( Object paramValue : propName.evaluate( object ) ) {
+        for ( TypedObjectNode paramValue : propName.evaluate( object ) ) {
             Geometry param1Value = checkGeometryOrNull( paramValue );
             if ( param1Value != null ) {
                 Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, bbox );

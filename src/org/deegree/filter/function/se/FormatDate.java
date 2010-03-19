@@ -50,6 +50,8 @@ import java.util.Locale;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
@@ -81,19 +83,19 @@ public class FormatDate extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f ) {
+    public TypedObjectNode[] evaluate( MatchableObject f ) {
         StringBuffer sb = new StringBuffer( dateValue.toString().trim() );
         if ( dateValueContn != null ) {
             dateValueContn.evaluate( sb, f );
         }
         try {
             Date value = DateUtils.parseISO8601Date( sb.toString().trim() );
-            return new Object[] { formatter.format( value ) };
+            return new TypedObjectNode[] { new PrimitiveValue( formatter.format( value ) ) };
         } catch ( ParseException e ) {
             LOG.warn( "Evaluated value could not be parsed as a date (in an argument to FormatDate)." );
         }
 
-        return new Object[] { sb.toString().trim() };
+        return new TypedObjectNode[] { new PrimitiveValue( sb.toString().trim() ) };
     }
 
     /**

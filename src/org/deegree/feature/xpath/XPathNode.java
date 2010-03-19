@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import org.deegree.commons.tom.TypedObjectNode;
+
 /**
  * Base interface for XML nodes that have to be represented during XPath-evaluation.
  * 
@@ -43,7 +45,7 @@ package org.deegree.feature.xpath;
  * 
  * @version $Revision:$, $Date:$
  */
-public interface XPathNode {
+public interface XPathNode<V extends TypedObjectNode> {
 
     /**
      * Returns the parent node.
@@ -51,6 +53,13 @@ public interface XPathNode {
      * @return the parent node or <code>null</code> if this is the root node
      */
     public XPathNode getParent();
+    
+    /**
+     * Returns the value of the node.
+     * 
+     * @return
+     */
+    public V getValue();
 
     public boolean isElement();
 }

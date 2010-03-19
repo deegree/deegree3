@@ -39,6 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -79,7 +80,7 @@ public class Function implements Expression {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject object )
+    public TypedObjectNode[] evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         LOG.warn( "The function with name '{}' is not implemented.", name );
         throw new FilterEvaluationException( "Evaluation of the '" + getType().name()

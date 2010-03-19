@@ -110,14 +110,14 @@ class FeatureNavigator extends DefaultNavigator {
     public Iterator<AttributeNode> getAttributeAxisIterator( Object node ) {
         if ( node instanceof GMLObjectNode ) {
             GMLObjectNode gmlObjectNode = (GMLObjectNode) node;
-            GMLObject object = gmlObjectNode.getGMLObject();
+            GMLObject object = gmlObjectNode.getValue();
             if ( object.getId() != null ) {
                 PrimitiveValue id = new PrimitiveValue( object.getId() );
                 AttributeNode gmlIdAttrNode = new AttributeNode( gmlObjectNode, new QName( gmlNs, "id" ), id );
                 return new SingleObjectIterator( gmlIdAttrNode );
             }
         } else if ( node instanceof PropertyNode ) {
-            Object value = ( (PropertyNode) node ).getProperty().getValue();
+            Object value = ( (PropertyNode) node ).getValue().getValue();
             if ( value instanceof GenericXMLElementContent ) {
                 GenericXMLElementContent genericValue = (GenericXMLElementContent) value;
                 Map<QName, PrimitiveValue> attributes = genericValue.getAttributes();
@@ -135,7 +135,7 @@ class FeatureNavigator extends DefaultNavigator {
                                                                     codeSpace ) );
             }
         } else if ( node instanceof XMLElementNode ) {
-            GenericXMLElement value = ( (XMLElementNode) node ).getElement();
+            GenericXMLElement value = ( (XMLElementNode) node ).getValue();
             Map<QName, PrimitiveValue> attributes = value.getAttributes();
             List<AttributeNode> attrNodes = new ArrayList<AttributeNode>( attributes.size() );
             for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
@@ -227,13 +227,13 @@ class FeatureNavigator extends DefaultNavigator {
     public Iterator<?> getChildAxisIterator( Object node ) {
         Iterator<?> iter = EMPTY_ITERATOR;
         if ( node instanceof GMLObjectNode ) {
-            if ( ( (GMLObjectNode) node ).getGMLObject() instanceof Feature ) {
+            if ( ( (GMLObjectNode) node ).getValue() instanceof Feature ) {
                 iter = new PropertyNodeIterator( (GMLObjectNode) node, version );
             }
         } else if ( node instanceof DocumentNode ) {
             iter = new SingleObjectIterator( ( (DocumentNode) node ).getRootNode() );
         } else if ( node instanceof PropertyNode ) {
-            Property prop = ( (PropertyNode) node ).getProperty();
+            Property prop = ( (PropertyNode) node ).getValue();
             Object propValue = prop.getValue();
             if ( propValue instanceof GMLObject ) {
                 // TODO clear strategy for GML object references (remote + local)
@@ -262,7 +262,7 @@ class FeatureNavigator extends DefaultNavigator {
                                                                new PrimitiveValue( propValue.toString() ) ) );
             }
         } else if ( node instanceof XMLElementNode ) {
-            List<TypedObjectNode> xmlNodes = ( (XMLElementNode) node ).getElement().getChildren();
+            List<TypedObjectNode> xmlNodes = ( (XMLElementNode) node ).getValue().getChildren();
             List<XPathNode> xpathNodes = new ArrayList<XPathNode>( xmlNodes.size() );
             for ( TypedObjectNode xmlNode : xmlNodes ) {
                 if ( xmlNode instanceof GenericXMLElement ) {
@@ -365,7 +365,7 @@ class FeatureNavigator extends DefaultNavigator {
     public String getElementStringValue( Object node ) {
         String value = null;
         if ( node instanceof PropertyNode ) {
-            Property prop = ( (PropertyNode) node ).getProperty();
+            Property prop = ( (PropertyNode) node ).getValue();
             Object propValue = prop.getValue();
             // TODO check if conversion is feasible (e.g. Geometry.toString() may be expensive)
             value = propValue.toString();

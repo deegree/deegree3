@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.PropertyName;
@@ -55,8 +56,8 @@ public class Intersects extends SpatialOperator {
     private final Geometry geometry;
 
     /**
-     * @param propName 
-     * @param geometry 
+     * @param propName
+     * @param geometry
      */
     public Intersects( PropertyName propName, Geometry geometry ) {
         this.propName = propName;
@@ -66,7 +67,7 @@ public class Intersects extends SpatialOperator {
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        for ( Object paramValue : propName.evaluate( object ) ) {
+        for ( TypedObjectNode paramValue : propName.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( paramValue );
             if ( geom != null ) {
                 Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
@@ -75,8 +76,6 @@ public class Intersects extends SpatialOperator {
         }
         return false;
     }
-    
-    
 
     /**
      * @return the propName
@@ -99,9 +98,9 @@ public class Intersects extends SpatialOperator {
         s += indent + geometry;
         return s;
     }
-    
+
     @Override
-    public Object[] getParams () {
-        return new Object [] {propName, geometry};
-    }    
+    public Object[] getParams() {
+        return new Object[] { propName, geometry };
+    }
 }

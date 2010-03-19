@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -70,7 +71,7 @@ public class PropertyIsNull extends ComparisonOperator {
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
 
-        Object[] paramValues = propName.evaluate( object );
+        TypedObjectNode[] paramValues = propName.evaluate( object );
         if ( paramValues.length == 0 ) {
             return true;
         }

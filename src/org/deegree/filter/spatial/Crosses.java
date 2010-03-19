@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,9 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.PropertyName;
@@ -42,17 +43,17 @@ import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Crosses extends SpatialOperator {
-    
+
     private final PropertyName propName;
 
-    private final Geometry geometry;      
+    private final Geometry geometry;
 
     public Crosses( PropertyName propName, Geometry geometry ) {
         this.propName = propName;
@@ -62,17 +63,15 @@ public class Crosses extends SpatialOperator {
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        for ( Object paramValue : propName.evaluate( object ) ) {
+        for ( TypedObjectNode paramValue : propName.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( paramValue );
             if ( geom != null ) {
                 Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
-                return geom.crosses( transformedLiteral);
+                return geom.crosses( transformedLiteral );
             }
         }
         return false;
     }
-    
-    
 
     /**
      * @return the propName
@@ -95,9 +94,9 @@ public class Crosses extends SpatialOperator {
         s += indent + geometry;
         return s;
     }
-    
+
     @Override
-    public Object[] getParams () {
-        return new Object [] {propName, geometry};
+    public Object[] getParams() {
+        return new Object[] { propName, geometry };
     }
 }

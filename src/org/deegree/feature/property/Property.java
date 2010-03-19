@@ -54,7 +54,7 @@ import org.deegree.feature.types.property.PropertyType;
  * 
  * @version $Revision$, $Date$
  */
-public interface Property {
+public interface Property extends TypedObjectNode {
 
     /**
      * Returns the name of the property.
@@ -91,4 +91,12 @@ public interface Property {
      * @return the value of this property, or <code>null</code> if it is nilled
      */
     public TypedObjectNode getValue();
+    
+    /**
+     * Returns the text value of this property.
+     * 
+     * @return the text value of this property, never <code>null</code>
+     */
+    @Override
+    public String toString ();
 }

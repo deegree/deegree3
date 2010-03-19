@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -70,11 +71,11 @@ public class PropertyIsLike extends ComparisonOperator {
      * @param wildCard
      * @param singleChar
      * @param escapeChar
-     * @param matchCase 
+     * @param matchCase
      */
     public PropertyIsLike( PropertyName propName, Literal literal, String wildCard, String singleChar,
                            String escapeChar, boolean matchCase ) {
-        super (matchCase);
+        super( matchCase );
         this.propName = propName;
         this.literal = literal;
         this.wildCard = wildCard;
@@ -112,13 +113,11 @@ public class PropertyIsLike extends ComparisonOperator {
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
 
-        Object[] paramValues = propName.evaluate( object );
+        TypedObjectNode[] paramValues = propName.evaluate( object );
 
-        for ( Object value : paramValues ) {
-            if ( !( value instanceof Geometry ) ) {
-                if ( matches( literal.getValue().toString(), value.toString() ) ) {
-                    return true;
-                }
+        for ( TypedObjectNode value : paramValues ) {
+            if ( matches( literal.getValue().toString(), value.toString() ) ) {
+                return true;
             }
         }
         return false;
@@ -137,9 +136,10 @@ public class PropertyIsLike extends ComparisonOperator {
      * @param buffer
      *            the <code>String</code> to test
      * @return true, if the <code>String</code> matches the pattern
-     * @throws FilterEvaluationException 
+     * @throws FilterEvaluationException
      */
-    private boolean matches( String pattern, String buffer ) throws FilterEvaluationException {
+    private boolean matches( String pattern, String buffer )
+                            throws FilterEvaluationException {
 
         // match must be successful if both the pattern and the buffer are empty
         if ( pattern.length() == 0 && buffer.length() == 0 ) {
@@ -156,11 +156,11 @@ public class PropertyIsLike extends ComparisonOperator {
         if ( wildCard.length() != 1 || singleChar.length() != 1 || escapeChar.length() != 1 ) {
             String msg = "At the moment, wildCard, singleChar and escapeChar must each be exactly one character.";
             throw new FilterEvaluationException( msg );
-        }        
+        }
         char escapeChar = this.escapeChar.charAt( 0 );
         char singleChar = this.singleChar.charAt( 0 );
         char wildCard = this.wildCard.charAt( 0 );
-        
+
         for ( int i = 0; i < length; i++ ) {
             char c = pattern.charAt( i );
 

@@ -37,6 +37,8 @@ package org.deegree.feature.xpath;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
+
 /**
  * {@link XPathNode} that represents an XML element node.
  *
@@ -45,7 +47,7 @@ import javax.xml.namespace.QName;
  *
  * @version $Revision:$, $Date:$
  */
-public abstract class ElementNode implements XPathNode {
+public abstract class ElementNode<V extends TypedObjectNode> implements XPathNode<V> {
 
     private QName name;
 

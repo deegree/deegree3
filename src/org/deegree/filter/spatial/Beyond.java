@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.uom.Measure;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -86,7 +87,7 @@ public class Beyond extends SpatialOperator {
 
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        for ( Object param1Value : propName.evaluate( object ) ) {
+        for ( TypedObjectNode param1Value : propName.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( param1Value );
             if ( geom != null ) {
                 Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );

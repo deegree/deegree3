@@ -47,7 +47,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  * 
  * @version $Revision:$, $Date:$
  */
-public class AttributeNode implements XPathNode {
+public class AttributeNode implements XPathNode<PrimitiveValue> {
 
     private ElementNode parentNode;
 

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,9 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -42,37 +44,36 @@ import org.deegree.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class PropertyIsLessThanOrEqualTo extends BinaryComparisonOperator {
 
     public PropertyIsLessThanOrEqualTo( Expression parameter1, Expression parameter2, boolean matchCase ) {
-        super (parameter1, parameter2, matchCase);
+        super( parameter1, parameter2, matchCase );
     }
 
-    @Override    
+    @Override
     public SubType getSubType() {
         return SubType.PROPERTY_IS_LESS_THAN_OR_EQUAL_TO;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override    
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
 
-        Object[] param1Values = param1.evaluate( object );
-        Object[] param2Values = param2.evaluate( object );
+        TypedObjectNode[] param1Values = param1.evaluate( object );
+        TypedObjectNode[] param2Values = param2.evaluate( object );
 
-        // evaluate to true if at least one pair of values matches the condition        
-        for ( Object value1 : param1Values ) {
-            for ( Object value2 : param2Values ) {
+        // evaluate to true if at least one pair of values matches the condition
+        for ( TypedObjectNode value1 : param1Values ) {
+            for ( TypedObjectNode value2 : param2Values ) {
                 if ( value1 != null && value2 != null ) {
-                    Pair<Object, Object> comparablePair = makeComparable( value1, value2 );
-                    if ( ( (Comparable<Object>) comparablePair.first ).compareTo( comparablePair.second ) <= 0 ) {
+                    Pair<PrimitiveValue, PrimitiveValue> comparablePair = getPrimitives( value1, value2 );
+                    if ( ( comparablePair.first ).compareTo( comparablePair.second ) <= 0 ) {
                         return true;
                     }
                 }
@@ -81,11 +82,11 @@ public class PropertyIsLessThanOrEqualTo extends BinaryComparisonOperator {
         return false;
     }
 
-    @Override    
+    @Override
     public String toString( String indent ) {
         String s = indent + "-PropertyIsLessThanOrEqualTo\n";
-        s += param1.toString (indent + "  ");
-        s += param2.toString (indent + "  ");
+        s += param1.toString( indent + "  " );
+        s += param2.toString( indent + "  " );
         return s;
     }
 }

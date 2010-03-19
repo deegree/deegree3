@@ -43,6 +43,8 @@ import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -71,7 +73,7 @@ public class Trim extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f ) {
+    public TypedObjectNode[] evaluate( MatchableObject f ) {
         StringBuffer sb = new StringBuffer( value.toString().trim() );
         if ( contn != null ) {
             contn.evaluate( sb, f );
@@ -90,7 +92,7 @@ public class Trim extends Function {
                 res = res.substring( 0, res.length() - subLen );
             }
         }
-        return new Object[] { res };
+        return new TypedObjectNode[] { new PrimitiveValue( res ) };
     }
 
     /**

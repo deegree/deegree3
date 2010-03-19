@@ -266,19 +266,27 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         memberFeatures.set( featureNum, (Feature) value );
     }
 
-    // TODO also allow the retrieval of featureMember properties in the methods below
-
     @Override
     public Property[] getProperties( QName propName ) {
+
         List<Property> namedProps = new ArrayList<Property>( nonMemberProps.size() );
-        for ( Property property : nonMemberProps ) {
-            if ( propName.equals( property.getName() ) ) {
-                namedProps.add( property );
+
+        if ( propName.equals( FEATURE_MEMBER ) ) {
+            for ( Feature feature : memberFeatures ) {
+                namedProps.add( new GenericProperty( featureMemberDecl, null, feature ) );
+            }
+        } else {
+            for ( Property property : nonMemberProps ) {
+                if ( propName.equals( property.getName() ) ) {
+                    namedProps.add( property );
+                }
             }
         }
         return namedProps.toArray( new Property[namedProps.size()] );
     }
 
+    // TODO also allow the retrieval of featureMember properties in the methods below    
+    
     @Override
     public Property getProperty( QName propName ) {
         Property prop = null;

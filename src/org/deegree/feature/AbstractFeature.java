@@ -45,12 +45,9 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.property.Property;
-import org.deegree.feature.xpath.AttributeNode;
 import org.deegree.feature.xpath.FeatureXPath;
 import org.deegree.feature.xpath.GMLObjectNode;
-import org.deegree.feature.xpath.PropertyNode;
-import org.deegree.feature.xpath.TextNode;
-import org.deegree.feature.xpath.XMLElementNode;
+import org.deegree.feature.xpath.XPathNode;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -78,40 +75,30 @@ abstract class AbstractFeature implements Feature {
         return standardProps;
     }
 
-    public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
+    public TypedObjectNode[] evalXPath( PropertyName propName, GMLVersion version )
                             throws JaxenException {
 
         // simple property with just a simple element step?
-
-        // TODO reactivate this code path (speed!)
-
-        // QName simplePropName = propName.getAsQName();
-        // if ( simplePropName != null ) {
-        // return getPropertyValues( simplePropName, version );
-        // }
+        QName simplePropName = propName.getAsQName();
+        if ( simplePropName != null ) {
+            return getProperties( simplePropName, version );
+        }
 
         // no. activate the full xpath machinery
         XPath xpath = new FeatureXPath( propName.getPropertyName(), this, version );
         xpath.setNamespaceContext( propName.getNsContext() );
         List<?> selectedNodes = xpath.selectNodes( new GMLObjectNode<Feature>( null, this, version ) );
 
-        Object[] resultValues = new Object[selectedNodes.size()];
+        TypedObjectNode[] resultValues = new TypedObjectNode[selectedNodes.size()];
         int i = 0;
         for ( Object node : selectedNodes ) {
-            if ( node instanceof PropertyNode ) {
-                Property prop = ( (PropertyNode) node ).getProperty();
-                resultValues[i++] = prop.getValue();
-            } else if ( node instanceof AttributeNode ) {
-                resultValues[i++] = ( (AttributeNode) node ).getValue();
-            } else if ( node instanceof XMLElementNode ) {
-                resultValues[i++] = ( (XMLElementNode) node ).getElement();
-            } else if ( node instanceof GMLObjectNode<?> ) {
-                resultValues[i++] = ( (GMLObjectNode<?>) node ).getGMLObject();
-            } else if ( node instanceof TextNode ) {
-                resultValues[i++] = ( (TextNode) node ).getValue();
+            if ( node instanceof XPathNode<?> ) {
+                resultValues[i++] = ( (XPathNode<?>) node ).getValue();
+            } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
+                resultValues[i++] = new PrimitiveValue( node );
             } else {
-                // TODO is node.toString() o.k. for all other node types?
-                resultValues[i++] = new PrimitiveValue( node.toString() );
+                throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
+                                            + node.getClass().getName() + "' (=" + node + ") during XPath-evaluation." );
             }
         }
         return resultValues;

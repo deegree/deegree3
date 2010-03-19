@@ -46,6 +46,8 @@ import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -70,7 +72,7 @@ public class Substring extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f ) {
+    public TypedObjectNode[] evaluate( MatchableObject f ) {
         StringBuffer sb = new StringBuffer();
         sb.append( value.toString().trim() );
         if ( valueContn != null ) {
@@ -90,7 +92,7 @@ public class Substring extends Function {
         pos = max( pos - 1, 0 );
 
         if ( length == null ) {
-            return new Object[] { val.substring( pos ) };
+            return new TypedObjectNode[] { new PrimitiveValue( val.substring( pos ) ) };
         }
 
         int len;
@@ -105,7 +107,7 @@ public class Substring extends Function {
         int end = pos + len;
         end = min( val.length(), end );
 
-        return new Object[] { val.substring( pos, end ) };
+        return new PrimitiveValue[] { new PrimitiveValue( val.substring( pos, end ) ) };
     }
 
     /**

@@ -52,6 +52,8 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
@@ -107,7 +109,7 @@ public class Categorize extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f ) {
+    public TypedObjectNode[] evaluate( MatchableObject f ) {
         String val = eval( value, contn, f );
 
         Iterator<StringBuffer> vals = values.iterator();
@@ -120,15 +122,15 @@ public class Categorize extends Function {
             String cur = eval( barriers.next(), barrierContns.next(), f );
             String nextVal = eval( vals.next(), valContns.next(), f );
             if ( cur.equals( val ) ) {
-                return new Object[] { precedingBelongs ? curVal : nextVal };
+                return new TypedObjectNode[] { new PrimitiveValue( precedingBelongs ? curVal : nextVal ) };
             }
             if ( val.compareTo( cur ) == -1 ) {
-                return new Object[] { curVal };
+                return new TypedObjectNode[] { new PrimitiveValue( curVal ) };
             }
             curVal = nextVal;
         }
 
-        return new Object[] { curVal };
+        return new TypedObjectNode[] { new PrimitiveValue( curVal ) };
     }
 
     /**

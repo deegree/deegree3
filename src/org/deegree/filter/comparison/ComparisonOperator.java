@@ -35,16 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-
-import org.deegree.commons.tom.datetime.Date;
-import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.Time;
-import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
@@ -98,80 +92,47 @@ public abstract class ComparisonOperator implements Operator {
         return (Comparable<Object>) value;
     }
 
-    protected Pair<Object, Object> makeComparable( Object value1, Object value2 )
+    /**
+     * Creates a pair of {@link PrimitiveValue} instances from the given {@link TypedObjectNode} while trying to
+     * preserve primitive type information.
+     * 
+     * @param value1
+     * @param value2
+     * @return
+     * @throws FilterEvaluationException
+     */
+    protected Pair<PrimitiveValue, PrimitiveValue> getPrimitives( TypedObjectNode value1, TypedObjectNode value2 )
                             throws FilterEvaluationException {
-        Pair<Object, Object> result = new Pair<Object, Object>( value1, value2 );
-        if ( !( value1 instanceof String ) ) {
-            if ( value1 instanceof Number ) {
-                result = new Pair<Object, Object>( value1, new BigDecimal( value2.toString() ) );
-            } else if ( value1 instanceof Date ) {
-                try {
-                    result = new Pair<Object, Object>( value1, new Date( value2.toString() ) );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            } else if ( value1 instanceof DateTime ) {
-                try {
-                    result = new Pair<Object, Object>( value1, new DateTime( value2.toString() ) );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            } else if ( value1 instanceof Time ) {
-                try {
-                    result = new Pair<Object, Object>( value1, new Time( value2.toString() ) );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            } else if ( value1 instanceof CodeType ) {
-                result = new Pair<Object, Object>( value1, new CodeType( value2.toString(),
-                                                                         ( (CodeType) value1 ).getCodeSpace() ) );
-            } else if ( value1 instanceof Measure ) {
-                result = new Pair<Object, Object>( value1, new Measure( value2.toString(),
-                                                                        ( (Measure) value1 ).getUomUri() ) );
-            } else if ( value1 instanceof PrimitiveValue ) {
-                result = new Pair<Object, Object>( value1, new PrimitiveValue( value2.toString() ) );
-            }
-        } else if ( !( value2 instanceof String ) ) {
-            if ( value2 instanceof Number ) {
-                result = new Pair<Object, Object>( new BigDecimal( value1.toString() ), value2 );
-            } else if ( value2 instanceof Date ) {
-                try {
-                    result = new Pair<Object, Object>( new Date( value1.toString() ), value2 );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            } else if ( value2 instanceof DateTime ) {
-                try {
-                    result = new Pair<Object, Object>( new DateTime( value1.toString() ), value2 );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            } else if ( value2 instanceof Time ) {
-                try {
-                    result = new Pair<Object, Object>( new Time( value1.toString() ), value2 );
-                } catch ( ParseException e ) {
-                    throw new FilterEvaluationException( e.getMessage() );
-                }
-            } else if ( value1 instanceof CodeType ) {
-                result = new Pair<Object, Object>( new CodeType( value1.toString(),
-                                                                 ( (CodeType) value2 ).getCodeSpace() ), value2 );
-            } else if ( value1 instanceof Measure ) {
-                result = new Pair<Object, Object>( new Measure( value1.toString(), ( (Measure) value2 ).getUomUri() ),
-                                                   value2 );
-            } else if ( value1 instanceof PrimitiveValue ) {
-                result = new Pair<Object, Object>( value2, new PrimitiveValue( value1.toString() ) );
-            }
+
+        if ( value1 instanceof Property ) {
+            value1 = ( (Property) value1 ).getValue();
+        }
+        if ( value2 instanceof Property ) {
+            value2 = ( (Property) value2 ).getValue();
         }
 
-        // TODO create comparable numbers in a more efficient manner
-        if ( result.first instanceof Number && !( result.first instanceof BigDecimal ) ) {
-            result.first = new BigDecimal( result.first.toString() );
+        Pair<PrimitiveValue, PrimitiveValue> result = null;
+        if ( value1 instanceof PrimitiveValue ) {
+            result = getPrimitivePair( (PrimitiveValue) value1, value2 );
+        } else if ( value2 instanceof PrimitiveValue ) {
+            Pair<PrimitiveValue, PrimitiveValue> switched = getPrimitivePair( (PrimitiveValue) value2, value1 );
+            result = new Pair<PrimitiveValue, PrimitiveValue>( switched.second, switched.first );
+        } else {
+            PrimitiveValue primitive1 = new PrimitiveValue( value1.toString() );
+            PrimitiveValue primitive2 = new PrimitiveValue( value2.toString() );
+            result = new Pair<PrimitiveValue, PrimitiveValue>( primitive1, primitive2 );
         }
-        if ( result.second instanceof Number && !( result.second instanceof BigDecimal ) ) {
-            result.second = new BigDecimal( result.second.toString() );
-        }
-
         return result;
+    }
+
+    private Pair<PrimitiveValue, PrimitiveValue> getPrimitivePair( PrimitiveValue value1, TypedObjectNode value2 ) {
+        PrimitiveValue pValue2 = null;
+        if ( value2 instanceof PrimitiveValue ) {
+            pValue2 = (PrimitiveValue) value2;
+        } else {
+            pValue2 = new PrimitiveValue( value2.toString() );
+        }
+        return new Pair<PrimitiveValue, PrimitiveValue>( value1, pValue2 );
     }
 
     public abstract Expression[] getParams();

@@ -46,6 +46,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
 
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.comparison.PropertyIsBetween;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.comparison.PropertyIsGreaterThan;
@@ -94,7 +95,7 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
         assertEquals( "SomeProperty", ( (PropertyName) prop.getParameter1() ).getPropertyName() );
-        assertEquals( "100", ( (Literal<String>) prop.getParameter2() ).getValue() );
+        assertEquals( "100", ( (Literal<PrimitiveValue>) prop.getParameter2() ).getValue() );
     }
 
     /**
@@ -110,7 +111,7 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         PropertyIsLessThan prop = (PropertyIsLessThan) opFilter.getOperator();
         assertEquals( "DEPTH", ( (PropertyName) prop.getParameter1() ).getPropertyName() );
-        assertEquals( "30", ( (Literal<String>) prop.getParameter2() ).getValue() );
+        assertEquals( "30", ( (Literal<PrimitiveValue>) prop.getParameter2() ).getValue() );
     }
 
     /**
@@ -166,7 +167,7 @@ public class Filter100XMLAdapterTest extends TestCase {
         PropertyIsLessThan prop = (PropertyIsLessThan) op.getParameter( 0 );
         PropertyName propName = (PropertyName) prop.getParameter1();
         assertEquals( "DEPTH", propName.getPropertyName() );
-        Literal<String> literal = (Literal<String>) prop.getParameter2();
+        Literal<PrimitiveValue> literal = (Literal<PrimitiveValue>) prop.getParameter2();
         assertEquals( "30", literal.getValue() );
 
         Not not = (Not) op.getParameter( 1 );
@@ -235,7 +236,7 @@ public class Filter100XMLAdapterTest extends TestCase {
         PropertyName propName = (PropertyName) params.get( 0 );
         assertEquals( "DISPERSION_ANGLE", propName.getPropertyName() );
 
-        Literal<String> lit = (Literal<String>) prop.getParameter2();
+        Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) prop.getParameter2();
         assertEquals( "1", lit.getValue() );
     }
 
@@ -258,7 +259,7 @@ public class Filter100XMLAdapterTest extends TestCase {
         PropertyName propB = (PropertyName) add.getParameter1();
         assertEquals( "PROPB", propB.getPropertyName() );
 
-        Literal<String> lit = (Literal<String>) add.getParameter2();
+        Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) add.getParameter2();
         assertEquals( "100", lit.getValue() );
     }
 
@@ -274,10 +275,10 @@ public class Filter100XMLAdapterTest extends TestCase {
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
-        Literal<String> lb = (Literal<String>) prop.getLowerBoundary();
+        Literal<PrimitiveValue> lb = (Literal<PrimitiveValue>) prop.getLowerBoundary();
         assertEquals( "100", lb.getValue() );
 
-        Literal<String> ub = (Literal<String>) prop.getUpperBoundary();
+        Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
         assertEquals( "200", ub.getValue() );
 
         PropertyName propName = (PropertyName) prop.getExpression();
@@ -296,10 +297,10 @@ public class Filter100XMLAdapterTest extends TestCase {
         OperatorFilter opFilter = (OperatorFilter) result;
 
         PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
-        Literal<String> lb = (Literal<String>) prop.getLowerBoundary();
+        Literal<PrimitiveValue> lb = (Literal<PrimitiveValue>) prop.getLowerBoundary();
         assertEquals( "2001-01-15T20:07:48.11", lb.getValue() );
 
-        Literal<String> ub = (Literal<String>) prop.getUpperBoundary();
+        Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
         assertEquals( "2001-03-06T12:00:00.00", ub.getValue() );
 
         PropertyName propName = (PropertyName) prop.getExpression();
@@ -366,15 +367,15 @@ public class Filter100XMLAdapterTest extends TestCase {
         Or or = (Or) and.getParameter( 0 );
         PropertyIsEqualTo prop0 = (PropertyIsEqualTo) or.getParameter( 0 );
         assertEquals( "FIELD1", ( (PropertyName) prop0.getParameter1() ).getPropertyName() );
-        assertEquals( "10", ( (Literal<String>) prop0.getParameter2() ).getValue() );
+        assertEquals( "10", ( (Literal<PrimitiveValue>) prop0.getParameter2() ).getValue() );
 
         PropertyIsEqualTo prop1 = (PropertyIsEqualTo) or.getParameter( 1 );
         assertEquals( "FIELD1", ( (PropertyName) prop1.getParameter1() ).getPropertyName() );
-        assertEquals( "20", ( (Literal<String>) prop1.getParameter2() ).getValue() );
+        assertEquals( "20", ( (Literal<PrimitiveValue>) prop1.getParameter2() ).getValue() );
 
         PropertyIsEqualTo prop01 = (PropertyIsEqualTo) and.getParameter( 1 );
         assertEquals( "STATUS", ( (PropertyName) prop01.getParameter1() ).getPropertyName() );
-        assertEquals( "VALID", ( (Literal<String>) prop01.getParameter2() ).getValue() );
+        assertEquals( "VALID", ( (Literal<PrimitiveValue>) prop01.getParameter2() ).getValue() );
     }
 
     /**
@@ -420,13 +421,13 @@ public class Filter100XMLAdapterTest extends TestCase {
         PropertyIsGreaterThan pg = (PropertyIsGreaterThan) and.getParameter( 0 );
         PropertyName pn1 = (PropertyName) pg.getParameter1();
         assertEquals( "Person/Age", pn1.getPropertyName() );
-        Literal<String> lit1 = (Literal<String>) pg.getParameter2();
+        Literal<PrimitiveValue> lit1 = (Literal<PrimitiveValue>) pg.getParameter2();
         assertEquals( "50", lit1.getValue() );
 
         PropertyIsEqualTo pe = (PropertyIsEqualTo) and.getParameter( 1 );
         PropertyName pn2 = (PropertyName) pe.getParameter1();
         assertEquals( "Person/Address/City", pn2.getPropertyName() );
-        Literal<String> lit2 = (Literal<String>) pe.getParameter2();
+        Literal<PrimitiveValue> lit2 = (Literal<PrimitiveValue>) pe.getParameter2();
         assertEquals( "Toronto", lit2.getValue() );
     }
 

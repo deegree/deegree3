@@ -3,6 +3,8 @@ package org.deegree.filter.function.geometry;
 
 import java.util.List;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -28,12 +30,11 @@ public class IsPoint extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f )
+    public TypedObjectNode[] evaluate( MatchableObject f )
                             throws FilterEvaluationException {
-        Object[] vals = getParams()[0].evaluate( f );
+        TypedObjectNode[] vals = getParams()[0].evaluate( f );
         // TODO is handling of multi geometries like this ok?
-        return new Object[] { new Boolean( vals != null && vals.length > 0
-                                           && ( vals[0] instanceof Point || vals[0] instanceof MultiPoint ) ).toString() };
+        boolean isPoint = ( vals != null && vals.length > 0 && ( vals[0] instanceof Point || vals[0] instanceof MultiPoint ) );
+        return new TypedObjectNode[] {new PrimitiveValue( new Boolean (isPoint).toString() )};
     }
-
 }

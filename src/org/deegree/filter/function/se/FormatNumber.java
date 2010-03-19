@@ -46,6 +46,8 @@ import java.text.DecimalFormat;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -74,7 +76,7 @@ public class FormatNumber extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f ) {
+    public TypedObjectNode[] evaluate( MatchableObject f ) {
         double nr;
         if ( numericValueContn != null ) {
             StringBuffer sb = new StringBuffer();
@@ -85,9 +87,9 @@ public class FormatNumber extends Function {
             nr = parseDouble( numericValue.toString() );
         }
         if ( nr < 0 && negativePattern != null ) {
-            return new Object[] { negativePattern.format( nr ) };
+            return new TypedObjectNode[] { new PrimitiveValue( negativePattern.format( nr ) ) };
         }
-        return new Object[] { pattern.format( nr ) };
+        return new TypedObjectNode[] { new PrimitiveValue( pattern.format( nr ) ) };
     }
 
     /**

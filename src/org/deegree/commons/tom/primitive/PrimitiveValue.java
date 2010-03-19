@@ -147,11 +147,29 @@ public class PrimitiveValue implements TypedObjectNode, Comparable<PrimitiveValu
 
     @Override
     public boolean equals( Object o ) {
+
         // TODO make this failproof
-        if ( o instanceof PrimitiveValue ) {
-            return ( (PrimitiveValue) o ).getAsText().equals( getAsText() );
+        PrimitiveValue that = null;
+        if ( o instanceof PrimitiveValue && ( (PrimitiveValue) o ).type == type ) {
+            that = (PrimitiveValue) o;
+        } else {
+            try {
+                that = new PrimitiveValue( o.toString(), type );
+            } catch ( IllegalArgumentException e ) {
+                return false;
+            }
         }
-        return false;
+
+        // NOTE: don't use #equals() for BigDecimal, because new BigDecimal("155.00") is not equal to
+        // new BigDecimal("155")
+        if ( value instanceof BigDecimal ) {
+            if ( ( (BigDecimal) value ).compareTo( (BigDecimal) that.value ) == 0 ) {
+                return true;
+            } else {
+                return value.equals( that.value );
+            }
+        }
+        return value.equals( that.value );
     }
 
     @Override

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -56,8 +58,9 @@ public class PropertyIsBetween extends ComparisonOperator {
 
     private final Expression expression;
 
-    public PropertyIsBetween( Expression expression, Expression lowerBoundary, Expression upperBoundary, boolean matchCase ) {
-        super (matchCase);
+    public PropertyIsBetween( Expression expression, Expression lowerBoundary, Expression upperBoundary,
+                              boolean matchCase ) {
+        super( matchCase );
         this.expression = expression;
         this.lowerBoundary = lowerBoundary;
         this.upperBoundary = upperBoundary;
@@ -84,29 +87,29 @@ public class PropertyIsBetween extends ComparisonOperator {
     @Override
     public SubType getSubType() {
         return SubType.PROPERTY_IS_BETWEEN;
-    }      
+    }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
 
-        Object[] propertyValues = expression.evaluate( obj );
-        Object[] upperBoundaryValues = upperBoundary.evaluate( obj );
-        Object[] lowerBoundaryValues = lowerBoundary.evaluate( obj );
+        TypedObjectNode[] propertyValues = expression.evaluate( obj );
+        TypedObjectNode[] upperBoundaryValues = upperBoundary.evaluate( obj );
+        TypedObjectNode[] lowerBoundaryValues = lowerBoundary.evaluate( obj );
 
-        for ( Object propertyValue : propertyValues ) {
+        for ( TypedObjectNode propertyValue : propertyValues ) {
             // check for one upper value that is larger than the propertyValue
             if ( propertyValue != null ) {
-                for ( Object upperValue : upperBoundaryValues ) {
+                for ( TypedObjectNode upperValue : upperBoundaryValues ) {
                     if ( upperValue != null ) {
-                        Pair<Object, Object> propUpper = makeComparable( propertyValue, upperValue );
-                        if ( ( (Comparable<Object>) propUpper.first ).compareTo( propUpper.second ) <= 0 ) {
+                        Pair<PrimitiveValue, PrimitiveValue> propUpper = getPrimitives( propertyValue, upperValue );
+                        if ( ( propUpper.first ).compareTo( propUpper.second ) <= 0 ) {
                             // now check for one lower value that is smaller than the propertyValue
-                            for ( Object lowerValue : lowerBoundaryValues ) {
+                            for ( TypedObjectNode lowerValue : lowerBoundaryValues ) {
                                 if ( lowerValue != null ) {
-                                    Pair<Object, Object> propLower = makeComparable( propertyValue, lowerValue );
-                                    if ( ( (Comparable<Object>) propLower.first ).compareTo( propLower.second ) >= 0 ) {
+                                    Pair<PrimitiveValue, PrimitiveValue> propLower = getPrimitives( propertyValue,
+                                                                                                     lowerValue );
+                                    if ( ( propLower.first ).compareTo( propLower.second ) >= 0 ) {
                                         return true;
                                     }
                                 }
@@ -128,8 +131,8 @@ public class PropertyIsBetween extends ComparisonOperator {
         s += upperBoundary.toString( indent + "  " );
         return s;
     }
-    
-    public Expression[] getParams () {
-        return new Expression [] {lowerBoundary, expression, upperBoundary};
+
+    public Expression[] getParams() {
+        return new Expression[] { lowerBoundary, expression, upperBoundary };
     }
 }

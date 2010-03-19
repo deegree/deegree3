@@ -56,6 +56,8 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
@@ -257,7 +259,7 @@ public class Interpolate extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f ) {
+    public TypedObjectNode[] evaluate( MatchableObject f ) {
         StringBuffer sb = new StringBuffer( value.toString().trim() );
         if ( contn != null ) {
             contn.evaluate( sb, f );
@@ -288,7 +290,7 @@ public class Interpolate extends Function {
         String fstString = buf.toString();
 
         if ( !data.hasNext() ) {
-            return new Object[] { fstString };
+            return new TypedObjectNode[] { new PrimitiveValue( fstString ) };
         }
 
         buf = new StringBuffer( vals.next().toString().trim() );
@@ -302,10 +304,10 @@ public class Interpolate extends Function {
 
         if ( color ) {
             Color res = interpolateColor( pos - 1, pos, fac );
-            return new Object[] { "#" + toHexString( res.getRGB() ) };
+            return new TypedObjectNode[] { new PrimitiveValue( "#" + toHexString( res.getRGB() ) ) };
         }
 
-        return new Object[] { "" + interpolate( pos - 1, pos, fac ) };
+        return new TypedObjectNode[] { new PrimitiveValue( "" + interpolate( pos - 1, pos, fac ) ) };
     }
 
     /**
@@ -421,7 +423,7 @@ public class Interpolate extends Function {
             dataArray = new Double[datas.size()];
             List<Double> list = new ArrayList<Double>( datas.size() );
             Iterator<Double> i = datas.iterator();
-            while ( i.hasNext() ){
+            while ( i.hasNext() ) {
                 list.add( Double.parseDouble( i.next().toString() ) );
             }
             dataArray = list.toArray( dataArray );

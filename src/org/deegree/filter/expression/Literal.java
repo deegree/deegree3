@@ -35,22 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.MatchableObject;
 
 /**
  * {@link Expression} that has a constant value.
  * 
- * @param <T>
- *            TODO which types are allowed here?
+ * @param <V>
+ *            type of the contained value, in most cases {@link PrimitiveValue}
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class Literal<T> implements Expression {
+public class Literal<V extends TypedObjectNode> implements Expression {
 
-    private T value;
+    private V value;
+
+    public Literal( String valu ) {
+        this.value = (V) new PrimitiveValue( value );
+    }
 
     /**
      * Creates a new {@link Literal} instance.
@@ -58,7 +64,7 @@ public class Literal<T> implements Expression {
      * @param value
      *            value of the literal
      */
-    public Literal( T value ) {
+    public Literal( V value ) {
         this.value = value;
     }
 
@@ -67,7 +73,7 @@ public class Literal<T> implements Expression {
      * 
      * @return the literal's value
      */
-    public T getValue() {
+    public V getValue() {
         return value;
     }
 
@@ -80,8 +86,8 @@ public class Literal<T> implements Expression {
      * Returns the <code>Literal</code>'s value (to be used in the evaluation of a complexer <code>Expression</code>).
      */
     @Override
-    public Object[] evaluate( MatchableObject obj ) {
-        return new Object[] { value };
+    public TypedObjectNode[] evaluate( MatchableObject obj ) {
+        return new TypedObjectNode[] { value };
     }
 
     @Override

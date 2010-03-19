@@ -35,9 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
-import org.deegree.commons.tom.datetime.Date;
-import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.Time;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
@@ -45,24 +43,14 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.expression.Sub;
-import org.deegree.geometry.Geometry;
 
 /**
  * An <code>Expression</code> describes a rule to obtain a value that may be derived from the properties of a
  * {@link MatchableObject}.
  * <p>
- * Note that the objects returned by {@link #evaluate(MatchableObject)} is an <code>Object[]</code>, as an expression
- * may evaluate to multiple values, e.g. a {@link PropertyName} that targets a multi property of a feature. The values
- * in the array always have one of the following classes:
- * <ul>
- * <li><code>String</code></li>
- * <li><code>Number</code></li>
- * <li>{@link Date}</li>
- * <li>{@link DateTime}</li>
- * <li>{@link Time}</li>
- * <li>{@link Geometry}</li>
- * </ul>
- * NOTE: Values in the returned array may also be <code>null</code>.
+ * Note that the objects returned by {@link #evaluate(MatchableObject)} is an <code>TypedObjectNode[]</code>, as an
+ * expression may evaluate to multiple values, e.g. a {@link PropertyName} that targets a multi property of a feature.
+ * Values in the returned array may also be <code>null</code>.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -109,8 +97,8 @@ public interface Expression {
     /**
      * Determines the values of the expression for the given {@link MatchableObject}.
      * <p>
-     * Note that this returns an <code>Object[]</code>, as an expression may evaluate to multiple values, e.g. a
-     * {@link PropertyName} that targets a multi property of a feature.
+     * Note that this returns an <code>TypedObjectNode[]</code>, as an expression may evaluate to multiple values, e.g.
+     * a {@link PropertyName} that targets a multi property of a feature.
      * </p>
      * 
      * @param obj
@@ -119,7 +107,7 @@ public interface Expression {
      *         <code>null</code>
      * @throws FilterEvaluationException
      */
-    public Object[] evaluate( MatchableObject obj )
+    public TypedObjectNode[] evaluate( MatchableObject obj )
                             throws FilterEvaluationException;
 
     /**
@@ -127,7 +115,7 @@ public interface Expression {
      * 
      * @return the parameters of the expression
      */
-    public abstract Expression [] getParams();    
-    
-    public String toString( String indent );    
+    public abstract Expression[] getParams();
+
+    public String toString( String indent );
 }

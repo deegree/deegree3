@@ -112,9 +112,9 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     }
 
     @Override
-    public Object[] getPropertyValues( PropertyName propName, GMLVersion version )
+    public TypedObjectNode[] evalXPath( PropertyName propName, GMLVersion version )
                             throws JaxenException {
-        return getReferencedObject().getPropertyValues( propName, version );
+        return getReferencedObject().evalXPath( propName, version );
     }
 
     @Override

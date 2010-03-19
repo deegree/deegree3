@@ -45,7 +45,7 @@ import org.deegree.feature.property.Property;
  * 
  * @version $Revision:$, $Date:$
  */
-public class PropertyNode extends ElementNode {
+public class PropertyNode extends ElementNode<Property> {
 
     private GMLObjectNode parent;
 
@@ -67,7 +67,7 @@ public class PropertyNode extends ElementNode {
      * 
      * @return wrapped property
      */
-    public Property getProperty() {
+    public Property getValue() {
         return prop;
     }
 }

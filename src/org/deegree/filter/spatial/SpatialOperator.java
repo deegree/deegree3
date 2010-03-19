@@ -38,7 +38,9 @@ package org.deegree.filter.spatial;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.crs.CRS;
+import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
 import org.deegree.filter.i18n.Messages;
@@ -119,13 +121,20 @@ public abstract class SpatialOperator implements Operator {
      * @throws FilterEvaluationException
      *             if the value is neither <code>null</code> nor a {@link Geometry}
      */
-    protected Geometry checkGeometryOrNull( Object value )
+    protected Geometry checkGeometryOrNull( TypedObjectNode value )
                             throws FilterEvaluationException {
-        if ( value != null && !( value instanceof Geometry ) ) {
-            String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
-            throw new FilterEvaluationException( msg );
+        Geometry geom = null;
+        if ( value != null ) {
+            if ( value instanceof Geometry ) {
+                geom = (Geometry) value;
+            } else if ( value instanceof Property || ( (Property) value ).getValue() instanceof Geometry ) {
+                geom = (Geometry) ((Property) value).getValue();
+            } else {
+                String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
+                throw new FilterEvaluationException( msg );
+            }
         }
-        return (Geometry) value;
+        return geom;
     }
 
     /**
@@ -160,6 +169,6 @@ public abstract class SpatialOperator implements Operator {
         }
         return transformedLiteral;
     }
-    
-    public abstract Object[] getParams ();    
+
+    public abstract Object[] getParams();
 }

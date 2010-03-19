@@ -46,6 +46,8 @@ import java.util.LinkedList;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
@@ -70,7 +72,7 @@ public class Concatenate extends Function {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject f ) {
+    public TypedObjectNode[] evaluate( MatchableObject f ) {
         StringBuffer res = new StringBuffer();
         Iterator<StringBuffer> sbs = values.iterator();
         Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
@@ -82,7 +84,7 @@ public class Concatenate extends Function {
             }
             res.append( sb.toString() );
         }
-        return new Object[] { res.toString().trim() };
+        return new TypedObjectNode[] { new PrimitiveValue( res.toString().trim() ) };
     }
 
     /**

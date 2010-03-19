@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.uom.Measure;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -42,7 +43,7 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
 
 /**
- * If geometries are within the specified distance of one another. 
+ * If geometries are within the specified distance of one another.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -65,7 +66,7 @@ public class DWithin extends SpatialOperator {
 
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        for ( Object param1Value : propName.evaluate( object ) ) {
+        for ( TypedObjectNode param1Value : propName.evaluate( object ) ) {
             Geometry geom = checkGeometryOrNull( param1Value );
             if ( geom != null ) {
                 Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
@@ -75,8 +76,6 @@ public class DWithin extends SpatialOperator {
         }
         return false;
     }
-    
-    
 
     /**
      * @return the propName
@@ -108,7 +107,7 @@ public class DWithin extends SpatialOperator {
     }
 
     @Override
-    public Object[] getParams () {
-        return new Object [] {propName, geometry};
-    }    
+    public Object[] getParams() {
+        return new Object[] { propName, geometry };
+    }
 }

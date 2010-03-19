@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
-import java.math.BigDecimal;
-
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -61,34 +61,27 @@ public class PropertyIsEqualTo extends BinaryComparisonOperator {
         return SubType.PROPERTY_IS_EQUAL_TO;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
 
-        Object[] param1Values = param1.evaluate( object );
-        Object[] param2Values = param2.evaluate( object );
+        TypedObjectNode[] param1Values = param1.evaluate( object );
+        TypedObjectNode[] param2Values = param2.evaluate( object );
 
         // evaluate to true if at least one pair of values matches the condition
-        for ( Object value1 : param1Values ) {
-            for ( Object value2 : param2Values ) {
+        for ( TypedObjectNode value1 : param1Values ) {
+            for ( TypedObjectNode value2 : param2Values ) {
                 if ( value1 == null && value2 == null ) {
                     return true;
                 }
                 if ( value1 != null && value2 != null ) {
-                    Pair<Object, Object> comparablePair = makeComparable( value1, value2 );
+                    Pair<PrimitiveValue, PrimitiveValue> primitivePair = getPrimitives( value1, value2 );
                     if ( !matchCase ) {
-                        if ( comparablePair.first.toString().equalsIgnoreCase( comparablePair.second.toString() ) ) {
-                            return true;
-                        }
-                    } else if ( comparablePair.first instanceof BigDecimal ) {
-                        // NOTE: don't use #equals() for BigDecimal, because new BigDecimal("155.00") is not equal to
-                        // new BigDecimal("155")
-                        if ( ( (Comparable) comparablePair.first ).compareTo( comparablePair.second ) == 0 ) {
+                        if ( primitivePair.first.toString().equalsIgnoreCase( primitivePair.second.toString() ) ) {
                             return true;
                         }
                     } else {
-                        if ( comparablePair.first.equals( comparablePair.second ) ) {
+                        if ( primitivePair.first.equals( primitivePair.second ) ) {
                             return true;
                         }
                     }

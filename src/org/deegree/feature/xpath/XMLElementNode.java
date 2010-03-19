@@ -45,7 +45,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
  * 
  * @version $Revision$, $Date$
  */
-public class XMLElementNode extends ElementNode {
+public class XMLElementNode extends ElementNode<GenericXMLElement> {
 
     private XPathNode parentNode;
 
@@ -62,7 +62,7 @@ public class XMLElementNode extends ElementNode {
         return parentNode;
     }
 
-    public GenericXMLElement getElement() {
+    public GenericXMLElement getValue() {
         return element;
     }
 }

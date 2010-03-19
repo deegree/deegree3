@@ -36,7 +36,11 @@
 package org.deegree.filter.expression;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -74,26 +78,29 @@ public class Add implements Expression {
     }
 
     @Override
-    public Object[] evaluate( MatchableObject obj )
+    public TypedObjectNode[] evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
 
-        Object[] values1 = param1.evaluate( obj );
-        Object[] values2 = param2.evaluate( obj );
+        TypedObjectNode[] values1 = param1.evaluate( obj );
+        TypedObjectNode[] values2 = param2.evaluate( obj );
 
-        Object[] resultValues = new Object[values1.length * values2.length];
-        int i = 0;
-        for ( Object value1 : values1 ) {
-            if ( !( value1 instanceof BigDecimal ) ) {
-                value1 = new BigDecimal( value1.toString() );
-            }
-            for ( Object value2 : values2 ) {
-                if ( !( value2 instanceof BigDecimal ) ) {
-                    value2 = new BigDecimal( value2.toString() );
+        List<TypedObjectNode> resultValues = new ArrayList<TypedObjectNode>( values1.length * values2.length );
+        for ( TypedObjectNode value1 : values1 ) {
+            if ( value1 != null ) {
+                try {
+                    BigDecimal bd1 = new BigDecimal( value1.toString() );
+                    for ( TypedObjectNode value2 : values2 ) {
+                        if ( value2 != null ) {
+                            BigDecimal bd2 = new BigDecimal( value2.toString() );
+                            resultValues.add( new PrimitiveValue( bd1.add( bd2 ) ) );
+                        }
+                    }
+                } catch ( NumberFormatException e ) {
+                    // nothing to do
                 }
-                resultValues[i++] = ( (BigDecimal) value1 ).add( (BigDecimal) value2 );
             }
         }
-        return resultValues;
+        return resultValues.toArray( new TypedObjectNode[resultValues.size()] );
     }
 
     @Override
