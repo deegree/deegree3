@@ -69,6 +69,7 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
+import org.junit.Test;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -87,7 +88,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
+    @Test
     public void testFilter1()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter1.xml" );
@@ -95,7 +96,7 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
         assertEquals( "SomeProperty", ( (PropertyName) prop.getParameter1() ).getPropertyName() );
-        assertEquals( "100", ( (Literal<PrimitiveValue>) prop.getParameter2() ).getValue() );
+        assertEquals( "100", ( (Literal<PrimitiveValue>) prop.getParameter2() ).getValue().toString() );
     }
 
     /**
@@ -103,7 +104,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
+    @Test
     public void testFilter2()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter2.xml" );
@@ -111,7 +112,7 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         PropertyIsLessThan prop = (PropertyIsLessThan) opFilter.getOperator();
         assertEquals( "DEPTH", ( (PropertyName) prop.getParameter1() ).getPropertyName() );
-        assertEquals( "30", ( (Literal<PrimitiveValue>) prop.getParameter2() ).getValue() );
+        assertEquals( "30", ( (Literal<PrimitiveValue>) prop.getParameter2() ).getValue().toString() );
     }
 
     /**
@@ -119,6 +120,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
+    @Test
     public void testFilter3()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter3.xml" );
@@ -135,7 +137,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    @SuppressWarnings("boxing")
+    @Test
     public void testFilter4()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter4.xml" );
@@ -158,6 +160,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings( { "unchecked", "boxing" })
+    @Test
     public void testFilter5()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter5.xml" );
@@ -168,7 +171,7 @@ public class Filter100XMLAdapterTest extends TestCase {
         PropertyName propName = (PropertyName) prop.getParameter1();
         assertEquals( "DEPTH", propName.getPropertyName() );
         Literal<PrimitiveValue> literal = (Literal<PrimitiveValue>) prop.getParameter2();
-        assertEquals( "30", literal.getValue() );
+        assertEquals( "30", literal.getValue().toString() );
 
         Not not = (Not) op.getParameter( 1 );
         Disjoint disjoint = (Disjoint) not.getParameter();
@@ -190,6 +193,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
+    @Test
     public void testFilter6()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter6.xml" );
@@ -204,6 +208,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
+    @Test
     public void testFilter7()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter7.xml" );
@@ -224,6 +229,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testFilter8()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter8.xml" );
@@ -237,7 +243,7 @@ public class Filter100XMLAdapterTest extends TestCase {
         assertEquals( "DISPERSION_ANGLE", propName.getPropertyName() );
 
         Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) prop.getParameter2();
-        assertEquals( "1", lit.getValue() );
+        assertEquals( "1", lit.getValue().toString() );
     }
 
     /**
@@ -246,6 +252,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testFilter9()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter9.xml" );
@@ -260,7 +267,7 @@ public class Filter100XMLAdapterTest extends TestCase {
         assertEquals( "PROPB", propB.getPropertyName() );
 
         Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) add.getParameter2();
-        assertEquals( "100", lit.getValue() );
+        assertEquals( "100", lit.getValue().toString() );
     }
 
     /**
@@ -269,6 +276,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testFilter10()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter10.xml" );
@@ -276,10 +284,10 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
         Literal<PrimitiveValue> lb = (Literal<PrimitiveValue>) prop.getLowerBoundary();
-        assertEquals( "100", lb.getValue() );
+        assertEquals( "100", lb.getValue().toString() );
 
         Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
-        assertEquals( "200", ub.getValue() );
+        assertEquals( "200", ub.getValue().toString() );
 
         PropertyName propName = (PropertyName) prop.getExpression();
         assertEquals( "DEPTH", propName.getPropertyName() );
@@ -291,6 +299,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testFilter11()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter11.xml" );
@@ -298,10 +307,10 @@ public class Filter100XMLAdapterTest extends TestCase {
 
         PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
         Literal<PrimitiveValue> lb = (Literal<PrimitiveValue>) prop.getLowerBoundary();
-        assertEquals( "2001-01-15T20:07:48.11", lb.getValue() );
+        assertEquals( "2001-01-15T20:07:48.11", lb.getValue().toString() );
 
         Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
-        assertEquals( "2001-03-06T12:00:00.00", ub.getValue() );
+        assertEquals( "2001-03-06T12:00:00.00", ub.getValue().toString() );
 
         PropertyName propName = (PropertyName) prop.getExpression();
         assertEquals( "SAMPLE_DATE", propName.getPropertyName() );
@@ -312,6 +321,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
+    @Test
     public void testFilter12()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter12.xml" );
@@ -329,6 +339,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings("boxing")
+    @Test
     public void testFilter13()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter13.xml" );
@@ -358,6 +369,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testFilter14()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter14.xml" );
@@ -367,15 +379,15 @@ public class Filter100XMLAdapterTest extends TestCase {
         Or or = (Or) and.getParameter( 0 );
         PropertyIsEqualTo prop0 = (PropertyIsEqualTo) or.getParameter( 0 );
         assertEquals( "FIELD1", ( (PropertyName) prop0.getParameter1() ).getPropertyName() );
-        assertEquals( "10", ( (Literal<PrimitiveValue>) prop0.getParameter2() ).getValue() );
+        assertEquals( "10", ( (Literal<PrimitiveValue>) prop0.getParameter2() ).getValue().toString() );
 
         PropertyIsEqualTo prop1 = (PropertyIsEqualTo) or.getParameter( 1 );
         assertEquals( "FIELD1", ( (PropertyName) prop1.getParameter1() ).getPropertyName() );
-        assertEquals( "20", ( (Literal<PrimitiveValue>) prop1.getParameter2() ).getValue() );
+        assertEquals( "20", ( (Literal<PrimitiveValue>) prop1.getParameter2() ).getValue().toString() );
 
         PropertyIsEqualTo prop01 = (PropertyIsEqualTo) and.getParameter( 1 );
         assertEquals( "STATUS", ( (PropertyName) prop01.getParameter1() ).getPropertyName() );
-        assertEquals( "VALID", ( (Literal<PrimitiveValue>) prop01.getParameter2() ).getValue() );
+        assertEquals( "VALID", ( (Literal<PrimitiveValue>) prop01.getParameter2() ).getValue().toString() );
     }
 
     /**
@@ -384,6 +396,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings("boxing")
+    @Test
     public void testFilter15()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter15.xml" );
@@ -412,6 +425,7 @@ public class Filter100XMLAdapterTest extends TestCase {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testFilter16()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter result = parse( "testdata/v100/testfilter16.xml" );
@@ -422,13 +436,13 @@ public class Filter100XMLAdapterTest extends TestCase {
         PropertyName pn1 = (PropertyName) pg.getParameter1();
         assertEquals( "Person/Age", pn1.getPropertyName() );
         Literal<PrimitiveValue> lit1 = (Literal<PrimitiveValue>) pg.getParameter2();
-        assertEquals( "50", lit1.getValue() );
+        assertEquals( "50", lit1.getValue().toString() );
 
         PropertyIsEqualTo pe = (PropertyIsEqualTo) and.getParameter( 1 );
         PropertyName pn2 = (PropertyName) pe.getParameter1();
         assertEquals( "Person/Address/City", pn2.getPropertyName() );
         Literal<PrimitiveValue> lit2 = (Literal<PrimitiveValue>) pe.getParameter2();
-        assertEquals( "Toronto", lit2.getValue() );
+        assertEquals( "Toronto", lit2.getValue().toString() );
     }
 
     private Filter parse( String resourceName )

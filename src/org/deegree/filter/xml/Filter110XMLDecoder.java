@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
@@ -45,6 +46,7 @@ import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,9 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.genericxml.GenericXMLElementContent;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
@@ -63,7 +68,6 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.RemoveMeAfterRefactoring;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
@@ -698,9 +702,48 @@ public class Filter110XMLDecoder {
     private static Literal<?> parseLiteral( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        LOG.warn( "Parsing of custom literals needs implementation: " + RemoveMeAfterRefactoring.class );
-        String s = xmlStream.getElementText();
-        return new Literal<PrimitiveValue>( new PrimitiveValue( s ) );
+        Map<QName, PrimitiveValue> attrs = parseAttrs( xmlStream );
+        List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
+        while ( xmlStream.next() != END_ELEMENT ) {
+            int eventType = xmlStream.getEventType();
+            if ( eventType == START_ELEMENT ) {
+                children.add( parseElement( xmlStream ) );
+            } else if ( eventType == CHARACTERS ) {
+                children.add( new PrimitiveValue( xmlStream.getText() ) );
+            }
+        }
+        TypedObjectNode value = null;
+        if ( attrs == null || children.size() == 1 ) {
+            value = children.get( 0 );
+        } else {
+            value = new GenericXMLElementContent( null, attrs, children );
+        }
+        return new Literal<TypedObjectNode>( value );
+    }
+
+    private static GenericXMLElement parseElement( XMLStreamReader xmlStream ) throws IllegalArgumentException, XMLStreamException {
+        Map<QName, PrimitiveValue> attrs = parseAttrs( xmlStream );
+        List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
+        while ( xmlStream.next() != END_ELEMENT ) {
+            int eventType = xmlStream.getEventType();
+            if ( eventType == START_ELEMENT ) {
+                children.add( parseElement( xmlStream ) );
+            } else if ( eventType == CHARACTERS ) {
+                children.add( new PrimitiveValue( xmlStream.getText() ) );
+            }
+        }
+        return new GenericXMLElement( xmlStream.getName(), null, attrs, children );
+    }
+
+    private static Map<QName, PrimitiveValue> parseAttrs( XMLStreamReader xmlStream ) {
+        Map<QName, PrimitiveValue> attrs = new LinkedHashMap<QName, PrimitiveValue>();
+        for ( int i = 0; i < xmlStream.getAttributeCount(); i++ ) {
+            QName name = xmlStream.getAttributeName( i );
+            String value = xmlStream.getAttributeValue( i );
+            PrimitiveValue xmlValue = new PrimitiveValue( value );
+            attrs.put( name, xmlValue );
+        }
+        return attrs;
     }
 
     private static PropertyName parsePropertyName( XMLStreamReader xmlStream, boolean permitEmpty )

@@ -47,7 +47,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.RemoveMeAfterRefactoring;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.gml.GMLInputFactory;
@@ -59,8 +58,6 @@ import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests the correct evaluation of filter expressions.
@@ -163,15 +160,12 @@ public class FilterEvaluationTest {
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_6" );
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger( FilterEvaluationTest.class );
-    
     @Test
     public void filterCollection10()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
                             JaxenException {
-        LOG.warn("Activate me after refactoring: " + RemoveMeAfterRefactoring.class);
-//        Filter filter = parseFilter( "testfilter10.invalid_xml" );
-//        assertResultSet( fc.getMembers( filter ) );
+        Filter filter = parseFilter( "testfilter10.invalid_xml" );
+        assertResultSet( fc.getMembers( filter ) );
     }
 
     @Test
@@ -190,14 +184,14 @@ public class FilterEvaluationTest {
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2", "PHILOSOPHER_3" );
     }
 
-//    @Test
+    @Test
     public void filterCollection13()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter13.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_7" );
     }
 
-//    @Test
+    @Test
     public void filterCollection14()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter filter = parseFilter( "testfilter14.xml" );
