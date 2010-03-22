@@ -71,8 +71,11 @@ public class Centroid extends Function {
             throw new FilterEvaluationException( "The Centroid function takes exactly one argument (got " + vals.length
                                                  + ")." );
         }
-        if ( vals[0] instanceof Property && ( (Property) vals[0] ).getValue() instanceof Geometry ) {
-            return new TypedObjectNode[] { ( (Geometry) ( (Property) vals[0] ).getValue() ).getCentroid() };
+        if ( vals[0] instanceof Geometry
+             || ( vals[0] instanceof Property && ( (Property) vals[0] ).getValue() instanceof Geometry ) ) {
+            Geometry geom = vals[0] instanceof Geometry ? (Geometry) vals[0]
+                                                       : (Geometry) ( (Property) vals[0] ).getValue();
+            return new TypedObjectNode[] { geom.getCentroid() };
         }
         if ( vals[0] == null ) {
             throw new FilterEvaluationException( "The argument to the Centroid function must be a geometry (was null)." );
