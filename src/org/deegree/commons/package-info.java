@@ -33,49 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.commons.utils.log;
+@PackageLoggingNotes(meta = "common logging settings for all of deegree")
+package org.deegree.commons;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import org.deegree.commons.utils.log.PackageLoggingNotes;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-/**
- * <code>DebuggingNotes</code>
- * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- */
-@Retention(SOURCE)
-@Target(TYPE)
-public @interface DebuggingNotes {
-
-    /**
-     * @return the string that describes the error level logging for this class
-     */
-    String error() default "";
-
-    /**
-     * @return the string that describes the warn level logging for this class
-     */
-    String warn() default "";
-
-    /**
-     * @return the string that describes the info level logging for this class
-     */
-    String info() default "";
-
-    /**
-     * @return the string that describes the debug level logging for this class
-     */
-    String debug() default "";
-
-    /**
-     * @return the string that describes the trace level logging for this class
-     */
-    String trace() default "";
-
-}

@@ -35,12 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.log;
 
+import static java.lang.Integer.parseInt;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -61,17 +64,48 @@ import javax.lang.model.element.TypeElement;
  * @version $Revision$, $Date$
  */
 
-@SupportedAnnotationTypes(value = { "org.deegree.commons.utils.log.DebuggingNotes" })
+@SupportedAnnotationTypes(value = { "org.deegree.commons.utils.log.PackageLoggingNotes",
+                                   "org.deegree.commons.utils.log.LoggingNotes" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedOptions("log4j.outputfile")
+@SupportedOptions( { "log4j.outputfile", "width" })
 public class DebuggingAnnotationProcessor extends AbstractProcessor {
 
     private String outFile;
+
+    private int width;
 
     @Override
     public void init( ProcessingEnvironment env ) {
         super.init( env );
         outFile = env.getOptions().get( "log4j.outputfile" );
+        String w = env.getOptions().get( "width" );
+        width = w == null ? 80 : parseInt( w );
+    }
+
+    private String format( String str ) {
+        StringBuilder res = new StringBuilder();
+        outer: while ( str.length() > ( width - 2 ) ) {
+            int len = 2;
+            res.append( "# " );
+            while ( len < width && str.length() > 0 ) {
+                int idx = str.indexOf( " " );
+                if ( idx == -1 ) {
+                    res.append( str );
+                    str = "";
+                } else {
+                    if ( len + idx + 1 > width ) {
+                        res.append( "\n" );
+                        continue outer;
+                    }
+                    res.append( str.substring( 0, idx + 1 ) );
+                    str = str.substring( idx + 1 );
+                    len += idx + 1;
+                }
+            }
+            res.append( "\n" );
+        }
+        res.append( "# " + str );
+        return res.toString();
     }
 
     @Override
@@ -79,48 +113,68 @@ public class DebuggingAnnotationProcessor extends AbstractProcessor {
         try {
             PrintWriter out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( outFile, true ), "UTF-8" ) );
 
-            for ( TypeElement el : annotations ) {
-                // we expect notes on a per class level, so the list should always have one element exactly
-                Set<? extends Element> list = roundEnv.getElementsAnnotatedWith( el );
-                Element cls = list.iterator().next();
-                DebuggingNotes notes = cls.getAnnotation( DebuggingNotes.class );
+            TreeMap<String, Element> sorted = new TreeMap<String, Element>();
+            for ( Element e : roundEnv.getElementsAnnotatedWith( PackageLoggingNotes.class ) ) {
+                sorted.put( e.toString(), e );
+            }
 
-                // this seems to be the only way to get to the actual qualified name?
-                String qname = cls.toString();
+            for ( Element e : roundEnv.getElementsAnnotatedWith( LoggingNotes.class ) ) {
+                sorted.put( e.toString(), e );
+            }
 
-                if ( !notes.error().isEmpty() ) {
-                    out.println( "# " + notes.error() );
-                    out.println( "#log4j.logger." + qname + "=ERROR" );
+            for ( Element e : sorted.values() ) {
+                LoggingNotes notes = e.getAnnotation( LoggingNotes.class );
+
+                if ( notes == null ) {
+                    String meta = e.getAnnotation( PackageLoggingNotes.class ).meta();
+                    int len = ( width - meta.length() - 4 ) / 2;
+                    out.print( "# " );
+                    for ( int i = 0; i < len; ++i ) {
+                        out.print( "=" );
+                    }
+                    out.print( " " + meta + " " );
+                    for ( int i = 0; i < len; ++i ) {
+                        out.print( "=" );
+                    }
                     out.println();
-                }
-                if ( !notes.warn().isEmpty() ) {
-                    out.println( "# " + notes.warn() );
-                    out.println( "#log4j.logger." + qname + "=WARN" );
                     out.println();
-                }
-                if ( !notes.info().isEmpty() ) {
-                    out.println( "# " + notes.info() );
-                    out.println( "#log4j.logger." + qname + "=INFO" );
-                    out.println();
-                }
-                if ( !notes.debug().isEmpty() ) {
-                    out.println( "# " + notes.debug() );
-                    out.println( "#log4j.logger." + qname + "=DEBUG" );
-                    out.println();
-                }
-                if ( !notes.trace().isEmpty() ) {
-                    out.println( "# " + notes.trace() );
-                    out.println( "#log4j.logger." + qname + "=TRACE" );
-                    out.println();
+                } else {
+                    // this seems to be the only way to get to the actual qualified name?
+                    String qname = e.toString();
+
+                    if ( !notes.error().isEmpty() ) {
+                        out.println( format( notes.error() ) );
+                        out.println( "#log4j.logger." + qname + "=ERROR" );
+                        out.println();
+                    }
+                    if ( !notes.warn().isEmpty() ) {
+                        out.println( "# " + notes.warn() );
+                        out.println( "#log4j.logger." + qname + "=WARN" );
+                        out.println();
+                    }
+                    if ( !notes.info().isEmpty() ) {
+                        out.println( "# " + notes.info() );
+                        out.println( "#log4j.logger." + qname + "=INFO" );
+                        out.println();
+                    }
+                    if ( !notes.debug().isEmpty() ) {
+                        out.println( format( notes.debug() ) );
+                        out.println( "#log4j.logger." + qname + "=DEBUG" );
+                        out.println();
+                    }
+                    if ( !notes.trace().isEmpty() ) {
+                        out.println( "# " + notes.trace() );
+                        out.println( "#log4j.logger." + qname + "=TRACE" );
+                        out.println();
+                    }
                 }
             }
 
             out.close();
+            return true;
         } catch ( UnsupportedEncodingException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return false;

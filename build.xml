@@ -345,10 +345,12 @@
 	<src path="${src.dir}" />
       </javac>
 
-      <javac classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}">
+      <!-- output may not point to the src directory, because else ant 1.7.1 will set the access time on package folders and not process the package-info.java files in subsequent calls! -->
+      <!-- setting it to ${build.dir} does not cause any trouble, because no files are generated here anyway (except the log4j.properties, of course) -->
+      <javac classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}" destdir="${build.dir}">
 	<compilerarg line="-proc:only" />
 	<compilerarg line="-processor org.deegree.commons.utils.log.DebuggingAnnotationProcessor" />
-	<compilerarg line="-Alog4j.outputfile=${basedir}/build/log4j.properties" />
+	<compilerarg line="-Alog4j.outputfile=${basedir}/build/log4j.properties -Awidth=100" />
 	<src path="${src.dir}" />
 	<src path="${src-api.dir}" />
       </javac>
