@@ -91,22 +91,27 @@ public class DebuggingAnnotationProcessor extends AbstractProcessor {
                 if ( !notes.error().isEmpty() ) {
                     out.println( "# " + notes.error() );
                     out.println( "#log4j.logger." + qname + "=ERROR" );
+                    out.println();
                 }
                 if ( !notes.warn().isEmpty() ) {
                     out.println( "# " + notes.warn() );
                     out.println( "#log4j.logger." + qname + "=WARN" );
+                    out.println();
                 }
                 if ( !notes.info().isEmpty() ) {
                     out.println( "# " + notes.info() );
                     out.println( "#log4j.logger." + qname + "=INFO" );
+                    out.println();
                 }
                 if ( !notes.debug().isEmpty() ) {
                     out.println( "# " + notes.debug() );
                     out.println( "#log4j.logger." + qname + "=DEBUG" );
+                    out.println();
                 }
                 if ( !notes.trace().isEmpty() ) {
                     out.println( "# " + notes.trace() );
                     out.println( "#log4j.logger." + qname + "=TRACE" );
+                    out.println();
                 }
             }
 
