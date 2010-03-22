@@ -61,7 +61,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.time.DateUtils;
-import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.GenericFeatureType;
@@ -277,8 +276,11 @@ public class DBFReader {
             case 'N':
             case 'F': {
                 in.readFully( bs );
-                property = new SimpleProperty( field.propertyType, getString( bs, encoding ).trim(),
-                                               field.propertyType.getPrimitiveType() );
+                String str = getString( bs, encoding ).trim();
+                if ( str.isEmpty() ) {
+                    continue;
+                }
+                property = new SimpleProperty( field.propertyType, str, field.propertyType.getPrimitiveType() );
                 break;
             }
             case 'L': {
