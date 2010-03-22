@@ -336,9 +336,9 @@
         <ivy:publish conf="${module.name}-report" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" publishivy="false" />
     </target>
 
-    <target name="process-anntotations" depends="version">
+    <target name="process-annotations" depends="version">
       <delete dir="${build.dir}/processors" />
-      <delete file="${build.dir}/log4j.properties" />
+      <delete file="${build.dir}/log4j.snippet" />
       <mkdir dir="${build.dir}/processors" />
 
       <javac destdir="${build.dir}/processors" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}" includes="org/deegree/commons/utils/log/LoggingAnnotationProcessor.java">
@@ -350,7 +350,7 @@
       <javac classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}" destdir="${build.dir}">
 	<compilerarg line="-proc:only" />
 	<compilerarg line="-processor org.deegree.commons.utils.log.LoggingAnnotationProcessor" />
-	<compilerarg line="-Alog4j.outputfile=${basedir}/build/log4j.properties -Awidth=100" />
+	<compilerarg line="-Alog4j.outputfile=${basedir}/build/log4j.snippet -Awidth=100" />
 	<src path="${src.dir}" />
 	<src path="${src-api.dir}" />
       </javac>
