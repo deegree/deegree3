@@ -55,7 +55,7 @@ public class Literal<V extends TypedObjectNode> implements Expression {
     private V value;
 
     public Literal( String valu ) {
-        this.value = (V) new PrimitiveValue( value );
+        this.value = (V) new PrimitiveValue( valu );
     }
 
     /**
