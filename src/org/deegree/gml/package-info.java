@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "GML subsystem")
+@PackageLoggingNotes(title = "GML subsystem")
 package org.deegree.gml;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

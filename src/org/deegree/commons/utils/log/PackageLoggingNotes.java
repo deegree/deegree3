@@ -52,8 +52,35 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target(PACKAGE)
 public @interface PackageLoggingNotes {
+
     /**
      * @return the string that can be used as title string delimiting a log4j.properties section
      */
-    String meta();
+    String title() default "";
+
+    /**
+     * @return the string that describes the error level logging for this class
+     */
+    String error() default "";
+
+    /**
+     * @return the string that describes the warn level logging for this class
+     */
+    String warn() default "";
+
+    /**
+     * @return the string that describes the info level logging for this class
+     */
+    String info() default "";
+
+    /**
+     * @return the string that describes the debug level logging for this class
+     */
+    String debug() default "";
+
+    /**
+     * @return the string that describes the trace level logging for this class
+     */
+    String trace() default "";
+
 }

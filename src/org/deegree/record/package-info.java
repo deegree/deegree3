@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "record subsystem")
+@PackageLoggingNotes(title = "record subsystem")
 package org.deegree.record;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "geometry subsystem")
+@PackageLoggingNotes(title = "geometry subsystem")
 package org.deegree.geometry;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

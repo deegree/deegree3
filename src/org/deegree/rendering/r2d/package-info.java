@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "2D rendering")
+@PackageLoggingNotes(title = "2D rendering")
 package org.deegree.rendering.r2d;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "filter subsystem")
+@PackageLoggingNotes(title = "filter subsystem")
 package org.deegree.filter;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

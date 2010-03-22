@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "feature subsystem")
+@PackageLoggingNotes(title = "feature subsystem")
 package org.deegree.feature;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

@@ -129,7 +129,8 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                 LoggingNotes notes = e.getValue().getAnnotation( LoggingNotes.class );
 
                 if ( notes == null ) {
-                    String meta = e.getValue().getAnnotation( PackageLoggingNotes.class ).meta();
+                    PackageLoggingNotes pnotes = e.getValue().getAnnotation( PackageLoggingNotes.class );
+                    String meta = pnotes.title();
                     int len = ( width - meta.length() - 4 ) / 2;
                     out.print( "# " );
                     for ( int i = 0; i < len; ++i ) {
@@ -141,9 +142,33 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                     }
                     out.println();
                     out.println();
-                    out.println( "# log whole package (VERY verbose)" );
-                    out.println( "#log4j.logger." + e.getKey() + "=DEBUG" );
-                    out.println();
+                    String qname = e.getKey();
+
+                    if ( !pnotes.error().isEmpty() ) {
+                        out.println( format( pnotes.error() ) );
+                        out.println( "#log4j.logger." + qname + "=ERROR" );
+                        out.println();
+                    }
+                    if ( !pnotes.warn().isEmpty() ) {
+                        out.println( "# " + pnotes.warn() );
+                        out.println( "#log4j.logger." + qname + "=WARN" );
+                        out.println();
+                    }
+                    if ( !pnotes.info().isEmpty() ) {
+                        out.println( "# " + pnotes.info() );
+                        out.println( "#log4j.logger." + qname + "=INFO" );
+                        out.println();
+                    }
+                    if ( !pnotes.debug().isEmpty() ) {
+                        out.println( format( pnotes.debug() ) );
+                        out.println( "#log4j.logger." + qname + "=DEBUG" );
+                        out.println();
+                    }
+                    if ( !pnotes.trace().isEmpty() ) {
+                        out.println( "# " + pnotes.trace() );
+                        out.println( "#log4j.logger." + qname + "=TRACE" );
+                        out.println();
+                    }
                 } else {
                     String qname = e.getKey();
 

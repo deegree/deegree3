@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "crs configuration settings")
+@PackageLoggingNotes(title = "crs configuration settings")
 package org.deegree.crs.configuration.deegree;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "feature locking subsystem")
+@PackageLoggingNotes(title = "feature locking subsystem")
 package org.deegree.feature.persistence.lock;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

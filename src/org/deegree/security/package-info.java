@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(meta = "logs nothing, as there are no classes here")
+@PackageLoggingNotes(title = "logs nothing, as there are no classes here")
 package org.deegree.security;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;
