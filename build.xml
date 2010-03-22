@@ -19,6 +19,7 @@
     <!-- Create the paths for the libs (TODO use ivy configurations) -->
     <path id="build.path">
         <fileset dir="${lib.dir}" />
+	<pathelement location="build/processors" />
     </path>
 
     <!-- Check if the ivy jar is already present, so it isn't downloaded every time -->
@@ -333,6 +334,24 @@
         <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" publishivy="false" />
         <ivy:report todir="${build.dir}" outputpattern="${report.name}.[ext]" conf="${module.name}-build" xsl="true" xml="false" dot="false" graph="false" />
         <ivy:publish conf="${module.name}-report" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" publishivy="false" />
+    </target>
+
+    <target name="process-anntotations" depends="version">
+      <delete dir="${build.dir}/processors" />
+      <delete file="${build.dir}/log4j.properties" />
+      <mkdir dir="${build.dir}/processors" />
+
+      <javac destdir="${build.dir}/processors" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}" includes="org/deegree/commons/utils/log/DebuggingAnnotationProcessor.java">
+	<src path="${src.dir}" />
+      </javac>
+
+      <javac classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}">
+	<compilerarg line="-proc:only" />
+	<compilerarg line="-processor org.deegree.commons.utils.log.DebuggingAnnotationProcessor" />
+	<compilerarg line="-Alog4j.outputfile=${basedir}/build/log4j.properties" />
+	<src path="${src.dir}" />
+	<src path="${src-api.dir}" />
+      </javac>
     </target>
 
 </project>

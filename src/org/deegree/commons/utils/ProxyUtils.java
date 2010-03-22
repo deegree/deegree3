@@ -44,7 +44,6 @@ import java.util.Properties;
 import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.configuration.ProxyConfiguration;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for accessing and modifying the VM's proxy configuration and for opening URL connections that respect
@@ -61,8 +60,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public final class ProxyUtils {
-
-    private static Logger LOG = LoggerFactory.getLogger( ProxyUtils.class );
 
     private static final String PROXY_HOST = "proxyHost";
 
