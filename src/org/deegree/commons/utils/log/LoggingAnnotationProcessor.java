@@ -44,6 +44,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -56,7 +57,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 /**
- * <code>DebuggingAnnotationProcessor</code>
+ * <code>LoggingAnnotationProcessor</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -68,7 +69,7 @@ import javax.lang.model.element.TypeElement;
                                    "org.deegree.commons.utils.log.LoggingNotes" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedOptions( { "log4j.outputfile", "width" })
-public class DebuggingAnnotationProcessor extends AbstractProcessor {
+public class LoggingAnnotationProcessor extends AbstractProcessor {
 
     private String outFile;
 
@@ -82,6 +83,7 @@ public class DebuggingAnnotationProcessor extends AbstractProcessor {
         width = w == null ? 80 : parseInt( w );
     }
 
+    // breaks the lines at max width
     private String format( String str ) {
         StringBuilder res = new StringBuilder();
         outer: while ( str.length() > ( width - 2 ) ) {
@@ -113,6 +115,7 @@ public class DebuggingAnnotationProcessor extends AbstractProcessor {
         try {
             PrintWriter out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( outFile, true ), "UTF-8" ) );
 
+            // the #toString apparently yields the qname, is there another way?
             TreeMap<String, Element> sorted = new TreeMap<String, Element>();
             for ( Element e : roundEnv.getElementsAnnotatedWith( PackageLoggingNotes.class ) ) {
                 sorted.put( e.toString(), e );
@@ -122,11 +125,11 @@ public class DebuggingAnnotationProcessor extends AbstractProcessor {
                 sorted.put( e.toString(), e );
             }
 
-            for ( Element e : sorted.values() ) {
-                LoggingNotes notes = e.getAnnotation( LoggingNotes.class );
+            for ( Entry<String, Element> e : sorted.entrySet() ) {
+                LoggingNotes notes = e.getValue().getAnnotation( LoggingNotes.class );
 
                 if ( notes == null ) {
-                    String meta = e.getAnnotation( PackageLoggingNotes.class ).meta();
+                    String meta = e.getValue().getAnnotation( PackageLoggingNotes.class ).meta();
                     int len = ( width - meta.length() - 4 ) / 2;
                     out.print( "# " );
                     for ( int i = 0; i < len; ++i ) {
@@ -138,9 +141,11 @@ public class DebuggingAnnotationProcessor extends AbstractProcessor {
                     }
                     out.println();
                     out.println();
+                    out.println( "# log whole package (VERY verbose)" );
+                    out.println( "#log4j.logger." + e.getKey() + "=DEBUG" );
+                    out.println();
                 } else {
-                    // this seems to be the only way to get to the actual qualified name?
-                    String qname = e.toString();
+                    String qname = e.getKey();
 
                     if ( !notes.error().isEmpty() ) {
                         out.println( format( notes.error() ) );
@@ -179,5 +184,4 @@ public class DebuggingAnnotationProcessor extends AbstractProcessor {
         }
         return false;
     }
-
 }
