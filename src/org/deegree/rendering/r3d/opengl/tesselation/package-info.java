@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(title = "log tesselation status information")
+@PackageLoggingNotes(debug = "log tesselation status information")
 package org.deegree.rendering.r3d.opengl.tesselation;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

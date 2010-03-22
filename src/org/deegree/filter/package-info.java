@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(title = "filter subsystem")
+@PackageLoggingNotes(title = "filter subsystem", debug = "placeholder to enable quick debugging, please describe further")
 package org.deegree.filter;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

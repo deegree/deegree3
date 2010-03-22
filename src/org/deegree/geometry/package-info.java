@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(title = "geometry subsystem")
+@PackageLoggingNotes(title = "geometry subsystem", debug = "placeholder to enable quick debugging, please describe further")
 package org.deegree.geometry;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;

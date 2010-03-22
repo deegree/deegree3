@@ -92,6 +92,7 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
             while ( len < width && str.length() > 0 ) {
                 int idx = str.indexOf( " " );
                 if ( idx == -1 ) {
+                    res.append( "\n" );
                     res.append( str );
                     str = "";
                 } else {
@@ -131,42 +132,47 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                 if ( notes == null ) {
                     PackageLoggingNotes pnotes = e.getValue().getAnnotation( PackageLoggingNotes.class );
                     String meta = pnotes.title();
-                    int len = ( width - meta.length() - 4 ) / 2;
-                    out.print( "# " );
-                    for ( int i = 0; i < len; ++i ) {
-                        out.print( "=" );
+
+                    if ( !meta.isEmpty() ) {
+                        int odd = meta.length() % 2;
+                        int len = ( width - meta.length() - 4 ) / 2;
+                        out.print( "# " );
+                        for ( int i = 0; i < len; ++i ) {
+                            out.print( "=" );
+                        }
+                        out.print( " " + meta + " " );
+                        for ( int i = 0; i < len + odd; ++i ) {
+                            out.print( "=" );
+                        }
+                        out.println();
+                        out.println();
                     }
-                    out.print( " " + meta + " " );
-                    for ( int i = 0; i < len; ++i ) {
-                        out.print( "=" );
-                    }
-                    out.println();
-                    out.println();
+
                     String qname = e.getKey();
 
                     if ( !pnotes.error().isEmpty() ) {
                         out.println( format( pnotes.error() ) );
-                        out.println( "#log4j.logger." + qname + "=ERROR" );
+                        out.println( "#log4j.logger." + qname + " = ERROR" );
                         out.println();
                     }
                     if ( !pnotes.warn().isEmpty() ) {
                         out.println( "# " + pnotes.warn() );
-                        out.println( "#log4j.logger." + qname + "=WARN" );
+                        out.println( "#log4j.logger." + qname + " = WARN" );
                         out.println();
                     }
                     if ( !pnotes.info().isEmpty() ) {
                         out.println( "# " + pnotes.info() );
-                        out.println( "#log4j.logger." + qname + "=INFO" );
+                        out.println( "#log4j.logger." + qname + " = INFO" );
                         out.println();
                     }
                     if ( !pnotes.debug().isEmpty() ) {
                         out.println( format( pnotes.debug() ) );
-                        out.println( "#log4j.logger." + qname + "=DEBUG" );
+                        out.println( "#log4j.logger." + qname + " = DEBUG" );
                         out.println();
                     }
                     if ( !pnotes.trace().isEmpty() ) {
                         out.println( "# " + pnotes.trace() );
-                        out.println( "#log4j.logger." + qname + "=TRACE" );
+                        out.println( "#log4j.logger." + qname + " = TRACE" );
                         out.println();
                     }
                 } else {
@@ -174,27 +180,27 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
 
                     if ( !notes.error().isEmpty() ) {
                         out.println( format( notes.error() ) );
-                        out.println( "#log4j.logger." + qname + "=ERROR" );
+                        out.println( "#log4j.logger." + qname + " = ERROR" );
                         out.println();
                     }
                     if ( !notes.warn().isEmpty() ) {
                         out.println( "# " + notes.warn() );
-                        out.println( "#log4j.logger." + qname + "=WARN" );
+                        out.println( "#log4j.logger." + qname + " = WARN" );
                         out.println();
                     }
                     if ( !notes.info().isEmpty() ) {
                         out.println( "# " + notes.info() );
-                        out.println( "#log4j.logger." + qname + "=INFO" );
+                        out.println( "#log4j.logger." + qname + " = INFO" );
                         out.println();
                     }
                     if ( !notes.debug().isEmpty() ) {
                         out.println( format( notes.debug() ) );
-                        out.println( "#log4j.logger." + qname + "=DEBUG" );
+                        out.println( "#log4j.logger." + qname + " = DEBUG" );
                         out.println();
                     }
                     if ( !notes.trace().isEmpty() ) {
                         out.println( "# " + notes.trace() );
-                        out.println( "#log4j.logger." + qname + "=TRACE" );
+                        out.println( "#log4j.logger." + qname + " = TRACE" );
                         out.println();
                     }
                 }

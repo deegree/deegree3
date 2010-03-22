@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(title = "rendering of the interactive components")
+@PackageLoggingNotes(debug = "rendering of the interactive components")
 package org.deegree.rendering.r3d.opengl.display;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;
