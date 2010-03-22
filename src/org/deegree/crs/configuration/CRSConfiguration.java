@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.i18n.Messages;
@@ -70,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-
+@LoggingNotes(debug = "the class that instantiates the appropriate providers")
 public class CRSConfiguration {
     private static Logger LOG = LoggerFactory.getLogger( CRSConfiguration.class );
 

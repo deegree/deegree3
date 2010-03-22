@@ -71,6 +71,7 @@ import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -106,6 +107,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(warn = "log info about problems with the renderer setup, or broken geometries coming in, or problematic usage of the renderer", debug = "log what's funny about rendering, eg. when null geometries are rendered, general info about the renderer, also log stack traces, use for debugging/improving your styles", trace = "log geometries and styles being rendered, only use for debugging the code")
 public class Java2DRenderer implements Renderer {
 
     private static final Logger LOG = getLogger( Java2DRenderer.class );

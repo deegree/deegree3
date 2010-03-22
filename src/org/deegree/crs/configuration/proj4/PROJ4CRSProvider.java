@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.proj4;
 
@@ -47,6 +47,7 @@ import java.util.Set;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.EPSGCode;
@@ -80,15 +81,15 @@ import org.deegree.crs.i18n.Messages;
  * <li>URN:OPENGIS:DEF:CRS:EPSG::</li>
  * <li>URN:OGC:DEF:CRS:EPSG::</li>
  * </ul>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-
+@LoggingNotes(debug = "the proj4 format provider")
 public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     private static Logger LOG = LoggerFactory.getLogger( PROJ4CRSProvider.class );
@@ -134,7 +135,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     /**
      * Opens a reader on the file and parses all parameters with id, without instantiating any CoordinateSystems.
-     *
+     * 
      * @param properties
      *            containing a crs.configuration property referencing a file location.
      */
@@ -189,7 +190,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     /**
      * Creates a projected crs from given params. Because proj4 doesn't define some axisorder xy is always assumed.
-     *
+     * 
      * @param projectionName
      *            to give the geographic crs (+e.g. proj=tmerc) or <code>null</code>
      * @param params
@@ -207,7 +208,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         String[] ids = getPredefinedIDs( id );
 
         // convert ids to codes
-        CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+        CRSCodeType[] codes = new CRSCodeType[ids.length];
         for ( int i = 0; i < ids.length; i++ )
             codes[i] = CRSCodeType.valueOf( ids[i] );
 
@@ -222,14 +223,14 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         Projection projection = createProjection( projectionName, underLyingCRS, params );
 
         return new ProjectedCRS( projection, new Axis[] { new Axis( projection.getUnits(), "x", Axis.AO_EAST ),
-                                                         new Axis( projection.getUnits(), "y", Axis.AO_NORTH ) }, codes,
-                                 names, versions, descriptions, areasOfUse );
+                                                         new Axis( projection.getUnits(), "y", Axis.AO_NORTH ) },
+                                 codes, names, versions, descriptions, areasOfUse );
     }
 
     /**
      * Creates a geographic crs with given identifier, if the identifier is empty or <code>null</code> the
      * params.getIdentifier will be used. Because proj4 doesn't define some axisorder xy is always assumed.
-     *
+     * 
      * @param identifier
      *            to give the geographic crs (+proj=longlat) or <code>null</code>
      * @param params
@@ -250,7 +251,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         String[] names = new String[] { name };
         String description = "Handmade proj4 geographic crs definition (parsed from nad/epsg).";
         String ids[] = new String[] { identifier };
-        CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+        CRSCodeType[] codes = new CRSCodeType[ids.length];
         String tmpIdentifier = identifier;
         String tmpProjectedID = projectedID;
         if ( tmpIdentifier == null || "".equals( tmpIdentifier.trim() ) ) {
@@ -279,7 +280,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     /**
      * Create a datum by resolving the 'datum' param or creating it from the given ellipsoid/primemeridan parameters.
-     *
+     * 
      * @param params
      *            to create the datum from
      * @return a datum
@@ -311,14 +312,15 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
             String description = "Handmade proj4 datum definition (parsed from nad/epsg) used by crs with id: "
                                  + ( EPSG_PRE + identifier );
             PrimeMeridian pm = createPrimeMeridian( params );
-            result = new GeodeticDatum( ellipsoid, pm, null, CRSCodeType.valueOf( id ), name, version, description, areaOfUse );
+            result = new GeodeticDatum( ellipsoid, pm, null, CRSCodeType.valueOf( id ), name, version, description,
+                                        areaOfUse );
         }
         return result;
     }
 
     /**
      * Create a prime meridian according to predefined proj4 definitions.
-     *
+     * 
      * @param params
      *            to get the 'pm' parameter from.
      * @return a mapped primemeridian or the Greenwich if no pm parameter was found.
@@ -416,8 +418,8 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 ids = getPredefinedIDs( id );
             }
 
-            CRSCodeType[] codes = new CRSCodeType[ ids.length ];
-            for (int i = 0; i < ids.length; i++ )
+            CRSCodeType[] codes = new CRSCodeType[ids.length];
+            for ( int i = 0; i < ids.length; i++ )
                 codes[i] = CRSCodeType.valueOf( ids[i] );
             result = new PrimeMeridian( Unit.RADIAN, longitude, codes, names, meridianVersions, descs, aous );
         }
@@ -426,7 +428,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     /**
      * Tries to create an ellips from a predefined mapping, or from axis, eccentricities etc. if defined.
-     *
+     * 
      * @param params
      *            to create the ellipsoid from
      * @return an (mapped) ellipsoid.
@@ -478,7 +480,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                                     inverseFlattening = 1 / flattening;
                                 } else {
                                     LOG.debug( "The given flattening: " + flattening
-                                                  + " can not be inverted (divide by zero) using a sphere as ellipsoid" );
+                                               + " can not be inverted (divide by zero) using a sphere as ellipsoid" );
                                 }
                             } else {
                                 tmpValue = params.remove( "b" );
@@ -562,21 +564,21 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
             String name = "Proj4 defined ellipsoid";
 
             if ( !Double.isNaN( eccentricitySquared ) ) {
-                result = new Ellipsoid( semiMajorAxis, Math.sqrt( eccentricitySquared ), Unit.METRE, CRSCodeType.valueOf( id ), name, version,
-                                        description, areaOfUse );
+                result = new Ellipsoid( semiMajorAxis, Math.sqrt( eccentricitySquared ), Unit.METRE,
+                                        CRSCodeType.valueOf( id ), name, version, description, areaOfUse );
             } else if ( !Double.isNaN( eccentricity ) ) {
-                result = new Ellipsoid( semiMajorAxis, eccentricity, Unit.METRE, CRSCodeType.valueOf( id ), name, version, description,
-                                        areaOfUse );
+                result = new Ellipsoid( semiMajorAxis, eccentricity, Unit.METRE, CRSCodeType.valueOf( id ), name,
+                                        version, description, areaOfUse );
             } else if ( !Double.isNaN( inverseFlattening ) ) {
-                result = new Ellipsoid( semiMajorAxis, Unit.METRE, inverseFlattening, CRSCodeType.valueOf( id ), name, version, description,
-                                        areaOfUse );
+                result = new Ellipsoid( semiMajorAxis, Unit.METRE, inverseFlattening, CRSCodeType.valueOf( id ), name,
+                                        version, description, areaOfUse );
             } else if ( !Double.isNaN( semiMinorAxis ) ) {
-                result = new Ellipsoid( Unit.METRE, semiMajorAxis, semiMinorAxis, CRSCodeType.valueOf( id ), name, version, description,
-                                        areaOfUse );
+                result = new Ellipsoid( Unit.METRE, semiMajorAxis, semiMinorAxis, CRSCodeType.valueOf( id ), name,
+                                        version, description, areaOfUse );
             } else {
                 LOG.debug( "Only a semimajor defined, assuming a sphere (instead of an ellipsoid) is to be created." );
-                result = new Ellipsoid( Unit.METRE, semiMajorAxis, semiMajorAxis, CRSCodeType.valueOf( id ), name, version, description,
-                                        areaOfUse );
+                result = new Ellipsoid( Unit.METRE, semiMajorAxis, semiMajorAxis, CRSCodeType.valueOf( id ), name,
+                                        version, description, areaOfUse );
             }
         }
         return result;
@@ -586,8 +588,8 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
      * @param datumName
      *            of the datum to map.
      * @param definedEllipsoid
-     *            the ellipsoid to use (gotten from 'ellps' param) or <code>null</code> if a predefined ellipsoid
-     *            should be used.
+     *            the ellipsoid to use (gotten from 'ellps' param) or <code>null</code> if a predefined ellipsoid should
+     *            be used.
      * @return a Geodetic datum or <code>null</code> if the given name was null or empty.
      * @throws CRSConfigurationException
      */
@@ -601,15 +603,16 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
             String[] datumDescriptions = null;
             String[] datumVersions = null;
             String[] datumAOU = null;
-            Helmert confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, CRSCodeType.valueOf( "Created by proj4 CRSProvider" ) );
+            Helmert confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84,
+                                            CRSCodeType.valueOf( "Created by proj4 CRSProvider" ) );
             Ellipsoid ellipsoid = null;
             if ( "GGRS87".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1272" );
-                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                CRSCodeType[] codes = new CRSCodeType[ids.length];
                 for ( int i = 0; i < ids.length; i++ )
                     codes[i] = CRSCodeType.valueOf( ids[i] );
                 confInfo = new Helmert( -199.87, 74.79, 246.62, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                       codes , new String[] {}, null, null, null );
+                                        codes, new String[] {}, null, null, null );
 
                 datumIDs = getPredefinedIDs( "6121" );
                 datumNames = new String[] { "Greek_Geodetic_Reference_System_1987" };
@@ -621,13 +624,12 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 }
             } else if ( "NAD27".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1173" );
-                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                CRSCodeType[] codes = new CRSCodeType[ids.length];
                 for ( int i = 0; i < ids.length; i++ )
                     codes[i] = CRSCodeType.valueOf( ids[i] );
 
-                confInfo = new Helmert( -8, 160, 176, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                        codes, new String[] { "North_American_Datum_1983" }, null,
-                                        null, null );
+                confInfo = new Helmert( -8, 160, 176, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84, codes,
+                                        new String[] { "North_American_Datum_1983" }, null, null, null );
 
                 datumIDs = getPredefinedIDs( "6267" );
                 datumNames = new String[] { "North_American_Datum_1927" };
@@ -641,12 +643,12 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 }
             } else if ( "NAD83".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1188" );
-                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                CRSCodeType[] codes = new CRSCodeType[ids.length];
                 for ( int i = 0; i < ids.length; i++ )
                     codes[i] = CRSCodeType.valueOf( ids[i] );
 
-                confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, codes, null,
-                                        null, new String[] { "Derived at 312 stations." },
+                confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, codes, null, null,
+                                        new String[] { "Derived at 312 stations." },
                                         new String[] { "North America - all Canada and USA subunits" } );
                 datumIDs = getPredefinedIDs( "6269" );
                 datumNames = new String[] { "North_American_Datum_1983" };
@@ -658,7 +660,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 }
             } else if ( "OSGB36".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1314" );
-                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                CRSCodeType[] codes = new CRSCodeType[ids.length];
                 for ( int i = 0; i < ids.length; i++ )
                     codes[i] = CRSCodeType.valueOf( ids[i] );
 
@@ -689,13 +691,13 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 return GeodeticDatum.WGS84;
             } else if ( "carthage".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1130" );
-                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                CRSCodeType[] codes = new CRSCodeType[ids.length];
                 for ( int i = 0; i < ids.length; i++ )
                     codes[i] = CRSCodeType.valueOf( ids[i] );
 
                 confInfo = new Helmert( -263.0, 6.0, 431.0, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                        codes, null, null,
-                                        new String[] { "Derived at 5 stations." }, new String[] { "Tunisia" } );
+                                        codes, null, null, new String[] { "Derived at 5 stations." },
+                                        new String[] { "Tunisia" } );
                 datumIDs = getPredefinedIDs( "6816" );
                 datumNames = new String[] { "Carthage 1934 Tunisia" };
                 if ( definedEllipsoid == null || "".equals( definedEllipsoid )
@@ -706,13 +708,12 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 }
             } else if ( "hermannskogel".equalsIgnoreCase( datumName ) ) {
                 String[] ids = new String[] { "kogel", EPSG_PRE + "1306" };
-                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                CRSCodeType[] codes = new CRSCodeType[ids.length];
                 for ( int i = 0; i < ids.length; i++ )
                     codes[i] = CRSCodeType.valueOf( ids[i] );
 
                 confInfo = new Helmert( 653.0, -212.0, 449.0, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                        codes, null, null,
-                                        new String[] { "No epsg code was found." }, null );
+                                        codes, null, null, new String[] { "No epsg code was found." }, null );
                 datumIDs = new String[] { "Hermannskogel" };
                 datumNames = new String[] { "some undefined proj4 datum" };
                 if ( definedEllipsoid == null || "".equals( definedEllipsoid )
@@ -723,7 +724,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 }
             } else if ( "ire65".equalsIgnoreCase( datumName ) ) {
                 String[] ids = new String[] { "ire65_conversion" };
-                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                CRSCodeType[] codes = new CRSCodeType[ids.length];
                 for ( int i = 0; i < ids.length; i++ )
                     codes[i] = CRSCodeType.valueOf( ids[i] );
 
@@ -740,7 +741,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 }
             } else if ( "nzgd49".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1564" );
-                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                CRSCodeType[] codes = new CRSCodeType[ids.length];
                 for ( int i = 0; i < ids.length; i++ )
                     codes[i] = CRSCodeType.valueOf( ids[i] );
 
@@ -772,7 +773,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                      || "31466".equals( crsID ) || "31467".equals( crsID ) || "31468".equals( crsID )
                      || "31469".equals( crsID ) ) {
                     String[] ids = getPredefinedIDs( "1777" );
-                    CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                    CRSCodeType[] codes = new CRSCodeType[ids.length];
                     for ( int i = 0; i < ids.length; i++ )
                         codes[i] = CRSCodeType.valueOf( ids[i] );
 
@@ -798,7 +799,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                     datumAOU = new String[] { "Germany - states of former West Germany - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Schleswig-Holstein." };
                 } else {
                     String[] ids = getPredefinedIDs( "15955" );
-                    CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                    CRSCodeType[] codes = new CRSCodeType[ids.length];
                     for ( int i = 0; i < ids.length; i++ )
                         codes[i] = CRSCodeType.valueOf( ids[i] );
 
@@ -833,7 +834,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
             }
 
             // convert datumIDs to datumCodes
-            datumCodes = new CRSCodeType[ datumIDs.length ];
+            datumCodes = new CRSCodeType[datumIDs.length];
             for ( int i = 0; i < datumIDs.length; i++ )
                 datumCodes[i] = CRSCodeType.valueOf( datumIDs[i] );
 
@@ -849,7 +850,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     /**
      * This method was adopted from the com.jhlabs.map.proj.Projection Factory#initizalize method.
-     *
+     * 
      * @param projName
      *            name of the projection
      * @return the deegree understandable String or <code>null</code> if the projName could not be mapped.
@@ -1095,7 +1096,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     /**
      * Maps the given proj4 name to an id (if any) and creates an ellipsoid accordingly.
-     *
+     * 
      * @param ellipsoidName
      *            defined in the proj lib
      * @return an ellipsoid with an id and name or <code>null</code> if the ellipsoidName was null or empty.
@@ -1325,10 +1326,12 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_UNKNOWN_ELLIPSOID",
                                                                           ellipsoidName ) );
             }
-//            String[] ids = new String[] { id };
+            // String[] ids = new String[] { id };
             CRSCodeType[] ids = new EPSGCode[] { new EPSGCode( Integer.parseInt( id ) ) };
             if ( !ellipsoidName.equals( id ) ) {
-                ids = new CRSCodeType[] { CRSCodeType.valueOf( EPSG_PRE + id), CRSCodeType.valueOf( OGC_URN + id ), CRSCodeType.valueOf( OPENGIS_URL + id ), CRSCodeType.valueOf( OPENGIS_URN + id ) };
+                ids = new CRSCodeType[] { CRSCodeType.valueOf( EPSG_PRE + id ), CRSCodeType.valueOf( OGC_URN + id ),
+                                         CRSCodeType.valueOf( OPENGIS_URL + id ),
+                                         CRSCodeType.valueOf( OPENGIS_URN + id ) };
             }
             Ellipsoid ellips = null;
             if ( Double.isNaN( semiMinorAxis ) ) {
@@ -1345,7 +1348,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     /**
      * Helper method to parse day, month second formats. With a little help from com.jhlabs.map.AngleFormat
-     *
+     * 
      * @param text
      *            to pe parsed into degrees (or radians).
      * @param toDegrees
@@ -1416,7 +1419,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
     /**
      * Converts angle information to radians. With a little help from com.jhlabs.map.MapMath. For negative angles, d
      * should be negative, m & s positive.
-     *
+     * 
      * @param d
      *            days
      * @param m
@@ -1435,7 +1438,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
     /**
      * Converts angle information to degrees. With a little help from com.jhlabs.map.MapMath. For negative angles, d
      * should be negative, m & s positive.
-     *
+     * 
      * @param d
      *            days
      * @param m

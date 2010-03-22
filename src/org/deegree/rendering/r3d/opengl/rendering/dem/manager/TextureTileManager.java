@@ -38,6 +38,7 @@ package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
 import java.util.LinkedHashSet;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTile;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileProvider;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileRequest;
@@ -50,6 +51,7 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileReque
  * 
  * @version $Revision: $, $Date: $
  */
+@LoggingNotes(debug = "logs information about how texture tiles are managed")
 public class TextureTileManager {
 
     private final LinkedHashSet<TextureTile> cachedTiles = new LinkedHashSet<TextureTile>();

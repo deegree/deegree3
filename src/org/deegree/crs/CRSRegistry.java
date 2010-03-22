@@ -41,6 +41,7 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Ellipsoid;
 import org.deegree.crs.components.GeodeticDatum;
@@ -72,6 +73,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "factory to instantiate providers")
 public class CRSRegistry {
 
     private static Logger LOG = LoggerFactory.getLogger( CRSRegistry.class );

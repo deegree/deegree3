@@ -53,6 +53,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Path2D.Double;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
@@ -78,6 +79,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(warn = "logs usage of text rendering with unsupported geometry types", debug = "logs rendering of null/zero length texts/null geometries")
 public class Java2DTextRenderer implements TextRenderer {
 
     private static final Logger LOG = getLogger( Java2DTextRenderer.class );

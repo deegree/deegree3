@@ -55,6 +55,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
@@ -142,7 +143,7 @@ import org.slf4j.LoggerFactory;
  *            The return type of the {@link CRSParser#getURIAsType(String)} method
  * 
  */
-
+@LoggingNotes(debug = "the deegree XML format provider")
 public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
 
     private static final String VERSION = "CRS_VERSION";

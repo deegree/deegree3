@@ -74,6 +74,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.slf4j.Logger;
 
@@ -86,6 +87,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(debug = "logs which text is rendered how", trace = "logs implementation/code debugging details about text strokes")
 public class TextStroke implements Stroke {
 
     private static final Logger LOG = getLogger( TextStroke.class );
