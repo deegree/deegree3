@@ -38,6 +38,7 @@ package org.deegree.filter.function.geometry;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
@@ -70,8 +71,8 @@ public class Centroid extends Function {
             throw new FilterEvaluationException( "The Centroid function takes exactly one argument (got " + vals.length
                                                  + ")." );
         }
-        if ( vals[0] instanceof Geometry ) {
-            return new TypedObjectNode[] { ( (Geometry) vals[0] ).getCentroid() };
+        if ( vals[0] instanceof Property && ( (Property) vals[0] ).getValue() instanceof Geometry ) {
+            return new TypedObjectNode[] { ( (Geometry) ( (Property) vals[0] ).getValue() ).getCentroid() };
         }
         if ( vals[0] == null ) {
             throw new FilterEvaluationException( "The argument to the Centroid function must be a geometry (was null)." );
