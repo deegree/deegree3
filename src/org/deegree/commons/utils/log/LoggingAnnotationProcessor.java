@@ -86,13 +86,15 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
     // breaks the lines at max width
     private String format( String str ) {
         StringBuilder res = new StringBuilder();
-        outer: while ( str.length() > ( width - 2 ) ) {
-            int len = 2;
-            res.append( "# " );
+        outer: while ( str.length() > ( width - 3 ) ) {
+            int len = 3;
+            res.append( "## " );
             while ( len < width && str.length() > 0 ) {
                 int idx = str.indexOf( " " );
                 if ( idx == -1 ) {
-                    res.append( "\n" );
+                    if ( len > 3 ) {
+                        res.append( "\n## " );
+                    }
                     res.append( str );
                     str = "";
                 } else {
@@ -105,9 +107,13 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                     len += idx + 1;
                 }
             }
-            res.append( "\n" );
+            if ( !str.isEmpty() ) {
+                res.append( "\n" );
+            }
         }
-        res.append( "# " + str );
+        if ( !str.isEmpty() ) {
+            res.append( "## " + str );
+        }
         return res.toString();
     }
 
@@ -131,20 +137,39 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
 
                 if ( notes == null ) {
                     PackageLoggingNotes pnotes = e.getValue().getAnnotation( PackageLoggingNotes.class );
-                    String meta = pnotes.title();
+                    String title = pnotes.title();
 
-                    if ( !meta.isEmpty() ) {
-                        int odd = meta.length() % 2;
-                        int len = ( width - meta.length() - 4 ) / 2;
+                    boolean isSubsystem = e.getKey().replaceAll( "[^\\.]", "" ).length() == 2;
+
+                    if ( !title.isEmpty() ) {
+                        if ( isSubsystem ) {
+                            out.print( "# " );
+                            for ( int i = 0; i < width - 2; ++i ) {
+                                out.print( "=" );
+                            }
+                            out.println();
+                        }
+
+                        int odd = title.length() % 2;
+                        int len = ( width - title.length() - 4 ) / 2;
                         out.print( "# " );
                         for ( int i = 0; i < len; ++i ) {
                             out.print( "=" );
                         }
-                        out.print( " " + meta + " " );
+                        out.print( " " + title + " " );
                         for ( int i = 0; i < len + odd; ++i ) {
                             out.print( "=" );
                         }
                         out.println();
+
+                        if ( isSubsystem ) {
+                            out.print( "# " );
+                            for ( int i = 0; i < width - 2; ++i ) {
+                                out.print( "=" );
+                            }
+                            out.println();
+                        }
+
                         out.println();
                     }
 
@@ -156,12 +181,12 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                         out.println();
                     }
                     if ( !pnotes.warn().isEmpty() ) {
-                        out.println( "# " + pnotes.warn() );
+                        out.println( format( pnotes.warn() ) );
                         out.println( "#log4j.logger." + qname + " = WARN" );
                         out.println();
                     }
                     if ( !pnotes.info().isEmpty() ) {
-                        out.println( "# " + pnotes.info() );
+                        out.println( format( pnotes.info() ) );
                         out.println( "#log4j.logger." + qname + " = INFO" );
                         out.println();
                     }
@@ -171,7 +196,7 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                         out.println();
                     }
                     if ( !pnotes.trace().isEmpty() ) {
-                        out.println( "# " + pnotes.trace() );
+                        out.println( format( pnotes.trace() ) );
                         out.println( "#log4j.logger." + qname + " = TRACE" );
                         out.println();
                     }
@@ -184,12 +209,12 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                         out.println();
                     }
                     if ( !notes.warn().isEmpty() ) {
-                        out.println( "# " + notes.warn() );
+                        out.println( format( notes.warn() ) );
                         out.println( "#log4j.logger." + qname + " = WARN" );
                         out.println();
                     }
                     if ( !notes.info().isEmpty() ) {
-                        out.println( "# " + notes.info() );
+                        out.println( format( notes.info() ) );
                         out.println( "#log4j.logger." + qname + " = INFO" );
                         out.println();
                     }
@@ -199,7 +224,7 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
                         out.println();
                     }
                     if ( !notes.trace().isEmpty() ) {
-                        out.println( "# " + notes.trace() );
+                        out.println( format( notes.trace() ) );
                         out.println( "#log4j.logger." + qname + " = TRACE" );
                         out.println();
                     }
