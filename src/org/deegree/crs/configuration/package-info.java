@@ -33,8 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(title = "crs configuration settings")
-package org.deegree.crs.configuration.deegree;
+@PackageLoggingNotes(title = "crs configuration logging", debug = "Output logging information on loading of Coordinate Systems from a configuration.")
+package org.deegree.crs.configuration;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;
 

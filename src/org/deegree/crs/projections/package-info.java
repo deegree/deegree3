@@ -33,8 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(title = "Transformation logging", debug = "Get information about transformations and the creation of transformation chains.")
-package org.deegree.crs.transformations;
+@PackageLoggingNotes(title = "projections logging", debug = "Get logging information about projections and the execution of projections.")
+package org.deegree.crs.projections;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;
 
