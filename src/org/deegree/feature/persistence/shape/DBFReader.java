@@ -300,14 +300,13 @@ public class DBFReader {
                 in.readFully( bs );
                 String val = new String( bs, 0, 4 ).trim();
                 if ( val.isEmpty() ) {
-                    property = new SimpleProperty( field.propertyType, null, DATE );
-                } else {
-                    int year = Integer.valueOf( val );
-                    int month = Integer.valueOf( new String( bs, 4, 2 ) );
-                    int day = Integer.valueOf( new String( bs, 6, 2 ) );
-                    Calendar cal = new GregorianCalendar( year, month, day );
-                    property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ), DATE );
+                    continue;
                 }
+                int year = Integer.valueOf( val );
+                int month = Integer.valueOf( new String( bs, 4, 2 ) );
+                int day = Integer.valueOf( new String( bs, 6, 2 ) );
+                Calendar cal = new GregorianCalendar( year, month, day );
+                property = new SimpleProperty( field.propertyType, DateUtils.formatISO8601Date( cal ), DATE );
                 break;
             }
             case 'I': {
