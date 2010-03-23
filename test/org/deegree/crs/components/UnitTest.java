@@ -44,7 +44,7 @@ import static org.deegree.crs.components.Unit.MILLISECOND;
 import static org.deegree.crs.components.Unit.RADIAN;
 import static org.deegree.crs.components.Unit.SECOND;
 import static org.deegree.crs.components.Unit.USFOOT;
-import static org.deegree.crs.projections.ProjectionUtils.DTR;
+import static org.deegree.crs.utilities.ProjectionUtils.DTR;
 import junit.framework.TestCase;
 
 import org.deegree.crs.components.Unit;
