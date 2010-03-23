@@ -74,7 +74,7 @@ public class DeegreeCRSProviderTest extends TestCase {
      */
     @Test
     public void testLoadingConfiguration() {
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration(
+        CRSProvider provider = CRSConfiguration.getInstance(
                                                                      "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider" ).getProvider();
         assertNotNull( provider );
         assertTrue( provider instanceof DeegreeCRSProvider );
@@ -86,7 +86,7 @@ public class DeegreeCRSProviderTest extends TestCase {
      * Tries to create a crs by id.
      */
     public void testCRSByID() {
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration(
+        CRSProvider provider = CRSConfiguration.getInstance(
                                                                      "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider" ).getProvider();
         assertNotNull( provider );
         assertTrue( provider instanceof DeegreeCRSProvider );
@@ -178,7 +178,7 @@ public class DeegreeCRSProviderTest extends TestCase {
      * Test a cache
      */
     public void testCache() {
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration(
+        CRSProvider provider = CRSConfiguration.getInstance(
                                                                      "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider" ).getProvider();
         assertNotNull( provider );
         assertTrue( provider instanceof DeegreeCRSProvider );

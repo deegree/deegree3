@@ -36,12 +36,14 @@
 
 package org.deegree.crs.configuration;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point3d;
-
-import junit.framework.TestCase;
 
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
@@ -50,8 +52,6 @@ import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Ellipsoid;
 import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
-import org.deegree.crs.configuration.CRSConfiguration;
-import org.deegree.crs.configuration.CRSProvider;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
@@ -59,6 +59,8 @@ import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.projections.ProjectionTest;
+import org.deegree.crs.transformations.TransformationFactory;
+import org.deegree.crs.transformations.TransformationFactory.DSTransform;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -74,7 +76,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class ProviderBasedAccuracyTest extends TestCase {
+public class ProviderBasedAccuracyTest {
 
     private static Logger LOG = LoggerFactory.getLogger( ProjectionTest.class );
 
@@ -261,9 +263,9 @@ public class ProviderBasedAccuracyTest extends TestCase {
                                       Point3d target, Point3d forwardEpsilon, Point3d inverseEpsilon )
                             throws TransformationException {
         StringBuilder output = new StringBuilder();
-        output.append( "Transforming forward/inverse -> projected with id: '" );
+        output.append( "Transforming forward/inverse -> crs with id: '" );
         output.append( sourceCRS.getCode().toString() );
-        output.append( "' and projected with id: '" );
+        output.append( "' and crs with id: '" );
         output.append( targetCRS.getCode().toString() );
         output.append( "'.\n" );
 
@@ -286,7 +288,9 @@ public class ProviderBasedAccuracyTest extends TestCase {
             output.append( ae.getLocalizedMessage() );
             inverseSuccess = false;
         }
-        LOG.debug( output.toString() );
+        // if ( !forwardSuccess || !inverseSuccess ) {
+        LOG.info( output.toString() );
+        // }
 
         assertEquals( true, forwardSuccess );
         assertEquals( true, inverseSuccess );
@@ -541,6 +545,37 @@ public class ProviderBasedAccuracyTest extends TestCase {
 
         // do the testing
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilonDegree, epsilonDegree );
+    }
+
+    /**
+     * Test the forward/inverse transformation from a geographic crs (EPSG:4314) to another geographic crs (EPSG:4258)
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testGeographicToGeographicNTv2()
+                            throws TransformationException {
+
+        TransformationFactory fac = CRSConfiguration.getCRSConfiguration().getTransformationFactory();
+        fac.setPreferredTransformation( DSTransform.NTv2 );
+
+        CoordinateSystem crs = getCRS( "epsg:4314" );
+        assertTrue( crs instanceof GeographicCRS );
+        // source crs epsg:4314
+        GeographicCRS sourceCRS = (GeographicCRS) crs;
+
+        crs = getCRS( "epsg:4258" );
+        assertTrue( crs instanceof GeographicCRS );
+        // target crs epsg:4258
+        GeographicCRS targetCRS = (GeographicCRS) crs;
+
+        // coordinates from http://crs.bkg.bund.de/crseu/crs/descrtrans/BeTA/BETA2007testdaten.csv
+        Point3d sourcePoint = new Point3d( 8.5, 54.716666666667, Double.NaN );
+        Point3d targetPoint = new Point3d( 8.499027339833, 54.714992333813, Double.NaN );
+
+        // do the testing
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilonDegree, epsilonDegree );
+        fac.setPreferredTransformation( DSTransform.HELMERT );
     }
 
     /**

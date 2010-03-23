@@ -85,7 +85,7 @@ public class GMLCRSProviderTest extends TestCase {
         }
         final String old_value = CRSConfiguration.setDefaultFileProperty( GMLCRSProviderTest.class.getResource(
                                                                                                                 CONFIG_FILE ).getPath() );
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.gml.GMLCRSProvider" ).getProvider();
+        CRSProvider provider = CRSConfiguration.getInstance( "org.deegree.crs.configuration.gml.GMLCRSProvider" ).getProvider();
         assertNotNull( provider );
         if ( !( provider instanceof GMLCRSProvider ) ) {
             throw new NullPointerException( "The provider was not loaded. " );
