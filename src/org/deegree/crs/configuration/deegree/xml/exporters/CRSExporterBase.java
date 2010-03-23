@@ -37,7 +37,7 @@
 package org.deegree.crs.configuration.deegree.xml.exporters;
 
 import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,6 +51,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.crs.CRSCodeType;
@@ -88,6 +89,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get information about the currently exported coordinate system.")
 public class CRSExporterBase {
 
     private static Logger LOG = LoggerFactory.getLogger( CRSExporterBase.class );

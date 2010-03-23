@@ -36,18 +36,19 @@
 
 package org.deegree.crs.projections.cylindric;
 
-import static org.deegree.crs.projections.ProjectionUtils.calcPhiFromConformalLatitude;
-import static org.deegree.crs.projections.ProjectionUtils.preCalcedThetaSeries;
+import static org.deegree.crs.utilities.ProjectionUtils.calcPhiFromConformalLatitude;
+import static org.deegree.crs.utilities.ProjectionUtils.preCalcedThetaSeries;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.EPSGCode;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
 import org.deegree.crs.projections.Projection;
-import org.deegree.crs.projections.ProjectionUtils;
+import org.deegree.crs.utilities.ProjectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +74,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  * 
  */
+@LoggingNotes(debug = "Get information about incoming ordinates.")
 public class Mercator extends CylindricalProjection {
 
     private static Logger LOG = LoggerFactory.getLogger( Mercator.class );

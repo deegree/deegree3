@@ -42,7 +42,7 @@ import static java.lang.Math.toDegrees;
 import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
 import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
 import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -65,6 +65,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
@@ -102,6 +103,7 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get information about the currently exported coordinate system.")
 public class CRSExporter extends CRSExporterBase {
 
     private static final Logger LOG = getLogger( CRSExporter.class );

@@ -57,6 +57,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.crs.CRSCodeType;
@@ -86,6 +87,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(debug = "Get information about the currently parsed crs, as well as a stack trace if something went wrong.")
 public class CoordinateSystemParser extends DefinitionParser {
 
     private static Logger LOG = LoggerFactory.getLogger( CoordinateSystemParser.class );
@@ -205,21 +207,6 @@ public class CoordinateSystemParser extends DefinitionParser {
      */
     protected Axis[] parseAxisOrder( XMLStreamReader reader )
                             throws CRSConfigurationException, XMLStreamException {
-        // String axisOrder = null;
-        // try {
-        // axisOrder = StAXParsingHelper.getRequiredText( reader, new QName( CRS_NS, "AxisOrder" ) );
-        // } catch ( XMLParsingException e ) {
-        // throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "AxisOrder",
-        // e.getMessage() ), e );
-        // }
-        // if ( axisOrder == null || "".equals( axisOrder.trim() ) ) {
-        // throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "AxisOrder",
-        // " axisOrder element may not be empty" ) );
-        // }
-        // axisOrder = axisOrder.trim();
-        // String[] order = axisOrder.trim().split( "," );
-
-        // String XPATH = PRE + "Axis[" + PRE + "name = '";
         List<Axis> confAxis = new ArrayList<Axis>();
         while ( new QName( CRS_NS, "Axis" ).equals( reader.getName() ) ) {
             // end tag Axis
@@ -276,21 +263,7 @@ public class CoordinateSystemParser extends DefinitionParser {
      * @return the list of transformations or the empty list if no transformations were found. Never <code>null</code>.
      */
     protected List<Transformation> parseAlternativeTransformations( XMLStreamReader reader ) {
-        // List<OMElement> usedTransformations = null;
-        // try {
-        // usedTransformations = getElements( crsElement, new XPath( PRE + "polynomialTransformation", nsContext ) );
-        // } catch ( XMLParsingException e ) {
-        // LOG.error( e.getMessage(), e );
-        // }
         List<Transformation> result = new LinkedList<Transformation>();
-        // if ( usedTransformations != null ) {
-        // for ( OMElement transformationElement : usedTransformations ) {
-        // PolynomialTransformation transform = getTransformation( transformationElement );
-        // if ( transform != null ) {
-        // result.add( transform );
-        // }
-        // }
-        // }
         return result;
     }
 
@@ -524,100 +497,4 @@ public class CoordinateSystemParser extends DefinitionParser {
         }
         return result;
     }
-    // /**
-    // * Gets the Element for the given id and heuristically check the localname of the resulting root Element. This
-    // * version supports following local names (see schema): <code>
-    // * <ul>
-    // * <li>ellipsoid</li>
-    // * <li>geodeticDatum</li>
-    // * <li>projectedCRS</li>
-    // * <li>geographicCRS</li>
-    // * <li>compoundCRS</li>
-    // * <li>geocentricCRS</li>
-    // * <li>primeMeridian</li>
-    // * <li>wgs84Transformation</li>
-    // * </ul>
-    // * </code>
-    // *
-    // * @param id
-    // * to look for.
-    // * @return the instantiated {@link CRSIdentifiable} or <code>null</code> if it could not be parsed.
-    // */
-    // public CRSIdentifiable parseIdentifiableObject( String id ) {
-    // if ( id == null || "".equals( id ) ) {
-    // return null;
-    // }
-    // OMElement resolvedID = null;
-    // try {
-    // resolvedID = getURIAsType( id );
-    // } catch ( IOException e ) {
-    // throw new CRSConfigurationException( e );
-    // }
-    // CRSIdentifiable result = null;
-    // if ( resolvedID != null ) {
-    // String localName = resolvedID.getLocalName();
-    // if ( localName != null && !"".equals( localName.trim() ) ) {
-    // if ( localName.equals( "ellipsoid" ) ) {
-    // result = getEllipsoidFromID( id );
-    // } else if ( localName.equals( "geodeticDatum" ) ) {
-    // result = getGeodeticDatumFromID( id );
-    // } else if ( localName.equals( "projectedCRS" ) || localName.equals( "geographicCRS" )
-    // || localName.equals( "compoundCRS" ) || localName.equals( "geocentricCRS" ) ) {
-    // result = getProvider().getCRSByCode( CRSCodeType.valueOf( id ) );
-    // } else if ( localName.equals( "primeMeridian" ) ) {
-    // result = getPrimeMeridianFromID( id );
-    // } else if ( localName.equals( "wgs84Transformation" ) ) {
-    // result = getConversionInfoFromID( id );
-    // }
-    // }
-    // }
-    // return result;
-    // }
-
-    // /**
-    // *
-    // * @return all available codetypes
-    // * @throws CRSConfigurationException
-    // */
-    // public List<CRSCodeType> getAvailableCRSCodes()
-    // throws CRSConfigurationException {
-    // List<OMElement> allCRSIDs = getAvailableCRSs();
-    // List<CRSCodeType> result = new LinkedList<CRSCodeType>();
-    // for ( OMElement crs : allCRSIDs ) {
-    // if ( crs != null ) {
-    // result.add( CRSCodeType.valueOf( getNodeAsString( crs, new XPath( ".", nsContext ), null ) ) );
-    // }
-    // }
-    // return result;
-    // }
-
-    // /**
-    // *
-    // * @return the elements which contain crs's
-    // * @throws CRSConfigurationException
-    // */
-    // private List<OMElement> getAvailableCRSs()
-    // throws CRSConfigurationException {
-    // List<OMElement> allCRSIDs = new LinkedList<OMElement>();
-    // if ( getRootElement() != null ) {
-    // try {
-    // allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "geographicCRS/" + PRE + "id",
-    // nsContext ) ) );
-    // allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "projectedCRS/" + PRE + "id",
-    // nsContext ) ) );
-    // allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "geocentricCRS/" + PRE + "id",
-    // nsContext ) ) );
-    // allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "compoundCRS/" + PRE + "id",
-    // nsContext ) ) );
-    // } catch ( XMLParsingException e ) {
-    // throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS",
-    // e.getMessage() ), e );
-    // }
-    //
-    // } else {
-    // LOG.debug( "The root element is null, is this correct behaviour?" );
-    // }
-    // return allCRSIDs;
-    // }
-
 }

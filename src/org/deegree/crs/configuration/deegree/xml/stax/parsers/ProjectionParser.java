@@ -57,6 +57,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
@@ -83,6 +84,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(debug = "Get information about the currently parsed projections, as well as a stack trace if something went wrong.")
 public class ProjectionParser extends DefinitionParser {
 
     private static final Logger LOG = getLogger( ProjectionParser.class );
@@ -344,27 +346,6 @@ public class ProjectionParser extends DefinitionParser {
             }
 
         }
-        // for ( String id : dup.keySet() ) {
-        // StringBuilder sb = new StringBuilder( id + ":" );
-        // List<Projection> l = dup.get( id );
-        // Set test = new HashSet<Projection>( l );
-        // if ( test.size() != 1 ) {
-        // sb.append( "not EQUAL" );
-        // }
-        // sb.append( "(" ).append( l.size() ).append( ")[" );
-        //
-        // for ( Projection p : l ) {
-        // sb.append( p.getImplementationName() ).append( ", " );
-        // }
-        //
-        // sb.append( "]" );
-        // if ( test.size() != 1 ) {
-        // System.out.println( sb.toString() );
-        // }
-        // }
-        // System.out.println( total + " of which uniq proj: " + projections.size() + " | ids: " + dup.keySet().size()
-        // );
-
         return result;
     }
 

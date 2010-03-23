@@ -36,9 +36,9 @@
 
 package org.deegree.crs.projections;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
-import static org.deegree.crs.projections.ProjectionUtils.normalizeLatitude;
-import static org.deegree.crs.projections.ProjectionUtils.normalizeLongitude;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.normalizeLatitude;
+import static org.deegree.crs.utilities.ProjectionUtils.normalizeLongitude;
 
 import javax.vecmath.Point2d;
 

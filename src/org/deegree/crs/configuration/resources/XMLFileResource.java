@@ -39,10 +39,10 @@ package org.deegree.crs.configuration.resources;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.Properties;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.crs.configuration.AbstractCRSProvider;
 import org.deegree.crs.exceptions.CRSConfigurationException;
@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>XMLFileResource</code> class TODO add class documentation here.
+ * The <code>XMLFileResource</code> is an {@link OMElement} based adapter for an xml file.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get information about initializing the xml file.")
 public abstract class XMLFileResource extends XMLAdapter implements XMLResource {
 
     private static Logger LOG = LoggerFactory.getLogger( XMLFileResource.class );
@@ -87,7 +88,6 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
             throw new NullPointerException( "The provider is null, this may not be." );
         }
         String fileName = properties.getProperty( "crs.configuration" );
-        Reader read = null;
         InputStream is = null;
         try {
 

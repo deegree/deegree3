@@ -36,7 +36,7 @@
 
 package org.deegree.crs.components;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
 
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;

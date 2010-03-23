@@ -36,14 +36,10 @@
 
 package org.deegree.crs.configuration.deegree.db;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -53,13 +49,11 @@ import javax.vecmath.Point2d;
 
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
-import org.deegree.crs.CRSRegistry;
 import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Ellipsoid;
 import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.PrimeMeridian;
 import org.deegree.crs.components.VerticalDatum;
-import org.deegree.crs.configuration.CRSConfiguration;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
@@ -69,7 +63,6 @@ import org.deegree.crs.coordinatesystems.VerticalCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.crs.exceptions.CRSException;
 import org.deegree.crs.exceptions.CRSExportingException;
-import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.deegree.crs.projections.azimuthal.StereographicAlternative;
@@ -1176,87 +1169,6 @@ public class CRSDBExporter {
             } else {
                 LOG.warn( "A null CRS in the exporting CRS list." );
             }
-        }
-    }
-
-    /**
-     * Command-line tool for inserting a CRS that is provided in a either in WKT format (via a filename argument), or in
-     * XML format (through its codetype).
-     * 
-     * @param args
-     * @throws IOException
-     * @throws UnknownCRSException
-     */
-    public static void main( String[] args )
-                            throws IOException, UnknownCRSException {
-        // get the instantiated CRS from WKT format
-        if ( args != null ) {
-            if ( args.length == 2 ) {
-                List<CoordinateSystem> crsList = new ArrayList<CoordinateSystem>();
-                if ( "wkt".equals( args[0] ) ) {
-                    WKTParser parser = new WKTParser( args[1] );
-                    CoordinateSystem crs = parser.parseCoordinateSystem();
-
-                    crsList.add( crs );
-
-                } else if ( "xml".equals( args[0] ) ) {
-                    CoordinateSystem lookup = CRSRegistry.lookup(
-                                                                  "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider",
-                                                                  args[1] );
-                    crsList.add( lookup );
-                } else {
-                    throw new IllegalArgumentException(
-                                                        "First parameters should be, wkt or xml, second a wktfile or an epsg code." );
-                }
-
-                CRSDBExporter exporter = new CRSDBExporter();
-                exporter.exportFromOther( crsList.get( 0 ) );
-            }
-        }
-    }
-
-    /**
-     * Method for inserting an Identifiable object into the database.
-     * 
-     * @param crsID
-     *            the type to add to the database
-     * @param className
-     *            the class name of the object, so that the exporting method may be determined
-     */
-    private void exportFromOther( CRSIdentifiable crsID ) {
-
-        // prepare the exporter ( and getting the database connection )
-        CRSConfiguration dbConfig = CRSConfiguration.getCRSConfiguration();
-        DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) dbConfig.getProvider();
-        Connection conn = dbProvider.getConnection();
-        setConnection( conn );
-
-        // determine the maximum id used so that the next additions can be under immediately larger ids
-        try {
-            PreparedStatement ps = conn.prepareStatement( "SELECT MAX(ref_id) FROM code" );
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            internalID = rs.getInt( 1 ) + 1; // if rs.getInt(1) is NULL the value returned is 0 anyway
-        } catch ( SQLException e1 ) {
-            LOG.error( e1.getMessage(), e1 );
-        }
-
-        // since we do not know before runtime what crs type we are exporting
-        // the accessing is done via the java reflection mechanism
-        try {
-            Method exportMethod = CRSDBExporter.class.getDeclaredMethod( "export", crsID.getClass() );
-            exportMethod.invoke( this, crsID );
-
-        } catch ( SecurityException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( NoSuchMethodException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( IllegalArgumentException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( IllegalAccessException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( InvocationTargetException e ) {
-            LOG.error( e.getMessage(), e );
         }
     }
 }

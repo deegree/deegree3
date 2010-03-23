@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.proj4;
 
@@ -47,27 +47,29 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.configuration.resources.CRSResource;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
+import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.transformations.Transformation;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.deegree.crs.i18n.Messages;
 
 /**
- * The <code>ProjFileResource</code> class TODO add class documentation here.
- *
+ * The <code>ProjFileResource</code> reads a list of proj4 definitions from a file.
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
+@LoggingNotes(debug = "Get information about errors while parsing the proj4 file.")
 public class ProjFileResource implements CRSResource<Map<String, String>> {
 
     private Map<CRSCodeType, Map<String, String>> idToParams = new HashMap<CRSCodeType, Map<String, String>>( 4000 );
@@ -90,7 +92,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
                     // remove the '#' from the String.
                     if ( kvp.get( "comment" ) != null ) {
                         LOG.debug( "(Line: " + lineNumber + ") Multiple comments found, removing previous: "
-                                      + kvp.get( "comment" ) );
+                                   + kvp.get( "comment" ) );
                     }
                     kvp.put( "comment", line.substring( 1 ).trim() );
                 } else {
@@ -122,7 +124,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 
         // convert codes to ids
         CRSCodeType[] codes = sourceCRS.getCodes();
-        String[] ids = new String[ codes.length ];
+        String[] ids = new String[codes.length];
         for ( int i = 0; i < ids.length; i++ )
             ids[i] = codes[i].getOriginal();
 
@@ -162,7 +164,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 
     /**
      * Creating the wgs84 aka BursaWolf conversion parameters. Either 3 or 7 parameters are supported.
-     *
+     * 
      * @param params
      *            to get the towgs84 param from
      * @return the conversion info from the params or <code>null<code> if no conversion info is available.
@@ -187,15 +189,17 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
                                      + sourceCRS.getCode() + "identifier";
                 String name = "Proj4 defined toWGS84 params";
 
-                String id = Transformation.createFromTo( sourceCRS.getCode().getOriginal(), GeographicCRS.WGS84.getCode().getOriginal() );
+                String id = Transformation.createFromTo( sourceCRS.getCode().getOriginal(),
+                                                         GeographicCRS.WGS84.getCode().getOriginal() );
 
                 if ( values.length == 3 ) {
                     result = new Helmert( values[0], values[1], values[2], 0, 0, 0, 0, sourceCRS, GeographicCRS.WGS84,
-                                          CRSCodeType.valueOf( id ), name, sourceCRS.getVersion(), description, sourceCRS.getAreaOfUse() );
+                                          CRSCodeType.valueOf( id ), name, sourceCRS.getVersion(), description,
+                                          sourceCRS.getAreaOfUse() );
                 } else if ( values.length == 7 ) {
                     result = new Helmert( values[0], values[1], values[2], values[3], values[4], values[5], values[6],
-                                          sourceCRS, GeographicCRS.WGS84, CRSCodeType.valueOf( id ), name, sourceCRS.getVersion(),
-                                          description, sourceCRS.getAreaOfUse() );
+                                          sourceCRS, GeographicCRS.WGS84, CRSCodeType.valueOf( id ), name,
+                                          sourceCRS.getVersion(), description, sourceCRS.getAreaOfUse() );
                 } else {
                     throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_WGS84_PARAMS",
                                                                               sourceCRS.getCode() + "identifier",
@@ -208,7 +212,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 
     /**
      * Parses the configured proj4 parameters from the given String using a StreamTokenizer and saves them in the Map.
-     *
+     * 
      * @param params
      *            to be parsed
      * @param lineNumber
@@ -243,7 +247,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
         t.wordChars( ',', ',' );
         t.nextToken();
         String identifier = null;
-        /**
+         /**
          * PROJ4 type definitions have following format, <number> +proj .... So the first type must start with an '<'
          */
         if ( t.ttype == '<' ) {
@@ -318,7 +322,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 
     /**
      * Creates a helpfull string of the given StreamTokenizer value.
-     *
+     * 
      * @param val
      *            an int gotten from streamTokenizer.ttype.
      * @return a human readable String.
@@ -337,7 +341,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 
     /**
      * removes any strings in front of the last number.
-     *
+     * 
      * @param id
      *            to be normalized.
      * @return the number of the id, or id if ':' or '#' is not found.

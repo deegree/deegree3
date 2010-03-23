@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.transformations.coordinate;
 
@@ -41,6 +41,7 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Axis;
@@ -48,21 +49,22 @@ import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.ProjectionException;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.projections.Projection;
+import org.deegree.crs.transformations.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The <code>ProjectionTransform</code> class wraps the access to a projection, by calling it's doProjection.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
-
-public class ProjectionTransform extends CRSTransformation {
+@LoggingNotes(debug = "Get information about axis of the projection as well as the used projection and the incoming ordinates.")
+public class ProjectionTransform extends Transformation {
 
     private static Logger LOG = LoggerFactory.getLogger( ProjectionTransform.class );
 
@@ -114,8 +116,12 @@ public class ProjectionTransform extends CRSTransformation {
      *            The crs containing a projection.
      */
     public ProjectionTransform( ProjectedCRS projectedCRS ) {
-        this( projectedCRS, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( projectedCRS.getGeographicCRS().getCode().toString(),
-                                                            projectedCRS.getCode().toString() ) ) ) );
+        this(
+              projectedCRS,
+              new CRSIdentifiable(
+                                   CRSCodeType.valueOf( createFromTo(
+                                                                      projectedCRS.getGeographicCRS().getCode().toString(),
+                                                                      projectedCRS.getCode().toString() ) ) ) );
     }
 
     @Override

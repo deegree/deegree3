@@ -49,6 +49,7 @@ import org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.transformations.TransformationFactory;
+import org.deegree.crs.transformations.TransformationFactory.DSTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "the class that instantiates the appropriate providers")
+@LoggingNotes(debug = "Get information on the instantiation on the appropriate providers, and the configured properties.")
 public class CRSConfiguration {
     private static Logger LOG = LoggerFactory.getLogger( CRSConfiguration.class );
 
@@ -138,7 +139,8 @@ public class CRSConfiguration {
      */
     private CRSConfiguration( CRSProvider provider ) {
         this.provider = provider;
-        this.transformationFactory = new TransformationFactory( provider );
+        this.transformationFactory = new TransformationFactory( provider,
+                                                                DSTransform.fromProperties( configuredProperties ) );
     }
 
     /**

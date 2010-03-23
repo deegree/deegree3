@@ -52,6 +52,7 @@ import javax.vecmath.Point2d;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
@@ -87,7 +88,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>CRSParser</code> class TODO add class documentation here.
+ * The <code>Parser</code> containing the parsing code for configuration up to version 0.4 of the crs (include deegree2
+ * crs-configuration files).
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -96,6 +98,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get information about the currently parsed coordinate system components.")
 public class Parser extends XMLFileResource implements CRSParser<OMElement> {
 
     /**
@@ -128,7 +131,6 @@ public class Parser extends XMLFileResource implements CRSParser<OMElement> {
      */
     public Parser( DeegreeCRSProvider<OMElement> provider, Properties properties ) {
         this( provider, properties, "definitions", CommonNamespaces.CRSNS );
-        // TODO Auto-generated constructor stub
     }
 
     /**

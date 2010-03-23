@@ -33,12 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-@PackageLoggingNotes(title = "crs subsystem")
-/**
- * The org.deegree.crs package contains all necessities to transform and project coordinates form one coordinates system
- * into another. For easy access to all information (e.g. identifier, name, description etc. ) about a crs, transformation
- * or projection, the <code>CRSIdentifiable</code> class is used as super class.
- */
-package org.deegree.crs;
+@PackageLoggingNotes(debug = "Get information about transformations and the creation of transformation chains.")
+package org.deegree.crs.transformations;
 
 import org.deegree.commons.utils.log.PackageLoggingNotes;
+

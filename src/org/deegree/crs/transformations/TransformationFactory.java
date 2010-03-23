@@ -39,26 +39,25 @@ import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.COMPOUN
 import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTRIC;
 import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
 import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
+import static org.deegree.crs.transformations.coordinate.ConcatenatedTransform.concatenate;
+import static org.deegree.crs.transformations.coordinate.MatrixTransform.createMatrixTransform;
+import static org.deegree.crs.utilities.MappingUtils.updateFromDefinedTransformations;
+import static org.deegree.crs.utilities.Matrix.swapAndRotateGeoAxis;
+import static org.deegree.crs.utilities.Matrix.swapAxis;
+import static org.deegree.crs.utilities.Matrix.toStdValues;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.Properties;
 
-import javax.vecmath.GMatrix;
-import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
-import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Ellipsoid;
 import org.deegree.crs.components.GeodeticDatum;
-import org.deegree.crs.components.Unit;
 import org.deegree.crs.configuration.CRSProvider;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
@@ -67,9 +66,6 @@ import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.i18n.Messages;
-import org.deegree.crs.transformations.coordinate.CRSTransformation;
-import org.deegree.crs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.crs.transformations.coordinate.GeocentricTransform;
 import org.deegree.crs.transformations.coordinate.MatrixTransform;
 import org.deegree.crs.transformations.coordinate.ProjectionTransform;
@@ -105,6 +101,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get information about the transformation steps which were 'automatically' created.")
 public class TransformationFactory {
     private static Logger LOG = LoggerFactory.getLogger( TransformationFactory.class );
 
@@ -116,10 +113,31 @@ public class TransformationFactory {
      * Defines the type of transformation to use while switching datums.
      */
     public enum DSTransform {
+
         /** use the helmert transformation */
         HELMERT,
         /** Try to use an ntv2 transformation */
         NTv2;
+        /** The property to use */
+        public static String DS_PROP = "PREFERRED_DATUM_TRANSFORM";
+
+        /**
+         * Create a {@link DSTransform} from the String with bound to the Key {@link #DS_PROP}. If <code>null</code>
+         * {@link #HELMERT} will be returned.
+         * 
+         * @param props
+         * @return the value of key {@link #DS_PROP} of {@link #HELMERT} if the value was not known.
+         */
+        public static DSTransform fromProperties( Properties props ) {
+            DSTransform result = DSTransform.HELMERT;
+            if ( props.contains( DS_PROP ) ) {
+                String def = props.getProperty( DS_PROP );
+                if ( def != null && "NTv2".equalsIgnoreCase( def ) ) {
+                    result = NTv2;
+                }
+            }
+            return result;
+        }
     }
 
     /**
@@ -127,10 +145,12 @@ public class TransformationFactory {
      * 
      * @param provider
      *            used to do lookups of transformations
+     * @param preferredTransform
+     *            to use for datum shift necessities
      */
-    public TransformationFactory( CRSProvider provider ) {
+    public TransformationFactory( CRSProvider provider, DSTransform preferredTransform ) {
         this.provider = provider;
-        this.preferredDSTransform = DSTransform.HELMERT;
+        this.preferredDSTransform = preferredTransform;
     }
 
     /**
@@ -142,16 +162,6 @@ public class TransformationFactory {
     public void setPreferredTransformation( DSTransform datumTransform ) {
         this.preferredDSTransform = datumTransform;
     }
-
-    // /**
-    // * @return the default coordinate transformation factory.
-    // */
-    // public static synchronized TransformationFactory getInstance() {
-    // if ( DEFAULT_INSTANCE == null ) {
-    // DEFAULT_INSTANCE = new TransformationFactory();
-    // }
-    // return DEFAULT_INSTANCE;
-    // }
 
     /**
      * Creates a transformation between two coordinate systems. This method will examine the coordinate systems in order
@@ -202,9 +212,6 @@ public class TransformationFactory {
         if ( targetCRS == null ) {
             throw new IllegalArgumentException( "The target CRS may not be null" );
         }
-        // 1) Call crs-config.getTransformation for source and target (caching????)
-        // 2) if( helmert, use this class)
-        // 3) if direct, do this=????
         if ( !isSupported( sourceCRS ) || !isSupported( targetCRS ) ) {
             throw new TransformationException( sourceCRS, targetCRS,
                                                "Either the target crs type or the source crs type was unknown" );
@@ -218,6 +225,13 @@ public class TransformationFactory {
         }
 
         List<Transformation> toBeUsed = copyTransformations( transformationsToBeUsed );
+        // Do following steps:
+        // 1) Check if the 'supplied' transformation already contains a path from source to target.
+        // 2) Call crs-config.getTransformation for source and target
+        // 3) if no 'direct' transformation try to find an inverse.
+        // 4) if helmert was defined but the provider transformation was NTv2, create a chain.
+        // 5) if source has direct transformation to target use this
+        // 6) create a chain if none of the above apply.
 
         // check if the list of required transformations contains a 'direct' transformation.
         Transformation result = getRequiredTransformation( toBeUsed, sourceCRS, targetCRS );
@@ -231,7 +245,7 @@ public class TransformationFactory {
                 }
             }
             if ( result == null
-                 || ( result instanceof NTv2Transformation && this.preferredDSTransform == DSTransform.HELMERT ) ) {
+                 || ( "NTv2".equals( result.getImplementationName() ) && this.preferredDSTransform == DSTransform.HELMERT ) ) {
                 // no configured transformation
                 // check if the source crs has an alternative transformation for the given target, if so use it
                 if ( sourceCRS.hasDirectTransformation( targetCRS ) ) {
@@ -276,10 +290,8 @@ public class TransformationFactory {
             result = createMatrixTransform( sourceCRS, targetCRS, matrix );
         } else {
             LOG.debug( "Concatenating the result, with the conversion matrices." );
-            result = concatenate(
-                                  createMatrixTransform( sourceCRS, sourceCRS, toStandardizedValues( sourceCRS, false ) ),
-                                  result, createMatrixTransform( targetCRS, targetCRS, toStandardizedValues( targetCRS,
-                                                                                                             true ) ) );
+            result = concatenate( createMatrixTransform( sourceCRS, sourceCRS, toStdValues( sourceCRS, false ) ),
+                                  result, createMatrixTransform( targetCRS, targetCRS, toStdValues( targetCRS, true ) ) );
         }
         if ( LOG.isDebugEnabled() ) {
             StringBuilder output = new StringBuilder( "The resulting transformation chain: \n" );
@@ -294,11 +306,19 @@ public class TransformationFactory {
         return result;
     }
 
+    /**
+     * Calls the provider to find a 'configured' transformation, if found a copy will be returned.
+     * 
+     * @param sourceCRS
+     * @param targetCRS
+     * @return a copy of a configured provider.
+     */
     private Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
         Transformation result = provider.getTransformation( sourceCRS, targetCRS );
         if ( result != null ) {
             String implName = result.getImplementationName();
-            // make a copy.
+            // make a copy, so inverse can be called without changing the original transformation, which might be cached
+            // somewhere.
             if ( "Helmert".equals( implName ) ) {
                 Helmert h = (Helmert) result;
                 result = new Helmert( h.dx, h.dy, h.dz, h.ex, h.ey, h.ez, h.ppm, h.getSourceCRS(), h.getTargetCRS(), h );
@@ -351,143 +371,6 @@ public class TransformationFactory {
         return result;
     }
 
-    private Transformation updateFromDefinedTransformations( List<Transformation> toBeUsed, Transformation createdResult ) {
-        if ( createdResult == null || toBeUsed == null || toBeUsed.isEmpty() ) {
-            return createdResult;
-        }
-        Iterator<Transformation> it = toBeUsed.iterator();
-        while ( it.hasNext() ) {
-            Transformation tbu = it.next();
-            if ( tbu != null ) {
-                createdResult = traverseAndReplace( createdResult, tbu );
-            }
-        }
-        return createdResult;
-    }
-
-    private Transformation traverseAndReplace( Transformation createdResult, Transformation tbu ) {
-        if ( createdResult == null ) {
-            return null;
-        }
-        if ( createdResult.equalOnCRS( tbu ) ) {
-            return tbu;
-        }
-
-        if ( createdResult.contains( tbu.getSourceCRS() ) && createdResult.contains( tbu.getTargetCRS() ) ) {
-            // some part of the transformation matches the given source and target of to be used transformation, lets
-            // find and replace it.
-            if ( "Concatenated-Transform".equals( createdResult.getImplementationName() ) ) {
-                return reorganizeConcatenate( (ConcatenatedTransform) createdResult, tbu );
-                // ConcatenatedTransform ct = (ConcatenatedTransform) createdResult;
-                // Transformation f = ct.getFirstTransform();
-                // if ( f.contains( tbu.getSourceCRS() ) && !f.contains( tbu.getTargetCRS() ) ) {
-                // // special case, the first transformation has the source, the second the target;
-                // // reorganize the concatenated tree.
-                // return reorganizeConcatenate( (ConcatenatedTransform) createdResult, tbu );
-                // }
-                // if ( f.contains( tbu.getSourceCRS() ) ) {
-                // return traverseAndReplace( f, tbu );
-                // }
-                // // second part must contain the requested transformation.
-                // return traverseAndReplace( ct.getSecondTransform(), tbu );
-
-            }
-            // rb: what kind of transformation could this probably be???
-            LOG.warn( "Could not handle transformation replacement of type:" + createdResult.getImplementationName()
-                      + " ignoring requested transformation: " + tbu.getCodeAndName() );
-
-        } else {
-            LOG.debug( "Found no matching (requested) transformation: " + tbu.getCodeAndName()
-                       + " in resulting transform, transformation chain will not be altered." );
-        }
-        return createdResult;
-    }
-
-    private Transformation reorganizeConcatenate( ConcatenatedTransform ct, Transformation tbu ) {
-        Deque<Transformation> chain = new LinkedList<Transformation>();
-        obtainChain( ct, tbu.getSourceCRS(), tbu.getTargetCRS(), chain );
-        if ( chain.isEmpty() ) {
-            LOG.debug( "Found no matching (requested) transformation: " + tbu.getCodeAndName()
-                       + " in concatenated transform, transformation chain will not be altered." );
-            return ct;
-        }
-        Transformation first = chain.peekFirst();
-        if ( first == null || !first.getSourceCRS().equals( tbu.getSourceCRS() ) ) {
-            LOG.debug( "Found no matching (requested) transformation: " + tbu.getCodeAndName()
-                       + " in concatenated transform, transformation chain will not be altered." );
-            return ct;
-        }
-        Transformation last = chain.peekLast();
-        if ( last == null || !last.getTargetCRS().equals( tbu.getTargetCRS() ) ) {
-            LOG.debug( "Found no matching (requested) transformation: " + tbu.getCodeAndName()
-                       + " in concatenated transform, transformation chain will not be altered." );
-            return ct;
-        }
-        Queue<Transformation> resultChain = new LinkedList<Transformation>();
-        if ( !ct.getSourceCRS().equals( first.getSourceCRS() ) ) {
-            chain.clear();
-            obtainChain( ct, ct.getSourceCRS(), tbu.getSourceCRS(), chain );
-            if ( !chain.isEmpty() ) {
-                if ( chain.getLast() != null && chain.getLast().equals( first ) ) {
-                    // get out the last transformation (which is the first of the old chain).
-                    chain.removeLast();
-                }
-                if ( !chain.isEmpty() ) {
-                    resultChain.addAll( chain );
-                }
-            }
-        }
-        // add the requested transformation.
-        resultChain.add( tbu );
-        if ( !ct.getTargetCRS().equals( last.getTargetCRS() ) ) {
-            chain.clear();
-            obtainChain( ct, tbu.getTargetCRS(), ct.getTargetCRS(), chain );
-            if ( !chain.isEmpty() ) {
-                if ( chain.getFirst() != null && chain.getFirst().equals( last ) ) {
-                    // get out the first transformation (which is the last of the old chain).
-                    chain.removeFirst();
-                }
-                if ( !chain.isEmpty() ) {
-                    resultChain.addAll( chain );
-                }
-            }
-        }
-        // just one transformation.
-        if ( resultChain.size() == 1 ) {
-            return resultChain.poll();
-        }
-        Iterator<Transformation> it = resultChain.iterator();
-        Transformation result = null;
-        while ( it.hasNext() ) {
-            result = concatenate( result, it.next() );
-        }
-        return result;
-    }
-
-    private void obtainChain( Transformation ct, CoordinateSystem sourceCRS, CoordinateSystem targetCRS,
-                              Deque<Transformation> chain ) {
-        if ( "Concatenated-Transform".equals( ct.getImplementationName() ) ) {
-            obtainChain( ( (ConcatenatedTransform) ct ).getFirstTransform(), sourceCRS, targetCRS, chain );
-            CoordinateSystem nSource = sourceCRS;
-            if ( !chain.isEmpty() ) {
-                nSource = chain.peekLast().getSourceCRS();
-            }
-            obtainChain( ( (ConcatenatedTransform) ct ).getSecondTransform(), nSource, targetCRS, chain );
-        } else {
-            if ( ct.contains( sourceCRS ) && ct.contains( targetCRS ) ) {
-                chain.addLast( ct );
-            } else {
-                if ( sourceCRS.equals( ct.getSourceCRS() ) ) {
-                    chain.addLast( ct );
-                }
-                if ( targetCRS.equals( ct.getTargetCRS() ) ) {
-                    chain.addLast( ct );
-                }
-            }
-
-        }
-    }
-
     /**
      * Iterates over the given transformations and removes a 'fitting' transformation from the list.
      * 
@@ -498,27 +381,22 @@ public class TransformationFactory {
      */
     private Transformation getRequiredTransformation( List<Transformation> requiredTransformations,
                                                       CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
-        Transformation result = null;
         if ( requiredTransformations != null && !requiredTransformations.isEmpty() ) {
             Iterator<Transformation> it = requiredTransformations.iterator();
-            while ( it.hasNext() && result == null ) {
+            while ( it.hasNext() ) {
                 Transformation t = it.next();
                 if ( t != null ) {
                     boolean matches = ( sourceCRS != null ) ? sourceCRS.equals( t.getSourceCRS() )
                                                            : t.getSourceCRS() == null;
                     matches = matches && ( targetCRS != null ) ? targetCRS.equals( t.getTargetCRS() )
                                                               : t.getTargetCRS() == null;
-                    matches = matches && !t.isIdentity();
                     if ( matches ) {
-                        result = t;
+                        return t;
                     }
                 }
             }
-            if ( result != null ) {
-                requiredTransformations.remove( result );
-            }
         }
-        return result;
+        return null;
     }
 
     /**
@@ -637,46 +515,6 @@ public class TransformationFactory {
     }
 
     /**
-     * Creates a matrix, with which incoming values will be transformed to a standardized form. This means, to radians
-     * and meters.
-     * 
-     * @param sourceCRS
-     *            to create the matrix for.
-     * @param invert
-     *            the values. Using the inverted scale, i.e. going from standard to crs specific.
-     * @return the standardized matrix.
-     * @throws TransformationException
-     *             if the unit of one of the axis could not be transformed to one of the base units.
-     */
-    private Matrix toStandardizedValues( CoordinateSystem sourceCRS, boolean invert )
-                            throws TransformationException {
-        final int dim = sourceCRS.getDimension();
-        Matrix result = null;
-        Axis[] allAxis = sourceCRS.getAxis();
-        for ( int i = 0; i < allAxis.length; ++i ) {
-            Axis targetAxis = allAxis[i];
-            if ( targetAxis != null ) {
-                Unit targetUnit = targetAxis.getUnits();
-                if ( !( Unit.RADIAN.equals( targetUnit ) || Unit.METRE.equals( targetUnit ) ) ) {
-                    if ( !( targetUnit.canConvert( Unit.RADIAN ) || targetUnit.canConvert( Unit.METRE ) ) ) {
-                        throw new TransformationException(
-                                                           Messages.getMessage(
-                                                                                "CRS_TRANSFORMATION_NO_APLLICABLE_UNIT",
-                                                                                targetUnit ) );
-                    }
-                    // lazy instantiation
-                    if ( result == null ) {
-                        result = new Matrix( dim + 1 );
-                        result.setIdentity();
-                    }
-                    result.setElement( i, i, invert ? 1d / targetUnit.getScale() : targetUnit.getScale() );
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
      * @param sourceCRS
      * @param targetCRS
      * @return the transformation chain or <code>null</code> if the transformation operation is the identity.
@@ -784,9 +622,9 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final CRSTransformation axisAligned = createMatrixTransform( sourceGeographic, sourceGeocentric,
-                                                                             swapAxis( sourceGeographic,
-                                                                                       GeographicCRS.WGS84 ) );
+                final Transformation axisAligned = createMatrixTransform( sourceGeographic, sourceGeocentric,
+                                                                          swapAxis( sourceGeographic,
+                                                                                    GeographicCRS.WGS84 ) );
                 if ( LOG.isDebugEnabled() ) {
                     StringBuilder sb = new StringBuilder(
                                                           "Resulting axis alignment between source geographic and source geocentric is:" );
@@ -797,10 +635,16 @@ public class TransformationFactory {
                     }
                     LOG.debug( sb.toString() );
                 }
-                final CRSTransformation geoCentricTransform = new GeocentricTransform( sourceCRS, sourceGeocentric );
+                final Transformation geoCentricTransform = new GeocentricTransform( sourceCRS, sourceGeocentric );
                 // concatenate the possible projection with the axis alignment and the geocentric transform.
                 sourceTransformationChain = concatenate( sourceTransformationChain, axisAligned, geoCentricTransform );
                 // }
+                break;
+            case COMPOUND:
+                // cannot happen.
+                break;
+            case VERTICAL:
+                LOG.warn( "Vertical crs is currently not supported for the Compound crs." );
                 break;
             }
             switch ( targetType ) {
@@ -820,14 +664,20 @@ public class TransformationFactory {
                  */
                 // if ( helmertTransformation != null ) {
                 // create a 2d->3d mapping.
-                final CRSTransformation axisAligned = createMatrixTransform( targetGeocentric, targetGeographic,
-                                                                             swapAxis( GeographicCRS.WGS84,
-                                                                                       targetGeographic ) );
-                final CRSTransformation geoCentricTransform = new GeocentricTransform( targetCRS, targetGeocentric );
+                final Transformation axisAligned = createMatrixTransform( targetGeocentric, targetGeographic,
+                                                                          swapAxis( GeographicCRS.WGS84,
+                                                                                    targetGeographic ) );
+                final Transformation geoCentricTransform = new GeocentricTransform( targetCRS, targetGeocentric );
                 geoCentricTransform.inverse();
                 // concatenate the possible projection with the axis alignment and the geocentric transform.
                 targetTransformationChain = concatenate( geoCentricTransform, axisAligned, targetTransformationChain );
                 // }
+                break;
+            case COMPOUND:
+                // cannot happen.
+                break;
+            case VERTICAL:
+                LOG.warn( "Vertical crs is currently not supported for the Compound crs." );
                 break;
             }
             Transformation helmertTransformation = null;
@@ -857,7 +707,6 @@ public class TransformationFactory {
      */
     private Transformation createTransformation( final GeographicCRS sourceCRS, final GeographicCRS targetCRS )
                             throws TransformationException {
-        // if an NTv2 transformation was specified, we should use this.
         // check if a 'direct' transformation could be loaded from the configuration;
         Transformation result = getTransformation( sourceCRS, targetCRS );
         if ( result == null ) {
@@ -867,17 +716,11 @@ public class TransformationFactory {
                 result.inverse();
             }
         }
-        if ( result == null || this.preferredDSTransform == DSTransform.HELMERT ) {
+        if ( result == null
+             || ( "NTv2".equals( result.getImplementationName() ) && this.preferredDSTransform == DSTransform.HELMERT ) ) {
 
-            // if ( sourceDatum.equals( targetDatum ) ) {
-            // LOG.debug( "The datums of geographic (source): " + sourceCRS.getCode() + " equals geographic (target): "
-            // + targetCRS.getCode() + " returning null" );
-            // return null;
-            // }
             LOG.debug( "Creating geographic ->geographic transformation: from (source): " + sourceCRS.getCode()
                        + " to(target): " + targetCRS.getCode() );
-            // final Ellipsoid sourceEllipsoid = sourceDatum.getEllipsoid();
-            // final Ellipsoid targetEllipsoid = targetDatum.getEllipsoid();
             // if a conversion needs to take place
             if ( isEllipsoidTransformNeeded( sourceCRS, targetCRS ) ) {
                 Transformation sourceT = getToWGSTransformation( sourceCRS );
@@ -897,7 +740,7 @@ public class TransformationFactory {
                          * target ellipsoid through the geocentric coordinate system.
                          */
                         Transformation step1 = null;
-                        CRSTransformation step2 = null;
+                        Transformation step2 = null;
                         Transformation step3 = null;
                         // use the WGS84 Geocentric transform if no toWGS84 parameters are given and the datums
                         // ellipsoid is actually a sphere.
@@ -972,7 +815,7 @@ public class TransformationFactory {
             final GeographicCRS stepGeoCS = targetCRS.getGeographicCRS();
 
             final Transformation geo2geo = createTransformation( sourceCRS, stepGeoCS );
-            final CRSTransformation swap = createMatrixTransform( stepGeoCS, targetCRS, swapAxis( stepGeoCS, targetCRS ) );
+            final Transformation swap = createMatrixTransform( stepGeoCS, targetCRS, swapAxis( stepGeoCS, targetCRS ) );
             if ( LOG.isDebugEnabled() ) {
                 StringBuilder sb = new StringBuilder(
                                                       "Resulting axis alignment between target geographic and target projected is:" );
@@ -983,7 +826,7 @@ public class TransformationFactory {
                 }
                 LOG.debug( sb.toString() );
             }
-            final CRSTransformation projection = new ProjectionTransform( targetCRS );
+            final Transformation projection = new ProjectionTransform( targetCRS );
             result = concatenate( geo2geo, swap, projection );
         }
         return result;
@@ -1004,8 +847,8 @@ public class TransformationFactory {
      */
     private Transformation createTransformation( final GeographicCRS sourceCRS, final GeocentricCRS targetCRS )
                             throws TransformationException {
-        LOG.debug( "Creating geographic -> geocentric (helmert) transformation: from (source): " + sourceCRS.getCode()
-                   + " to(target): " + targetCRS.getCode() );
+        LOG.debug( "Creating geographic -> geocentric transformation: from (source): ? to (target): ?",
+                   sourceCRS.getCode(), targetCRS.getCode() );
         Transformation result = getTransformation( sourceCRS, targetCRS );
         if ( isIdentity( result ) ) {
             GeocentricCRS sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(),
@@ -1019,13 +862,6 @@ public class TransformationFactory {
                 Transformation targetT = getToWGSTransformation( targetCRS );
                 if ( !isIdentity( sourceT ) || !isIdentity( targetT ) ) {
                     if ( isHelmert( sourceT ) && isHelmert( targetT ) ) {
-
-                        /*
-                         * if ( !PrimeMeridian.GREENWICH.equals( targetCRS.getGeodeticDatum().getPrimeMeridian() ) ) {
-                         * throw new TransformationException( "The rotation from " +
-                         * targetCRS.getGeodeticDatum().getPrimeMeridian().getIdentifier() + " to Greenwich prime
-                         * meridian is not yet implemented" ); }
-                         */
                         ellipsoidTransform = transformUsingPivot( sourceGeocentric, targetCRS, (Helmert) sourceT,
                                                                   (Helmert) targetT );
 
@@ -1059,13 +895,10 @@ public class TransformationFactory {
                     // if no helmert transformation is needed, the targetCRS equals the source-geocentric.
                     sourceGeocentric = targetCRS;
                 }
-                // final CRSTransformation axisAlign = createMatrixTransform( sourceCRS, sourceGeocentric,
-                // swapAndRotateGeoAxis( sourceCRS,
-                // GeographicCRS.WGS84 ) );
             }
-            final CRSTransformation axisAlign = createMatrixTransform( sourceCRS, createWGSAlligned( sourceCRS ),
-                                                                       swapAndRotateGeoAxis( sourceCRS,
-                                                                                             GeographicCRS.WGS84 ) );
+            final Transformation axisAlign = createMatrixTransform( sourceCRS, createWGSAlligned( sourceCRS ),
+                                                                    swapAndRotateGeoAxis( sourceCRS,
+                                                                                          GeographicCRS.WGS84 ) );
             if ( LOG.isDebugEnabled() ) {
                 StringBuilder sb = new StringBuilder(
                                                       "Resulting axis alignment between source geographic and target geocentric is:" );
@@ -1076,7 +909,7 @@ public class TransformationFactory {
                 }
                 LOG.debug( sb.toString() );
             }
-            final CRSTransformation geocentric = new GeocentricTransform( sourceCRS, sourceGeocentric );
+            final Transformation geocentric = new GeocentricTransform( sourceCRS, sourceGeocentric );
             result = concatenate( axisAlign, geocentric, ellipsoidTransform );
 
         }
@@ -1236,18 +1069,7 @@ public class TransformationFactory {
             LOG.debug( "Creating geocentric->geocetric transformation: from (source): " + sourceCRS.getCode()
                        + " to(target): " + targetCRS.getCode() );
 
-            /*
-             * if ( !PrimeMeridian.GREENWICH.equals( sourceDatum.getPrimeMeridian() ) ||
-             * !PrimeMeridian.GREENWICH.equals( targetDatum.getPrimeMeridian() ) ) { throw new TransformationException(
-             * "Rotation of prime meridian not yet implemented" ); }
-             */
             if ( isEllipsoidTransformNeeded( sourceCRS, targetCRS ) ) {
-                // if ( !sourceDatum.equals( targetDatum ) ) {
-                // final Ellipsoid sourceEllipsoid = sourceDatum.getEllipsoid();
-                // final Ellipsoid targetEllipsoid = targetDatum.getEllipsoid();
-                //
-                // if ( sourceEllipsoid != null
-                // && !sourceEllipsoid.equals( targetEllipsoid )
                 final GeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
                 final GeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
                 // convert from the source to target ellipsoid through the geocentric coordinate system.
@@ -1259,9 +1081,7 @@ public class TransformationFactory {
                 }
             }
             if ( result == null ) {
-                /*
-                 * Swap axis order, and rotate the longitude coordinate if prime meridians are different.
-                 */
+                // Swap axis order, and rotate the longitude coordinate if prime meridians are different.
                 final Matrix matrix = swapAxis( sourceCRS, targetCRS );
                 result = createMatrixTransform( sourceCRS, targetCRS, matrix );
                 if ( LOG.isDebugEnabled() ) {
@@ -1285,16 +1105,14 @@ public class TransformationFactory {
         if ( !sourceDatum.equals( targetDatum ) ) {
             final Ellipsoid sourceEllipsoid = sourceDatum.getEllipsoid();
             final Ellipsoid targetEllipsoid = targetDatum.getEllipsoid();
-            /*
-             * If the two coordinate systems use different ellipsoid, a transformation needs to take place.
-             */
+            // If the two coordinate systems use different ellipsoid, a transformation needs to take place.
             return sourceEllipsoid != null && !sourceEllipsoid.equals( targetEllipsoid );
         }
         return false;
     }
 
-    private CRSTransformation transformUsingPivot( GeocentricCRS sourceCRS, GeocentricCRS targetCRS,
-                                                   Helmert sourceHelmert, Helmert targetHelmert )
+    private Transformation transformUsingPivot( GeocentricCRS sourceCRS, GeocentricCRS targetCRS,
+                                                Helmert sourceHelmert, Helmert targetHelmert )
                             throws TransformationException {
         // Transform between different ellipsoids using Bursa Wolf parameters.
         Matrix tmp = swapAxis( sourceCRS, GeocentricCRS.WGS84 );
@@ -1373,121 +1191,6 @@ public class TransformationFactory {
     }
 
     /**
-     * Concatenates two existing transforms.
-     * 
-     * @param first
-     *            The first transform to apply to points.
-     * @param second
-     *            The second transform to apply to points.
-     * @return The concatenated transform.
-     * 
-     */
-    private Transformation concatenateTransformations( Transformation first, Transformation second ) {
-        if ( first == null ) {
-            LOG.debug( "Concatenate: the first transform  is null." );
-            return second;
-        }
-        if ( second == null ) {
-            LOG.debug( "Concatenate: the second transform  is null." );
-            return first;
-        }
-        // if one of the two is an identity transformation, just return the other.
-        if ( first.isIdentity() ) {
-            LOG.debug( "Concatenate:  the first transform  is the identity." );
-            return second;
-        }
-        if ( second.isIdentity() ) {
-            LOG.debug( "Concatenate:  the second transform is the identity." );
-            return first;
-        }
-
-        /*
-         * If one transform is the inverse of the other, just return an identitiy transform.
-         */
-        if ( first.areInverse( second ) ) {
-            LOG.debug( "Transformation1 and Transformation2 are inverse operations, returning null" );
-            return null;
-        }
-
-        /*
-         * If both transforms use matrix, then we can create a single transform using the concatened matrix.
-         */
-        if ( first instanceof MatrixTransform && second instanceof MatrixTransform ) {
-            GMatrix m1 = ( (MatrixTransform) first ).getMatrix();
-            GMatrix m2 = ( (MatrixTransform) second ).getMatrix();
-            if ( m1 == null ) {
-                if ( m2 == null ) {
-                    // both matrices are null, just return the identiy matrix.
-                    return new MatrixTransform( first.getSourceCRS(), first.getTargetCRS(),
-                                                new GMatrix( second.getTargetDimension() + 1,
-                                                             first.getSourceDimension() + 1 ) );
-                }
-                return second;
-            } else if ( m2 == null ) {
-                return first;
-            }
-
-            m2.mul( m1 );
-            // m1.mul( m2 );
-            LOG.debug( "Concatenate: both transforms are matrices, resulting multiply:\n" + m2 );
-            MatrixTransform result = new MatrixTransform( first.getSourceCRS(), second.getTargetCRS(), m2 );
-            // if ( result.isIdentity() ) {
-            // return null;
-            // }
-            return result;
-        }
-
-        /*
-         * If one or both math transform are instance of {@link ConcatenatedTransform}, then concatenate
-         * <code>tr1</code> or <code>tr2</code> with one of step transforms.
-         */
-        if ( first instanceof ConcatenatedTransform ) {
-            final ConcatenatedTransform ctr = (ConcatenatedTransform) first;
-            first = ctr.getFirstTransform();
-            second = concatenateTransformations( ctr.getSecondTransform(), second );
-        } else if ( second instanceof ConcatenatedTransform ) {
-            final ConcatenatedTransform ctr = (ConcatenatedTransform) second;
-            first = concatenateTransformations( first, ctr.getFirstTransform() );
-            second = ctr.getSecondTransform();
-        }
-        // because of the concatenation one of the transformations may be null.
-        if ( first == null ) {
-            return second;
-        }
-        if ( second == null ) {
-            return first;
-        }
-
-        return new ConcatenatedTransform( first, second );
-    }
-
-    /**
-     * Creates an affine transform from a matrix.
-     * 
-     * @param matrix
-     *            The matrix used to define the affine transform.
-     * @return The affine transform.
-     * @throws TransformationException
-     *             if the matrix is not affine.
-     * 
-     */
-    private MatrixTransform createMatrixTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS,
-                                                   final Matrix matrix )
-                            throws TransformationException {
-        if ( matrix == null ) {
-            return null;
-        }
-        if ( matrix.isAffine() ) {// Affine transform are square.
-            if ( matrix.getNumRow() == 3 && matrix.getNumCol() == 3 && !matrix.isIdentity() ) {
-                Matrix3d tmp = matrix.toAffineTransform();
-                return new MatrixTransform( sourceCRS, targetCRS, tmp );
-            }
-            return new MatrixTransform( sourceCRS, targetCRS, matrix );
-        }
-        throw new TransformationException( "Given matrix is not affine, cannot continue" );
-    }
-
-    /**
      * @return the WGS84 parameters as an affine transform, or <code>null</code> if not available.
      */
     private Matrix4d getWGS84Parameters( final Helmert transformation ) {
@@ -1495,120 +1198,6 @@ public class TransformationFactory {
             return transformation.getAsAffineTransform();
         }
         return null;
-    }
-
-    /**
-     * Concatenate two transformation steps.
-     * 
-     * @param step1
-     *            The first step, or <code>null</code> for the identity transform.
-     * @param step2
-     *            The second step, or <code>null</code> for the identity transform.
-     * @return A concatenated transform, or <code>null</code> if all arguments was nul.
-     */
-    private Transformation concatenate( final Transformation step1, final Transformation step2 ) {
-        if ( step1 == null )
-            return step2;
-        if ( step2 == null )
-            return step1;
-        return concatenateTransformations( step1, step2 );
-    }
-
-    /**
-     * Concatenate three transformation steps.
-     * 
-     * @param step1
-     *            The first step, or <code>null</code> for the identity transform.
-     * @param step2
-     *            The second step, or <code>null</code> for the identity transform.
-     * @param step3
-     *            The third step, or <code>null</code> for the identity transform.
-     * @return A concatenated transform, or <code>null</code> if all arguments were <code>null</code>.
-     */
-    private Transformation concatenate( final Transformation step1, final Transformation step2,
-                                        final Transformation step3 ) {
-        if ( step1 == null ) {
-            return concatenate( step2, step3 );
-        }
-        if ( step2 == null ) {
-            return concatenate( step1, step3 );
-        }
-        if ( step3 == null ) {
-            return concatenate( step1, step2 );
-        }
-        return concatenateTransformations( step1, concatenateTransformations( step2, step3 ) );
-    }
-
-    /**
-     * @return an affine transform between two coordinate systems. Only units and axis order (e.g. transforming from
-     *         (NORTH,WEST) to (EAST,NORTH)) are taken in account. Other attributes (especially the datum) must be
-     *         checked before invoking this method.
-     * 
-     * @param sourceCRS
-     *            The source coordinate system.
-     * @param targetCRS
-     *            The target coordinate system.
-     */
-    private Matrix swapAxis( final CoordinateSystem sourceCRS, final CoordinateSystem targetCRS )
-                            throws TransformationException {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Creating swap matrix from: " + sourceCRS.getCode() + " to: " + targetCRS.getCode() );
-            LOG.debug( "Source Axis:\n" + Arrays.toString( sourceCRS.getAxis() ) );
-            LOG.debug( "Target Axis:\n" + Arrays.toString( targetCRS.getAxis() ) );
-        }
-        final Matrix matrix;
-        try {
-            matrix = new Matrix( sourceCRS.getAxis(), targetCRS.getAxis() );
-        } catch ( RuntimeException e ) {
-            throw new TransformationException( sourceCRS, targetCRS, e.getMessage() );
-        }
-        return matrix.isIdentity() ? null : matrix;
-    }
-
-    /**
-     * @return an affine transform between two geographic coordinate systems. Only units, axis order (e.g. transforming
-     *         from (NORTH,WEST) to (EAST,NORTH)) and prime meridian are taken in account. Other attributes (especially
-     *         the datum) must be checked before invoking this method.
-     * 
-     * @param sourceCRS
-     *            The source coordinate system.
-     * @param targetCRS
-     *            The target coordinate system.
-     */
-    private Matrix swapAndRotateGeoAxis( final GeographicCRS sourceCRS, final GeographicCRS targetCRS )
-                            throws TransformationException {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Creating geo swap/rotate matrix from: " + sourceCRS.getCode() + " to: " + targetCRS.getCode() );
-        }
-        Matrix matrix = swapAxis( sourceCRS, targetCRS );
-        if ( !sourceCRS.getGeodeticDatum().getPrimeMeridian().equals( targetCRS.getGeodeticDatum().getPrimeMeridian() ) ) {
-            if ( matrix == null ) {
-                matrix = new Matrix( sourceCRS.getDimension() + 1 );
-            }
-            Axis[] targetAxis = targetCRS.getAxis();
-            final int lastMatrixColumn = matrix.getNumCol() - 1;
-            for ( int i = 0; i < targetAxis.length; ++i ) {
-                // Find longitude, and apply a translation if prime meridians are different.
-                final int orientation = targetAxis[i].getOrientation();
-                if ( Axis.AO_WEST == Math.abs( orientation ) ) {
-                    LOG.debug( "Adding prime-meridian translation to axis:" + targetAxis[i] );
-                    final double sourceLongitude = sourceCRS.getGeodeticDatum().getPrimeMeridian().getLongitudeAsRadian();
-                    final double targetLongitude = targetCRS.getGeodeticDatum().getPrimeMeridian().getLongitudeAsRadian();
-                    if ( Math.abs( sourceLongitude - targetLongitude ) > EPS11 ) {
-                        double translation = targetLongitude - sourceLongitude;
-                        if ( Axis.AO_WEST == orientation ) {
-                            translation = -translation;
-                        }
-                        // add the translation to the matrix translate element of this axis
-                        matrix.setElement( i, lastMatrixColumn, matrix.getElement( i, lastMatrixColumn ) - translation );
-
-                    }
-                }
-            }
-        } else {
-            LOG.debug( "The primemeridians of the geographic crs's are equal, so no translation needed." );
-        }
-        return matrix;
     }
 
 }

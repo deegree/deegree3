@@ -40,7 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.deegree.crs.configuration.deegree.db.WKTParser;
+import org.deegree.crs.configuration.wkt.WKTParser;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -108,7 +108,7 @@ public class CRS {
      * @throws IOException
      */
     public CRS( File prj ) throws IOException {
-        crs = new WKTParser( prj.toString() ).parseCoordinateSystem();
+        crs = new WKTParser( prj ).parseCoordinateSystem();
         crsName = crs.getName();
     }
 

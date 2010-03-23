@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.crs.components;
 
-import static org.deegree.crs.projections.ProjectionUtils.DTR;
 import static org.deegree.crs.utilities.MappingUtils.matchEPSGString;
+import static org.deegree.crs.utilities.ProjectionUtils.DTR;
 
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;

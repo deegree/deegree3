@@ -49,6 +49,7 @@ import java.util.Properties;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -59,7 +60,6 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.transformations.Transformation;
-import org.deegree.crs.transformations.coordinate.CRSTransformation;
 import org.deegree.crs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
@@ -76,6 +76,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get information about the currently parsed transformations.")
 public class GMLFileResource extends XMLFileResource {
 
     /**
@@ -118,14 +119,10 @@ public class GMLFileResource extends XMLFileResource {
         if ( parsedTransformation instanceof Helmert ) {
             result = (Helmert) parsedTransformation;
         } else {
-            if ( parsedTransformation instanceof CRSTransformation ) {
-                CoordinateSystem target = ( (CRSTransformation) parsedTransformation ).getTargetCRS();
-                GeographicCRS geoCRS = getGeographicCRS( target );
-                if ( geoCRS != null ) {
-                    result = getWGS84Transformation( geoCRS );
-                }
-            } else {
-                LOG.warn( "The transformation is not an instance of CRSTransformation nor a Helmert, ignoring it." );
+            CoordinateSystem target = parsedTransformation.getTargetCRS();
+            GeographicCRS geoCRS = getGeographicCRS( target );
+            if ( geoCRS != null ) {
+                result = getWGS84Transformation( geoCRS );
             }
         }
 

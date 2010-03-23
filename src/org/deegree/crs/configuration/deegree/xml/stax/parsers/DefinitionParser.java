@@ -57,6 +57,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.crs.CRSCodeType;
@@ -69,13 +70,15 @@ import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 
 /**
- * The <code>CRSParsers</code> class TODO add class documentation here.
+ * The parent class of all parsers defines convenience methods common to all StAX based crs parsers as well as reading
+ * in the locations of the crs components defintions.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get stacktraces if something goes wrong.")
 public abstract class DefinitionParser {
 
     private static final Logger LOG = getLogger( DefinitionParser.class );

@@ -53,6 +53,7 @@ import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.PrimeMeridian;
 import org.deegree.crs.components.VerticalDatum;
 import org.deegree.crs.configuration.CRSConfiguration;
+import org.deegree.crs.configuration.wkt.WKTParser;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
@@ -641,7 +642,7 @@ public class CRSRemover {
             crsList.add( crs );
 
             DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getInstance(
-                                                                                                         "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
+                                                                                                 "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
             dbProvider.remove( crsList );
         } catch ( UnknownCRSException e ) {
             System.err.println( "The crs code-type provided as the second argument is unknown. "

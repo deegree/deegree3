@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.configuration.resources.CRSResource;
@@ -69,17 +70,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * add class documentation here.
+ * The base class for a {@link CRSProvider} which has a caching mechanism for {@link CRSIdentifiable}s and instantiates
+ * a given resolver used for inverse lookup.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * @param <T>
  *            the type of object the parse method awaits.
  * 
  */
+@LoggingNotes(debug = "Get information about the initialization of the provider, as well as on requested objects.")
 public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractCRSProvider.class );

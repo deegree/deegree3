@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "factory to instantiate providers")
+@LoggingNotes(debug = "Get information about the retrieval of a crs from the registry.")
 public class CRSRegistry {
 
     private static Logger LOG = LoggerFactory.getLogger( CRSRegistry.class );

@@ -38,7 +38,7 @@
 
 package org.deegree.crs.transformations.ntv2;
 
-import static org.deegree.crs.projections.ProjectionUtils.DTR;
+import static org.deegree.crs.utilities.ProjectionUtils.DTR;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
@@ -49,25 +49,30 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Ellipsoid;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.projections.ProjectionUtils;
 import org.deegree.crs.transformations.Transformation;
+import org.deegree.crs.utilities.ProjectionUtils;
 import org.slf4j.Logger;
 
 import au.com.objectix.jgridshift.GridShift;
 import au.com.objectix.jgridshift.GridShiftFile;
 
 /**
- * The <code>NTv2Transformation</code> class TODO add class documentation here.
+ * An NTv2 Transformation uses a GridShift file to transform ordinates defined in a source CRS based on a given
+ * ellipsoid to ordinates in a target CRS based on another ellipsoid. The Coordinate systems are normally
+ * {@link GeographicCRS}s.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get stack traces if an error occurred while loading / transforming (on) a gridshift file.")
 public class NTv2Transformation extends Transformation {
 
     private static final Logger LOG = getLogger( NTv2Transformation.class );
@@ -178,7 +183,7 @@ public class NTv2Transformation extends Transformation {
                 }
             } catch ( IOException e ) {
                 LOG.debug( "Exception occurred: " + e.getLocalizedMessage(), e );
-                LOG.debug( "Exception occurred: " + e.getLocalizedMessage() );
+                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
             }
             p.x = shifter.getShiftedLonPositiveEastDegrees() * DTR;
             p.y = shifter.getShiftedLatDegrees() * DTR;

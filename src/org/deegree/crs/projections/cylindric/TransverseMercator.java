@@ -36,18 +36,19 @@
 
 package org.deegree.crs.projections.cylindric;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS10;
-import static org.deegree.crs.projections.ProjectionUtils.HALFPI;
-import static org.deegree.crs.projections.ProjectionUtils.acosScaled;
-import static org.deegree.crs.projections.ProjectionUtils.asinScaled;
-import static org.deegree.crs.projections.ProjectionUtils.calcPhiFromMeridianDistance;
-import static org.deegree.crs.projections.ProjectionUtils.getDistanceAlongMeridian;
-import static org.deegree.crs.projections.ProjectionUtils.getRectifiyingLatitudeValues;
-import static org.deegree.crs.projections.ProjectionUtils.normalizeLatitude;
-import static org.deegree.crs.projections.ProjectionUtils.normalizeLongitude;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS10;
+import static org.deegree.crs.utilities.ProjectionUtils.HALFPI;
+import static org.deegree.crs.utilities.ProjectionUtils.acosScaled;
+import static org.deegree.crs.utilities.ProjectionUtils.asinScaled;
+import static org.deegree.crs.utilities.ProjectionUtils.calcPhiFromMeridianDistance;
+import static org.deegree.crs.utilities.ProjectionUtils.getDistanceAlongMeridian;
+import static org.deegree.crs.utilities.ProjectionUtils.getRectifiyingLatitudeValues;
+import static org.deegree.crs.utilities.ProjectionUtils.normalizeLatitude;
+import static org.deegree.crs.utilities.ProjectionUtils.normalizeLongitude;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.EPSGCode;
 import org.deegree.crs.components.Unit;
@@ -79,7 +80,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-
+@LoggingNotes(debug = "Get information about incoming ordinates of the (inverse) projection.")
 public class TransverseMercator extends CylindricalProjection {
 
     private static Logger LOG = LoggerFactory.getLogger( TransverseMercator.class );

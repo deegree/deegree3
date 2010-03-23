@@ -36,15 +36,15 @@
 
 package org.deegree.crs.projections.conic;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS10;
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
-import static org.deegree.crs.projections.ProjectionUtils.HALFPI;
-import static org.deegree.crs.projections.ProjectionUtils.QUARTERPI;
-import static org.deegree.crs.projections.ProjectionUtils.calcMFromSnyder;
-import static org.deegree.crs.projections.ProjectionUtils.calcPhiFromConformalLatitude;
-import static org.deegree.crs.projections.ProjectionUtils.length;
-import static org.deegree.crs.projections.ProjectionUtils.preCalcedThetaSeries;
-import static org.deegree.crs.projections.ProjectionUtils.tanHalfCoLatitude;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS10;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.HALFPI;
+import static org.deegree.crs.utilities.ProjectionUtils.QUARTERPI;
+import static org.deegree.crs.utilities.ProjectionUtils.calcMFromSnyder;
+import static org.deegree.crs.utilities.ProjectionUtils.calcPhiFromConformalLatitude;
+import static org.deegree.crs.utilities.ProjectionUtils.length;
+import static org.deegree.crs.utilities.ProjectionUtils.preCalcedThetaSeries;
+import static org.deegree.crs.utilities.ProjectionUtils.tanHalfCoLatitude;
 
 import javax.vecmath.Point2d;
 

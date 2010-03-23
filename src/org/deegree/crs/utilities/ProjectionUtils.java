@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.crs.projections;
+package org.deegree.crs.utilities;
 
 import java.awt.geom.Rectangle2D;
 

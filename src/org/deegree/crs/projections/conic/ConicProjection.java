@@ -36,8 +36,8 @@
 
 package org.deegree.crs.projections.conic;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
-import static org.deegree.crs.projections.ProjectionUtils.WORLD_BOUNDS_RAD;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.WORLD_BOUNDS_RAD;
 
 import javax.vecmath.Point2d;
 

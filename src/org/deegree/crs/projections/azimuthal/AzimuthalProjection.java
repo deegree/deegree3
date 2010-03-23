@@ -36,8 +36,8 @@
 
 package org.deegree.crs.projections.azimuthal;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS10;
-import static org.deegree.crs.projections.ProjectionUtils.HALFPI;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS10;
+import static org.deegree.crs.utilities.ProjectionUtils.HALFPI;
 
 import javax.vecmath.Point2d;
 

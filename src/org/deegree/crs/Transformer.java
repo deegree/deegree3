@@ -43,10 +43,9 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.transformations.Transformation;
 import org.deegree.crs.transformations.TransformationFactory;
-import org.deegree.crs.transformations.coordinate.CRSTransformation;
 
 /**
- * Abstract base class for all transformers. Stores a target coordinate system and creates {@link CRSTransformation}
+ * Abstract base class for all transformers. Stores a target coordinate system and creates {@link Transformation}
  * objects for a given source CRS.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>

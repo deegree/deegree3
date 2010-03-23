@@ -44,6 +44,7 @@ import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.transformations.Transformation;
 
 /**
  * The <code>NotSupportedTransformation</code> class simply wraps the source and target crs. This transformation doesn't
@@ -58,7 +59,7 @@ import org.deegree.crs.exceptions.TransformationException;
  * @version $Revision$, $Date$
  * 
  */
-public class NotSupportedTransformation extends CRSTransformation {
+public class NotSupportedTransformation extends Transformation {
 
     /**
      * @param sourceCRS

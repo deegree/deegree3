@@ -45,7 +45,7 @@ import java.io.IOException;
 
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.crs.CRS;
-import org.deegree.crs.configuration.deegree.db.WKTParser;
+import org.deegree.crs.configuration.wkt.WKTParser;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.geometry.Envelope;
@@ -94,7 +94,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( new WKTParser().parse( wkt ) );
+                return new CRS( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -121,7 +121,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( new WKTParser().parse( wkt ) );
+                return new CRS( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -145,7 +145,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( new WKTParser().parse( wkt ) );
+                return new CRS( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -170,7 +170,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( new WKTParser().parse( wkt ) );
+                return new CRS( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }
@@ -192,7 +192,7 @@ public class Utils {
             LOG.debug( "Generated wkt: {}", wkt );
 
             try {
-                return new CRS( new WKTParser().parse( wkt ) );
+                return new CRS( WKTParser.parse( wkt ) );
             } catch ( IOException e ) {
                 LOG.debug( "Unknown error", e );
             }

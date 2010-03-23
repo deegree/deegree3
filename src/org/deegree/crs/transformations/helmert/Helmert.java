@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.crs.transformations.helmert;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
 
 import java.util.List;
 

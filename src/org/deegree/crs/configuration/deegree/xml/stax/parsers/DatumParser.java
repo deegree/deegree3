@@ -48,6 +48,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.crs.CRSIdentifiable;
@@ -68,6 +69,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(debug = "Get information about the currently parsed datums, as well as a stack trace if something went wrong.")
 public class DatumParser extends DefinitionParser {
     private static final Logger LOG = getLogger( DatumParser.class );
 

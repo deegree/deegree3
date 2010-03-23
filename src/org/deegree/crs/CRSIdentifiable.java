@@ -42,18 +42,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>CRSIdentifiable</code> class can be used to identify any crs, Ellipsoid, Geodetic Datum and Prime Meridian
+ * The <code>CRSIdentifiable</code> class can be used to identify Coordinate system components.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(debug = "Get information about metadata of Coordinate System components.")
 public class CRSIdentifiable {
 
     private static final Logger LOG = LoggerFactory.getLogger( CRSIdentifiable.class );
@@ -112,17 +114,6 @@ public class CRSIdentifiable {
     public CRSIdentifiable( CRSCodeType[] identifiers ) {
         this( identifiers, null, null, null, null );
     }
-
-    // /**
-    // * Creates arrays fromt the given identifier and name without setting the versions,
-    // descriptions and areasOfUse.
-    // *
-    // * @param identifier of the object.
-    // * @param name the human readable name of the object.
-    // */
-    // protected CRSIdentifiable( String identifier, String name ) {
-    // this( new String[]{identifier}, new String[]{name}, null, null, null );
-    // }
 
     /**
      * @param id

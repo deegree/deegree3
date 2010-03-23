@@ -36,14 +36,14 @@
 
 package org.deegree.crs.projections.azimuthal;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS10;
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
-import static org.deegree.crs.projections.ProjectionUtils.HALFPI;
-import static org.deegree.crs.projections.ProjectionUtils.QUARTERPI;
-import static org.deegree.crs.projections.ProjectionUtils.calcPhiFromAuthalicLatitude;
-import static org.deegree.crs.projections.ProjectionUtils.calcQForAuthalicLatitude;
-import static org.deegree.crs.projections.ProjectionUtils.getAuthalicLatitudeSeriesValues;
-import static org.deegree.crs.projections.ProjectionUtils.length;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS10;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.HALFPI;
+import static org.deegree.crs.utilities.ProjectionUtils.QUARTERPI;
+import static org.deegree.crs.utilities.ProjectionUtils.calcPhiFromAuthalicLatitude;
+import static org.deegree.crs.utilities.ProjectionUtils.calcQForAuthalicLatitude;
+import static org.deegree.crs.utilities.ProjectionUtils.getAuthalicLatitudeSeriesValues;
+import static org.deegree.crs.utilities.ProjectionUtils.length;
 
 import javax.vecmath.Point2d;
 

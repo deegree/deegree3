@@ -41,6 +41,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -49,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for transforming coordinates to new a coordinate reference systems.
+ * Base class for transforming coordinates to new a coordinate reference systems.
  * 
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(debug = "Get information about the transformation of a list of ordinates.")
 public class CoordinateTransformer extends Transformer {
 
     private static Logger LOG_TRANSFORM = LoggerFactory.getLogger( CoordinateTransformer.class.getCanonicalName()
@@ -174,7 +176,7 @@ public class CoordinateTransformer extends Transformer {
                 }
                 sb.append( successString );
                 LOG_TRANSFORM.debug( sb.toString() );
-                // LOG.debug( sb.toString() );
+                LOG.debug( sb.toString() );
             }
         }
         if ( result == null ) {
@@ -201,7 +203,7 @@ public class CoordinateTransformer extends Transformer {
     public double[] transform( CoordinateSystem sourceCRS, double[] input, double[] out )
                             throws IllegalArgumentException, TransformationException {
         Transformation trans = createCRSTransformation( sourceCRS );
-        
+
         trans.doTransform( input, 0, out, 0, input.length );
         return out;
     }

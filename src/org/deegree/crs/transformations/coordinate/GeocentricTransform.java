@@ -36,14 +36,15 @@
 
 package org.deegree.crs.transformations.coordinate;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
-import static org.deegree.crs.projections.ProjectionUtils.length;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.length;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.components.Ellipsoid;
@@ -52,6 +53,7 @@ import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType;
+import org.deegree.crs.transformations.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +68,8 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-
-public class GeocentricTransform extends CRSTransformation {
+@LoggingNotes(debug = "Get information about the incoming ordinates of a geocentric transformation.")
+public class GeocentricTransform extends Transformation {
 
     private static Logger LOG = LoggerFactory.getLogger( GeocentricTransform.class );
 

@@ -34,14 +34,16 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.crs.configuration.deegree.db;
+package org.deegree.crs.configuration.wkt;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -89,21 +91,33 @@ import org.slf4j.Logger;
 public class WKTParser {
     private static final Logger LOG = getLogger( WKTParser.class );
 
-    StreamTokenizer tokenizer;
+    private StreamTokenizer tokenizer;
 
-    private BufferedReader buff;
+    private Reader buff;
 
-    boolean equalsParameterVariants( String candidate, String paramName ) {
+    /**
+     * 
+     * @param candidate
+     * @param paramName
+     * @return true if the candidate stripped of underscores equals ignore case the param name (also stripped).
+     */
+    protected boolean equalsParameterVariants( String candidate, String paramName ) {
         String candidateVariant = candidate.replace( "_", "" );
         String paramVariant = paramName.replaceAll( "_", "" );
         if ( candidateVariant.equalsIgnoreCase( paramVariant ) ) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
-    String containsVariantsKey( Map<String, Double> params, String candidate ) {
+    /**
+     * Checks if the params contains the candidate, underscores will be stripped.
+     * 
+     * @param params
+     * @param candidate
+     * @return the key found in the params or <code>null</code> if not found.
+     */
+    protected String containsVariantsKey( Map<String, Double> params, String candidate ) {
         String candidateVariant = candidate.replaceAll( "_", "" );
         for ( String key : params.keySet() ) {
             String keyVariant = key.replaceAll( "_", "" );
@@ -123,12 +137,13 @@ public class WKTParser {
      * @throws WKTParsingException
      *             if the expected character is not present at this position.
      */
-    void passOverChar( char ch )
+    protected void passOverChar( char ch )
                             throws IOException {
         tokenizer.nextToken();
-        if ( tokenizer.ttype != ch )
+        if ( tokenizer.ttype != ch ) {
             throw new WKTParsingException( "The tokenizer expects the character " + ch + " while the current token is "
                                            + tokenizer.toString() );
+        }
     }
 
     /**
@@ -139,13 +154,14 @@ public class WKTParser {
      * @throws WKTParsingException
      *             if the opening bracket is not present at this position.
      */
-    void passOverOpeningBracket()
+    protected void passOverOpeningBracket()
                             throws IOException {
         tokenizer.nextToken();
-        if ( tokenizer.ttype != '[' && tokenizer.ttype != '(' )
+        if ( tokenizer.ttype != '[' && tokenizer.ttype != '(' ) {
             throw new WKTParsingException(
                                            "The tokenizer expects an opening square/round bracket while the current token is "
                                                                    + tokenizer.toString() );
+        }
     }
 
     /**
@@ -156,7 +172,7 @@ public class WKTParser {
      * @throws WKTParsingException
      *             if the closing bracket is not present at this position.
      */
-    void passOverClosingBracket()
+    protected void passOverClosingBracket()
                             throws IOException {
         tokenizer.nextToken();
         if ( tokenizer.ttype != ']' && tokenizer.ttype != ')' )
@@ -175,7 +191,7 @@ public class WKTParser {
      * @throws WKTParsingException
      *             if the keyword is not present at this position.
      */
-    void passOverWord( String s )
+    protected void passOverWord( String s )
                             throws IOException {
         tokenizer.nextToken();
         if ( tokenizer.sval == null || !tokenizer.sval.equalsIgnoreCase( s ) )
@@ -188,7 +204,7 @@ public class WKTParser {
      * @throws IOException
      *             if an I/O error occurs
      */
-    CRSCodeType parseAuthority()
+    protected CRSCodeType parseAuthority()
                             throws IOException {
         passOverWord( "AUTHORITY" );
         passOverOpeningBracket();
@@ -206,7 +222,7 @@ public class WKTParser {
      * @throws WKTParsingException
      *             if the string does not begin with have an opening double-quote.
      */
-    String parseString()
+    protected String parseString()
                             throws IOException {
         tokenizer.nextToken();
         if ( tokenizer.ttype != '"' )
@@ -222,7 +238,7 @@ public class WKTParser {
      *             if the axis orientation is not one of the values defined in the WKT reference ( NORTH | SOUTH | WEST
      *             | EAST | UP | DOWN | OTHER )
      */
-    Axis parseAxis()
+    protected Axis parseAxis()
                             throws IOException {
         passOverWord( "AXIS" );
         passOverOpeningBracket();
@@ -241,12 +257,12 @@ public class WKTParser {
     }
 
     /**
-     * @return a linear Unit ( METRE, BRITISHYARD, USFOOT )
+     * @return a Unit.
      * @throws IOException
      * @throws UnknownUnitException
      *             if the unit name does not match any of the predefined units in the API
      */
-    Unit parseLinearUnit()
+    protected Unit parseUnit()
                             throws IOException {
         passOverWord( "UNIT" );
         passOverOpeningBracket();
@@ -280,76 +296,14 @@ public class WKTParser {
         if ( name == null ) {
             throw new UnknownUnitException( "Unit name is missing" );
         }
-        if ( name.toLowerCase().contains( "metre" ) || name.toLowerCase().contains( "meter" )
-             || name.equalsIgnoreCase( "m" ) ) {
-            return Unit.METRE;
-        } else if ( name.toLowerCase().contains( "british" ) && name.toLowerCase().contains( "yard" )
-                    || name.equalsIgnoreCase( "y" ) ) {
-            return Unit.BRITISHYARD;
-        } else if ( name.toLowerCase().contains( "foot" ) && name.toLowerCase().contains( "us" )
-                    || name.equalsIgnoreCase( "ft" ) ) {
-            return Unit.USFOOT;
-        } else {
-            throw new UnknownUnitException( "Cannot determine the unit meant by the name: " + name );
-        }
-    }
-
-    /**
-     * @return an angular Unit ( DEGREE, RADIAN, ARC_SEC, DMSH )
-     * @throws IOException
-     * @throws UnknownUnitException
-     *             if the unit name does not match any of the predefined units in the API
-     */
-    Unit parseAngularUnit()
-                            throws IOException {
-        passOverWord( "UNIT" );
-        passOverOpeningBracket();
-        String name = null;
-        // Double conversionFactor = null; // we do not identify a unit based on the conversion factor, only on the name
-        // CRSCodeType code = CRSCodeType.getUndefined(); // currently Units are not identifiable so the code parsed
-        // here
-        // is of no use
-        while ( true ) {
-            tokenizer.nextToken();
-            switch ( tokenizer.ttype ) {
-            case '"':
-                name = tokenizer.sval;
-                break;
-            case StreamTokenizer.TT_NUMBER:
-                // conversionFactor = tokenizer.nval;
-                break;
-            case StreamTokenizer.TT_WORD:
-                if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
-                    tokenizer.pushBack();
-                    // code = parseAuthority();
-                } else
-                    throw new WKTParsingException( "Unknown word encountered in the UNIT element: " + tokenizer );
-                break;
-            default:
-                throw new WKTParsingException( "Unknown token encountered in the UNIT element: " + tokenizer );
-            }
-            tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
-                break;
-        }
-        if ( name == null ) {
-            throw new UnknownUnitException( "Unit name is null" );
-        }
-        if ( name.toLowerCase().contains( "degree" ) || name.toLowerCase().contains( "dmsh" ) )
-            return Unit.DEGREE;
-        else if ( name.toLowerCase().contains( "radian" ) || name.equalsIgnoreCase( "rad" ) )
-            return Unit.RADIAN;
-        else if ( name.toLowerCase().contains( "arc" ) && name.toLowerCase().contains( "sec" ) )
-            return Unit.ARC_SEC;
-        else
-            throw new UnknownUnitException( "Cannot determine the unit meant by the name: " + name );
+        return Unit.createUnitFromString( name );
     }
 
     /**
      * @return a Prime Meridian
      * @throws IOException
      */
-    PrimeMeridian parsePrimeMeridian()
+    protected PrimeMeridian parsePrimeMeridian()
                             throws IOException {
         passOverWord( "PRIMEM" );
         passOverOpeningBracket();
@@ -388,7 +342,11 @@ public class WKTParser {
                                                        null ) );
     }
 
-    Ellipsoid parseEllipsoid()
+    /**
+     * @return the Ellipsoid parsed from a WKT 'SPHEROID'.
+     * @throws IOException
+     */
+    protected Ellipsoid parseEllipsoid()
                             throws IOException {
         passOverWord( "SPHEROID" );
         passOverOpeningBracket();
@@ -432,7 +390,11 @@ public class WKTParser {
                                                                       new String[] { name }, null, null, null ) );
     }
 
-    Helmert parseHelmert()
+    /**
+     * @return the Helmert transformatio parsed from the WKT 'TOWGS84'
+     * @throws IOException
+     */
+    protected Helmert parseHelmert()
                             throws IOException {
         passOverWord( "TOWGS84" );
         passOverOpeningBracket();
@@ -489,10 +451,10 @@ public class WKTParser {
     }
 
     /**
-     * @return a Geodetic Datum
+     * @return a Geodetic Datum parsed from WKT 'DATUM'
      * @throws IOException
      */
-    GeodeticDatum parseGeodeticDatum()
+    protected GeodeticDatum parseGeodeticDatum()
                             throws IOException {
         passOverWord( "DATUM" );
         passOverOpeningBracket();
@@ -537,10 +499,10 @@ public class WKTParser {
     }
 
     /**
-     * @return a Vertical Datum
+     * @return a Vertical Datum parsed from WKT 'VERT_DATUM'
      * @throws IOException
      */
-    VerticalDatum parseVerticalDatum()
+    protected VerticalDatum parseVerticalDatum()
                             throws IOException {
         passOverWord( "VERT_DATUM" );
         passOverOpeningBracket();
@@ -609,7 +571,11 @@ public class WKTParser {
                                            + tokenizer.sval + " at line " + tokenizer.lineno() );
     }
 
-    private CoordinateSystem parseVerticalCRS()
+    /**
+     * @return a {@link VerticalCRS} parsed from the current reader position.
+     * @throws IOException
+     */
+    protected VerticalCRS parseVerticalCRS()
                             throws IOException {
         passOverOpeningBracket();
         String name = null;
@@ -629,7 +595,7 @@ public class WKTParser {
                     verticalDatum = parseVerticalDatum();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "UNIT" ) ) {
                     tokenizer.pushBack();
-                    unit = parseLinearUnit();
+                    unit = parseUnit();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AXIS" ) ) {
                     tokenizer.pushBack();
                     axis = parseAxis();
@@ -661,7 +627,11 @@ public class WKTParser {
                                                                                          null, null ) );
     }
 
-    private CoordinateSystem parseGeocentricCRS()
+    /**
+     * @return a {@link GeocentricCRS} parsed from the current reader position.
+     * @throws IOException
+     */
+    protected GeocentricCRS parseGeocentricCRS()
                             throws IOException {
         passOverOpeningBracket();
         String name = null;
@@ -688,7 +658,7 @@ public class WKTParser {
                     pm = parsePrimeMeridian();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "UNIT" ) ) {
                     tokenizer.pushBack();
-                    unit = parseLinearUnit();
+                    unit = parseUnit();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AXIS" ) ) {
                     tokenizer.pushBack();
                     axis1 = parseAxis();
@@ -730,7 +700,11 @@ public class WKTParser {
                                                        null ) );
     }
 
-    private CoordinateSystem parseGeographiCRS()
+    /**
+     * @return a {@link GeographicCRS} parsed from the current reader position.
+     * @throws IOException
+     */
+    protected GeographicCRS parseGeographiCRS()
                             throws IOException {
         passOverOpeningBracket();
         String name = null;
@@ -757,7 +731,7 @@ public class WKTParser {
                     pm = parsePrimeMeridian();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "UNIT" ) ) {
                     tokenizer.pushBack();
-                    unit = parseAngularUnit();
+                    unit = parseUnit();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AXIS" ) ) {
                     tokenizer.pushBack();
                     axis1 = parseAxis();
@@ -800,7 +774,11 @@ public class WKTParser {
                                                                                            null, null ) );
     }
 
-    private CoordinateSystem parseProjectedCRS()
+    /**
+     * @return a {@link ProjectedCRS} parsed from the current reader position.
+     * @throws IOException
+     */
+    protected ProjectedCRS parseProjectedCRS()
                             throws IOException {
         passOverOpeningBracket();
         String name = null;
@@ -861,7 +839,7 @@ public class WKTParser {
                     axis2 = parseAxis();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "UNIT" ) ) {
                     tokenizer.pushBack();
-                    unit = parseLinearUnit();
+                    unit = parseUnit();
                 } else if ( tokenizer.sval.equalsIgnoreCase( "AUTHORITY" ) ) {
                     tokenizer.pushBack();
                     code = parseAuthority();
@@ -1016,9 +994,9 @@ public class WKTParser {
                                                                                        new String[] { name }, null,
                                                                                        null, null ) );
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Azimuthal" ) ) {
+            LOG.warn( "True scale latitude is not read from the StereoGraphic azimuthal projection yet." );
             return new ProjectedCRS(
                                      new StereographicAzimuthal(
-                                                                 // TODO true_scale_latitude parameter???
                                                                  geographicCRS,
                                                                  params.get( "false_northing" ),
                                                                  params.get( "false_easting" ),
@@ -1038,7 +1016,13 @@ public class WKTParser {
         }
     }
 
-    private CompoundCRS parseCompoundCRS()
+    /**
+     * Parses a {@link CompoundCRS} from the current WKT location.
+     * 
+     * @return a {@link CompoundCRS} parsed from the current reader position.
+     * @throws IOException
+     */
+    protected CompoundCRS parseCompoundCRS()
                             throws IOException {
         passOverOpeningBracket();
         String name = null;
@@ -1127,17 +1111,25 @@ public class WKTParser {
      *             if the provided WKT has a syntax error
      */
     public WKTParser( String fileName ) throws IOException {
-        File file = new File( fileName );
-        buff = new BufferedReader( new FileReader( file ) );
+        this( new File( fileName ) );
+    }
+
+    /**
+     * Create a WKTParser which reads data from the given reader.
+     */
+    private WKTParser( Reader reader ) {
+        this.buff = reader;
         tokenizer = new StreamTokenizer( buff );
         tokenizer.wordChars( '_', '_' );
     }
 
     /**
-     * Use this if you want to parse WKT strings directly using the parse method.
+     * @param fileName
+     *            to read a wkt from.
+     * @throws FileNotFoundException
      */
-    public WKTParser() {
-        // see comment
+    public WKTParser( File fileName ) throws FileNotFoundException {
+        this( new BufferedReader( new FileReader( fileName ) ) );
     }
 
     /**
@@ -1147,28 +1139,9 @@ public class WKTParser {
      * @throws IOException
      *             if the provided WKT has a syntax error
      */
-    public CoordinateSystem parse( String wkt )
+    public static CoordinateSystem parse( String wkt )
                             throws IOException {
-        buff = new BufferedReader( new StringReader( wkt ) );
-        tokenizer = new StreamTokenizer( buff );
-        tokenizer.wordChars( '_', '_' );
-        return parseCoordinateSystem();
+        WKTParser parse = new WKTParser( new BufferedReader( new StringReader( wkt ) ) );
+        return parse.parseCoordinateSystem();
     }
-
-    /**
-     * For testing purposes.
-     * 
-     * @param args
-     *            the first argument is the file containing the Coordinate System.
-     * @throws IOException
-     *             if the provided WKT has a syntax error
-     */
-    public static void main( String[] args )
-                            throws IOException {
-        WKTParser parser = new WKTParser( args[0] );
-        LOG.info( " The CRS looks like: " + parser.parseCoordinateSystem() );
-        // System.out.println( "The coordinate system introduced is " + crs );
-        // System.out.println( ( (ProjectedCRS) ( (CompoundCRS) crs).getUnderlyingCRS() ).getProjection() );
-    }
-
 }

@@ -36,7 +36,7 @@
 
 package org.deegree.crs.transformations.polynomial;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
+import static org.deegree.crs.utilities.ProjectionUtils.EPS11;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
