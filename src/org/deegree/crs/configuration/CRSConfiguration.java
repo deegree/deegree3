@@ -48,6 +48,7 @@ import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.i18n.Messages;
+import org.deegree.crs.transformations.TransformationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +153,7 @@ public class CRSConfiguration {
      * @throws CRSConfigurationException
      *             if --anything-- went wrong while instantiating the CRSProvider.
      */
-    public synchronized static CRSConfiguration getCRSConfiguration( String providerName ) {
+    public synchronized static CRSConfiguration getInstance( String providerName ) {
         String provName = null;
         if ( providerName == null || "".equals( providerName.trim() ) ) {
             provName = CONFIGURED_DEFAULT_PROVIDER_CLASS;
@@ -225,7 +226,7 @@ public class CRSConfiguration {
      */
     public synchronized static CRSConfiguration getCRSConfiguration()
                             throws CRSConfigurationException {
-        return getCRSConfiguration( null );
+        return getInstance( null );
     }
 
     /**

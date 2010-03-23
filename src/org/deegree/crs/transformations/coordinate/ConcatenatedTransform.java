@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.transformations.coordinate;
 
@@ -42,6 +42,7 @@ import javax.vecmath.Point3d;
 
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
+import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.transformations.Transformation;
 
@@ -51,13 +52,13 @@ import org.deegree.crs.transformations.Transformation;
  * Calling inverse on this transformation will invert the whole underlying transformation chain. For example, if A * (B
  * *C)=D and D is this transformation calling D.inverse() will result in (C.inverse * B.inverse) * A.inverse.
  * </p>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class ConcatenatedTransform extends CRSTransformation {
@@ -72,7 +73,7 @@ public class ConcatenatedTransform extends CRSTransformation {
      * Creates a transform by concatenating two existing transforms. A concatenated transform applies two transforms,
      * one after the other. The dimension of the output space of the first transform must match the dimension of the
      * input space in the second transform.
-     *
+     * 
      * @param first
      *            The first transformation to apply to given points.
      * @param second
@@ -93,17 +94,18 @@ public class ConcatenatedTransform extends CRSTransformation {
      * Creates a transform by concatenating two existing transforms. A concatenated transform applies two transforms,
      * one after the other. The dimension of the output space of the first transform must match the dimension of the
      * input space in the second transform.
-     *
+     * 
      * Creates an CRSIdentifiable using the {@link CRSTransformation#createFromTo(String, String)} method.
-     *
+     * 
      * @param first
      *            The first transformation to apply to given points.
      * @param second
      *            The second transformation to apply to given points.
      */
     public ConcatenatedTransform( Transformation first, Transformation second ) {
-        this( first, second, new CRSIdentifiable( CRSCodeType.valueOf( Transformation.createFromTo( first.getCode().toString(),
-                                                                            second.getCode().toString() ) ) ) );
+        this( first, second,
+              new CRSIdentifiable( CRSCodeType.valueOf( Transformation.createFromTo( first.getCode().toString(),
+                                                                                     second.getCode().toString() ) ) ) );
     }
 
     @Override
@@ -150,4 +152,13 @@ public class ConcatenatedTransform extends CRSTransformation {
         return "Concatenated-Transform";
     }
 
+    @Override
+    public boolean contains( CoordinateSystem crs ) {
+        boolean result = getFirstTransform().contains( crs );
+        if ( !result ) {
+            result = getSecondTransform().contains( crs );
+        }
+        return result;
+
+    }
 }

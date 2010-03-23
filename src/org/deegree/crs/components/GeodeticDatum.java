@@ -232,9 +232,9 @@ public class GeodeticDatum extends Datum {
             GeodeticDatum that = (GeodeticDatum) other;
             return this.getPrimeMeridian().equals( that.getPrimeMeridian() )
                    && this.getEllipsoid().equals( that.getEllipsoid() )
-                   && ( ( this.getWGS84Conversion() == null ) ? that.getWGS84Conversion() == null
-                                                             : this.getWGS84Conversion().equals(
-                                                                                                 that.getWGS84Conversion() ) )
+                   // && ( ( this.getWGS84Conversion() == null ) ? that.getWGS84Conversion() == null
+                   // : this.getWGS84Conversion().equals(
+                   // that.getWGS84Conversion() ) )
                    && super.equals( that );
         }
         return false;
@@ -261,7 +261,7 @@ public class GeodeticDatum extends Datum {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>

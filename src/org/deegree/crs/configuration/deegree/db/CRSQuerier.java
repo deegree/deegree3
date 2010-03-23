@@ -68,7 +68,7 @@ import org.deegree.crs.components.PrimeMeridian;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.components.VerticalDatum;
 import org.deegree.crs.configuration.CRSConfiguration;
-import org.deegree.crs.configuration.deegree.xml.CRSExporterBase;
+import org.deegree.crs.configuration.deegree.xml.exporters.CRSExporterBase;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
@@ -1084,7 +1084,7 @@ public class CRSQuerier {
             return;
         }
 
-        DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration(
+        DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getInstance(
                                                                                                      "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
         CoordinateSystem crs = dbProvider.getCRSByCode( new CRSCodeType( args[0] ) );
 

@@ -65,6 +65,7 @@ import org.deegree.crs.components.PrimeMeridian;
 import org.deegree.crs.configuration.AbstractCRSProvider;
 import org.deegree.crs.configuration.CRSConfiguration;
 import org.deegree.crs.configuration.CRSProvider;
+import org.deegree.crs.configuration.deegree.xml.exporters.CRSExporterBase;
 import org.deegree.crs.configuration.deegree.xml.om.Parser;
 import org.deegree.crs.configuration.deegree.xml.stax.StAXResource;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;

@@ -48,7 +48,6 @@ import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.configuration.CRSConfiguration;
 import org.deegree.crs.configuration.CRSProvider;
-import org.deegree.crs.configuration.TransformationFactory;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
@@ -57,6 +56,7 @@ import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
 import org.deegree.crs.transformations.Transformation;
+import org.deegree.crs.transformations.TransformationFactory;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ public class CRSRegistry {
     private static Logger LOG = LoggerFactory.getLogger( CRSRegistry.class );
 
     private synchronized static CRSProvider getProvider( String providerName ) {
-        CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration( providerName );
+        CRSConfiguration crsConfig = CRSConfiguration.getInstance( providerName );
         return crsConfig.getProvider();
     }
 
@@ -208,7 +208,7 @@ public class CRSRegistry {
                                                                  CoordinateSystem targetCRS,
                                                                  List<Transformation> transformationsToBeUsed )
                             throws IllegalArgumentException, TransformationException {
-        CRSConfiguration crsConfiguration = CRSConfiguration.getCRSConfiguration( providerName );
+        CRSConfiguration crsConfiguration = CRSConfiguration.getInstance( providerName );
 
         TransformationFactory fac = crsConfiguration.getTransformationFactory();
         return fac.createFromCoordinateSystems( sourceCRS, targetCRS, transformationsToBeUsed );

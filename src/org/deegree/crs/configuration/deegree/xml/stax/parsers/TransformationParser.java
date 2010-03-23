@@ -61,7 +61,6 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
-import org.deegree.crs.configuration.TransformationFactory;
 import org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider;
 import org.deegree.crs.configuration.deegree.xml.stax.StAXResource;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
@@ -69,6 +68,7 @@ import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.transformations.Transformation;
+import org.deegree.crs.transformations.TransformationFactory;
 import org.deegree.crs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.deegree.crs.transformations.ntv2.NTv2Transformation;
@@ -420,9 +420,11 @@ public class TransformationParser extends DefinitionParser {
                 }
                 // no direct transformation found, trying a chain?
                 for ( Transformation t : set ) {
-                    Transformation nt = getTransformation( t.getTargetCRS(), targetCRS );
-                    if ( nt != null ) {
-                        return new ConcatenatedTransform( t, nt );
+                    if ( !"Helmert".equals( t.getImplementationName() ) ) {
+                        Transformation nt = getTransformation( t.getTargetCRS(), targetCRS );
+                        if ( nt != null ) {
+                            return new ConcatenatedTransform( t, nt );
+                        }
                     }
                 }
             }

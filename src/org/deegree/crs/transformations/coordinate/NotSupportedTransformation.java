@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.transformations.coordinate;
 
@@ -46,17 +46,17 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 
 /**
- * The <code>NotSupportedTransformation</code> class simply wraps the source and target crs. This transformation
- * doesn't do anything, it only provides an opportunity to create a transformation chain, without losing the source and
- * target information as well as the causality of actually having to implement anything. Note that incoming points are
- * returned immediately.
- *
+ * The <code>NotSupportedTransformation</code> class simply wraps the source and target crs. This transformation doesn't
+ * do anything, it only provides an opportunity to create a transformation chain, without losing the source and target
+ * information as well as the causality of actually having to implement anything. Note that incoming points are returned
+ * immediately.
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class NotSupportedTransformation extends CRSTransformation {
 
@@ -74,8 +74,9 @@ public class NotSupportedTransformation extends CRSTransformation {
      * @param targetCRS
      */
     public NotSupportedTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
-        this( sourceCRS, targetCRS, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( sourceCRS.getCode().toString(),
-                                                                    targetCRS.getCode().toString() ) ) ) );
+        this( sourceCRS, targetCRS,
+              new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( sourceCRS.getCode().toString(),
+                                                                      targetCRS.getCode().toString() ) ) ) );
     }
 
     @Override
@@ -91,7 +92,7 @@ public class NotSupportedTransformation extends CRSTransformation {
 
     @Override
     public boolean isIdentity() {
-        return true;
+        return false;
     }
 
 }

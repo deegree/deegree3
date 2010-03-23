@@ -37,12 +37,12 @@ package org.deegree.crs;
 
 import java.util.List;
 
-import org.deegree.crs.configuration.TransformationFactory;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.transformations.Transformation;
+import org.deegree.crs.transformations.TransformationFactory;
 import org.deegree.crs.transformations.coordinate.CRSTransformation;
 
 /**

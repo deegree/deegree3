@@ -39,8 +39,7 @@ package org.deegree.crs;
 import static org.deegree.commons.utils.ArrayUtils.contains;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.crs.i18n.Messages;
@@ -292,23 +291,21 @@ public class CRSIdentifiable {
 
     @Override
     public boolean equals( Object other ) {
-        if ( other != null && other instanceof CRSIdentifiable
-             && ( (CRSIdentifiable) other ).getCodes().length == getCodes().length ) {
-            // compare the codes from each part as sets
-            CRSCodeType[] thisArray = getCodes();
-            CRSCodeType[] otherArray = ( (CRSIdentifiable) other ).getCodes();
-            Set<CRSCodeType> thisSet = new HashSet<CRSCodeType>();
-            Set<CRSCodeType> otherSet = new HashSet<CRSCodeType>();
-            int n = getCodes().length;
-            for ( int i = 0; i < n; i++ ) {
-                thisSet.add( thisArray[i] );
-                otherSet.add( otherArray[i] );
-            }
+        if ( other != null && other instanceof CRSIdentifiable ) {
+            CRSCodeType[] mId = getCodes();
+            CRSCodeType[] yId = ( (CRSIdentifiable) other ).getCodes();
+            CRSCodeType[] small = mId.length >= yId.length ? yId : mId;
+            CRSCodeType[] large = mId.length < yId.length ? yId : mId;
 
-            if ( !thisSet.equals( otherSet ) ) {
-                return false;
+            List<CRSCodeType> list = Arrays.asList( large );
+            boolean result = true;
+            for ( int i = 0; result && ( i < small.length ); ++i ) {
+                CRSCodeType id = small[i];
+                if ( id != null ) {
+                    result = list.contains( id );
+                }
             }
-            return true;
+            return result;
         }
 
         return false;

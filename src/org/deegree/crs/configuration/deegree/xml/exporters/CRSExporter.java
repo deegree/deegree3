@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.crs.configuration.deegree.xml;
+package org.deegree.crs.configuration.deegree.xml.exporters;
 
 import static java.lang.Math.toDegrees;
 import static org.deegree.commons.xml.CommonNamespaces.CRSNS;

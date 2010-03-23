@@ -1904,23 +1904,6 @@
       <crs:UsedDatum>epsg:6746</crs:UsedDatum>
     </crs:GeographicCRS>
     <crs:GeographicCRS>
-      <crs:Id>geo_crs_204</crs:Id>
-      <crs:Name>Proj4 defined Geographic CRS</crs:Name>
-      <crs:Version>2008-1-16T9:49</crs:Version>
-      <crs:Description>Handmade proj4 geographic crs definition (parsed from nad/epsg). Used by projected crs with id: 28992</crs:Description>
-      <crs:Axis>
-        <crs:Name>longitude</crs:Name>
-        <crs:Units>degree</crs:Units>
-        <crs:AxisOrientation>east</crs:AxisOrientation>
-      </crs:Axis>
-      <crs:Axis>
-        <crs:Name>latitude</crs:Name>
-        <crs:Units>degree</crs:Units>
-        <crs:AxisOrientation>north</crs:AxisOrientation>
-      </crs:Axis>
-      <crs:UsedDatum>datum_171</crs:UsedDatum>
-    </crs:GeographicCRS>
-    <crs:GeographicCRS>
       <crs:Id>google_maps_geographiccrs</crs:Id>
       <crs:Name>Geographic crs based on the spherical ellipsoid, google maps uses</crs:Name>
       <crs:Version>2009-12-09T13:39</crs:Version>
@@ -30739,7 +30722,7 @@
         <crs:Units>metre</crs:Units>
         <crs:AxisOrientation>north</crs:AxisOrientation>
       </crs:Axis>
-      <crs:UsedGeographicCRS>geo_crs_204</crs:UsedGeographicCRS>
+      <crs:UsedGeographicCRS>epsg:4289</crs:UsedGeographicCRS>
       <crs:UsedProjection>epsg:19914</crs:UsedProjection>
     </crs:ProjectedCRS>
     <crs:ProjectedCRS>

@@ -640,7 +640,7 @@ public class CRSRemover {
             List<CoordinateSystem> crsList = new ArrayList<CoordinateSystem>();
             crsList.add( crs );
 
-            DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration(
+            DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getInstance(
                                                                                                          "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
             dbProvider.remove( crsList );
         } catch ( UnknownCRSException e ) {

@@ -38,6 +38,7 @@
 
 package org.deegree.crs.transformations.ntv2;
 
+import static org.deegree.crs.projections.ProjectionUtils.DTR;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
@@ -48,12 +49,11 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
-import org.deegree.crs.CRSRegistry;
 import org.deegree.crs.components.Ellipsoid;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.projections.ProjectionUtils;
 import org.deegree.crs.transformations.Transformation;
 import org.slf4j.Logger;
 
@@ -97,13 +97,47 @@ public class NTv2Transformation extends Transformation {
         } catch ( FileNotFoundException e ) {
             LOG.debug( "Could not find the gridshift file stack trace.", e );
             LOG.error( "Could not find the gridshift file because: " + e.getLocalizedMessage() );
-            throw new IllegalArgumentException( "Could not load the gridshift file.", e );
+            throw new IllegalArgumentException( "Could not load the gridshift file: " + gridURL, e );
         } catch ( IOException e ) {
             LOG.debug( "Could not read the gridshift file stack trace.", e );
             LOG.error( "Could not read the gridshift file because: " + e.getLocalizedMessage() );
-            throw new IllegalArgumentException( "Could not load the gridshift file.", e );
+            throw new IllegalArgumentException( "Could not load the gridshift file: " + gridURL, e );
         }
 
+        String fromEllips = gsf.getFromEllipsoid();
+        String toEllips = gsf.getToEllipsoid();
+
+        Ellipsoid sourceEl = sourceCRS.getGeodeticDatum().getEllipsoid();
+        Ellipsoid targetEl = targetCRS.getGeodeticDatum().getEllipsoid();
+
+        // rb: patched the gridshift file for access to the axis
+        if ( Math.abs( sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajor() ) > 0.001
+             || Math.abs( sourceEl.getSemiMinorAxis() - gsf.getFromSemiMinor() ) > 0.001 ) {
+            LOG.warn( "The given source CRS' ellipsoid (" + sourceEl.getCode().getOriginal()
+                      + ") does not match the 'from' ellipsoid (" + fromEllips + ")defined in the gridfile: " + gridURL );
+        }
+
+        if ( Math.abs( targetEl.getSemiMajorAxis() - gsf.getToSemiMajor() ) > 0.001
+             || Math.abs( targetEl.getSemiMinorAxis() - gsf.getToSemiMinor() ) > 0.001 ) {
+            LOG.warn( "The given target CRS' ellipsoid (" + targetEl.getCode().getOriginal()
+                      + ") does not match the 'to' ellipsoid (" + toEllips + ") defined in the gridfile: " + gridURL );
+        }
+
+        isIdentity = ( Math.abs( gsf.getFromSemiMajor() - gsf.getToSemiMajor() ) < 0.001 )
+                     && ( Math.abs( gsf.getFromSemiMinor() - gsf.getToSemiMinor() ) < 0.001 );
+    }
+
+    /**
+     * @param sourceCRS
+     * @param targetCRS
+     * @param id
+     * @param gsf
+     *            the loaded gridshift file
+     */
+    public NTv2Transformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id,
+                               GridShiftFile gsf ) {
+        super( sourceCRS, targetCRS, id );
+        this.gsf = gsf;
         String fromEllips = gsf.getFromEllipsoid();
         String toEllips = gsf.getToEllipsoid();
 
@@ -131,21 +165,25 @@ public class NTv2Transformation extends Transformation {
     public List<Point3d> doTransform( List<Point3d> srcPts )
                             throws TransformationException {
         GridShift shifter = new GridShift();
-        if ( !isInverseTransform() ) {
 
-            for ( Point3d p : srcPts ) {
-                // shifter.setLatSeconds( p.x )
-                p.x = shifter.getShiftedLonPositiveWestSeconds();
-                p.y = shifter.getShiftedLatSeconds();
+        for ( Point3d p : srcPts ) {
+            // rb: only degrees are supported :-)
+            shifter.setLonPositiveEastDegrees( p.x * ProjectionUtils.RTD );
+            shifter.setLatDegrees( p.y * ProjectionUtils.RTD );
+            try {
+                if ( isInverseTransform() ) {
+                    gsf.gridShiftReverse( shifter );
+                } else {
+                    gsf.gridShiftForward( shifter );
+                }
+            } catch ( IOException e ) {
+                LOG.debug( "Exception occurred: " + e.getLocalizedMessage(), e );
+                LOG.debug( "Exception occurred: " + e.getLocalizedMessage() );
             }
-        } else {
-            for ( Point3d p : srcPts ) {
-                // shifter.setLatSeconds( p.x )
-                p.x = shifter.getShiftedLonPositiveWestSeconds();
-                p.y = shifter.getShiftedLatSeconds();
-            }
+            p.x = shifter.getShiftedLonPositiveEastDegrees() * DTR;
+            p.y = shifter.getShiftedLatDegrees() * DTR;
         }
-        return null;
+        return srcPts;
     }
 
     @Override
@@ -158,24 +196,17 @@ public class NTv2Transformation extends Transformation {
         return isIdentity;
     }
 
-    public static void main( String[] args )
-                            throws Exception {
-        CoordinateSystem source = CRSRegistry.lookup( "EPSG:4314" );
-        CoordinateSystem target = CRSRegistry.lookup( "EPSG:4258" );
-        NTv2Transformation ntv2 = new NTv2Transformation(
-                                                          source,
-                                                          target,
-                                                          new CRSIdentifiable( new CRSCodeType( "a" ) ),
-                                                          new URL(
-                                                                   "file:/home/rutger/workspace/bkg_wps/resources/data/BETA2007.gsb" ) );
-        System.out.println( "Is identity: " + ntv2.isIdentity() );
-
-    }
-
     /**
      * @return the url to the gridfile.
      */
     public URL getGridfile() {
         return this.gridURL;
+    }
+
+    /**
+     * @return the loaded gridshift file
+     */
+    public GridShiftFile getGridfileRef() {
+        return this.gsf;
     }
 }

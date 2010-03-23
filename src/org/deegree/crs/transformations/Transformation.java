@@ -69,7 +69,7 @@ import org.deegree.crs.transformations.coordinate.ConcatenatedTransform;
  * @version $Revision$, $Date$
  * 
  */
-public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
+public abstract class Transformation extends CRSIdentifiable {
 
     private CoordinateSystem sourceCRS;
 
@@ -339,6 +339,44 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
     }
 
     /**
+     * Returns true if the source and target of this transformation equal the source and target of the given
+     * transformation.
+     * 
+     * @param other
+     *            transformation to check against
+     * @return true if the source and target coordinate systems of this transformation equal the source and target
+     *         coordinate systems of the given transformation.
+     */
+    public boolean equalOnCRS( Transformation other ) {
+        boolean result = false;
+        if ( other != null ) {
+            result = getSourceCRS() == null ? other.getSourceCRS() == null
+                                           : getSourceCRS().equals( other.getSourceCRS() );
+            if ( result ) {
+                result = getTargetCRS() == null ? other.getTargetCRS() == null
+                                               : getTargetCRS().equals( other.getTargetCRS() );
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns true if this Transformation transforms over the given crs.
+     * 
+     * @param crs
+     *            to check for
+     * @return true if the given crs is used in this transformation.
+     */
+    public boolean contains( CoordinateSystem crs ) {
+        boolean result = getSourceCRS() == null ? crs == null : getSourceCRS().equals( crs );
+        if ( !result ) {
+            result = getTargetCRS() == null ? crs == null : getTargetCRS().equals( crs );
+        }
+
+        return result;
+    }
+
+    /**
      * @param newSource
      *            to be used as the new source coordinate system.
      */
@@ -356,4 +394,15 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
     public boolean canTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
         return getSourceCRS().equals( sourceCRS ) && getTargetCRS().equals( targetCRS );
     }
+
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof Transformation ) {
+            final Transformation that = (Transformation) other;
+            return this.getImplementationName().equals( that.getImplementationName() ) && super.equals( that )
+                   && isIdentity() == that.isIdentity() && isInverseTransform() == that.isInverseTransform();
+        }
+        return false;
+    }
+
 }

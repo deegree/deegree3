@@ -1,14 +1,6 @@
 <?xml version="1.0" ?>
 <crs:DatumDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/0.5.0/crsdefinition.xsd" version="0.5.0">
     <crs:GeodeticDatum>
-      <crs:Id>datum_171</crs:Id>
-      <crs:Name>Proj4 defined datum</crs:Name>
-      <crs:Version>2008-1-16T9:49</crs:Version>
-      <crs:Description>Handmade proj4 datum definition (parsed from nad/epsg) used by crs with id: EPSG:28992</crs:Description>
-      <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
-      <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
-    </crs:GeodeticDatum>
-    <crs:GeodeticDatum>
       <crs:Id>epsg:6005</crs:Id>
       <crs:Name>Not specified (based on Bessel Modified ellipsoid)</crs:Name>
       <crs:Version>2000-05-03</crs:Version>

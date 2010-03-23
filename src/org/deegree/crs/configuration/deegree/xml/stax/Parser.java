@@ -92,7 +92,7 @@ public class Parser implements CRSParser<StAXResource> {
     /** Default namespace of the crs configuration */
     public static final String CRS_NS = "http://www.deegree.org/crs";
 
-    private final CoordinateSystemParser crs;
+    private final org.deegree.crs.configuration.deegree.xml.stax.parsers.CoordinateSystemParser crs;
 
     private final DatumParser datums;
 
@@ -142,34 +142,45 @@ public class Parser implements CRSParser<StAXResource> {
         try {
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( resolvedURL.toExternalForm(),
                                                                                           resolvedURL.openStream() );
-            /* instantiate the parsers */
-            String cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "ProjectionsFile" ),
-                                                     "projection-definitions.xml", true );
-            URL url = StAXParsingHelper.resolve( cUrl, reader );
-            proj = new ProjectionParser( provider, url );
+            // CRSConfigurations
+            StAXParsingHelper.nextElement( reader );
+            if ( reader.getName().equals( new QName( CRS_NS, "CRSConfiguration" ) ) ) {
+                // ProjectionsFile.
+                StAXParsingHelper.nextElement( reader );
+                /* instantiate the parsers */
+                String cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "ProjectionsFile" ),
+                                                         "projection-definitions.xml", true );
+                URL url = StAXParsingHelper.resolve( cUrl, reader );
+                proj = new ProjectionParser( provider, url );
 
-            cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "TransformationsFile" ),
-                                              "transformation-definitions.xml", true );
-            url = StAXParsingHelper.resolve( cUrl, reader );
-            trans = new TransformationParser( provider, url );
+                cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "TransformationsFile" ),
+                                                  "transformation-definitions.xml", true );
+                url = StAXParsingHelper.resolve( cUrl, reader );
+                trans = new TransformationParser( provider, url );
 
-            cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "PrimeMeridiansFile" ), "pm-definitions.xml",
-                                              true );
-            url = StAXParsingHelper.resolve( cUrl, reader );
-            pm = new PrimemeridianParser( provider, url );
+                cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "PrimeMeridiansFile" ),
+                                                  "pm-definitions.xml", true );
+                url = StAXParsingHelper.resolve( cUrl, reader );
+                pm = new PrimemeridianParser( provider, url );
 
-            cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "EllispoidsFile" ),
-                                              "ellipsoid-definitions.xml", true );
-            url = StAXParsingHelper.resolve( cUrl, reader );
-            ellips = new EllipsoidParser( provider, url );
+                cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "EllispoidsFile" ),
+                                                  "ellipsoid-definitions.xml", true );
+                url = StAXParsingHelper.resolve( cUrl, reader );
+                ellips = new EllipsoidParser( provider, url );
 
-            cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "DatumsFile" ), "datum-definitions.xml", true );
-            url = StAXParsingHelper.resolve( cUrl, reader );
-            datums = new DatumParser( provider, url );
+                cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "DatumsFile" ), "datum-definitions.xml",
+                                                  true );
+                url = StAXParsingHelper.resolve( cUrl, reader );
+                datums = new DatumParser( provider, url );
 
-            cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "CRSsFile" ), "crs-definitions.xml", true );
-            url = StAXParsingHelper.resolve( cUrl, reader );
-            crs = new CoordinateSystemParser( provider, url );
+                cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "CRSsFile" ), "crs-definitions.xml", true );
+                url = StAXParsingHelper.resolve( cUrl, reader );
+                crs = new CoordinateSystemParser( provider, url );
+            } else {
+                throw new CRSConfigurationException(
+                                                     "Could not instantiate crs definitions because the root element is not {"
+                                                                             + CRS_NS + "}:CRSConfiguration." );
+            }
         } catch ( XMLStreamException e ) {
             throw new CRSConfigurationException( "Could not instantiate crs definitions because: "
                                                  + e.getLocalizedMessage() );
