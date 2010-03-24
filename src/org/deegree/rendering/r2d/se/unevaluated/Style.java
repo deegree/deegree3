@@ -37,8 +37,8 @@
 package org.deegree.rendering.r2d.se.unevaluated;
 
 import static java.awt.Color.black;
-import static java.lang.Double.MAX_VALUE;
-import static java.lang.Double.MIN_VALUE;
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collection;
@@ -128,8 +128,9 @@ public class Style {
     public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label, String name ) {
         InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>> contn = new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>(
                                                                                                                                                symbolizer );
-        rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, new DoublePair( MIN_VALUE,
-                                                                                                         MAX_VALUE ) ) );
+        rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn,
+                                                                                  new DoublePair( NEGATIVE_INFINITY,
+                                                                                                  POSITIVE_INFINITY ) ) );
         if ( label != null ) {
             labels.put( (Symbolizer) symbolizer, label );
         }

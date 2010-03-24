@@ -839,7 +839,7 @@ public class SymbologyParser {
                                              common.col );
     }
 
-    private static UOM getUOM( String uom ) {
+    static UOM getUOM( String uom ) {
         if ( uom != null ) {
             String u = uom.toLowerCase();
             if ( u.endsWith( "metre" ) || u.endsWith( "meter" ) ) {
