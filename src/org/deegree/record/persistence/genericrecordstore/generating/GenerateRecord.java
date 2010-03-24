@@ -35,15 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore.generating;
 
+import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.ParseException;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.impl.llom.OMElementImpl;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
 import org.deegree.record.persistence.genericrecordstore.parsing.ReturnableProperties;
@@ -137,7 +141,7 @@ public class GenerateRecord {
     private OMElement setISOBriefElements() {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
 
         isoBriefElement = factory.createOMElement( "MD_Metadata", namespaceGMD );
         // identifier
@@ -147,6 +151,18 @@ public class GenerateRecord {
             for ( OMElement elem : hierarchyLevel ) {
                 isoBriefElement.addChild( elem );
             }
+        }
+        // Contact, is mandatory in the metadataEntity.xsd but not in ISO spec -> contact is provided empty
+        if ( contact != null ) {
+            for ( OMElement elem : contact ) {
+                isoBriefElement.addChild( new OMElementImpl( new QName( GMD_NS, "contact" ), elem, factory ) );
+            }
+        }
+        // Contact, is mandatory in the metadataEntity.xsd but not in ISO spec -> contact is provided empty
+        if ( dateStamp != null ) {
+
+            isoBriefElement.addChild( new OMElementImpl( new QName( GMD_NS, "dateStamp" ), dateStamp, factory ) );
+
         }
         // BoundingBox, GraphicOverview, ServiceType, ServiceTypeVersion
         if ( identificationInfo != null ) {
@@ -193,6 +209,12 @@ public class GenerateRecord {
         if ( hierarchyLevelName != null ) {
             for ( OMElement elem : hierarchyLevelName ) {
                 isoSummaryElement.addChild( elem );
+            }
+        }
+        // Contact, is mandatory in the metadataEntity.xsd but not in ISO spec -> contact is provided empty
+        if ( contact != null ) {
+            for ( OMElement elem : contact ) {
+                isoSummaryElement.addChild( new OMElementImpl( new QName( GMD_NS, "contact" ), elem, factory ) );
             }
         }
         // Modified

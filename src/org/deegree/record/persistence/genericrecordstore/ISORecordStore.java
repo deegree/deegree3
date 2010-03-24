@@ -355,6 +355,7 @@ public class ISORecordStore implements RecordStore {
 
         PostGISMappingsISODC mapping = new PostGISMappingsISODC();
         PostGISWhereBuilder builder = null;
+
         // TODO sortProperty
         try {
             builder = new PostGISWhereBuilder( mapping, (OperatorFilter) recordStoreOptions.getFilter(), null,
@@ -622,6 +623,7 @@ public class ISORecordStore implements RecordStore {
 
         s.append( "SELECT " + formatType + ".data FROM " + PostGISMappingsISODC.databaseTables.datasets.name() + ", "
                   + formatType );
+
         /*
          * appends the tables identified in the WHERE-builder to the FROM clause
          */
@@ -630,7 +632,9 @@ public class ISORecordStore implements RecordStore {
                 if ( propName.getTable() == null ) {
                     s.append( ' ' );
                 } else {
-                    s.append( ", " + propName.getTable() + " " );
+                    if ( !propName.getTable().equals( PostGISMappingsISODC.databaseTables.datasets.name() ) ) {
+                        s.append( ", " + propName.getTable() + " " );
+                    }
                 }
             }
         }
@@ -650,9 +654,11 @@ public class ISORecordStore implements RecordStore {
                 if ( propName.getTable() == null ) {
                     s.append( ' ' );
                 } else {
-                    s.append( " AND " + propName.getTable() + "."
-                              + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
-                              + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
+                    if ( !propName.getTable().equals( PostGISMappingsISODC.databaseTables.datasets.name() ) ) {
+                        s.append( " AND " + propName.getTable() + "."
+                                  + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
+                                  + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
+                    }
                 }
             }
         }
@@ -668,7 +674,7 @@ public class ISORecordStore implements RecordStore {
         if ( recordStoreOptions.getMaxRecords() != 0 ) {
             s.append( " LIMIT " + recordStoreOptions.getMaxRecords() );
         }
-
+        LOG.debug( "statement: " + s );
         stmt = conn.prepareStatement( s.toString() );
 
         /*
@@ -678,13 +684,13 @@ public class ISORecordStore implements RecordStore {
             int i = 0;
             for ( Object arg : builder.getWhereParams() ) {
                 i++;
-                LOG.info( "Setting argument: " + arg );
+                LOG.debug( "Setting argument: " + arg );
                 stmt.setObject( i, arg );
 
             }
         }
 
-        LOG.info( "rs: " + stmt );
+        LOG.debug( "rs: " + stmt );
         return stmt;
     }
 

@@ -399,7 +399,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
     @Override
     public Object getPostGISValue( Literal literal, PropertyName propName )
                             throws FilterEvaluationException {
-        LOG.info( "mapping for literal: " + literal + " propName " + propName );
+
         Object pgValue = null;
 
         if ( propName == null ) {
@@ -407,7 +407,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
         } else {
 
             Expr xpath = propName.getAsXPath();
-            LOG.info( "Expression? " + xpath );
+
             if ( !( xpath instanceof LocationPath ) ) {
                 LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
                            + "': the root expression is not a LocationPath." );
@@ -437,7 +437,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                            + "': must contain one or two NameSteps (needs implementation)." );
                 return null;
             }
-            LOG.info( "steps? " + steps );
+
             QName requestedProperty = null;
             if ( steps.size() == 1 ) {
                 // step must be equal to a property name of the queried feature
@@ -465,10 +465,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                 requestedProperty = steps.get( 1 );
             }
 
-            LOG.info( "RequestedProperty: " + requestedProperty.toString() );
-
             String column = getMapping( new PropertyName( requestedProperty ) ).getColumn();
-            LOG.info( "column: " + column );
 
             if ( column == null ) {
                 throw new FilterEvaluationException( column + " doesn't exist!" );
@@ -503,7 +500,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
         byte[] pgValue = null;
 
         Expr xpath = propName.getAsXPath();
-        LOG.info( "Expression? " + xpath );
+
         if ( !( xpath instanceof LocationPath ) ) {
             LOG.debug( "Unable to map PropertyName '" + propName.getPropertyName()
                        + "': the root expression is not a LocationPath." );
@@ -533,7 +530,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
                        + "': must contain one or two NameSteps (needs implementation)." );
             return null;
         }
-        LOG.info( "steps? " + steps );
+
         QName requestedProperty = null;
         if ( steps.size() == 1 ) {
             // step must be equal to a property name of the queried feature
@@ -561,10 +558,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
             requestedProperty = steps.get( 1 );
         }
 
-        LOG.info( "RequestedProperty: " + requestedProperty.toString() );
-
         String column = getMapping( new PropertyName( requestedProperty ) ).getColumn();
-        LOG.info( "column: " + column );
 
         if ( column == null ) {
             throw new FilterEvaluationException( column + " doesn't exist!" );

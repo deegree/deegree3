@@ -259,8 +259,8 @@ public class GenerateQueryableProperties {
         StringWriter s_POST = new StringWriter( 50 );
 
         for ( String identifierString : qp.getIdentifier() ) {
-            s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.commonColumnNames.id.name() + ", "
-                          + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", identifier)" );
+            s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.commonColumnNames.id.name()
+                          + ", " + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", identifier)" );
 
             s_POST.append( "'" + identifierString + "');" );
 
@@ -980,14 +980,14 @@ public class GenerateQueryableProperties {
                                      + qp.getBoundingBox().getEastBoundLongitude() + " "
                                      + qp.getBoundingBox().getNorthBoundLatitude() + ","
                                      + qp.getBoundingBox().getWestBoundLongitude() + " "
-                                     + qp.getBoundingBox().getSouthBoundLatitude() + ")'::box3d,4326));" );
+                                     + qp.getBoundingBox().getSouthBoundLatitude() + ")'::box3d,-1));" );
             } else {
                 sqlStatement.append( "UPDATE " + databaseTable + " SET bbox = " + "SetSRID('BOX3D("
                                      + qp.getBoundingBox().getEastBoundLongitude() + " "
                                      + qp.getBoundingBox().getNorthBoundLatitude() + ","
                                      + qp.getBoundingBox().getWestBoundLongitude() + " "
                                      + qp.getBoundingBox().getSouthBoundLatitude()
-                                     + ")'::box3d,4326) WHERE fk_datasets = " + operatesOnId + ";" );
+                                     + ")'::box3d,-1) WHERE fk_datasets = " + operatesOnId + ";" );
             }
             stm.executeUpdate( sqlStatement.toString() );
 
