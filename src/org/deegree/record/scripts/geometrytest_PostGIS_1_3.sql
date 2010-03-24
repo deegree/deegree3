@@ -20,7 +20,7 @@ SELECT ST_GeomFromEWKT('CURVEPOLYGON(
 					CIRCULARSTRING(1.7 1, 1.4 0.4, 1.6 0.4, 1.6 0.5, 1.7 1) 
 			) ');
 
-
+SELECT asText(GeomFromtext('POLYGON((8.09 49.90, 8.09 50.10, 8.20 50.10, 8.20 49.90, 8.09 49.90))'));
 
 
 DROP TABLE geometrytest;
