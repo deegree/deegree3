@@ -65,6 +65,7 @@ import org.deegree.gml.geometry.GML2GeometryWriter;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * The class tests both the {@link GML2GeometryWriter} and the {@link GML2GeometryReader}.
@@ -111,6 +112,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testBox()
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
@@ -128,7 +130,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( 0.0, envelope.getMin().get1(), DELTA );
         Assert.assertEquals( 100.0, envelope.getMax().get0(), DELTA );
         Assert.assertEquals( 100.0, envelope.getMax().get1(), DELTA );
-        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), envelope.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), envelope.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -159,6 +161,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testPoint()
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
@@ -176,7 +179,7 @@ public class GML2GeometryTest extends TestCase {
         Assert.assertEquals( new QName( GML21NS, "Point" ), xmlReader.getName() );
         Assert.assertEquals( 5.0, point.get0(), DELTA );
         Assert.assertEquals( 40.0, point.get1(), DELTA );
-        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), point.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -201,6 +204,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testPoint2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
                             UnknownCRSException {
@@ -236,6 +240,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testPolygon()
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
@@ -274,7 +279,7 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 90.0, 60.0, points2.get( 3 ) );
         comparePoint( 60.0, 60.0, points2.get( 4 ) );
 
-        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), polygon.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), polygon.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -300,6 +305,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testLineString()
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
@@ -321,7 +327,7 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 20.0, 35.0, controlPoints.get( 1 ) );
         comparePoint( 100.0, 100.0, controlPoints.get( 2 ) );
 
-        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), lineString.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), lineString.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
@@ -347,6 +353,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testMultiGeometry()
                             throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
                             UnknownCRSException {
@@ -407,6 +414,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testMultiLineString()
                             throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
                             UnknownCRSException {
@@ -462,6 +470,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testMultiPoint()
                             throws XMLStreamException, FactoryConfigurationError, IOException, TransformationException,
                             UnknownCRSException {
@@ -506,6 +515,7 @@ public class GML2GeometryTest extends TestCase {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @Test
     public void testMultiPolygon()
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
                             TransformationException {
@@ -551,7 +561,7 @@ public class GML2GeometryTest extends TestCase {
         comparePoint( 0.0, 100.0, points.get( 3 ) );
         comparePoint( 0.0, 0.0, points.get( 4 ) );
 
-        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), multiPolygon.getCoordinateSystem().getWrappedCRS() );
+        Assert.assertEquals( CRSRegistry.lookup( "http://www.opengis.net/gml/srs/epsg.xml#4326" ), multiPolygon.getCoordinateSystem().getWrappedCRS() );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );

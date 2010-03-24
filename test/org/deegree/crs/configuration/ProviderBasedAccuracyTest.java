@@ -58,7 +58,6 @@ import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.projections.ProjectionTest;
 import org.deegree.crs.transformations.TransformationFactory;
 import org.deegree.crs.transformations.TransformationFactory.DSTransform;
 import org.deegree.crs.transformations.helmert.Helmert;
@@ -78,7 +77,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ProviderBasedAccuracyTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( ProjectionTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( ProviderBasedAccuracyTest.class );
 
     private final static double METER_EPSILON = 0.15;
 

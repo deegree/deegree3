@@ -40,7 +40,7 @@ import javax.vecmath.Point2d;
 
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.exceptions.ProjectionException;
-import org.deegree.crs.projections.ProjectionTest;
+import org.deegree.crs.projections.ProjectionBase;
 import org.deegree.crs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  *
  */
-public class LambertAzimuthalTest extends ProjectionTest {
+public class LambertAzimuthalTest extends ProjectionBase {
 
     private static final LambertAzimuthalEqualArea projection_3035 = new LambertAzimuthalEqualArea(
                                                                                                     geographic_4258,

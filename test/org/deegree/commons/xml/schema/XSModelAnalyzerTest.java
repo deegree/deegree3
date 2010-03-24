@@ -50,6 +50,7 @@ import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.junit.Test;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +116,7 @@ public class XSModelAnalyzerTest {
         // LOG.debug (concreteFeatureElements.size());
     }
 
-    @Test
+    //@Test
     public void testGML311SF()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
@@ -202,7 +203,7 @@ public class XSModelAnalyzerTest {
             }
         }
         default: {
-            assert false;
+            Assert.fail();
         }
         }
     }

@@ -40,7 +40,7 @@ import javax.vecmath.Point2d;
 
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.exceptions.ProjectionException;
-import org.deegree.crs.projections.ProjectionTest;
+import org.deegree.crs.projections.ProjectionBase;
 import org.deegree.crs.projections.conic.LambertConformalConic;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
 import org.junit.Test;
@@ -55,7 +55,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  *
  */
-public class TransverseMercatorTest extends ProjectionTest {
+public class TransverseMercatorTest extends ProjectionBase {
 
     private static final TransverseMercator projection_25832 = new TransverseMercator(
                                                                                        true,

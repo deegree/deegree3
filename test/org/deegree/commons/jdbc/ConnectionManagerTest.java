@@ -35,14 +35,14 @@
 ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.jdbc;
-
+import org.junit.Test;
 
 public class ConnectionManagerTest {
     
     // TODO use configuration that works in every environment (derby??)
 
-//    @Test
-//    public void testConnectionAllocation () throws JAXBException, SQLException {
+    @Test
+    public void testConnectionAllocation () {
 //
 //        URL configURL = ConnectionManagerTest.class.getResource( "jdbc_connections.xml");
 //        ConnectionManager.addConnections( configURL);
@@ -55,5 +55,5 @@ public class ConnectionManagerTest {
 //        for ( int i = 0; i < conns.length; i++ ) {
 //            conns [i].close();
 //        }
-//    }
+    }
 }

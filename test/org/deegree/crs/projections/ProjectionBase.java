@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class ProjectionTest extends TestCase {
+public class ProjectionBase extends TestCase {
 
     /**
      * Standard axis of a geographic crs
@@ -104,7 +104,7 @@ public class ProjectionTest extends TestCase {
                                                                                                                    "4258",
                                                                                                                    "ESPG" ) } );
 
-    private static Logger LOG = LoggerFactory.getLogger( ProjectionTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( ProjectionBase.class );
 
     private final static double METER_EPSILON = 0.15;
 

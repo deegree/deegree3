@@ -40,7 +40,7 @@ import javax.vecmath.Point2d;
 
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.exceptions.ProjectionException;
-import org.deegree.crs.projections.ProjectionTest;
+import org.deegree.crs.projections.ProjectionBase;
 import org.deegree.crs.projections.conic.LambertConformalConic;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  *
  */
-public class LambertConformalConicTest extends ProjectionTest {
+public class LambertConformalConicTest extends ProjectionBase {
 
     private static final LambertConformalConic projection_26985 = new LambertConformalConic(
                                                                                              Math.toRadians( 39.45 ),

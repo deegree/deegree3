@@ -45,7 +45,7 @@ import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
-import org.deegree.crs.projections.ProjectionTest;
+import org.deegree.crs.projections.ProjectionBase;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  * 
  */
-public class StereographicAlternativeTest extends ProjectionTest {
+public class StereographicAlternativeTest extends ProjectionBase {
 
     private static final Ellipsoid ellipsoid_7004 = new Ellipsoid(
                                                                    6377397.155,

@@ -54,7 +54,6 @@ import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.projections.ProjectionTest;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +78,7 @@ public class TransformationAccuracyTest implements CRSDefines {
         datum_6171.setToWGS84( wgs_1188 );
     }
 
-    private static Logger LOG = LoggerFactory.getLogger( ProjectionTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( TransformationAccuracyTest.class );
 
     /**
      * Creates a {@link CoordinateTransformer} for the given coordinate system.
