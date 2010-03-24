@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-core</artifactId>
@@ -12,12 +13,15 @@
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/core/trunk</url>
   </scm>
   <build>
-    <!--resources>
+    <resources>
       <resource>
         <directory>src/main/resources</directory>
-        <filtering>false</filtering>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
       </resource>
-    </resources-->
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -58,16 +62,15 @@
           </execution>
         </executions>
         <configuration>
-          <format>{0,date,yyyy-MM-dd HH:mm:ss}</format>
-          <items>
-            <item>timestamp</item>
-          </items>
           <doCheck>true</doCheck>
           <doUpdate>true</doUpdate>
         </configuration>
       </plugin>
     </plugins>
   </build>
+  <properties>
+    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+  </properties>
   <repositories>
     <repository>
       <id>central</id>
@@ -93,7 +96,22 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>deegree-snapshots</id>
+      <name>deegree-snapshots</name>
+      <url>http://havola.lat-lon.de/artifactory/libs-snapshots-local</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>    
   </repositories>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>deegree-repository</id>
+      <name>havola.lat-lon.de-snapshots</name>
+      <url>http://havola.lat-lon.de/artifactory/libs-snapshots-local</url>
+    </snapshotRepository>
+  </distributionManagement>
   <dependencies>
     <dependency>
       <groupId>org.apache.ws.commons.axiom</groupId>
