@@ -76,7 +76,8 @@
     </plugins>
   </build>
   <properties>
-    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
+    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>    
   </properties>
   <repositories>
     <repository>
@@ -110,8 +111,24 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>    
+    </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <url>http://havola.lat-lon.de/artifactory/plugins-releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>snapshots</id>
+      <url>http://havola.lat-lon.de/artifactory/plugins-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
   <distributionManagement>
     <snapshotRepository>
       <id>deegree-repository</id>
