@@ -16,17 +16,11 @@
     <resources>
       <resource>
         <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.properties</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
         <filtering>false</filtering>
-        <excludes>
-          <exclude>**/*.properties</exclude>
-        </excludes>
+      </resource>    
+      <resource>
+        <directory>src/main/filtered</directory>
+        <filtering>true</filtering>
       </resource>
     </resources>
     <plugins>
@@ -76,8 +70,8 @@
     </plugins>
   </build>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
-    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>    
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
   <repositories>
     <repository>
