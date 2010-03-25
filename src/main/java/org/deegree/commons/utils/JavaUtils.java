@@ -44,6 +44,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -83,8 +84,15 @@ public class JavaUtils {
                     }
                     f.setAccessible( true );
                     Object instance = f.get( o );
-                    if ( t.isPrimitive() || t.isEnum() || instance instanceof Collection<?> || instance instanceof Font
-                         || instance instanceof BufferedImage ) {
+                    if ( instance instanceof double[] ) {
+                        if ( first ) {
+                            first = false;
+                        } else {
+                            sb.append( ", " );
+                        }
+                        sb.append( f.getName() ).append( ": " ).append( Arrays.toString( (double[]) instance ) );
+                    } else if ( t.isPrimitive() || t.isEnum() || instance instanceof Collection<?>
+                                || instance instanceof Font || instance instanceof BufferedImage ) {
                         if ( first ) {
                             first = false;
                         } else {
