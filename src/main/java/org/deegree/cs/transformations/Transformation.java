@@ -305,10 +305,17 @@ public abstract class Transformation extends CRSIdentifiable {
      * @return true if this and the other transformation are each others inverse.
      */
     public boolean areInverse( Transformation other ) {
-        return ( other == null ) ? false
-                                : ( this.isIdentity() && other.isIdentity() )
-                                  || ( ( this.getSourceCRS().equals( other.getTargetCRS() ) && this.getTargetCRS().equals(
-                                                                                                                           other.getSourceCRS() ) ) );
+        boolean result = ( other == null ) ? false : ( this.isIdentity() && other.isIdentity() );
+        if ( result && other != null ) {
+            result = getSourceCRS() == null ? other.getSourceCRS() == null
+                                           : getSourceCRS().equals( other.getSourceCRS() );
+            if ( result ) {
+                result = getTargetCRS() == null ? other.getTargetCRS() == null
+                                               : getTargetCRS().equals( other.getTargetCRS() );
+            }
+        }
+        return result;
+
     }
 
     /**
