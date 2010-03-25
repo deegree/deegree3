@@ -37,6 +37,7 @@ package org.deegree.filter.function.other;
 
 import static org.deegree.commons.utils.math.MathUtils.round;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
@@ -92,7 +93,7 @@ public class IMod extends Function {
                             throws FilterEvaluationException {
         Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], f );
 
-        return new TypedObjectNode[] { new PrimitiveValue( p.first % p.second ) };
+        return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first % p.second ) ) };
     }
 
 }
