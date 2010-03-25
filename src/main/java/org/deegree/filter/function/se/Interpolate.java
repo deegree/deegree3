@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.se;
 
+import static java.awt.Color.decode;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.toHexString;
 import static java.util.Arrays.binarySearch;
@@ -58,6 +59,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
@@ -77,6 +79,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(debug = "logs when the fallback value is used or values cannot be parsed properly for the given type")
 public class Interpolate extends Function {
 
     private static final Logger LOG = LoggerFactory.getLogger( Interpolate.class );
@@ -102,6 +105,8 @@ public class Interpolate extends Function {
     private boolean linear = true, cosine, cubic;
 
     private Mode mode = Mode.Linear;
+
+    private Color fallbackColor;
 
     /***/
     public Interpolate() {
@@ -158,6 +163,11 @@ public class Interpolate extends Function {
     private final Color interpolateColor( final int pos1, final int pos2, final double f ) {
         if ( !color ) {
             return null;
+        }
+
+        if ( pos1 == -1 || pos2 == -1 ) {
+            LOG.debug( "Found a value outside of the interpolation range, using fallback value." );
+            return fallbackColor;
         }
 
         switch ( mode ) {
@@ -318,6 +328,8 @@ public class Interpolate extends Function {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Interpolate" );
 
+        String fallbackValue = in.getAttributeValue( null, "fallbackValue" );
+
         LOG.trace( "Parsing SE XML document for Interpolate... " );
         String mode = in.getAttributeValue( null, "mode" );
         if ( mode != null ) {
@@ -335,6 +347,9 @@ public class Interpolate extends Function {
         String method = in.getAttributeValue( null, "method" );
         if ( method != null ) {
             color = method.equals( "color" );
+            if ( color ) {
+                fallbackColor = decode( fallbackValue );
+            }
         }
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "Interpolate" ) ) ) {
