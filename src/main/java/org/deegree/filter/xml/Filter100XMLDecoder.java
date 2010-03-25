@@ -41,6 +41,7 @@ import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
+import static org.deegree.filter.xml.Filter110XMLDecoder.parseFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -403,107 +404,6 @@ public class Filter100XMLDecoder {
         }
         }
         return expression;
-    }
-
-    /**
-     * Returns the object representation for the given <code>ogc:expression</code> element event that the cursor of the
-     * associated <code>XMLStreamReader</code> points at.
-     * <p>
-     * The element must be one of the following:
-     * <ul>
-     * <li>ogc:Add</li>
-     * <li>ogc:Sub</li>
-     * <li>ogc:Div</li>
-     * <li>ogc:Mul</li>
-     * <li>ogc:PropertyName</li>
-     * <li>ogc:Literal</li>
-     * <li>ogc:Function</li>
-     * </ul>
-     * </p>
-     * <p>
-     * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;)</li>
-     * </ul>
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
-     * @return corresponding {@link Expression} object
-     * @throws XMLParsingException
-     *             if the element is not a valid "ogc:expression" element
-     * @throws XMLStreamException
-     */
-    public static Function parseFunction( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-
-        if ( xmlStream.getLocalName().equals( "FormatNumber" ) ) {
-            FormatNumber fun = new FormatNumber();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "FormatDate" ) ) {
-            FormatDate fun = new FormatDate();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Substring" ) ) {
-            Substring fun = new Substring();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Concatenate" ) ) {
-            Concatenate fun = new Concatenate();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "ChangeCase" ) ) {
-            ChangeCase fun = new ChangeCase();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Trim" ) ) {
-            Trim fun = new Trim();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "StringPosition" ) ) {
-            StringPosition fun = new StringPosition();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "StringLength" ) ) {
-            StringLength fun = new StringLength();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Categorize" ) ) {
-            Categorize fun = new Categorize();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Interpolate" ) ) {
-            Interpolate fun = new Interpolate();
-            fun.parse( xmlStream );
-            return fun;
-        }
-        if ( xmlStream.getLocalName().equals( "Recode" ) ) {
-            Recode fun = new Recode();
-            fun.parse( xmlStream );
-            return fun;
-        }
-
-        xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
-        String name = getRequiredAttributeValue( xmlStream, null, "name" );
-        xmlStream.nextTag();
-        List<Expression> params = new ArrayList<Expression>();
-        while ( xmlStream.getEventType() == START_ELEMENT ) {
-            params.add( parseExpression( xmlStream ) );
-            xmlStream.nextTag();
-        }
-        xmlStream.require( END_ELEMENT, OGC_NS, "Function" );
-        return new Function( name, params );
     }
 
     /**
