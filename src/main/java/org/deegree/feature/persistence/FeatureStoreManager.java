@@ -64,7 +64,7 @@ import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType.GMLFe
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;

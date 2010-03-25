@@ -64,7 +64,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.grid.GridFileReader;
 import org.deegree.coverage.raster.io.grid.GridReader;
 import org.deegree.coverage.raster.io.grid.GridWriter;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;

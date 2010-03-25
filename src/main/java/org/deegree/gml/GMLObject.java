@@ -36,7 +36,7 @@
 package org.deegree.gml;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.dictionary.Definition;

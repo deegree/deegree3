@@ -55,7 +55,7 @@ URL: https://jai.dev.java.net/
 Version: 1.1.3
 Description: Java Advanced Imaging, high-level imaging API
 Comments: mlibwrapper_jar contains native implementation of parts of jai
-Used for: - org.deegree.crs.transformation (polynomial transformation)
+Used for: - org.deegree.cs.transformation (polynomial transformation)
           - org.deegree.dataaccess.jai (image/raster reading and writing)
 Origin of files: https://jai.dev.java.net/binary-builds.html
 License: Java Distribution License (JDL)
@@ -180,7 +180,7 @@ Files: jgridshift-1.0_deegree_version.jar
 URL: http://sourceforge.net/projects/jgridshift/
 Version: 1.0
 Description: Used for the NTv2 transformations between different Geographic coordinate systems.
-Used for: org.deegree.crs
+Used for: org.deegree.cs
 Responsible: bezema
 License: LGPL
 Patched because: failing getters for ellipsoid values. see META-INF/patch for patches to version 1.0.

@@ -39,10 +39,10 @@ import javax.imageio.metadata.IIOMetadata;
 
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.crs.CRS;
-import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.CRS;
+import org.deegree.cs.CRSRegistry;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

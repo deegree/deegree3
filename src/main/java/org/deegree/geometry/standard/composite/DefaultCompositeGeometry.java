@@ -40,7 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.precision.PrecisionModel;

@@ -44,7 +44,7 @@ import java.util.List;
 
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.client.WMSClient111;

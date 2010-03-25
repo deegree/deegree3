@@ -55,7 +55,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.slf4j.Logger;
 
 /**

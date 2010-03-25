@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.feature.property.Property;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;

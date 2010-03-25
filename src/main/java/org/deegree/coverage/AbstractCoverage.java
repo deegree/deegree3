@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage;
 
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 

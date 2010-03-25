@@ -48,9 +48,9 @@ import junit.framework.TestCase;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
-import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.CRSRegistry;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;

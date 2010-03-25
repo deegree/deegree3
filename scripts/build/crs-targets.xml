@@ -25,7 +25,7 @@
     </target>
 
     <target name="fill-crs-db-from-xml" depends="publish-local" description="->fill the fill the created db ATTENTION, you will need to drop and create the current db for this to work.">
-        <java  classname="org.deegree.crs.configuration.CRSConfiguration" fork="true" maxmemory="512M" >
+        <java  classname="org.deegree.cs.configuration.CRSConfiguration" fork="true" maxmemory="512M" >
             <classpath>
                 <path refid="build.path"/>
                 <pathelement location="${classes.dir}"/>
@@ -37,7 +37,7 @@
 
     <target name="insert-crs-into-db-from-xml-configuration" depends="publish-local" description="->insert a crs defined in the deegree-crs-configuration.xml into the db.">
         <fail unless="crs.id" message="you should supply a crs.id parameter to this ant target (ant insert-crs-into-db-from-xml-configuration -Dcrs.id=your_newly_inserted_id)"/>
-        <java  classname="org.deegree.crs.configuration.deegree.db.CRSDBExporter" fork="true" maxmemory="512M" >
+        <java  classname="org.deegree.cs.configuration.deegree.db.CRSDBExporter" fork="true" maxmemory="512M" >
             <classpath>
                 <path refid="build.path"/>
                 <pathelement location="${classes.dir}"/>
@@ -49,7 +49,7 @@
 
     <target name="insert-crs-into-db-from-wkt-file" depends="publish-local" description="->insert a crs defined in a wkt file into the db.">
         <fail unless="wkt.file" message="you should supply a wkt.file parameter to this ant target (ant insert-crs-into-db-from-wkt-file -Dwkt.file=your_file)"/>
-        <java  classname="org.deegree.crs.configuration.deegree.db.CRSDBExporter" fork="true" maxmemory="512M" >
+        <java  classname="org.deegree.cs.configuration.deegree.db.CRSDBExporter" fork="true" maxmemory="512M" >
             <classpath>
                 <path refid="build.path"/>
                 <pathelement location="${classes.dir}"/>
@@ -61,7 +61,7 @@
 
 		<target name="show-crs" description="-> outputs a crs with all its components, when supplied a CRS id">
 				<fail unless="crs.id" message="you should supply a crs.id parameter to this ant target (-Dcrs.id=the_crs_that_you_want_to_look_at)"/>			
-				<java classname="org.deegree.crs.configuration.deegree.db.CRSQuerier" fork="true" maxmemory="512M">
+				<java classname="org.deegree.cs.configuration.deegree.db.CRSQuerier" fork="true" maxmemory="512M">
 						<classpath>
 								<path refid="build.path"/>
 								<pathelement location="${classes.dir}"/>

@@ -50,10 +50,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-import org.deegree.crs.CRS;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;

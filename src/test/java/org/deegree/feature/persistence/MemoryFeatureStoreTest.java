@@ -52,8 +52,8 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;

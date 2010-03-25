@@ -36,8 +36,8 @@ package org.deegree.gml.geometry;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeCurve;

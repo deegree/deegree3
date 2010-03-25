@@ -56,12 +56,12 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.crs.CRS;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.exceptions.OutsideCRSDomainException;
-import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.crs.transformations.Transformation;
+import org.deegree.cs.CRS;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.exceptions.OutsideCRSDomainException;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.transformations.Transformation;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 

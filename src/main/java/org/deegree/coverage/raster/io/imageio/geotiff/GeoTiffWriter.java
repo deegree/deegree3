@@ -36,8 +36,8 @@
 
 package org.deegree.coverage.raster.io.imageio.geotiff;
 
-import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
-import static org.deegree.crs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
+import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -47,8 +47,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.crs.CRS;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 
 import com.sun.media.jai.codec.TIFFEncodeParam;
@@ -306,7 +306,7 @@ public class GeoTiffWriter {
      */
     private void setCoordinateSystem( CRS crs )
                             throws UnknownCRSException {
-        org.deegree.crs.coordinatesystems.CoordinateSystem crs2 = crs.getWrappedCRS();
+        org.deegree.cs.coordinatesystems.CoordinateSystem crs2 = crs.getWrappedCRS();
         if ( crs2 != null ) {
             String[] identifiers = crs2.getOrignalCodeStrings();
             int epsg = -1;

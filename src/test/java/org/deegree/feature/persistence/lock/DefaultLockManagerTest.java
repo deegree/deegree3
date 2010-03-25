@@ -50,7 +50,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.memory.MemoryFeatureStore;

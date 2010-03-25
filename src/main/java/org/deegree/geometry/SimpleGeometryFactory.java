@@ -39,7 +39,7 @@ package org.deegree.geometry;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;

@@ -45,7 +45,7 @@ import java.util.ListIterator;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;

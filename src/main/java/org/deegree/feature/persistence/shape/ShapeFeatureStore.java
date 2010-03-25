@@ -59,10 +59,10 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.Pair;
-import org.deegree.crs.CRS;
-import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.crs.exceptions.WKTParsingException;
+import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.exceptions.WKTParsingException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;

@@ -53,8 +53,8 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.crs.CRS;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.CRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;

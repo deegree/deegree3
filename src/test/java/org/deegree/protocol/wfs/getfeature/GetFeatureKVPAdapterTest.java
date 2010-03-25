@@ -42,7 +42,7 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 
 import org.deegree.commons.utils.kvp.KVPUtils;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.PropertyName;

@@ -44,7 +44,7 @@ import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation
 import junit.framework.Assert;
 
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;

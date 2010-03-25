@@ -48,7 +48,7 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;

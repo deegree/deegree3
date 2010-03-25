@@ -37,7 +37,7 @@ package org.deegree.protocol.wfs.getfeature;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.PropertyName;

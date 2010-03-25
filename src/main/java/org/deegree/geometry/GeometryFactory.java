@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.deegree.commons.uom.Angle;
 import org.deegree.commons.uom.Length;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;

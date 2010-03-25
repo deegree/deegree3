@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;

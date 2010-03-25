@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiLineString;

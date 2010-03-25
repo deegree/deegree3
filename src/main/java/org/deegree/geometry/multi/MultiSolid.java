@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.multi;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.primitive.Solid;
 
 /**

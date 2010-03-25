@@ -46,7 +46,7 @@ import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.Loa
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -38,16 +38,16 @@ package org.deegree.protocol.wms;
 import static java.lang.Math.floor;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
-import static org.deegree.crs.coordinatesystems.GeographicCRS.WGS84;
+import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 
 import org.deegree.commons.utils.MapUtils;
-import org.deegree.crs.CRS;
-import org.deegree.crs.configuration.wkt.WKTParser;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.cs.CRS;
+import org.deegree.cs.configuration.wkt.WKTParser;
+import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;

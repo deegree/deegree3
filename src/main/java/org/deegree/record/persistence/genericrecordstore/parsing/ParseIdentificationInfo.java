@@ -55,7 +55,7 @@ import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.record.persistence.genericrecordstore.generating.GenerateRecord;
 import org.deegree.record.persistence.neededdatastructures.BoundingBox;
 import org.deegree.record.persistence.neededdatastructures.Keyword;

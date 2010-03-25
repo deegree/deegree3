@@ -37,7 +37,7 @@ package org.deegree.geometry;
 
 import static org.junit.Assert.assertTrue;
 
-import org.deegree.crs.CRS;
+import org.deegree.cs.CRS;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.points.PackedPoints;
