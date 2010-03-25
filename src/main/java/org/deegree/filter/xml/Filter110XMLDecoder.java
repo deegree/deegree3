@@ -96,6 +96,8 @@ import org.deegree.filter.function.geometry.Centroid;
 import org.deegree.filter.function.geometry.IsCurve;
 import org.deegree.filter.function.geometry.IsPoint;
 import org.deegree.filter.function.geometry.IsSurface;
+import org.deegree.filter.function.other.IDiv;
+import org.deegree.filter.function.other.IMod;
 import org.deegree.filter.function.se.Categorize;
 import org.deegree.filter.function.se.ChangeCase;
 import org.deegree.filter.function.se.Concatenate;
@@ -505,6 +507,12 @@ public class Filter110XMLDecoder {
         }
         if ( name.equals( "Centroid" ) ) {
             return new Centroid( params );
+        }
+        if ( name.equals( "imod" ) ) {
+            return new IMod( params );
+        }
+        if ( name.equals( "idiv" ) ) {
+            return new IDiv( params );
         }
 
         return new Function( name, params );
