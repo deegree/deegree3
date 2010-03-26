@@ -101,7 +101,7 @@ public class GriddedTileContainerTest extends CenterOuterTest {
 
         GridMetaInfoFile worldFile = GridMetaInfoFile.readFromFile( new File( infoUrl.toURI() ),
                                                                     new RasterIOOptions( type ) );
-        GriddedTileContainer gtc = new GriddedBlobTileContainer( new File( blob.getFile() ), worldFile );
+        GriddedTileContainer gtc = new GriddedBlobTileContainer( new File( blob.toURI() ), worldFile );
         return new TiledRaster( gtc );
     }
 
