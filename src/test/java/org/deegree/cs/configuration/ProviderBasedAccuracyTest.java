@@ -52,8 +52,6 @@ import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Ellipsoid;
 import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.components.Unit;
-import org.deegree.cs.configuration.CRSConfiguration;
-import org.deegree.cs.configuration.CRSProvider;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
@@ -289,9 +287,9 @@ public class ProviderBasedAccuracyTest {
             output.append( ae.getLocalizedMessage() );
             inverseSuccess = false;
         }
-        // if ( !forwardSuccess || !inverseSuccess ) {
-        LOG.info( output.toString() );
-        // }
+        if ( !forwardSuccess || !inverseSuccess ) {
+            LOG.info( output.toString() );
+        }
 
         assertEquals( true, forwardSuccess );
         assertEquals( true, inverseSuccess );
