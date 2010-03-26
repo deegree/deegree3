@@ -75,14 +75,6 @@
   </properties>
   <repositories>
     <repository>
-      <id>central</id>
-      <name>havola.lat-lon.de-remote</name>
-      <url>http://havola.lat-lon.de/artifactory/remote-repos</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
       <id>ext-releases</id>
       <name>havola.lat-lon.de-releases</name>
       <url>http://havola.lat-lon.de/artifactory/ext-releases-local</url>
@@ -107,22 +99,6 @@
       </snapshots>
     </repository>
   </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>central</id>
-      <url>http://havola.lat-lon.de/artifactory/plugins-releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>snapshots</id>
-      <url>http://havola.lat-lon.de/artifactory/plugins-snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
   <distributionManagement>
     <snapshotRepository>
       <id>deegree-repository</id>
