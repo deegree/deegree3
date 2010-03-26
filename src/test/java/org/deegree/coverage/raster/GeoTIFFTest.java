@@ -79,9 +79,9 @@ public class GeoTIFFTest {
      */
     @BeforeClass
     public static void init()
-                            throws IOException {
+                            throws Exception {
         URL inputURL = GeoTIFFTest.class.getResource( "epsg4326.tiff" );
-        File input = new File( inputURL.getFile() );
+        File input = new File( inputURL.toURI() );
         RasterIOOptions options = RasterIOOptions.forFile( input );
         options.add( RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.OUTER.name() );
         raster = RasterFactory.loadRasterFromFile( input, options );

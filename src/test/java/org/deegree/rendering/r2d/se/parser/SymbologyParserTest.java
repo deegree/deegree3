@@ -42,6 +42,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -69,13 +70,14 @@ public class SymbologyParserTest extends TestCase {
      * @throws FactoryConfigurationError
      * @throws XMLStreamException
      * @throws FileNotFoundException
+     * @throws URISyntaxException 
      */
     @Test
     public void testAll()
-                            throws XMLStreamException, FactoryConfigurationError, FileNotFoundException {
+                            throws XMLStreamException, FactoryConfigurationError, FileNotFoundException, URISyntaxException {
         final XMLInputFactory fac = XMLInputFactory.newInstance();
         final Class<SymbologyParserTest> cls = SymbologyParserTest.class;
-        File dir = new File( cls.getResource( "SymbologyParserTest.class" ).getFile() ).getParentFile();
+        File dir = new File( cls.getResource( "SymbologyParserTest.class" ).toURI()).getParentFile();
         for ( File f : dir.listFiles() ) {
             if ( f.getName().endsWith( ".xml" ) ) {
                 LOG.debug( "Expecting {} to parse fine.", f );
