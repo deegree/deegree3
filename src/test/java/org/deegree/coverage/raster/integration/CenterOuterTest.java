@@ -43,6 +43,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import junit.framework.Assert;
 
@@ -80,9 +81,11 @@ public abstract class CenterOuterTest implements CompareValues {
      * kind of a constructor will be called as initialization.
      * 
      * @throws IOException
+     * @throws URISyntaxException 
+     * @throws NumberFormatException 
      */
     protected abstract void buildRasters()
-                            throws IOException;
+                            throws IOException, NumberFormatException, URISyntaxException;
 
     /**
      * Init the two rasters
@@ -91,11 +94,9 @@ public abstract class CenterOuterTest implements CompareValues {
     public void init() {
         try {
             buildRasters();
-        } catch ( IOException e ) {
-            e.printStackTrace();
+        } catch ( Exception e ) {
             Assert.fail( e.getLocalizedMessage() );
         }
-
     }
 
     /**

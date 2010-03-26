@@ -40,6 +40,7 @@ package org.deegree.coverage.raster.integration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import junit.framework.Assert;
@@ -94,11 +95,11 @@ public class GriddedTileContainerTest extends CenterOuterTest {
     private TiledRaster rasterOuter = null;
 
     private TiledRaster buildRaster( OriginLocation type )
-                            throws IOException {
+                            throws IOException, NumberFormatException, URISyntaxException {
         URL infoUrl = GriddedTileContainerTest.class.getResource( "gridded_raster.info" );
         URL blob = GriddedTileContainerTest.class.getResource( "blob_0.bin" );
 
-        GridMetaInfoFile worldFile = GridMetaInfoFile.readFromFile( new File( infoUrl.getFile() ),
+        GridMetaInfoFile worldFile = GridMetaInfoFile.readFromFile( new File( infoUrl.toURI() ),
                                                                     new RasterIOOptions( type ) );
         GriddedTileContainer gtc = new GriddedBlobTileContainer( new File( blob.getFile() ), worldFile );
         return new TiledRaster( gtc );
@@ -106,7 +107,7 @@ public class GriddedTileContainerTest extends CenterOuterTest {
 
     @Override
     protected void buildRasters()
-                            throws IOException {
+                            throws IOException, NumberFormatException, URISyntaxException {
         rasterCenter = buildRaster( OriginLocation.CENTER );
         rasterOuter = buildRaster( OriginLocation.OUTER );
         resX = rasterCenter.getRasterReference().getResolutionX();
