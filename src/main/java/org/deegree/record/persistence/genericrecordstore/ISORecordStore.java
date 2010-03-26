@@ -430,13 +430,11 @@ public class ISORecordStore implements RecordStore {
                                                                      profileFormatNumberOutputSchema, true, builder,
                                                                      conn );
 
-        // ConnectionManager.addConnections( con );
-
         ResultSet rs = selectCountRows.executeQuery();
 
         while ( rs.next() ) {
             countRows = rs.getInt( 1 );
-            LOG.debug( "rs: " + rs.getInt( 1 ) );
+            LOG.info( "rs for rowCount: " + rs.getInt( 1 ) );
         }
 
         if ( resultType.equals( ResultType.hits ) ) {
@@ -615,7 +613,7 @@ public class ISORecordStore implements RecordStore {
             COUNT_SUF = "";
         }
 
-        s.append( "SELECT " + COUNT_PRE + formatType + ".data" + COUNT_SUF + " FROM " + formatType + " " );
+        s.append( "SELECT DISTINCT " + COUNT_PRE + formatType + ".data" + COUNT_SUF + " FROM " + formatType + " " );
 
         s.append( "WHERE " + formatType + ".format = " + profileFormatNumberOutputSchema + " " );
 
@@ -641,9 +639,7 @@ public class ISORecordStore implements RecordStore {
 
         s.append( " WHERE " + formatType + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
                   + PostGISMappingsISODC.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
-                  + typeNameFormatNumber + " AND " + formatType + "."
-                  + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " >= "
-                  + recordStoreOptions.getStartPosition() );
+                  + typeNameFormatNumber );
 
         /*
          * appends the tables with their columns identified in the WHERE-builder to the WHERE clause and binds it to the
@@ -666,7 +662,8 @@ public class ISORecordStore implements RecordStore {
         /*
          * appends the constraint expression from the WHERE-builder
          */
-        s.append( constraintExpression + ")" );
+        s.append( constraintExpression + " OFFSET " + Integer.toString( recordStoreOptions.getStartPosition() - 1 )
+                  + ")" );
 
         /*
          * finally, appends the LIMIT constraint
@@ -674,7 +671,7 @@ public class ISORecordStore implements RecordStore {
         if ( recordStoreOptions.getMaxRecords() != 0 ) {
             s.append( " LIMIT " + recordStoreOptions.getMaxRecords() );
         }
-        LOG.debug( "statement: " + s );
+        LOG.info( "statement: " + s );
         stmt = conn.prepareStatement( s.toString() );
 
         /*
