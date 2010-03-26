@@ -97,7 +97,5 @@ public class SymbologyParserTest extends TestCase {
                 }
             }
         }
-
     }
-
 }
