@@ -48,6 +48,7 @@ import org.deegree.commons.uom.Length;
 import org.deegree.cs.CRS;
 import org.deegree.cs.Transformer;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.OutsideCRSDomainException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -226,7 +227,7 @@ public class GeometryTransformer extends Transformer {
         Envelope tEnv = null;
         try {
             Envelope env = geomFactory.createEnvelope( areaOfUseBBox[0], areaOfUseBBox[1], areaOfUseBBox[2],
-                                                       areaOfUseBBox[3], CRS.EPSG_4326 );
+                                                       areaOfUseBBox[3], new CRS( GeographicCRS.WGS84 ) );
             Geometry geom = t.transform( env, false );
             if ( geom != null ) {
                 tEnv = geom.getEnvelope();
@@ -490,7 +491,15 @@ public class GeometryTransformer extends Transformer {
                     }
                 }
             }
-            result = validDomain.contains( inSource );
+            try {
+                result = validDomain.contains( inSource );
+            } catch ( UnsupportedOperationException e ) {
+                LOG.debug( "Could not determine valid domain because it is not supported: " + e.getMessage(), e );
+                result = true;
+            } catch ( Throwable t ) {
+                LOG.debug( "No valid domain checking available: " + t.getMessage(), t );
+                result = false;
+            }
         }
         return result;
     }

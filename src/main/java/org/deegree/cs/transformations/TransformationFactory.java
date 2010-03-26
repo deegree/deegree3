@@ -130,11 +130,10 @@ public class TransformationFactory {
          */
         public static DSTransform fromProperties( Properties props ) {
             DSTransform result = DSTransform.HELMERT;
-            if ( props.contains( DS_PROP ) ) {
-                String def = props.getProperty( DS_PROP );
-                if ( def != null && "NTv2".equalsIgnoreCase( def ) ) {
-                    result = NTv2;
-                }
+            String def = props.getProperty( DS_PROP );
+            if ( def != null && "NTv2".equalsIgnoreCase( def ) ) {
+                result = NTv2;
+
             }
             return result;
         }
@@ -238,10 +237,12 @@ public class TransformationFactory {
         if ( result == null ) {
             // check if a 'direct' transformation could be loaded from the configuration;
             result = getTransformation( sourceCRS, targetCRS );
-            if ( result == null ) {
+            if ( result == null || "Helmert".equals( result.getImplementationName() ) ) {
                 result = getTransformation( targetCRS, sourceCRS );
-                if ( result != null ) {
+                if ( result != null && !"Helmert".equals( result.getImplementationName() ) ) {
                     result.inverse();
+                } else {
+                    result = null;
                 }
             }
             if ( result == null
@@ -321,7 +322,8 @@ public class TransformationFactory {
             // somewhere.
             if ( "Helmert".equals( implName ) ) {
                 Helmert h = (Helmert) result;
-                result = new Helmert( h.dx, h.dy, h.dz, h.ex, h.ey, h.ez, h.ppm, h.getSourceCRS(), h.getTargetCRS(), h );
+                result = new Helmert( h.dx, h.dy, h.dz, h.ex, h.ey, h.ez, h.ppm, h.getSourceCRS(), h.getTargetCRS(), h,
+                                      h.areRotationsInRad() );
             } else if ( "NTv2".equals( implName ) ) {
                 NTv2Transformation h = (NTv2Transformation) result;
                 result = new NTv2Transformation( h.getSourceCRS(), h.getTargetCRS(), h, h.getGridfileRef() );
@@ -716,7 +718,7 @@ public class TransformationFactory {
                 result.inverse();
             }
         }
-        if ( result == null
+        if ( result == null || "Helmert".equalsIgnoreCase( result.getImplementationName() )
              || ( "NTv2".equals( result.getImplementationName() ) && this.preferredDSTransform == DSTransform.HELMERT ) ) {
 
             LOG.debug( "Creating geographic ->geographic transformation: from (source): " + sourceCRS.getCode()

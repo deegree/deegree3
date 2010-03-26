@@ -103,7 +103,7 @@ public class PointsList implements Points {
         }
         return coords;
     }
-    
+
     @Override
     public Point getEndPoint() {
         return get( size() - 1 );
@@ -116,8 +116,8 @@ public class PointsList implements Points {
 
     // -----------------------------------------------------------------------
     // Implementation of JTS methods
-    // -----------------------------------------------------------------------    
-    
+    // -----------------------------------------------------------------------
+
     @Override
     public Envelope expandEnvelope( Envelope env ) {
         for ( Point p : points ) {
@@ -128,27 +128,32 @@ public class PointsList implements Points {
 
     @Override
     public Coordinate getCoordinate( int index ) {
-        Point point = points.get(index);
-        return new Coordinate( point.get0(), point.get1(), point.get2() );   
+        if ( index < points.size() && index >= 0 ) {
+            Point point = points.get( index );
+            return new Coordinate( point.get0(), point.get1(), point.get2() );
+        }
+        return null;
     }
 
     @Override
     public void getCoordinate( int index, Coordinate coord ) {
-        Point point = points.get(index);
-        coord.x = point.get0();
-        coord.y = point.get1();
-        coord.z = point.get2();
+        if ( index < points.size() && index >= 0 ) {
+            Point point = points.get( index );
+            coord.x = point.get0();
+            coord.y = point.get1();
+            coord.z = point.get2();
+        }
     }
 
     @Override
     public Coordinate getCoordinateCopy( int index ) {
-        Point point = points.get(index);
-        return new Coordinate( point.get0(), point.get1(), point.get2() );        
+        Point point = points.get( index );
+        return new Coordinate( point.get0(), point.get1(), point.get2() );
     }
 
     @Override
     public double getOrdinate( int index, int ordinateIndex ) {
-        return points.get( index ).get(ordinateIndex);
+        return points.get( index ).get( ordinateIndex );
     }
 
     @Override
@@ -175,9 +180,9 @@ public class PointsList implements Points {
         }
         return coords;
     }
-    
+
     @Override
-    public Object clone () {
+    public Object clone() {
         throw new UnsupportedOperationException();
     }
 }

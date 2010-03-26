@@ -208,7 +208,7 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
             }
         }
         if ( formatter == null ) {
-            this.formatter = new DecimalCoordinateFormatter( 5 );
+            this.formatter = new DecimalCoordinateFormatter( 8 );
         } else {
             this.formatter = formatter;
         }

@@ -125,7 +125,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                     sb.append( tc.getCanonicalName() ).append( " to create a subtype from. " );
                     LOG.warn( sb.toString() );
                 } else {
-                    tc = subType.getClass();
+                    tc = Class.forName( subType.getName() );
                 }
                 // use reflection to instantiate the configured provider.
                 Class<?> t = Class.forName( className );
@@ -308,6 +308,20 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
      */
     public abstract Transformation parseTransformation( T transformationDefinition )
                             throws CRSConfigurationException;
+
+    /**
+     * Clears the cache.
+     */
+    public void clearCache() {
+        try {
+            synchronized ( cachedIdentifiables ) {
+                cachedIdentifiables.clear();
+                cachedIdentifiables.notifyAll();
+            }
+        } catch ( Exception e ) {
+            LOG.warn( "The clearing of the cache could not be forefullfilled because: " + e.getLocalizedMessage() );
+        }
+    }
 
     /**
      * The id are what they are, not trimming 'upcasing' or other modifications will be done in this method.
@@ -843,7 +857,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                             || matchEPSGString( compare, "method", "9607" ) ) {
                     return SupportedTransformations.HELMERT_7;
                 } else if ( "NTv2".equalsIgnoreCase( compare ) || matchEPSGString( compare, "method", "9615" ) ) {
-                    return SupportedTransformations.NOT_SUPPORTED;
+                    return SupportedTransformations.NTV2;
                 } else if ( matchEPSGString( compare, "method", "9645" ) || matchEPSGString( compare, "method", "9646" )
                             || matchEPSGString( compare, "method", "9647" )
                             || matchEPSGString( compare, "method", "9648" ) ) {

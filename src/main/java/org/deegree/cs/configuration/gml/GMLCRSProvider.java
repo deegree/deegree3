@@ -47,6 +47,7 @@ import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTR
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,6 +91,7 @@ import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
 import org.deegree.cs.transformations.coordinate.NotSupportedTransformation;
 import org.deegree.cs.transformations.helmert.Helmert;
+import org.deegree.cs.transformations.ntv2.NTv2Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +115,23 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
     private static String PRE = CommonNamespaces.GML3_2_PREFIX + ":";
 
+    private static String GMD_P = "gmd";
+
+    private static String GCO_P = "gco";
+
+    private static String GMD_PRE = GMD_P + ":";
+
+    private static String GCO_PRE = GCO_P + ":";
+
+    private static String GMD_NS = "http://www.isotc211.org/2005/gmd";
+
+    private static String GCO_NS = "http://www.isotc211.org/2005/gco";
+
     private static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
+    static {
+        nsContext.addNamespace( GMD_PRE, GMD_NS );
+        nsContext.addNamespace( GCO_PRE, GCO_NS );
+    }
 
     private XMLAdapter adapter;
 
@@ -254,7 +272,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             CRSIdentifiable conversionMethodID = parseIdentifiedObject( conversionMethod );
             SupportedTransformations transform = mapTransformation( conversionMethodID.getCodes() );
 
-            List<Pair<CRSIdentifiable, Pair<Unit, Double>>> parameterValues = parseParameterValues( rootElement );
+            List<Pair<CRSIdentifiable, Object>> parameterValues = parseParameterValues( rootElement );
             switch ( transform ) {
             case GENERAL_POLYNOMIAL:
                 LOG.warn( "The mapping of gml:Transformation to Polynomial transformations is not yet implemented." );
@@ -269,9 +287,9 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 ey = 0,
                 ez = 0,
                 ppm = 0;
-                for ( Pair<CRSIdentifiable, Pair<Unit, Double>> paramValue : parameterValues ) {
-                    if ( paramValue != null ) {
-                        Pair<Unit, Double> second = paramValue.second;
+                for ( Pair<CRSIdentifiable, Object> paramValue : parameterValues ) {
+                    if ( paramValue != null && ( paramValue.second instanceof Pair<?, ?> ) ) {
+                        Pair<Unit, Double> second = (Pair<Unit, Double>) paramValue.second;
                         if ( second != null ) {
                             double value = second.second;
                             if ( !Double.isNaN( value ) ) {
@@ -339,8 +357,23 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 result = new NotSupportedTransformation( sourceCRS, targetCRS, id );
                 break;
             case NTV2:
-                LOG.warn( "The mapping of gml:Transformation to NTV2 transformations is not supported yet." );
-                result = new NotSupportedTransformation( sourceCRS, targetCRS, id );
+                if ( !parameterValues.isEmpty() ) {
+                    Pair<CRSIdentifiable, Object> paramValue = parameterValues.get( 0 );
+                    if ( paramValue != null && ( paramValue.second instanceof String ) ) {
+                        String second = (String) paramValue.second;
+                        if ( second != null ) {
+                            URL url = null;
+                            try {
+                                url = new URL( second );
+                            } catch ( Throwable t ) {
+                                LOG.debug( "Could not load NTv2 file from location: " + second );
+                            }
+                            if ( url != null ) {
+                                result = new NTv2Transformation( sourceCRS, targetCRS, id, url );
+                            }
+                        }
+                    }
+                }
                 break;
             case NOT_SUPPORTED:
                 LOG.warn( "The gml:Transformation could not be mapped to a deegree transformation." );
@@ -360,7 +393,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * @throws XMLParsingException
      *             if the given rootElement could not be parsed.
      */
-    protected CRSIdentifiable parseIdentifiedObject( OMElement rootElement )
+    public CRSIdentifiable parseIdentifiedObject( OMElement rootElement )
                             throws XMLParsingException {
         if ( rootElement == null ) {
             return null;
@@ -405,14 +438,27 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         List<OMElement> domainsOfValidity = adapter.getElements( rootElement, new XPath( PRE + "domainOfValidity",
                                                                                          nsContext ) );
         if ( domainsOfValidity != null && domainsOfValidity.size() > 0 ) {
-            LOG.warn( "Ignoring domains of validity" );
-            // // LOG.debug( "domains of validity will not be parsed, but put in a area of use instead" );
-            // for ( Element domainOfValidity : domainsOfValidity ) {
-            // String validDomain = " <![CDATA["
-            // + DOMPrinter.nodeToString( domainOfValidity, CharsetUtils.getSystemCharset() )
-            // + "]]>";
-            // areasOfUse.add( validDomain );
-            // }
+            // <domainOfValidity><gmd:geographicElement><gmd:EX_GeographicBoundingBox>
+            OMElement elem = adapter.getElement( domainsOfValidity.get( 0 ), new XPath( GMD_PRE + "EX_Extent/"
+                                                                                        + GMD_PRE
+                                                                                        + "geographicElement/"
+                                                                                        + GMD_PRE
+                                                                                        + "EX_GeographicBoundingBox",
+                                                                                        nsContext ) );
+            if ( elem != null ) {
+                double w = adapter.getNodeAsDouble( elem, new XPath( GMD_PRE + "westBoundLongitude/" + GCO_PRE
+                                                                     + "Decimal", nsContext ), -180 );
+                double e = adapter.getNodeAsDouble( elem, new XPath( GMD_PRE + "eastBoundLongitude/" + GCO_PRE
+                                                                     + "Decimal", nsContext ), 180 );
+                double s = adapter.getNodeAsDouble( elem, new XPath( GMD_PRE + "southBoundLatitude/" + GCO_PRE
+                                                                     + "Decimal", nsContext ), -90 );
+                double n = adapter.getNodeAsDouble( elem, new XPath( GMD_PRE + "northBoundLatitude/" + GCO_PRE
+                                                                     + "Decimal", nsContext ), 90 );
+                areasOfUse.add( w + "," + s + "," + e + "," + n );
+
+            } else {
+                LOG.warn( "No 'gmd:geographicElement/gmd:EX_GeographicBoundingBox' found in domainOfValidity, ignoring" );
+            }
         }
         // String[] scopes = XMLTools.getNodesAsStrings( rootElement, PRE + "scope", nsContext );
         String[] scopes = adapter.getNodesAsStrings( rootElement, new XPath( PRE + "scope", nsContext ) );
@@ -436,11 +482,12 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         // convert identifiers to codes
         CRSCodeType[] crsCodes = new CRSCodeType[identifiers.length];
         int n = identifiers.length;
-        for ( int i = 0; i < n; i++ )
+        for ( int i = 0; i < n; i++ ) {
             crsCodes[i] = CRSCodeType.valueOf( identifiers[i] );
-        CRSIdentifiable result = new CRSIdentifiable( crsCodes, names, versions.toArray( new String[0] ),
-                                                      descriptions.toArray( new String[0] ),
-                                                      areasOfUse.toArray( new String[0] ) );
+        }
+        CRSIdentifiable result = new CRSIdentifiable( crsCodes, names, versions.toArray( new String[versions.size()] ),
+                                                      descriptions.toArray( new String[descriptions.size()] ),
+                                                      areasOfUse.toArray( new String[areasOfUse.size()] ) );
         return result;
 
     }
@@ -1076,10 +1123,10 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             double falseNorthing = 0, falseEasting = 0, scale = 1, firstParallelLatitude = 0, secondParallelLatitude = 0, trueScaleLatitude = 0;
             Point2d naturalOrigin = new Point2d();
             Unit units = Unit.METRE;
-            List<Pair<CRSIdentifiable, Pair<Unit, Double>>> parameterValues = parseParameterValues( rootElement );
-            for ( Pair<CRSIdentifiable, Pair<Unit, Double>> paramValue : parameterValues ) {
-                if ( paramValue != null ) {
-                    Pair<Unit, Double> second = paramValue.second;
+            List<Pair<CRSIdentifiable, Object>> parameterValues = parseParameterValues( rootElement );
+            for ( Pair<CRSIdentifiable, Object> paramValue : parameterValues ) {
+                if ( paramValue != null && ( paramValue.second instanceof Pair<?, ?> ) ) {
+                    Pair<Unit, Double> second = (Pair<Unit, Double>) paramValue.second;
                     if ( second != null ) {
                         double value = second.second;
                         if ( !Double.isNaN( value ) ) {
@@ -1176,9 +1223,9 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      *             if the dom tree is not consistent or a required element is missing.
      * @throws IOException
      */
-    protected List<Pair<CRSIdentifiable, Pair<Unit, Double>>> parseParameterValues( OMElement rootElement )
+    protected List<Pair<CRSIdentifiable, Object>> parseParameterValues( OMElement rootElement )
                             throws XMLParsingException, IOException {
-        List<Pair<CRSIdentifiable, Pair<Unit, Double>>> result = new ArrayList<Pair<CRSIdentifiable, Pair<Unit, Double>>>();
+        List<Pair<CRSIdentifiable, Object>> result = new ArrayList<Pair<CRSIdentifiable, Object>>();
         if ( rootElement == null ) {
             LOG.debug( "The given parameter property root element is null, returning nothing" );
             return result;
@@ -1190,7 +1237,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         } else {
             for ( OMElement paramValueProp : parameterValues ) {
                 if ( paramValueProp != null ) {
-                    Pair<CRSIdentifiable, Pair<Unit, Double>> r = parseParameterValue( paramValueProp );
+                    Pair<CRSIdentifiable, Object> r = parseParameterValue( paramValueProp );
                     if ( r != null ) {
                         result.add( r );
                     }
@@ -1209,7 +1256,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      *             if the dom tree is not consistent or a required element is missing.
      * @throws IOException
      */
-    protected Pair<CRSIdentifiable, Pair<Unit, Double>> parseParameterValue( OMElement rootElement )
+    protected Pair<CRSIdentifiable, Object> parseParameterValue( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             LOG.debug( "The given parameter property root element is null, returning nothing" );
@@ -1225,17 +1272,31 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         CRSIdentifiable paramID = parseIdentifiedObject( operationParameter );
 
         OMElement valueElem = adapter.getElement( paramValue, new XPath( PRE + "value", nsContext ) );
+        Object value = null;
         if ( valueElem == null ) {
             LOG.debug( "No gml:value found in the gml:Conversion/gml:parameterValue/gml:ParameterValue/ node, trying gml:integerValue instead." );
             valueElem = adapter.getElement( paramValue, new XPath( PRE + "integerValue", nsContext ) );
             if ( valueElem == null ) {
-                LOG.debug( "Neither found a gml:integerValue in the gml:Conversion/gml:parameterValue/gml:ParameterValue/ node, ignoring this parameter value." );
+                LOG.debug( "No gml:integerValue found in the gml:Conversion/gml:parameterValue/gml:ParameterValue/ node, trying gml:fileValue instead." );
+                valueElem = adapter.getElement( paramValue, new XPath( PRE + "valueFile", nsContext ) );
+                if ( valueElem == null ) {
+                    LOG.debug( "Neither found a gml:integerValue in the gml:Conversion/gml:parameterValue/gml:ParameterValue/ node, ignoring this parameter value." );
+                } else {
+                    value = adapter.getNodeAsString( valueElem, new XPath( ".", nsContext ), null );
+                    if ( value == null ) {
+                        LOG.debug( "No value found for fileValue, returning null." );
+                        return null;
+                    }
+                }
             }
         }
+        if ( value == null && valueElem != null ) {
+            double val = adapter.getNodeAsDouble( valueElem, new XPath( ".", nsContext ), Double.NaN );
+            Unit units = parseUnitOfMeasure( valueElem );
+            value = new Pair<Unit, Double>( units, val );
+        }
 
-        double value = adapter.getNodeAsDouble( valueElem, new XPath( ".", nsContext ), Double.NaN );
-        Unit units = parseUnitOfMeasure( valueElem );
-        return new Pair<CRSIdentifiable, Pair<Unit, Double>>( paramID, new Pair<Unit, Double>( units, value ) );
+        return new Pair<CRSIdentifiable, Object>( paramID, value );
     }
 
     /**
@@ -1262,7 +1323,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         Unit result = getCachedIdentifiable( Unit.class, uomAttribute );
         if ( result == null ) {
             result = createUnitFromString( uomAttribute );
-            if ( result == null && uomAttribute.indexOf( ":" ) != -1 ) {
+            if ( result == null ) {
                 LOG.debug( "Trying to resolve the uri: " + uomAttribute + " from a gml:value/@uom node" );
                 OMElement unitElement = null;
                 try {
@@ -1374,8 +1435,34 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                             throws CRSConfigurationException {
         CRSIdentifiable result = getCachedIdentifiable( id );
         if ( result == null ) {
-            throw new UnsupportedOperationException(
-                                                     "The retrieval of an arbitrary CRSIdentifiable Object is currently not supported by the GML Provider." );
+            OMElement idRes = null;
+            try {
+                idRes = getResolver().getURIAsType( id.getOriginal() );
+            } catch ( IOException e ) {
+                LOG.debug( "Exception occurred: " + e.getLocalizedMessage(), e );
+            }
+            if ( idRes != null ) {
+                String localName = idRes.getLocalName();
+                if ( localName != null ) {
+                    try {
+                        if ( "Transformation".equals( localName ) ) {
+                            result = parseGMLTransformation( idRes );
+                        } else if ( "Conversion".equalsIgnoreCase( localName ) ) {
+                            result = parseProjection( idRes, null );
+                        } else {
+                            // try coordinatesystem
+                            result = parseCoordinateSystem( idRes );
+                        }
+                    } catch ( XMLParsingException e ) {
+                        LOG.debug( "Could not get an identifiable for id: " + id.getOriginal() + " because: "
+                                   + e.getLocalizedMessage(), e );
+                    } catch ( IOException e ) {
+                        LOG.debug( "Could not get an identifiable for id: " + id.getOriginal() + " because: "
+                                   + e.getLocalizedMessage(), e );
+                    }
+
+                }
+            }
         }
         return result;
     }

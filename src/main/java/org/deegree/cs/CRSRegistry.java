@@ -158,8 +158,14 @@ public class CRSRegistry {
      */
     public synchronized static Transformation getTransformation( String providerName, String id ) {
         CRSProvider crsProvider = getProvider( providerName );
-        CRSIdentifiable t = crsProvider.getIdentifiable( CRSCodeType.valueOf( id ) );
-        if ( t instanceof Transformation ) {
+        CRSIdentifiable t = null;
+        try {
+            t = crsProvider.getIdentifiable( CRSCodeType.valueOf( id ) );
+        } catch ( Throwable e ) {
+            LOG.debug( "Could not retrieve a transformation for id: " + id );
+
+        }
+        if ( t != null && t instanceof Transformation ) {
             return (Transformation) t;
         }
         LOG.debug( "The given id: " + id + " is not of type transformation return null." );

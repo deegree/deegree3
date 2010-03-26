@@ -403,12 +403,13 @@ public class CRSIdentifiable {
             areaOfUseBBox[2] = Double.NaN;
             areaOfUseBBox[3] = Double.NaN;
             if ( areasOfUse != null ) {
-                for ( String bboxString : areasOfUse ) {
+                for ( int i = 0; i < areasOfUse.length; ++i ) {
+                    String bboxString = areasOfUse[i];
                     try {
                         double[] ords = parseAreaBBox( bboxString );
-                        for ( int i = 0; i < 4; i++ ) {
-                            if ( Double.isNaN( areaOfUseBBox[i] ) || areaOfUseBBox[i] > ords[i] ) {
-                                areaOfUseBBox[i] = ords[i];
+                        for ( int co = 0; i < 4; co++ ) {
+                            if ( Double.isNaN( areaOfUseBBox[co] ) || areaOfUseBBox[i] > ords[co] ) {
+                                areaOfUseBBox[co] = ords[co];
                             }
                         }
                     } catch ( Exception e ) {

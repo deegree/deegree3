@@ -481,12 +481,21 @@ public class Helmert extends Transformation {
         // create the inverse matrix
         if ( isInverseTransform() ) {
             if ( inverseMatrix == null ) {
-                transformMatrix.invert( inverseMatrix );
+                inverseMatrix = getAsAffineTransform();
+                inverseMatrix.invert();
             }
             matrix = inverseMatrix;
         }
+
         for ( Point3d p : srcPts ) {
+            boolean zIsNaN = Double.isNaN( p.z );
+            if ( zIsNaN ) {
+                p.z = 1;
+            }
             matrix.transform( p );
+            if ( zIsNaN ) {
+                p.z = Double.NaN;
+            }
         }
 
         return srcPts;
@@ -500,5 +509,12 @@ public class Helmert extends Transformation {
     @Override
     public boolean isIdentity() {
         return !hasValues();
+    }
+
+    /**
+     * @return
+     */
+    public boolean areRotationsInRad() {
+        return rotationInRadians;
     }
 }
