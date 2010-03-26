@@ -36,6 +36,7 @@
 
 package org.deegree.feature.persistence;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -179,7 +180,8 @@ public class MemoryFeatureStoreTest {
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-        OutputStream out = new FileOutputStream( "/tmp/exported_ring.gml" );
+        OutputStream out = new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + File.separatorChar
+                                                 + "exported_ring.gml" );
         XMLStreamWriter writer = outputFactory.createXMLStreamWriter( out );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
 

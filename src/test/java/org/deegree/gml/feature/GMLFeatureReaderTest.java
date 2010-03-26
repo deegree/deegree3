@@ -39,6 +39,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -146,7 +147,7 @@ public class GMLFeatureReaderTest {
         for ( Feature feature : fc ) {
             if ( "f094".equals( feature.getId() ) ) {
                 Property decimalProp = feature.getProperty( new QName( "http://cite.opengeospatial.org/gmlsf",
-                                                                          "decimalProperty" ) );
+                                                                       "decimalProperty" ) );
                 LOG.debug( "decimal prop: " + decimalProp );
             }
         }
@@ -181,7 +182,9 @@ public class GMLFeatureReaderTest {
         XMLStreamWriter writer = new FormattingXMLStreamWriter(
                                                                 XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                       new FileWriter(
-                                                                                                                                      "/tmp/out.xml" ) ) );
+                                                                                                                                      System.getProperty( "java.io.tmpdir" )
+                                                                                                                                                              + File.separatorChar
+                                                                                                                                                              + "out.xml" ) ) );
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );

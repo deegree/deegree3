@@ -78,12 +78,13 @@ public class GriddedTileContainerTest extends CenterOuterTest {
     @SuppressWarnings("unused")
     private void readTest()
                             throws IOException {
-        GriddedTileContainer cont = GriddedBlobTileContainer.create( new File( "/tmp/" ),
+        GriddedTileContainer cont = GriddedBlobTileContainer.create( new File( System.getProperty( "java.io.tmpdir" ) + File.separatorChar ),
                                                                      new RasterIOOptions( OriginLocation.CENTER ) );
         for ( int x = 0; x < cont.getColumns(); ++x ) {
             for ( int y = 0; y < cont.getRows(); ++y ) {
                 AbstractRaster tile = cont.getTile( y, x );
-                RasterFactory.saveRasterToFile( tile, new File( "/tmp/" + y + "_" + x + ".png" ) );
+                RasterFactory.saveRasterToFile( tile, new File( System.getProperty( "java.io.tmpdir" )
+                                                                + File.separatorChar + y + "_" + x + ".png" ) );
             }
         }
     }

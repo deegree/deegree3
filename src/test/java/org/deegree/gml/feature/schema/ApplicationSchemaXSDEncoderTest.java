@@ -36,6 +36,7 @@
 
 package org.deegree.gml.feature.schema;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -91,7 +92,7 @@ public class ApplicationSchemaXSDEncoderTest {
         XMLStreamWriter writer = new FormattingXMLStreamWriter(
                                                                 XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                       new FileWriter(
-                                                                                                                                      "/tmp/out.xml" ) ) );
+System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "out.xml" ) ) );
         writer.setPrefix( "xlink", CommonNamespaces.XLNNS );
         writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );

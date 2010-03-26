@@ -37,6 +37,7 @@ package org.deegree.geometry;
 
 import static junit.framework.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -138,7 +139,9 @@ public class GeometryAnalysisTest {
             XMLStreamWriter writer = new FormattingXMLStreamWriter(
                                                                     XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                           new FileWriter(
-                                                                                                                                          "/tmp/out.gml" ) ) );
+                                                                                                                                          System.getProperty( "java.io.tmpdir" )
+                                                                                                                                                                  + File.separatorChar
+                                                                                                                                                                  + "out.gml" ) ) );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
             GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );
             gmlStream.write( result );

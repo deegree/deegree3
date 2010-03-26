@@ -127,7 +127,6 @@ public class RasterFactory {
                 Assert.assertEquals( compareVal, realVal );
             }
         }
-        // ImageIO.write( img, "tif", new File( "/tmp/out.tif" ) );
     }
 
     /**

@@ -135,6 +135,6 @@ public class JAXBAdapterTest {
         Marshaller m = jc.createMarshaller();
         m.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
         m.setProperty( Marshaller.JAXB_SCHEMA_LOCATION, "http://www.deegree.org/feature/featuretype http://schemas.deegree.org/feature/0.5.0/postgis_appschema.xsd" );
-        m.marshal( jaxbAppSchema, new File ("/tmp/out.txt") );
+        m.marshal( jaxbAppSchema, new File (System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "out.txt") );
     }    
 }

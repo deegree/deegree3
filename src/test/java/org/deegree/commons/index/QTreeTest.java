@@ -163,7 +163,8 @@ public class QTreeTest {
 
     private void output( QTree<Integer> tree, String i )
                             throws IOException {
-        FileWriter fw = new FileWriter( new File( "/tmp/out_" + i + ".dot" ) );
+        FileWriter fw = new FileWriter( new File( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "out_"
+                                                  + i + ".dot" ) );
         GraphvizDot.startDiGraph( fw );
         tree.outputAsDot( fw, "", 0, -1 );
         GraphvizDot.endGraph( fw );
