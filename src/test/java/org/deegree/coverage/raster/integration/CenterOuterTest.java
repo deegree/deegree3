@@ -92,6 +92,7 @@ public abstract class CenterOuterTest implements CompareValues {
         try {
             buildRasters();
         } catch ( IOException e ) {
+            e.printStackTrace();
             Assert.fail( e.getLocalizedMessage() );
         }
 
