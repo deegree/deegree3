@@ -37,6 +37,7 @@
 package org.deegree.cs.configuration.gml;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 import junit.framework.TestCase;
 
@@ -77,8 +78,8 @@ public class GMLCRSProviderTest extends TestCase {
 
     private static Logger LOG = LoggerFactory.getLogger( GMLCRSProviderTest.class );
 
-    private GMLCRSProvider getProvider() {
-        File f = new File( GMLCRSProviderTest.class.getResource( CONFIG_FILE ).getPath() );
+    private GMLCRSProvider getProvider() throws URISyntaxException {
+        File f = new File( GMLCRSProviderTest.class.getResource( CONFIG_FILE ).toURI() );
         if ( !f.exists() ) {
             LOG.error( "No configuration file found, nothing to test. " );
             throw new NullPointerException( "The file was not found. " );
@@ -96,9 +97,10 @@ public class GMLCRSProviderTest extends TestCase {
 
     /**
      * Tries to load the configuration
+     * @throws URISyntaxException 
      */
     @Test
-    public void testLoadingConfiguration() {
+    public void testLoadingConfiguration() throws URISyntaxException {
         try {
             GMLCRSProvider gProvider = getProvider();
             assertFalse( gProvider.canExport() );
@@ -109,9 +111,10 @@ public class GMLCRSProviderTest extends TestCase {
 
     /**
      * Tries to create a crs by id.
+     * @throws URISyntaxException 
      */
     @Test
-    public void testCRSByID() {
+    public void testCRSByID() throws URISyntaxException {
         try {
             GMLCRSProvider gProvider = getProvider();
             // for (String id : gProvider.getCRSByID(""))) {
@@ -195,8 +198,9 @@ public class GMLCRSProviderTest extends TestCase {
 
     /**
      * Test a cache
+     * @throws URISyntaxException 
      */
-    public void testCache() {
+    public void testCache() throws URISyntaxException {
         GMLCRSProvider gProvider = getProvider();
 
         CoordinateSystem testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
