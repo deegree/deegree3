@@ -18,6 +18,7 @@ drop table polygons;
 
 -- main tables
 create table layers (
+id varchar,
 name varchar,
 title varchar not null,
 connectionid varchar,
@@ -97,7 +98,7 @@ displacementy float,
 perpendicularoffset float
 );
 
-create index pk_name_layers on layers(name);
+create index pk_id_layers on layers(id);
 create index pk_id_styles on styles(id);
 create index pk_id_fills on fills(id);
 create index pk_id_strokes on strokes(id);
