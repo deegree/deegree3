@@ -245,6 +245,38 @@ public class GenerateQueryableProperties {
         // generateISOQP_CRSStatement( isUpdate );
         // }
 
+        generateADDQP_DegreeStatement( isUpdate, connection, stm, operatesOnId, parsedElement.getQueryableProperties() );
+
+        if ( parsedElement.getQueryableProperties().getLimitation() != null ) {
+            generateADDQP_LimitationsStatement( isUpdate, connection, stm, operatesOnId,
+                                                parsedElement.getQueryableProperties() );
+        }
+
+        if ( parsedElement.getQueryableProperties().getLineage() != null ) {
+            generateADDQP_LineageStatement( isUpdate, connection, stm, operatesOnId,
+                                            parsedElement.getQueryableProperties() );
+        }
+
+        if ( parsedElement.getQueryableProperties().getAccessConstraints() != null ) {
+            generateADDQP_AccessConstraintsStatement( isUpdate, connection, stm, operatesOnId,
+                                                      parsedElement.getQueryableProperties() );
+        }
+
+        if ( parsedElement.getQueryableProperties().getOtherConstraints() != null ) {
+            generateADDQP_OtherConstraintsStatement( isUpdate, connection, stm, operatesOnId,
+                                                     parsedElement.getQueryableProperties() );
+        }
+
+        if ( parsedElement.getQueryableProperties().getClassification() != null ) {
+            generateADDQP_ClassificationStatement( isUpdate, connection, stm, operatesOnId,
+                                                   parsedElement.getQueryableProperties() );
+        }
+
+        if ( parsedElement.getQueryableProperties().getSpecificationTitle() != null ) {
+            generateADDQP_SpecificationStatement( isUpdate, connection, stm, operatesOnId,
+                                                  parsedElement.getQueryableProperties() );
+        }
+
     }
 
     /**
@@ -568,8 +600,21 @@ public class GenerateQueryableProperties {
 
         StringWriter s_PRE = new StringWriter( 200 );
         StringWriter s_POST = new StringWriter( 50 );
+        // String operatesOnString;
 
         for ( OperatesOnData operatesOnData : qp.getOperatesOnData() ) {
+
+            // Pattern p = Pattern.compile( "[0-9]" );
+            // Matcher m = p.matcher( "" + operatesOnData.getOperatesOn().charAt( 0 ) );
+            // boolean b = m.matches();
+            //
+            // if ( b ) {
+            // operatesOnString = "_" + operatesOnData.getOperatesOn();
+            // } else {
+            // operatesOnString = operatesOnData.getOperatesOn();
+            // }
+            // LOG.info( "OperatesOnString: " + operatesOnString );
+
             s_PRE.append( "INSERT INTO " + databaseTable
                           + " (id, fk_datasets, operateson, operatesonidentifier, operatesonname)" );
 
@@ -954,6 +999,169 @@ public class GenerateQueryableProperties {
 
             executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE,
                                                       s_POST );
+        }
+
+    }
+
+    /**
+     * Puts the degree for this dataset into the database.
+     * 
+     * @param isUpdate
+     * @param connection
+     * @param stm
+     * @param operatesOnId
+     * @param qp
+     */
+    private void generateADDQP_DegreeStatement( boolean isUpdate, Connection connection, Statement stm,
+                                                int operatesOnId, QueryableProperties qp ) {
+        final String databaseTable = PostGISMappingsISODC.databaseTables.addqp_degree.name();
+
+        StringWriter s_PRE = new StringWriter( 200 );
+        StringWriter s_POST = new StringWriter( 50 );
+
+        s_PRE.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, degree)" );
+
+        s_POST.append( "'" + qp.isDegree() + "');" );
+
+        executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE, s_POST );
+
+    }
+
+    /**
+     * Puts the lineage for this dataset into the database.
+     * 
+     * @param isUpdate
+     * @param connection
+     * @param stm
+     * @param operatesOnId
+     * @param qp
+     */
+    private void generateADDQP_LineageStatement( boolean isUpdate, Connection connection, Statement stm,
+                                                 int operatesOnId, QueryableProperties qp ) {
+        final String databaseTable = PostGISMappingsISODC.databaseTables.addqp_lineage.name();
+
+        StringWriter s_PRE = new StringWriter( 200 );
+        StringWriter s_POST = new StringWriter( 50 );
+
+        s_PRE.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, lineage)" );
+
+        s_POST.append( "'" + qp.getLineage() + "');" );
+
+        executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE, s_POST );
+
+    }
+
+    /**
+     * Puts the specification for this dataset into the database.
+     * 
+     * @param isUpdate
+     */
+    private void generateADDQP_SpecificationStatement( boolean isUpdate, Connection connection, Statement stm,
+                                                       int operatesOnId, QueryableProperties qp ) {
+        final String databaseTable = PostGISMappingsISODC.databaseTables.addqp_specification.name();
+
+        StringWriter s_PRE = new StringWriter( 200 );
+        StringWriter s_POST = new StringWriter( 50 );
+
+        s_PRE.append( "INSERT INTO " + databaseTable
+                      + " (id, fk_datasets, specificationTitle, specificationDateType, specificationDate)" );
+
+        s_POST.append( "'" + qp.getSpecificationTitle() + "','" + qp.getSpecificationDateType() + "','"
+                       + qp.getSpecificationDate() + "');" );
+
+        executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE, s_POST );
+
+    }
+
+    /**
+     * Puts the accessConstraints for this dataset into the database.
+     * 
+     * @param isUpdate
+     */
+    private void generateADDQP_AccessConstraintsStatement( boolean isUpdate, Connection connection, Statement stm,
+                                                           int operatesOnId, QueryableProperties qp ) {
+        final String databaseTable = PostGISMappingsISODC.databaseTables.addqp_accessConstraint.name();
+
+        StringWriter s_PRE = new StringWriter( 200 );
+        StringWriter s_POST = new StringWriter( 50 );
+
+        for ( String accessConstraint : qp.getAccessConstraints() ) {
+            s_PRE.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, accessconstraint)" );
+
+            s_POST.append( "'" + accessConstraint + "');" );
+
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE,
+                                                      s_POST );
+        }
+
+    }
+
+    /**
+     * Puts the limitation for this dataset into the database.
+     * 
+     * @param isUpdate
+     */
+    private void generateADDQP_LimitationsStatement( boolean isUpdate, Connection connection, Statement stm,
+                                                     int operatesOnId, QueryableProperties qp ) {
+        final String databaseTable = PostGISMappingsISODC.databaseTables.addqp_limitation.name();
+
+        StringWriter s_PRE = new StringWriter( 200 );
+        StringWriter s_POST = new StringWriter( 50 );
+
+        for ( String limitation : qp.getLimitation() ) {
+            s_PRE.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, limitation)" );
+
+            s_POST.append( "'" + limitation + "');" );
+
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE,
+                                                      s_POST );
+        }
+
+    }
+
+    /**
+     * Puts the otherConstaints for this dataset into the database.
+     * 
+     * @param isUpdate
+     */
+    private void generateADDQP_OtherConstraintsStatement( boolean isUpdate, Connection connection, Statement stm,
+                                                          int operatesOnId, QueryableProperties qp ) {
+        final String databaseTable = PostGISMappingsISODC.databaseTables.addqp_otherConstraint.name();
+
+        StringWriter s_PRE = new StringWriter( 200 );
+        StringWriter s_POST = new StringWriter( 50 );
+
+        for ( String otherConstraint : qp.getOtherConstraints() ) {
+            s_PRE.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, otherConstraint)" );
+
+            s_POST.append( "'" + otherConstraint + "');" );
+
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE,
+                                                      s_POST );
+        }
+
+    }
+
+    /**
+     * Puts the classification for this dataset into the database.
+     * 
+     * @param isUpdate
+     */
+    private void generateADDQP_ClassificationStatement( boolean isUpdate, Connection connection, Statement stm,
+                                                        int operatesOnId, QueryableProperties qp ) {
+        final String databaseTable = PostGISMappingsISODC.databaseTables.addqp_classification.name();
+
+        StringWriter s_PRE = new StringWriter( 200 );
+        StringWriter s_POST = new StringWriter( 50 );
+
+        for ( String classification : qp.getClassification() ) {
+            s_PRE.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, classification)" );
+
+            s_POST.append( "'" + classification + "');" );
+
+            executeQueryablePropertiesDatabasetables( isUpdate, connection, stm, operatesOnId, databaseTable, s_PRE,
+                                                      s_POST );
+
         }
 
     }
