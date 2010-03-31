@@ -130,6 +130,163 @@ public class QueryableProperties {
 
     // ---</additional common queryable properties for SERVICE>
 
+    // ---<additional common queryable properties for INSPIRE>
+
+    private boolean degree;
+
+    private String specificationTitle;
+
+    private String specificationDateType;
+
+    private Date specificationDate;
+
+    private List<String> limitation;
+
+    private List<String> accessConstraints;
+
+    private List<String> otherConstraints;
+
+    private List<String> classification;
+
+    /**
+     * @return the degree
+     */
+    public boolean isDegree() {
+        return degree;
+    }
+
+    /**
+     * @param degree
+     *            the degree to set
+     */
+    public void setDegree( boolean degree ) {
+        this.degree = degree;
+    }
+
+    /**
+     * @return the specificationTitle
+     */
+    public String getSpecificationTitle() {
+        return specificationTitle;
+    }
+
+    /**
+     * @param specificationTitle
+     *            the specificationTitle to set
+     */
+    public void setSpecificationTitle( String specificationTitle ) {
+        this.specificationTitle = specificationTitle;
+    }
+
+    /**
+     * @return the specificationDateType
+     */
+    public String getSpecificationDateType() {
+        return specificationDateType;
+    }
+
+    /**
+     * @param specificationDateType
+     *            the specificationDateType to set
+     */
+    public void setSpecificationDateType( String specificationDateType ) {
+        this.specificationDateType = specificationDateType;
+    }
+
+    /**
+     * @return the specificationDate
+     */
+    public Date getSpecificationDate() {
+        return specificationDate;
+    }
+
+    /**
+     * @param specificationDate
+     *            the specificationDate to set
+     */
+    public void setSpecificationDate( Date specificationDate ) {
+        this.specificationDate = specificationDate;
+    }
+
+    /**
+     * @return the limitation
+     */
+    public List<String> getLimitation() {
+        return limitation;
+    }
+
+    /**
+     * @param limitation
+     *            the limitation to set
+     */
+    public void setLimitation( List<String> limitation ) {
+        this.limitation = limitation;
+    }
+
+    /**
+     * @return the accessConstraints
+     */
+    public List<String> getAccessConstraints() {
+        return accessConstraints;
+    }
+
+    /**
+     * @param accessConstraints
+     *            the accessConstraints to set
+     */
+    public void setAccessConstraints( List<String> accessConstraints ) {
+        this.accessConstraints = accessConstraints;
+    }
+
+    /**
+     * @return the otherConstraints
+     */
+    public List<String> getOtherConstraints() {
+        return otherConstraints;
+    }
+
+    /**
+     * @param otherConstraints
+     *            the otherConstraints to set
+     */
+    public void setOtherConstraints( List<String> otherConstraints ) {
+        this.otherConstraints = otherConstraints;
+    }
+
+    /**
+     * @return the classification
+     */
+    public List<String> getClassification() {
+        return classification;
+    }
+
+    /**
+     * @param classification
+     *            the classification to set
+     */
+    public void setClassification( List<String> classification ) {
+        this.classification = classification;
+    }
+
+    /**
+     * @return the lineage
+     */
+    public String getLineage() {
+        return lineage;
+    }
+
+    /**
+     * @param lineage
+     *            the lineage to set
+     */
+    public void setLineage( String lineage ) {
+        this.lineage = lineage;
+    }
+
+    private String lineage;
+
+    // ---</additional common queryable properties for INSPIRE>
+
     /**
      * @return _abstract
      */

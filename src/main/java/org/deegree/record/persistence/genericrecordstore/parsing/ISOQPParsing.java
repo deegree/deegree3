@@ -539,6 +539,44 @@ public final class ISOQPParsing extends XMLAdapter {
 
         if ( omElementNullCheckList != null ) {
             gr.setDataQualityInfo( getElements( rootElement, new XPath( "./gmd:dataQualityInfo", nsContextISOParsing ) ) );
+            qp.setLineage( getNodeAsString(
+                                            rootElement,
+                                            new XPath(
+                                                       "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString",
+                                                       nsContextISOParsing ), "" ) );
+            qp.setDegree( getNodeAsBoolean(
+                                            rootElement,
+                                            new XPath(
+                                                       "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:pass/gco:Boolean",
+                                                       nsContextISOParsing ), false ) );
+            qp.setSpecificationTitle( getNodeAsString(
+                                                       rootElement,
+                                                       new XPath(
+                                                                  "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                                                                  nsContextISOParsing ), "" ) );
+
+            qp.setSpecificationDateType( getNodeAsString(
+                                                          rootElement,
+                                                          new XPath(
+                                                                     "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue",
+                                                                     nsContextISOParsing ), "" ) );
+
+            LOG.info( "SpecificationDateType: " + qp.getSpecificationDateType() );
+
+            String specificationDateString = getNodeAsString(
+                                                              rootElement,
+                                                              new XPath(
+                                                                         "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date",
+                                                                         nsContextISOParsing ), "0000-00-00" );
+            Date dateSpecificationDate = null;
+            try {
+                dateSpecificationDate = new Date( specificationDateString );
+            } catch ( ParseException e ) {
+
+                LOG.debug( "error: " + e.getMessage(), e );
+            }
+
+            qp.setSpecificationDate( dateSpecificationDate );
 
         }
         /*---------------------------------------------------------------
@@ -723,6 +761,10 @@ public final class ISOQPParsing extends XMLAdapter {
         qp.setKeywords( keywordList );
 
         qp.setTitle( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dc:title", nsContextISOParsing ) ) ) );
+
+        // List<String> abstractList = new ArrayList<String>();
+        // TODO
+        // abstractList.add( e )
 
         qp.set_abstract( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dct:abstract",
                                                                                    nsContextISOParsing ) ) ) );

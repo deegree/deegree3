@@ -445,6 +445,30 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                sv_service_OR_md_dataIdentification,
                                                                new XPath( "./gmd:resourceConstraints", nsContextParseII ) );
 
+            qp.setLimitation( Arrays.asList( getNodesAsStrings(
+                                                                sv_service_OR_md_dataIdentification,
+                                                                new XPath(
+                                                                           "./gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString",
+                                                                           nsContextParseII ) ) ) );
+
+            qp.setAccessConstraints( Arrays.asList( getNodesAsStrings(
+                                                                       sv_service_OR_md_dataIdentification,
+                                                                       new XPath(
+                                                                                  "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue",
+                                                                                  nsContextParseII ) ) ) );
+
+            qp.setOtherConstraints( Arrays.asList( getNodesAsStrings(
+                                                                      sv_service_OR_md_dataIdentification,
+                                                                      new XPath(
+                                                                                 "./gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gco:CharacterString",
+                                                                                 nsContextParseII ) ) ) );
+
+            qp.setClassification( Arrays.asList( getNodesAsStrings(
+                                                                    sv_service_OR_md_dataIdentification,
+                                                                    new XPath(
+                                                                               "./gmd:resourceConstraints/gmd:MD_SecurityConstraints/gmd:classification/gmd:MD_ClassificationCode/@codeListValue",
+                                                                               nsContextParseII ) ) ) );
+
             /*---------------------------------------------------------------
              * 
              * AggregationInfo
