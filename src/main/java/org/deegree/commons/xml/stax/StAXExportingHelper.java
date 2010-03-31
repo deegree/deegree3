@@ -36,6 +36,7 @@
 
 package org.deegree.commons.xml.stax;
 
+import static org.deegree.commons.utils.StringUtils.isSet;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.xml.namespace.QName;
@@ -65,5 +66,41 @@ public class StAXExportingHelper {
         } else {
             xmlStream.writeAttribute( name.getPrefix(), name.getNamespaceURI(), name.getLocalPart(), value );
         }
+    }
+
+    /**
+     * Writes a start element from the given QName.
+     * 
+     * @param xmlStream
+     * @param qName
+     * @throws XMLStreamException
+     */
+    public static void writeStartElement( XMLStreamWriter xmlStream, QName qName )
+                            throws XMLStreamException {
+        if ( qName == null ) {
+            throw new XMLStreamException( "The given qname may not be null" );
+        }
+        int id = isSet( qName.getNamespaceURI() ) ? 1 : 0;
+        id += isSet( qName.getLocalPart() ) ? 2 : 0;
+        id += isSet( qName.getPrefix() ) ? 4 : 0;
+        switch ( id ) {
+        case 0:
+            throw new XMLStreamException( "The given qname may not be null or empty" );
+        case 1:
+        case 4:
+        case 5:
+            throw new XMLStreamException( "The given qname must have a local part." );
+        case 2:
+        case 6:
+            xmlStream.writeStartElement( qName.getLocalPart() );
+            break;
+        case 3:
+            xmlStream.writeStartElement( qName.getNamespaceURI(), qName.getLocalPart() );
+            break;
+        case 7:
+            xmlStream.writeStartElement( qName.getPrefix(), qName.getLocalPart(), qName.getNamespaceURI() );
+            break;
+        }
+
     }
 }
