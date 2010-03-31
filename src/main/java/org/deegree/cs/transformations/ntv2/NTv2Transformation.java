@@ -38,6 +38,10 @@
 
 package org.deegree.cs.transformations.ntv2;
 
+import static org.deegree.cs.transformations.TransformationFactory.createWGSAlligned;
+import static org.deegree.cs.transformations.coordinate.ConcatenatedTransform.concatenate;
+import static org.deegree.cs.transformations.coordinate.MatrixTransform.createMatrixTransform;
+import static org.deegree.cs.utilities.Matrix.swapAndRotateGeoAxis;
 import static org.deegree.cs.utilities.ProjectionUtils.DTR;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -59,11 +63,13 @@ import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
+import org.deegree.cs.utilities.Matrix;
 import org.deegree.cs.utilities.ProjectionUtils;
 import org.slf4j.Logger;
 
 import au.com.objectix.jgridshift.GridShift;
 import au.com.objectix.jgridshift.GridShiftFile;
+import au.com.objectix.jgridshift.SubGrid;
 
 /**
  * An NTv2 Transformation uses a GridShift file to transform ordinates defined in a source CRS based on a given
@@ -227,30 +233,57 @@ public class NTv2Transformation extends Transformation {
 
         for ( Point3d p : srcPts ) {
             // rb: only degrees are supported :-)
-            if ( swapFromSource ) {
-                shifter.setLonPositiveEastDegrees( p.y * ProjectionUtils.RTD );
-                shifter.setLatDegrees( p.x * ProjectionUtils.RTD );
-            } else {
-                shifter.setLonPositiveEastDegrees( p.x * ProjectionUtils.RTD );
-                shifter.setLatDegrees( p.y * ProjectionUtils.RTD );
-            }
+            shifter.setLonPositiveEastDegrees( p.x * ProjectionUtils.RTD );
+            shifter.setLatDegrees( p.y * ProjectionUtils.RTD );
+            boolean shift = false;
             try {
                 if ( isInverseTransform() ) {
-                    gsf.gridShiftReverse( shifter );
+                    shift = gsf.gridShiftReverse( shifter );
                 } else {
-                    gsf.gridShiftForward( shifter );
+                    shift = gsf.gridShiftForward( shifter );
                 }
             } catch ( IOException e ) {
                 LOG.debug( "Exception occurred: " + e.getLocalizedMessage(), e );
                 LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
             }
-            if ( swapToTarget ) {
-                p.x = shifter.getShiftedLatDegrees() * DTR;
-                p.y = shifter.getShiftedLonPositiveEastDegrees() * DTR;
+            if ( !shift ) {
+                StringBuilder sb = new StringBuilder( "Could not do " );
+                sb.append( ( isInverseTransform() ? "an inverse" : "a forward" ) ).append( " transform because: " );
+                sb.append( "gridfile is loaded: " ).append( gsf.isLoaded() );
+                SubGrid[] subGridTree = gsf.getSubGridTree();
+                if ( subGridTree == null ) {
+                    sb.append( "no sub grid tree could be retrieved." );
+                } else {
+                    sb.append( "Getting SubGrid for coordinates: " );
+                    sb.append( shifter.getLonPositiveEastDegrees() ).append( "," ).append( shifter.getLatDegrees() );
+                    SubGrid sg = subGridTree[0];
+                    SubGrid forCoord = sg.getSubGridForCoord( shifter.getLonPositiveWestSeconds(),
+                                                              shifter.getLatSeconds() );
+                    if ( forCoord == null ) {
+                        sb.append( ". Retrieval of SubGrid for coordinates: " );
+                        sb.append( shifter.getLonPositiveEastDegrees() ).append( "," );
+                        sb.append( shifter.getLatDegrees() );
+                        sb.append( " Failed." );
+                    }
+                }
+                LOG.debug( sb.toString() );
             } else {
-                p.x = shifter.getShiftedLonPositiveEastDegrees() * DTR;
-                p.y = shifter.getShiftedLatDegrees() * DTR;
+                StringBuilder sb = new StringBuilder( "Successfully applied " );
+                sb.append( ( isInverseTransform() ? "an inverse" : "a forward" ) ).append(
+                                                                                           " transform for incoming points: " );
+                sb.append( shifter.getLonPositiveEastDegrees() ).append( "," ).append( shifter.getLatDegrees() );
+                sb.append( ", result->" );
+                sb.append( shifter.getShiftedLonPositiveEastDegrees() ).append( "," ).append(
+                                                                                              shifter.getShiftedLatDegrees() );
+                LOG.debug( sb.toString() );
             }
+            // if ( swapToTarget ) {
+            // p.x = shifter.getShiftedLatDegrees() * DTR;
+            // p.y = shifter.getShiftedLonPositiveEastDegrees() * DTR;
+            // } else {
+            p.x = shifter.getShiftedLonPositiveEastDegrees() * DTR;
+            p.y = shifter.getShiftedLatDegrees() * DTR;
+            // }
         }
         return srcPts;
     }
@@ -285,5 +318,32 @@ public class NTv2Transformation extends Transformation {
         boolean s = swapFromSource;
         this.swapFromSource = swapToTarget;
         this.swapToTarget = s;
+    }
+
+    /**
+     * Create a concatenated (swap) transform for the {@link NTv2Transformation} if the ({@link GeographicCRS}) source
+     * and target are not aligned with the expected lon/lat.
+     * 
+     * @param transform
+     *            to create a swap matrix for.
+     * @return the concatenated Swap tranformation for the given transform Matrix
+     */
+    public final static Transformation createAxisAllignedNTv2Transformation( NTv2Transformation transform ) {
+        Transformation result = transform;
+        final GeographicCRS sourceCRS = (GeographicCRS) result.getSourceCRS();
+        final GeographicCRS targetCRS = (GeographicCRS) result.getTargetCRS();
+        if ( sourceCRS != null && targetCRS != null ) {
+            final GeographicCRS alignedSource = createWGSAlligned( sourceCRS );
+            final GeographicCRS alignedTarget = createWGSAlligned( targetCRS );
+            try {
+                final Matrix first = swapAndRotateGeoAxis( sourceCRS, alignedSource );
+                final Matrix second = swapAndRotateGeoAxis( alignedTarget, targetCRS );
+                result = concatenate( createMatrixTransform( sourceCRS, alignedSource, first ), result,
+                                      createMatrixTransform( alignedTarget, targetCRS, second ) );
+            } catch ( TransformationException e ) {
+                LOG.warn( "Could not create an alignment matrix for the supplied NTv2 transformation, are the coordinate systems correctly defined?" );
+            }
+        }
+        return result;
     }
 }

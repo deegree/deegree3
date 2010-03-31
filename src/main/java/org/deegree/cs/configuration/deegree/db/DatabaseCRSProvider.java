@@ -202,7 +202,7 @@ public class DatabaseCRSProvider implements CRSProvider {
     /**
      * @return a list of {@link CRSCodeType}s from all the available CRSs
      */
-    public List<CRSCodeType> getAvailableCRSCodes() {
+    public List<CRSCodeType[]> getAvailableCRSCodes() {
         return querier.getAvailableCRSCodes();
     }
 

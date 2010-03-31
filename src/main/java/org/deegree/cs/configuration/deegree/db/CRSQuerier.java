@@ -707,7 +707,7 @@ public class CRSQuerier {
                             throws SQLException {
         List<CoordinateSystem> CRSlist = new LinkedList<CoordinateSystem>();
 
-        List<CRSCodeType> crsCodes = getAvailableCRSCodes();
+        List<CRSCodeType[]> crsCodes = getAvailableCRSCodes();
         int nCRSCodes = crsCodes.size();
         long time1 = System.currentTimeMillis();
         System.out.println( "Loading " + nCRSCodes + " CRSs..." );
@@ -717,7 +717,7 @@ public class CRSQuerier {
                 percent = ( i * 100 ) / nCRSCodes;
                 System.out.println( percent + "%" );
             }
-            CRSlist.add( getCRSByCode( crsCodes.get( i ) ) );
+            CRSlist.add( getCRSByCode( crsCodes.get( i )[0] ) );
         }
         System.out.println( "Complete! ( loading time: " + ( System.currentTimeMillis() - time1 ) + " ms )" );
         // let other methods know that the cache contains all the CRSs, so not to query them again in the database
@@ -917,15 +917,15 @@ public class CRSQuerier {
      * 
      * @return a list with CRSCodeType elements
      */
-    protected List<CRSCodeType> getAvailableCRSCodes() {
-        List<CRSCodeType> listCodes = new ArrayList<CRSCodeType>();
+    protected List<CRSCodeType[]> getAvailableCRSCodes() {
+        List<CRSCodeType[]> listCodes = new ArrayList<CRSCodeType[]>();
 
         try {
             PreparedStatement ps = conn.prepareStatement( "SELECT original " + "FROM crs_lookup JOIN code ON"
                                                           + " crs_lookup.id = code.ref_id" );
             ResultSet rs = ps.executeQuery();
             while ( rs.next() ) {
-                listCodes.add( new CRSCodeType( rs.getString( 1 ) ) );
+                listCodes.add( new CRSCodeType[] { new CRSCodeType( rs.getString( 1 ) ) } );
             }
         } catch ( SQLException e ) {
             LOG.error( e.getMessage() );
@@ -1085,7 +1085,7 @@ public class CRSQuerier {
         }
 
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getInstance(
-                                                                                                     "org.deegree.cs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
+                                                                                             "org.deegree.cs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
         CoordinateSystem crs = dbProvider.getCRSByCode( new CRSCodeType( args[0] ) );
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

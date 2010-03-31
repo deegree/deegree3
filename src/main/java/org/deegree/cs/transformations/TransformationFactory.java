@@ -41,6 +41,7 @@ import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPH
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTED;
 import static org.deegree.cs.transformations.coordinate.ConcatenatedTransform.concatenate;
 import static org.deegree.cs.transformations.coordinate.MatrixTransform.createMatrixTransform;
+import static org.deegree.cs.transformations.ntv2.NTv2Transformation.createAxisAllignedNTv2Transformation;
 import static org.deegree.cs.utilities.MappingUtils.updateFromDefinedTransformations;
 import static org.deegree.cs.utilities.Matrix.swapAndRotateGeoAxis;
 import static org.deegree.cs.utilities.Matrix.swapAxis;
@@ -67,6 +68,7 @@ import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
+import org.deegree.cs.transformations.coordinate.IdentityTransform;
 import org.deegree.cs.transformations.coordinate.MatrixTransform;
 import org.deegree.cs.transformations.coordinate.ProjectionTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
@@ -220,10 +222,11 @@ public class TransformationFactory {
             LOG.debug( "Source crs and target crs are equal, no transformation needed (returning identity matrix)." );
             final Matrix matrix = new Matrix( sourceCRS.getDimension() + 1 );
             matrix.setIdentity();
-            return createMatrixTransform( sourceCRS, targetCRS, matrix );
+            return new IdentityTransform( sourceCRS, targetCRS );
         }
 
         List<Transformation> toBeUsed = copyTransformations( transformationsToBeUsed );
+
         // Do following steps:
         // 1) Check if the 'supplied' transformation already contains a path from source to target.
         // 2) Call crs-config.getTransformation for source and target
@@ -345,6 +348,8 @@ public class TransformationFactory {
      *            the original requested transformations.
      * @return a copy of the list without any duplicates or <code>null</code> if the given list was null or the empty
      *         list if the given list was empty.
+     * @throws TransformationException
+     *             if an allignment to an evantual NTv2 could not be done.
      */
     private List<Transformation> copyTransformations( List<Transformation> originalRequested ) {
         if ( originalRequested == null || originalRequested.isEmpty() ) {
@@ -360,16 +365,22 @@ public class TransformationFactory {
                 boolean isDuplicate = false;
                 while ( it.hasNext() && !isDuplicate ) {
                     Transformation tra = it.next();
-                    if ( tra != null && tra.equalOnCRS( tr ) ) {
-                        isDuplicate = true;
+                    if ( tra != null ) {
+                        if ( tra.equalOnCRS( tr ) ) {
+                            isDuplicate = true;
+                        }
                     }
                 }
                 if ( !isDuplicate ) {
+                    if ( "NTv2".equalsIgnoreCase( tr.getImplementationName() ) ) {
+                        // rb: dirty hack, ntv2 needs lon/lat incoming coordinates, if not set, swap them.
+                        // the axis must be swapped to fit ntv2 (which is defined on lon/lat.
+                        tr = createAxisAllignedNTv2Transformation( (NTv2Transformation) tr );
+                    }
                     result.add( tr );
                 }
             }
         }
-
         return result;
     }
 
@@ -792,6 +803,9 @@ public class TransformationFactory {
                 LOG.debug( sb.toString() );
             }
         }
+        if ( result != null && ( "NTv2".equals( result.getImplementationName() ) ) ) {
+            result = createAxisAllignedNTv2Transformation( (NTv2Transformation) result );
+        }
         return result;
     }
 
@@ -924,7 +938,7 @@ public class TransformationFactory {
      * @param sourceCRS
      * @return a new crs with same axis as wgs84.
      */
-    private final GeographicCRS createWGSAlligned( GeographicCRS sourceCRS ) {
+    public final static GeographicCRS createWGSAlligned( GeographicCRS sourceCRS ) {
         return new GeographicCRS( sourceCRS.getGeodeticDatum(), GeographicCRS.WGS84.getAxis(),
                                   new CRSCodeType( "wgsalligned" ) );
     }
@@ -1188,7 +1202,7 @@ public class TransformationFactory {
      *            to check for.
      * @return true if the given transformation is null or an identity.
      */
-    private boolean isIdentity( Transformation transformation ) {
+    public final static boolean isIdentity( Transformation transformation ) {
         return transformation == null || transformation.isIdentity();
     }
 

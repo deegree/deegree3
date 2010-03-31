@@ -42,7 +42,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -203,15 +202,9 @@ public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
         return (CRSParser<T>) super.getResolver();
     }
 
-    public List<CRSCodeType> getAvailableCRSCodes() {
+    public List<CRSCodeType[]> getAvailableCRSCodes() {
         List<CRSCodeType[]> codes = getResolver().getAvailableCRSCodes();
-        List<CRSCodeType> result = new LinkedList<CRSCodeType>();
-        for ( CRSCodeType[] code : codes ) {
-            if ( code != null ) {
-                result.addAll( Arrays.asList( code ) );
-            }
-        }
-        return result;
+        return codes;
     }
 
     public List<CoordinateSystem> getAvailableCRSs() {
@@ -342,16 +335,16 @@ public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
                 } else {
                     provider = new DeegreeCRSProvider<StAXResource>( properties );
                     parser = new org.deegree.cs.configuration.deegree.xml.stax.Parser(
-                                                                                        (DeegreeCRSProvider<StAXResource>) provider,
-                                                                                        properties );
+                                                                                       (DeegreeCRSProvider<StAXResource>) provider,
+                                                                                       properties );
                 }
             }
         }
         if ( provider == null ) {
             provider = new DeegreeCRSProvider<StAXResource>( properties );
             parser = new org.deegree.cs.configuration.deegree.xml.stax.Parser(
-                                                                                (DeegreeCRSProvider<StAXResource>) provider,
-                                                                                properties );
+                                                                               (DeegreeCRSProvider<StAXResource>) provider,
+                                                                               properties );
         }
         provider.setResolver( parser );
         return provider;
@@ -363,11 +356,11 @@ public class DeegreeCRSProvider<T> extends AbstractCRSProvider<T> {
      * @param args
      */
     public static void main( String[] args ) {
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration().getProvider();
+        CRSProvider provider = CRSConfiguration.getInstance().getProvider();
 
         long sT = currentTimeMillis();
 
-        List<CRSCodeType> availableCRSCodes = provider.getAvailableCRSCodes();
+        List<CRSCodeType[]> availableCRSCodes = provider.getAvailableCRSCodes();
         long eT = currentTimeMillis() - sT;
         System.out.println( "Action took: " + eT + " ms." );
 

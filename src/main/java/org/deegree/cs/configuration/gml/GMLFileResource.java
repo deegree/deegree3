@@ -43,6 +43,7 @@ import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.PROJECTE
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -54,11 +55,14 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.configuration.resources.XMLFileResource;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.exceptions.CRSConfigurationException;
+import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
@@ -77,7 +81,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @LoggingNotes(debug = "Get information about the currently parsed transformations.")
-public class GMLFileResource extends XMLFileResource {
+public class GMLFileResource extends XMLFileResource implements GMLResource {
 
     /**
      * 
@@ -90,6 +94,8 @@ public class GMLFileResource extends XMLFileResource {
 
     private static final String TRANSFORM_XPATH = "/" + PRE + "Dictionary/" + PRE + "dictionaryEntry/" + PRE
                                                   + "Transformation";
+
+    private static final String ID_XPATH = "//" + PRE + "dictionaryEntry/" + PRE + "*[" + PRE + "identifier='";
 
     private List<OMElement> transformations;
 
@@ -273,12 +279,59 @@ public class GMLFileResource extends XMLFileResource {
                             throws IOException {
         OMElement result = null;
         try {
-            XPath xpath = new XPath( "//" + PRE + "dictionaryEntry/" + PRE + "*[" + PRE + "identifier='" + uri + "']",
-                                     nsContext );
+            XPath xpath = new XPath( ID_XPATH + uri + "']", nsContext );
             OMElement root = getRootElement();
             result = adapter.getElement( root, xpath );
         } catch ( XMLParsingException e ) {
             LOG.error( e.getLocalizedMessage(), e );
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.crs.configuration.gml.GMLResource#getAvailableCRSIds()
+     */
+    public List<CRSCodeType[]> getAvailableCRSIds() {
+        List<OMElement> crsIDs = new LinkedList<OMElement>();
+        try {
+            XPath xpath = new XPath( "//" + PRE + "dictionaryEntry/*[" + PRE + "ProjectedCRS|" + PRE + "CompoundCRS|"
+                                     + PRE + "GeodeticCRS]", nsContext );
+            crsIDs.addAll( adapter.getElements( getRootElement(), xpath ) );
+        } catch ( XMLParsingException e ) {
+            throw new CRSConfigurationException(
+                                                 Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS", e.getMessage() ),
+                                                 e );
+        }
+
+        List<CRSCodeType[]> result = new ArrayList<CRSCodeType[]>();
+        for ( OMElement crs : crsIDs ) {
+            if ( crs != null ) {
+                String[] ids = adapter.getNodesAsStrings( crs, new XPath( PRE + "identifier", nsContext ) );
+                if ( ids != null ) {
+                    CRSCodeType[] r = new CRSCodeType[ids.length];
+                    for ( int i = 0; i < ids.length; ++i ) {
+                        if ( ids[i] != null ) {
+                            r[i] = new CRSCodeType( ids[i] );
+                        }
+                    }
+                    result.add( r );
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<CoordinateSystem> getAvailableCRSs() {
+        List<CRSCodeType[]> availableCRSIds = getAvailableCRSIds();
+        List<CoordinateSystem> result = new ArrayList<CoordinateSystem>( availableCRSIds.size() );
+        for ( CRSCodeType[] s : availableCRSIds ) {
+            CoordinateSystem crs = getProvider().getCRSByCode( s[0] );
+            if ( crs != null ) {
+                result.add( crs );
+            }
         }
         return result;
     }

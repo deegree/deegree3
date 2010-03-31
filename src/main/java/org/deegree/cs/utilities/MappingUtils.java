@@ -47,8 +47,11 @@ import java.util.Queue;
 
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
+import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
+import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
+import org.deegree.cs.transformations.coordinate.MatrixTransform;
 import org.slf4j.Logger;
 
 /**
@@ -117,9 +120,11 @@ public class MappingUtils {
      * @param originalChain
      *            the transformation chain which is to be replaced with some (or all) of the given transformations.
      * @return a Transformation which contains some or all of the given transformations.
+     * @throws TransformationException
      */
     public static Transformation updateFromDefinedTransformations( List<Transformation> userRequested,
-                                                                   Transformation originalChain ) {
+                                                                   Transformation originalChain )
+                            throws TransformationException {
         if ( originalChain == null || userRequested == null || userRequested.isEmpty() ) {
             return originalChain;
         }
@@ -140,8 +145,10 @@ public class MappingUtils {
      * @param createdResult
      * @param tbu
      * @return the transformation which uses the given tbu (if it matched).
+     * @throws TransformationException
      */
-    private static Transformation traverseAndReplace( Transformation originalChain, Transformation tbu ) {
+    private static Transformation traverseAndReplace( Transformation originalChain, Transformation tbu )
+                            throws TransformationException {
         if ( originalChain == null ) {
             return null;
         }
@@ -176,8 +183,10 @@ public class MappingUtils {
      * @param tbu
      *            the transformation to be used
      * @return the transformation which uses the given tbu (if it matched).
+     * @throws TransformationException
      */
-    private static Transformation reorganizeConcatenate( ConcatenatedTransform ct, Transformation tbu ) {
+    private static Transformation reorganizeConcatenate( ConcatenatedTransform ct, Transformation tbu )
+                            throws TransformationException {
         Deque<Transformation> chain = new LinkedList<Transformation>();
         obtainChain( ct, tbu.getSourceCRS(), tbu.getTargetCRS(), chain );
         if ( chain.isEmpty() ) {
@@ -207,6 +216,15 @@ public class MappingUtils {
                     chain.removeLast();
                 }
                 if ( !chain.isEmpty() ) {
+                    Transformation prev = chain.getFirst();
+                    // align the axis of source crs of the given transformation to the targetcrs of the previous one.
+                    if ( prev != null ) {
+                        Transformation allign = MatrixTransform.createAllignMatrixTransform( prev.getSourceCRS(),
+                                                                                             tbu.getSourceCRS() );
+                        if ( !TransformationFactory.isIdentity( allign ) ) {
+                            resultChain.add( allign );
+                        }
+                    }
                     resultChain.addAll( chain );
                 }
             }
@@ -222,6 +240,16 @@ public class MappingUtils {
                     chain.removeFirst();
                 }
                 if ( !chain.isEmpty() ) {
+                    Transformation next = chain.getFirst();
+                    if ( next != null ) {
+                        Transformation allign = MatrixTransform.createAllignMatrixTransform( tbu.getTargetCRS(),
+                                                                                             next.getSourceCRS() );
+                        // align the axis of target crs of the given transformation to the source crs of the next
+                        // one.
+                        if ( !TransformationFactory.isIdentity( allign ) ) {
+                            resultChain.add( allign );
+                        }
+                    }
                     resultChain.addAll( chain );
                 }
             }

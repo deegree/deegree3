@@ -744,7 +744,7 @@ public class CRSExporterBase {
     public static void main( String[] args )
                             throws XMLStreamException, FileNotFoundException {
         // CoordinateSystem lookup = CRSRegistry.lookup( "EPSG:31466" );
-        CRSConfiguration config = CRSConfiguration.getCRSConfiguration();
+        CRSConfiguration config = CRSConfiguration.getInstance();
         CRSProvider provider = config.getProvider();
 
         List<CoordinateSystem> one = provider.getAvailableCRSs();

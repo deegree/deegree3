@@ -45,8 +45,8 @@ import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.transformations.Transformation;
 
 /**
- * The <code>CRSProvider</code> will allow the support for different crs-definitions formats within the crs package.
- * All implementation should consider the fact that the deegree-crs package will assume all incoming and outgoing
+ * The <code>CRSProvider</code> will allow the support for different crs-definitions formats within the crs package. All
+ * implementation should consider the fact that the deegree-crs package will assume all incoming and outgoing
  * latitude/longitude coordinates in <u>radians</u>.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
@@ -63,15 +63,17 @@ public interface CRSProvider {
      * This method is should retrieve a transformation (chain) which transforms coordinates from the given source into
      * the given target crs. If no such transformation could be found or the implementation does not support inverse
      * lookup of transformations <code>null<code> should be returned.
-
-     * @param sourceCRS start of the transformation (chain)
-     * @param targetCRS end point of the transformation (chain).
-     *
+     * 
+     * @param sourceCRS
+     *            start of the transformation (chain)
+     * @param targetCRS
+     *            end point of the transformation (chain).
+     * 
      * @return the {@link Transformation} Object or <code>null</code> if no such Object was found.
      * @throws CRSConfigurationException
      *             if the implementation was confronted by an exception and could not deliver the requested Object. This
-     *             exception should not be thrown no Transformation was found, in this case <code>null</code> should
-     *             be returned.
+     *             exception should not be thrown no Transformation was found, in this case <code>null</code> should be
+     *             returned.
      */
     public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
                             throws CRSConfigurationException;
@@ -86,8 +88,8 @@ public interface CRSProvider {
      * @return the {@link CRSIdentifiable} Object or <code>null</code> if no such Object was found.
      * @throws CRSConfigurationException
      *             if the implementation was confronted by an exception and could not deliver the requested Object. This
-     *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should
-     *             be returned.
+     *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should be
+     *             returned.
      */
     public CRSIdentifiable getIdentifiable( CRSCodeType id )
                             throws CRSConfigurationException;
@@ -98,8 +100,8 @@ public interface CRSProvider {
      * @return the identified CRS or <code>null</code> if no such CRS was found.
      * @throws CRSConfigurationException
      *             if the implementation was confronted by an exception and could not deliver the requested crs. This
-     *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should
-     *             be returned.
+     *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should be
+     *             returned.
      */
     public CoordinateSystem getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException;
@@ -127,7 +129,7 @@ public interface CRSProvider {
      *             exception should not be thrown if no CoordinateSystems were found, in the latter case an empty List (
      *             a list with size == 0 ) should be returned.
      */
-    public List<CRSCodeType> getAvailableCRSCodes()
+    public List<CRSCodeType[]> getAvailableCRSCodes()
                             throws CRSConfigurationException;
 
     /**

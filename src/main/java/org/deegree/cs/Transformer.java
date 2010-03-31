@@ -35,14 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.List;
 
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
+import org.slf4j.Logger;
 
 /**
  * Abstract base class for all transformers. Stores a target coordinate system and creates {@link Transformation}
@@ -54,7 +58,10 @@ import org.deegree.cs.transformations.TransformationFactory;
  * @version $Revision$, $Date$
  * 
  */
+@LoggingNotes(debug = "Get information about created transformation chain.")
 public abstract class Transformer {
+
+    private static final Logger LOG = getLogger( Transformer.class );
 
     private final CoordinateSystem targetCRS;
 
@@ -218,6 +225,9 @@ public abstract class Transformer {
              || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
                                                                                                                             targetCRS ) ) ) {
             definedTransformation = CRSRegistry.getTransformation( null, sourceCRS, targetCRS, toBeUsedTransformations );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Resulting transform: {}", definedTransformation.getTransformationPath( null ).toString() );
+            }
         }
         return definedTransformation;
     }

@@ -45,6 +45,7 @@ import static org.deegree.cs.components.Unit.createUnitFromString;
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.COMPOUND;
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOCENTRIC;
 import static org.deegree.cs.coordinatesystems.CoordinateSystem.CRSType.GEOGRAPHIC;
+import static org.deegree.cs.projections.SupportedProjections.fromCodes;
 
 import java.io.IOException;
 import java.net.URL;
@@ -73,7 +74,6 @@ import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.components.VerticalDatum;
 import org.deegree.cs.configuration.AbstractCRSProvider;
-import org.deegree.cs.configuration.resources.XMLResource;
 import org.deegree.cs.coordinatesystems.CompoundCRS;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
@@ -82,11 +82,15 @@ import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.coordinatesystems.VerticalCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.projections.Projection;
+import org.deegree.cs.projections.SupportedProjectionParameters;
+import org.deegree.cs.projections.SupportedProjections;
 import org.deegree.cs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.deegree.cs.projections.azimuthal.StereographicAlternative;
 import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
+import org.deegree.cs.transformations.SupportedTransformationParameters;
+import org.deegree.cs.transformations.SupportedTransformations;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
 import org.deegree.cs.transformations.coordinate.NotSupportedTransformation;
@@ -142,7 +146,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      *            the properties which can hold information about the configuration of this GML provider.
      */
     public GMLCRSProvider( Properties properties ) {
-        super( properties, XMLResource.class, null );
+        super( properties, GMLResource.class, null );
         if ( getResolver() == null ) {
             setResolver( new GMLFileResource( this, new Properties( properties ) ) );
         }
@@ -157,14 +161,14 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         throw new UnsupportedOperationException( "Exporting to gml is currently not supported." );
     }
 
-    public List<CRSCodeType> getAvailableCRSCodes()
+    public List<CRSCodeType[]> getAvailableCRSCodes()
                             throws CRSConfigurationException {
-        throw new UnsupportedOperationException( "Retrieval of all crs id's is currently not supported." );
+        return ( (GMLResource) getResolver() ).getAvailableCRSIds();
     }
 
     public List<CoordinateSystem> getAvailableCRSs()
                             throws CRSConfigurationException {
-        throw new UnsupportedOperationException( "Retrieval of all crs is currently not supported." );
+        return ( (GMLResource) getResolver() ).getAvailableCRSs();
     }
 
     /**
@@ -212,7 +216,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     public Transformation parseTransformation( OMElement rootElement )
                             throws CRSConfigurationException {
         try {
-            return parseGMLTransformation( rootElement );
+            return parseGMLTransformation( rootElement, null, null );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( e );
         } catch ( IOException e ) {
@@ -224,11 +228,18 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * Parses some of the gml 3.2 transformation constructs. Currently only helmert transformations are supported.
      * 
      * @param rootElement
+     * @param sourceCRS
+     *            to be used as the source crs, if <code>null</code> the values from the given transformation will be
+     *            parsed.
+     * @param targetCRS
+     *            to be used as the target crs, if <code>null</code> the values from the given transformation will be
+     *            parsed.
      * @return the transformation.
      * @throws XMLParsingException
      * @throws IOException
      */
-    protected Transformation parseGMLTransformation( OMElement rootElement )
+    public Transformation parseGMLTransformation( OMElement rootElement, CoordinateSystem sourceCRS,
+                                                  CoordinateSystem targetCRS )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             return null;
@@ -241,149 +252,185 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             LOG.debug( "Parsing id of transformation method resulted in: " + Arrays.toString( id.getCodes() ) );
         }
         Transformation result = getCachedIdentifiable( Transformation.class, id );
+        CoordinateSystem source = sourceCRS;
+        CoordinateSystem target = targetCRS;
         if ( result == null ) {
-            OMElement crsProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "sourceCRS", nsContext ) );
-            OMElement crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
-            CoordinateSystem sourceCRS = parseCoordinateSystem( crsElem );
-            if ( sourceCRS == null ) {
-                throw new XMLParsingException( adapter, rootElement,
-                                               "The transformation could not be parsed, because the sourceCRS is not supported." );
+            if ( source == null ) {
+                OMElement crsProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "sourceCRS", nsContext ) );
+                OMElement crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
+                source = parseCoordinateSystem( crsElem );
+                if ( source == null ) {
+                    throw new XMLParsingException( adapter, rootElement,
+                                                   "The transformation could not be parsed, because the sourceCRS is not supported." );
+                }
             }
-            // crsProp = getRequiredElement( rootElement, PRE + "targetCRS", nsContext );
-            crsProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "targetCRS", nsContext ) );
-            String tCRSLinked = retrieveXLink( crsProp );
-            CoordinateSystem targetCRS = null;
-            // rb: if the wgs 84 was referenced, use the default implementation, maybe this is not a good idea?
-            if ( tCRSLinked != null && ( tCRSLinked.contains( "4326" ) || tCRSLinked.toLowerCase().contains( "WGS84" ) ) ) {
-                targetCRS = GeographicCRS.WGS84;
-            } else {
-                crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
-                targetCRS = parseCoordinateSystem( crsElem );
-            }
-
-            if ( targetCRS == null ) {
-                throw new XMLParsingException( adapter, rootElement,
-                                               "The transformation could not be parsed, because the targetCRS is not supported." );
+            if ( target == null ) {
+                // crsProp = getRequiredElement( rootElement, PRE + "targetCRS", nsContext );
+                OMElement crsProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "targetCRS", nsContext ) );
+                String tCRSLinked = retrieveXLink( crsProp );
+                // rb: if the wgs 84 was referenced, use the default implementation, maybe this is not a good idea?
+                if ( tCRSLinked != null
+                     && ( tCRSLinked.contains( "4326" ) || tCRSLinked.toLowerCase().contains( "WGS84" ) ) ) {
+                    target = GeographicCRS.WGS84;
+                } else {
+                    OMElement crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
+                    target = parseCoordinateSystem( crsElem );
+                }
+                if ( target == null ) {
+                    throw new XMLParsingException( adapter, rootElement,
+                                                   "The transformation could not be parsed, because the targetCRS is not supported." );
+                }
             }
 
             OMElement method = adapter.getRequiredElement( rootElement, new XPath( PRE + "method", nsContext ) );
 
             OMElement conversionMethod = getRequiredXlinkedElement( method, PRE + "OperationMethod" );
             CRSIdentifiable conversionMethodID = parseIdentifiedObject( conversionMethod );
-            SupportedTransformations transform = mapTransformation( conversionMethodID.getCodes() );
+            SupportedTransformations transform = SupportedTransformations.fromCodes( conversionMethodID.getCodes() );
 
             List<Pair<CRSIdentifiable, Object>> parameterValues = parseParameterValues( rootElement );
             switch ( transform ) {
             case GENERAL_POLYNOMIAL:
                 LOG.warn( "The mapping of gml:Transformation to Polynomial transformations is not yet implemented." );
-                result = new NotSupportedTransformation( sourceCRS, targetCRS, id );
+                result = new NotSupportedTransformation( source, target, id );
                 break;
             case HELMERT_3:
             case HELMERT_7:
-                double dx = 0,
-                dy = 0,
-                dz = 0,
-                ex = 0,
-                ey = 0,
-                ez = 0,
-                ppm = 0;
-                for ( Pair<CRSIdentifiable, Object> paramValue : parameterValues ) {
-                    if ( paramValue != null && ( paramValue.second instanceof Pair<?, ?> ) ) {
-                        Pair<Unit, Double> second = (Pair<Unit, Double>) paramValue.second;
-                        if ( second != null ) {
-                            double value = second.second;
-                            if ( !Double.isNaN( value ) ) {
-                                CRSIdentifiable paramID = paramValue.first;
-                                if ( paramID != null ) {
-                                    SupportedTransformationParameters paramType = mapTransformationParameters( paramID.getCodes() );
-                                    Unit unit = second.first;
-                                    // If a unit was given, convert the value to the internally used
-                                    // unit.
-                                    if ( unit != null && !unit.isBaseType() ) {
-                                        value = unit.toBaseUnits( value );
-                                    }
-                                    switch ( paramType ) {
-                                    case X_AXIS_ROTATION:
-                                        ex = value;
-                                        break;
-                                    case Y_AXIS_ROTATION:
-                                        ey = value;
-                                        break;
-                                    case Z_AXIS_ROTATION:
-                                        ez = value;
-                                        break;
-                                    case X_AXIS_TRANSLATION:
-                                        dx = value;
-                                        break;
-                                    case Y_AXIS_TRANSLATION:
-                                        dy = value;
-                                        break;
-                                    case Z_AXIS_TRANSLATION:
-                                        dz = value;
-                                        break;
-                                    case SCALE_DIFFERENCE:
-                                        ppm = value;
-                                        break;
-                                    default:
-                                        LOG.warn( "The (helmert) transformation parameter: " + paramID.getCodeAndName()
-                                                  + " could not be mapped to a valid parameter and will not be used." );
-                                        break;
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-                result = new Helmert( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, id, true );
+                result = createHelmert( id, parameterValues, source, target );
                 break;
             case GEOGRAPHIC_GEOCENTRIC:
                 LOG.warn( "The mapping of gml:Transformation to Geographic/Geocentic transformations is not necessary." );
-                if ( targetCRS.getType() == GEOCENTRIC ) {
-                    result = new GeocentricTransform( sourceCRS, (GeocentricCRS) targetCRS );
-                } else if ( targetCRS.getType() == COMPOUND ) {
-                    if ( ( (CompoundCRS) targetCRS ).getUnderlyingCRS().getType() == GEOCENTRIC ) {
-                        result = new GeocentricTransform(
-                                                          sourceCRS,
-                                                          (GeocentricCRS) ( (CompoundCRS) targetCRS ).getUnderlyingCRS() );
+                if ( target.getType() == GEOCENTRIC ) {
+                    result = new GeocentricTransform( source, (GeocentricCRS) target );
+                } else if ( target.getType() == COMPOUND ) {
+                    if ( ( (CompoundCRS) target ).getUnderlyingCRS().getType() == GEOCENTRIC ) {
+                        result = new GeocentricTransform( source,
+                                                          (GeocentricCRS) ( (CompoundCRS) target ).getUnderlyingCRS() );
                     }
                 } else {
-                    result = new NotSupportedTransformation( sourceCRS, targetCRS, id );
+                    result = new NotSupportedTransformation( source, target, id );
                 }
 
                 break;
             case LONGITUDE_ROTATION:
                 LOG.warn( "The mapping of gml:Transformation to a longitude rotation is not necessary." );
-                result = new NotSupportedTransformation( sourceCRS, targetCRS, id );
+                result = new NotSupportedTransformation( source, target, id );
                 break;
             case NTV2:
-                if ( !parameterValues.isEmpty() ) {
-                    Pair<CRSIdentifiable, Object> paramValue = parameterValues.get( 0 );
-                    if ( paramValue != null && ( paramValue.second instanceof String ) ) {
-                        String second = (String) paramValue.second;
-                        if ( second != null ) {
-                            URL url = null;
-                            try {
-                                url = new URL( second );
-                            } catch ( Throwable t ) {
-                                LOG.debug( "Could not load NTv2 file from location: " + second );
-                            }
-                            if ( url != null ) {
-                                result = new NTv2Transformation( sourceCRS, targetCRS, id, url );
-                            }
-                        }
-                    }
-                }
+                result = createNTv2( id, parameterValues, source, target );
                 break;
             case NOT_SUPPORTED:
                 LOG.warn( "The gml:Transformation could not be mapped to a deegree transformation." );
-                result = new NotSupportedTransformation( sourceCRS, targetCRS, id );
+                result = new NotSupportedTransformation( source, target, id );
             }
         }
-
-        // Element sourceCRSProp = getRequiredElement( rootElement, PRE + "sourceCRS", nsContext
-        // );
         return addIdToCache( result, false );
+    }
+
+    /**
+     * Creates a {@link Helmert} transformation from the given parameter list.
+     * 
+     * @param id
+     *            of the transformation.
+     * @param parameterValues
+     *            the list of values, the Object must be a {@link Double} (denoting a the rotation/translation/ppm of
+     *            the helmert.)
+     * @param source
+     *            to go from
+     * @param target
+     *            to go to
+     * 
+     * @return a helmert transformation matrix from the given parameter list.
+     */
+    @SuppressWarnings("unchecked")
+    protected Helmert createHelmert( CRSIdentifiable id, List<Pair<CRSIdentifiable, Object>> parameterValues,
+                                     CoordinateSystem source, CoordinateSystem target ) {
+        double dx = 0, dy = 0, dz = 0, ex = 0, ey = 0, ez = 0, ppm = 0;
+        for ( Pair<CRSIdentifiable, Object> paramValue : parameterValues ) {
+            if ( paramValue != null && ( paramValue.second instanceof Pair<?, ?> ) ) {
+                Pair<Unit, Double> second = (Pair<Unit, Double>) paramValue.second;
+                if ( second != null ) {
+                    double value = second.second;
+                    if ( !Double.isNaN( value ) ) {
+                        CRSIdentifiable paramID = paramValue.first;
+                        if ( paramID != null ) {
+                            SupportedTransformationParameters paramType = SupportedTransformationParameters.fromCodes( paramID.getCodes() );
+                            Unit unit = second.first;
+                            // If a unit was given, convert the value to the internally used
+                            // unit.
+                            if ( unit != null && !unit.isBaseType() ) {
+                                value = unit.toBaseUnits( value );
+                            }
+                            switch ( paramType ) {
+                            case X_AXIS_ROTATION:
+                                ex = value;
+                                break;
+                            case Y_AXIS_ROTATION:
+                                ey = value;
+                                break;
+                            case Z_AXIS_ROTATION:
+                                ez = value;
+                                break;
+                            case X_AXIS_TRANSLATION:
+                                dx = value;
+                                break;
+                            case Y_AXIS_TRANSLATION:
+                                dy = value;
+                                break;
+                            case Z_AXIS_TRANSLATION:
+                                dz = value;
+                                break;
+                            case SCALE_DIFFERENCE:
+                                ppm = value;
+                                break;
+                            default:
+                                LOG.warn( "The (helmert) transformation parameter: " + paramID.getCodeAndName()
+                                          + " could not be mapped to a valid parameter and will not be used." );
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        return new Helmert( dx, dy, dz, ex, ey, ez, ppm, source, target, id, true );
+    }
+
+    /**
+     * Create an {@link NTv2Transformation} from the given parameter list.
+     * 
+     * @param id
+     *            of the transformation.
+     * @param parameterValues
+     *            the list of values, the Object must be a String (denoting a gridshift file url.)
+     * @param source
+     *            to go from
+     * @param target
+     *            to go to
+     * @return an {@link NTv2Transformation} if a file was given, <code>null</code> otherwise.
+     */
+    protected NTv2Transformation createNTv2( CRSIdentifiable id, List<Pair<CRSIdentifiable, Object>> parameterValues,
+                                             CoordinateSystem source, CoordinateSystem target ) {
+        NTv2Transformation result = null;
+        if ( !parameterValues.isEmpty() ) {
+            Pair<CRSIdentifiable, Object> paramValue = parameterValues.get( 0 );
+            if ( paramValue != null && ( paramValue.second instanceof String ) ) {
+                String second = (String) paramValue.second;
+                if ( second != null ) {
+                    URL url = null;
+                    try {
+                        url = new URL( second );
+                    } catch ( Throwable t ) {
+                        LOG.debug( "Could not load NTv2 file from location: " + second );
+                    }
+                    if ( url != null ) {
+                        result = new NTv2Transformation( source, target, id, url );
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -1132,7 +1179,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                         if ( !Double.isNaN( value ) ) {
                             CRSIdentifiable paramID = paramValue.first;
                             if ( paramID != null ) {
-                                SupportedProjectionParameters paramType = mapProjectionParameters( paramID.getCodes() );
+                                SupportedProjectionParameters paramType = SupportedProjectionParameters.fromCodes( paramID.getCodes() );
                                 Unit unit = second.first;
                                 // If a unit was given, convert the value to the internally used unit.
                                 if ( unit != null && !unit.isBaseType() ) {
@@ -1175,7 +1222,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 }
             }
 
-            SupportedProjections projection = mapProjections( conversionMethodID.getCodes() );
+            SupportedProjections projection = fromCodes( conversionMethodID.getCodes() );
             switch ( projection ) {
             case TRANSVERSE_MERCATOR:
                 boolean northernHemisphere = falseNorthing < 10000000;
@@ -1446,7 +1493,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 if ( localName != null ) {
                     try {
                         if ( "Transformation".equals( localName ) ) {
-                            result = parseGMLTransformation( idRes );
+                            result = parseGMLTransformation( idRes, null, null );
                         } else if ( "Conversion".equalsIgnoreCase( localName ) ) {
                             result = parseProjection( idRes, null );
                         } else {

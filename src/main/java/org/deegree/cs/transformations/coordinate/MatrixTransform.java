@@ -506,7 +506,7 @@ public class MatrixTransform extends Transformation {
     public static MatrixTransform createMatrixTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS,
                                                          final Matrix matrix )
                             throws TransformationException {
-        if ( matrix == null ) {
+        if ( matrix == null || matrix.isIdentity() ) {
             return null;
         }
         if ( matrix.isAffine() ) {// Affine transform are square.
@@ -519,4 +519,27 @@ public class MatrixTransform extends Transformation {
         throw new TransformationException( "Given matrix is not affine, cannot continue" );
     }
 
+    /**
+     * Create a swap matrix to align the axis of the given coordinate systems and create a tranformation for the result.
+     * 
+     * @param sourceCRS
+     *            used as the CRS for transforming ordinates on the matrix
+     * @param targetCRS
+     *            used as the result CRS after transforming ordinates on the matrix
+     * @return an axis aligned matrix transform, or <code>null</code> if the source and/or target are <code>null</code>
+     *         or no transformation is needed.
+     * @throws TransformationException
+     *             if the matrix could not be created or the result is not affine.
+     */
+    public static Transformation createAllignMatrixTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+                            throws TransformationException {
+        if ( sourceCRS == null || targetCRS == null ) {
+            return null;
+        }
+        Matrix allign = Matrix.swapAxis( sourceCRS, targetCRS );
+        if ( allign == null ) {
+            return null;
+        }
+        return createMatrixTransform( sourceCRS, targetCRS, allign );
+    }
 }

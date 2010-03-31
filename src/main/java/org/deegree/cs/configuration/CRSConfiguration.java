@@ -226,7 +226,7 @@ public class CRSConfiguration {
      * @throws CRSConfigurationException
      *             if --anything-- went wrong while instantiating the CRSProvider.
      */
-    public synchronized static CRSConfiguration getCRSConfiguration()
+    public synchronized static CRSConfiguration getInstance()
                             throws CRSConfigurationException {
         return getInstance( null );
     }

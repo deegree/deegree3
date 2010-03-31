@@ -48,8 +48,6 @@ import java.util.Set;
 import javax.vecmath.Point2d;
 
 import org.deegree.commons.utils.log.LoggingNotes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.EPSGCode;
@@ -72,6 +70,8 @@ import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>PROJ4CRSProvider</code> class is capable of parsing the nad/epsg file and use it as a backend for crs's.
@@ -1454,11 +1454,13 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         return ( d - m / 60 - s / 3600 );
     }
 
-    public List<CRSCodeType> getAvailableCRSCodes()
+    public List<CRSCodeType[]> getAvailableCRSCodes()
                             throws CRSConfigurationException {
         Set<CRSCodeType> keys = getResolver().getAvailableCodes();
-        List<CRSCodeType> result = new LinkedList<CRSCodeType>();
-        result.addAll( keys );
+        List<CRSCodeType[]> result = new LinkedList<CRSCodeType[]>();
+        for ( CRSCodeType key : keys ) {
+            result.add( new CRSCodeType[] { key } );
+        }
         return result;
     }
 
