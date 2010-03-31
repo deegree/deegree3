@@ -297,7 +297,7 @@ public class ProviderBasedAccuracyTest {
     }
 
     private CRSProvider getProvider() {
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration().getProvider();
+        CRSProvider provider = CRSConfiguration.getInstance().getProvider();
         assertNotNull( provider );
         return provider;
     }
@@ -555,7 +555,7 @@ public class ProviderBasedAccuracyTest {
     public void testGeographicToGeographicNTv2()
                             throws TransformationException {
 
-        TransformationFactory fac = CRSConfiguration.getCRSConfiguration().getTransformationFactory();
+        TransformationFactory fac = CRSConfiguration.getInstance().getTransformationFactory();
         fac.setPreferredTransformation( DSTransform.NTv2 );
 
         CoordinateSystem crs = getCRS( "epsg:4314" );

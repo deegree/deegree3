@@ -81,7 +81,7 @@ public class TransformationSubstitution implements CRSDefines {
      * @return the factory to test.
      */
     private TransformationFactory getFactory() {
-        return CRSConfiguration.getCRSConfiguration().getTransformationFactory();
+        return CRSConfiguration.getInstance().getTransformationFactory();
     }
 
     /**
