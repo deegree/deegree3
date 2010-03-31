@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.sql.postgis;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.filter.expression.PropertyName;
 
 /**
@@ -54,9 +55,29 @@ public class PropertyNameMapping {
 
     private final String dbColumn;
 
+    private PrimitiveType dbColumnType;
+
+    /**
+     * 
+     * @param dbTable
+     * @param dbColumn
+     */
     public PropertyNameMapping( String dbTable, String dbColumn ) {
         this.dbTable = dbTable;
         this.dbColumn = dbColumn;
+    }
+
+    /**
+     * Generates a mapping with an additional information which type has the column.
+     * 
+     * @param dbTable
+     * @param dbColumn
+     * @param dbColumnType
+     */
+    public PropertyNameMapping( String dbTable, String dbColumn, PrimitiveType dbColumnType ) {
+        this.dbTable = dbTable;
+        this.dbColumn = dbColumn;
+        this.dbColumnType = dbColumnType;
     }
 
     public String getTable() {
@@ -66,4 +87,12 @@ public class PropertyNameMapping {
     public String getColumn() {
         return dbColumn;
     }
+
+    /**
+     * @return the dbColumnType
+     */
+    public PrimitiveType getDbColumnType() {
+        return dbColumnType;
+    }
+
 }
