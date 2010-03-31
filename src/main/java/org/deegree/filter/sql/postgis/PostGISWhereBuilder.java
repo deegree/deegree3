@@ -558,7 +558,7 @@ public class PostGISWhereBuilder {
 
         PropertyNameMapping propMapping = mapping.getMapping( propName );
         if ( propMapping != null ) {
-            addToPropNameMappingList( propMapping );
+            propNameMappingList.add( propMapping );
             whereClause.append( propMapping.getTable() );
             whereClause.append( '.' );
             whereClause.append( propMapping.getColumn() );
@@ -618,7 +618,7 @@ public class PostGISWhereBuilder {
         case PROPERTY_NAME: {
             PropertyNameMapping propMapping = mapping.getMapping( (PropertyName) expr );
             if ( propMapping != null ) {
-                addToPropNameMappingList( propMapping );
+                propNameMappingList.add( propMapping );
                 if ( lowerCase ) {
                     whereClause.append( "LOWER(" );
                     whereClause.append( propMapping.getTable() );
@@ -667,21 +667,21 @@ public class PostGISWhereBuilder {
         }
     }
 
-    /**
-     * Prevents the propNameMappingList to add duplicate tables.
-     * 
-     * @param propMapping
-     */
-    private void addToPropNameMappingList( PropertyNameMapping propMapping ) {
-
-        if ( propNameMappingList != null ) {
-            for ( PropertyNameMapping propName : propNameMappingList ) {
-                if ( propName.getTable().equals( propMapping.getTable() ) ) {
-                    return;
-                }
-            }
-        }
-        propNameMappingList.add( propMapping );
-
-    }
+    // /**
+    // * Prevents the propNameMappingList to add duplicate tables.
+    // *
+    // * @param propMapping
+    // */
+    // private void addToPropNameMappingList( PropertyNameMapping propMapping ) {
+    //
+    // if ( propNameMappingList != null ) {
+    // for ( PropertyNameMapping propName : propNameMappingList ) {
+    // if ( propName.getTable().equals( propMapping.getTable() ) ) {
+    // return;
+    // }
+    // }
+    // }
+    // propNameMappingList.add( propMapping );
+    //
+    // }
 }
