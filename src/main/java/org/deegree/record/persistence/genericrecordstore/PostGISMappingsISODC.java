@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore;
 
+import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.PrimitiveType.DATE;
+import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
 import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
 import static org.deegree.protocol.csw.CSWConstants.DC_NS;
@@ -48,6 +51,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.SQLValueMangler;
+import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
@@ -64,7 +70,8 @@ import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Implementation of the {@link PostGISMapping}. It's the base class for access to the backend. Is there any change in
- * the database schema for the {@link ISORecordStore} then in this class should be changed the binding, as well.
+ * the database schema for the {@link ISORecordStore} then in this class should be changed the binding, as well. TODO
+ * boundingbox, crs and association, denominator, distanceUOM, distanceValue put a type in
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
@@ -81,12 +88,16 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
-        propToTableAndCol.put( new QName( APISO_NS, "title" ), new PropertyNameMapping( "isoqp_title", "title" ) );
-        propToTableAndCol.put( new QName( DC_NS, "title" ), new PropertyNameMapping( "isoqp_title", "title" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
+        propToTableAndCol.put( new QName( DC_NS, "title" ), new PropertyNameMapping( "isoqp_title", "title", STRING ) );
 
-        propToTableAndCol.put( new QName( APISO_NS, "abstract" ),
-                               new PropertyNameMapping( "isoqp_abstract", "abstract" ) );
-        propToTableAndCol.put( new QName( DCT_NS, "abstract" ), new PropertyNameMapping( "isoqp_abstract", "abstract" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "abstract" ), new PropertyNameMapping( "isoqp_abstract",
+                                                                                           "abstract", STRING ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Abstract" ), new PropertyNameMapping( "isoqp_abstract",
+                                                                                           "abstract", STRING ) );
+        propToTableAndCol.put( new QName( DCT_NS, "abstract" ), new PropertyNameMapping( "isoqp_abstract", "abstract",
+                                                                                         STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "BoundingBox" ), new PropertyNameMapping( "isoqp_BoundingBox",
                                                                                               "bbox" ) );
@@ -96,29 +107,47 @@ public class PostGISMappingsISODC implements PostGISMapping {
         propToTableAndCol.put( new QName( APISO_NS, "BoundingBox" ), new PropertyNameMapping( "isoqp_BoundingBox",
                                                                                               "bbox" ) );
 
-        propToTableAndCol.put( new QName( APISO_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type" ) );
-        propToTableAndCol.put( new QName( DC_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
+        propToTableAndCol.put( new QName( DC_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
 
-        propToTableAndCol.put( new QName( APISO_NS, "format" ), new PropertyNameMapping( "isoqp_format", "format" ) );
-        propToTableAndCol.put( new QName( DC_NS, "format" ), new PropertyNameMapping( "isoqp_format", "format" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "format" ), new PropertyNameMapping( "isoqp_format", "format",
+                                                                                         STRING ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Format" ), new PropertyNameMapping( "isoqp_format", "format",
+                                                                                         STRING ) );
+        propToTableAndCol.put( new QName( DC_NS, "format" ), new PropertyNameMapping( "isoqp_format", "format", STRING ) );
 
-        propToTableAndCol.put( new QName( APISO_NS, "subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword" ) );
-        propToTableAndCol.put( new QName( DC_NS, "subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
+                                                                                          STRING ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
+                                                                                          STRING ) );
+        propToTableAndCol.put( new QName( DC_NS, "subject" ), new PropertyNameMapping( "isoqp_keyword", "keyword",
+                                                                                       STRING ) );
 
-        propToTableAndCol.put( new QName( APISO_NS, "anyText" ), new PropertyNameMapping( "datasets", "anytext" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "anyText" ),
+                               new PropertyNameMapping( "datasets", "anytext", STRING ) );
+        propToTableAndCol.put( new QName( APISO_NS, "AnyText" ),
+                               new PropertyNameMapping( "datasets", "anytext", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "identifier" ), new PropertyNameMapping( "qp_identifier",
-                                                                                             "identifier" ) );
-        propToTableAndCol.put( new QName( DC_NS, "identifier" ),
-                               new PropertyNameMapping( "qp_identifier", "identifier" ) );
+                                                                                             "identifier", STRING ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Identifier" ), new PropertyNameMapping( "qp_identifier",
+                                                                                             "identifier", STRING ) );
+        propToTableAndCol.put( new QName( DC_NS, "identifier" ), new PropertyNameMapping( "qp_identifier",
+                                                                                          "identifier", STRING ) );
 
-        propToTableAndCol.put( new QName( APISO_NS, "modified" ), new PropertyNameMapping( "datasets", "modified" ) );
-        propToTableAndCol.put( new QName( DCT_NS, "modified" ), new PropertyNameMapping( "datasets", "modified" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "modified" ),
+                               new PropertyNameMapping( "datasets", "modified", DATE ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Modified" ),
+                               new PropertyNameMapping( "datasets", "modified", DATE ) );
+        propToTableAndCol.put( new QName( DCT_NS, "modified" ), new PropertyNameMapping( "datasets", "modified", DATE ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "CRS" ), new PropertyNameMapping( "isoqp_crs", "crs" ) );
         propToTableAndCol.put( new QName( DC_NS, "CRS" ), new PropertyNameMapping( "isoqp_crs", "crs" ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "association" ), new PropertyNameMapping( "isoqp_association",
+                                                                                              "relation" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Association" ), new PropertyNameMapping( "isoqp_association",
                                                                                               "relation" ) );
         propToTableAndCol.put( new QName( DC_NS, "relation" ),
                                new PropertyNameMapping( "isoqp_association", "relation" ) );
@@ -127,46 +156,52 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<additional common queryable properties>--------------------------
-        propToTableAndCol.put( new QName( APISO_NS, "Language" ), new PropertyNameMapping( "datasets", "language" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "Language" ), new PropertyNameMapping( "datasets", "language",
+                                                                                           STRING ) );
+        propToTableAndCol.put( new QName( APISO_NS, "language" ), new PropertyNameMapping( "datasets", "language",
+                                                                                           STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "RevisionDate" ), new PropertyNameMapping( "isoqp_revisiondate",
-                                                                                               "revisiondate" ) );
+                                                                                               "revisiondate", DATE ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "AlternateTitle" ),
-                               new PropertyNameMapping( "isoqp_alternatetitle", "alternatetitle" ) );
+                               new PropertyNameMapping( "isoqp_alternatetitle", "alternatetitle", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "CreationDate" ), new PropertyNameMapping( "isoqp_creationdate",
-                                                                                               "creationdate" ) );
+                                                                                               "creationdate", DATE ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "PublicationDate" ),
-                               new PropertyNameMapping( "isoqp_publicationdate", "publicationdate" ) );
+                               new PropertyNameMapping( "isoqp_publicationdate", "publicationdate", DATE ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "OrganisationName" ),
-                               new PropertyNameMapping( "isoqp_organisationname", "organisationname" ) );
+                               new PropertyNameMapping( "isoqp_organisationname", "organisationname", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "HasSecurityConstraint" ),
-                               new PropertyNameMapping( "datasets", "hassecurityconstraint" ) );
+                               new PropertyNameMapping( "datasets", "hassecurityconstraint", BOOLEAN ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "ResourceIdentifier" ),
-                               new PropertyNameMapping( "isoqp_resourceidentifier", "resourceidentifier" ) );
+                               new PropertyNameMapping( "isoqp_resourceidentifier", "resourceidentifier", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "ParentIdentifier" ), new PropertyNameMapping( "datasets",
-                                                                                                   "parentidentifier" ) );
+                                                                                                   "parentidentifier",
+                                                                                                   STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "KeywordType" ), new PropertyNameMapping( "isoqp_keyword",
-                                                                                              "keywordType" ) );
+                                                                                              "keywordType", STRING ) );
 
-        propToTableAndCol.put( new QName( APISO_NS, "TopicCategory" ), new PropertyNameMapping( "isoqp_topiccategory",
-                                                                                                "topiccategory" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "TopicCategory" ),
+                               new PropertyNameMapping( "isoqp_topiccategory", "topiccategory", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "ResourceLanguage" ), new PropertyNameMapping( "datasets",
-                                                                                                   "resourcelanguage" ) );
+                                                                                                   "resourcelanguage",
+                                                                                                   STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "GeographicDescriptionCode" ),
-                               new PropertyNameMapping( "isoqp_geographicdescriptioncode", "geographicdescriptioncode" ) );
+                               new PropertyNameMapping( "isoqp_geographicdescriptioncode", "geographicdescriptioncode",
+                                                        STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "Denominator" ),
-                               new PropertyNameMapping( "isoqp_spatialresolution", "denominator" ) );
+                               new PropertyNameMapping( "isoqp_spatialresolution", "denominator", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "DistanceValue" ),
                                new PropertyNameMapping( "isoqp_spatialresolution", "distancevalue" ) );
@@ -175,33 +210,65 @@ public class PostGISMappingsISODC implements PostGISMapping {
                                new PropertyNameMapping( "isoqp_spatialresolution", "distanceuom" ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "TempExtent_begin" ),
-                               new PropertyNameMapping( "isoqp_temporalextent", "tempextent_begin" ) );
+                               new PropertyNameMapping( "isoqp_temporalextent", "tempextent_begin", DATE ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "TempExtent_end" ),
-                               new PropertyNameMapping( "isoqp_temporalextent", "tempextent_end" ) );
+                               new PropertyNameMapping( "isoqp_temporalextent", "tempextent_end", DATE ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "ServiceType" ), new PropertyNameMapping( "isoqp_servicetype",
-                                                                                              "servicetype" ) );
+                                                                                              "servicetype", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "ServiceTypeVersion" ),
-                               new PropertyNameMapping( "isoqp_servicetypeversion", "servicetypeversion" ) );
+                               new PropertyNameMapping( "isoqp_servicetypeversion", "servicetypeversion", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "Operation" ), new PropertyNameMapping( "isoqp_operation",
-                                                                                            "operation" ) );
+                                                                                            "operation", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "OperatesOn" ), new PropertyNameMapping( "isoqp_operatesondata",
-                                                                                             "operateson" ) );
+                                                                                             "operateson", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "OperatesOnIdentifier" ),
-                               new PropertyNameMapping( "isoqp_operatesondata", "operatesonidentifier" ) );
+                               new PropertyNameMapping( "isoqp_operatesondata", "operatesonidentifier", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "OperatesOnName" ),
-                               new PropertyNameMapping( "isoqp_operatesondata", "operatesonname" ) );
+                               new PropertyNameMapping( "isoqp_operatesondata", "operatesonname", STRING ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "CouplingType" ), new PropertyNameMapping( "isoqp_couplingtype",
-                                                                                               "couplingtype" ) );
+                                                                                               "couplingtype", STRING ) );
 
         // ----------------------</additional common queryable properties>-------------------------
+        // ----------------------------------------------------------------------------------------
+
+        // ----------------------------------------------------------------------------------------
+        // ----------------------<additional queryable properties for INSPIRE>--------------------------
+        propToTableAndCol.put( new QName( APISO_NS, "Degree" ), new PropertyNameMapping( "addqp_degree", "degree",
+                                                                                         BOOLEAN ) );
+
+        propToTableAndCol.put( new QName( APISO_NS, "AccessConstraints" ),
+                               new PropertyNameMapping( "addqp_accessconstraint", "accessconstraint", STRING ) );
+
+        propToTableAndCol.put( new QName( APISO_NS, "OtherConstraints" ),
+                               new PropertyNameMapping( "addqp_otherconstraint", "otherconstraint", STRING ) );
+
+        propToTableAndCol.put( new QName( APISO_NS, "Classification" ),
+                               new PropertyNameMapping( "addqp_classification", "classification", STRING ) );
+
+        propToTableAndCol.put( new QName( APISO_NS, "ConditionApplyingToAccessAndUse" ),
+                               new PropertyNameMapping( "addqp_limitation", "limitation", STRING ) );
+
+        propToTableAndCol.put( new QName( APISO_NS, "Lineage" ), new PropertyNameMapping( "addqp_lineage", "lineage",
+                                                                                          STRING ) );
+
+        propToTableAndCol.put( new QName( APISO_NS, "SpecificationTitle" ),
+                               new PropertyNameMapping( "addqp_specification", "specificationtitle", STRING ) );
+
+        propToTableAndCol.put( new QName( APISO_NS, "SpecificationDate" ),
+                               new PropertyNameMapping( "addqp_specification", "specificationdate", DATE ) );
+
+        propToTableAndCol.put( new QName( APISO_NS, "SpecificationDateType" ),
+                               new PropertyNameMapping( "addqp_specification", "specificationdatetype", STRING ) );
+
+        // ----------------------</additional queryable properties for INSPIRE>-------------------------
         // ----------------------------------------------------------------------------------------
 
     }
@@ -361,7 +428,42 @@ public class PostGISMappingsISODC implements PostGISMapping {
         /**
          * the coordinate reference system of the bounding box(es)
          */
-        isoqp_crs
+        isoqp_crs,
+
+        /**
+         * TODO
+         */
+        addqp_degree,
+
+        /**
+         * TODO
+         */
+        addqp_specification,
+
+        /**
+         *TODO
+         */
+        addqp_limitation,
+
+        /**
+         * TODO
+         */
+        addqp_accessConstraint,
+
+        /**
+         * TODO
+         */
+        addqp_otherConstraint,
+
+        /**
+         * TODO
+         */
+        addqp_classification,
+
+        /**
+         * TODO
+         */
+        addqp_lineage
 
     }
 
@@ -373,17 +475,16 @@ public class PostGISMappingsISODC implements PostGISMapping {
     @Override
     public PropertyNameMapping getMapping( PropertyName propName )
                             throws FilterEvaluationException {
-        LOG.info( "first time in Mapping: " + propName.getAsQName() );
+
         for ( QName matchingPropertyName : propToTableAndCol.keySet() ) {
-            LOG.info( matchingPropertyName + " - " + propName.getAsQName() );
+            LOG.debug( matchingPropertyName + " - " + propName.getAsQName() );
 
             // TODO handle the case that PropertyName is *not* a QName, but a more complex XPath
             if ( propName.getAsQName().equals( matchingPropertyName ) ) {
 
-                LOG.info( "mapping for PropName: " + propToTableAndCol.get( matchingPropertyName ).getTable() + " "
-                          + propToTableAndCol.get( matchingPropertyName ).getColumn() );
                 return new PropertyNameMapping( propToTableAndCol.get( matchingPropertyName ).getTable(),
-                                                propToTableAndCol.get( matchingPropertyName ).getColumn() );
+                                                propToTableAndCol.get( matchingPropertyName ).getColumn(),
+                                                propToTableAndCol.get( matchingPropertyName ).getDbColumnType() );
 
             }
         }
@@ -471,17 +572,25 @@ public class PostGISMappingsISODC implements PostGISMapping {
                 throw new FilterEvaluationException( column + " doesn't exist!" );
                 // pgValue = literal.getValue().toString();
             }
-            pgValue = literal.getValue().toString();
+
+            PrimitiveType t = getMapping( new PropertyName( requestedProperty ) ).getDbColumnType();
+
+            Object internalValue = XMLValueMangler.xmlToInternal(
+                                                                  literal.getValue().toString(),
+                                                                  getMapping( new PropertyName( requestedProperty ) ).getDbColumnType() );
+
+            pgValue = SQLValueMangler.internalToSQL( internalValue );
+
             // // TODO implement properly
             // PropertyType pt = mapping.first;
-            // if ( pt instanceof SimplePropertyType<?> ) {
-            // Object internalValue = XMLValueMangler.xmlToInternal(
-            // literal.getValue().toString(),
-            // ( (SimplePropertyType<?>) pt ).getPrimitiveType() );
+            // if ( pt instanceof SimplePropertyType ) {
+            // Object internalValue = XMLValueMangler.xmlToInternal( literal.getValue().toString(),
+            // ( (SimplePropertyType) pt ).getPrimitiveType() );
             // pgValue = SQLValueMangler.internalToSQL( internalValue );
             // } else {
             // pgValue = literal.getValue().toString();
             // }
+            LOG.info( "pg_value in mapping: " + pgValue );
 
         }
 
@@ -564,6 +673,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
             throw new FilterEvaluationException( column + " doesn't exist!" );
             // pgValue = literal.getValue().toString();
         }
+
         // pgValue = literal.getValue().toString();
         // // TODO implement properly
         // PropertyType pt = mapping.first;

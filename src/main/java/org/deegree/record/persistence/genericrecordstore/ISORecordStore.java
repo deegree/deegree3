@@ -71,6 +71,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -82,6 +84,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.FilterEvaluationException;
@@ -456,7 +459,7 @@ public class ISORecordStore implements RecordStore {
                 returnedRecords = recordStoreOptions.getMaxRecords();
             } else {
                 nextRecord = 0;
-                returnedRecords = countRows;
+                returnedRecords = countRows - recordStoreOptions.getStartPosition() + 1;
             }
 
             writer.writeAttribute( "elementSet", recordStoreOptions.getSetOfReturnableElements().name() );
@@ -551,7 +554,7 @@ public class ISORecordStore implements RecordStore {
             break;
         }
 
-        if ( rs != null ) {
+        if ( rs != null && recordStoreOptions.getMaxRecords() != 0 ) {
             writeResultSet( rs, writer );
         }
 
@@ -585,19 +588,83 @@ public class ISORecordStore implements RecordStore {
 
         Writer s = new StringWriter();
         PreparedStatement stmt = null;
-        Writer constraintExpression = new StringWriter();
+        StringWriter constraintExpression = new StringWriter();
+        StringBuilder whereBuilder = builder.getWhereClause();
+        String constraintExpressionTemp = "";
         String COUNT_PRE;
         String COUNT_SUF;
-
-        // correctPropertyNameMappings( builder.getPropNameMappingList() );
-
+        String SET_OFFSET;
+        List<Pair<String, String>> aliasMapping = new ArrayList<Pair<String, String>>();
+        String formatTypeAlias = formatType + Integer.toString( 0 );
+        String datasetsAlias = "";
         StringBuilder stringWriter = builder.getWhereClause();
+        StringWriter stringINNER_FROM = new StringWriter();
 
+        /*
+         * appends the tables identified in the WHERE-builder to the FROM clause with aliasnames
+         */
+        aliasMapping.add( new Pair<String, String>( formatType, formatTypeAlias ) );
+        if ( builder != null && builder.getPropNameMappingList() != null ) {
+            boolean containsDatasetsTable = false;
+            int aliasCount = 1;
+            // just look up the datasets table to build an aliasName
+            for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
+                if ( propName.getTable().equals( PostGISMappingsISODC.databaseTables.datasets.name() ) ) {
+                    datasetsAlias = PostGISMappingsISODC.databaseTables.datasets.name() + Integer.toString( aliasCount );
+                    containsDatasetsTable = true;
+                }
+            }
+            if ( containsDatasetsTable == false ) {
+                datasetsAlias = PostGISMappingsISODC.databaseTables.datasets.name() + Integer.toString( aliasCount );
+                aliasMapping.add( new Pair<String, String>( PostGISMappingsISODC.databaseTables.datasets.name(),
+                                                            datasetsAlias ) );
+                stringINNER_FROM.append( ", " + PostGISMappingsISODC.databaseTables.datasets.name() + " AS "
+                                         + datasetsAlias );
+            }
+
+            for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
+                if ( propName.getTable() == null ) {
+                    stringINNER_FROM.append( ' ' );
+                } else {
+                    stringINNER_FROM.append( ", " + propName.getTable() + " AS " + propName.getTable()
+                                             + Integer.toString( aliasCount ) );
+
+                    Pair<String, String> aliasPair = new Pair<String, String>(
+                                                                               propName.getTable(),
+                                                                               propName.getTable()
+                                                                                                       + Integer.toString( aliasCount ) );
+
+                    // if ( aliasPair.first.equals( PostGISMappingsISODC.databaseTables.datasets.name() ) ) {
+                    // datasetsAlias = aliasPair.second.toString();
+                    // containsDatasetsTable = true;
+                    // }
+
+                    aliasMapping.add( aliasPair );
+
+                    Pattern p = Pattern.compile( aliasPair.first.toString() + "[.]" );
+                    Matcher m = p.matcher( whereBuilder );
+
+                    constraintExpressionTemp = m.replaceFirst( aliasPair.second
+                                                               + "."
+                                                               + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
+                                                               + " = " + datasetsAlias + ".id AND "
+                                                               + aliasPair.second.toString() + "." );
+
+                    aliasCount++;
+
+                    whereBuilder.delete( 0, whereBuilder.capacity() );
+                    whereBuilder.append( constraintExpressionTemp );
+                }
+            }
+
+        }
+
+        LOG.info( "where builder: " + whereBuilder );
         /*
          * building a constraint expression from the WHERE-builder
          */
         if ( stringWriter.length() != 0 ) {
-            constraintExpression.append( " AND (" + builder.getWhereClause() + ") " );
+            constraintExpression.append( " AND (" + whereBuilder + ") " );
         } else {
             constraintExpression.append( " " );
         }
@@ -608,9 +675,11 @@ public class ISORecordStore implements RecordStore {
         if ( setCount == true ) {
             COUNT_PRE = "COUNT(";
             COUNT_SUF = ")";
+            SET_OFFSET = "";
         } else {
             COUNT_PRE = "";
             COUNT_SUF = "";
+            SET_OFFSET = " OFFSET " + Integer.toString( recordStoreOptions.getStartPosition() - 1 );
         }
 
         s.append( "SELECT DISTINCT " + COUNT_PRE + formatType + ".data" + COUNT_SUF + " FROM " + formatType + " " );
@@ -619,51 +688,35 @@ public class ISORecordStore implements RecordStore {
 
         s.append( "AND " + formatType + ".data IN(" );
 
-        s.append( "SELECT " + formatType + ".data FROM " + PostGISMappingsISODC.databaseTables.datasets.name() + ", "
-                  + formatType );
+        s.append( "SELECT " + formatTypeAlias + ".data FROM " + formatType + " AS " + formatTypeAlias );
 
-        /*
-         * appends the tables identified in the WHERE-builder to the FROM clause
-         */
-        if ( builder != null && builder.getPropNameMappingList() != null ) {
-            for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
-                if ( propName.getTable() == null ) {
-                    s.append( ' ' );
-                } else {
-                    if ( !propName.getTable().equals( PostGISMappingsISODC.databaseTables.datasets.name() ) ) {
-                        s.append( ", " + propName.getTable() + " " );
-                    }
-                }
-            }
-        }
+        s.append( stringINNER_FROM.toString() );
 
-        s.append( " WHERE " + formatType + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
-                  + PostGISMappingsISODC.databaseTables.datasets.name() + ".id AND " + formatType + ".format = "
-                  + typeNameFormatNumber );
+        s.append( " WHERE " + formatTypeAlias + ".format = " + typeNameFormatNumber + " AND " + formatTypeAlias
+                  + ".fk_datasets = " + datasetsAlias + ".id " );
 
         /*
          * appends the tables with their columns identified in the WHERE-builder to the WHERE clause and binds it to the
          * maindatabasetable
          */
-        if ( builder != null && builder.getPropNameMappingList() != null ) {
-            for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
-                if ( propName.getTable() == null ) {
-                    s.append( ' ' );
-                } else {
-                    if ( !propName.getTable().equals( PostGISMappingsISODC.databaseTables.datasets.name() ) ) {
-                        s.append( " AND " + propName.getTable() + "."
-                                  + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
-                                  + PostGISMappingsISODC.databaseTables.datasets.name() + ".id " );
-                    }
-                }
-            }
-        }
+        // if ( builder != null && builder.getPropNameMappingList() != null ) {
+        //
+        // for ( Pair<String, String> pair : aliasMapping ) {
+        // if ( !pair.first.equals( PostGISMappingsISODC.databaseTables.datasets.name() ) ) {
+        // s.append( " AND " + pair.second + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
+        // + " = " + datasetsAlias + ".id " );
+        // }
+        // }
+        //
+        // } else {
+        // s.append( ' ' );
+        // }
 
         /*
-         * appends the constraint expression from the WHERE-builder
+         * appends the constraint expression from the WHERE-builder with the possible offset if the counting shouldn't
+         * begin at position 1
          */
-        s.append( constraintExpression + " OFFSET " + Integer.toString( recordStoreOptions.getStartPosition() - 1 )
-                  + ")" );
+        s.append( constraintExpression + SET_OFFSET + ")" );
 
         /*
          * finally, appends the LIMIT constraint
@@ -679,15 +732,17 @@ public class ISORecordStore implements RecordStore {
          */
         if ( builder != null && builder.getWhereClause().length() > 0 ) {
             int i = 0;
+
             for ( Object arg : builder.getWhereParams() ) {
                 i++;
-                LOG.debug( "Setting argument: " + arg );
+
+                LOG.info( "Setting argument: " + arg );
                 stmt.setObject( i, arg );
 
             }
         }
 
-        LOG.debug( "rs: " + stmt );
+        LOG.info( "rs: " + stmt );
         return stmt;
     }
 
