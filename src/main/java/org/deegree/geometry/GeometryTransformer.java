@@ -39,6 +39,7 @@ import static org.deegree.commons.utils.StringUtils.isSet;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ import javax.vecmath.Point3d;
 
 import org.deegree.commons.uom.Length;
 import org.deegree.cs.CRS;
+import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.Transformer;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
@@ -53,6 +55,7 @@ import org.deegree.cs.exceptions.OutsideCRSDomainException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
+import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.geometry.Geometry.GeometryType;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
@@ -213,10 +216,15 @@ public class GeometryTransformer extends Transformer {
     }
 
     /**
+     * Creates an envelope in the given CRS of the Area of Use (defined in WGS84) of the given Coordinate System.
+     * 
      * @param sourceCRS
-     * @return
+     *            to get the area of use from.
+     * @return an Envelope with corresponding ordinates of the area of use BBox of the given Coordinate system, if the
+     *         AreaOfUse was defined as -180,-90,180,90 BBox or if the envelope could not be transformed
+     *         <code>null</code> will be returned.
      */
-    private Envelope createValidDomain( CoordinateSystem sourceCRS ) {
+    public static Envelope createValidDomain( CoordinateSystem sourceCRS ) {
         double[] areaOfUseBBox = sourceCRS.getAreaOfUseBBox();
         if ( areaOfUseBBox[0] == -180 && areaOfUseBBox[1] == -90 && areaOfUseBBox[2] == 180 && areaOfUseBBox[3] == 90 ) {
             // not set
@@ -226,8 +234,26 @@ public class GeometryTransformer extends Transformer {
         GeometryTransformer t = new GeometryTransformer( sourceCRS );
         Envelope tEnv = null;
         try {
-            Envelope env = geomFactory.createEnvelope( areaOfUseBBox[0], areaOfUseBBox[1], areaOfUseBBox[2],
-                                                       areaOfUseBBox[3], new CRS( GeographicCRS.WGS84 ) );
+            double[] copy = Arrays.copyOf( areaOfUseBBox, 4 );
+            CoordinateSystem defWGS = GeographicCRS.WGS84;
+            try {
+                // rb: lookup the default WGS84 in the registry, it may be, that the axis are swapped.
+                defWGS = CRSRegistry.lookup( GeographicCRS.WGS84.getCode() );
+            } catch ( Exception e ) {
+                // catch any exceptions and use the default.
+            }
+            int xAxis = defWGS.getEasting();
+
+            double[] min = new double[] { copy[0], copy[1] };
+            double[] max = new double[] { copy[2], copy[3] };
+            if ( xAxis == 1 ) {
+                min[0] = copy[1];
+                min[1] = copy[0];
+                max[0] = copy[3];
+                max[1] = copy[2];
+            }
+
+            Envelope env = geomFactory.createEnvelope( min, max, new CRS( defWGS ) );
             Geometry geom = t.transform( env, false );
             if ( geom != null ) {
                 tEnv = geom.getEnvelope();
@@ -316,6 +342,9 @@ public class GeometryTransformer extends Transformer {
      */
     private Geometry transform( Geometry geo, Transformation trans, Envelope domainOfValidity )
                             throws TransformationException, IllegalArgumentException {
+        if ( TransformationFactory.isIdentity( trans ) ) {
+            return geo;
+        }
         if ( domainOfValidity != null ) {
             if ( !insideValidDomain( domainOfValidity, geo ) ) {
                 throw new OutsideCRSDomainException( "Geometry (gml:id="
@@ -522,6 +551,7 @@ public class GeometryTransformer extends Transformer {
      */
     private Envelope transform( Envelope envelope, Transformation trans, int numPoints )
                             throws TransformationException {
+
         int pointsPerSide;
         if ( numPoints < 4 ) {
             pointsPerSide = 0;
@@ -529,37 +559,43 @@ public class GeometryTransformer extends Transformer {
             pointsPerSide = (int) Math.ceil( ( numPoints - 4 ) / 4.0 );
         }
 
-        double x1 = envelope.getMin().get0();
-        double y1 = envelope.getMin().get1();
-        double x2 = envelope.getMax().get0();
-        double y2 = envelope.getMax().get1();
+        double axis0Min = envelope.getMin().get0();
+        double axis1Min = envelope.getMin().get1();
+        double axis0Max = envelope.getMax().get0();
+        double axis1Max = envelope.getMax().get1();
 
-        double width = envelope.getSpan0();
-        double height = envelope.getSpan1();
+        double span0 = envelope.getSpan0();
+        double span1 = envelope.getSpan1();
 
-        double xStep = width / ( pointsPerSide + 1 );
-        double yStep = height / ( pointsPerSide + 1 );
+        double axis0Step = span0 / ( pointsPerSide + 1 );
+        double axis1Step = span1 / ( pointsPerSide + 1 );
 
-        // PrecisionModel precision = envelope.getPrecision();
-
-        List<Point> points = new ArrayList<Point>( pointsPerSide * 4 + 4 );
-
-        CRS envCRS = envelope.getCoordinateSystem();
+        List<Point3d> points = new ArrayList<Point3d>( pointsPerSide * 4 + 4 );
+        double zValue = Double.NaN;
+        if ( trans.getSourceCRS() != null ) {
+            zValue = trans.getSourceCRS().getDimension() == 3 ? 1 : Double.NaN;
+        }
 
         for ( int i = 0; i <= pointsPerSide + 1; i++ ) {
-            points.add( geomFactory.createPoint( null, new double[] { x1 + i * xStep, y1 }, envCRS ) );
-            points.add( geomFactory.createPoint( null, new double[] { x1 + i * xStep, y2 }, envCRS ) );
+            points.add( new Point3d( axis0Min + i * axis0Step, axis1Min, zValue ) );
+            points.add( new Point3d( axis0Min + i * axis0Step, axis1Max, zValue ) );
+            points.add( new Point3d( axis0Min, axis1Min + i * axis1Step, zValue ) );
+            points.add( new Point3d( axis0Max, axis1Min + i * axis1Step, zValue ) );
         }
 
-        for ( int i = 1; i <= pointsPerSide; i++ ) {
-            points.add( geomFactory.createPoint( null, new double[] { x1, y1 + i * yStep }, envCRS ) );
-            points.add( geomFactory.createPoint( null, new double[] { x2, y1 + i * yStep }, envCRS ) );
+        points = trans.doTransform( points );
+        axis0Min = Double.MAX_VALUE;
+        axis1Min = Double.MAX_VALUE;
+        axis0Max = Double.NEGATIVE_INFINITY;
+        axis1Max = Double.NEGATIVE_INFINITY;
+        for ( Point3d p : points ) {
+            axis0Min = Math.min( p.x, axis0Min );
+            axis1Min = Math.min( p.y, axis1Min );
+            axis0Max = Math.max( p.x, axis0Max );
+            axis1Max = Math.max( p.y, axis1Max );
         }
-
-        MultiPoint envGeometry = geomFactory.createMultiPoint( null, envCRS, points );
-        MultiPoint transformedEnvGeometry = transform( envGeometry, trans );
-
-        return transformedEnvGeometry.getEnvelope();
+        return geomFactory.createEnvelope( new double[] { axis0Min, axis1Min }, new double[] { axis0Max, axis1Max },
+                                           envelope.getCoordinateSystem() );
     }
 
     private LineString transform( LineString geo, Transformation trans )
