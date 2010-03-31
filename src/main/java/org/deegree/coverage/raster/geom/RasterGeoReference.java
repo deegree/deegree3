@@ -762,11 +762,11 @@ public class RasterGeoReference {
             double[] worldMinCoordinate = getWorldCoordinate( world0Min, world1Min );
             double[] worldMaxCoordinate = getWorldCoordinate( world0Max, world1Max );
 
-            min[0] = worldMinCoordinate[0];
-            min[1] = worldMinCoordinate[1];
-            max[0] = worldMaxCoordinate[0];
-            max[1] = worldMaxCoordinate[1];
-            transformedEnv = geomFactory.createEnvelope( min, max, transformedEnv.getCoordinateSystem() );
+            nMin[0] = worldMinCoordinate[0];
+            nMin[1] = worldMinCoordinate[1];
+            nMax[0] = worldMaxCoordinate[0];
+            nMax[1] = worldMaxCoordinate[1];
+            transformedEnv = geomFactory.createEnvelope( nMin, nMax, transformedEnv.getCoordinateSystem() );
 
             // no convert back to the requested crs
             if ( transformer != null && envelope.getCoordinateSystem() != null ) {
