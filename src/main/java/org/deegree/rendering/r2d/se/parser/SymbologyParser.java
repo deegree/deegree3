@@ -43,6 +43,9 @@ import static java.awt.Font.createFont;
 import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
 import static java.lang.Double.parseDouble;
+import static java.lang.Float.parseFloat;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -253,7 +256,7 @@ public class SymbologyParser {
                         @Override
                         public void update( Fill obj, String val ) {
                             // keep original color
-                            float alpha = Float.parseFloat( val );
+                            float alpha = max( 0, min( 1, parseFloat( val ) ) );
                             float[] cols = obj.color.getRGBColorComponents( null );
                             obj.color = new Color( cols[0], cols[1], cols[2], alpha );
                         }
