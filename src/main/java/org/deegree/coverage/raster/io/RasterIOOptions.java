@@ -63,6 +63,9 @@ public class RasterIOOptions {
 
     private final static Logger LOG = LoggerFactory.getLogger( RasterIOOptions.class );
 
+    /** Seperator for text base files */
+    public final static String OPT_TEXT_SEPARATOR = "value_separator";
+
     /**
      * This key stores the (output) format.
      */
@@ -390,7 +393,7 @@ public class RasterIOOptions {
             if ( getRasterOriginLocation() == OriginLocation.CENTER ) {
                 add( GEO_ORIGIN_LOCATION, otherOptions.getRasterOriginLocation().name() );
             }
-            if ( getCRS() == null ) {
+            if ( getCRS() == null && otherOptions.getCRS() != null ) {
                 add( CRS, otherOptions.getCRS().getName() );
             }
             if ( get( LOCAL_RASTER_CACHE_DIR ) == null ) {

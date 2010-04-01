@@ -91,6 +91,24 @@ public enum DataType {
     }
 
     /**
+     * Convert from a string to {@link DataType}s.
+     * 
+     * @param type
+     *            The string representation of the Type (eg. 'short', etc.)
+     * @return The according DataType, or {@link #UNDEFINED} if not mappable;
+     */
+    public static DataType fromString( String type ) {
+
+        DataType result = UNDEFINED;
+        try {
+            result = valueOf( type.toUpperCase() );
+        } catch ( Throwable t ) {
+            // let it be.
+        }
+        return result;
+    }
+
+    /**
      * Convert from {@link DataBuffer}-Types to {@link DataType}s.
      * 
      * @param type

@@ -139,22 +139,27 @@ public class IIORasterReader implements RasterReader {
     private AbstractRaster loadFromReader( IIORasterDataReader reader, RasterIOOptions options ) {
         width = reader.getWidth();
         height = reader.getHeight();
-        setID( options );
-        OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();
+        RasterIOOptions opts = options;
+        if ( options == null ) {
+            opts = new RasterIOOptions();
+        }
+        setID( opts );
+
+        OriginLocation definedRasterOrigLoc = opts.getRasterOriginLocation();
         MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc );
         CoordinateSystem crs = metaDataReader.getCRS();
         rasterReference = metaDataReader.getRasterReference();
 
         if ( rasterReference == null ) {
-            if ( options.hasRasterGeoReference() ) {
-                rasterReference = options.getRasterGeoReference();
+            if ( opts.hasRasterGeoReference() ) {
+                rasterReference = opts.getRasterGeoReference();
             } else {
                 // create a 1:1 mapping
                 rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
-                if ( options.readWorldFile() ) {
+                if ( opts.readWorldFile() ) {
                     try {
                         if ( reader.file() != null ) {
-                            rasterReference = WorldFileAccess.readWorldFile( reader.file(), options );
+                            rasterReference = WorldFileAccess.readWorldFile( reader.file(), opts );
                         }
                     } catch ( IOException e ) {
                         //
@@ -164,18 +169,24 @@ public class IIORasterReader implements RasterReader {
         }
 
         // reader.close();
+        // read crs from options (if any)
+        CRS readCRS = null;
+        if ( crs == null ) {
+            readCRS = opts.getCRS();
+        } else {
+            readCRS = new CRS( crs );
+        }
 
-        CRS readCRS = crs == null ? null : new CRS( crs );
         Envelope envelope = rasterReference.getEnvelope( width, height, readCRS );
 
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
         // RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy()
         // );
         RasterDataInfo rdi = reader.getRasterDataInfo();
-        RasterCache cache = RasterCache.getInstance( options );
+        RasterCache cache = RasterCache.getInstance( opts );
         SimpleRaster result = cache.createFromCache( this, this.dataLocationId );
         if ( result == null ) {
-            result = RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, options );
+            result = RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, opts );
         }
         this.reader.dispose();
         return result;
