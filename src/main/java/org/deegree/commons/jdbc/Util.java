@@ -102,6 +102,7 @@ public class Util {
             conn = getConnection( connId );
             stmt = conn.prepareStatement( sql + " limit 0" );
             stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
+            LOG.debug( "Detemining feature type using query '{}'.", stmt );
             stmt.execute();
             set = stmt.getResultSet();
             ResultSetMetaData md = set.getMetaData();

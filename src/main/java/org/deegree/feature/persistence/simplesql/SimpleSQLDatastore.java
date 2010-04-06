@@ -242,9 +242,17 @@ public class SimpleSQLDatastore implements FeatureStore {
         return schema;
     }
 
+    /**
+     * @return the feature type (it can have only one)
+     */
+    public GenericFeatureType getFeatureType() {
+        return featureType;
+    }
+
     public void init()
                             throws FeatureStoreException {
         featureType = Util.determineFeatureType( featureName, namespace, connId, lods.values().iterator().next() );
+        System.out.println(featureType);
         if ( featureType == null ) {
             available = false;
         } else {
@@ -299,6 +307,13 @@ public class SimpleSQLDatastore implements FeatureStore {
                     LOG.info( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
                     LOG.trace( "Stack trace:", e );
                 }
+                int parameterCount = stmt.getParameterMetaData().getParameterCount();
+                if ( parameterCount == 0 ) {
+                    LOG.info( "No parameter for the bbox was found, requesting without bbox!" );
+                } else if ( parameterCount > 1 ) {
+                    LOG.warn( "Too many parameters specified ({}), cannot go further!" );
+                    return null;
+                }
                 stmt.setString( 1, WKTWriter.write( bbox ) );
                 LOG.debug( "Statement to fetch features was '{}'.", stmt );
                 stmt.execute();
@@ -326,6 +341,7 @@ public class SimpleSQLDatastore implements FeatureStore {
                                         } catch ( ParseException e ) {
                                             LOG.info( "WKB from the DB could not be parsed: '{}'.",
                                                       e.getLocalizedMessage() );
+                                            LOG.info( "For PostGIS users: you have to select the geometry field 'asbinary(geometry)'." );
                                             LOG.trace( "Stack trace:", e );
                                         }
                                     }

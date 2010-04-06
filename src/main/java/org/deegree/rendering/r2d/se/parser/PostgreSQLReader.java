@@ -89,7 +89,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs when problematic styles were found in the database", trace = "logs stack traces")
+@LoggingNotes(debug = "logs when problematic styles were found in the database", info = "logs problems when accessing the DB", trace = "logs stack traces")
 public class PostgreSQLReader {
 
     enum Type {
@@ -116,10 +116,8 @@ public class PostgreSQLReader {
 
     /**
      * @param connid
-     * @throws SQLException
-     * 
      */
-    public PostgreSQLReader( String connid ) throws SQLException {
+    public PostgreSQLReader( String connid ) {
         this.connid = connid;
     }
 
@@ -477,10 +475,8 @@ public class PostgreSQLReader {
     /**
      * @param id
      * @return the corresponding style from the database
-     * @throws SQLException
      */
-    public Style getStyle( String id )
-                            throws SQLException {
+    public Style getStyle( String id ) {
         Style style = pool.get( id );
         if ( style != null ) {
             return style;
@@ -554,15 +550,34 @@ public class PostgreSQLReader {
                 LOG.debug( "For style id '{}', no SLD snippet was found and no symbolizer referenced.", id );
             }
             return null;
+        } catch ( SQLException e ) {
+            LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return null;
         } finally {
             if ( rs != null ) {
-                rs.close();
+                try {
+                    rs.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
             }
             if ( stmt != null ) {
-                stmt.close();
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
             }
             if ( conn != null ) {
-                conn.close();
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to read style from DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
             }
         }
     }

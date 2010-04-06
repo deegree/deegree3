@@ -24,6 +24,9 @@ title varchar not null,
 connectionid varchar,
 sourcetable varchar,
 sourcequery varchar,
+crs varchar,
+bboxquery varchar,
+namespace varchar,
 symbolcodes varchar,
 symbolfield varchar
 );
