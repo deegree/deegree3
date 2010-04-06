@@ -53,7 +53,6 @@ import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
@@ -70,7 +69,6 @@ import org.slf4j.Logger;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.io.ParseException;
 
 /**
  * <code>SHPReader</code>
