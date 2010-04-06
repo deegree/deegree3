@@ -36,41 +36,27 @@
 package org.deegree.feature.persistence.simplesql;
 
 import static java.lang.Boolean.TRUE;
-import static java.sql.Types.BINARY;
-import static java.sql.Types.BIT;
-import static java.sql.Types.CHAR;
-import static java.sql.Types.DOUBLE;
-import static java.sql.Types.INTEGER;
-import static java.sql.Types.NUMERIC;
-import static java.sql.Types.OTHER;
-import static java.sql.Types.SMALLINT;
-import static java.sql.Types.VARCHAR;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
-import static org.deegree.commons.tom.primitive.PrimitiveType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.PrimitiveType.DECIMAL;
-import static org.deegree.commons.tom.primitive.PrimitiveType.STRING;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.ResultSetIterator;
+import org.deegree.commons.jdbc.Util;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -116,15 +102,14 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision$, $Date$
  */
+@LoggingNotes(info = "logs problems when connecting to the DB/getting data from the DB", debug = "logs the SQL statements sent to the SQL server", trace = "logs stack traces")
 public class SimpleSQLDatastore implements FeatureStore {
 
     static final Logger LOG = getLogger( SimpleSQLDatastore.class );
 
     boolean available = false;
 
-    private String connId;
-
-    Connection conn;
+    String connId;
 
     CRS crs;
 
@@ -167,10 +152,11 @@ public class SimpleSQLDatastore implements FeatureStore {
         try {
             transformer = new GeometryTransformer( this.crs.getWrappedCRS() );
         } catch ( IllegalArgumentException e ) {
-            LOG.error( "Stack trace:", e );
+            LOG.error( "The invalid crs '{}' was specified for the simple SQL data store.", crs );
+            LOG.trace( "Stack trace:", e );
         } catch ( UnknownCRSException e ) {
             LOG.error( "The invalid crs '{}' was specified for the simple SQL data store.", crs );
-            LOG.debug( "Stack trace:", e );
+            LOG.trace( "Stack trace:", e );
         }
         this.lods = new TreeMap<Integer, String>();
         this.lods.put( -1, sql );
@@ -185,20 +171,15 @@ public class SimpleSQLDatastore implements FeatureStore {
     }
 
     public void destroy() {
-        try {
-            if ( conn != null ) {
-                conn.close();
-            }
-        } catch ( SQLException e ) {
-            LOG.warn( "Connection could not be closed: '{}'.", e.getLocalizedMessage() );
-            LOG.debug( "Stack trace:", e );
-        }
+        // nothing to do
     }
 
     public Envelope getEnvelope( QName ftName ) {
         ResultSet set = null;
         PreparedStatement stmt = null;
+        Connection conn = null;
         try {
+            conn = getConnection( connId );
             stmt = conn.prepareStatement( bbox );
             LOG.debug( "Getting bbox with query '{}'.", stmt );
             stmt.execute();
@@ -209,13 +190,13 @@ public class SimpleSQLDatastore implements FeatureStore {
                 return g.getEnvelope();
             }
         } catch ( SQLException e ) {
-            LOG.warn( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
-            LOG.debug( "Stack trace:", e );
+            LOG.info( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
             available = false;
             return null;
         } catch ( ParseException e ) {
-            LOG.warn( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
-            LOG.debug( "Stack trace:", e );
+            LOG.info( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
             available = false;
             return null;
         } finally {
@@ -223,16 +204,24 @@ public class SimpleSQLDatastore implements FeatureStore {
                 try {
                     set.close();
                 } catch ( SQLException e ) {
-                    LOG.warn( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.debug( "Stack trace:", e );
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
                 }
             }
             if ( stmt != null ) {
                 try {
                     stmt.close();
                 } catch ( SQLException e ) {
-                    LOG.warn( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.debug( "Stack trace:", e );
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
                 }
             }
         }
@@ -255,79 +244,13 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     public void init()
                             throws FeatureStoreException {
-        ResultSet set = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = getConnection( connId );
-            stmt = conn.prepareStatement( lods.values().iterator().next() + " limit 0" );
-            stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
-            stmt.execute();
-            set = stmt.getResultSet();
-            ResultSetMetaData md = set.getMetaData();
-            LinkedList<PropertyType> ps = new LinkedList<PropertyType>();
-            for ( int i = 1; i <= md.getColumnCount(); ++i ) {
-                String name = md.getColumnLabel( i );
-
-                PropertyType pt;
-                int colType = md.getColumnType( i );
-                switch ( colType ) {
-                case VARCHAR:
-                case CHAR:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, STRING, false, null );
-                    break;
-                case INTEGER:
-                case SMALLINT:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, PrimitiveType.INTEGER,
-                                                         false, null );
-                    break;
-                case BIT:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, BOOLEAN, false, null );
-                    break;
-                case NUMERIC:
-                case DOUBLE:
-                    pt = new SimplePropertyType( new QName( namespace, name ), 0, 1, DECIMAL, false, null );
-                    break;
-                case OTHER:
-                case BINARY:
-                    pt = new GeometryPropertyType( new QName( namespace, name ), 0, 1, GEOMETRY, DIM_2_OR_3, false,
-                                                   null, null );
-                    break;
-                default:
-                    LOG.error( "Unsupported data type '{}'.", colType );
-                    continue;
-                }
-
-                ps.add( pt );
-            }
-
-            featureType = new GenericFeatureType( new QName( namespace, featureName ), (List) ps, false );
-
-            schema = new ApplicationSchema( new FeatureType[] { featureType }, null );
-        } catch ( SQLException e ) {
-            LOG.warn( "Data store could not be initialized: '{}'.", e.getLocalizedMessage() );
-            LOG.debug( "Stack trace:", e );
+        featureType = Util.determineFeatureType( featureName, namespace, connId, lods.values().iterator().next() );
+        if ( featureType == null ) {
             available = false;
-            return;
-        } finally {
-            if ( set != null ) {
-                try {
-                    set.close();
-                } catch ( SQLException e ) {
-                    LOG.warn( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.debug( "Stack trace:", e );
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.warn( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.debug( "Stack trace:", e );
-                }
-            }
+        } else {
+            schema = new ApplicationSchema( new FeatureType[] { featureType }, null );
+            available = true;
         }
-
-        available = true;
     }
 
     @Override
@@ -342,149 +265,88 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     public FeatureResultSet query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
+        PreparedStatement stmt = null;
+        Connection conn = null;
+        FeatureResultSet set = null;
         try {
+
             LinkedList<FeatureResultSet> list = new LinkedList<FeatureResultSet>();
 
             for ( final Query q : queries ) {
-                FeatureResultSet set = new IteratorResultSet( new CloseableIterator<Feature>() {
-                    ResultSet set = null;
 
-                    PreparedStatement stmt = null;
-
-                    {
-                        Envelope bbox = (Envelope) q.getHint( HINT_LOOSE_BBOX );
-                        Object scaleHint = q.getHint( HINT_SCALE );
-                        int scale = -1;
-                        if ( scaleHint != null ) {
-                            scale = (Integer) scaleHint;
-                        }
-                        String sql = null;
-                        for ( Integer i : lods.keySet() ) {
-                            if ( i <= scale ) {
-                                LOG.debug( "Considering use of LOD with scale {}.", i );
-                                sql = lods.get( i );
-                            }
-                        }
-
-                        stmt = conn.prepareStatement( sql );
-                        try {
-                            bbox = (Envelope) transformer.transform( bbox );
-                        } catch ( UnknownCRSException e ) {
-                            LOG.warn( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
-                            LOG.debug( "Stack trace:", e );
-                        } catch ( TransformationException e ) {
-                            LOG.warn( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
-                            LOG.debug( "Stack trace:", e );
-                        }
-                        stmt.setString( 1, WKTWriter.write( bbox ) );
-                        LOG.debug( "Statement to fetch features was '{}'.", stmt );
-                        stmt.execute();
-                        set = stmt.getResultSet();
+                Envelope bbox = (Envelope) q.getHint( HINT_LOOSE_BBOX );
+                Object scaleHint = q.getHint( HINT_SCALE );
+                int scale = -1;
+                if ( scaleHint != null ) {
+                    scale = (Integer) scaleHint;
+                }
+                String sql = null;
+                for ( Integer i : lods.keySet() ) {
+                    if ( i <= scale ) {
+                        LOG.debug( "Considering use of LOD with scale {}.", i );
+                        sql = lods.get( i );
                     }
+                }
 
-                    public void close() {
-                        if ( set != null ) {
-                            try {
-                                set.close();
-                            } catch ( SQLException e ) {
-                                LOG.warn( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                                LOG.debug( "Stack trace:", e );
-                            }
-                        }
-                        if ( stmt != null ) {
-                            try {
-                                stmt.close();
-                            } catch ( SQLException e ) {
-                                LOG.warn( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                                LOG.debug( "Stack trace:", e );
-                            }
-                        }
-                    }
+                conn = getConnection( connId );
+                stmt = conn.prepareStatement( sql );
+                try {
+                    bbox = (Envelope) transformer.transform( bbox );
+                } catch ( UnknownCRSException e ) {
+                    LOG.info( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                } catch ( TransformationException e ) {
+                    LOG.info( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+                stmt.setString( 1, WKTWriter.write( bbox ) );
+                LOG.debug( "Statement to fetch features was '{}'.", stmt );
+                stmt.execute();
 
-                    public Collection<Feature> getAsCollectionAndClose( Collection<Feature> collection ) {
-                        while ( hasNext() ) {
-                            collection.add( next() );
-                        }
-                        return collection;
-                    }
+                set = new IteratorResultSet( new ResultSetIterator<Feature>( stmt.getResultSet(), conn, stmt ) {
 
-                    public List<Feature> getAsListAndClose() {
-                        return (List<Feature>) getAsCollectionAndClose( new LinkedList<Feature>() );
-                    }
-
-                    public boolean hasNext() {
-                        try {
-                            return !set.isLast();
-                        } catch ( SQLException e ) {
-                            LOG.warn( "Data store could not be accessed: '{}'.", e.getLocalizedMessage() );
-                            LOG.debug( "Stack trace:", e );
-                            available = false;
-                        }
-                        return false;
-                    }
-
-                    public Feature next() {
-                        if ( !hasNext() ) {
-                            return null;
-                        }
-                        try {
-                            if ( set.next() ) {
-                                LinkedList<Property> props = new LinkedList<Property>();
-                                for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
-                                    if ( pt instanceof GeometryPropertyType ) {
-                                        if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE ) {
-                                            byte[] bs = set.getBytes( pt.getName().getLocalPart() );
-                                            if ( bs != null ) {
-                                                try {
-                                                    Geometry geom = WKBReader.read( bs );
-                                                    geom.setCoordinateSystem( crs );
-                                                    if ( geom instanceof MultiGeometry<?> ) {
-                                                        for ( Geometry g : (MultiGeometry<?>) geom ) {
-                                                            g.setCoordinateSystem( crs );
-                                                        }
-                                                    }
-                                                    props.add( new GenericProperty( pt, geom ) );
-                                                } catch ( ParseException e ) {
-                                                    LOG.warn( "WKB from the DB could not be parsed: '{}'.",
-                                                              e.getLocalizedMessage() );
-                                                    LOG.debug( "Stack trace:", e );
+                    @Override
+                    protected Feature createElement( ResultSet rs )
+                                            throws SQLException {
+                        LinkedList<Property> props = new LinkedList<Property>();
+                        for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
+                            if ( pt instanceof GeometryPropertyType ) {
+                                if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE ) {
+                                    byte[] bs = rs.getBytes( pt.getName().getLocalPart() );
+                                    if ( bs != null ) {
+                                        try {
+                                            Geometry geom = WKBReader.read( bs );
+                                            geom.setCoordinateSystem( crs );
+                                            if ( geom instanceof MultiGeometry<?> ) {
+                                                for ( Geometry g : (MultiGeometry<?>) geom ) {
+                                                    g.setCoordinateSystem( crs );
                                                 }
                                             }
-                                        }
-                                    } else {
-                                        Object obj = set.getObject( pt.getName().getLocalPart() );
-                                        if ( obj != null ) {
-                                            if ( obj instanceof Integer ) {
-                                                props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
-                                                                               PrimitiveType.INTEGER ) );
-                                            } else if ( obj instanceof Double ) {
-                                                props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
-                                                                               PrimitiveType.DOUBLE ) );
-                                            } else {
-                                                props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
-                                                                               PrimitiveType.STRING ) );
-                                            }
+                                            props.add( new GenericProperty( pt, geom ) );
+                                        } catch ( ParseException e ) {
+                                            LOG.info( "WKB from the DB could not be parsed: '{}'.",
+                                                      e.getLocalizedMessage() );
+                                            LOG.trace( "Stack trace:", e );
                                         }
                                     }
                                 }
-                                return new GenericFeature( featureType, null, (List) props, null );
+                            } else {
+                                Object obj = rs.getObject( pt.getName().getLocalPart() );
+                                if ( obj != null ) {
+                                    if ( obj instanceof Integer ) {
+                                        props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
+                                                                       PrimitiveType.INTEGER ) );
+                                    } else if ( obj instanceof Double ) {
+                                        props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
+                                                                       PrimitiveType.DOUBLE ) );
+                                    } else {
+                                        props.add( new SimpleProperty( (SimplePropertyType) pt, "" + obj,
+                                                                       PrimitiveType.STRING ) );
+                                    }
+                                }
                             }
-                        } catch ( SQLException e ) {
-                            LOG.warn( "Data store could not be accessed: '{}'.", e.getLocalizedMessage() );
-                            LOG.debug( "Stack trace:", e );
-                            available = false;
                         }
-                        return null;
-                    }
-
-                    public void remove() {
-                        try {
-                            set.next();
-                        } catch ( SQLException e ) {
-                            LOG.warn( "Data store could not be accessed: '{}'.", e.getLocalizedMessage() );
-                            LOG.debug( "Stack trace:", e );
-                            available = false;
-                        }
+                        return new GenericFeature( featureType, null, props, null );
                     }
                 } );
 
@@ -497,8 +359,8 @@ public class SimpleSQLDatastore implements FeatureStore {
 
             return new CombinedResultSet( list.iterator() );
         } catch ( SQLException e ) {
-            LOG.warn( "Data store could not be accessed: '{}'.", e.getLocalizedMessage() );
-            LOG.debug( "Stack trace:", e );
+            LOG.info( "Data store could not be accessed: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
             available = false;
             throw new FeatureStoreException( "Data store could not be accessed." );
         }
