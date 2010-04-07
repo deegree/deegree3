@@ -378,6 +378,48 @@ public class TransformationAccuracyTest implements CRSDefines {
     }
 
     /**
+     * Test the forward/inverse transformation from a projected crs (EPSG:28992) to another projected crs (EPSG:25832)
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testProjectedToProjectedWithLatLonGeoAxis()
+                            throws TransformationException {
+        // Source crs espg:28992
+        ProjectedCRS sourceCRS = projected_28992_lat_lon;
+
+        // Target crs espg:25832
+        ProjectedCRS targetCRS = projected_25832_lat_lon;
+
+        // reference created with coord tool from http://www.rdnap.nl/ (NL/hoensbroek)
+        Point3d sourcePoint = new Point3d( 191968.31999475454, 326455.285005203, Double.NaN );
+        Point3d targetPoint = new Point3d( 283065.845, 5646206.125, Double.NaN );
+
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_M, EPSILON_M );
+    }
+
+    /**
+     * Test the forward/inverse transformation from a projected crs (EPSG:28992) to another projected crs (EPSG:25832)
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testProjectedToProjectedWithYX()
+                            throws TransformationException {
+        // Source crs espg:28992
+        ProjectedCRS sourceCRS = projected_28992_yx;
+
+        // Target crs espg:25832
+        ProjectedCRS targetCRS = projected_25832;
+
+        // reference created with coord tool from http://www.rdnap.nl/ (NL/hoensbroek)
+        Point3d sourcePoint = new Point3d( 326455.285005203, 191968.31999475454, Double.NaN );
+        Point3d targetPoint = new Point3d( 283065.845, 5646206.125, Double.NaN );
+
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_M, EPSILON_M );
+    }
+
+    /**
      * Test the forward/inverse transformation from a projected crs (EPSG:31467) to a geographic crs (EPSG:4258)
      * 
      * @throws TransformationException
@@ -394,6 +436,72 @@ public class TransformationAccuracyTest implements CRSDefines {
         // with kind regards to vodafone for supplying reference points
         Point3d sourcePoint = new Point3d( 3532465.57, 5301523.49, Double.NaN );
         Point3d targetPoint = new Point3d( 9.432778, 47.851111, Double.NaN );
+
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_M );
+    }
+
+    /**
+     * Test the forward/inverse transformation from a projected crs (EPSG:31467) with yx axis order to a geographic crs
+     * (EPSG:4258).
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testProjectedWithYXToGeographic()
+                            throws TransformationException {
+        // Source crs espg:31467
+        ProjectedCRS sourceCRS = projected_31467_yx;
+
+        // Target crs espg:4258
+        GeographicCRS targetCRS = geographic_4258;
+
+        // with kind regards to vodafone for supplying reference points
+        Point3d sourcePoint = new Point3d( 5301523.49, 3532465.57, Double.NaN );
+        Point3d targetPoint = new Point3d( 9.432778, 47.851111, Double.NaN );
+
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_M );
+    }
+
+    /**
+     * Test the forward/inverse transformation from a projected crs (EPSG:31467) based on a lat/lon geographic crs to a
+     * geographic crs (EPSG:4258).
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testProjectedOnGeoLatLonToGeographic()
+                            throws TransformationException {
+        // Source crs espg:31467
+        ProjectedCRS sourceCRS = projected_31467_lat_lon;
+
+        // Target crs espg:4258
+        GeographicCRS targetCRS = geographic_4258;
+
+        // with kind regards to vodafone for supplying reference points
+        Point3d sourcePoint = new Point3d( 3532465.57, 5301523.49, Double.NaN );
+        Point3d targetPoint = new Point3d( 9.432778, 47.851111, Double.NaN );
+
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_M );
+    }
+
+    /**
+     * Test the forward/inverse transformation from a projected crs (EPSG:31467) to a geographic crs (EPSG:4258) which
+     * has lat/lon axis
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testProjectedToGeographicLatLon()
+                            throws TransformationException {
+        // Source crs espg:31467
+        ProjectedCRS sourceCRS = projected_31467;
+
+        // Target crs espg:4258
+        GeographicCRS targetCRS = geographic_4258_lat_lon;
+
+        // with kind regards to vodafone for supplying reference points
+        Point3d sourcePoint = new Point3d( 3532465.57, 5301523.49, Double.NaN );
+        Point3d targetPoint = new Point3d( 47.851111, 9.432778, Double.NaN );
 
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_M );
     }
@@ -435,6 +543,52 @@ public class TransformationAccuracyTest implements CRSDefines {
         // with kind regards to vodafone for supplying reference points.
         Point3d sourcePoint = new Point3d( 8.83319047, 54.90017335, Double.NaN );
         Point3d targetPoint = new Point3d( 8.83213115, 54.89846442, Double.NaN );
+
+        // do the testing
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_D );
+    }
+
+    /**
+     * Test the forward/inverse transformation from a geographic crs (EPSG:4314) lat/lon to another geographic crs
+     * (EPSG:4258) lon/lat
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testGeographicLatLonToGeographic()
+                            throws TransformationException {
+
+        // source crs epsg:4314
+        GeographicCRS sourceCRS = geographic_4314_lat_lon;
+        // target crs epsg:4258
+        GeographicCRS targetCRS = geographic_4258;
+
+        // with kind regards to vodafone for supplying reference points.
+        Point3d sourcePoint = new Point3d( 54.90017335, 8.83319047, Double.NaN );
+        Point3d targetPoint = new Point3d( 8.83213115, 54.89846442, Double.NaN );
+
+        // do the testing
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_D );
+    }
+
+    /**
+     * Test the forward/inverse transformation from a geographic crs (EPSG:4314) lat/lon to another geographic crs
+     * (EPSG:4258) lat/lon
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testGeographicLatLonToGeographicLatLon()
+                            throws TransformationException {
+
+        // source crs epsg:4314
+        GeographicCRS sourceCRS = geographic_4314_lat_lon;
+        // target crs epsg:4258
+        GeographicCRS targetCRS = geographic_4258_lat_lon;
+
+        // with kind regards to vodafone for supplying reference points.
+        Point3d sourcePoint = new Point3d( 54.90017335, 8.83319047, Double.NaN );
+        Point3d targetPoint = new Point3d( 54.89846442, 8.83213115, Double.NaN );
 
         // do the testing
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_D );
