@@ -139,6 +139,19 @@ public class TransformationFactory {
             }
             return result;
         }
+
+        /**
+         * @param transform
+         *            to check for.
+         * @return true if the name of this data shift transformation hint equals the implementation name of the given
+         *         transformation.
+         */
+        public boolean isPreferred( Transformation transform ) {
+            if ( transform != null ) {
+                return name().equalsIgnoreCase( transform.getImplementationName() );
+            }
+            return false;
+        }
     }
 
     /**
