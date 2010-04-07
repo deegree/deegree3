@@ -122,7 +122,7 @@ public class ApplicationSchemaXSDEncoder {
         if ( importURLs == null ) {
             this.importURLs = new HashMap<String, String>();
         } else {
-            this.importURLs = importURLs;
+            this.importURLs = new HashMap<String, String>( importURLs );
         }
         switch ( version ) {
         case GML_2:

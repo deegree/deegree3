@@ -40,8 +40,10 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -215,25 +217,36 @@ public class GMLFeatureWriter {
      * TODO merge with other schema location possibilities
      * 
      * @param col
-     * @param schemaLocation
+     * @param noNamespaceSchemaLocation
      *            may be null
-     * @param namespace
+     * @param bindings
+     *            optional additional schema locations
      * @throws XMLStreamException
      * @throws TransformationException
      * @throws UnknownCRSException
      */
-    public void export( FeatureCollection col, String schemaLocation, String namespace )
+    public void export( FeatureCollection col, String noNamespaceSchemaLocation, Map<String, String> bindings )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         LOG.debug( "Exporting generic feature collection." );
         writer.setPrefix( "gml", gmlNs );
-        writer.writeStartElement( "FeatureCollection" );
-        if ( schemaLocation != null && namespace == null ) {
+        writer.setPrefix( "wfs", WFS_NS );
+        writer.writeStartElement( WFS_NS, "FeatureCollection" );
+        if ( noNamespaceSchemaLocation != null ) {
             writer.setPrefix( "xsi", XSINS );
-            writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", schemaLocation );
+            writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", noNamespaceSchemaLocation );
         }
-        if ( schemaLocation != null && namespace != null ) {
+        if ( bindings != null && !bindings.isEmpty() ) {
             writer.setPrefix( "xsi", XSINS );
-            writer.writeAttribute( XSINS, "schemaLocation", namespace + " " + schemaLocation );
+            String locs = null;
+            for ( Entry<String, String> e : bindings.entrySet() ) {
+                if ( locs == null ) {
+                    locs = "";
+                } else {
+                    locs += " ";
+                }
+                locs += e.getKey() + " " + e.getValue();
+            }
+            writer.writeAttribute( XSINS, "schemaLocation", locs );
         }
 
         writer.writeStartElement( gmlNs, "boundedBy" );
