@@ -508,7 +508,7 @@ public class ISORecordStore implements RecordStore {
 
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
-        List<Pair<Writer, Collection<Object>>> wList = new ArrayList<Pair<Writer, Collection<Object>>>();
+        List<Pair<Writer, Collection<Object>>> preparedStatementList = new ArrayList<Pair<Writer, Collection<Object>>>();
 
         List<Pair<StringBuilder, Collection<Object>>> whereClauseList = new GenerateWhereClauseList(
                                                                                                      builder.getWhereClause(),
@@ -524,19 +524,20 @@ public class ISORecordStore implements RecordStore {
                                                                                         typeNameFormatNumber,
                                                                                         profileFormatNumberOutputSchema,
                                                                                         false, builder,
-                                                                                        whereBuilderPair, conn );
+                                                                                        whereBuilderPair );
 
-                wList.add( selectBrief );
+                preparedStatementList.add( selectBrief );
 
             }
 
-            preparedStatement = combinePreparedStatement( wList, recordStoreOptions, conn, false, builder );
+            preparedStatement = combinePreparedStatement( preparedStatementList, recordStoreOptions, conn, false,
+                                                          builder );
 
             rs = preparedStatement.executeQuery();
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                               ResultType.results, builder, wList );
+                               ResultType.results, builder, preparedStatementList );
             break;
         case summary:
 
@@ -547,19 +548,20 @@ public class ISORecordStore implements RecordStore {
                                                                                           typeNameFormatNumber,
                                                                                           profileFormatNumberOutputSchema,
                                                                                           false, builder,
-                                                                                          whereBuilderPair, conn );
+                                                                                          whereBuilderPair );
 
-                wList.add( selectSummary );
+                preparedStatementList.add( selectSummary );
 
             }
 
-            preparedStatement = combinePreparedStatement( wList, recordStoreOptions, conn, false, builder );
+            preparedStatement = combinePreparedStatement( preparedStatementList, recordStoreOptions, conn, false,
+                                                          builder );
 
             rs = preparedStatement.executeQuery();
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
-                               ResultType.results, builder, wList );
+                               ResultType.results, builder, preparedStatementList );
             break;
         case full:
 
@@ -569,20 +571,20 @@ public class ISORecordStore implements RecordStore {
                                                                                        recordStoreOptions,
                                                                                        typeNameFormatNumber,
                                                                                        profileFormatNumberOutputSchema,
-                                                                                       false, builder,
-                                                                                       whereBuilderPair, conn );
+                                                                                       false, builder, whereBuilderPair );
 
-                wList.add( selectFull );
+                preparedStatementList.add( selectFull );
 
             }
 
-            preparedStatement = combinePreparedStatement( wList, recordStoreOptions, conn, false, builder );
+            preparedStatement = combinePreparedStatement( preparedStatementList, recordStoreOptions, conn, false,
+                                                          builder );
 
             rs = preparedStatement.executeQuery();
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
-                               ResultType.results, builder, wList );
+                               ResultType.results, builder, preparedStatementList );
             break;
         }
 
@@ -594,7 +596,7 @@ public class ISORecordStore implements RecordStore {
 
     }
 
-    private PreparedStatement combinePreparedStatement( List<Pair<Writer, Collection<Object>>> wList,
+    private PreparedStatement combinePreparedStatement( List<Pair<Writer, Collection<Object>>> preparedStatementList,
                                                         RecordStoreOptions recordStoreOptions, Connection conn,
                                                         boolean setCount, PostGISWhereBuilder builder )
                             throws SQLException {
@@ -618,14 +620,14 @@ public class ISORecordStore implements RecordStore {
             SET_OFFSET = " OFFSET " + Integer.toString( recordStoreOptions.getStartPosition() - 1 );
         }
         s.append( COUNT_PRE );
-        for ( int i = 0; i < wList.size(); i++ ) {
-            if ( i == wList.size() - 1 ) {
-                s.append( wList.get( i ).first.toString() );
+        for ( int i = 0; i < preparedStatementList.size(); i++ ) {
+            if ( i == preparedStatementList.size() - 1 ) {
+                s.append( preparedStatementList.get( i ).first.toString() );
                 if ( recordStoreOptions.getMaxRecords() != 0 ) {
                     s.append( " " + SET_OFFSET + " LIMIT " + recordStoreOptions.getMaxRecords() );
                 }
             } else {
-                s.append( wList.get( i ).first.toString() );
+                s.append( preparedStatementList.get( i ).first.toString() );
                 s.append( " UNION " );
             }
 
@@ -637,10 +639,10 @@ public class ISORecordStore implements RecordStore {
         /*
          * the parameter identified in the WHERE-builder replaces the "?" in the statement
          */
-        if ( builder != null && wList.size() > 0 ) {
+        if ( builder != null && preparedStatementList.size() > 0 ) {
             int i = 0;
 
-            for ( Pair pair : wList )
+            for ( Pair<Writer, Collection<Object>> pair : preparedStatementList )
                 for ( Object arg : (Collection<Object>) pair.second ) {
                     i++;
 
@@ -681,13 +683,11 @@ public class ISORecordStore implements RecordStore {
                                                                       int profileFormatNumberOutputSchema,
                                                                       boolean setCount,
                                                                       PostGISWhereBuilder builder,
-                                                                      Pair<StringBuilder, Collection<Object>> whereBuilder,
-                                                                      Connection conn )
+                                                                      Pair<StringBuilder, Collection<Object>> whereBuilder )
                             throws IOException, SQLException {
 
         Pair<Writer, Collection<Object>> pair = new Pair<Writer, Collection<Object>>();
         Writer s = new StringWriter();
-        PreparedStatement stmt = null;
         StringWriter constraintExpression = new StringWriter();
         String constraintExpressionTemp = "";
         List<Pair<String, String>> aliasMapping = new ArrayList<Pair<String, String>>();
@@ -812,7 +812,8 @@ public class ISORecordStore implements RecordStore {
          * begin at position 1
          */
         s.append( "" + constraintExpression );
-
+        pair.first = s;
+        pair.second = (Collection<Object>) whereBuilder.second;
         return pair;
 
     }
