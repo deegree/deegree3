@@ -36,12 +36,17 @@
 
 package org.deegree.protocol.wms.dims;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.slf4j.Logger;
 
 /**
  * <code>ParserTest</code>
@@ -52,6 +57,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  */
 public class ParserTest extends TestCase {
+    private static final Logger LOG = getLogger( ParserTest.class );
 
     /**
      * @throws Exception
@@ -78,6 +84,11 @@ public class ParserTest extends TestCase {
         p = new parser( new DimensionLexer( new StringReader( "a/b/c,b/c/a,c/b/a" ) ) );
         assertEquals( "[a/b/c, b/c/a, c/b/a]", p.parse().value.toString() );
 
+        LOG.warn( "Setting std.err to a bytearray print stream, so parser error messages will not be visible in the tests." );
+        PrintStream err = System.err;
+        PrintStream newOut = new PrintStream( new ByteArrayOutputStream() );
+        System.setErr( newOut );
+
         p = new parser( new DimensionLexer( new StringReader( "1,2," ) ) );
         assertEquals( "Expected another value after '2,'.", ( (Exception) p.parse().value ).getMessage() );
 
@@ -95,6 +106,7 @@ public class ParserTest extends TestCase {
 
         p = new parser( new DimensionLexer( new StringReader( "one/two, three/four/, " ) ) );
         assertEquals( "Expected another interval after 'three/four/0,'.", ( (Exception) p.parse().value ).getMessage() );
+        System.setErr( err );
     }
 
 }
