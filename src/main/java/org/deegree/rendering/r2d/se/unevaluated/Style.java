@@ -41,6 +41,7 @@ import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -48,6 +49,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
@@ -249,8 +251,15 @@ public class Style {
     /**
      * @return the base stylings for all symbolizers sorted by rules
      */
-    public LinkedList<LinkedList<Styling>> getBases() {
-        LinkedList<LinkedList<Styling>> list = new LinkedList<LinkedList<Styling>>();
+    public ArrayList<LinkedList<Styling>> getBases() {
+        return CollectionUtils.unzip( getBasesWithScales() ).first;
+    }
+
+    /**
+     * @return the base stylings for all symbolizers sorted by rules and the corresponding scale denominators
+     */
+    public LinkedList<Pair<LinkedList<Styling>, DoublePair>> getBasesWithScales() {
+        LinkedList<Pair<LinkedList<Styling>, DoublePair>> list = new LinkedList<Pair<LinkedList<Styling>, DoublePair>>();
         for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
             LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
             rule.first.evaluate( base, null );
@@ -259,7 +268,7 @@ public class Style {
                 stylings.add( (Styling) s.getBase() );
             }
             if ( !stylings.isEmpty() ) {
-                list.add( stylings );
+                list.add( new Pair<LinkedList<Styling>, DoublePair>( stylings, rule.second ) );
             }
         }
         return list;

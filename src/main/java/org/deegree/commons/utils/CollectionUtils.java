@@ -44,6 +44,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * <code>CollectionUtils</code>
@@ -130,6 +132,24 @@ public class CollectionUtils {
             list1.add( pair.first );
             list2.add( pair.second );
         }
+        return new Pair<ArrayList<T>, ArrayList<U>>( list1, list2 );
+    }
+
+    /**
+     * @param <T>
+     * @param <U>
+     * @param map
+     * @return two separate lists
+     */
+    public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzip( Map<T, U> map ) {
+        ArrayList<T> list1 = new ArrayList<T>( map.size() );
+        ArrayList<U> list2 = new ArrayList<U>( map.size() );
+
+        for ( Entry<T, U> e : map.entrySet() ) {
+            list1.add( e.getKey() );
+            list2.add( e.getValue() );
+        }
+
         return new Pair<ArrayList<T>, ArrayList<U>>( list1, list2 );
     }
 

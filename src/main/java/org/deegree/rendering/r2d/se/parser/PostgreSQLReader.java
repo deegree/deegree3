@@ -98,19 +98,19 @@ public class PostgreSQLReader {
 
     private static final Logger LOG = getLogger( PostgreSQLReader.class );
 
-    private final HashMap<String, Style> pool = new HashMap<String, Style>();
+    private final HashMap<Integer, Style> pool = new HashMap<Integer, Style>();
 
-    private final HashMap<String, Fill> fills = new HashMap<String, Fill>();
+    private final HashMap<Integer, Fill> fills = new HashMap<Integer, Fill>();
 
-    private final HashMap<String, Stroke> strokes = new HashMap<String, Stroke>();
+    private final HashMap<Integer, Stroke> strokes = new HashMap<Integer, Stroke>();
 
-    private final HashMap<String, Graphic> graphics = new HashMap<String, Graphic>();
+    private final HashMap<Integer, Graphic> graphics = new HashMap<Integer, Graphic>();
 
-    private final HashMap<String, PointStyling> points = new HashMap<String, PointStyling>();
+    private final HashMap<Integer, PointStyling> points = new HashMap<Integer, PointStyling>();
 
-    private final HashMap<String, LineStyling> lines = new HashMap<String, LineStyling>();
+    private final HashMap<Integer, LineStyling> lines = new HashMap<Integer, LineStyling>();
 
-    private final HashMap<String, PolygonStyling> polygons = new HashMap<String, PolygonStyling>();
+    private final HashMap<Integer, PolygonStyling> polygons = new HashMap<Integer, PolygonStyling>();
 
     private String connid;
 
@@ -121,7 +121,7 @@ public class PostgreSQLReader {
         this.connid = connid;
     }
 
-    private Graphic getGraphic( String id, Connection conn )
+    private Graphic getGraphic( int id, Connection conn )
                             throws SQLException {
         Graphic graphic = graphics.get( id );
         if ( graphic != null ) {
@@ -132,7 +132,7 @@ public class PostgreSQLReader {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement( "select size, rotation, anchorx, anchory, displacementx, displacementy, wellknownname, svg, base64raster, fill_id, stroke_id from graphics where id = ?" );
-            stmt.setString( 1, id );
+            stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 Graphic res = new Graphic();
@@ -190,11 +190,11 @@ public class PostgreSQLReader {
                         LOG.trace( "Stack trace:", e );
                     }
                 }
-                String fill = rs.getString( "fill_id" );
+                Integer fill = (Integer) rs.getObject( "fill_id" );
                 if ( fill != null ) {
                     res.mark.fill = getFill( fill, conn );
                 }
-                String stroke = rs.getString( "stroke_id" );
+                Integer stroke = (Integer) rs.getObject( "stroke_id" );
                 if ( stroke != null ) {
                     res.mark.stroke = getStroke( stroke, conn );
                 }
@@ -214,7 +214,7 @@ public class PostgreSQLReader {
         }
     }
 
-    private Stroke getStroke( String id, Connection conn )
+    private Stroke getStroke( int id, Connection conn )
                             throws SQLException {
         Stroke stroke = strokes.get( id );
         if ( stroke != null ) {
@@ -225,7 +225,7 @@ public class PostgreSQLReader {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement( "select color, width, linejoin, linecap, dasharray, dashoffset, stroke_graphic_id, fill_graphic_id, strokegap, strokeinitialgap, positionpercentage from strokes where id = ?" );
-            stmt.setString( 1, id );
+            stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 Stroke res = new Stroke();
@@ -262,11 +262,11 @@ public class PostgreSQLReader {
                 if ( dashoffset != null ) {
                     res.dashoffset = dashoffset;
                 }
-                String graphicstroke = rs.getString( "stroke_graphic_id" );
+                Integer graphicstroke = (Integer) rs.getObject( "stroke_graphic_id" );
                 if ( graphicstroke != null ) {
                     res.stroke = getGraphic( graphicstroke, conn );
                 }
-                String graphicfill = rs.getString( "fill_graphic_id" );
+                Integer graphicfill = (Integer) rs.getObject( "fill_graphic_id" );
                 if ( graphicfill != null ) {
                     res.fill = getGraphic( graphicfill, conn );
                 }
@@ -298,7 +298,7 @@ public class PostgreSQLReader {
         }
     }
 
-    private Fill getFill( String id, Connection conn )
+    private Fill getFill( int id, Connection conn )
                             throws SQLException {
         Fill fill = fills.get( id );
         if ( fill != null ) {
@@ -309,7 +309,7 @@ public class PostgreSQLReader {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement( "select color, graphic_id from fills where id = ?" );
-            stmt.setString( 1, id );
+            stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 Fill res = new Fill();
@@ -318,7 +318,7 @@ public class PostgreSQLReader {
                 if ( color != null ) {
                     res.color = decode( color );
                 }
-                String graphic = rs.getString( "graphic_id" );
+                Integer graphic = (Integer) rs.getObject( "graphic_id" );
                 if ( graphic != null ) {
                     res.graphic = getGraphic( graphic, conn );
                 }
@@ -338,7 +338,7 @@ public class PostgreSQLReader {
         }
     }
 
-    private PointStyling getPointStyling( String id, Connection conn )
+    private PointStyling getPointStyling( int id, Connection conn )
                             throws SQLException {
         PointStyling sym = points.get( id );
         if ( sym != null ) {
@@ -349,7 +349,7 @@ public class PostgreSQLReader {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement( "select uom, graphic_id from points where id = ?" );
-            stmt.setString( 1, id );
+            stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 PointStyling res = new PointStyling();
@@ -358,7 +358,7 @@ public class PostgreSQLReader {
                 if ( uom != null ) {
                     res.uom = getUOM( uom );
                 }
-                String graphic = rs.getString( "graphic_id" );
+                Integer graphic = (Integer) rs.getObject( "graphic_id" );
                 if ( graphic != null ) {
                     res.graphic = getGraphic( graphic, conn );
                 }
@@ -376,7 +376,7 @@ public class PostgreSQLReader {
         }
     }
 
-    private LineStyling getLineStyling( String id, Connection conn )
+    private LineStyling getLineStyling( int id, Connection conn )
                             throws SQLException {
         LineStyling sym = lines.get( id );
         if ( sym != null ) {
@@ -387,7 +387,7 @@ public class PostgreSQLReader {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement( "select uom, stroke_id, perpendicularoffset from lines where id = ?" );
-            stmt.setString( 1, id );
+            stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 LineStyling res = new LineStyling();
@@ -396,7 +396,7 @@ public class PostgreSQLReader {
                 if ( uom != null ) {
                     res.uom = getUOM( uom );
                 }
-                String stroke = rs.getString( "stroke_id" );
+                Integer stroke = (Integer) rs.getObject( "stroke_id" );
                 if ( stroke != null ) {
                     res.stroke = getStroke( stroke, conn );
                 }
@@ -418,7 +418,7 @@ public class PostgreSQLReader {
         }
     }
 
-    private PolygonStyling getPolygonStyling( String id, Connection conn )
+    private PolygonStyling getPolygonStyling( int id, Connection conn )
                             throws SQLException {
         PolygonStyling sym = polygons.get( id );
         if ( sym != null ) {
@@ -429,7 +429,7 @@ public class PostgreSQLReader {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement( "select uom, fill_id, stroke_id, displacementx, displacementy, perpendicularoffset from polygons where id = ?" );
-            stmt.setString( 1, id );
+            stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 PolygonStyling res = new PolygonStyling();
@@ -438,11 +438,11 @@ public class PostgreSQLReader {
                 if ( uom != null ) {
                     res.uom = getUOM( uom );
                 }
-                String fill = rs.getString( "fill_id" );
+                Integer fill = (Integer) rs.getObject( "fill_id" );
                 if ( fill != null ) {
                     res.fill = getFill( fill, conn );
                 }
-                String stroke = rs.getString( "stroke_id" );
+                Integer stroke = (Integer) rs.getObject( "stroke_id" );
                 if ( stroke != null ) {
                     res.stroke = getStroke( stroke, conn );
                 }
@@ -476,7 +476,7 @@ public class PostgreSQLReader {
      * @param id
      * @return the corresponding style from the database
      */
-    public Style getStyle( String id ) {
+    public Style getStyle( int id ) {
         Style style = pool.get( id );
         if ( style != null ) {
             return style;
@@ -488,12 +488,12 @@ public class PostgreSQLReader {
         try {
             conn = getConnection( connid );
             stmt = conn.prepareStatement( "select type, fk, minscale, maxscale, sld from styles where id = ?" );
-            stmt.setString( 1, id );
+            stmt.setInt( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 String type = rs.getString( "type" );
-                String key = rs.getString( "fk" );
-                if ( type != null && key != null ) {
+                int key = rs.getInt( "fk" );
+                if ( type != null ) {
                     final Symbolizer<?> sym;
                     switch ( Type.valueOf( type.toUpperCase() ) ) {
                     case LINE:
@@ -530,7 +530,7 @@ public class PostgreSQLReader {
                     };
                     rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scale ) );
 
-                    return new Style( rules, null, id, null );
+                    return new Style( rules, null, "" + id, null );
                 }
                 String sld = rs.getString( "sld" );
                 if ( sld != null ) {
