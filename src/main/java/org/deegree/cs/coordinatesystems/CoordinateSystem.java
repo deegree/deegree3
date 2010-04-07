@@ -36,6 +36,10 @@
 
 package org.deegree.cs.coordinatesystems;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,11 +47,14 @@ import javax.vecmath.Point3d;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
+import org.deegree.cs.CRSRegistry;
+import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Datum;
 import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.transformations.Transformation;
+import org.slf4j.Logger;
 
 /**
  * Three kinds of <code>CoordinateSystem</code>s (in this class abbreviated with CRS) are supported in this lib.
@@ -84,11 +91,17 @@ import org.deegree.cs.transformations.Transformation;
 
 public abstract class CoordinateSystem extends CRSIdentifiable {
 
+    private static final Logger LOG = getLogger( CoordinateSystem.class );
+
+    private final String LOCK = "LOCK";
+
     private Axis[] axisOrder;
 
     private Datum usedDatum;
 
     private final List<Transformation> transformations;
+
+    private transient double[] validDomain = null;
 
     /**
      * 
@@ -431,4 +444,80 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         return 1;
     }
 
+    /**
+     * Returns the approximate domain of validity of this coordinate system. The returned array will contain the values
+     * in the appropriate coordinate system and with the appropriate axis order.
+     * 
+     * @return the real world coordinates of the domain of validity of this crs, or <code>null</code> if the valid
+     *         domain could not be determined
+     */
+    public double[] getValidDomain() {
+        synchronized ( LOCK ) {
+            if ( this.validDomain == null ) {
+                double[] bbox = getAreaOfUseBBox();
+                // transform world to coordinates in sourceCRS;
+                CoordinateTransformer t = new CoordinateTransformer( this );
+                try {
+                    CoordinateSystem defWGS = GeographicCRS.WGS84;
+                    try {
+                        // rb: lookup the default WGS84 in the registry, it may be, that the axis are swapped.
+                        defWGS = CRSRegistry.lookup( GeographicCRS.WGS84.getCode() );
+                    } catch ( Exception e ) {
+                        // catch any exceptions and use the default.
+                    }
+                    int xAxis = defWGS.getEasting();
+                    int yAxis = 1 - xAxis;
+
+                    int pointsPerSide = 5;
+
+                    double axis0Min = bbox[xAxis];
+                    double axis1Min = bbox[yAxis];
+                    double axis0Max = bbox[xAxis + 2];
+                    double axis1Max = bbox[yAxis + 2];
+
+                    double span0 = Math.abs( axis0Max - axis0Min );
+                    double span1 = Math.abs( axis1Max - axis1Min );
+
+                    double axis0Step = span0 / ( pointsPerSide + 1 );
+                    double axis1Step = span1 / ( pointsPerSide + 1 );
+
+                    List<Point3d> points = new ArrayList<Point3d>( pointsPerSide * 4 + 4 );
+                    double zValue = getDimension() == 3 ? 0 : Double.NaN;
+
+                    for ( int i = 0; i <= pointsPerSide + 1; i++ ) {
+                        points.add( new Point3d( axis0Min + i * axis0Step, axis1Min, zValue ) );
+                        points.add( new Point3d( axis0Min + i * axis0Step, axis1Max, zValue ) );
+                        points.add( new Point3d( axis0Min, axis1Min + i * axis1Step, zValue ) );
+                        points.add( new Point3d( axis0Max, axis1Min + i * axis1Step, zValue ) );
+                    }
+
+                    points = t.transform( defWGS, points );
+                    axis0Min = Double.MAX_VALUE;
+                    axis1Min = Double.MAX_VALUE;
+                    axis0Max = Double.NEGATIVE_INFINITY;
+                    axis1Max = Double.NEGATIVE_INFINITY;
+                    for ( Point3d p : points ) {
+                        axis0Min = Math.min( p.x, axis0Min );
+                        axis1Min = Math.min( p.y, axis1Min );
+                        axis0Max = Math.max( p.x, axis0Max );
+                        axis1Max = Math.max( p.y, axis1Max );
+                    }
+
+                    this.validDomain = new double[4];
+                    validDomain[0] = axis0Min;
+                    validDomain[1] = axis1Min;
+                    validDomain[2] = axis0Max;
+                    validDomain[3] = axis1Max;
+                } catch ( IllegalArgumentException e ) {
+                    LOG.debug( "Exception occurred: " + e.getLocalizedMessage(), e );
+                    LOG.debug( "Exception occurred: " + e.getLocalizedMessage() );
+
+                } catch ( org.deegree.cs.exceptions.TransformationException e ) {
+                    LOG.debug( "Exception occurred: " + e.getLocalizedMessage(), e );
+                    LOG.debug( "Exception occurred: " + e.getLocalizedMessage() );
+                }
+            }
+        }
+        return Arrays.copyOf( validDomain, 4 );
+    }
 }

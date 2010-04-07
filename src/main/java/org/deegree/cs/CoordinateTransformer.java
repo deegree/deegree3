@@ -46,6 +46,7 @@ import org.deegree.cs.coordinatesystems.CoordinateSystem;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.transformations.Transformation;
+import org.deegree.cs.transformations.TransformationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,6 +123,9 @@ public class CoordinateTransformer extends Transformer {
             return new ArrayList<Point3d>();
         }
         Transformation trans = createCRSTransformation( sourceCRS );
+        if ( TransformationFactory.isIdentity( trans ) ) {
+            return points;
+        }
 
         List<Point3d> result = new ArrayList<Point3d>( points.size() );
         TransformationException exception = null;
