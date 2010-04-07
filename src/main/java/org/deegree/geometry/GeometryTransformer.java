@@ -39,7 +39,6 @@ import static org.deegree.commons.utils.StringUtils.isSet;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +49,6 @@ import org.deegree.cs.CRS;
 import org.deegree.cs.CRSRegistry;
 import org.deegree.cs.Transformer;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.OutsideCRSDomainException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -180,10 +178,7 @@ public class GeometryTransformer extends Transformer {
      */
     public Geometry transform( Geometry geo )
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
-        if ( geo.getCoordinateSystem() == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_GEOMETRY_HAS_NO_CRS" ) );
-        }
-        return transform( geo, createCRSTransformation( geo.getCoordinateSystem().getWrappedCRS() ), null );
+        return transform( geo, null, false, null );
     }
 
     /**
@@ -204,15 +199,7 @@ public class GeometryTransformer extends Transformer {
      */
     public Geometry transform( Geometry geo, boolean testValidDomain )
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
-        if ( geo.getCoordinateSystem() == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_GEOMETRY_HAS_NO_CRS" ) );
-        }
-        CoordinateSystem sourceCRS = geo.getCoordinateSystem().getWrappedCRS();
-        Envelope sourceEnv = null;
-        if ( testValidDomain ) {
-            sourceEnv = createValidDomain( sourceCRS );
-        }
-        return transform( geo, createCRSTransformation( sourceCRS ), sourceEnv );
+        return transform( geo, null, testValidDomain, null );
     }
 
     /**
@@ -225,44 +212,12 @@ public class GeometryTransformer extends Transformer {
      *         <code>null</code> will be returned.
      */
     public static Envelope createValidDomain( CoordinateSystem sourceCRS ) {
-        double[] areaOfUseBBox = sourceCRS.getAreaOfUseBBox();
-        if ( areaOfUseBBox[0] == -180 && areaOfUseBBox[1] == -90 && areaOfUseBBox[2] == 180 && areaOfUseBBox[3] == 90 ) {
-            // not set
-            return null;
+        double[] validDomain = sourceCRS.getValidDomain();
+        if ( validDomain != null ) {
+            return geomFactory.createEnvelope( new double[] { validDomain[0], validDomain[1] },
+                                               new double[] { validDomain[2], validDomain[3] }, new CRS( sourceCRS ) );
         }
-        // transform world to coordinates in sourceCRS;
-        GeometryTransformer t = new GeometryTransformer( sourceCRS );
-        Envelope tEnv = null;
-        try {
-            double[] copy = Arrays.copyOf( areaOfUseBBox, 4 );
-            CoordinateSystem defWGS = GeographicCRS.WGS84;
-            try {
-                // rb: lookup the default WGS84 in the registry, it may be, that the axis are swapped.
-                defWGS = CRSRegistry.lookup( GeographicCRS.WGS84.getCode() );
-            } catch ( Exception e ) {
-                // catch any exceptions and use the default.
-            }
-            int xAxis = defWGS.getEasting();
-
-            double[] min = new double[] { copy[0], copy[1] };
-            double[] max = new double[] { copy[2], copy[3] };
-            if ( xAxis == 1 ) {
-                min[0] = copy[1];
-                min[1] = copy[0];
-                max[0] = copy[3];
-                max[1] = copy[2];
-            }
-
-            Envelope env = geomFactory.createEnvelope( min, max, new CRS( defWGS ) );
-            Geometry geom = t.transform( env, false );
-            if ( geom != null ) {
-                tEnv = geom.getEnvelope();
-            }
-        } catch ( Exception e ) {
-            LOG.debug( "Could not create envelope in source crs coordinate system this is strange: "
-                       + e.getLocalizedMessage(), e );
-        }
-        return tEnv;
+        return null;
     }
 
     /**
@@ -282,7 +237,7 @@ public class GeometryTransformer extends Transformer {
      */
     public Geometry transform( Geometry geo, String sourceCRS )
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
-        return transform( geo, createCRSTransformation( sourceCRS ), null );
+        return transform( geo, CRSRegistry.lookup( sourceCRS ), false, null );
     }
 
     /**
@@ -300,7 +255,7 @@ public class GeometryTransformer extends Transformer {
      */
     public Geometry transform( Geometry geo, CoordinateSystem sourceCRS )
                             throws TransformationException, IllegalArgumentException {
-        return transform( geo, createCRSTransformation( sourceCRS ), null );
+        return transform( geo, sourceCRS, false, null );
     }
 
     /**
@@ -323,10 +278,22 @@ public class GeometryTransformer extends Transformer {
                                List<Transformation> toBeUsedTransformations )
                             throws IllegalArgumentException, TransformationException {
         Envelope sourceEnv = null;
-        if ( testValidArea ) {
-            sourceEnv = createValidDomain( sourceCRS );
+        CoordinateSystem source = sourceCRS;
+        if ( source == null ) {
+            CRS gCRS = geom.getCoordinateSystem();
+            if ( gCRS != null ) {
+                try {
+                    source = gCRS.getWrappedCRS();
+                } catch ( UnknownCRSException e ) {
+                    LOG.debug( "No sourceCRS was found in geometry: " + e.getLocalizedMessage(), e );
+                    LOG.debug( "No sourceCRS was found in geometry: " + e.getLocalizedMessage() );
+                }
+            }
         }
-        return transform( geom, createCRSTransformation( sourceCRS, toBeUsedTransformations ), sourceEnv );
+        if ( testValidArea ) {
+            sourceEnv = createValidDomain( source );
+        }
+        return transform( geom, createCRSTransformation( source, toBeUsedTransformations ), sourceEnv );
     }
 
     /**
