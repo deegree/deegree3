@@ -410,6 +410,7 @@ public class Java2DRenderer implements Renderer {
                 if ( patch instanceof PolygonPatch ) {
                     PolygonPatch polygonPatch = (PolygonPatch) patch;
                     for ( Curve curve : polygonPatch.getBoundaryRings() ) {
+                        curve.setCoordinateSystem( surface.getCoordinateSystem() );
                         render( styling, curve );
                     }
                 } else {

@@ -73,6 +73,7 @@ import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Graphic;
 import org.deegree.rendering.r2d.styling.components.Stroke;
@@ -489,6 +490,7 @@ public class PostgreSQLReader {
             conn = getConnection( connid );
             stmt = conn.prepareStatement( "select type, fk, minscale, maxscale, sld from styles where id = ?" );
             stmt.setInt( 1, id );
+            LOG.debug( "Fetching styles using query '{}'.", stmt );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 String type = rs.getString( "type" );
@@ -530,7 +532,9 @@ public class PostgreSQLReader {
                     };
                     rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scale ) );
 
-                    return new Style( rules, null, "" + id, null );
+                    return new Style( rules, new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>(), ""
+                                                                                                                 + id,
+                                      null );
                 }
                 String sld = rs.getString( "sld" );
                 if ( sld != null ) {

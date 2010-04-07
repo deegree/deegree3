@@ -252,7 +252,6 @@ public class SimpleSQLDatastore implements FeatureStore {
     public void init()
                             throws FeatureStoreException {
         featureType = Util.determineFeatureType( featureName, namespace, connId, lods.values().iterator().next() );
-        System.out.println(featureType);
         if ( featureType == null ) {
             available = false;
         } else {

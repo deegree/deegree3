@@ -294,6 +294,20 @@ public class ArrayUtils {
     /**
      * @param str
      * @param delim
+     * @return str.split(delim) values parsed as ints
+     */
+    public static ArrayList<Integer> splitAsIntList( String str, String delim ) {
+        String[] ss = str.split( delim );
+        ArrayList<Integer> ds = new ArrayList<Integer>( ss.length );
+        for ( int i = 0; i < ss.length; ++i ) {
+            ds.add( Integer.valueOf( ss[i] ) );
+        }
+        return ds;
+    }
+
+    /**
+     * @param str
+     * @param delim
      * @return str.split(delim) values parsed as doubles
      */
     public static double[] splitAsDoubles( String str, String delim ) {

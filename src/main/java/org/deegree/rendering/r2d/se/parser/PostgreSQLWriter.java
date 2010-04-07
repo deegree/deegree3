@@ -158,7 +158,7 @@ public class PostgreSQLWriter {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement( "insert into fills (color, graphic_id) values (?, ?) returning id" );
-            String hex = Integer.toHexString( fill.color.getRGB() );
+            String hex = Integer.toHexString( fill.color.getRGB() & 0xffffff );
             while ( hex.length() < 6 ) {
                 hex = "0" + hex;
             }
@@ -199,7 +199,7 @@ public class PostgreSQLWriter {
         ResultSet rs = null;
         try {
             stmt = conn.prepareStatement( "insert into strokes (color, width, linejoin, linecap, dasharray, dashoffset, stroke_graphic_id, fill_graphic_id, strokegap, strokeinitialgap, positionpercentage) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id" );
-            String hex = Integer.toHexString( stroke.color.getRGB() );
+            String hex = Integer.toHexString( stroke.color.getRGB() & 0xffffff );
             while ( hex.length() < 6 ) {
                 hex = "0" + hex;
             }
