@@ -215,20 +215,25 @@ public class GMLFeatureWriter {
      * TODO merge with other schema location possibilities
      * 
      * @param col
-     * @param noNamespaceSchemaLocation
+     * @param schemaLocation
      *            may be null
+     * @param namespace
      * @throws XMLStreamException
      * @throws TransformationException
      * @throws UnknownCRSException
      */
-    public void export( FeatureCollection col, String noNamespaceSchemaLocation )
+    public void export( FeatureCollection col, String schemaLocation, String namespace )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         LOG.debug( "Exporting generic feature collection." );
         writer.setPrefix( "gml", gmlNs );
         writer.writeStartElement( "FeatureCollection" );
-        if ( noNamespaceSchemaLocation != null ) {
+        if ( schemaLocation != null && namespace == null ) {
             writer.setPrefix( "xsi", XSINS );
-            writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", noNamespaceSchemaLocation );
+            writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", schemaLocation );
+        }
+        if ( schemaLocation != null && namespace != null ) {
+            writer.setPrefix( "xsi", XSINS );
+            writer.writeAttribute( XSINS, "schemaLocation", namespace + " " + schemaLocation );
         }
 
         writer.writeStartElement( gmlNs, "boundedBy" );
@@ -537,16 +542,16 @@ public class GMLFeatureWriter {
             if ( ( traverseXlinkDepth > 0 && inlineLevels < traverseXlinkDepth ) || referenceTemplate == null
                  || traverseXlinkDepth == -1 ) {
                 // must be exported inline
-				// throw new UnsupportedOperationException(
-				// "Inlining of remote feature references is not implemented yet."
-				// );
-                 LOG.warn( "Inlining of remote feature references is not implemented yet." );
-                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                 writer.writeAttribute( XLNNS, "href", ref.getURI() );
-                 writer.writeComment( "Reference to remote feature '"
-                 + ref.getURI()
-                 + "' (should have been inlined, but inlining of remote features is not implemented yet)." );
-                 writer.writeEndElement();
+                // throw new UnsupportedOperationException(
+                // "Inlining of remote feature references is not implemented yet."
+                // );
+                LOG.warn( "Inlining of remote feature references is not implemented yet." );
+                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XLNNS, "href", ref.getURI() );
+                writer.writeComment( "Reference to remote feature '"
+                                     + ref.getURI()
+                                     + "' (should have been inlined, but inlining of remote features is not implemented yet)." );
+                writer.writeEndElement();
             } else {
                 // must be exported by reference
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );

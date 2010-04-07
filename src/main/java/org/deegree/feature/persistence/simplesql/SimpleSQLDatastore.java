@@ -325,7 +325,8 @@ public class SimpleSQLDatastore implements FeatureStore {
                         LinkedList<Property> props = new LinkedList<Property>();
                         for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
                             if ( pt instanceof GeometryPropertyType ) {
-                                if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE ) {
+                                // if filter is != null, we possibly cannot eval it properly without the geometries
+                                if ( q.getHint( HINT_NO_GEOMETRIES ) != TRUE || q.getFilter() != null ) {
                                     byte[] bs = rs.getBytes( pt.getName().getLocalPart() );
                                     if ( bs != null ) {
                                         try {
