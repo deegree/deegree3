@@ -226,7 +226,12 @@ public abstract class Transformer {
                                                                                                                             targetCRS ) ) ) {
             definedTransformation = CRSRegistry.getTransformation( null, sourceCRS, targetCRS, toBeUsedTransformations );
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "Resulting transform: {}", definedTransformation.getTransformationPath( null ).toString() );
+                if ( definedTransformation == null ) {
+                    LOG.debug( "Identity transformation (null)." );
+                } else {
+                    LOG.debug( "Resulting transform: {}",
+                               definedTransformation.getTransformationPath( null ).toString() );
+                }
             }
         }
         return definedTransformation;

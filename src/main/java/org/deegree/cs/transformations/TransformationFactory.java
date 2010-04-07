@@ -312,7 +312,11 @@ public class TransformationFactory {
         }
         if ( LOG.isDebugEnabled() ) {
             StringBuilder output = new StringBuilder( "The resulting transformation chain: \n" );
-            output = result.getTransformationPath( output );
+            if ( result == null ) {
+                output.append( " identity transformation (null)" );
+            } else {
+                output = result.getTransformationPath( output );
+            }
             LOG.debug( output.toString() );
 
             if ( result instanceof MatrixTransform ) {
