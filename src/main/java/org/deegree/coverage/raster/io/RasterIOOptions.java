@@ -341,11 +341,11 @@ public class RasterIOOptions {
                         wrap.put( Byte.decode( val ) );
                         break;
                     case DOUBLE:
-                        wrap.putDouble( Long.decode( val ).doubleValue() );
+                        Double d = Double.valueOf( val );
+                        wrap.putDouble( d );
                         break;
                     case FLOAT:
-                        Integer in = Integer.decode( val );
-                        float f = in.floatValue();
+                        Float f = Float.valueOf( val );
                         wrap.putFloat( f );
                         break;
                     case INT:

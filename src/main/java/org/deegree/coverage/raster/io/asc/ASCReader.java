@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io.asc;
 
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -63,8 +62,10 @@ import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
@@ -111,55 +112,65 @@ public class ASCReader implements RasterReader {
      */
     private SimpleRaster readASCIIGrid( BufferedReader reader, RasterIOOptions options )
                             throws IOException {
+        StreamTokenizer st = new StreamTokenizer( reader );
+        st.commentChar( '#' );
+        st.parseNumbers();
+        st.nextToken();
+        st.wordChars( '_', '_' );
+        st.eolIsSignificant( true );
+        st.lowerCaseMode( true );
+
         // ncols [number of columns]
         // nrows [number of rows]
         // xllcorner [x coordinate of lower left corner]
         // yllcorner [y coordinate of lower left corner]
         // cellsize [cell size in meters]
         // nodata_value [value which will be used if no data in grid cell; default is -9999]
-        int line = 1;
-        width = readInt( reader.readLine(), line++, "number of columns" );
-        height = readInt( reader.readLine(), line++, "number of rows" );
-        double xllCorner = readDouble( reader.readLine(), line++, "x coordinate of lower left corner" );
-        double yllCorner = readDouble( reader.readLine(), line++, "y coordinate of lower left corner" );
-        double resolution = readDouble( reader.readLine(), line++, "cell size in meters" );
-        String nextLine = reader.readLine();
-        String noData = "-9999";
-        try {
-            if ( nextLine.length() < 15 ) {
-                Double.parseDouble( nextLine );
-                // a valid value
-                noData = nextLine;
-                nextLine = null;
-            }
-        } catch ( NumberFormatException e ) {
-            // no nodata value defined, assume -9999
+        boolean widthFirst = testColsRows( st );
+        if ( widthFirst ) {
+            width = readInt( st, "ncols" );
+            nextLine( st );
+            height = readInt( st, "nrows" );
+        } else {
+            height = readInt( st, "nrows" );
+            nextLine( st );
+            width = readInt( st, "ncols" );
         }
+        nextLine( st );
+        OriginLocation origLoc = getOriginLocation( st );
+        String loc = origLoc == OriginLocation.OUTER ? "corner" : "center";
+        double origX = readDouble( st, "xll" + loc );
+        nextLine( st );
+        double origY = readDouble( st, "yll" + loc );
+        nextLine( st );
+        double resolution = readDouble( st, "cellsize" );
+        nextLine( st );
+        // no data will call st.nextToken if successful.
+        double noData = readNoData( st, -9999 );
         if ( options.getNoDataValue() == null ) {
-            byte[] createNoData = RasterIOOptions.createNoData( new String[] { noData }, DataType.FLOAT );
+            byte[] createNoData = RasterIOOptions.createNoData( new String[] { Double.toString( noData ) },
+                                                                DataType.FLOAT );
             options.setNoData( createNoData );
         }
+        double outerCenterY = height * resolution;
+        if ( origLoc != OriginLocation.OUTER && options.getRasterOriginLocation() == OriginLocation.OUTER ) {
+            // rb: read center, but the options say outer, add half a resolution to the outer.
+            outerCenterY += ( 0.5 * resolution );
+            origLoc = OriginLocation.OUTER;
+        }
 
-        double outerCenterY = ( options.getRasterOriginLocation() == CENTER ? height - 1 : height ) * -resolution;
+        geoReference = new RasterGeoReference( origLoc, resolution, -resolution, origX, origY + outerCenterY );
 
-        geoReference = new RasterGeoReference( options.getRasterOriginLocation(), resolution, -resolution, xllCorner,
-                                               yllCorner + outerCenterY );
         ByteBuffer buffer = ByteBuffer.allocate( width * height * DataType.FLOAT.getSize() );
+
         FloatBuffer fb = buffer.asFloatBuffer();
 
-        StreamTokenizer st = new StreamTokenizer( reader );
-        st.commentChar( '#' );
-        st.parseNumbers();
-        st.nextToken();
-        st.eolIsSignificant( true );
         int type = st.ttype;
         while ( type != StreamTokenizer.TT_EOF ) {
-            type = st.ttype;
             if ( type == StreamTokenizer.TT_NUMBER ) {
                 fb.put( (float) st.nval );
-            }
-            // st.next token till end of line.
-            while ( type != StreamTokenizer.TT_EOL && type != StreamTokenizer.TT_EOF ) {
+                type = st.nextToken();
+            } else {
                 type = st.nextToken();
             }
         }
@@ -174,28 +185,124 @@ public class ASCReader implements RasterReader {
     }
 
     /**
+     * @param st
+     * @return the originlocation of the grid file.
+     * @throws IOException
+     */
+    private OriginLocation getOriginLocation( StreamTokenizer st )
+                            throws IOException {
+        String key = retrieveKey( st, "xllcorner", false );
+        if ( key == null ) {
+            key = retrieveKey( st, "xllcenter", false );
+            if ( key == null ) {
+                throw new IOException( st.lineno()
+                                       + ") Could not determine the location of the origing of the grid/asc file." );
+            }
+        }
+        OriginLocation result = "xllcorner".equalsIgnoreCase( key ) ? OriginLocation.OUTER : OriginLocation.CENTER;
+        return result;
+    }
+
+    private void nextLine( StreamTokenizer tok )
+                            throws IOException {
+        int type = tok.ttype;
+        while ( type != StreamTokenizer.TT_EOL ) {
+            tok.nextToken();
+            type = tok.ttype;
+            if ( type == StreamTokenizer.TT_EOF ) {
+                throw new IOException( tok.lineno() + "Unexpected end of file." );
+            }
+        }
+        // read the next token after the eol.
+        tok.nextToken();
+
+    }
+
+    /**
+     * @param st
+     * @return true if the columns are first defined
+     * @throws IOException
+     */
+    private boolean testColsRows( StreamTokenizer st )
+                            throws IOException {
+        String key = retrieveKey( st, "nrows", false );
+        if ( key == null ) {
+            key = retrieveKey( st, "ncols", false );
+            if ( key == null ) {
+                throw new IOException( st.lineno() + ") Could not determine the rows and columns of the grid/asc file." );
+            }
+        }
+        return "ncols".equalsIgnoreCase( key );
+    }
+
+    private double readNoData( StreamTokenizer tok, double defaultVal )
+                            throws IOException {
+        String keyVal = retrieveKey( tok, "nodata_value", false );
+        if ( keyVal == null || !"nodata_value".equalsIgnoreCase( keyVal ) ) {
+            tok.pushBack();
+            return defaultVal;
+        }
+
+        int nextToken = tok.nextToken();
+        if ( nextToken != StreamTokenizer.TT_NUMBER ) {
+            throw new IOException( tok.lineno() + ") Could not determine 'nodata_value' from the asc/grd file." );
+        }
+        tok.nextToken();
+        return tok.nval;
+    }
+
+    /**
      * @param readLine
      * @param i
      * @param string
      * @return
      * @throws IOException
      */
-    private double readDouble( String line, int lineNumber, String key )
+    private double readDouble( StreamTokenizer tok, String key )
                             throws IOException {
-        try {
-            return Double.parseDouble( line );
-        } catch ( NumberFormatException e ) {
-            throw new IOException( lineNumber + " expected a value denoting " + key + " but found " + line );
+        String keyVal = retrieveKey( tok, key, true );
+        if ( keyVal == null || !key.equalsIgnoreCase( keyVal ) ) {
+            throw new IOException( tok.lineno() + ") Awaited key '" + key + "' but found: " + keyVal
+                                   + "'. Aborting reading from the asc/grd file." );
         }
+
+        int nextToken = tok.nextToken();
+        if ( nextToken != StreamTokenizer.TT_NUMBER ) {
+            throw new IOException( tok.lineno() + ") Could not determine '" + key + "' from the asc/grd file." );
+        }
+        return tok.nval;
     }
 
-    private final int readInt( String line, int lineNumber, String key )
+    private String retrieveKey( StreamTokenizer tok, String awaitedKey, boolean required )
                             throws IOException {
-        try {
-            return Integer.parseInt( line );
-        } catch ( NumberFormatException e ) {
-            throw new IOException( lineNumber + " expected a value denoting " + key + " but found " + line );
+        String result = null;
+        int nextToken = tok.ttype;
+        if ( nextToken != StreamTokenizer.TT_WORD ) {
+            if ( required ) {
+                throw new IOException( tok.lineno() + ") Could not determine '" + awaitedKey
+                                       + "' from the asc/grd file." );
+            }
+        } else {
+            result = tok.sval;
         }
+        return result;
+    }
+
+    private final int readInt( StreamTokenizer tok, String key )
+                            throws IOException {
+
+        String keyVal = retrieveKey( tok, key, true );
+        if ( keyVal == null || !key.equalsIgnoreCase( keyVal ) ) {
+            throw new IOException( tok.lineno() + ") Awaited key '" + key + "' but found: " + keyVal
+                                   + "'. Aborting reading from the asc/grd file." );
+        }
+
+        int nextToken = tok.nextToken();
+        if ( nextToken != StreamTokenizer.TT_NUMBER ) {
+            throw new IOException( tok.lineno() + ") Could not determine '" + key + "' from the asc/grd file." );
+        }
+        int result = (int) tok.nval;
+        return result;
     }
 
     @Override
@@ -304,4 +411,13 @@ public class ASCReader implements RasterReader {
     public void dispose() {
         // nothing to do yet.
     }
+
+//    public static void main( String[] args )
+//                            throws IOException {
+//        ASCReader read = new ASCReader();
+//        File f = new File( "/home/rutger/raster_test/utah/raster/dem/12STF200800.asc" );
+//        RasterIOOptions options = RasterIOOptions.forFile( f );
+//        AbstractRaster raster = read.load( f, options );
+//        RasterFactory.saveRasterToFile( raster, new File( "/dev/shm/out.tiff" ) );
+//    }
 }

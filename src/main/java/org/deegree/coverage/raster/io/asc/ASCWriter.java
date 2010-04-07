@@ -110,7 +110,7 @@ public class ASCWriter implements RasterWriter {
             double[] worldCoordinate = rasterReference.getWorldCoordinate( 0, simpleRaster.getRows() );
             CRS crs = simpleRaster.getCoordinateSystem();
             int axis = 0;
-            int northing = 0;
+            int northing = 1;
             if ( crs != null ) {
                 CoordinateSystem wcrs = null;
                 try {
@@ -126,8 +126,8 @@ public class ASCWriter implements RasterWriter {
 
             writer.write( "xllcorner " + worldCoordinate[axis] + newLine );
             writer.write( "yllcorner " + worldCoordinate[northing] + newLine );
-            writer.write( "cellsize" + rasterReference.getResolutionX() + newLine );
-            writer.write( "nodata_value" + simpleRaster.getRasterDataInfo().getFloatNoDataForBand( 0 ) + newLine );
+            writer.write( "cellsize " + rasterReference.getResolutionX() + newLine );
+            writer.write( "nodata_value " + simpleRaster.getRasterDataInfo().getFloatNoDataForBand( 0 ) + newLine );
 
             RasterData data = simpleRaster.getRasterData();
             DataType type = data.getDataType();
@@ -138,22 +138,22 @@ public class ASCWriter implements RasterWriter {
             }
             switch ( type ) {
             case BYTE:
-                writeBytes( data, writer, newLine, rasterReference, separator );
+                writeBytes( data, writer, separator );
                 break;
             case DOUBLE:
-                writeDoubles( data, writer, newLine, rasterReference, separator );
+                writeDoubles( data, writer, separator );
                 break;
             case FLOAT:
-                writeFloats( data, writer, newLine, rasterReference, separator );
+                writeFloats( data, writer, separator );
                 break;
             case INT:
-                writeInts( data, writer, newLine, rasterReference, separator );
+                writeInts( data, writer, separator );
                 break;
             case SHORT:
-                writeShorts( data, writer, newLine, rasterReference, separator );
+                writeShorts( data, writer, separator );
                 break;
             case USHORT:
-                writeUShorts( data, writer, newLine, rasterReference, separator );
+                writeUShorts( data, writer, separator );
                 break;
             case UNDEFINED:
                 throw new UnsupportedOperationException( "The asc writer does not know how to interpret your data." );
@@ -164,172 +164,138 @@ public class ASCWriter implements RasterWriter {
 
     /**
      * @param data
-     * @param bw
-     * @param newLine
-     * @param origin
-     * @param resX
-     * @param resY
+     * @param writer
      * @param separator
      */
-    private void writeUShorts( RasterData data, BufferedWriter bw, String newLine, RasterGeoReference geoRef,
-                               String separator )
+    private void writeUShorts( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
-
-        double[] worldCoords = new double[2];
-        for ( int x = 0; x < width; ++x ) {
-            // 30, assuming the values are 10 characters long
-            sb = new StringBuilder( ( height + 1 ) * 30 );
-            for ( int y = height; y >= 0; --y ) {
-                short sample = data.getShortSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
-                sb.append( worldCoords[0] + separator + worldCoords[1] + separator + ( sample & 0xFFFF ) + newLine );
+        final int width = data.getWidth();
+        final int height = data.getHeight();
+        short[] line = new short[width];
+        for ( int y = 0; y < height; ++y ) {
+            data.getShorts( 0, y, width, 1, 0, line );
+            for ( int i = 0; i < width; ++i ) {
+                writer.write( Integer.toString( 0xFFFF & line[i] ) );
+                if ( i + 1 < width ) {
+                    writer.write( separator );
+                }
             }
-            bw.write( sb.toString() );
+            writer.newLine();
         }
     }
 
     /**
      * @param data
-     * @param bw
-     * @param newLine
-     * @param origin
-     * @param resX
-     * @param resY
+     * @param writer
      * @param separator
      */
-    private void writeShorts( RasterData data, BufferedWriter bw, String newLine, RasterGeoReference geoRef,
-                              String separator )
+    private void writeShorts( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
-
-        double[] worldCoords = new double[2];
-        for ( int x = 0; x < width; ++x ) {
-            // 30, assuming the values are 10 characters long
-            sb = new StringBuilder( ( height + 1 ) * 30 );
-            for ( int y = height; y >= 0; --y ) {
-                short sample = data.getShortSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
-                sb.append( worldCoords[0] + separator + worldCoords[1] + separator + sample + newLine );
+        final int width = data.getWidth();
+        final int height = data.getHeight();
+        short[] line = new short[width];
+        for ( int y = 0; y < height; ++y ) {
+            data.getShorts( 0, y, width, 1, 0, line );
+            for ( int i = 0; i < width; ++i ) {
+                writer.write( Integer.toString( line[i] ) );
+                if ( i + 1 < width ) {
+                    writer.write( separator );
+                }
             }
-            bw.write( sb.toString() );
+            writer.newLine();
         }
     }
 
     /**
      * @param data
-     * @param bw
-     * @param newLine
-     * @param origin
-     * @param resX
-     * @param resY
+     * @param writer
      * @param separator
      */
-    private void writeInts( RasterData data, BufferedWriter bw, String newLine, RasterGeoReference geoRef,
-                            String separator )
+    private void writeInts( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
-
-        double[] worldCoords = new double[2];
-        for ( int x = 0; x < width; ++x ) {
-            // 30, assuming the values are 10 characters long
-            sb = new StringBuilder( ( height + 1 ) * 30 );
-            for ( int y = height; y >= 0; --y ) {
-                int sample = data.getIntSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
-                sb.append( worldCoords[0] + separator + worldCoords[1] + separator + sample + newLine );
+        final int width = data.getWidth();
+        final int height = data.getHeight();
+        int[] line = new int[width];
+        for ( int y = 0; y < height; ++y ) {
+            data.getInts( 0, y, width, 1, 0, line );
+            for ( int i = 0; i < width; ++i ) {
+                writer.write( Integer.toString( line[i] ) );
+                if ( i + 1 < width ) {
+                    writer.write( separator );
+                }
             }
-            bw.write( sb.toString() );
+            writer.newLine();
         }
     }
 
     /**
      * @param data
-     * @param bw
-     * @param newLine
-     * @param origin
-     * @param resX
-     * @param resY
+     * @param writer
      * @param separator
      */
-    private void writeFloats( RasterData data, BufferedWriter bw, String newLine, RasterGeoReference geoRef,
-                              String separator )
+    private void writeDoubles( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
-
-        double[] worldCoords = new double[2];
-        for ( int x = 0; x < width; ++x ) {
-            // 30, assuming the values are 10 characters long
-            sb = new StringBuilder( ( height + 1 ) * 30 );
-            for ( int y = height; y >= 0; --y ) {
-                float sample = data.getFloatSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
-                sb.append( worldCoords[0] + separator + worldCoords[1] + separator + sample + newLine );
+        final int width = data.getWidth();
+        final int height = data.getHeight();
+        double[] line = new double[width];
+        for ( int y = 0; y < height; ++y ) {
+            data.getDoubles( 0, y, width, 1, 0, line );
+            for ( int i = 0; i < width; ++i ) {
+                writer.write( Double.toString( line[i] ) );
+                if ( i + 1 < width ) {
+                    writer.write( separator );
+                }
             }
-            bw.write( sb.toString() );
+            writer.newLine();
         }
     }
 
     /**
      * @param data
-     * @param bw
-     * @param newLine
-     * @param origin
-     * @param resX
-     * @param resY
-     * @param separator
-     */
-    private void writeBytes( RasterData data, BufferedWriter bw, String newLine, RasterGeoReference geoRef,
-                             String separator )
-                            throws IOException {
-        StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
-
-        double[] worldCoords = new double[2];
-        for ( int x = 0; x < width; ++x ) {
-            // 30, assuming the values are 10 characters long
-            sb = new StringBuilder( ( height + 1 ) * 30 );
-            for ( int y = height; y >= 0; --y ) {
-                byte sample = data.getByteSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
-                sb.append( worldCoords[0] + separator + worldCoords[1] + separator + ( sample & 0xFF ) + newLine );
-            }
-            bw.write( sb.toString() );
-        }
-    }
-
-    /**
-     * @param data
-     * @param bw
+     * @param writer
      * @param separator
      * @throws IOException
      */
-    private void writeDoubles( RasterData data, BufferedWriter bw, String newLine, RasterGeoReference geoRef,
-                               String separator )
+    private void writeBytes( RasterData data, BufferedWriter writer, String separator )
                             throws IOException {
-        StringBuilder sb = null;
-        int height = data.getHeight() - 1;
-        int width = data.getWidth();
-
-        double[] worldCoords = new double[2];
-        for ( int x = 0; x < width; ++x ) {
-            // 30, assuming the values are 10 characters long
-            sb = new StringBuilder( ( height + 1 ) * 30 );
-            for ( int y = height; y >= 0; --y ) {
-                double sample = data.getDoubleSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
-                sb.append( worldCoords[0] + separator + worldCoords[1] + separator + sample + newLine );
+        final int width = data.getWidth();
+        final int height = data.getHeight();
+        byte[] line = new byte[width];
+        for ( int y = 0; y < height; ++y ) {
+            data.getBytes( 0, y, width, 1, 0, line );
+            for ( int i = 0; i < width; ++i ) {
+                writer.write( Integer.toString( 0xFF & line[i] ) );
+                if ( i + 1 < width ) {
+                    writer.write( separator );
+                }
             }
-            bw.write( sb.toString() );
+            writer.newLine();
+        }
+    }
+
+    /**
+     * @param data
+     * @param bw
+     * @param newLine
+     * @param origin
+     * @param resX
+     * @param resY
+     * @param separator
+     */
+    private void writeFloats( RasterData data, BufferedWriter bw, String separator )
+                            throws IOException {
+        final int width = data.getWidth();
+        final int height = data.getHeight();
+        float[] line = new float[width];
+        for ( int y = 0; y < height; ++y ) {
+            data.getFloats( 0, y, width, 1, 0, line );
+            for ( int i = 0; i < width; ++i ) {
+                bw.write( Float.toString( line[i] ) );
+                if ( i + 1 < width ) {
+                    bw.write( separator );
+                }
+            }
+            bw.newLine();
         }
     }
 
@@ -340,5 +306,4 @@ public class ASCWriter implements RasterWriter {
         write( raster, bw, options );
         // don't close the stream.
     }
-
 }
