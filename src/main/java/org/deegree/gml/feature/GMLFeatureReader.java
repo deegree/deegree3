@@ -510,7 +510,7 @@ public class GMLFeatureReader extends XMLAdapter {
                                                     CRS crs )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
         TypedObjectNode node = null;
-        System.out.println( xmlStream.getName() );
+        LOG.debug( xmlStream.getName().toString() );
         if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
             node = parseGenericXMLElement( xmlStream, (XSSimpleTypeDefinition) xsdValueType );
         } else {
@@ -541,7 +541,7 @@ public class GMLFeatureReader extends XMLAdapter {
         while ( ( eventType = xmlStream.next() ) != END_ELEMENT ) {
             if ( eventType == START_ELEMENT ) {
                 QName childElName = xmlStream.getName();
-                System.out.println( "Child: " + childElName );
+                LOG.debug( "Child: " + childElName );
                 if ( geomReader.isGeometryElement( xmlStream ) ) {
                     children.add( geomReader.parse( xmlStream, crs ) );
                 } else {
@@ -553,14 +553,14 @@ public class GMLFeatureReader extends XMLAdapter {
                                                                     xmlStream,
                                                                     childElementDecls.get( childElName ).getTypeDefinition(),
                                                                     crs );
-                    System.out.println( "adding: " + childElName + ", " + child.getClass().getName() );
+                    LOG.debug( "adding: " + childElName + ", " + child.getClass().getName() );
                     children.add( child );
                 }
             } else {
                 // TOOD text nodes
             }
         }
-        System.out.println( "creating element: " + xmlStream.getName() );
+        LOG.debug( "creating element: " + xmlStream.getName() );
         return new GenericXMLElement( xmlStream.getName(), xsdValueType, attrs, children );
     }
 
@@ -574,7 +574,7 @@ public class GMLFeatureReader extends XMLAdapter {
             childDeclMap.put( name, decl );
             for ( XSElementDeclaration substitution : schema.getXSModel().getSubstitutions( decl, null, true, true ) ) {
                 name = new QName( substitution.getNamespace(), substitution.getName() );
-                System.out.println( "Adding: " + name );
+                LOG.debug( "Adding: " + name );
                 childDeclMap.put( name, substitution );
             }
         }
