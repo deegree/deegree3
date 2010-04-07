@@ -469,7 +469,8 @@ public class GeometryTransformer extends Transformer {
         if ( validDomain != null && geom != null ) {
             Geometry inSource = geom;
             CRS sourceCRS = validDomain.getCoordinateSystem();
-            if ( sourceCRS != null && !sourceCRS.equals( geom.getCoordinateSystem() ) ) {
+            if ( sourceCRS != null && geom.getCoordinateSystem() != null
+                 && !sourceCRS.equals( geom.getCoordinateSystem() ) ) {
                 try {
                     GeometryTransformer trans = new GeometryTransformer( sourceCRS.getWrappedCRS() );
                     inSource = trans.transform( geom );
