@@ -70,6 +70,7 @@ import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
+import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.ntv2.NTv2Transformation;
@@ -111,12 +112,16 @@ public class TransformationParser extends DefinitionParser {
     /** maps crs names to transformations */
     private final HashMap<String, Set<Transformation>> availableTransformations = new HashMap<String, Set<Transformation>>();
 
+    private DSTransform datumShiftOperation;
+
     /**
      * @param provider
      * @param confURL
+     * @param datumShift
      */
-    public TransformationParser( DeegreeCRSProvider<StAXResource> provider, URL confURL ) {
+    public TransformationParser( DeegreeCRSProvider<StAXResource> provider, URL confURL, DSTransform datumShift ) {
         super( provider, confURL );
+        datumShiftOperation = datumShift;
     }
 
     /**
@@ -411,13 +416,18 @@ public class TransformationParser extends DefinitionParser {
         }
         // a will be null;
         String[] ids = sourceCRS.getOrignalCodeStrings();
+        List<Transformation> hits = new LinkedList<Transformation>();
         for ( String id : ids ) {
             String c = id.toLowerCase();
             if ( availableTransformations.containsKey( c ) ) {
                 Set<Transformation> set = availableTransformations.get( c );
                 for ( Transformation t : set ) {
                     if ( targetCRS.equals( t.getTargetCRS() ) ) {
-                        return t;
+                        if ( datumShiftOperation.isPreferred( t ) ) {
+                            return t;
+                        }
+                        // found a possible hit, but it was not preferred (e.g. found NTv2 but Helmert is preferred.)
+                        hits.add( t );
                     }
                 }
                 // no direct transformation found, trying a chain?
@@ -430,6 +440,10 @@ public class TransformationParser extends DefinitionParser {
                     }
                 }
             }
+        }
+        if ( !hits.isEmpty() ) {
+            // return the first (not best) hit.
+            return hits.get( 0 );
         }
         return null;
     }

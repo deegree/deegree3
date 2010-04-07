@@ -72,6 +72,7 @@ import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.projections.Projection;
 import org.deegree.cs.transformations.Transformation;
+import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 
@@ -111,6 +112,7 @@ public class Parser implements CRSParser<StAXResource> {
     public Parser( DeegreeCRSProvider<StAXResource> provider, Properties properties ) {
         // load definition file location from properties.
         URL resolvedURL = Parser.class.getResource( "parser-files.xml" );
+        TransformationFactory.DSTransform datumShift = TransformationFactory.DSTransform.fromProperties( properties );
         if ( properties != null ) {
             String prop = properties.getProperty( PARSER_CONFIG );
             if ( prop != null && !"".equals( prop ) ) {
@@ -156,7 +158,7 @@ public class Parser implements CRSParser<StAXResource> {
                 cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "TransformationsFile" ),
                                                   "transformation-definitions.xml", true );
                 url = StAXParsingHelper.resolve( cUrl, reader );
-                trans = new TransformationParser( provider, url );
+                trans = new TransformationParser( provider, url, datumShift );
 
                 cUrl = StAXParsingHelper.getText( reader, new QName( CRS_NS, "PrimeMeridiansFile" ),
                                                   "pm-definitions.xml", true );
