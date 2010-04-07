@@ -20,9 +20,9 @@
     </crs:Ellipsoid>
     <crs:Ellipsoid>
       <crs:Id>epsg:7003</crs:Id>
-      <crs:Id>urn:ogc:def:crs:epsg::7050</crs:Id>
-      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7050</crs:Id>
       <crs:Id>epsg:7050</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7050</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7050</crs:Id>
       <crs:Name>Australian National Spheroid</crs:Name>
       <crs:Version>2008-08-11</crs:Version>
       <crs:Description>Based on the GRS 1967 figure but with 1/f taken to 2 decimal places exactly.  The dimensions are also used as the GRS 1967 Modified ellipsoid (see code 7050).</crs:Description>
@@ -51,8 +51,8 @@
     <crs:Ellipsoid>
       <crs:Id>epsg:7008</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7008</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::7008</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::7008</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7008</crs:Id>
       <crs:Name>Clarke 1866</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6378206.4</crs:SemiMajorAxis>
@@ -194,8 +194,8 @@
     <crs:Ellipsoid>
       <crs:Id>epsg:7034</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7034</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::7034</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::7034</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7034</crs:Id>
       <crs:Name>Clarke 1880 mod.</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6378249.145</crs:SemiMajorAxis>
@@ -213,8 +213,8 @@
     <crs:Ellipsoid>
       <crs:Id>epsg:7036</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7036</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::7036</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::7036</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7036</crs:Id>
       <crs:Name>GRS 67(IUGG 1967)</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6378160.0</crs:SemiMajorAxis>
@@ -248,9 +248,9 @@
     </crs:Ellipsoid>
     <crs:Ellipsoid>
       <crs:Id>epsg:7046</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::7046</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7046</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::7046</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7046</crs:Id>
       <crs:Name>Bessel 1841 (Namibia)</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6377483.865</crs:SemiMajorAxis>
@@ -334,9 +334,9 @@
       <crs:InverseFlattening>0.0</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
+      <crs:Id>epsg:7004</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::7004</crs:Id>
-      <crs:Id>epsg:7004</crs:Id>
       <crs:Id>urn:opengis:def:crs:epsg::7004</crs:Id>
       <crs:Name>Bessel 1841</crs:Name>
       <crs:Units>metre</crs:Units>
@@ -344,39 +344,39 @@
       <crs:InverseFlattening>299.1528128</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
-      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7016</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::7016</crs:Id>
       <crs:Id>epsg:7016</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7016</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::7016</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7016</crs:Id>
       <crs:Name>Everest (Sabah &amp; Sarawak)</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6377298.556</crs:SemiMajorAxis>
       <crs:InverseFlattening>300.8017</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
-      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::7019</crs:Id>
-      <crs:Id>urn:ogc:def:crs:epsg::7019</crs:Id>
       <crs:Id>epsg:7019</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7019</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7019</crs:Id>
       <crs:Name>GRS 1980(IUGG, 1980)</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6378137.0</crs:SemiMajorAxis>
       <crs:InverseFlattening>298.257222101</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
-      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7043</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::7043</crs:Id>
       <crs:Id>epsg:7043</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7043</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::7043</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7043</crs:Id>
       <crs:Name>WGS 72</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6378135.0</crs:SemiMajorAxis>
       <crs:InverseFlattening>298.26</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
-      <crs:Id>urn:ogc:def:crs:epsg::7001</crs:Id>
       <crs:Id>epsg:7001</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7001</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7001</crs:Id>
       <crs:Id>urn:opengis:def:crs:epsg::7001</crs:Id>
       <crs:Name>Airy 1830</crs:Name>
       <crs:Units>metre</crs:Units>
@@ -384,9 +384,9 @@
       <crs:InverseFlattening>299.3249753150345</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
-      <crs:Id>urn:ogc:def:crs:epsg::7024</crs:Id>
       <crs:Id>epsg:7024</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7024</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7024</crs:Id>
       <crs:Id>urn:opengis:def:crs:epsg::7024</crs:Id>
       <crs:Name>Krassowsky, 1942</crs:Name>
       <crs:Units>metre</crs:Units>
@@ -394,20 +394,20 @@
       <crs:InverseFlattening>298.3</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
-      <crs:Id>urn:opengis:def:crs:epsg::7020</crs:Id>
       <crs:Id>epsg:7020</crs:Id>
-      <crs:Id>urn:ogc:def:crs:epsg::7020</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7020</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7020</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7020</crs:Id>
       <crs:Name>Helmert 1906</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6378200.0</crs:SemiMajorAxis>
       <crs:InverseFlattening>298.3</crs:InverseFlattening>
     </crs:Ellipsoid>
     <crs:Ellipsoid>
-      <crs:Id>urn:opengis:def:crs:epsg::7022</crs:Id>
-      <crs:Id>urn:ogc:def:crs:epsg::7022</crs:Id>
       <crs:Id>epsg:7022</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#7022</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::7022</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::7022</crs:Id>
       <crs:Name>International 1909 (Hayford)</crs:Name>
       <crs:Units>metre</crs:Units>
       <crs:SemiMajorAxis>6378388.0</crs:SemiMajorAxis>

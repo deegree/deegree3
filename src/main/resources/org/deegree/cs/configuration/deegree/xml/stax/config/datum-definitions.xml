@@ -601,9 +601,9 @@
     </crs:GeodeticDatum>
     <crs:GeodeticDatum>
       <crs:Id>epsg:6269</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::6269</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6269</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::6269</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6269</crs:Id>
       <crs:Name>North_American_Datum_1983</crs:Name>
       <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:UsedEllipsoid>
       <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
@@ -1293,9 +1293,9 @@
     </crs:GeodeticDatum>
     <crs:GeodeticDatum>
       <crs:Id>epsg:6746</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::6746</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6746</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::6746</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6746</crs:Id>
       <crs:Name>Potsdam Rauenberg 1950 DHDN</crs:Name>
       <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7004</crs:UsedEllipsoid>
       <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
@@ -1480,28 +1480,28 @@
       <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
     </crs:GeodeticDatum>
     <crs:GeodeticDatum>
-      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6258</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::6258</crs:Id>
-      <crs:Id>urn:ogc:def:crs:epsg::6258</crs:Id>
       <crs:Id>epsg:6258</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6258</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6258</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6258</crs:Id>
       <crs:Name>European Terrestrial Reference System 1989</crs:Name>
       <crs:UsedEllipsoid>http://www.opengis.net/gml/srs/epsg.xml#7019</crs:UsedEllipsoid>
       <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
     </crs:GeodeticDatum>
     <crs:GeodeticDatum>
-      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6272</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::6272</crs:Id>
-      <crs:Id>urn:ogc:def:crs:epsg::6272</crs:Id>
       <crs:Id>epsg:6272</crs:Id>
+      <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6272</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6272</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6272</crs:Id>
       <crs:Name>New Zealand Geodetic Datum 1949</crs:Name>
       <crs:UsedEllipsoid>urn:opengis:def:crs:epsg::7022</crs:UsedEllipsoid>
       <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
     </crs:GeodeticDatum>
     <crs:GeodeticDatum>
+      <crs:Id>epsg:6314</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6314</crs:Id>
       <crs:Id>urn:ogc:def:crs:epsg::6314</crs:Id>
       <crs:Id>urn:opengis:def:crs:epsg::6314</crs:Id>
-      <crs:Id>epsg:6314</crs:Id>
       <crs:Name>Deutsches Hauptdreiecksnetz</crs:Name>
       <crs:Version>2006-06-12</crs:Version>
       <crs:Description>
@@ -1512,10 +1512,10 @@
       <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
     </crs:GeodeticDatum>
     <crs:GeodeticDatum>
-      <crs:Id>urn:ogc:def:crs:epsg::6267</crs:Id>
       <crs:Id>epsg:6267</crs:Id>
-      <crs:Id>urn:opengis:def:crs:epsg::6267</crs:Id>
       <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#6267</crs:Id>
+      <crs:Id>urn:ogc:def:crs:epsg::6267</crs:Id>
+      <crs:Id>urn:opengis:def:crs:epsg::6267</crs:Id>
       <crs:Name>North_American_Datum_1927</crs:Name>
       <crs:UsedEllipsoid>epsg:7008</crs:UsedEllipsoid>
       <crs:UsedPrimeMeridian>urn:opengis:def:crs:epsg::8901</crs:UsedPrimeMeridian>
