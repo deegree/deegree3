@@ -104,7 +104,9 @@ public class PostGISMappingsISODC implements PostGISMapping {
         propToTableAndCol.put( new QName( DC_NS, "coverage" ), new PropertyNameMapping( "isoqp_BoundingBox", "bbox" ) );
         propToTableAndCol.put( new QName( OWS_NS, "BoundingBox" ),
                                new PropertyNameMapping( "isoqp_BoundingBox", "bbox" ) );
-        propToTableAndCol.put( new QName( APISO_NS, "BoundingBox" ), new PropertyNameMapping( "isoqp_BoundingBox",
+        propToTableAndCol.put( new QName( OWS_NS, "boundingBox" ),
+                               new PropertyNameMapping( "isoqp_BoundingBox", "bbox" ) );
+        propToTableAndCol.put( new QName( APISO_NS, "boundingBox" ), new PropertyNameMapping( "isoqp_BoundingBox",
                                                                                               "bbox" ) );
 
         propToTableAndCol.put( new QName( APISO_NS, "type" ), new PropertyNameMapping( "isoqp_type", "type", STRING ) );
