@@ -224,18 +224,16 @@ public class XMLTransformer extends GeometryTransformer {
                 if ( gmlReader.isGeometryOrEnvelopeElement() ) {
                     Geometry geom = gmlReader.readGeometryOrEnvelope();
                     if ( geom != null ) {
-                        CRS gCRS = geom.getCoordinateSystem();
-                        CoordinateSystem geomCRS = null;
-                        if ( gCRS != null ) {
-                            geomCRS = gCRS.getWrappedCRS();
-                        }
+                        CoordinateSystem geomCRS = sourceCRS;
                         if ( geomCRS == null ) {
-                            if ( sourceCRS == null ) {
+                            CRS gCRS = geom.getCoordinateSystem();
+                            if ( gCRS != null ) {
+                                geomCRS = gCRS.getWrappedCRS();
+                            } else {
                                 throw new TransformationException(
                                                                    "Could not determine Coordinate System of geometry: "
                                                                                            + geom );
                             }
-                            geomCRS = sourceCRS;
                         }
                         geom = super.transform( geom, geomCRS, testValidArea, toBeUsedTransformations );
                         // write transformed geometry
