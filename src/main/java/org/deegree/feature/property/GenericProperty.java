@@ -38,6 +38,7 @@ package org.deegree.feature.property;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 
@@ -88,8 +89,8 @@ public class GenericProperty implements Property {
         this.value = value;
 
         if ( declaration instanceof SimplePropertyType ) {
-            if ( value != null
-                 && value.getClass() != ( (SimplePropertyType) declaration ).getPrimitiveType().getValueClass() ) {
+            if ( value != null && !( value instanceof PrimitiveValue ) ) {
+                // TODO do more fine grained type checks
                 String msg = "Invalid simple property (PrimitiveType="
                              + ( (SimplePropertyType) declaration ).getPrimitiveType().name() + "): required class="
                              + ( (SimplePropertyType) declaration ).getPrimitiveType().getValueClass()
