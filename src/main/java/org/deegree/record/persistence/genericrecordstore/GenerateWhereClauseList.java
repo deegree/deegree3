@@ -101,7 +101,7 @@ public class GenerateWhereClauseList {
 
         List<Pair<StringBuilder, Object>> clauseParamPairList = new ArrayList<Pair<StringBuilder, Object>>();
         List<Pair<StringBuilder, Object>> clauseParamPairListTemp = new ArrayList<Pair<StringBuilder, Object>>();
-        // List<Pair<StringBuilder, Object>> clauseParamPairListTemp2 = new ArrayList<Pair<StringBuilder, Object>>();
+        List<Pair<StringBuilder, Object>> clauseParamPairListTemp2 = new ArrayList<Pair<StringBuilder, Object>>();
         Pair<StringBuilder, Object> clauseParamPair;
         Pattern ANDOR = Pattern.compile( "AND|OR" );
         Pattern bracketForwards = Pattern.compile( "\\(" );
@@ -216,7 +216,7 @@ public class GenerateWhereClauseList {
                             }
 
                         }
-                        // clauseParamPairListTemp2.addAll( clauseParamPairListTemp );
+                        clauseParamPairListTemp2.addAll( clauseParamPairListTemp );
                         clauseBuilderPair.second = col;
 
                         whereClauseList.add( clauseBuilderPair );
@@ -263,7 +263,7 @@ public class GenerateWhereClauseList {
                                 parsedExpressionAfterTemp = parsedExpressionAfterTemp.replace(
                                                                                                a.first.toString().trim(),
                                                                                                "" );
-                                clauseParamPairListTemp.remove( new Pair<StringBuilder, Object>( a.first, a.second ) );
+                                clauseParamPairListTemp2.remove( new Pair<StringBuilder, Object>( a.first, a.second ) );
                             }
 
                         }
@@ -305,7 +305,7 @@ public class GenerateWhereClauseList {
                         clauseBuilderPair.first = new StringBuilder( expressionBeforeTemp );
                         Collection<Object> col = new ArrayList<Object>();
 
-                        for ( Pair<StringBuilder, Object> a : clauseParamPairListTemp ) {
+                        for ( Pair<StringBuilder, Object> a : clauseParamPairListTemp2 ) {
                             int i = expressionBeforeTemp.indexOf( a.first.toString().trim() );
                             if ( i > -1 ) {
                                 if ( a.second != null ) {

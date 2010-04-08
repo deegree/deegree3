@@ -122,7 +122,7 @@ public class QueryableProperties {
 
     private List<String> serviceTypeVersion;
 
-    private String geographicDescriptionCode_service;
+    private List<String> geographicDescriptionCode_service;
 
     private List<String> operation;
 
@@ -134,7 +134,7 @@ public class QueryableProperties {
 
     private boolean degree;
 
-    private String specificationTitle;
+    private List<String> specificationTitle;
 
     private String specificationDateType;
 
@@ -166,7 +166,7 @@ public class QueryableProperties {
     /**
      * @return the specificationTitle
      */
-    public String getSpecificationTitle() {
+    public List<String> getSpecificationTitle() {
         return specificationTitle;
     }
 
@@ -174,7 +174,7 @@ public class QueryableProperties {
      * @param specificationTitle
      *            the specificationTitle to set
      */
-    public void setSpecificationTitle( String specificationTitle ) {
+    public void setSpecificationTitle( List<String> specificationTitle ) {
         this.specificationTitle = specificationTitle;
     }
 
@@ -635,7 +635,7 @@ public class QueryableProperties {
     /**
      * @return the geographicDescriptionCode_service
      */
-    public String getGeographicDescriptionCode_service() {
+    public List<String> getGeographicDescriptionCode_service() {
         return geographicDescriptionCode_service;
     }
 
@@ -643,7 +643,7 @@ public class QueryableProperties {
      * @param geographicDescriptionCodeService
      *            the geographicDescriptionCode_service to set
      */
-    public void setGeographicDescriptionCode_service( String geographicDescriptionCodeService ) {
+    public void setGeographicDescriptionCode_service( List<String> geographicDescriptionCodeService ) {
         geographicDescriptionCode_service = geographicDescriptionCodeService;
     }
 

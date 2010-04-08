@@ -148,9 +148,24 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             OMElement title = getElement( ci_citation, new XPath( "./gmd:title", nsContextParseII ) );
 
+            String[] titleList = getNodesAsStrings(
+                                                    title,
+                                                    new XPath(
+                                                               "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                               nsContextParseII ) );
+
             List<OMElement> alternateTitle = getElements( ci_citation, new XPath( "./gmd:alternateTitle",
                                                                                   nsContextParseII ) );
 
+            String[] alternateTitleOtherLang = null;
+            for ( OMElement alternateTitleElement : alternateTitle ) {
+                alternateTitleOtherLang = getNodesAsStrings(
+                                                             alternateTitleElement,
+                                                             new XPath(
+                                                                        "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                                        nsContextParseII ) );
+
+            }
             List<OMElement> citation_date = getElements( ci_citation, new XPath( "./gmd:date", nsContextParseII ) );
 
             OMElement edition = getElement( ci_citation, new XPath( "./gmd:edition", nsContextParseII ) );
@@ -167,10 +182,19 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                  new XPath(
                                                                             "./gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString",
                                                                             nsContextParseII ) );
+            List<String> titleStringList = new ArrayList<String>();
+            titleStringList.addAll( Arrays.asList( titleElements ) );
+            if ( titleList != null ) {
+                titleStringList.addAll( Arrays.asList( titleList ) );
+            }
+            qp.setTitle( titleStringList );
 
-            qp.setTitle( Arrays.asList( titleElements ) );
-
-            qp.setAlternateTitle( Arrays.asList( alternateTitleElements ) );
+            List<String> alternateTitleList = new ArrayList<String>();
+            alternateTitleList.addAll( Arrays.asList( alternateTitleElements ) );
+            if ( alternateTitleOtherLang != null ) {
+                alternateTitleList.addAll( Arrays.asList( alternateTitleOtherLang ) );
+            }
+            qp.setAlternateTitle( alternateTitleList );
 
             for ( OMElement dateElem : citation_date ) {
 
@@ -349,10 +373,20 @@ public class ParseIdentificationInfo extends XMLAdapter {
             OMElement _abstract = getElement( sv_service_OR_md_dataIdentification, new XPath( "./gmd:abstract",
                                                                                               nsContextParseII ) );
 
+            String[] _abstractOtherLang = getNodesAsStrings(
+                                                             _abstract,
+                                                             new XPath(
+                                                                        "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                                        nsContextParseII ) );
+
             String[] _abstractStrings = getNodesAsStrings( _abstract, new XPath( "./gco:CharacterString",
                                                                                  nsContextParseII ) );
-
-            qp.set_abstract( Arrays.asList( _abstractStrings ) );
+            List<String> _abstractList = new ArrayList<String>();
+            _abstractList.addAll( Arrays.asList( _abstractStrings ) );
+            if ( _abstractOtherLang != null ) {
+                _abstractList.addAll( Arrays.asList( _abstractOtherLang ) );
+            }
+            qp.set_abstract( _abstractList );
 
             /*---------------------------------------------------------------
              * 
@@ -794,6 +828,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
             CRS crs = null;
 
             String geographicDescriptionCode_service = null;
+            String[] geographicDescriptionCode_serviceOtherLang = null;
 
             for ( OMElement extentElem : extent ) {
 
@@ -850,11 +885,19 @@ public class ParseIdentificationInfo extends XMLAdapter {
                 }
 
                 if ( geographicDescriptionCode_service == null ) {
-                    geographicDescriptionCode_service = getNodeAsString(
-                                                                         extentElem,
-                                                                         new XPath(
-                                                                                    "./gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
+                    OMElement geographicDescriptionCode_serviceElem = getElement(
+                                                                                  extentElem,
+                                                                                  new XPath(
+                                                                                             "./gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeopraphicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code",
+                                                                                             nsContextParseII ) );
+                    geographicDescriptionCode_service = getNodeAsString( geographicDescriptionCode_serviceElem,
+                                                                         new XPath( "./gco:CharacterString",
                                                                                     nsContextParseII ), null );
+                    geographicDescriptionCode_serviceOtherLang = getNodesAsStrings(
+                                                                                    geographicDescriptionCode_serviceElem,
+                                                                                    new XPath(
+                                                                                               "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                                                               nsContextParseII ) );
                 }
 
             }
@@ -864,7 +907,13 @@ public class ParseIdentificationInfo extends XMLAdapter {
             qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
                                                 boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
             qp.setCrs( crsList );
-            qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
+
+            List<String> geographicDescCode_serviceList = new ArrayList<String>();
+            geographicDescCode_serviceList.addAll( Arrays.asList( geographicDescriptionCode_service ) );
+            if ( geographicDescriptionCode_serviceOtherLang != null ) {
+                geographicDescCode_serviceList.addAll( Arrays.asList( geographicDescriptionCode_serviceOtherLang ) );
+            }
+            qp.setGeographicDescriptionCode_service( geographicDescCode_serviceList );
 
             /*---------------------------------------------------------------
              * SV_ServiceIdentification and IdentificationInfo
@@ -891,13 +940,24 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                        new XPath( "./gmd:MD_Keywords/gmd:keyword/gco:CharacterString",
                                                                   nsContextParseII ) );
 
+                String[] keywordsOtherLang = getNodesAsStrings(
+                                                                md_keywords,
+                                                                new XPath(
+                                                                           "./gmd:MD_Keywords/gmd:keyword/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                                           nsContextParseII ) );
+
                 String thesaurus = getNodeAsString(
                                                     md_keywords,
                                                     new XPath(
                                                                "./gmd:MD_Keywords/gmd:thesaurusName/gmd:CI_Citation/gmd:title/gco:CharacterString",
                                                                nsContextParseII ), null );
 
-                listOfKeywords.add( new Keyword( keywordType, Arrays.asList( keywords ), thesaurus ) );
+                List<String> keywordList = new ArrayList<String>();
+                keywordList.addAll( Arrays.asList( keywords ) );
+                if ( keywordsOtherLang != null ) {
+                    keywordList.addAll( Arrays.asList( keywordsOtherLang ) );
+                }
+                listOfKeywords.add( new Keyword( keywordType, keywordList, thesaurus ) );
 
             }
 
@@ -1001,9 +1061,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                             if ( operatesOnString.equals( operatesOnIdentifierString ) ) {
                                 isTightlyCoupledOK = true;
                                 break;
-                            } else {
-                                isTightlyCoupledOK = false;
                             }
+                            isTightlyCoupledOK = false;
 
                         }
                         // OperatesOnList [a,b,c] - OperatesOnIdList [b,c,d] -> a not in OperatesOnIdList ->

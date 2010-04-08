@@ -496,7 +496,7 @@ public final class ISOQPParsing extends XMLAdapter {
         List<OMElement> formats = getElements(
                                                rootElement,
                                                new XPath(
-                                                          "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format",
+                                                          "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format",
                                                           nsContextISOParsing ) );
 
         // String onlineResource = getNodeAsString(
@@ -549,11 +549,29 @@ public final class ISOQPParsing extends XMLAdapter {
                                             new XPath(
                                                        "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:pass/gco:Boolean",
                                                        nsContextISOParsing ), false ) );
-            qp.setSpecificationTitle( getNodeAsString(
-                                                       rootElement,
-                                                       new XPath(
-                                                                  "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString",
-                                                                  nsContextISOParsing ), "" ) );
+
+            OMElement titleElem = getElement(
+                                              rootElement,
+                                              new XPath(
+                                                         "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title",
+                                                         nsContextISOParsing ) );
+
+            String[] titleList = getNodesAsStrings(
+                                                    titleElem,
+                                                    new XPath(
+                                                               "./gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString",
+                                                               nsContextISOParsing ) );
+
+            List<String> titleStringList = new ArrayList<String>();
+            titleStringList.addAll( Arrays.asList( getNodeAsString(
+                                                                    rootElement,
+                                                                    new XPath(
+                                                                               "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString",
+                                                                               nsContextISOParsing ), "" ) ) );
+            if ( titleList != null ) {
+                titleStringList.addAll( Arrays.asList( titleList ) );
+            }
+            qp.setSpecificationTitle( titleStringList );
 
             qp.setSpecificationDateType( getNodeAsString(
                                                           rootElement,
@@ -761,7 +779,7 @@ public final class ISOQPParsing extends XMLAdapter {
         qp.setTitle( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dc:title", nsContextISOParsing ) ) ) );
 
         // List<String> abstractList = new ArrayList<String>();
-        // TODO
+        // TODO because there are more abstracts possible in theory...
         // abstractList.add( e )
 
         qp.set_abstract( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dct:abstract",
