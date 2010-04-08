@@ -127,7 +127,7 @@ public abstract class SpatialOperator implements Operator {
         if ( value != null ) {
             if ( value instanceof Geometry ) {
                 geom = (Geometry) value;
-            } else if ( value instanceof Property || ( (Property) value ).getValue() instanceof Geometry ) {
+            } else if ( value instanceof Property && ( (Property) value ).getValue() instanceof Geometry ) {
                 geom = (Geometry) ((Property) value).getValue();
             } else {
                 String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
