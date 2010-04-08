@@ -37,8 +37,8 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.awt.Color;
@@ -58,6 +58,7 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.utils.RasterDataUtility;
@@ -226,18 +227,18 @@ public class Categorize extends Function {
 
             if ( in.getLocalName().equals( "LookupValue" ) ) {
                 value = new StringBuffer();
-                contn = updateOrContinue( in, "LookupValue", value, SBUPDATER, null );
+                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
             }
 
             if ( in.getLocalName().equals( "Threshold" ) ) {
                 StringBuffer sb = new StringBuffer();
-                thresholdContns.add( updateOrContinue( in, "Threshold", sb, SBUPDATER, null ) );
+                thresholdContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Threshold", sb, SBUPDATER, null ).second );
                 thresholds.add( sb );
             }
 
             if ( in.getLocalName().equals( "Value" ) ) {
                 StringBuffer sb = new StringBuffer();
-                valueContns.add( updateOrContinue( in, "Value", sb, SBUPDATER, null ) );
+                valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
                 values.add( sb );
             }
 
@@ -275,10 +276,6 @@ public class Categorize extends Function {
             }
             thresholdsArray = list.toArray( thresholdsArray );
         }
-    }
-
-    private static final Color decodeWithAlpha( final String s ) {
-        return new Color( Integer.decode( s ), s.length() > 7 );
     }
 
 }

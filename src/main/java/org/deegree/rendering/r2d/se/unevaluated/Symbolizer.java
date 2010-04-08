@@ -126,6 +126,13 @@ public class Symbolizer<T extends Copyable<T>> {
     }
 
     /**
+     * @return whether the symbolizer is already evaluated
+     */
+    public boolean isEvaluated() {
+        return evaluated != null;
+    }
+
+    /**
      * @param f
      * @return an appropriate PointStyling
      */

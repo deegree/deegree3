@@ -42,7 +42,6 @@ import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.rendering.r2d.RenderHelper.getShapeFromSvg;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.getUOM;
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.parse;
 import static org.deegree.rendering.r2d.styling.components.Mark.SimpleMark.SQUARE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -532,14 +531,14 @@ public class PostgreSQLReader {
                     };
                     rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scale ) );
 
-                    return new Style( rules, new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>(), ""
-                                                                                                                 + id,
-                                      null );
+                    return new Style( rules, new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>(), null,
+                                      "" + id, null );
                 }
                 String sld = rs.getString( "sld" );
                 if ( sld != null ) {
                     try {
-                        return parse( XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( sld ) ) );
+                        XMLInputFactory fac = XMLInputFactory.newInstance();
+                        return new SymbologyParser().parse( fac.createXMLStreamReader( new StringReader( sld ) ) );
                     } catch ( XMLStreamException e ) {
                         LOG.debug( "Could not parse SLD snippet for id '{}', error was '{}'", id,
                                    e.getLocalizedMessage() );

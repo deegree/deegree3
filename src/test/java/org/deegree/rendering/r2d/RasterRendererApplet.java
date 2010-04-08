@@ -116,7 +116,7 @@ public class RasterRendererApplet extends JApplet {
                 in.nextTag();
             }
             in.require( XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer" );
-            Symbolizer<RasterStyling> symb = SymbologyParser.parseRasterSymbolizer( in, null );
+            Symbolizer<RasterStyling> symb = SymbologyParser.INSTANCE.parseRasterSymbolizer( in, null );
             rs = symb.evaluate( null ).first;
             LOG.debug( "Loaded SE XML" );
         } catch ( Exception e ) {

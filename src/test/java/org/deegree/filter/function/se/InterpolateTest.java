@@ -87,7 +87,7 @@ public class InterpolateTest extends TestCase {
             in.nextTag();
         }
         in.require( XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer" );
-        Symbolizer<RasterStyling> symb = SymbologyParser.parseRasterSymbolizer( in, null );
+        Symbolizer<RasterStyling> symb = SymbologyParser.INSTANCE.parseRasterSymbolizer( in, null );
         RasterStyling rs = symb.getBase();
         interp = rs.interpolate;
     }

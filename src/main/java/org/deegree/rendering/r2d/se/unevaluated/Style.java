@@ -39,6 +39,7 @@ package org.deegree.rendering.r2d.se.unevaluated;
 import static java.awt.Color.black;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
+import static org.deegree.commons.utils.CollectionUtils.unzip;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
@@ -49,7 +50,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
@@ -96,6 +96,8 @@ public class Style {
 
     private HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
 
+    private HashMap<Symbolizer<TextStyling>, String> labelXMLTexts = new HashMap<Symbolizer<TextStyling>, String>();
+
     private String name;
 
     private boolean useDefault;
@@ -111,14 +113,19 @@ public class Style {
     /**
      * @param rules
      * @param labels
+     * @param xmlTexts
      * @param name
      * @param featureTypeName
      */
     public Style( Collection<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules,
-                  Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels, String name, QName featureTypeName ) {
+                  Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels,
+                  Map<Symbolizer<TextStyling>, String> xmlTexts, String name, QName featureTypeName ) {
         this.rules.addAll( rules );
         this.labels.putAll( labels );
         this.name = name;
+        if ( xmlTexts != null ) {
+            this.labelXMLTexts.putAll( xmlTexts );
+        }
         featureType = featureTypeName;
     }
 
@@ -126,15 +133,19 @@ public class Style {
      * @param symbolizer
      * @param label
      * @param name
+     * @param xmlText
      */
-    public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label, String name ) {
-        InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>> contn = new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>(
-                                                                                                                                               symbolizer );
+    public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label, String name, String xmlText ) {
+        InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>> contn;
+        contn = new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>( symbolizer );
         rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn,
                                                                                   new DoublePair( NEGATIVE_INFINITY,
                                                                                                   POSITIVE_INFINITY ) ) );
         if ( label != null ) {
             labels.put( (Symbolizer) symbolizer, label );
+        }
+        if ( xmlText != null ) {
+            labelXMLTexts.put( (Symbolizer) symbolizer, xmlText );
         }
         this.name = name;
     }
@@ -170,7 +181,7 @@ public class Style {
                 LOG.debug( "Not using rule because of scale constraints, in style with name '{}'.", name );
             }
         }
-        return new Style( rules, labels, name, featureType );
+        return new Style( rules, labels, null, name, featureType );
     }
 
     /**
@@ -252,26 +263,53 @@ public class Style {
      * @return the base stylings for all symbolizers sorted by rules
      */
     public ArrayList<LinkedList<Styling>> getBases() {
-        return CollectionUtils.unzip( getBasesWithScales() ).first;
+        return unzip( getBasesWithScales() ).first;
     }
 
     /**
      * @return the base stylings for all symbolizers sorted by rules and the corresponding scale denominators
      */
-    public LinkedList<Pair<LinkedList<Styling>, DoublePair>> getBasesWithScales() {
-        LinkedList<Pair<LinkedList<Styling>, DoublePair>> list = new LinkedList<Pair<LinkedList<Styling>, DoublePair>>();
+    public LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>> getBasesWithScales() {
+        LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>> list;
+        list = new LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>>();
         for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
             LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
             rule.first.evaluate( base, null );
             LinkedList<Styling> stylings = new LinkedList<Styling>();
+            LinkedList<String> xmlTexts = new LinkedList<String>();
             for ( Symbolizer<?> s : base ) {
                 stylings.add( (Styling) s.getBase() );
+                String text = labelXMLTexts.get( s );
+                if ( text != null ) {
+                    xmlTexts.add( text );
+                }
             }
             if ( !stylings.isEmpty() ) {
-                list.add( new Pair<LinkedList<Styling>, DoublePair>( stylings, rule.second ) );
+                list.add( new Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>( stylings, rule.second,
+                                                                                           xmlTexts ) );
             }
         }
         return list;
+    }
+
+    /**
+     * @return true, if no filters and no expressions are used
+     */
+    public boolean isSimple() {
+        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
+            if ( rule.first instanceof FilterContinuation && ( (FilterContinuation) rule.first ).filter != null ) {
+                return false;
+            }
+
+            LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
+            rule.first.evaluate( base, null );
+            for ( Symbolizer<?> s : base ) {
+                if ( !s.isEvaluated() ) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**

@@ -40,7 +40,6 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import javax.xml.stream.XMLStreamException;
@@ -50,6 +49,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
@@ -125,17 +125,17 @@ public class Substring extends Function {
 
             if ( in.getLocalName().equals( "StringValue" ) ) {
                 value = new StringBuffer();
-                valueContn = updateOrContinue( in, "StringValue", value, SBUPDATER, null );
+                valueContn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
             }
 
             if ( in.getLocalName().equals( "Position" ) ) {
                 position = new StringBuffer();
-                positionContn = updateOrContinue( in, "Position", position, SBUPDATER, null );
+                positionContn = SymbologyParser.INSTANCE.updateOrContinue( in, "Position", position, SBUPDATER, null ).second;
             }
 
             if ( in.getLocalName().equals( "Length" ) ) {
                 length = new StringBuffer();
-                lengthContn = updateOrContinue( in, "Length", length, SBUPDATER, null );
+                lengthContn = SymbologyParser.INSTANCE.updateOrContinue( in, "Length", length, SBUPDATER, null ).second;
             }
         }
 

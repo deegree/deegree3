@@ -38,7 +38,6 @@ package org.deegree.filter.function.se;
 import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.text.DecimalFormat;
@@ -50,6 +49,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
@@ -112,7 +112,8 @@ public class FormatNumber extends Function {
 
             if ( in.getLocalName().equals( "NumericValue" ) ) {
                 numericValue = new StringBuffer();
-                numericValueContn = updateOrContinue( in, "NumericValue", numericValue, SBUPDATER, null );
+                numericValueContn = SymbologyParser.INSTANCE.updateOrContinue( in, "NumericValue", numericValue,
+                                                                               SBUPDATER, null ).second;
             }
 
             if ( in.getLocalName().equals( "Pattern" ) ) {

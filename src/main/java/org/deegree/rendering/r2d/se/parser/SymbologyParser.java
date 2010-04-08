@@ -36,12 +36,11 @@
 
 package org.deegree.rendering.r2d.se.parser;
 
-import static java.awt.Color.decode;
 import static java.awt.Font.TRUETYPE_FONT;
 import static java.awt.Font.TYPE1_FONT;
 import static java.awt.Font.createFont;
-import static java.lang.Double.MAX_VALUE;
-import static java.lang.Double.MIN_VALUE;
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
 import static java.lang.Double.parseDouble;
 import static java.lang.Float.parseFloat;
 import static java.lang.Math.max;
@@ -50,6 +49,7 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsBoolean;
@@ -73,6 +73,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -87,8 +88,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.impl.dv.util.Base64;
 import org.deegree.commons.utils.DoublePair;
@@ -102,6 +105,7 @@ import org.deegree.filter.MatchableObject;
 import org.deegree.filter.function.se.Categorize;
 import org.deegree.filter.function.se.Interpolate;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
@@ -142,9 +146,31 @@ import org.slf4j.Logger;
  */
 public class SymbologyParser {
 
+    private boolean collectXMLSnippets = false;
+
     static final Logger LOG = getLogger( SymbologyParser.class );
 
     static final ElseFilter ELSEFILTER = new ElseFilter();
+
+    /**
+     * A default instance.
+     */
+    public static final SymbologyParser INSTANCE = new SymbologyParser();
+
+    /**
+     * Constructs one which does not collect source snippets.
+     */
+    public SymbologyParser() {
+        // default values
+    }
+
+    /**
+     * @param collectXMLSnippets
+     *            if true, some source snippets are collected (which can be used for re-export)
+     */
+    public SymbologyParser( boolean collectXMLSnippets ) {
+        this.collectXMLSnippets = collectXMLSnippets;
+    }
 
     private static boolean require( XMLStreamReader in, String elementName ) {
         if ( !( in.getLocalName().equals( elementName ) && in.isStartElement() ) ) {
@@ -212,7 +238,7 @@ public class SymbologyParser {
         }
     }
 
-    private static Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
+    private Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Fill" );
 
@@ -245,10 +271,10 @@ public class SymbologyParser {
                         public void update( Fill obj, String val ) {
                             // keep alpha value
                             int alpha = obj.color.getAlpha();
-                            obj.color = decode( val );
+                            obj.color = decodeWithAlpha( val );
                             obj.color = new Color( obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha );
                         }
-                    }, contn );
+                    }, contn ).second;
                 }
 
                 if ( cssName.equals( "fill-opacity" ) ) {
@@ -260,7 +286,7 @@ public class SymbologyParser {
                             float[] cols = obj.color.getRGBColorComponents( null );
                             obj.color = new Color( cols[0], cols[1], cols[2], alpha );
                         }
-                    }, contn );
+                    }, contn ).second;
                 }
             } else if ( in.isStartElement() ) {
                 Location loc = in.getLocation();
@@ -276,7 +302,7 @@ public class SymbologyParser {
         return new Pair<Fill, Continuation<Fill>>( base, contn );
     }
 
-    private static Pair<Stroke, Continuation<Stroke>> parseStroke( XMLStreamReader in )
+    private Pair<Stroke, Continuation<Stroke>> parseStroke( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Stroke" );
 
@@ -295,10 +321,10 @@ public class SymbologyParser {
                         public void update( Stroke obj, String val ) {
                             // keep alpha value
                             int alpha = obj.color.getAlpha();
-                            obj.color = decode( val );
+                            obj.color = decodeWithAlpha( val );
                             obj.color = new Color( obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "stroke-opacity" ) ) {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
@@ -308,14 +334,14 @@ public class SymbologyParser {
                             float[] cols = obj.color.getRGBColorComponents( null );
                             obj.color = new Color( cols[0], cols[1], cols[2], alpha );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "stroke-width" ) ) {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
                         public void update( Stroke obj, String val ) {
                             obj.width = Double.parseDouble( val );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "stroke-linejoin" ) ) {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
@@ -327,7 +353,7 @@ public class SymbologyParser {
                                 obj.linejoin = ROUND;
                             }
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "stroke-linecap" ) ) {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
@@ -339,21 +365,21 @@ public class SymbologyParser {
                                 obj.linecap = BUTT;
                             }
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "stroke-dasharray" ) ) {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
                         public void update( Stroke obj, String val ) {
                             obj.dasharray = splitAsDoubles( val, " " );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "stroke-dashoffset" ) ) {
                     contn = updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                         @Override
                         public void update( Stroke obj, String val ) {
                             obj.dashoffset = Double.parseDouble( val );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else {
                     Location loc = in.getLocation();
                     LOG.error( "Found unknown parameter '{}' at line {}, column {}, skipping.",
@@ -405,7 +431,7 @@ public class SymbologyParser {
                             public void update( Stroke obj, String val ) {
                                 obj.strokeInitialGap = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                         in.require( END_ELEMENT, null, "InitialGap" );
                     } else if ( in.getLocalName().equals( "Gap" ) ) {
                         contn = updateOrContinue( in, "Gap", base, new Updater<Stroke>() {
@@ -413,7 +439,7 @@ public class SymbologyParser {
                             public void update( Stroke obj, String val ) {
                                 obj.strokeGap = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                         in.require( END_ELEMENT, null, "Gap" );
                     } else if ( in.getLocalName().equals( "PositionPercentage" ) ) {
                         contn = updateOrContinue( in, "PositionPercentage", base, new Updater<Stroke>() {
@@ -421,7 +447,7 @@ public class SymbologyParser {
                             public void update( Stroke obj, String val ) {
                                 obj.positionPercentage = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                         in.require( END_ELEMENT, null, "PositionPercentage" );
                     } else if ( in.isStartElement() ) {
                         Location loc = in.getLocation();
@@ -442,7 +468,7 @@ public class SymbologyParser {
         return new Pair<Stroke, Continuation<Stroke>>( base, contn );
     }
 
-    private static Pair<Mark, Continuation<Mark>> parseMark( XMLStreamReader in )
+    private Pair<Mark, Continuation<Mark>> parseMark( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Mark" );
 
@@ -553,15 +579,14 @@ public class SymbologyParser {
         return new Pair<Mark, Continuation<Mark>>( base, contn );
     }
 
-    private static Triple<InputStream, String, Continuation<StringBuffer>> getOnlineResourceOrInlineContent(
-                                                                                                             XMLStreamReader in )
+    private Triple<InputStream, String, Continuation<StringBuffer>> getOnlineResourceOrInlineContent( XMLStreamReader in )
                             throws XMLStreamException {
         if ( in.getLocalName().equals( "OnlineResource" ) ) {
             String str = in.getAttributeValue( XLNNS, "href" );
 
             if ( str == null ) {
                 Continuation<StringBuffer> contn = updateOrContinue( in, "OnlineResource", new StringBuffer(),
-                                                                     SBUPDATER, null );
+                                                                     SBUPDATER, null ).second;
                 return new Triple<InputStream, String, Continuation<StringBuffer>>( null, null, contn );
             }
 
@@ -596,8 +621,8 @@ public class SymbologyParser {
         return null;
     }
 
-    private static Triple<BufferedImage, String, Continuation<List<BufferedImage>>> parseExternalGraphic(
-                                                                                                          final XMLStreamReader in )
+    private Triple<BufferedImage, String, Continuation<List<BufferedImage>>> parseExternalGraphic(
+                                                                                                   final XMLStreamReader in )
                             throws IOException, XMLStreamException {
         // TODO color replacement
 
@@ -670,7 +695,7 @@ public class SymbologyParser {
         return new Triple<BufferedImage, String, Continuation<List<BufferedImage>>>( img, url, contn );
     }
 
-    private static Pair<Graphic, Continuation<Graphic>> parseGraphic( XMLStreamReader in )
+    private Pair<Graphic, Continuation<Graphic>> parseGraphic( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Graphic" );
 
@@ -721,19 +746,19 @@ public class SymbologyParser {
                     public void update( Graphic obj, String val ) {
                         obj.opacity = Double.parseDouble( val );
                     }
-                }, contn );
+                }, contn ).second;
             } else if ( in.getLocalName().equals( "Size" ) ) {
                 contn = updateOrContinue( in, "Size", base, new Updater<Graphic>() {
                     public void update( Graphic obj, String val ) {
                         obj.size = Double.parseDouble( val );
                     }
-                }, contn );
+                }, contn ).second;
             } else if ( in.getLocalName().equals( "Rotation" ) ) {
                 contn = updateOrContinue( in, "Rotation", base, new Updater<Graphic>() {
                     public void update( Graphic obj, String val ) {
                         obj.rotation = Double.parseDouble( val );
                     }
-                }, contn );
+                }, contn ).second;
             } else if ( in.getLocalName().equals( "AnchorPoint" ) ) {
                 while ( !( in.isEndElement() && in.getLocalName().equals( "AnchorPoint" ) ) ) {
                     in.nextTag();
@@ -743,13 +768,13 @@ public class SymbologyParser {
                             public void update( Graphic obj, String val ) {
                                 obj.anchorPointX = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                     } else if ( in.getLocalName().equals( "AnchorPointY" ) ) {
                         contn = updateOrContinue( in, "AnchorPointY", base, new Updater<Graphic>() {
                             public void update( Graphic obj, String val ) {
                                 obj.anchorPointY = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                     } else if ( in.isStartElement() ) {
                         Location loc = in.getLocation();
                         LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -766,13 +791,13 @@ public class SymbologyParser {
                             public void update( Graphic obj, String val ) {
                                 obj.displacementX = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                     } else if ( in.getLocalName().equals( "DisplacementY" ) ) {
                         contn = updateOrContinue( in, "DisplacementY", base, new Updater<Graphic>() {
                             public void update( Graphic obj, String val ) {
                                 obj.displacementY = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                     } else if ( in.isStartElement() ) {
                         Location loc = in.getLocation();
                         LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -798,7 +823,7 @@ public class SymbologyParser {
      * @return a new symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<PointStyling> parsePointSymbolizer( XMLStreamReader in, UOM uom )
+    public Symbolizer<PointStyling> parsePointSymbolizer( XMLStreamReader in, UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "PointSymbolizer" );
 
@@ -864,26 +889,31 @@ public class SymbologyParser {
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Pair<Symbolizer<?>, Continuation<StringBuffer>> parseSymbolizer( XMLStreamReader in )
+    public Triple<Symbolizer<?>, Continuation<StringBuffer>, String> parseSymbolizer( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, null );
         if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
             UOM uom = getUOM( in.getAttributeValue( null, "uom" ) );
 
             if ( in.getLocalName().equals( "PointSymbolizer" ) ) {
-                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePointSymbolizer( in, uom ), null );
+                return new Triple<Symbolizer<?>, Continuation<StringBuffer>, String>( parsePointSymbolizer( in, uom ),
+                                                                                      null, null );
             }
             if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
-                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseLineSymbolizer( in, uom ), null );
+                return new Triple<Symbolizer<?>, Continuation<StringBuffer>, String>( parseLineSymbolizer( in, uom ),
+                                                                                      null, null );
             }
             if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
-                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePolygonSymbolizer( in, uom ), null );
+                return new Triple<Symbolizer<?>, Continuation<StringBuffer>, String>(
+                                                                                      parsePolygonSymbolizer( in, uom ),
+                                                                                      null, null );
             }
             if ( in.getLocalName().equals( "RasterSymbolizer" ) ) {
-                return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseRasterSymbolizer( in, uom ), null );
+                return new Triple<Symbolizer<?>, Continuation<StringBuffer>, String>( parseRasterSymbolizer( in, uom ),
+                                                                                      null, null );
             }
             if ( in.getLocalName().equals( "TextSymbolizer" ) ) {
-                return (Pair) parseTextSymbolizer( in, uom );
+                return (Triple) parseTextSymbolizer( in, uom );
             }
             Location loc = in.getLocation();
             LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -899,7 +929,7 @@ public class SymbologyParser {
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<RasterStyling> parseRasterSymbolizer( XMLStreamReader in, UOM uom )
+    public Symbolizer<RasterStyling> parseRasterSymbolizer( XMLStreamReader in, UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "RasterSymbolizer" );
 
@@ -919,7 +949,7 @@ public class SymbologyParser {
                     public void update( RasterStyling obj, String val ) {
                         obj.opacity = Double.parseDouble( val );
                     }
-                }, contn );
+                }, contn ).second;
             } else if ( in.getLocalName().equals( "ChannelSelection" ) ) {
                 String red = null, green = null, blue = null, gray = null;
                 HashMap<String, ContrastEnhancement> enhancements = new HashMap<String, ContrastEnhancement>( 10 );
@@ -1052,7 +1082,7 @@ public class SymbologyParser {
                                               common.line, common.col );
     }
 
-    private static ContrastEnhancement parseContrastEnhancement( XMLStreamReader in )
+    private ContrastEnhancement parseContrastEnhancement( XMLStreamReader in )
                             throws XMLStreamException {
         if ( !in.getLocalName().equals( "ContrastEnhancement" ) ) {
             return null;
@@ -1087,7 +1117,7 @@ public class SymbologyParser {
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<LineStyling> parseLineSymbolizer( XMLStreamReader in, UOM uom )
+    public Symbolizer<LineStyling> parseLineSymbolizer( XMLStreamReader in, UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "LineSymbolizer" );
 
@@ -1123,7 +1153,7 @@ public class SymbologyParser {
                     public void update( LineStyling obj, String val ) {
                         obj.perpendicularOffset = Double.parseDouble( val );
                     }
-                }, contn );
+                }, contn ).second;
             } else if ( in.isStartElement() ) {
                 Location loc = in.getLocation();
                 LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -1147,7 +1177,7 @@ public class SymbologyParser {
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<PolygonStyling> parsePolygonSymbolizer( XMLStreamReader in, UOM uom )
+    public Symbolizer<PolygonStyling> parsePolygonSymbolizer( XMLStreamReader in, UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "PolygonSymbolizer" );
 
@@ -1198,7 +1228,7 @@ public class SymbologyParser {
                     public void update( PolygonStyling obj, String val ) {
                         obj.perpendicularOffset = Double.parseDouble( val );
                     }
-                }, contn );
+                }, contn ).second;
             } else if ( in.getLocalName().equals( "Displacement" ) ) {
                 while ( !( in.isEndElement() && in.getLocalName().equals( "Displacement" ) ) ) {
                     in.nextTag();
@@ -1209,14 +1239,14 @@ public class SymbologyParser {
                             public void update( PolygonStyling obj, String val ) {
                                 obj.displacementX = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                     } else if ( in.getLocalName().equals( "DisplacementY" ) ) {
                         contn = updateOrContinue( in, "DisplacementY", baseOrEvaluated, new Updater<PolygonStyling>() {
                             @Override
                             public void update( PolygonStyling obj, String val ) {
                                 obj.displacementY = Double.parseDouble( val );
                             }
-                        }, contn );
+                        }, contn ).second;
                     } else if ( in.isStartElement() ) {
                         Location loc = in.getLocation();
                         LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -1248,12 +1278,15 @@ public class SymbologyParser {
      * @param obj
      * @param updater
      * @param contn
-     * @return either contn, or a new continuation which updates obj
+     * @return either contn, or a new continuation which updates obj, also the XML snippet (w/ filter expressions
+     *         re-exported) which was parsed (or null, if none was parsed)
      * @throws XMLStreamException
      */
-    public static <T> Continuation<T> updateOrContinue( XMLStreamReader in, String name, T obj,
-                                                        final Updater<T> updater, Continuation<T> contn )
+    public <T> Pair<String, Continuation<T>> updateOrContinue( XMLStreamReader in, String name, T obj,
+                                                               final Updater<T> updater, Continuation<T> contn )
                             throws XMLStreamException {
+        StringBuilder xmlText = collectXMLSnippets ? new StringBuilder() : null;
+
         if ( in.getLocalName().endsWith( name ) ) {
             final LinkedList<Pair<String, Pair<Expression, String>>> text = new LinkedList<Pair<String, Pair<Expression, String>>>(); // no
             // real 'alternative', have we?
@@ -1262,6 +1295,12 @@ public class SymbologyParser {
                 in.next();
                 if ( in.isStartElement() ) {
                     Expression expr = parseExpression( in );
+                    if ( collectXMLSnippets ) {
+                        StringWriter sw = new StringWriter();
+                        XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( sw );
+                        Filter110XMLEncoder.export( expr, out );
+                        xmlText.append( sw.toString() );
+                    }
                     Pair<Expression, String> second;
                     second = new Pair<Expression, String>( expr, get( "R2D.LINE", in.getLocation().getLineNumber(),
                                                                       in.getLocation().getColumnNumber(),
@@ -1270,6 +1309,9 @@ public class SymbologyParser {
                     textOnly = false;
                 }
                 if ( in.isCharacters() ) {
+                    if ( collectXMLSnippets ) {
+                        xmlText.append( in.getText() );
+                    }
                     if ( textOnly && !text.isEmpty() ) { // concat text in case of multiple text nodes from
                         // beginning
                         String txt = text.removeLast().first;
@@ -1316,7 +1358,7 @@ public class SymbologyParser {
             }
         }
 
-        return contn;
+        return new Pair<String, Continuation<T>>( collectXMLSnippets ? xmlText.toString() : null, contn );
     }
 
     /**
@@ -1325,8 +1367,8 @@ public class SymbologyParser {
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> parseTextSymbolizer( XMLStreamReader in,
-                                                                                                 UOM uom )
+    public Triple<Symbolizer<TextStyling>, Continuation<StringBuffer>, String> parseTextSymbolizer( XMLStreamReader in,
+                                                                                                    UOM uom )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "TextSymbolizer" );
 
@@ -1335,6 +1377,7 @@ public class SymbologyParser {
         baseOrEvaluated.uom = uom;
         Continuation<TextStyling> contn = null;
         Continuation<StringBuffer> label = null;
+        String xmlText = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "TextSymbolizer" ) ) ) {
             in.nextTag();
@@ -1342,12 +1385,17 @@ public class SymbologyParser {
             checkCommon( common, in );
 
             if ( in.getLocalName().equals( "Label" ) ) {
-                label = updateOrContinue( in, "Label", new StringBuffer(), new Updater<StringBuffer>() {
-                    @Override
-                    public void update( StringBuffer obj, String val ) {
-                        obj.append( val );
-                    }
-                }, null );
+                Pair<String, Continuation<StringBuffer>> res = updateOrContinue( in, "Label", new StringBuffer(),
+                                                                                 new Updater<StringBuffer>() {
+                                                                                     @Override
+                                                                                     public void update(
+                                                                                                         StringBuffer obj,
+                                                                                                         String val ) {
+                                                                                         obj.append( val );
+                                                                                     }
+                                                                                 }, null );
+                xmlText = res.first;
+                label = res.second;
             } else if ( in.getLocalName().equals( "LabelPlacement" ) ) {
                 while ( !( in.isEndElement() && in.getLocalName().equalsIgnoreCase( "LabelPlacement" ) ) ) {
                     in.nextTag();
@@ -1365,7 +1413,7 @@ public class SymbologyParser {
                                                                       public void update( TextStyling obj, String val ) {
                                                                           obj.anchorPointX = Double.parseDouble( val );
                                                                       }
-                                                                  }, contn );
+                                                                  }, contn ).second;
                                     } else if ( in.getLocalName().equals( "AnchorPointY" ) ) {
                                         contn = updateOrContinue( in, "AnchorPointY", baseOrEvaluated,
                                                                   new Updater<TextStyling>() {
@@ -1373,7 +1421,7 @@ public class SymbologyParser {
                                                                       public void update( TextStyling obj, String val ) {
                                                                           obj.anchorPointY = Double.parseDouble( val );
                                                                       }
-                                                                  }, contn );
+                                                                  }, contn ).second;
                                     } else if ( in.isStartElement() ) {
                                         Location loc = in.getLocation();
                                         LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -1392,7 +1440,7 @@ public class SymbologyParser {
                                                                       public void update( TextStyling obj, String val ) {
                                                                           obj.displacementX = Double.parseDouble( val );
                                                                       }
-                                                                  }, contn );
+                                                                  }, contn ).second;
                                     } else if ( in.getLocalName().equals( "DisplacementY" ) ) {
                                         contn = updateOrContinue( in, "DisplacementY", baseOrEvaluated,
                                                                   new Updater<TextStyling>() {
@@ -1400,7 +1448,7 @@ public class SymbologyParser {
                                                                       public void update( TextStyling obj, String val ) {
                                                                           obj.displacementY = Double.parseDouble( val );
                                                                       }
-                                                                  }, contn );
+                                                                  }, contn ).second;
                                     } else if ( in.isStartElement() ) {
                                         Location loc = in.getLocation();
                                         LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
@@ -1415,7 +1463,7 @@ public class SymbologyParser {
                                     public void update( TextStyling obj, String val ) {
                                         obj.rotation = Double.parseDouble( val );
                                     }
-                                }, contn );
+                                }, contn ).second;
                             } else if ( in.isStartElement() ) {
                                 Location loc = in.getLocation();
                                 LOG.error(
@@ -1496,15 +1544,15 @@ public class SymbologyParser {
         if ( contn == null ) {
             Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, common.geometry, common.name,
                                                                        common.loc, common.line, common.col );
-            return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
+            return new Triple<Symbolizer<TextStyling>, Continuation<StringBuffer>, String>( sym, label, xmlText );
         }
 
         Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, contn, common.geometry,
                                                                    common.name, common.loc, common.line, common.col );
-        return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
+        return new Triple<Symbolizer<TextStyling>, Continuation<StringBuffer>, String>( sym, label, xmlText );
     }
 
-    private static Pair<Font, Continuation<Font>> parseFont( XMLStreamReader in )
+    private Pair<Font, Continuation<Font>> parseFont( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Font" );
 
@@ -1522,28 +1570,28 @@ public class SymbologyParser {
                         public void update( Font obj, String val ) {
                             obj.fontFamily.add( val );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "font-style" ) ) {
                     contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
                         @Override
                         public void update( Font obj, String val ) {
                             obj.fontStyle = Style.valueOf( val.toUpperCase() );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "font-weight" ) ) {
                     contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
                         @Override
                         public void update( Font obj, String val ) {
                             obj.bold = val.equalsIgnoreCase( "bold" );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "font-size" ) ) {
                     contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
                         @Override
                         public void update( Font obj, String val ) {
                             obj.fontSize = Integer.parseInt( val );
                         }
-                    }, contn );
+                    }, contn ).second;
                 } else if ( name.equals( "font-color" ) ) {
                     skipElement( in );
                     LOG.warn( "The non-standard font-color Svg/CssParameter is not supported any more. Use a standard Fill element instead." );
@@ -1558,7 +1606,7 @@ public class SymbologyParser {
 
     }
 
-    private static Pair<Halo, Continuation<Halo>> parseHalo( XMLStreamReader in )
+    private Pair<Halo, Continuation<Halo>> parseHalo( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Halo" );
 
@@ -1575,7 +1623,7 @@ public class SymbologyParser {
                         obj.radius = Double.parseDouble( val );
 
                     }
-                }, contn );
+                }, contn ).second;
             }
 
             if ( in.getLocalName().equals( "Fill" ) ) {
@@ -1624,7 +1672,7 @@ public class SymbologyParser {
         return tp;
     }
 
-    private static Pair<LinePlacement, Continuation<LinePlacement>> parseLinePlacement( XMLStreamReader in )
+    private Pair<LinePlacement, Continuation<LinePlacement>> parseLinePlacement( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "LinePlacement" );
 
@@ -1642,7 +1690,7 @@ public class SymbologyParser {
                         obj.perpendicularOffset = Double.parseDouble( val );
 
                     }
-                }, contn );
+                }, contn ).second;
             }
 
             if ( in.getLocalName().equals( "InitialGap" ) ) {
@@ -1652,7 +1700,7 @@ public class SymbologyParser {
                         obj.initialGap = Double.parseDouble( val );
 
                     }
-                }, contn );
+                }, contn ).second;
             }
 
             if ( in.getLocalName().equals( "Gap" ) ) {
@@ -1662,7 +1710,7 @@ public class SymbologyParser {
                         obj.gap = Double.parseDouble( val );
 
                     }
-                }, contn );
+                }, contn ).second;
             }
 
             if ( in.getLocalName().equals( "GeneralizeLine" ) ) {
@@ -1672,7 +1720,7 @@ public class SymbologyParser {
                         obj.generalizeLine = Boolean.parseBoolean( val );
 
                     }
-                }, contn );
+                }, contn ).second;
             }
 
             if ( in.getLocalName().equals( "IsAligned" ) ) {
@@ -1682,7 +1730,7 @@ public class SymbologyParser {
                         obj.isAligned = Boolean.parseBoolean( val );
 
                     }
-                }, contn );
+                }, contn ).second;
             }
 
             if ( in.getLocalName().equals( "IsRepeated" ) ) {
@@ -1692,7 +1740,7 @@ public class SymbologyParser {
                         obj.repeat = Boolean.parseBoolean( val );
 
                     }
-                }, contn );
+                }, contn ).second;
             }
         }
 
@@ -1704,14 +1752,15 @@ public class SymbologyParser {
      * @return null, if no symbolizer and no MatchableObject type style was found
      * @throws XMLStreamException
      */
-    public static org.deegree.rendering.r2d.se.unevaluated.Style parse( XMLStreamReader in )
+    public org.deegree.rendering.r2d.se.unevaluated.Style parse( XMLStreamReader in )
                             throws XMLStreamException {
         if ( in.getEventType() == START_DOCUMENT ) {
             in.nextTag();
         }
         if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
-            Pair<Symbolizer<?>, Continuation<StringBuffer>> pair = parseSymbolizer( in );
-            return new org.deegree.rendering.r2d.se.unevaluated.Style( pair.first, pair.second, pair.first.getName() );
+            Triple<Symbolizer<?>, Continuation<StringBuffer>, String> pair = parseSymbolizer( in );
+            return new org.deegree.rendering.r2d.se.unevaluated.Style( pair.first, pair.second, pair.first.getName(),
+                                                                       pair.third );
         }
         if ( in.getLocalName().equals( "FeatureTypeStyle" ) ) {
             return parseFeatureTypeOrCoverageStyle( in );
@@ -1726,7 +1775,7 @@ public class SymbologyParser {
      * @return a new style
      * @throws XMLStreamException
      */
-    public static org.deegree.rendering.r2d.se.unevaluated.Style parseFeatureTypeOrCoverageStyle( XMLStreamReader in )
+    public org.deegree.rendering.r2d.se.unevaluated.Style parseFeatureTypeOrCoverageStyle( XMLStreamReader in )
                             throws XMLStreamException {
         if ( in.getLocalName().equals( "OnlineResource" ) ) {
             try {
@@ -1748,6 +1797,8 @@ public class SymbologyParser {
 
         LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> result = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
+        HashMap<Symbolizer<TextStyling>, String> labelXMLTexts = collectXMLSnippets ? new HashMap<Symbolizer<TextStyling>, String>()
+                                                                                   : null;
         Common common = new Common( in.getLocation() );
         QName featureTypeName = null;
 
@@ -1785,8 +1836,8 @@ public class SymbologyParser {
                 }
 
                 Common ruleCommon = new Common( in.getLocation() );
-                double minScale = MIN_VALUE;
-                double maxScale = MAX_VALUE;
+                double minScale = NEGATIVE_INFINITY;
+                double maxScale = POSITIVE_INFINITY;
 
                 Filter filter = null;
                 LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
@@ -1815,9 +1866,12 @@ public class SymbologyParser {
                     // TODO legendgraphic
                     if ( localReader.isStartElement() && localReader.getLocalName().endsWith( "Symbolizer" ) ) {
 
-                        Pair<Symbolizer<?>, Continuation<StringBuffer>> parsedSym = parseSymbolizer( localReader );
+                        Triple<Symbolizer<?>, Continuation<StringBuffer>, String> parsedSym = parseSymbolizer( localReader );
                         if ( parsedSym.second != null ) {
                             labels.put( (Symbolizer) parsedSym.first, parsedSym.second );
+                        }
+                        if ( collectXMLSnippets && parsedSym.third != null ) {
+                            labelXMLTexts.put( (Symbolizer) parsedSym.first, parsedSym.third );
                         }
                         syms.add( parsedSym.first );
                     }
@@ -1829,7 +1883,8 @@ public class SymbologyParser {
             }
         }
 
-        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels, common.name, featureTypeName );
+        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels, labelXMLTexts, common.name,
+                                                                   featureTypeName );
     }
 
     static class ElseFilter implements Filter {

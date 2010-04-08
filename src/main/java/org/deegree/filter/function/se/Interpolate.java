@@ -35,15 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.se;
 
-import static java.awt.Color.decode;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.toHexString;
 import static java.util.Arrays.binarySearch;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.awt.Color;
@@ -64,6 +63,7 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.utils.RasterDataUtility;
@@ -348,7 +348,7 @@ public class Interpolate extends Function {
         if ( method != null ) {
             color = method.equals( "color" );
             if ( color ) {
-                fallbackColor = decode( fallbackValue );
+                fallbackColor = decodeWithAlpha( fallbackValue );
             }
         }
 
@@ -357,7 +357,7 @@ public class Interpolate extends Function {
 
             if ( in.getLocalName().equals( "LookupValue" ) ) {
                 value = new StringBuffer();
-                contn = updateOrContinue( in, "LookupValue", value, SBUPDATER, null );
+                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
             }
 
             if ( in.getLocalName().equals( "InterpolationPoint" ) ) {
@@ -370,7 +370,7 @@ public class Interpolate extends Function {
 
                     if ( in.getLocalName().equals( "Value" ) ) {
                         StringBuffer sb = new StringBuffer();
-                        valueContns.add( updateOrContinue( in, "Value", sb, SBUPDATER, null ) );
+                        valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
                         values.add( sb );
                     }
                 }
@@ -420,7 +420,7 @@ public class Interpolate extends Function {
             List<Color> list = new ArrayList<Color>( values.size() );
             Iterator<StringBuffer> i = values.iterator();
             while ( i.hasNext() ) {
-                list.add( Color.decode( i.next().toString() ) );
+                list.add( decodeWithAlpha( i.next().toString() ) );
             }
             colorArray = list.toArray( colorArray );
         }

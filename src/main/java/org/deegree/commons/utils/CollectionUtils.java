@@ -138,6 +138,25 @@ public class CollectionUtils {
     /**
      * @param <T>
      * @param <U>
+     * @param <V>
+     * @param col
+     * @return three separate lists
+     */
+    public static <T, U, V> Triple<ArrayList<T>, ArrayList<U>, ArrayList<V>> unzip( Collection<Triple<T, U, V>> col ) {
+        ArrayList<T> list1 = new ArrayList<T>( col.size() );
+        ArrayList<U> list2 = new ArrayList<U>( col.size() );
+        ArrayList<V> list3 = new ArrayList<V>( col.size() );
+        for ( Triple<T, U, V> pair : col ) {
+            list1.add( pair.first );
+            list2.add( pair.second );
+            list3.add( pair.third );
+        }
+        return new Triple<ArrayList<T>, ArrayList<U>, ArrayList<V>>( list1, list2, list3 );
+    }
+
+    /**
+     * @param <T>
+     * @param <U>
      * @param map
      * @return two separate lists
      */

@@ -44,8 +44,13 @@ import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,7 +64,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.DoublePair;
-import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.rendering.r2d.styling.LineStyling;
@@ -449,9 +454,58 @@ public class PostgreSQLWriter {
      * @param style
      */
     public void write( Style style ) {
-        for ( Pair<LinkedList<Styling>, DoublePair> p : style.getBasesWithScales() ) {
+        for ( Triple<LinkedList<Styling>, DoublePair, LinkedList<String>> p : style.getBasesWithScales() ) {
             for ( Styling s : p.first ) {
                 write( s, p.second );
+            }
+        }
+    }
+
+    /**
+     * Writes a style as SLD/SE 'blob'.
+     * 
+     * @param in
+     * @throws IOException
+     */
+    public void write( InputStream in )
+                            throws IOException {
+        PreparedStatement stmt = null;
+        Connection conn = null;
+        try {
+            conn = getConnection( connId );
+            conn.setAutoCommit( false );
+            stmt = conn.prepareStatement( "insert into styles (sld) values (?)" );
+
+            StringBuilder sb = new StringBuilder();
+            String s = null;
+            BufferedReader bin = new BufferedReader( new InputStreamReader( in, "UTF-8" ) );
+            while ( ( s = bin.readLine() ) != null ) {
+                sb.append( s ).append( "\n" );
+            }
+            in.close();
+            stmt.setString( 1, sb.toString() );
+
+            stmt.executeUpdate();
+            conn.commit();
+        } catch ( SQLException e ) {
+            LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        } finally {
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
             }
         }
     }
@@ -460,18 +514,22 @@ public class PostgreSQLWriter {
      * Simple importer for SE files, with hardcoded 'configtool' on localhost.
      * 
      * @param args
-     * @throws FileNotFoundException
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
+     * @throws IOException
      */
     public static void main( String[] args )
-                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
-        Style style = SymbologyParser.parse( XMLInputFactory.newInstance().createXMLStreamReader(
-                                                                                                  new FileInputStream(
-                                                                                                                       args[0] ) ) );
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Style style = new SymbologyParser( true ).parse( XMLInputFactory.newInstance().createXMLStreamReader(
+                                                                                                              new FileInputStream(
+                                                                                                                                   args[0] ) ) );
         ConnectionManager.addConnection( "configtool", DatabaseType.POSTGIS, "jdbc:postgresql://localhost/configtool",
                                          "postgres", "", 5, 20 );
-        new PostgreSQLWriter( "configtool" ).write( style );
+        if ( style.isSimple() ) {
+            new PostgreSQLWriter( "configtool" ).write( style );
+        } else {
+            new PostgreSQLWriter( "configtool" ).write( new FileInputStream( args[0] ) );
+        }
     }
 
 }

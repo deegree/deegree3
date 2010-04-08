@@ -37,7 +37,6 @@ package org.deegree.filter.function.se;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.ParseException;
@@ -55,6 +54,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
 import org.slf4j.Logger;
@@ -111,11 +111,13 @@ public class FormatDate extends Function {
 
             if ( in.getLocalName().equals( "DateValue" ) ) {
                 dateValue = new StringBuffer();
-                dateValueContn = updateOrContinue( in, "DateValue", dateValue, new Updater<StringBuffer>() {
-                    public void update( StringBuffer obj, String val ) {
-                        obj.append( val );
-                    }
-                }, null );
+                dateValueContn = SymbologyParser.INSTANCE.updateOrContinue( in, "DateValue", dateValue,
+                                                                            new Updater<StringBuffer>() {
+                                                                                public void update( StringBuffer obj,
+                                                                                                    String val ) {
+                                                                                    obj.append( val );
+                                                                                }
+                                                                            }, null ).second;
             }
 
             if ( in.getLocalName().equals( "Pattern" ) ) {

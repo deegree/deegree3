@@ -36,7 +36,6 @@
 
 package org.deegree.rendering.r2d.se.parser;
 
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.parse;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
@@ -98,7 +97,7 @@ public class SymbologyParserTest extends TestCase {
             XMLStreamReader in = fac.createXMLStreamReader( cls.getResource( file ).toString(),
                                                             cls.getResourceAsStream( file ) );
             in.next();
-            assertNotNull( parse( in ) );
+            assertNotNull( SymbologyParser.INSTANCE.parse( in ) );
         }
         if ( file.endsWith( ".bad" ) ) {
             LOG.debug( "Expecting {} to fail.", file );
@@ -106,7 +105,7 @@ public class SymbologyParserTest extends TestCase {
                                                             cls.getResourceAsStream( file ) );
             in.next();
             try {
-                parse( in );
+                SymbologyParser.INSTANCE.parse( in );
                 assertEquals( true, false );
             } catch ( XMLStreamException e ) {
                 assertNotNull( e );

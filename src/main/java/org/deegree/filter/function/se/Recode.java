@@ -38,7 +38,6 @@ package org.deegree.filter.function.se;
 import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
 import java.util.Iterator;
@@ -51,6 +50,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.Function;
+import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 
 /**
@@ -127,7 +127,7 @@ public class Recode extends Function {
 
             if ( in.getLocalName().equals( "LookupValue" ) ) {
                 value = new StringBuffer();
-                contn = updateOrContinue( in, "LookupValue", value, SBUPDATER, null );
+                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
             }
 
             if ( in.getLocalName().equals( "MapItem" ) ) {
@@ -140,7 +140,7 @@ public class Recode extends Function {
 
                     if ( in.getLocalName().equals( "Value" ) ) {
                         StringBuffer sb = new StringBuffer();
-                        valueContns.add( updateOrContinue( in, "Value", sb, SBUPDATER, null ) );
+                        valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
                         values.add( sb );
                     }
                 }
