@@ -281,11 +281,15 @@ public class MappingUtils {
      */
     private static void obtainChain( Transformation ct, CoordinateSystem sourceCRS, CoordinateSystem targetCRS,
                                      Deque<Transformation> chain ) {
+        // if the source and target are the same
+        if ( sourceCRS.equals( targetCRS ) ) {
+            return;
+        }
         if ( "Concatenated-Transform".equals( ct.getImplementationName() ) ) {
             obtainChain( ( (ConcatenatedTransform) ct ).getFirstTransform(), sourceCRS, targetCRS, chain );
             CoordinateSystem nSource = sourceCRS;
             if ( !chain.isEmpty() ) {
-                nSource = chain.peekLast().getSourceCRS();
+                nSource = chain.peekLast().getTargetCRS();
             }
             obtainChain( ( (ConcatenatedTransform) ct ).getSecondTransform(), nSource, targetCRS, chain );
         } else {

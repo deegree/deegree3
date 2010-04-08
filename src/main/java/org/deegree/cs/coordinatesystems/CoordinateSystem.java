@@ -338,8 +338,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         if ( other != null && other instanceof CoordinateSystem ) {
             final CoordinateSystem that = (CoordinateSystem) other;
             return that.getType() == this.getType() && that.getDimension() == this.getDimension()
-                   && matchAxis( that.getAxis() ) && super.equals( that )
-                   && that.getGeodeticDatum().equals( this.getGeodeticDatum() );
+                   && matchAxis( that.getAxis() ) && super.equals( that ) && that.getDatum().equals( this.getDatum() );
         }
         return false;
     }

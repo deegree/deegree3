@@ -44,13 +44,14 @@ import junit.framework.Assert;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.EPSGCode;
+import org.deegree.cs.components.Axis;
+import org.deegree.cs.components.VerticalDatum;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.cs.configuration.deegree.xml.stax.Parser;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.coordinatesystems.VerticalCRS;
 import org.deegree.cs.exceptions.TransformationException;
-import org.deegree.cs.transformations.Transformation;
-import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
@@ -58,6 +59,7 @@ import org.deegree.cs.transformations.coordinate.NotSupportedTransformation;
 import org.deegree.cs.transformations.coordinate.ProjectionTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.ntv2.NTv2Transformation;
+import org.deegree.cs.utilities.MappingUtils;
 import org.junit.Test;
 
 /**
@@ -76,6 +78,73 @@ public class TransformationSubstitution implements CRSDefines {
         datum_6314.setToWGS84( wgs_1777 );
         datum_6171.setToWGS84( wgs_1188 );
     }
+
+    private final VerticalDatum datum = new VerticalDatum( new CRSCodeType( "datum" ) );
+
+    private final Axis[] axis = new Axis[] { new Axis( "up", Axis.AO_UP ) };
+
+    private final VerticalCRS c1 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "1" ) ) );
+
+    private final VerticalCRS c2 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "2" ) ) );
+
+    private final VerticalCRS c3 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "3" ) ) );
+
+    private final VerticalCRS c4 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "4" ) ) );
+
+    private final VerticalCRS c5 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "5" ) ) );
+
+    private final VerticalCRS c6 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "6" ) ) );
+
+    private final VerticalCRS c7 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "7" ) ) );
+
+    private final VerticalCRS c8 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "8" ) ) );
+
+    private final VerticalCRS c9 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "9" ) ) );
+
+    private final VerticalCRS c10 = new VerticalCRS( datum, axis, new CRSIdentifiable( new CRSCodeType( "10" ) ) );
+
+    private final Transformation c = new NotSupportedTransformation( c1, c2,
+                                                                     new CRSIdentifiable( new CRSCodeType( "c" ) ) );
+
+    private final Transformation e = new NotSupportedTransformation( c2, c3,
+                                                                     new CRSIdentifiable( new CRSCodeType( "e" ) ) );
+
+    private final Transformation f = new NotSupportedTransformation( c3, c4,
+                                                                     new CRSIdentifiable( new CRSCodeType( "f" ) ) );
+
+    private final Transformation h = new NotSupportedTransformation( c4, c5,
+                                                                     new CRSIdentifiable( new CRSCodeType( "h" ) ) );
+
+    private final Transformation j = new NotSupportedTransformation( c5, c6,
+                                                                     new CRSIdentifiable( new CRSCodeType( "j" ) ) );
+
+    private final Transformation k = new NotSupportedTransformation( c6, c7,
+                                                                     new CRSIdentifiable( new CRSCodeType( "k" ) ) );
+
+    private final Transformation n = new NotSupportedTransformation( c7, c8,
+                                                                     new CRSIdentifiable( new CRSCodeType( "n" ) ) );
+
+    private final Transformation p = new NotSupportedTransformation( c8, c9,
+                                                                     new CRSIdentifiable( new CRSCodeType( "p" ) ) );
+
+    private final Transformation q = new NotSupportedTransformation( c9, c10,
+                                                                     new CRSIdentifiable( new CRSCodeType( "q" ) ) );
+
+    private final Transformation d = new ConcatenatedTransform( e, f, new CRSIdentifiable( new CRSCodeType( "d" ) ) );
+
+    private final Transformation i = new ConcatenatedTransform( j, k, new CRSIdentifiable( new CRSCodeType( "i" ) ) );
+
+    private final Transformation b = new ConcatenatedTransform( c, d, new CRSIdentifiable( new CRSCodeType( "b" ) ) );
+
+    private final Transformation g = new ConcatenatedTransform( h, i, new CRSIdentifiable( new CRSCodeType( "g" ) ) );
+
+    private final Transformation a = new ConcatenatedTransform( b, g, new CRSIdentifiable( new CRSCodeType( "a" ) ) );
+
+    private final Transformation o = new ConcatenatedTransform( p, q, new CRSIdentifiable( new CRSCodeType( "a" ) ) );
+
+    private final Transformation m = new ConcatenatedTransform( n, o, new CRSIdentifiable( new CRSCodeType( "a" ) ) );
+
+    private final Transformation l = new ConcatenatedTransform( a, m, new CRSIdentifiable( new CRSCodeType( "a" ) ) );
 
     /**
      * @return the factory to test.
@@ -278,5 +347,123 @@ public class TransformationSubstitution implements CRSDefines {
         Assert.assertTrue( ( replaced ).getSecondTransform() instanceof ConcatenatedTransform );
         ConcatenatedTransform s = (ConcatenatedTransform) replaced.getSecondTransform();
         Assert.assertEquals( inv_geo, s.getFirstTransform() );
+    }
+
+    /**
+     * Test if the last three transformations of the 'a' transformation are found while replacing the first 3.
+     * 
+     * @throws IllegalArgumentException
+     * @throws TransformationException
+     */
+    @Test
+    public void substituteHypotheticalRightConcat()
+                            throws IllegalArgumentException, TransformationException {
+
+        Transformation tbu = new NotSupportedTransformation( c1, c4, new CRSIdentifiable( new CRSCodeType( "tbu" ) ) );
+        List<Transformation> tbus = new ArrayList<Transformation>();
+        tbus.add( tbu );
+        Transformation result = MappingUtils.updateFromDefinedTransformations( tbus, a );
+
+        Assert.assertNotNull( result );
+        Assert.assertTrue( result instanceof ConcatenatedTransform );
+        ConcatenatedTransform test = (ConcatenatedTransform) result;
+        Assert.assertEquals( test.getFirstTransform(), tbu );
+
+        Assert.assertTrue( test.getSecondTransform() instanceof ConcatenatedTransform );
+
+        test = (ConcatenatedTransform) test.getSecondTransform();
+        Assert.assertEquals( test.getFirstTransform(), h );
+
+        Assert.assertTrue( "Second should be concatenated, but was: " + test.getSecondTransform(),
+                           test.getSecondTransform() instanceof ConcatenatedTransform );
+        test = (ConcatenatedTransform) test.getSecondTransform();
+
+        Assert.assertEquals( test.getFirstTransform(), j );
+        Assert.assertEquals( test.getSecondTransform(), k );
+    }
+
+    /**
+     * Test if the first three transformations of the 'a' transformation are found while replacing the last 3.
+     * 
+     * @throws IllegalArgumentException
+     * @throws TransformationException
+     */
+    @Test
+    public void substituteHypotheticalLeftConcat()
+                            throws IllegalArgumentException, TransformationException {
+
+        Transformation tbu = new NotSupportedTransformation( c4, c7, new CRSIdentifiable( new CRSCodeType( "tbu" ) ) );
+        List<Transformation> tbus = new ArrayList<Transformation>();
+        tbus.add( tbu );
+        Transformation result = MappingUtils.updateFromDefinedTransformations( tbus, a );
+
+        Assert.assertNotNull( result );
+        Assert.assertTrue( result instanceof ConcatenatedTransform );
+        ConcatenatedTransform test = (ConcatenatedTransform) result;
+        Assert.assertEquals( test.getFirstTransform(), c );
+
+        Assert.assertTrue( "Second should be concatenated, but was: " + test.getSecondTransform(),
+                           test.getSecondTransform() instanceof ConcatenatedTransform );
+
+        test = (ConcatenatedTransform) test.getSecondTransform();
+        Assert.assertEquals( test.getFirstTransform(), e );
+
+        Assert.assertTrue( "Second should be concatenated, but was: " + test.getSecondTransform(),
+                           test.getSecondTransform() instanceof ConcatenatedTransform );
+        test = (ConcatenatedTransform) test.getSecondTransform();
+
+        Assert.assertEquals( test.getFirstTransform(), f );
+        Assert.assertEquals( test.getSecondTransform(), tbu );
+    }
+
+    /**
+     * Test if the first three transformations of the 'a' transformation are found while replacing the last 3.
+     * 
+     * @throws IllegalArgumentException
+     * @throws TransformationException
+     */
+    @Test
+    public void substituteHypotheticalMiddleConcat()
+                            throws IllegalArgumentException, TransformationException {
+
+        Transformation tbu = new NotSupportedTransformation( c4, c7, new CRSIdentifiable( new CRSCodeType( "tbu" ) ) );
+        List<Transformation> tbus = new ArrayList<Transformation>();
+        tbus.add( tbu );
+        Transformation result = MappingUtils.updateFromDefinedTransformations( tbus, l );
+
+        Assert.assertNotNull( result );
+        Assert.assertTrue( result instanceof ConcatenatedTransform );
+        ConcatenatedTransform test = (ConcatenatedTransform) result;
+        Assert.assertEquals( test.getFirstTransform(), c );
+
+        Assert.assertTrue( "Second should be concatenated, but was: " + test.getSecondTransform(),
+                           test.getSecondTransform() instanceof ConcatenatedTransform );
+
+        test = (ConcatenatedTransform) test.getSecondTransform();
+        Assert.assertEquals( test.getFirstTransform(), e );
+
+        Assert.assertTrue( "Second should be concatenated, but was: " + test.getSecondTransform(),
+                           test.getSecondTransform() instanceof ConcatenatedTransform );
+        test = (ConcatenatedTransform) test.getSecondTransform();
+
+        Assert.assertEquals( test.getFirstTransform(), f );
+
+        Assert.assertTrue( "Second should be concatenated, but was: " + test.getSecondTransform(),
+                           test.getSecondTransform() instanceof ConcatenatedTransform );
+        test = (ConcatenatedTransform) test.getSecondTransform();
+
+        Assert.assertEquals( test.getFirstTransform(), tbu );
+
+        Assert.assertTrue( "Second should be concatenated, but was: " + test.getSecondTransform(),
+                           test.getSecondTransform() instanceof ConcatenatedTransform );
+        test = (ConcatenatedTransform) test.getSecondTransform();
+        Assert.assertEquals( test.getFirstTransform(), n );
+
+        Assert.assertTrue( "Second should be concatenated, but was: " + test.getSecondTransform(),
+                           test.getSecondTransform() instanceof ConcatenatedTransform );
+        test = (ConcatenatedTransform) test.getSecondTransform();
+        Assert.assertEquals( test.getFirstTransform(), p );
+        Assert.assertEquals( test.getSecondTransform(), q );
+
     }
 }
