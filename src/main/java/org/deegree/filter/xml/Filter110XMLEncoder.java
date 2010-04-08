@@ -359,7 +359,7 @@ public class Filter110XMLEncoder {
                             throws XMLStreamException {
 
         QName elementName = expressionTypeToElementName.get( expression.getType() );
-        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
+        writer.writeStartElement( elementName.getPrefix(), elementName.getLocalPart(), elementName.getNamespaceURI() );
 
         switch ( expression.getType() ) {
         case PROPERTY_NAME:
