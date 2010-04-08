@@ -161,10 +161,10 @@ public class ISORecordStore implements RecordStore {
     /**
      * Creates a new {@link ISORecordStore} instance with a registered connectionId.
      * 
-     * @param connectionId
+     * @param _connectionId
      */
-    public ISORecordStore( String connectionId ) {
-        this.connectionId = connectionId;
+    public ISORecordStore( String _connectionId ) {
+        this.connectionId = _connectionId;
     }
 
     /*
@@ -276,21 +276,21 @@ public class ISORecordStore implements RecordStore {
      * @return the encoding of the PostGRES database.
      */
     private String determinePostGRESEncoding( Connection conn ) {
-        String encoding = "UTF-8";
+        String encodingPostGRES = "UTF-8";
         Statement stmt = null;
         ResultSet rs = null;
         try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery( "SHOW server_encoding" );
             rs.next();
-            encoding = rs.getString( 1 );
-            LOG.debug( "PostGRES encoding: " + encoding );
+            encodingPostGRES = rs.getString( 1 );
+            LOG.debug( "PostGRES encoding: " + encodingPostGRES );
         } catch ( Exception e ) {
             LOG.warn( "Could not determine PostGRES encoding: " + e.getMessage() + " -- defaulting to UTF-8" );
             closeSafely( null, stmt, rs );
         }
 
-        return null;
+        return encodingPostGRES;
     }
 
     private String determinePostGISVersion( Connection conn ) {
@@ -529,12 +529,6 @@ public class ISORecordStore implements RecordStore {
                 preparedStatementList.add( selectBrief );
 
             }
-
-            preparedStatement = combinePreparedStatement( preparedStatementList, recordStoreOptions, conn, false,
-                                                          builder );
-
-            rs = preparedStatement.executeQuery();
-
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
                                ResultType.results, builder, preparedStatementList );
@@ -554,11 +548,6 @@ public class ISORecordStore implements RecordStore {
 
             }
 
-            preparedStatement = combinePreparedStatement( preparedStatementList, recordStoreOptions, conn, false,
-                                                          builder );
-
-            rs = preparedStatement.executeQuery();
-
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
                                ResultType.results, builder, preparedStatementList );
@@ -577,16 +566,15 @@ public class ISORecordStore implements RecordStore {
 
             }
 
-            preparedStatement = combinePreparedStatement( preparedStatementList, recordStoreOptions, conn, false,
-                                                          builder );
-
-            rs = preparedStatement.executeQuery();
-
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
                                ResultType.results, builder, preparedStatementList );
             break;
         }
+
+        preparedStatement = combinePreparedStatement( preparedStatementList, recordStoreOptions, conn, false, builder );
+
+        rs = preparedStatement.executeQuery();
 
         if ( rs != null && recordStoreOptions.getMaxRecords() != 0 ) {
             writeResultSet( rs, writer );
@@ -596,6 +584,17 @@ public class ISORecordStore implements RecordStore {
 
     }
 
+    /**
+     * Combines the SQL-statements with a UNION operation and is responsible for counting the returned rows.
+     * 
+     * @param preparedStatementList
+     * @param recordStoreOptions
+     * @param conn
+     * @param setCount
+     * @param builder
+     * @return
+     * @throws SQLException
+     */
     private PreparedStatement combinePreparedStatement( List<Pair<Writer, Collection<Object>>> preparedStatementList,
                                                         RecordStoreOptions recordStoreOptions, Connection conn,
                                                         boolean setCount, PostGISWhereBuilder builder )
@@ -773,7 +772,7 @@ public class ISORecordStore implements RecordStore {
 
         }
 
-        LOG.info( "where builder: " + whereBuilder );
+        LOG.debug( "wherebuilder: " + whereBuilder );
         /*
          * building a constraint expression from the WHERE-builder
          */
@@ -808,8 +807,7 @@ public class ISORecordStore implements RecordStore {
         }
 
         /*
-         * appends the constraint expression from the WHERE-builder with the possible offset if the counting shouldn't
-         * begin at position 1
+         * appends the constraint expression from the WHERE-builder and puts the Writer into a pair object
          */
         s.append( "" + constraintExpression );
         pair.first = s;
@@ -818,24 +816,13 @@ public class ISORecordStore implements RecordStore {
 
     }
 
-    // /**
-    // * @param propNameMappingList
-    // */
-    // private void correctPropertyNameMappings( List<PropertyNameMapping> propNameMappingList ) {
-    //
-    // List<PropertyNameMapping> propNameMappingList2 = new ArrayList<PropertyNameMapping>();
-    // propNameMappingList2.addAll( propNameMappingList );
-    //
-    //        
-    //
-    // }
-
     /*
      * (non-Javadoc)
      * 
      * @see org.deegree.record.persistence.RecordStore#transaction(javax.xml.stream.XMLStreamWriter,
      * org.deegree.commons.configuration.JDBCConnections, java.util.List)
      */
+
     @Override
     public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations,
                                       TransactionOptions options )
@@ -878,6 +865,11 @@ public class ISORecordStore implements RecordStore {
             }
             break;
 
+        /*
+         * There is a known BUG here. If you update one complete record, there is no problem. If you update just some
+         * properties, multiple properties like "keywords" are not correctly updated. Have a look at {@link
+         * #recursiveElementKnotUpdate}
+         */
         case UPDATE:
 
             UpdateTransaction upd = (UpdateTransaction) operations;
@@ -980,7 +972,7 @@ public class ISORecordStore implements RecordStore {
 
                                     PropertyNameMapping propMapping = mapping.getMapping( recProp.getPropertyName() );
 
-                                    Object obje = mapping.getPostGISValue( (Literal) recProp.getReplacementValue(),
+                                    Object obje = mapping.getPostGISValue( (Literal<?>) recProp.getReplacementValue(),
                                                                            recProp.getPropertyName() );
 
                                     // creating an OMElement readed from the backend byteData
@@ -1081,7 +1073,7 @@ public class ISORecordStore implements RecordStore {
             // throw new IllegalArgumentException( message );
             // }
 
-            Iterator delIter = qNameSet.iterator();
+            Iterator<QName> delIter = qNameSet.iterator();
 
             for ( QName qName : typeNames.keySet() ) {
                 QName qname = (QName) delIter.next();
@@ -1103,7 +1095,7 @@ public class ISORecordStore implements RecordStore {
 
                 LOG.debug( "error: " + e.getMessage(), e );
             }
-            LOG.info( str.toString() );
+            LOG.debug( str.toString() );
 
             List<Integer> deletableDatasets = new ArrayList<Integer>();
             if ( rsDeletableDatasets != null ) {

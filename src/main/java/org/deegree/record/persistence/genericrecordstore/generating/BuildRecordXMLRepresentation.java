@@ -302,9 +302,9 @@ public class BuildRecordXMLRepresentation {
         // OMAttribute omCrs = factory.createOMAttribute( "crs", namespaceOWS, "EPSG:4326" );
 
         omUpperCorner.setText( qp.getBoundingBox().getEastBoundLongitude() + " "
-                               + qp.getBoundingBox().getSouthBoundLatitude() );
-        omLowerCorner.setText( qp.getBoundingBox().getWestBoundLongitude() + " "
                                + qp.getBoundingBox().getNorthBoundLatitude() );
+        omLowerCorner.setText( qp.getBoundingBox().getWestBoundLongitude() + " "
+                               + qp.getBoundingBox().getSouthBoundLatitude() );
         omBoundingBox.addChild( omLowerCorner );
         omBoundingBox.addChild( omUpperCorner );
         // omBoundingBox.addAttribute( omCrs );

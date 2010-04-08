@@ -1198,6 +1198,7 @@ public class GenerateQueryableProperties {
                                      + ")'::box3d,-1) WHERE fk_datasets = " + operatesOnId + ";" );
             }
             stm.executeUpdate( sqlStatement.toString() );
+            LOG.debug( "boundingbox: " + sqlStatement );
 
         } catch ( SQLException e ) {
 

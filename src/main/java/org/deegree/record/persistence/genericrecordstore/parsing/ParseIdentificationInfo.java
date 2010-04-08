@@ -822,21 +822,25 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     boundingBoxWestLongitude = getNodeAsDouble( bbox,
                                                                 new XPath( "./gmd:westBoundLongitude/gco:Decimal",
                                                                            nsContextParseII ), 0.0 );
+
                 }
                 if ( boundingBoxEastLongitude == 0.0 ) {
                     boundingBoxEastLongitude = getNodeAsDouble( bbox,
                                                                 new XPath( "./gmd:eastBoundLongitude/gco:Decimal",
                                                                            nsContextParseII ), 0.0 );
+
                 }
                 if ( boundingBoxSouthLatitude == 0.0 ) {
                     boundingBoxSouthLatitude = getNodeAsDouble( bbox,
                                                                 new XPath( "./gmd:southBoundLatitude/gco:Decimal",
                                                                            nsContextParseII ), 0.0 );
+
                 }
                 if ( boundingBoxNorthLatitude == 0.0 ) {
                     boundingBoxNorthLatitude = getNodeAsDouble( bbox,
                                                                 new XPath( "./gmd:northBoundLatitude/gco:Decimal",
                                                                            nsContextParseII ), 0.0 );
+
                 }
 
                 if ( bbox != null ) {
@@ -857,8 +861,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
 
             qp.setTemporalExtentBegin( dateTempBeg );
             qp.setTemporalExtentEnd( dateTempEnd );
-            qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxEastLongitude,
-                                                boundingBoxSouthLatitude, boundingBoxNorthLatitude ) );
+            qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
+                                                boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
             qp.setCrs( crsList );
             qp.setGeographicDescriptionCode_service( geographicDescriptionCode_service );
 

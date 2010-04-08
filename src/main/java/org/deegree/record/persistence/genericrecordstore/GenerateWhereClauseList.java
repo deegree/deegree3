@@ -52,8 +52,7 @@ import org.deegree.filter.sql.postgis.PostGISWhereBuilder;
  * from the {@link PostGISWhereBuilder}. This class at the beginning splits every element and generates a {@link Pair}
  * of the String-representation and its value as an object. After this is done, there is a splitting of the
  * whereClause-representation into the relevant expressions. With this class it is possible to parse complicated
- * expressions with nested AND/OR operations.
- * 
+ * expressions with nested AND/OR operations. <br>
  * TODO NOT is not implemented yet.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
@@ -70,22 +69,27 @@ public class GenerateWhereClauseList {
     /**
      * Generates a new instance of the {@link GenerateWhereClauseList}.
      * 
-     * @param whereBuilder
+     * @param _whereBuilder
      *            should not be <Code>null</Code>
-     * @param whereParams
+     * @param _whereParams
      *            could be <Code>null</Code>
+     * 
      */
-    public GenerateWhereClauseList( StringBuilder whereBuilder, Collection<Object> whereParams ) {
-        this.whereBuilder = whereBuilder;
-        this.whereParams = whereParams;
+    public GenerateWhereClauseList( StringBuilder _whereBuilder, Collection<Object> _whereParams ) {
+        this.whereBuilder = _whereBuilder;
+        this.whereParams = _whereParams;
 
     }
 
     /**
+     * This method generates the list of pairs holding the clause and the appropriate params. <br>
+     * The temp-variables are needed because there is a lot of removing and adding withing the Stings and
+     * StringBuilders.
      * 
      * @return a list of {@link Pair}s, not <Code>null</Code>
      */
-    public List<Pair<StringBuilder, Collection<Object>>> generateList() {
+    protected List<Pair<StringBuilder, Collection<Object>>> generateList() {
+
         List<Pair<StringBuilder, Collection<Object>>> whereClauseList = new ArrayList<Pair<StringBuilder, Collection<Object>>>();
 
         StringBuilder whereBuilderForGenerating = this.whereBuilder;
@@ -97,12 +101,12 @@ public class GenerateWhereClauseList {
 
         List<Pair<StringBuilder, Object>> clauseParamPairList = new ArrayList<Pair<StringBuilder, Object>>();
         List<Pair<StringBuilder, Object>> clauseParamPairListTemp = new ArrayList<Pair<StringBuilder, Object>>();
-        List<Pair<StringBuilder, Object>> clauseParamPairListTemp2 = new ArrayList<Pair<StringBuilder, Object>>();
+        // List<Pair<StringBuilder, Object>> clauseParamPairListTemp2 = new ArrayList<Pair<StringBuilder, Object>>();
         Pair<StringBuilder, Object> clauseParamPair;
         Pattern ANDOR = Pattern.compile( "AND|OR" );
         Pattern bracketForwards = Pattern.compile( "\\(" );
         Pattern bracketBackwards = Pattern.compile( "\\)" );
-        Iterator iter = whereParamsForGenerating.iterator();
+        Iterator<Object> iter = whereParamsForGenerating.iterator();
 
         String[] match = ANDOR.split( whereBuilderHelper );
         for ( String matchee : match ) {
@@ -207,12 +211,12 @@ public class GenerateWhereClauseList {
                                     col.add( a.second );
                                 }
                                 reverseReverse = reverseReverse.replace( a.first.toString().trim(), "" );
-                                clauseParamPairListTemp.remove( new Pair( a.first, a.second ) );
+                                clauseParamPairListTemp.remove( new Pair<StringBuilder, Object>( a.first, a.second ) );
 
                             }
 
                         }
-                        clauseParamPairListTemp2.addAll( clauseParamPairListTemp );
+                        // clauseParamPairListTemp2.addAll( clauseParamPairListTemp );
                         clauseBuilderPair.second = col;
 
                         whereClauseList.add( clauseBuilderPair );
@@ -259,7 +263,7 @@ public class GenerateWhereClauseList {
                                 parsedExpressionAfterTemp = parsedExpressionAfterTemp.replace(
                                                                                                a.first.toString().trim(),
                                                                                                "" );
-                                clauseParamPairListTemp2.remove( new Pair( a.first, a.second ) );
+                                clauseParamPairListTemp.remove( new Pair<StringBuilder, Object>( a.first, a.second ) );
                             }
 
                         }
@@ -301,7 +305,7 @@ public class GenerateWhereClauseList {
                         clauseBuilderPair.first = new StringBuilder( expressionBeforeTemp );
                         Collection<Object> col = new ArrayList<Object>();
 
-                        for ( Pair<StringBuilder, Object> a : clauseParamPairListTemp2 ) {
+                        for ( Pair<StringBuilder, Object> a : clauseParamPairListTemp ) {
                             int i = expressionBeforeTemp.indexOf( a.first.toString().trim() );
                             if ( i > -1 ) {
                                 if ( a.second != null ) {

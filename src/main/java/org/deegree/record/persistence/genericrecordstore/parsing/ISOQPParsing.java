@@ -213,7 +213,7 @@ public final class ISOQPParsing extends XMLAdapter {
         // nsContextISOParsing ), null ) );
 
         qp.setLanguage( l );
-        // LOG.info( getElement( rootElement, new XPath( "./gmd:language", nsContextISOParsing ) ).toString() );
+        // LOG.debug( getElement( rootElement, new XPath( "./gmd:language", nsContextISOParsing ) ).toString() );
         omElementNullCheck = getElement( rootElement, new XPath( "./gmd:language", nsContextISOParsing ) );
         if ( omElementNullCheck != null ) {
 
@@ -561,8 +561,6 @@ public final class ISOQPParsing extends XMLAdapter {
                                                                      "./gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue",
                                                                      nsContextISOParsing ), "" ) );
 
-            LOG.info( "SpecificationDateType: " + qp.getSpecificationDateType() );
-
             String specificationDateString = getNodeAsString(
                                                               rootElement,
                                                               new XPath(
@@ -813,8 +811,8 @@ public final class ISOQPParsing extends XMLAdapter {
 
         double boundingBoxNorthLatitude = Double.parseDouble( upperCornerSplitting[1] );
 
-        qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxEastLongitude,
-                                            boundingBoxSouthLatitude, boundingBoxNorthLatitude ) );
+        qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
+                                            boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
 
         rp.setPublisher( getNodeAsString( rootElement, new XPath( "./dc:publisher", nsContextISOParsing ), null ) );
 
