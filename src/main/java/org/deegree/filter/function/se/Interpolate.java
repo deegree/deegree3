@@ -37,6 +37,8 @@ package org.deegree.filter.function.se;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.toHexString;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.Arrays.binarySearch;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -120,7 +122,8 @@ public class Interpolate extends Function {
         int green = (int) Math.round( fst.getGreen() * f1m + snd.getGreen() * f );
         int blue = (int) Math.round( fst.getBlue() * f1m + snd.getBlue() * f );
         int alpha = (int) Math.round( fst.getAlpha() * f1m + snd.getAlpha() * f );
-        return new Color( red, green, blue, alpha );
+        return new Color( max( 0, min( 255, red ) ), max( 0, min( 255, green ) ), max( 0, min( 255, blue ) ),
+                          max( 0, min( 255, alpha ) ) );
     }
 
     /* Linear interpolation between two numbers with fraction f */

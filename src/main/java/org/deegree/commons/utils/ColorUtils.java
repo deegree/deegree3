@@ -55,7 +55,8 @@ public class ColorUtils {
      */
     public static final Color decodeWithAlpha( final String s ) {
         if ( s.startsWith( "#" ) ) {
-            return new Color( Integer.decode( s ), s.length() > 8 );
+            // I mean, why can you not decode #ffffffff as int -1? Why do I need a long for this 4 byte value?
+            return new Color( Long.decode( s ).intValue(), s.length() > 8 );
         }
         return new Color( Integer.decode( "#" + s ), s.length() > 7 );
     }
