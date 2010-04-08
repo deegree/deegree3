@@ -44,6 +44,7 @@ symbolfield varchar
 create table styles (
 id integer not null default nextval('layers_seq'),
 type varchar, -- should be one of 'point', 'line', 'polygon'
+name varchar,
 fk integer,
 minscale float,
 maxscale float,

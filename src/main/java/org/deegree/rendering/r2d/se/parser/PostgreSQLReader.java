@@ -487,13 +487,15 @@ public class PostgreSQLReader {
         Connection conn = null;
         try {
             conn = getConnection( connid );
-            stmt = conn.prepareStatement( "select type, fk, minscale, maxscale, sld from styles where id = ?" );
+            stmt = conn.prepareStatement( "select type, fk, minscale, maxscale, sld, name from styles where id = ?" );
             stmt.setInt( 1, id );
             LOG.debug( "Fetching styles using query '{}'.", stmt );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 String type = rs.getString( "type" );
                 int key = rs.getInt( "fk" );
+                String name = rs.getString( "name" );
+
                 if ( type != null ) {
                     final Symbolizer<?> sym;
                     switch ( Type.valueOf( type.toUpperCase() ) ) {
@@ -532,13 +534,17 @@ public class PostgreSQLReader {
                     rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scale ) );
 
                     return new Style( rules, new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>(), null,
-                                      "" + id, null );
+                                      name == null ? ( "" + id ) : name, null );
                 }
                 String sld = rs.getString( "sld" );
                 if ( sld != null ) {
                     try {
                         XMLInputFactory fac = XMLInputFactory.newInstance();
-                        return new SymbologyParser().parse( fac.createXMLStreamReader( new StringReader( sld ) ) );
+                        Style res = new SymbologyParser().parse( fac.createXMLStreamReader( new StringReader( sld ) ) );
+                        if ( name != null ) {
+                            res.setName( name );
+                        }
+                        return res;
                     } catch ( XMLStreamException e ) {
                         LOG.debug( "Could not parse SLD snippet for id '{}', error was '{}'", id,
                                    e.getLocalizedMessage() );

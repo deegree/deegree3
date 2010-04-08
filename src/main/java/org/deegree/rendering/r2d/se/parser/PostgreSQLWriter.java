@@ -46,11 +46,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -394,13 +392,13 @@ public class PostgreSQLWriter {
         }
     }
 
-    private void write( Styling styling, DoublePair scales ) {
+    private void write( Styling styling, DoublePair scales, String name ) {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
             conn = getConnection( connId );
             conn.setAutoCommit( false );
-            stmt = conn.prepareStatement( "insert into styles (type, fk, minscale, maxscale) values (?, ?, ?, ?)" );
+            stmt = conn.prepareStatement( "insert into styles (type, fk, minscale, maxscale, name) values (?, ?, ?, ?, ?)" );
             if ( styling instanceof PointStyling ) {
                 stmt.setString( 1, "POINT" );
                 stmt.setInt( 2, write( conn, (PointStyling) styling ) );
@@ -423,6 +421,12 @@ public class PostgreSQLWriter {
                 } else {
                     stmt.setNull( 4, DOUBLE );
                 }
+            }
+
+            if ( name == null ) {
+                stmt.setNull( 5, VARCHAR );
+            } else {
+                stmt.setString( 5, name );
             }
 
             stmt.executeUpdate();
@@ -452,11 +456,12 @@ public class PostgreSQLWriter {
 
     /**
      * @param style
+     * @param name
      */
-    public void write( Style style ) {
+    public void write( Style style, String name ) {
         for ( Triple<LinkedList<Styling>, DoublePair, LinkedList<String>> p : style.getBasesWithScales() ) {
             for ( Styling s : p.first ) {
-                write( s, p.second );
+                write( s, p.second, name == null ? style.getName() : name );
             }
         }
     }
@@ -465,16 +470,17 @@ public class PostgreSQLWriter {
      * Writes a style as SLD/SE 'blob'.
      * 
      * @param in
+     * @param name
      * @throws IOException
      */
-    public void write( InputStream in )
+    public void write( InputStream in, String name )
                             throws IOException {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
             conn = getConnection( connId );
             conn.setAutoCommit( false );
-            stmt = conn.prepareStatement( "insert into styles (sld) values (?)" );
+            stmt = conn.prepareStatement( "insert into styles (sld, name) values (?, ?)" );
 
             StringBuilder sb = new StringBuilder();
             String s = null;
@@ -484,6 +490,11 @@ public class PostgreSQLWriter {
             }
             in.close();
             stmt.setString( 1, sb.toString() );
+            if ( name == null ) {
+                stmt.setNull( 2, VARCHAR );
+            } else {
+                stmt.setString( 2, name );
+            }
 
             stmt.executeUpdate();
             conn.commit();
@@ -526,9 +537,9 @@ public class PostgreSQLWriter {
         ConnectionManager.addConnection( "configtool", DatabaseType.POSTGIS, "jdbc:postgresql://localhost/configtool",
                                          "postgres", "", 5, 20 );
         if ( style.isSimple() ) {
-            new PostgreSQLWriter( "configtool" ).write( style );
+            new PostgreSQLWriter( "configtool" ).write( style, null );
         } else {
-            new PostgreSQLWriter( "configtool" ).write( new FileInputStream( args[0] ) );
+            new PostgreSQLWriter( "configtool" ).write( new FileInputStream( args[0] ), style.getName() );
         }
     }
 
