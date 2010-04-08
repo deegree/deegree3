@@ -216,7 +216,7 @@ public class GMLFeatureWriter {
     /**
      * TODO merge with other schema location possibilities
      * 
-     * @param col
+     * @param fc
      * @param noNamespaceSchemaLocation
      *            may be null
      * @param bindings
@@ -225,12 +225,26 @@ public class GMLFeatureWriter {
      * @throws TransformationException
      * @throws UnknownCRSException
      */
-    public void export( FeatureCollection col, String noNamespaceSchemaLocation, Map<String, String> bindings )
+    public void export( FeatureCollection fc, String noNamespaceSchemaLocation, Map<String, String> bindings )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
+
         LOG.debug( "Exporting generic feature collection." );
+        if ( fc.getId() != null ) {
+            exportedIds.add( fc.getId() );
+        }
+
         writer.setPrefix( "gml", gmlNs );
         writer.setPrefix( "wfs", WFS_NS );
         writer.writeStartElement( WFS_NS, "FeatureCollection" );
+
+        if ( fc.getId() != null ) {
+            if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+                writer.writeAttribute( fidAttr.getLocalPart(), fc.getId() );
+            } else {
+                writer.writeAttribute( "gml", fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );
+            }
+        }
+
         if ( noNamespaceSchemaLocation != null ) {
             writer.setPrefix( "xsi", XSINS );
             writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", noNamespaceSchemaLocation );
@@ -250,16 +264,16 @@ public class GMLFeatureWriter {
         }
 
         writer.writeStartElement( gmlNs, "boundedBy" );
-        Envelope fcEnv = col.getEnvelope();
+        Envelope fcEnv = fc.getEnvelope();
         if ( fcEnv != null ) {
-            geometryWriter.exportEnvelope( col.getEnvelope() );
+            geometryWriter.exportEnvelope( fc.getEnvelope() );
         } else {
             writer.writeStartElement( gmlNs, gmlNull );
             writer.writeCharacters( "missing" );
             writer.writeEndElement();
         }
         writer.writeEndElement();
-        for ( Feature f : col ) {
+        for ( Feature f : fc ) {
             writer.writeStartElement( gmlNs, "featureMember" );
             export( f );
             writer.writeEndElement();
@@ -278,8 +292,21 @@ public class GMLFeatureWriter {
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         LOG.debug( "Exporting feature collection with explicit name." );
+
+        if ( fc.getId() != null ) {
+            exportedIds.add( fc.getId() );
+        }
+
         writer.setPrefix( "gml", gmlNs );
         writer.writeStartElement( name.getNamespaceURI(), name.getLocalPart() );
+
+        if ( fc.getId() != null ) {
+            if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+                writer.writeAttribute( fidAttr.getLocalPart(), fc.getId() );
+            } else {
+                writer.writeAttribute( "gml", fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), fc.getId() );
+            }
+        }
 
         // gml:boundedBy (mandatory)
         Envelope fcEnv = fc.getEnvelope();
@@ -316,6 +343,13 @@ public class GMLFeatureWriter {
             LOG.debug( "Exporting generic feature collection." );
             writer.setPrefix( "gml", gmlNs );
             writer.writeStartElement( "FeatureCollection" );
+            if ( feature.getId() != null ) {
+                if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
+                    writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
+                } else {
+                    writer.writeAttribute( "gml", fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
+                }
+            }
             for ( Feature member : ( (FeatureCollection) feature ) ) {
                 String memberFid = member.getId();
                 writer.writeStartElement( gmlNs, "featureMember" );
@@ -344,7 +378,7 @@ public class GMLFeatureWriter {
                 if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
                     writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
                 } else {
-                    writer.writeAttribute( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
+                    writer.writeAttribute( "gml", fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), feature.getId() );
                 }
             }
             for ( Property prop : feature.getProperties( version ) ) {
