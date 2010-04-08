@@ -53,6 +53,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -69,8 +70,12 @@ import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.Styling;
+import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
+import org.deegree.rendering.r2d.styling.components.Font;
 import org.deegree.rendering.r2d.styling.components.Graphic;
+import org.deegree.rendering.r2d.styling.components.Halo;
+import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.slf4j.Logger;
 
@@ -266,6 +271,121 @@ public class PostgreSQLWriter {
         }
     }
 
+    private int write( Connection conn, Font font )
+                            throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement( "insert into fonts (family, style, bold, size) values (?, ?, ?, ?) returning id" );
+
+            stmt.setString( 1, join( ",", font.fontFamily ) );
+            stmt.setString( 2, font.fontStyle.toString() );
+            stmt.setBoolean( 3, font.bold );
+            stmt.setInt( 4, font.fontSize );
+
+            rs = stmt.executeQuery();
+            if ( rs.next() ) {
+                return rs.getInt( 1 );
+            }
+            return -1;
+        } finally {
+            if ( rs != null ) {
+                try {
+                    rs.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+
+    private int write( Connection conn, LinePlacement lineplacement )
+                            throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement( "insert into lineplacements (perpendicularoffset, repeat, initialgap, gap, isaligned, generalizeline) values (?, ?, ?, ?, ?, ?) returning id" );
+
+            stmt.setDouble( 1, lineplacement.perpendicularOffset );
+            stmt.setBoolean( 2, lineplacement.repeat );
+            stmt.setDouble( 3, lineplacement.initialGap );
+            stmt.setDouble( 4, lineplacement.gap );
+            stmt.setBoolean( 5, lineplacement.isAligned );
+            stmt.setBoolean( 6, lineplacement.generalizeLine );
+
+            rs = stmt.executeQuery();
+            if ( rs.next() ) {
+                return rs.getInt( 1 );
+            }
+            return -1;
+        } finally {
+            if ( rs != null ) {
+                try {
+                    rs.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+
+    private int write( Connection conn, Halo halo )
+                            throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement( "insert into halos (fill_id, radius) values (?, ?) returning id" );
+
+            if ( halo.fill == null ) {
+                stmt.setNull( 1, INTEGER );
+            } else {
+                stmt.setInt( 1, write( conn, halo.fill ) );
+            }
+            stmt.setDouble( 2, halo.radius );
+
+            rs = stmt.executeQuery();
+            if ( rs.next() ) {
+                return rs.getInt( 1 );
+            }
+            return -1;
+        } finally {
+            if ( rs != null ) {
+                try {
+                    rs.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+
     private int write( Connection conn, PointStyling styling )
                             throws SQLException {
         PreparedStatement stmt = null;
@@ -392,7 +512,67 @@ public class PostgreSQLWriter {
         }
     }
 
-    private void write( Styling styling, DoublePair scales, String name ) {
+    private int write( Connection conn, TextStyling styling, String labelexpr )
+                            throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.prepareStatement( "insert into texts (labelexpr, uom, font_id, fill_id, rotation, displacementx, displacementy, anchorx, anchory, lineplacement_id, halo_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id" );
+
+            stmt.setString( 1, labelexpr );
+            stmt.setString( 2, styling.uom.toString() );
+            if ( styling.font == null ) {
+                stmt.setNull( 3, INTEGER );
+            } else {
+                stmt.setInt( 3, write( conn, styling.font ) );
+            }
+            if ( styling.fill == null ) {
+                stmt.setNull( 4, INTEGER );
+            } else {
+                stmt.setInt( 4, write( conn, styling.fill ) );
+            }
+            stmt.setDouble( 5, styling.rotation );
+            stmt.setDouble( 6, styling.displacementX );
+            stmt.setDouble( 7, styling.displacementY );
+            stmt.setDouble( 8, styling.anchorPointX );
+            stmt.setDouble( 9, styling.anchorPointY );
+            if ( styling.linePlacement == null ) {
+                stmt.setNull( 10, INTEGER );
+            } else {
+                stmt.setInt( 10, write( conn, styling.linePlacement ) );
+            }
+            if ( styling.halo == null ) {
+                stmt.setNull( 11, INTEGER );
+            } else {
+                stmt.setInt( 11, write( conn, styling.halo ) );
+            }
+
+            rs = stmt.executeQuery();
+            if ( rs.next() ) {
+                return rs.getInt( 1 );
+            }
+            return -1;
+        } finally {
+            if ( rs != null ) {
+                try {
+                    rs.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "Unable to write style to DB: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+
+    private void write( Styling styling, DoublePair scales, String name, String labelexpr ) {
         PreparedStatement stmt = null;
         Connection conn = null;
         try {
@@ -408,6 +588,9 @@ public class PostgreSQLWriter {
             } else if ( styling instanceof PolygonStyling ) {
                 stmt.setString( 1, "POLYGON" );
                 stmt.setInt( 2, write( conn, (PolygonStyling) styling ) );
+            } else if ( styling instanceof TextStyling ) {
+                stmt.setString( 1, "TEXT" );
+                stmt.setInt( 2, write( conn, (TextStyling) styling, labelexpr ) );
             }
 
             if ( scales != null ) {
@@ -460,8 +643,9 @@ public class PostgreSQLWriter {
      */
     public void write( Style style, String name ) {
         for ( Triple<LinkedList<Styling>, DoublePair, LinkedList<String>> p : style.getBasesWithScales() ) {
+            Iterator<String> labelexprs = p.third.iterator();
             for ( Styling s : p.first ) {
-                write( s, p.second, name == null ? style.getName() : name );
+                write( s, p.second, name == null ? style.getName() : name, labelexprs.next() );
             }
         }
     }

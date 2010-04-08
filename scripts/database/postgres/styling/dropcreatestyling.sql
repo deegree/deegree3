@@ -10,21 +10,48 @@ drop table styles;
 drop table fills;
 drop table strokes;
 drop table graphics;
+drop table fonts;
+drop table lineplacements;
+drop table halos;
 
 -- symbolizer tables
 drop table points;
 drop table lines;
 drop table polygons;
+drop table texts;
+
+-- drop sequences
+
+drop sequence layers_seq;
+drop sequence styles_seq;
+
+drop sequence fills_seq;
+drop sequence strokes_seq;
+drop sequence graphics_seq;
+drop sequence fonts_seq;
+drop sequence lineplacements_seq;
+drop sequence halos_seq;
+
+drop sequence points_seq;
+drop sequence lines_seq;
+drop sequence polygons_seq;
+drop sequence texts_seq;
 
 -- sequences
 create sequence layers_seq;
 create sequence styles_seq;
+
 create sequence fills_seq;
 create sequence strokes_seq;
 create sequence graphics_seq;
+create sequence fonts_seq;
+create sequence lineplacements_seq;
+create sequence halos_seq;
+
 create sequence points_seq;
 create sequence lines_seq;
 create sequence polygons_seq;
+create sequence texts_seq;
 
 -- main tables
 create table layers (
@@ -88,6 +115,30 @@ fill_id integer,
 stroke_id integer
 );
 
+create table fonts (
+id integer not null default nextval('fonts_seq'),
+family varchar,
+style varchar,
+bold boolean,
+size integer
+);
+
+create table lineplacements (
+id integer not null default nextval('lineplacements_seq'),
+perpendicularoffset float,
+repeat boolean,
+initialgap float,
+gap float,
+isaligned boolean,
+generalizeline boolean
+);
+
+create table halos (
+id integer not null default nextval('halos_seq'),
+fill_id integer,
+radius float
+);
+
 -- symbolizer tables
 create table points (
 id integer not null default nextval('points_seq'),
@@ -112,11 +163,32 @@ displacementy float,
 perpendicularoffset float
 );
 
+create table texts (
+id integer not null default nextval('texts_seq'),
+labelexpr varchar,
+uom varchar,
+font_id integer,
+fill_id integer,
+rotation float,
+displacementx float,
+displacementy float,
+anchorx float,
+anchory float,
+lineplacement_id integer,
+halo_id integer
+);
+
 create index pk_id_layers on layers(id);
 create index pk_id_styles on styles(id);
+
 create index pk_id_fills on fills(id);
 create index pk_id_strokes on strokes(id);
 create index pk_id_graphics on graphics(id);
+create index pk_id_fonts on fonts(id);
+create index pk_id_lineplacements on lineplacements(id);
+create index pk_id_halos on halos(id);
+
 create index pk_id_points on points(id);
 create index pk_id_lines on lines(id);
 create index pk_id_polygons on polygons(id);
+create index pk_id_texts on texts(id);
