@@ -296,14 +296,14 @@ public class Style {
      * @return true, if no filters and no expressions are used
      */
     public boolean isSimple() {
-        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
+        for ( Pair rule : rules ) {
             if ( rule.first instanceof FilterContinuation && ( (FilterContinuation) rule.first ).filter != null ) {
                 return false;
             }
 
             LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
-            rule.first.evaluate( base, null );
-            for ( Symbolizer<?> s : base ) {
+            ( (Continuation) rule.first ).evaluate( base, null );
+            for ( Symbolizer s : base ) {
                 if ( !s.isEvaluated() ) {
                     return false;
                 }
