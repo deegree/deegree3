@@ -101,7 +101,6 @@ public class GenerateWhereClauseList {
 
         List<Pair<StringBuilder, Object>> clauseParamPairList = new ArrayList<Pair<StringBuilder, Object>>();
         List<Pair<StringBuilder, Object>> clauseParamPairListTemp = new ArrayList<Pair<StringBuilder, Object>>();
-        List<Pair<StringBuilder, Object>> clauseParamPairListTemp2 = new ArrayList<Pair<StringBuilder, Object>>();
         Pair<StringBuilder, Object> clauseParamPair;
         Pattern ANDOR = Pattern.compile( "AND|OR" );
         Pattern bracketForwards = Pattern.compile( "\\(" );
@@ -112,15 +111,28 @@ public class GenerateWhereClauseList {
         for ( String matchee : match ) {
             clauseParamPair = new Pair<StringBuilder, Object>();
 
+            // if there is no ? then there is no param needed
+            // i.e.:
+            // title.title::TEXT LIKE '%water%' vs.
+            // title.title =?
+            // the first expression needs no parameter whereas the second one does.
+            //
             String[] t = matchee.split( "\\?" );
 
+            // the enclosing brackets should be eliminated because of the atomicity of the expression.
+            // Later this is important for matching the right expression.
+            // i.e.:
+            // ((title.title =?) <- this is from the input coming
+            // is transformed first into title.title =?
+            // 
             matchee = matchee.trim();
             matchee = matchee.replaceAll( "^\\(*", "" );
             matchee = matchee.replaceAll( "\\)*\\z", "" );
 
-            /*
-             * if there are brackets inside of the expression that are closed at the end, that causes errors
-             */
+            // if there are brackets inside of the expression that are closed at the end,
+            // that causes errors. So if there is a mismatch in any direction there should
+            // be the lost bracktes appended in front or at the end.
+            //
             int countBracket = 0;
 
             Matcher mForwards = bracketForwards.matcher( matchee );
@@ -141,7 +153,11 @@ public class GenerateWhereClauseList {
                 }
             }
 
+            // put in the expression into the first placeholder of the Pair
+            // with enclosing bracktes for atomicity
             clauseParamPair.first = new StringBuilder( "(" + matchee + ")" );
+            // and put the parameter into the second placeholder and remove it from the list
+            // this means, that the parsing is in right order
             if ( t.length > 1 ) {
 
                 clauseParamPair.second = iter.next();
@@ -153,82 +169,95 @@ public class GenerateWhereClauseList {
 
         Pair<StringBuilder, Collection<Object>> clauseBuilderPair;
         // cut whereBuilder at position OR
-
         Pattern pOR = Pattern.compile( "OR" );
+        // the size is needed to be aware of OR.
+        // If there is no OR operand there is no complicated parsing needed
         String[] sizeOfORConditions = pOR.split( whereBuilderForGenerating );
-
         boolean isORContaining = sizeOfORConditions.length == 1 ? false : true;
+
         if ( isORContaining ) {
             for ( int pointerOfOrConditions = 1; pointerOfOrConditions < sizeOfORConditions.length; pointerOfOrConditions++ ) {
                 // gets the first occurence of OR
-                int cut = whereBuilderForGenerating.indexOf( "OR" );
+                int cut = whereBuilderForGenerating.indexOf( "OR" ) + "OR".length();
                 if ( cut <= 0 ) {
                     cut = whereBuilderForGenerating.length();
                 }
+                // this is the hole expression before the OR operand
                 String before = whereBuilderForGenerating.substring( 0, cut );
-                String after = whereBuilderForGenerating.substring( cut, whereBuilderForGenerating.length() );
-                after = after.replace( "OR", "" ).trim();
+                // this is the hole expression after the OR operand
+                String after = whereBuilderForGenerating.substring( cut, whereBuilderForGenerating.length() ).trim();
                 before = before.replace( "OR", "" ).trim();
+
+                // go from the OR operand one expression back
+                // that means, there is a strict and correct bracketing
                 String reverse = new StringBuffer( before ).reverse().toString().trim();
-                String parsedExpression = "";
+                String parsedExpressionReverse = "";
                 String parsedExpressionAfter = "";
                 String parsedExpressionBefore = "";
                 int countBracket = 0;
 
-                /*
-                 * parses the first element before the OR operator this could be an expression, as well. Like (A AND B)
-                 */
+                //
+                // parses the first element before the OR operand this could be an expression, as well.
+                // Like ((A) AND (B)) or if there is something like this: (A) AND ((B) OR (C)) the String "before"
+                // would like this: (A) AND ((B) -> reverse would encapsulate just (B)
+                // because of reverse, the counting direction of the brackets are inverted
                 for ( int pos = 0; pos <= reverse.length() - 1; pos++ ) {
                     if ( reverse.charAt( pos ) == '(' ) {
                         countBracket--;
-                        parsedExpression += reverse.charAt( pos );
+                        parsedExpressionReverse += reverse.charAt( pos );
                         if ( countBracket != 0 ) {
                             continue;
                         }
                     }
                     if ( reverse.charAt( pos ) == ')' ) {
                         countBracket++;
-                        parsedExpression += reverse.charAt( pos );
+                        parsedExpressionReverse += reverse.charAt( pos );
                         continue;
                     }
                     if ( countBracket != 0 ) {
                         if ( reverse.charAt( pos ) != '(' || reverse.charAt( pos ) != ')' ) {
-                            parsedExpression += reverse.charAt( pos );
+                            parsedExpressionReverse += reverse.charAt( pos );
                             continue;
                         }
                     } else {
-                        String reverseReverse = new StringBuffer( parsedExpression ).reverse().toString();
+                        // invert the reverse to have a normal expression back
+                        String parsedExpression = new StringBuffer( parsedExpressionReverse ).reverse().toString();
                         clauseBuilderPair = new Pair<StringBuilder, Collection<Object>>();
-                        clauseBuilderPair.first = new StringBuilder( reverseReverse.trim() );
+                        clauseBuilderPair.first = new StringBuilder( parsedExpression.trim() );
                         Collection<Object> col = new ArrayList<Object>();
+                        // put into a temporary collection to work around a OutOfBoundsException
                         clauseParamPairListTemp.addAll( clauseParamPairList );
 
                         for ( Pair<StringBuilder, Object> a : clauseParamPairList ) {
-                            int i = reverseReverse.indexOf( a.first.toString().trim() );
+                            int i = parsedExpression.indexOf( a.first.toString().trim() );
 
                             if ( i > -1 ) {
                                 if ( a.second != null ) {
                                     col.add( a.second );
                                 }
-                                reverseReverse = reverseReverse.replace( a.first.toString().trim(), "" );
+                                parsedExpression = parsedExpression.replace( a.first.toString().trim(), "" );
                                 clauseParamPairListTemp.remove( new Pair<StringBuilder, Object>( a.first, a.second ) );
 
                             }
 
                         }
-                        clauseParamPairListTemp2.addAll( clauseParamPairListTemp );
+                        clauseParamPairList = new ArrayList<Pair<StringBuilder, Object>>();
+                        clauseParamPairList.addAll( clauseParamPairListTemp );
                         clauseBuilderPair.second = col;
 
                         whereClauseList.add( clauseBuilderPair );
-                        String g = new StringBuffer( parsedExpression ).reverse().toString();
+                        // remove the found expression from the String "before"
+                        String g = new StringBuffer( parsedExpressionReverse ).reverse().toString();
                         before = before.replace( g, "" ).trim();
                         break;
                     }
                 }
 
-                /*
-                 * parses the first element after the OR operator this could be an expression, as well. Like (A AND B)
-                 */
+                //
+                // parses the first element after the OR operator this could be an expression, as well.
+                // Like ((A) AND (B)) or if there is something like this: (A) AND ((B) OR (C)) the String "after"
+                // would like this: (C)) -> so go forward and get the (C)
+                //
                 for ( int pos = 0; pos <= after.length() - 1; pos++ ) {
 
                     if ( after.charAt( pos ) == '(' ) {
@@ -263,7 +292,7 @@ public class GenerateWhereClauseList {
                                 parsedExpressionAfterTemp = parsedExpressionAfterTemp.replace(
                                                                                                a.first.toString().trim(),
                                                                                                "" );
-                                clauseParamPairListTemp2.remove( new Pair<StringBuilder, Object>( a.first, a.second ) );
+                                clauseParamPairList.remove( new Pair<StringBuilder, Object>( a.first, a.second ) );
                             }
 
                         }
@@ -277,9 +306,11 @@ public class GenerateWhereClauseList {
                     }
                 }
 
-                /*
-                 * parses the rest of the expression and appends it to the whereClauseList-elements
-                 */
+                //
+                // parses the rest of the expression and appends it to the whereClauseList-elements.
+                // Like in eht example above: (A) AND ((B) OR (C)) the String "before"
+                // would then like this: (A) AND ( -> so you have to append A to every whereClauseList
+                //
                 for ( int pos = 0; pos <= before.length() - 1; pos++ ) {
 
                     if ( before.charAt( pos ) == '(' ) {
@@ -305,7 +336,7 @@ public class GenerateWhereClauseList {
                         clauseBuilderPair.first = new StringBuilder( expressionBeforeTemp );
                         Collection<Object> col = new ArrayList<Object>();
 
-                        for ( Pair<StringBuilder, Object> a : clauseParamPairListTemp2 ) {
+                        for ( Pair<StringBuilder, Object> a : clauseParamPairList ) {
                             int i = expressionBeforeTemp.indexOf( a.first.toString().trim() );
                             if ( i > -1 ) {
                                 if ( a.second != null ) {
@@ -321,16 +352,21 @@ public class GenerateWhereClauseList {
                         String g = new StringBuffer( parsedExpressionBefore ).toString();
                         after = after.replace( g, "" ).trim();
 
+                        // here is the appending to every whereClauseList
                         for ( Pair<StringBuilder, Collection<Object>> listlet : whereClauseList ) {
                             listlet.first.append( " AND " + clauseBuilderPair.first );
                             listlet.second.addAll( clauseBuilderPair.second );
                         }
+                        // after that is done, eliminates every unused sign
                         before = before.replace( parsedExpressionBefore, "" );
                         before = before.replaceAll( "AND", "" ).trim();
                         before = before.replaceAll( "^[ ]*", "" ).trim();
                         before = before.replaceAll( "[ ]*\\z", "" ).trim();
 
+                        // put the position to -1 because the for loop needs to start by 0 and after this loop is done
+                        // the pos will raise
                         pos = -1;
+                        // and finally remove all the signs from the expression
                         parsedExpressionBefore = "";
                     }
                 }
