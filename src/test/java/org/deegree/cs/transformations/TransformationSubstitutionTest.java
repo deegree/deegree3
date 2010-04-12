@@ -347,6 +347,7 @@ public class TransformationSubstitutionTest implements CRSDefines {
         Assert.assertTrue( ( replaced ).getSecondTransform() instanceof ConcatenatedTransform );
         ConcatenatedTransform s = (ConcatenatedTransform) replaced.getSecondTransform();
         Assert.assertEquals( inv_geo, s.getFirstTransform() );
+        factory.setPreferredTransformation( DSTransform.HELMERT );
     }
 
     /**
