@@ -217,7 +217,7 @@ public class RasterDataUtility {
                     return pixel[indexes[3]];
                 }
 
-                return ( pixel[indexes[0]] + pixel[indexes[1]] + pixel[indexes[2]] ) / 3;
+                return ( pixel[indexes[0]] + pixel[indexes[1]] + pixel[indexes[2]] ) / 3f;
             }
             switch ( bands ) {
             case 1: /* Gray-scale */
@@ -374,14 +374,17 @@ public class RasterDataUtility {
             i = data.getShortSample( col, row, band );
             size = Short.MAX_VALUE - Short.MIN_VALUE + 1;
             ret = (float) ( Math.pow( i / size, 1.0 / gamma ) * size );
+            break;
         case INT:
             i = data.getIntSample( col, row, band );
             size = Integer.MAX_VALUE - Integer.MIN_VALUE + 1;
             ret = (float) ( Math.pow( i / size, 1.0 / gamma ) * size );
+            break;
         case FLOAT:
             ret = data.getFloatSample( col, row, band );
             size = Float.MAX_VALUE - Float.MIN_VALUE + 1;
             ret = (float) ( Math.pow( ret / size, 1.0 / gamma ) * size );
+            break;
         default:
             LOG.error( "Datatype '{}' is not suitable for gamma correction.", data.getDataType().toString() );
             throw new UnsupportedOperationException( "Datatype '" + data.getDataType()
