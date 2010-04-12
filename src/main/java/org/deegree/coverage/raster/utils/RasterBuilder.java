@@ -197,7 +197,7 @@ public class RasterBuilder {
             }
             QTreeInfo inf = buildTiledRaster( coverageFiles, rasters, opts );
             Envelope domain = inf.envelope;
-            RasterGeoReference rasterDomain = inf.rasterGeoReference;
+            // RasterGeoReference rasterDomain = inf.rasterGeoReference;
             // IndexedMemoryTileContainer container = new IndexedMemoryTileContainer( domain, rasterDomain,
             // inf.numberOfObjects );
             MemoryTileContainer container = new MemoryTileContainer( rasters );

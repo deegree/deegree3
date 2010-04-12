@@ -116,7 +116,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
         return reader.getHeight();
     }
 
-    public void setRasterDataReader( RasterDataReader reader ) {
+    public synchronized void setRasterDataReader( RasterDataReader reader ) {
         this.rasterLoaded = false;
         this.raster = null;
         reader.close();

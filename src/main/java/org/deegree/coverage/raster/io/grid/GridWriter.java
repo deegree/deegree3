@@ -381,7 +381,10 @@ public class GridWriter implements RasterWriter {
             if ( this.readStream == null ) {
                 if ( !gridFile.exists() ) {
                     // the file was deleted
-                    gridFile.createNewFile();
+                    boolean nFile = gridFile.createNewFile();
+                    if ( !nFile ) {
+                        throw new IOException( "Could not create a new file for the grid writer." );
+                    }
                 }
                 this.readStream = new FileInputStream( gridFile );
             }
@@ -389,14 +392,17 @@ public class GridWriter implements RasterWriter {
         }
     }
 
-    private final synchronized FileChannel getWriteChannel()
+    private final FileChannel getWriteChannel()
                             throws IOException {
         synchronized ( tileData ) {
             if ( this.writeStream == null ) {
                 if ( !gridFile.exists() ) {
                     // the file was deleted
                     // System.out.println( "Creating new file." );
-                    gridFile.createNewFile();
+                    boolean nFile = gridFile.createNewFile();
+                    if ( !nFile ) {
+                        throw new IOException( "Could not create a new file for the grid writer." );
+                    }
                 }
                 this.writeStream = new RandomAccessFile( gridFile, "rw" );
             }

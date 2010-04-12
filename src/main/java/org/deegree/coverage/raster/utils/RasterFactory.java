@@ -56,6 +56,7 @@ import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
@@ -412,7 +413,8 @@ public class RasterFactory {
                 outputType = BufferedImage.TYPE_INT_ARGB;
                 outputBands = 4;
             } else {
-                throw new UnsupportedOperationException( "Could not save raster with bands: " + bandTypes );
+                throw new UnsupportedOperationException( "Could not save raster with bands: "
+                                                         + Arrays.toString( bandTypes ) );
             }
             sm = new PixelInterleavedSampleModel( DataType.toDataBufferType( type ), width, height, pixelStride,
                                                   lineStride, bandOffsets );

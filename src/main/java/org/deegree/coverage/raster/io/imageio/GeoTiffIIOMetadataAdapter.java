@@ -777,7 +777,7 @@ public class GeoTiffIIOMetadataAdapter {
      * or more value in the specified external Tiff tag. The number is specified by the count field, and the offset into
      * the record is the offset field.
      */
-    public class GeoKeyRecord {
+    public static class GeoKeyRecord {
         private int myKeyID;
 
         private int myTiffTagLocation;

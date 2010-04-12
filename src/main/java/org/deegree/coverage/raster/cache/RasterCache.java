@@ -83,7 +83,7 @@ public class RasterCache {
      */
     public static final String FILE_EXTENSION = ".d3rcache";
 
-    private static final Integer MEM_LOCK = 0;
+    private static final Object MEM_LOCK = 0;
 
     private final static Map<String, RasterCache> currentCaches = new ConcurrentHashMap<String, RasterCache>();
 

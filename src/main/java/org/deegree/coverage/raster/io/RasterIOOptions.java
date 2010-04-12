@@ -37,6 +37,7 @@ package org.deegree.coverage.raster.io;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -270,7 +271,7 @@ public class RasterIOOptions {
      * @return the no data values for the bands of the raster or <code>null</code> if no data was specified.
      */
     public byte[] getNoDataValue() {
-        return noData;
+        return noData == null ? null : Arrays.copyOf( noData, noData.length );
     }
 
     /**

@@ -54,7 +54,7 @@ public class SimpleRaster extends AbstractRaster {
 
     // private RasterDataContainer rasterDataContainer;
 
-    private final Integer LOCK = 0;
+    private final Object LOCK = new Object();
 
     private RasterData data;
 

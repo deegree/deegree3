@@ -150,13 +150,12 @@ public class XYZWriter implements RasterWriter {
         int height = data.getHeight() - 1;
         int width = data.getWidth();
 
-        double[] worldCoords = new double[2];
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
             sb = new StringBuilder( ( height + 1 ) * 30 );
             for ( int y = height; y >= 0; --y ) {
                 short sample = data.getShortSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
+                double[] worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
                 sb.append( worldCoords[0] + separator + worldCoords[1] + separator + ( sample & 0xFFFF ) + newLine );
             }
             bw.write( sb.toString() );
@@ -179,13 +178,12 @@ public class XYZWriter implements RasterWriter {
         int height = data.getHeight() - 1;
         int width = data.getWidth();
 
-        double[] worldCoords = new double[2];
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
             sb = new StringBuilder( ( height + 1 ) * 30 );
             for ( int y = height; y >= 0; --y ) {
                 short sample = data.getShortSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
+                double[] worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
                 sb.append( worldCoords[0] + separator + worldCoords[1] + separator + sample + newLine );
             }
             bw.write( sb.toString() );
@@ -208,13 +206,12 @@ public class XYZWriter implements RasterWriter {
         int height = data.getHeight() - 1;
         int width = data.getWidth();
 
-        double[] worldCoords = new double[2];
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
             sb = new StringBuilder( ( height + 1 ) * 30 );
             for ( int y = height; y >= 0; --y ) {
                 int sample = data.getIntSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
+                double[] worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
                 sb.append( worldCoords[0] + separator + worldCoords[1] + separator + sample + newLine );
             }
             bw.write( sb.toString() );
@@ -237,13 +234,12 @@ public class XYZWriter implements RasterWriter {
         int height = data.getHeight() - 1;
         int width = data.getWidth();
 
-        double[] worldCoords = new double[2];
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
             sb = new StringBuilder( ( height + 1 ) * 30 );
             for ( int y = height; y >= 0; --y ) {
                 float sample = data.getFloatSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
+                double[] worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
                 sb.append( worldCoords[0] + separator + worldCoords[1] + separator + sample + newLine );
             }
             bw.write( sb.toString() );
@@ -266,13 +262,12 @@ public class XYZWriter implements RasterWriter {
         int height = data.getHeight() - 1;
         int width = data.getWidth();
 
-        double[] worldCoords = new double[2];
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
             sb = new StringBuilder( ( height + 1 ) * 30 );
             for ( int y = height; y >= 0; --y ) {
                 byte sample = data.getByteSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
+                double[] worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
                 sb.append( worldCoords[0] + separator + worldCoords[1] + separator + ( sample & 0xFF ) + newLine );
             }
             bw.write( sb.toString() );
@@ -292,13 +287,12 @@ public class XYZWriter implements RasterWriter {
         int height = data.getHeight() - 1;
         int width = data.getWidth();
 
-        double[] worldCoords = new double[2];
         for ( int x = 0; x < width; ++x ) {
             // 30, assuming the values are 10 characters long
             sb = new StringBuilder( ( height + 1 ) * 30 );
             for ( int y = height; y >= 0; --y ) {
                 double sample = data.getDoubleSample( x, y, 0 );
-                worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
+                double[] worldCoords = geoRef.getWorldCoordinate( x + 0.5, y + 0.5 );
                 sb.append( worldCoords[0] + separator + worldCoords[1] + separator + sample + newLine );
             }
             bw.write( sb.toString() );

@@ -76,7 +76,7 @@ public class TiledRasterData implements RasterData {
     /**
      * @param reader
      *            to be used for the tiles.
-     * @param noData
+     * @param options
      * 
      */
     protected TiledRasterData( GridReader reader, RasterIOOptions options ) {
@@ -1029,7 +1029,7 @@ public class TiledRasterData implements RasterData {
      * @version $Revision$, $Date$
      * 
      */
-    private class MappedTile {
+    private static class MappedTile {
         final RasterData data;
 
         final int mappedX;

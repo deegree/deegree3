@@ -101,7 +101,7 @@ public class XYZReader implements RasterReader {
     private String dataLocationId;
 
     // saves a point in the raster grid (eg. each line becomes a GridPoint)
-    private class GridPoint {
+    private static class GridPoint {
         /**
          * x value
          */
@@ -270,7 +270,7 @@ public class XYZReader implements RasterReader {
         // clear up the gridpoints
         gridPoints.clear();
         gridPoints = null;
-        System.gc();
+        // System.gc();
 
         this.rasterDataInfo = data.getDataInfo();
         ByteBuffer byteBuffer = ( (ByteBufferRasterData) data ).getByteBuffer();
@@ -333,9 +333,13 @@ public class XYZReader implements RasterReader {
     public AbstractRaster load( File filename, RasterIOOptions options )
                             throws IOException {
         this.file = filename;
+        RasterIOOptions nOpts = options;
+        if ( nOpts == null ) {
+            nOpts = RasterIOOptions.forFile( filename );
+        }
         // try to read from cache.
-        RasterCache cache = RasterCache.getInstance( options );
-        setID( options );
+        RasterCache cache = RasterCache.getInstance( nOpts );
+        setID( nOpts );
         // File cacheFile = cache.createCacheFile( dataLocationId );
         SimpleRaster result = cache.createFromCache( null, dataLocationId );
         // the cachefiles are not backed with the xyz files.
@@ -343,22 +347,22 @@ public class XYZReader implements RasterReader {
         if ( result == null ) {
             // no cache file found or now instantiation of cache file possible.
             BufferedReader reader = new BufferedReader( new FileReader( filename ) );
-            if ( options != null && options.readWorldFile() ) {
+            if ( nOpts != null && nOpts.readWorldFile() ) {
                 try {
-                    RasterGeoReference geoRef = WorldFileAccess.readWorldFile( filename, options );
-                    options.setRasterGeoReference( geoRef );
+                    RasterGeoReference geoRef = WorldFileAccess.readWorldFile( filename, nOpts );
+                    nOpts.setRasterGeoReference( geoRef );
                 } catch ( IOException e ) {
                     LOG.debug( "Could not read xyz world file: " + e.getLocalizedMessage(), e );
                 }
             }
-            result = readASCIIGrid( reader, options );
+            result = readASCIIGrid( reader, nOpts );
             reader.close();
         } else {
             LOG.info( "Cache seems coherent using cachefile: {}.", cache.createCacheFile( dataLocationId ) );
         }
         // rb: setting the no value pixel from the options, should the cache actually save the no data value?
-        if ( result != null && options != null && options.getNoDataValue() != null ) {
-            result.getRasterData().setNoDataValue( options.getNoDataValue() );
+        if ( result != null && nOpts != null && nOpts.getNoDataValue() != null ) {
+            result.getRasterData().setNoDataValue( nOpts.getNoDataValue() );
         }
 
         return result;
@@ -368,8 +372,12 @@ public class XYZReader implements RasterReader {
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
         BufferedReader reader = new BufferedReader( new InputStreamReader( stream ) );
-        setID( options );
-        return readASCIIGrid( reader, options );
+        RasterIOOptions nOpts = options;
+        if ( nOpts == null ) {
+            nOpts = new RasterIOOptions();
+        }
+        setID( nOpts );
+        return readASCIIGrid( reader, nOpts );
     }
 
     @Override

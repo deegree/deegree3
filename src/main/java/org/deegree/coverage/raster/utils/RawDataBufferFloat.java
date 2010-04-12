@@ -60,10 +60,6 @@ public class RawDataBufferFloat extends DataBuffer {
 
     private static final int SIZE = Float.SIZE / 8;
 
-    private RasterRect bufferDomain;
-
-    private DataView view;
-
     private RasterRect maxViewData;
 
     private int toNullPoint;
@@ -72,13 +68,14 @@ public class RawDataBufferFloat extends DataBuffer {
 
     /**
      * @param floatBuffer
+     * @param noData
+     * @param bufferDomain
+     * @param view
      */
     public RawDataBufferFloat( ByteBuffer floatBuffer, float noData, RasterRect bufferDomain, DataView view ) {
         super( DataBuffer.TYPE_FLOAT, floatBuffer.capacity() / SIZE );
         this.floatBuffer = floatBuffer;
         this.noData = Float.floatToIntBits( noData );
-        this.bufferDomain = bufferDomain;
-        this.view = view;
         this.maxViewData = RasterRect.intersection( bufferDomain, view );
         toNullPoint = ( ( bufferDomain.width * maxViewData.y ) + maxViewData.x );
         lineStride = bufferDomain.width;

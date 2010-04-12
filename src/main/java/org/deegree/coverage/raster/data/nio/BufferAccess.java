@@ -88,7 +88,7 @@ public class BufferAccess {
 
     private int maxDataHeight;
 
-    private final String LOCK = "lock";
+    private final Object LOCK = new Object();
 
     // /** Intersection of the view with the values from the byte buffer. */
     // private RasterRect dataRect;
