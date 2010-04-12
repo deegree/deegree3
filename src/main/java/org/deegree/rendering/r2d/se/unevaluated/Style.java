@@ -357,7 +357,7 @@ public class Style {
         return list;
     }
 
-    class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
+    static class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
         U value;
 
         InsertContinuation( U value ) {
