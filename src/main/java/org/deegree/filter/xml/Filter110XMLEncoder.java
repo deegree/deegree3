@@ -359,10 +359,23 @@ public class Filter110XMLEncoder {
                             throws XMLStreamException {
 
         QName elementName = expressionTypeToElementName.get( expression.getType() );
-        writer.writeStartElement( elementName.getPrefix(), elementName.getLocalPart(), elementName.getNamespaceURI() );
+        if ( elementName.getPrefix() == null || elementName.getPrefix().isEmpty() ) {
+            writer.writeStartElement( elementName.getPrefix(), elementName.getLocalPart(),
+                                      elementName.getNamespaceURI() );
+            writer.writeNamespace( elementName.getPrefix(), elementName.getNamespaceURI() );
+        } else {
+            writer.writeStartElement( elementName.getPrefix(), elementName.getLocalPart(),
+                                      elementName.getNamespaceURI() );
+        }
 
         switch ( expression.getType() ) {
         case PROPERTY_NAME:
+            // TODO what about other bindings in non-simple xpaths?
+            PropertyName pn = (PropertyName) expression;
+            if ( pn.isSimple() ) {
+                QName qn = pn.getAsQName();
+                writer.writeNamespace( qn.getPrefix(), qn.getNamespaceURI() );
+            }
             writer.writeCharacters( ( (PropertyName) expression ).getPropertyName() );
             break;
         case LITERAL:

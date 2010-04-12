@@ -1358,7 +1358,7 @@ public class SymbologyParser {
             }
         }
 
-        return new Pair<String, Continuation<T>>( collectXMLSnippets ? xmlText.toString() : null, contn );
+        return new Pair<String, Continuation<T>>( collectXMLSnippets ? xmlText.toString().trim() : null, contn );
     }
 
     /**
