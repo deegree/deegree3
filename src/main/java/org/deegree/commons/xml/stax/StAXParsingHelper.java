@@ -257,7 +257,7 @@ public class StAXParsingHelper {
                                                    boolean nextElemOnSucces )
                             throws XMLStreamException {
         boolean res = defaultValue;
-        if ( elementName.equals( reader ) ) {
+        if ( elementName.equals( reader.getName() ) ) {
             res = parseAsBoolean( reader, reader.getElementText() );
             if ( nextElemOnSucces ) {
                 nextElement( reader );

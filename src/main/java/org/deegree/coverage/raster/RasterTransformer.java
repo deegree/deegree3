@@ -36,6 +36,7 @@
 package org.deegree.coverage.raster;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.media.jai.WarpPolynomial;
@@ -301,7 +302,7 @@ public class RasterTransformer extends Transformer {
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
 
         CRS srcCRS = sourceRaster.getCoordinateSystem();
-        if ( srcCRS == null || srcCRS.equals( getTargetCRS() ) ) {
+        if ( srcCRS == null || srcCRS.equals( getWrappedTargetCRS() ) ) {
             return sourceRaster;
         }
 
@@ -330,7 +331,7 @@ public class RasterTransformer extends Transformer {
      * @param backgroundValue
      */
     public void setBackgroundValue( byte[] backgroundValue ) {
-        this.backgroundValue = backgroundValue;
+        this.backgroundValue = backgroundValue == null ? null : Arrays.copyOf( backgroundValue, backgroundValue.length );
     }
 
     // private void debugRasterFile( AbstractRaster source ) {

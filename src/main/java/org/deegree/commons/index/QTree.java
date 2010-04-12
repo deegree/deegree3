@@ -101,8 +101,6 @@ public class QTree<T> extends SpatialIndex<T> {
 
     private int objectsInLeaf = 0;
 
-    private int objectsInCovering = 0;
-
     /**
      * Create son node.
      * 
@@ -137,7 +135,7 @@ public class QTree<T> extends SpatialIndex<T> {
      * @return the envelope
      */
     public final float[] getEnvelope() {
-        return envelope;
+        return Arrays.copyOf( envelope, envelope.length );
     }
 
     /**
@@ -762,21 +760,21 @@ public class QTree<T> extends SpatialIndex<T> {
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
      * @author last edited by: $Author$
      * @version $Revision$, $Date$
-     * @param <T>
+     * @param <ET>
      * 
      */
-    protected final class Entry<T> {
+    protected final class Entry<ET> {
 
         /** the envelope of the object */
         public final float[] entryEnv;
 
         /** the actual object */
-        public final T entryValue;
+        public final ET entryValue;
 
         /**
          * 
          */
-        Entry( float[] envelope, T object ) {
+        Entry( float[] envelope, ET object ) {
             this.entryEnv = envelope;
             this.entryValue = object;
         }

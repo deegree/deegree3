@@ -54,6 +54,8 @@ public class SimpleRaster extends AbstractRaster {
 
     // private RasterDataContainer rasterDataContainer;
 
+    private final Integer LOCK = 0;
+
     private RasterData data;
 
     /**
@@ -286,7 +288,7 @@ public class SimpleRaster extends AbstractRaster {
      * Cleans up all used memory buffers.
      */
     public void dispose() {
-        synchronized ( data ) {
+        synchronized ( LOCK ) {
             if ( data != null ) {
                 data.dispose();
             }

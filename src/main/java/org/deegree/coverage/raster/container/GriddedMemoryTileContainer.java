@@ -69,7 +69,13 @@ public class GriddedMemoryTileContainer extends GriddedTileContainer {
                                        int tileSamplesX, int tileSamplesY, AbstractRaster[] cells ) {
 
         super( location, envelope, rows, columns, tileSamplesX, tileSamplesY );
-        this.cells = cells;
+        this.cells = cells == null ? null : new AbstractRaster[cells.length];
+        // make copy is a better style...
+        if ( cells != null ) {
+            for ( int i = 0; i < cells.length; ++i ) {
+                this.cells[i] = cells[i];
+            }
+        }
     }
 
     @Override

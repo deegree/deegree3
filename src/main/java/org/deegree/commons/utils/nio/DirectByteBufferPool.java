@@ -269,7 +269,7 @@ public class DirectByteBufferPool {
      * @param capacity
      * @return true if the pool has more free space.
      */
-    public boolean canAllocate( int capacity ) {
+    public synchronized boolean canAllocate( int capacity ) {
         boolean result = false;
         Set<PooledByteBuffer> capBuffers = freeBuffers.get( capacity );
         result = capBuffers != null && !capBuffers.isEmpty();
