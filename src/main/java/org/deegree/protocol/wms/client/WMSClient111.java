@@ -542,7 +542,7 @@ public class WMSClient111 {
                     }
                 }
                 LOG.debug( "Received response." );
-            } catch ( Exception e ) {
+            } catch ( RuntimeException e ) {
                 LOG.info( "Error performing GetMap request: " + e.getMessage(), e );
                 res.second = e.getMessage();
             }
