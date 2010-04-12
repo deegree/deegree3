@@ -306,12 +306,6 @@ public class Interpolate extends Function {
             return new TypedObjectNode[] { new PrimitiveValue( fstString ) };
         }
 
-        buf = new StringBuffer( vals.next().toString().trim() );
-        contn = contns.next();
-        if ( contn != null ) {
-            contn.evaluate( sb, f );
-        }
-
         double next = data.next();
         double fac = ( val - cur ) / ( next - cur );
 
