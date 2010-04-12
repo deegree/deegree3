@@ -546,7 +546,7 @@ public class MatrixTransform extends Transformation {
     public static MatrixTransform createMatrixTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS,
                                                          final Matrix matrix )
                             throws TransformationException {
-        if ( matrix == null || matrix.isIdentity() ) {
+        if ( matrix == null ) {
             return null;
         }
         if ( matrix.isAffine() ) {// Affine transform are square.
