@@ -123,6 +123,8 @@ public class GridWriter implements RasterWriter {
 
     private boolean leaveStreamOpen;
 
+    private final Object LOCK = new Object();
+
     /**
      * An empty constructor used in the {@link GridRasterIOProvider}, to a location in time where no information is
      * known yet.
@@ -153,39 +155,44 @@ public class GridWriter implements RasterWriter {
         instantiate( targetColumns, targetRows, rasterEnvelope, geoRef, gridFile, dataInfo );
     }
 
-    private synchronized void instantiate( int targetColumns, int targetRows, Envelope rasterEnvelope,
-                                           RasterGeoReference geoRef, File gridFile, RasterDataInfo dataInfo ) {
-        if ( rasterEnvelope == null ) {
-            throw new NullPointerException( "The grid writer needs an envelope to work with." );
+    private void instantiate( int targetColumns, int targetRows, Envelope rasterEnvelope, RasterGeoReference geoRef,
+                              File gridFile, RasterDataInfo dataInfo ) {
+        synchronized ( LOCK ) {
+
+            if ( rasterEnvelope == null ) {
+                throw new NullPointerException( "The grid writer needs an envelope to work with." );
+            }
+            if ( geoRef == null ) {
+                throw new NullPointerException( "The grid writer needs a raster georeference to work with." );
+            }
+            this.envelope = geoRef.relocateEnvelope( OriginLocation.OUTER, rasterEnvelope );
+            this.columns = targetColumns;
+            this.rows = targetRows;
+            this.geoRef = geoRef.createRelocatedReference( OriginLocation.OUTER );
+
+            int[] rasterCoordinate = this.geoRef.getSize( this.envelope );
+
+            this.gridFile = gridFile;
+            // if ( this.gridFile != null && !this.gridFile.exists() ) {
+            // this.gridFile.createNewFile();
+            // }
+            this.dataInfo = dataInfo;
+            this.tilesInFile = columns * rows;
+
+            this.tileRasterWidth = Rasters.calcTileSize( rasterCoordinate[0], columns );
+            this.tileRasterHeight = Rasters.calcTileSize( rasterCoordinate[1], rows );
+            // this tile data does not need to be cached.
+            updateForRasterSize();
         }
-        if ( geoRef == null ) {
-            throw new NullPointerException( "The grid writer needs a raster georeference to work with." );
-        }
-        this.envelope = geoRef.relocateEnvelope( OriginLocation.OUTER, rasterEnvelope );
-        this.columns = targetColumns;
-        this.rows = targetRows;
-        this.geoRef = geoRef.createRelocatedReference( OriginLocation.OUTER );
-
-        int[] rasterCoordinate = this.geoRef.getSize( this.envelope );
-
-        this.gridFile = gridFile;
-        // if ( this.gridFile != null && !this.gridFile.exists() ) {
-        // this.gridFile.createNewFile();
-        // }
-        this.dataInfo = dataInfo;
-        this.tilesInFile = columns * rows;
-
-        this.tileRasterWidth = Rasters.calcTileSize( rasterCoordinate[0], columns );
-        this.tileRasterHeight = Rasters.calcTileSize( rasterCoordinate[1], rows );
-        // this tile data does not need to be cached.
-        updateForRasterSize();
 
     }
 
     private void updateForRasterSize() {
-        this.tileData = RasterDataFactory.createRasterData( tileRasterWidth, tileRasterHeight, dataInfo.bandInfo,
-                                                            dataInfo.dataType, dataInfo.interleaveType, false );
-        this.bytesPerTile = this.tileRasterWidth * this.tileRasterHeight * dataInfo.bands * dataInfo.dataSize;
+        synchronized ( LOCK ) {
+            this.tileData = RasterDataFactory.createRasterData( tileRasterWidth, tileRasterHeight, dataInfo.bandInfo,
+                                                                dataInfo.dataType, dataInfo.interleaveType, false );
+            this.bytesPerTile = this.tileRasterWidth * this.tileRasterHeight * dataInfo.bands * dataInfo.dataSize;
+        }
     }
 
     /**
@@ -335,7 +342,7 @@ public class GridWriter implements RasterWriter {
         maxRow = min( maxRow, rows - 1 );
         // System.out.println( "minCol: " + minColumn + " maxCol: " + maxColumn + " | minRow: " + minRow + ", maxRow: "
         // + maxRow );
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             this.leaveStreamOpen( true );
             for ( int row = minRow; row <= maxRow; row++ ) {
                 for ( int column = minColumn; column <= maxColumn; column++ ) {
@@ -377,7 +384,7 @@ public class GridWriter implements RasterWriter {
 
     private final FileChannel getReadChannel()
                             throws IOException {
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             if ( this.readStream == null ) {
                 if ( !gridFile.exists() ) {
                     // the file was deleted
@@ -394,7 +401,7 @@ public class GridWriter implements RasterWriter {
 
     private final FileChannel getWriteChannel()
                             throws IOException {
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             if ( this.writeStream == null ) {
                 if ( !gridFile.exists() ) {
                     // the file was deleted
@@ -417,7 +424,7 @@ public class GridWriter implements RasterWriter {
      */
     public void leaveStreamOpen( boolean yesNo ) {
         // System.out.println( "trying enter yesno: " + Thread.currentThread().getName() );
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             this.leaveStreamOpen = yesNo;
             // System.out.println( "entered yesno: " + Thread.currentThread().getName() );
             if ( !this.leaveStreamOpen ) {
@@ -433,7 +440,7 @@ public class GridWriter implements RasterWriter {
 
     private final void closeWriteStream()
                             throws IOException {
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             if ( this.writeStream != null && !this.leaveStreamOpen ) {
                 this.writeStream.close();
                 this.writeStream = null;
@@ -443,7 +450,7 @@ public class GridWriter implements RasterWriter {
 
     private final void closeReadStream()
                             throws IOException {
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             if ( this.readStream != null /* && !this.leaveStreamOpen */) {
                 this.readStream.close();
                 this.readStream = null;
@@ -461,7 +468,7 @@ public class GridWriter implements RasterWriter {
 
     private ByteBufferRasterData readData( int column, int row )
                             throws IOException {
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             ByteBuffer buffer = tileData.getByteBuffer();
             buffer.clear();
             long position = calcFilePosition( column, row );
@@ -567,7 +574,7 @@ public class GridWriter implements RasterWriter {
             throw new IllegalArgumentException( "byte buffer is to small, required bytes:" + ( this.bytesPerTile )
                                                 + ", provided bytes: " + newBytes.capacity() );
         }
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             FileChannel fileChannel = getWriteChannel();
             FileLock lock = fileChannel.lock();
             fileChannel.position( 0 );
@@ -590,7 +597,7 @@ public class GridWriter implements RasterWriter {
         if ( tileBuffer == null || tileBuffer.capacity() != this.bytesPerTile ) {
             throw new IllegalArgumentException( "Wrong number of bytes." );
         }
-        synchronized ( tileData ) {
+        synchronized ( LOCK ) {
             long position = calcFilePosition( column, row );
             FileChannel fileChannel = getWriteChannel();
             FileLock lock = fileChannel.lock( position, position + bytesPerTile, false );
@@ -627,7 +634,7 @@ public class GridWriter implements RasterWriter {
             // System.out.println( "new Data position: " + newDataPosition );
             // RasterFactory.saveRasterToFile( raster, new File( "/tmp/" + Thread.currentThread().getName() + ".tif" )
             // );
-            synchronized ( tileData ) {
+            synchronized ( LOCK ) {
                 // read in the data.
                 ByteBufferRasterData fileData = readData( column, row );
 
