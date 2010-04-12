@@ -117,7 +117,10 @@ public class DBFReader {
             int day = in.readUnsignedByte();
             LOG.trace( "Last modified: " + year + "/" + month + "/" + day );
         } else {
-            in.skipBytes( 3 );
+            int skp = 0;
+            while ( ( skp += in.skipBytes( 3 - skp ) ) != 3 ) {
+                // no action in the loop
+            }
         }
 
         noOfRecords = in.readUnsignedByte() + ( in.readUnsignedByte() << 8 ) + ( in.readUnsignedByte() << 16 )
@@ -363,7 +366,7 @@ public class DBFReader {
         return list;
     }
 
-    class Field {
+    static class Field {
         char type;
 
         SimplePropertyType propertyType;
