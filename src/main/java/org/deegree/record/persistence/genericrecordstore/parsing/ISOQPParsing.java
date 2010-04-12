@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore.parsing;
 
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -63,7 +65,6 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.cs.CRS;
-import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.record.persistence.genericrecordstore.generating.GenerateRecord;
 import org.deegree.record.persistence.neededdatastructures.BoundingBox;
 import org.deegree.record.persistence.neededdatastructures.Format;
@@ -94,8 +95,14 @@ public final class ISOQPParsing extends XMLAdapter {
 
     private GenerateRecord gr;
 
+    /**
+     * checks if an OMElement is null
+     */
     private OMElement omElementNullCheck;
 
+    /**
+     * checks if a List of OMElements is null
+     */
     private List<OMElement> omElementNullCheckList;
 
     /**
@@ -141,7 +148,7 @@ public final class ISOQPParsing extends XMLAdapter {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
-        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
 
         OMNamespace namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
 
@@ -150,7 +157,7 @@ public final class ISOQPParsing extends XMLAdapter {
             nsContextISOParsing.addNamespace( rootElement.getDefaultNamespace().getPrefix(),
                                               rootElement.getDefaultNamespace().getNamespaceURI() );
         }
-        nsContextISOParsing.addNamespace( CSWConstants.CSW_PREFIX, CSWConstants.CSW_202_NS );
+        nsContextISOParsing.addNamespace( CSW_PREFIX, CSW_202_NS );
         nsContextISOParsing.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
         nsContextISOParsing.addNamespace( "ows", "http://www.opengis.net/ows" );
 

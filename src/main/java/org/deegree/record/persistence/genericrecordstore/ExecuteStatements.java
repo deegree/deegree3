@@ -95,7 +95,8 @@ public class ExecuteStatements {
              * Question if there already exists the identifier.
              */
             for ( String identifier : parsedElement.getQueryableProperties().getIdentifier() ) {
-                String s = "SELECT i.identifier FROM qp_identifier AS i WHERE i.identifier = '" + identifier + "';";
+                String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.databaseTables.qp_identifier.name()
+                           + " AS i WHERE i.identifier = '" + identifier + "';";
                 ResultSet r = stm.executeQuery( s );
                 LOG.debug( s );
 
@@ -149,10 +150,10 @@ public class ExecuteStatements {
             for ( String identifierString : parsedElement.getQueryableProperties().getIdentifier() ) {
 
                 sqlStatementUpdate.append( "SELECT " + databaseTable + "."
-                                           + PostGISMappingsISODC.commonColumnNames.id.name() + " FROM " + databaseTable
-                                           + "," + qp_identifier + " WHERE " + databaseTable + "."
-                                           + PostGISMappingsISODC.commonColumnNames.id.name() + " = " + qp_identifier + "."
-                                           + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " AND "
+                                           + PostGISMappingsISODC.commonColumnNames.id.name() + " FROM "
+                                           + databaseTable + "," + qp_identifier + " WHERE " + databaseTable + "."
+                                           + PostGISMappingsISODC.commonColumnNames.id.name() + " = " + qp_identifier
+                                           + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " AND "
                                            + qp_identifier + ".identifier = '" + identifierString + "'" );
                 LOG.debug( sqlStatementUpdate.toString() );
                 StringBuffer buf = sqlStatementUpdate.getBuffer();
@@ -179,8 +180,9 @@ public class ExecuteStatements {
                     if ( parsedElement.getQueryableProperties().getAnyText() != null ) {
 
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET anyText = '"
-                                                  + parsedElement.getQueryableProperties().getAnyText()
-                                                  + "' WHERE id = " + requestedId );
+                                                  + parsedElement.getQueryableProperties().getAnyText() + "' WHERE "
+                                                  + PostGISMappingsISODC.commonColumnNames.id.name() + " = "
+                                                  + requestedId );
 
                         executeSQLStatementUpdate( sqlStatementUpdate );
 
@@ -189,14 +191,16 @@ public class ExecuteStatements {
                     // modified
                     if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET modified = " + modifiedAttribute
-                                                  + " WHERE id = " + requestedId );
+                                                  + " WHERE " + PostGISMappingsISODC.commonColumnNames.id.name()
+                                                  + " = " + requestedId );
                         executeSQLStatementUpdate( sqlStatementUpdate );
                     }
                     // hassecurityconstraints
                     if ( parsedElement.getQueryableProperties().isHasSecurityConstraints() == true ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET hassecurityconstraints = '"
                                                   + parsedElement.getQueryableProperties().isHasSecurityConstraints()
-                                                  + "' WHERE id = " + requestedId );
+                                                  + "' WHERE " + PostGISMappingsISODC.commonColumnNames.id.name()
+                                                  + " = " + requestedId );
 
                         executeSQLStatementUpdate( sqlStatementUpdate );
                     }
@@ -204,8 +208,9 @@ public class ExecuteStatements {
                     // language
                     if ( parsedElement.getQueryableProperties().getLanguage() != null ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET language = '"
-                                                  + parsedElement.getQueryableProperties().getLanguage()
-                                                  + "' WHERE id = " + requestedId );
+                                                  + parsedElement.getQueryableProperties().getLanguage() + "' WHERE "
+                                                  + PostGISMappingsISODC.commonColumnNames.id.name() + " = "
+                                                  + requestedId );
 
                         executeSQLStatementUpdate( sqlStatementUpdate );
                     }
@@ -213,7 +218,8 @@ public class ExecuteStatements {
                     if ( parsedElement.getQueryableProperties().getParentIdentifier() != null ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET parentidentifier = '"
                                                   + parsedElement.getQueryableProperties().getParentIdentifier()
-                                                  + "' WHERE id = " + requestedId );
+                                                  + "' WHERE " + PostGISMappingsISODC.commonColumnNames.id.name()
+                                                  + " = " + requestedId );
 
                         executeSQLStatementUpdate( sqlStatementUpdate );
                     }

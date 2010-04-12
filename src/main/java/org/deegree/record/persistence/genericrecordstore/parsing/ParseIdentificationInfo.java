@@ -96,7 +96,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
         this.connection = connection;
         this.nsContextParseII = nsContext;
 
-        namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+        namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
         namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
 
     }

@@ -783,12 +783,15 @@ public class ISORecordStore implements RecordStore {
             constraintExpression.append( " " );
         }
 
-        s.append( "SELECT " + formatTypeAlias + ".data FROM " + formatType + " AS " + formatTypeAlias );
+        s.append( "SELECT " + formatTypeAlias + "." + PostGISMappingsISODC.commonColumnNames.data.name() + " FROM "
+                  + formatType + " AS " + formatTypeAlias );
 
         s.append( stringINNER_FROM.toString() );
 
-        s.append( " WHERE " + formatTypeAlias + ".format = " + typeNameFormatNumber + " AND " + formatTypeAlias
-                  + ".fk_datasets = " + datasetsAlias + ".id " );
+        s.append( " WHERE " + formatTypeAlias + "." + PostGISMappingsISODC.commonColumnNames.format.name() + " = "
+                  + typeNameFormatNumber + " AND " + formatTypeAlias + "."
+                  + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = " + datasetsAlias + "."
+                  + PostGISMappingsISODC.commonColumnNames.id.name() + " " );
 
         /*
          * appends the tables with their columns identified in the WHERE-builder to the WHERE clause and binds it to the
@@ -799,7 +802,7 @@ public class ISORecordStore implements RecordStore {
             for ( Pair<String, String> pair1 : aliasMapping ) {
                 if ( !pair1.first.equals( PostGISMappingsISODC.databaseTables.datasets.name() ) ) {
                     s.append( " AND " + pair1.second + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
-                              + " = " + datasetsAlias + ".id " );
+                              + " = " + datasetsAlias + "." + PostGISMappingsISODC.commonColumnNames.id.name() + " " );
                 }
             }
 
@@ -843,8 +846,8 @@ public class ISORecordStore implements RecordStore {
 
                     ExecuteStatements executeStatements = new ExecuteStatements();
 
-                    if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
-                         || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
+                    if ( localName.equals( new QName( CSW_202_NS, "Record", CSW_PREFIX ) )
+                         || localName.equals( new QName( CSW_202_NS, "Record", "" ) ) ) {
 
                         executeStatements.executeInsertStatement( true, conn, affectedIds,
                                                                   new ISOQPParsing().parseAPDC( element ) );
@@ -884,8 +887,8 @@ public class ISORecordStore implements RecordStore {
 
                     ExecuteStatements executeStatements = new ExecuteStatements();
 
-                    if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_PREFIX ) )
-                         || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
+                    if ( localName.equals( new QName( CSW_202_NS, "Record", CSW_PREFIX ) )
+                         || localName.equals( new QName( CSW_202_NS, "Record", "" ) ) ) {
 
                         executeStatements.executeUpdateStatement( conn, affectedIds,
                                                                   new ISOQPParsing().parseAPDC( upd.getElement() ) );
@@ -960,7 +963,7 @@ public class ISORecordStore implements RecordStore {
 
                         for ( int i : updatableDatasets ) {
                             String stri = "SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
-                                          + ".data FROM "
+                                          + "." + PostGISMappingsISODC.commonColumnNames.data.name() + " FROM "
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + " WHERE "
                                           + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
                                           + ".format = 2 AND "
@@ -993,9 +996,8 @@ public class ISORecordStore implements RecordStore {
 
                                         ExecuteStatements executeStatements = new ExecuteStatements();
 
-                                        if ( localName.equals( new QName( CSWConstants.CSW_202_NS, "Record",
-                                                                          CSWConstants.CSW_PREFIX ) )
-                                             || localName.equals( new QName( CSWConstants.CSW_202_NS, "Record", "" ) ) ) {
+                                        if ( localName.equals( new QName( CSW_202_NS, "Record", CSW_PREFIX ) )
+                                             || localName.equals( new QName( CSW_202_NS, "Record", "" ) ) ) {
 
                                             executeStatements.executeUpdateStatement(
                                                                                       conn,
@@ -1110,7 +1112,9 @@ public class ISORecordStore implements RecordStore {
                     conn.createStatement().executeUpdate(
                                                           "DELETE FROM "
                                                                                   + PostGISMappingsISODC.databaseTables.datasets.name()
-                                                                                  + " WHERE id = " + i );
+                                                                                  + " WHERE "
+                                                                                  + PostGISMappingsISODC.commonColumnNames.id.name()
+                                                                                  + " = " + i );
                 }
             }
 
@@ -1192,38 +1196,47 @@ public class ISORecordStore implements RecordStore {
 
             case brief:
 
-                String selectBrief = "SELECT rb.data FROM "
+                String selectBrief = "SELECT rb." + PostGISMappingsISODC.commonColumnNames.data.name() + " FROM "
                                      + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + " AS rb, "
-                                     + PostGISMappingsISODC.databaseTables.datasets.name()
-                                     + " AS ds, qp_identifier AS i WHERE rb."
-                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
-                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
-                                     + " = ds.id AND i.identifier = '" + identifier + "' AND rb.format = "
+                                     + PostGISMappingsISODC.databaseTables.datasets.name() + " AS ds, "
+                                     + PostGISMappingsISODC.databaseTables.qp_identifier.name() + " AS i WHERE rb."
+                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds."
+                                     + PostGISMappingsISODC.commonColumnNames.id.name() + " AND i."
+                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds."
+                                     + PostGISMappingsISODC.commonColumnNames.id.name() + " AND i."
+                                     + PostGISMappingsISODC.databaseTables.qp_identifier.name() + " = '" + identifier
+                                     + "' AND rb." + PostGISMappingsISODC.commonColumnNames.format.name() + " = "
                                      + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectBrief );
                 break;
             case summary:
 
-                String selectSummary = "SELECT rs.data FROM "
+                String selectSummary = "SELECT rs." + PostGISMappingsISODC.commonColumnNames.data.name() + " FROM "
                                        + formatTypeInISORecordStore.get( SetOfReturnableElements.summary ) + " AS rs, "
-                                       + PostGISMappingsISODC.databaseTables.datasets.name()
-                                       + " AS ds, qp_identifier AS i WHERE rs."
-                                       + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
-                                       + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
-                                       + " = ds.id AND i.identifier = '" + identifier + "' AND rs.format = "
+                                       + PostGISMappingsISODC.databaseTables.datasets.name() + " AS ds, "
+                                       + PostGISMappingsISODC.databaseTables.qp_identifier.name() + " AS i WHERE rs."
+                                       + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds."
+                                       + PostGISMappingsISODC.commonColumnNames.id.name() + " AND i."
+                                       + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds."
+                                       + PostGISMappingsISODC.commonColumnNames.id.name() + " AND i."
+                                       + PostGISMappingsISODC.databaseTables.qp_identifier.name() + " = '" + identifier
+                                       + "' AND rs." + PostGISMappingsISODC.commonColumnNames.format.name() + " = "
                                        + profileFormatNumberOutputSchema + ";";
                 LOG.debug( selectSummary );
                 rs = conn.createStatement().executeQuery( selectSummary );
                 break;
             case full:
 
-                String selectFull = "SELECT rf.data FROM "
+                String selectFull = "SELECT rf." + PostGISMappingsISODC.commonColumnNames.data.name() + " FROM "
                                     + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + " AS rf, "
-                                    + PostGISMappingsISODC.databaseTables.datasets.name()
-                                    + " AS ds, qp_identifier AS i WHERE rf."
-                                    + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds.id AND i."
-                                    + PostGISMappingsISODC.commonColumnNames.fk_datasets.name()
-                                    + " = ds.id AND i.identifier = '" + identifier + "' AND rf.format = "
+                                    + PostGISMappingsISODC.databaseTables.datasets.name() + " AS ds, "
+                                    + PostGISMappingsISODC.databaseTables.qp_identifier.name() + " AS i WHERE rf."
+                                    + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds."
+                                    + PostGISMappingsISODC.commonColumnNames.id.name() + " AND i."
+                                    + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = ds."
+                                    + PostGISMappingsISODC.commonColumnNames.id.name() + " AND i."
+                                    + PostGISMappingsISODC.databaseTables.qp_identifier.name() + " = '" + identifier
+                                    + "' AND rf." + PostGISMappingsISODC.commonColumnNames.format.name() + " = "
                                     + profileFormatNumberOutputSchema + ";";
                 rs = conn.createStatement().executeQuery( selectFull );
                 break;

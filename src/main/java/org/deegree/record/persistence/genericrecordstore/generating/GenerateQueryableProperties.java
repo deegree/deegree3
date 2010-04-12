@@ -100,7 +100,9 @@ public class GenerateQueryableProperties {
 
             sqlStatement.append( "INSERT INTO "
                                  + databaseTable
-                                 + " (id, version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
+                                 + " ("
+                                 + PostGISMappingsISODC.commonColumnNames.id.name()
+                                 + ", version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
                                  + operatesOnId
                                  + ",null,null,'"
                                  + generateISOQP_AnyTextStatement( isCaseSensitive,
@@ -996,7 +998,8 @@ public class GenerateQueryableProperties {
 
         for ( Format format : qp.getFormat() ) {
             s_PRE.append( "INSERT INTO " + databaseTable + " (" + PostGISMappingsISODC.commonColumnNames.id.name()
-                          + ", " + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", format)" );
+                          + ", " + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", "
+                          + PostGISMappingsISODC.commonColumnNames.format.name() + ")" );
 
             s_POST.append( "'" + format.getName() + "');" );
 
@@ -1233,8 +1236,9 @@ public class GenerateQueryableProperties {
                                      + qp.getBoundingBox().getEastBoundLongitude() + " "
                                      + qp.getBoundingBox().getNorthBoundLatitude() + ","
                                      + qp.getBoundingBox().getWestBoundLongitude() + " "
-                                     + qp.getBoundingBox().getSouthBoundLatitude()
-                                     + ")'::box3d,-1) WHERE fk_datasets = " + operatesOnId + ";" );
+                                     + qp.getBoundingBox().getSouthBoundLatitude() + ")'::box3d,-1) WHERE "
+                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = " + operatesOnId
+                                     + ";" );
             }
             stm.executeUpdate( sqlStatement.toString() );
             LOG.debug( "boundingbox: " + sqlStatement );
@@ -1285,7 +1289,8 @@ public class GenerateQueryableProperties {
     private int getLastDatasetId( Connection conn, String databaseTable )
                             throws SQLException {
         int result = 0;
-        String selectIDRows = "SELECT id from " + databaseTable + " ORDER BY id DESC LIMIT 1";
+        String selectIDRows = "SELECT " + PostGISMappingsISODC.commonColumnNames.id.name() + " from " + databaseTable
+                              + " ORDER BY " + PostGISMappingsISODC.commonColumnNames.id.name() + " DESC LIMIT 1";
         ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
 
         while ( rsBrief.next() ) {

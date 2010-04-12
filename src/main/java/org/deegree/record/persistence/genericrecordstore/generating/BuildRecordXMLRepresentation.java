@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence.genericrecordstore.generating;
 
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -44,13 +46,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.deegree.record.persistence.genericrecordstore.PostGISMappingsISODC;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
 import org.deegree.record.persistence.genericrecordstore.parsing.QueryableProperties;
 import org.slf4j.Logger;
@@ -69,48 +70,6 @@ public class BuildRecordXMLRepresentation {
     private static final Logger LOG = getLogger( BuildRecordXMLRepresentation.class );
 
     /**
-     * Tablename in backend
-     */
-    private final static String RECORDBRIEF = "recordbrief";
-
-    /**
-     * Tablename in backend
-     */
-    private final static String RECORDSUMMARY = "recordsummary";
-
-    /**
-     * Tablename in backend
-     */
-    private final static String RECORDFULL = "recordfull";
-
-    /**
-     * XML element name in the representation of the response
-     */
-    private final static String BRIEFRECORD = "BriefRecord";
-
-    /**
-     * XML element name in the representation of the response
-     */
-    private final static String SUMMARYRECORD = "SummaryRecord";
-
-    /**
-     * XML element name in the representation of the response
-     */
-    private final static String RECORD = "Record";
-
-    /**
-     * 
-     */
-    private static Map<String, String> tableRecordType = new HashMap<String, String>();
-
-    static {
-
-        tableRecordType.put( RECORDBRIEF, BRIEFRECORD );
-        tableRecordType.put( RECORDSUMMARY, SUMMARYRECORD );
-        tableRecordType.put( RECORDFULL, RECORD );
-    }
-
-    /**
      * Updating the XML representation of a record in DC and ISO.
      * 
      * @param fk_datasets
@@ -125,23 +84,26 @@ public class BuildRecordXMLRepresentation {
 
         StringWriter isoOMElement = new StringWriter( 2000 );
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
+        OMNamespace namespaceCSW = factory.createOMNamespace( CSW_202_NS, CSW_PREFIX );
 
         int counter = 0;
-        for ( String databaseTable : tableRecordType.keySet() ) {
+        for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
 
             StringWriter sqlStatement = new StringWriter( 500 );
             StringBuffer buf = new StringBuffer();
 
             try {
                 // DC-update
-                OMElement omElement = factory.createOMElement( tableRecordType.get( databaseTable ), namespaceCSW );
+                OMElement omElement = factory.createOMElement(
+                                                               PostGISMappingsISODC.getTableRecordType().get(
+                                                                                                              databaseTable ),
+                                                               namespaceCSW );
 
-                if ( omElement.getLocalName().equals( BRIEFRECORD ) ) {
+                if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
                     parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
                     isoOMElement.write( parsedElement.getGenerateRecord().getIsoBriefElement().toString() );
                     counter++;
-                } else if ( omElement.getLocalName().equals( SUMMARYRECORD ) ) {
+                } else if ( omElement.getLocalName().equals( PostGISMappingsISODC.SUMMARYRECORD ) ) {
                     parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
                     isoOMElement.write( parsedElement.getGenerateRecord().getIsoSummaryElement().toString() );
                 } else {
@@ -151,16 +113,22 @@ public class BuildRecordXMLRepresentation {
 
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
-                sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + omElement.toString()
-                                    + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 1 );
+                sqlStatement.write( "UPDATE " + databaseTable + " SET "
+                                    + PostGISMappingsISODC.commonColumnNames.data.name() + " = '"
+                                    + omElement.toString() + "' WHERE "
+                                    + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = " + fk_datasets
+                                    + " AND " + PostGISMappingsISODC.commonColumnNames.format.name() + " = " + 1 );
 
                 buf = sqlStatement.getBuffer();
                 stm.executeUpdate( sqlStatement.toString() );
                 buf.setLength( 0 );
 
                 // ISO-update
-                sqlStatement.write( "UPDATE " + databaseTable + " SET data = '" + isoOMElement
-                                    + "' WHERE fk_datasets = " + fk_datasets + " AND format = " + 2 );
+                sqlStatement.write( "UPDATE " + databaseTable + " SET "
+                                    + PostGISMappingsISODC.commonColumnNames.data.name() + " = '" + isoOMElement
+                                    + "' WHERE " + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
+                                    + fk_datasets + " AND " + PostGISMappingsISODC.commonColumnNames.format.name()
+                                    + " = " + 2 );
 
                 buf = sqlStatement.getBuffer();
                 stm.executeUpdate( sqlStatement.toString() );
@@ -194,12 +162,12 @@ public class BuildRecordXMLRepresentation {
                             throws IOException {
 
         int idDatabaseTable;
-        for ( String databaseTable : tableRecordType.keySet() ) {
+        for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
             StringWriter sqlStatement = new StringWriter( 500 );
             OMElement isoElement;
-            if ( databaseTable.equals( RECORDBRIEF ) ) {
+            if ( databaseTable.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
                 isoElement = parsedElement.getGenerateRecord().getIsoBriefElement();
-            } else if ( databaseTable.equals( RECORDSUMMARY ) ) {
+            } else if ( databaseTable.equals( PostGISMappingsISODC.RECORDSUMMARY ) ) {
                 isoElement = parsedElement.getGenerateRecord().getIsoSummaryElement();
             } else {
                 isoElement = parsedElement.getGenerateRecord().getIsoFullElement();
@@ -210,7 +178,11 @@ public class BuildRecordXMLRepresentation {
                 idDatabaseTable = getLastDatasetId( connection, databaseTable );
                 idDatabaseTable++;
 
-                sqlStatement.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES ("
+                sqlStatement.append( "INSERT INTO " + databaseTable + " ("
+                                     + PostGISMappingsISODC.commonColumnNames.id.name() + ", "
+                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", "
+                                     + PostGISMappingsISODC.commonColumnNames.format.name() + ", "
+                                     + PostGISMappingsISODC.commonColumnNames.data.name() + ") VALUES ("
                                      + idDatabaseTable + "," + operatesOnId + ", 2, '" + isoElement.toString() + "');" );
                 stm.executeUpdate( sqlStatement.toString() );
 
@@ -242,10 +214,10 @@ public class BuildRecordXMLRepresentation {
 
         int recordsAffectedID = 0;
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceCSW = factory.createOMNamespace( "http://www.opengis.net/cat/csw/2.0.2", "csw" );
+        OMNamespace namespaceCSW = factory.createOMNamespace( CSW_202_NS, CSW_PREFIX );
 
         int idDatabaseTable;
-        for ( String databaseTable : tableRecordType.keySet() ) {
+        for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
             StringWriter sqlStatement = new StringWriter( 500 );
 
             try {
@@ -253,12 +225,15 @@ public class BuildRecordXMLRepresentation {
                 idDatabaseTable = getLastDatasetId( connection, databaseTable );
                 idDatabaseTable++;
 
-                OMElement omElement = factory.createOMElement( tableRecordType.get( databaseTable ), namespaceCSW );
+                OMElement omElement = factory.createOMElement(
+                                                               PostGISMappingsISODC.getTableRecordType().get(
+                                                                                                              databaseTable ),
+                                                               namespaceCSW );
 
-                if ( omElement.getLocalName().equals( BRIEFRECORD ) ) {
+                if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
                     parsedElement.getGenerateRecord().buildElementAsDcBriefElement( omElement, factory );
                     recordsAffectedID = idDatabaseTable;
-                } else if ( omElement.getLocalName().equals( SUMMARYRECORD ) ) {
+                } else if ( omElement.getLocalName().equals( PostGISMappingsISODC.SUMMARYRECORD ) ) {
                     parsedElement.getGenerateRecord().buildElementAsDcSummaryElement( omElement, factory );
                 } else {
                     parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
@@ -266,7 +241,11 @@ public class BuildRecordXMLRepresentation {
 
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
-                sqlStatement.append( "INSERT INTO " + databaseTable + " (id, fk_datasets, format, data) VALUES ("
+                sqlStatement.append( "INSERT INTO " + databaseTable + " ("
+                                     + PostGISMappingsISODC.commonColumnNames.id.name() + ", "
+                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", "
+                                     + PostGISMappingsISODC.commonColumnNames.format.name() + ", "
+                                     + PostGISMappingsISODC.commonColumnNames.data.name() + ") VALUES ("
                                      + idDatabaseTable + "," + operatesOnId + ", 1, '" + omElement.toString() + "');" );
 
                 stm.executeUpdate( sqlStatement.toString() );
@@ -326,7 +305,8 @@ public class BuildRecordXMLRepresentation {
     private int getLastDatasetId( Connection conn, String databaseTable )
                             throws SQLException {
         int result = 0;
-        String selectIDRows = "SELECT id from " + databaseTable + " ORDER BY id DESC LIMIT 1";
+        String selectIDRows = "SELECT " + PostGISMappingsISODC.commonColumnNames.id.name() + " from " + databaseTable
+                              + " ORDER BY " + PostGISMappingsISODC.commonColumnNames.id.name() + " DESC LIMIT 1";
         ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
 
         while ( rsBrief.next() ) {

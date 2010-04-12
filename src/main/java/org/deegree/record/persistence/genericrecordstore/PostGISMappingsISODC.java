@@ -84,7 +84,46 @@ public class PostGISMappingsISODC implements PostGISMapping {
 
     private static Map<QName, PropertyNameMapping> propToTableAndCol = new HashMap<QName, PropertyNameMapping>();
 
+    /**
+     * Tablename in backend
+     */
+    public final static String RECORDBRIEF = "recordbrief";
+
+    /**
+     * Tablename in backend
+     */
+    public final static String RECORDSUMMARY = "recordsummary";
+
+    /**
+     * Tablename in backend
+     */
+    public final static String RECORDFULL = "recordfull";
+
+    /**
+     * XML element name in the representation of the response
+     */
+    public final static String BRIEFRECORD = "BriefRecord";
+
+    /**
+     * XML element name in the representation of the response
+     */
+    public final static String SUMMARYRECORD = "SummaryRecord";
+
+    /**
+     * XML element name in the representation of the response
+     */
+    public final static String RECORD = "Record";
+
+    /**
+     * Mapping between tablename and XML element name
+     */
+    private static Map<String, String> tableRecordType = new HashMap<String, String>();
+
     static {
+
+        tableRecordType.put( RECORDBRIEF, BRIEFRECORD );
+        tableRecordType.put( RECORDSUMMARY, SUMMARYRECORD );
+        tableRecordType.put( RECORDFULL, RECORD );
 
         // ----------------------------------------------------------------------------------------
         // ----------------------<common queryable properties>-------------------------------------
@@ -294,7 +333,17 @@ public class PostGISMappingsISODC implements PostGISMapping {
         /**
          * the foreignkey of a databasetable
          */
-        fk_datasets
+        fk_datasets,
+
+        /**
+         * the BLOB data of the record
+         */
+        data,
+
+        /**
+         * the format of the record, 1 == DC, 2 == ISO
+         */
+        format
 
     }
 
@@ -433,37 +482,38 @@ public class PostGISMappingsISODC implements PostGISMapping {
         isoqp_crs,
 
         /**
-         * TODO
+         * Boolean value - indication of conformance result
          */
         addqp_degree,
 
         /**
-         * TODO
+         * citation of the product specification or user requirement against which data is being evaluated
          */
         addqp_specification,
 
         /**
-         *TODO
+         * restrictions on the access and use of a resource or metadata
          */
         addqp_limitation,
 
         /**
-         * TODO
+         * assures the protection of privacy or intellectual property. Regarding special restrictions or limitations on
+         * obtaining the resource.
          */
         addqp_accessConstraint,
 
         /**
-         * TODO
+         * legal prerequisites for accessing and using the resource or metadata
          */
         addqp_otherConstraint,
 
         /**
-         * TODO
+         * name of the handling restrictions on the resource.
          */
         addqp_classification,
 
         /**
-         * TODO
+         * general explanation of the data producer's knowledge about the lineage of a dataset.
          */
         addqp_lineage
 
@@ -704,6 +754,13 @@ public class PostGISMappingsISODC implements PostGISMapping {
     public Map<QName, PropertyNameMapping> getPropToTableAndCol() {
 
         return propToTableAndCol;
+    }
+
+    /**
+     * @return the tableRecordType
+     */
+    public static Map<String, String> getTableRecordType() {
+        return tableRecordType;
     }
 
 }

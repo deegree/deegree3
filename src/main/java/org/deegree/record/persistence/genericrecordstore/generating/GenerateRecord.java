@@ -182,7 +182,7 @@ public class GenerateRecord {
     private OMElement setISOSummaryElements() {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
 
         isoSummaryElement = factory.createOMElement( "MD_Metadata", namespaceGMD );
         // identifier
@@ -266,7 +266,7 @@ public class GenerateRecord {
     private OMElement setISOFullElements() {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "" );
+        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
 
         isoFullElement = factory.createOMElement( "MD_Metadata", namespaceGMD );
         // identifier
