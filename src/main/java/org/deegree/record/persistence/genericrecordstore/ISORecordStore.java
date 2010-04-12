@@ -616,14 +616,15 @@ public class ISORecordStore implements RecordStore {
         } else {
             COUNT_PRE = "";
             COUNT_SUF = "";
-            SET_OFFSET = " OFFSET " + Integer.toString( recordStoreOptions.getStartPosition() - 1 );
+            SET_OFFSET = " OFFSET " + Integer.toString( recordStoreOptions.getStartPosition() - 1 ) + " LIMIT "
+                         + recordStoreOptions.getMaxRecords();
         }
         s.append( COUNT_PRE );
         for ( int i = 0; i < preparedStatementList.size(); i++ ) {
             if ( i == preparedStatementList.size() - 1 ) {
                 s.append( preparedStatementList.get( i ).first.toString() );
                 if ( recordStoreOptions.getMaxRecords() != 0 ) {
-                    s.append( " " + SET_OFFSET + " LIMIT " + recordStoreOptions.getMaxRecords() );
+                    s.append( " " + SET_OFFSET );
                 }
             } else {
                 s.append( preparedStatementList.get( i ).first.toString() );
