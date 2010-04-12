@@ -286,6 +286,10 @@ public class TextStroke implements Stroke {
                         sog = wordsToRender.poll();
                     }
 
+                    if ( sog.string == null ) {
+                        break;
+                    }
+
                     GlyphVector vec = font.createGlyphVector( frc, sog.string );
                     Shape text = vec.getOutline();
 
@@ -404,7 +408,7 @@ public class TextStroke implements Stroke {
         return result;
     }
 
-    class StringOrGap {
+    static class StringOrGap {
         String string;
 
         double gap;
