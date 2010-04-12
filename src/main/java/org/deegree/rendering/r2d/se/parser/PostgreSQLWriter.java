@@ -645,7 +645,8 @@ public class PostgreSQLWriter {
         for ( Triple<LinkedList<Styling>, DoublePair, LinkedList<String>> p : style.getBasesWithScales() ) {
             Iterator<String> labelexprs = p.third.iterator();
             for ( Styling s : p.first ) {
-                write( s, p.second, name == null ? style.getName() : name, labelexprs.next() );
+                write( s, p.second, name == null ? style.getName() : name, labelexprs.hasNext() ? labelexprs.next()
+                                                                                               : null );
             }
         }
     }
