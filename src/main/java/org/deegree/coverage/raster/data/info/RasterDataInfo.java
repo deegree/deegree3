@@ -104,7 +104,7 @@ public class RasterDataInfo {
         if ( noDataPixel == null || ( noDataPixel.length != ( bands * dataSize ) ) ) {
             this.noDataPixel = new byte[bands * dataSize];
         } else {
-            this.noDataPixel = noDataPixel;
+            this.noDataPixel = Arrays.copyOf( noDataPixel, noDataPixel.length );
         }
         this.noDataWrapper = ByteBuffer.wrap( this.noDataPixel );
     }
