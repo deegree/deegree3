@@ -84,8 +84,8 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * 
  */
-public class RasterFactory {
-    private static final Logger LOG = getLogger( RasterFactory.class );
+public class RasterFactoryTest {
+    private static final Logger LOG = getLogger( RasterFactoryTest.class );
 
     private final static float[] TEST_HEIGHTS = new float[] { -10.912f, -5.8f, 0.001f, 5.5f, 10.1f, 15.3f };
 
@@ -246,7 +246,7 @@ public class RasterFactory {
         // tiff subset 2: 4532millis
         // jai total: 44543millis
 
-        File f = new File( RasterFactory.class.getResource( file ).getFile() );
+        File f = new File( RasterFactoryTest.class.getResource( file ).getFile() );
         ImageInputStream iis = ImageIO.createImageInputStream( f );
 
         Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName( FileUtils.getFileExtension( f ) );

@@ -51,7 +51,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  * 
  */
-public class VersionFromMime {
+public class VersionFromMimeTest {
 
     @Test
     public void gml1_0_0() {

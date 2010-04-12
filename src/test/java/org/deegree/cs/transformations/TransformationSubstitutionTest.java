@@ -70,7 +70,7 @@ import org.junit.Test;
  * 
  * @version $Revision$, $Date$
  */
-public class TransformationSubstitution implements CRSDefines {
+public class TransformationSubstitutionTest implements CRSDefines {
 
     static {
         datum_6289.setToWGS84( wgs_1672 );

@@ -52,7 +52,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  * 
  */
-public class ParseGetCapabilitiesRequest {
+public class ParseGetCapabilitiesRequestTest {
 
     /**
      * parse example from http://schemas.opengis.net/sos/1.0.0/examples/

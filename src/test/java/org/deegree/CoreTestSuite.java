@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.commons.utils.time.DateUtilsTest.class, org.deegree.commons.xml.XMLAdapterTest.class,
                 org.deegree.commons.xml.schema.XSModelAnalyzerTest.class,
                 org.deegree.coverage.filter.RasterRangeSetTest.class, org.deegree.coverage.raster.GeoTIFFTest.class,
-                org.deegree.coverage.raster.RasterFactory.class, org.deegree.coverage.raster.WorldFileAccessTest.class,
+                org.deegree.coverage.raster.RasterFactoryTest.class, org.deegree.coverage.raster.WorldFileAccessTest.class,
                 org.deegree.coverage.raster.geom.RasterGeoRefTest.class,
                 org.deegree.coverage.raster.geom.RasterRectTest.class,
                 org.deegree.coverage.raster.integration.GriddedTileContainerTest.class,
@@ -87,7 +87,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.cs.projections.conic.LambertConformalConicTest.class,
                 org.deegree.cs.projections.cylindric.TransverseMercatorTest.class,
                 org.deegree.cs.transformations.TransformationAccuracyTest.class,
-                org.deegree.cs.transformations.TransformationSubstitution.class,
+                org.deegree.cs.transformations.TransformationSubstitutionTest.class,
                 org.deegree.feature.persistence.MemoryFeatureStoreTest.class,
                 org.deegree.feature.persistence.lock.DefaultLockManagerTest.class,
                 org.deegree.feature.persistence.postgis.JAXBAdapterTest.class,
@@ -101,7 +101,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.geometry.linearization.CurveLinearizerTest.class,
                 org.deegree.geometry.linearization.SurfaceLinearizerTest.class,
                 org.deegree.geometry.validation.GeometryValidatorTest.class,
-                org.deegree.geometry.wktadapter.WKTWriterTest.class, org.deegree.gml.VersionFromMime.class,
+                org.deegree.geometry.wktadapter.WKTWriterTest.class, org.deegree.gml.VersionFromMimeTest.class,
                 org.deegree.gml.dictionary.GMLDictionaryReaderTest.class,
                 org.deegree.gml.feature.GMLFeatureReaderTest.class, org.deegree.gml.feature.GMLFeatureWriterTest.class,
                 org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoderTest.class,
@@ -114,7 +114,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.gml.geometry.GMLGeometryWriterTest.class,
                 org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParserTest.class,
                 org.deegree.protocol.sos.ParseDescribeSensorRequestTest.class,
-                org.deegree.protocol.sos.ParseGetCapabilitiesRequest.class,
+                org.deegree.protocol.sos.ParseGetCapabilitiesRequestTest.class,
                 org.deegree.protocol.sos.ParseGetObservationRequestTest.class,
                 org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapterTest.class,
                 org.deegree.protocol.wfs.getfeature.GetFeatureKVPAdapterTest.class,
@@ -251,6 +251,11 @@ class CoreTestSuite {
                         }
                         if ( hasTestMethod ) {
                             LOG.debug( "adding class: " + className );
+                            if ( !className.toLowerCase().contains( "test" ) ) {
+                                LOG.info( "Class: "
+                                          + className
+                                          + " does not have the Word 'test' in its name, older plugins may not find it." );
+                            }
                             classes.add( className );
                         } else {
                             LOG.debug( "Not adding class: " + className + " because it is does not have a test method." );
