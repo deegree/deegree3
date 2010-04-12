@@ -83,7 +83,7 @@ public abstract class DefinitionParser {
 
     private static final Logger LOG = getLogger( DefinitionParser.class );
 
-    private final String LOCK = "LOCK";
+    private final Object LOCK = new Object();
 
     private DeegreeCRSProvider<StAXResource> provider = null;
 

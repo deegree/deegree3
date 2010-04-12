@@ -120,7 +120,11 @@ public class CompoundCRS extends CoordinateSystem {
      */
     @Override
     public Axis[] getAxis() {
-        return axis;
+        Axis[] result = new Axis[axis.length];
+        for ( int i = 0; i < axis.length; ++i ) {
+            result[i] = axis[i];
+        }
+        return result;
     }
 
     /**

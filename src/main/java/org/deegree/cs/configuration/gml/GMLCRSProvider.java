@@ -874,9 +874,9 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 throw new XMLParsingException( adapter, rootElement, "An ellipsoidal cs can only have 2 or 3 axis." );
             }
             if ( axis[0].getUnits() == null ) {
-                LOG.debug( "Could not check axis [0]: " + axis + " because it has no units." );
+                LOG.debug( "Could not check axis [0]: " + axis[0] + " because it has no units." );
             } else if ( axis[1].getUnits() == null ) {
-                LOG.debug( "Could not check axis [1]: " + axis + " because it has no units." );
+                LOG.debug( "Could not check axis [1]: " + axis[1] + " because it has no units." );
             } else {
                 if ( !( axis[0].getUnits().canConvert( Unit.RADIAN ) && axis[1].getUnits().canConvert( Unit.RADIAN ) ) ) {
                     throw new XMLParsingException( adapter, rootElement,
@@ -1416,7 +1416,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     protected OMElement getRequiredXlinkedElement( OMElement propertyElement, String alternativeXPath )
                             throws XMLParsingException, IOException {
         if ( propertyElement == null ) {
-            throw new XMLParsingException( adapter, propertyElement, "The propertyElement may not be null" );
+            throw new XMLParsingException( adapter, null, "The propertyElement may not be null" );
         }
         OMElement child = retrieveAndResolveXLink( propertyElement );
         if ( child == null ) {

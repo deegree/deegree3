@@ -121,7 +121,7 @@ public class TransformationFactory {
         /** Try to use an ntv2 transformation */
         NTv2;
         /** The property to use */
-        public static String DS_PROP = "PREFERRED_DATUM_TRANSFORM";
+        public final static String DS_PROP = "PREFERRED_DATUM_TRANSFORM";
 
         /**
          * Create a {@link DSTransform} from the String with bound to the Key {@link #DS_PROP}. If <code>null</code>

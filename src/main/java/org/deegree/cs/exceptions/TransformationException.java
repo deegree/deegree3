@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.cs.exceptions;
 
@@ -45,15 +45,15 @@ import javax.vecmath.Point3d;
 import org.deegree.cs.coordinatesystems.CoordinateSystem;
 
 /**
- * The <code>TransformationException</code> class can be thrown if a transformation exception
- * occurs. For example in the process of creating a transformation step.
- *
+ * The <code>TransformationException</code> class can be thrown if a transformation exception occurs. For example in the
+ * process of creating a transformation step.
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class TransformationException extends Exception {
@@ -69,7 +69,7 @@ public class TransformationException extends Exception {
 
     /**
      * Initializes the error message map with the given size.
-     *
+     * 
      * @param numberOfCoordinates
      *            in the list of coordinates which will be transformed.
      */
@@ -113,9 +113,9 @@ public class TransformationException extends Exception {
     public TransformationException( CoordinateSystem sourceCS, CoordinateSystem targetCS, String cause ) {
         super(
                new StringBuilder( "Can't transform from: " ).append( sourceCS.getCode() ).append( " into " ).append(
-                                                                                                                           targetCS.getCode() ).append(
-                                                                                                                                                              " because: " ).append(
-                                                                                                                                                                                     cause ).toString() );
+                                                                                                                     targetCS.getCode() ).append(
+                                                                                                                                                  " because: " ).append(
+                                                                                                                                                                         cause ).toString() );
     }
 
     /**
@@ -127,14 +127,13 @@ public class TransformationException extends Exception {
 
     /**
      * @param coordinateNumber
-     *            the position of the coordinate-tuple/triple which were responsible for the
-     *            transformationexception.
+     *            the position of the coordinate-tuple/triple which were responsible for the transformationexception.
      * @param errorMessage
      *            the error message for given coordinate pair (in the array of coordinates).
      */
     public final void setTransformError( int coordinateNumber, String errorMessage ) {
         String value = "";
-        Integer key = new Integer( coordinateNumber );
+        Integer key = Integer.valueOf( coordinateNumber );
         if ( transformErrors.containsKey( key ) && transformErrors.get( key ) != null ) {
             value = transformErrors.get( key ) + ";";
         }
@@ -143,8 +142,8 @@ public class TransformationException extends Exception {
     }
 
     /**
-     * @return the transformedPoints, which are the points that were (successfully or
-     *         unsuccessfully) transformed or <code>null</code> if no points were set.
+     * @return the transformedPoints, which are the points that were (successfully or unsuccessfully) transformed or
+     *         <code>null</code> if no points were set.
      */
     public final List<Point3d> getTransformedPoints() {
         return transformedPoints;
@@ -152,8 +151,7 @@ public class TransformationException extends Exception {
 
     /**
      * @param transformedPoints
-     *            which were (successfully or unsuccessfully) transformed until the exception(s)
-     *            occurred.
+     *            which were (successfully or unsuccessfully) transformed until the exception(s) occurred.
      */
     public final void setTransformedPoints( List<Point3d> transformedPoints ) {
         this.transformedPoints = transformedPoints;

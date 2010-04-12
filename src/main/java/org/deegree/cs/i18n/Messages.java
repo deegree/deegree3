@@ -81,17 +81,18 @@ public class Messages {
      * Initialization done at class loading time.
      */
     static {
+        InputStream is = null;
         try {
             // load all messages from default file ("org/deegree/model/i18n/message_en.properties")
             String fileName = "messages_en.properties";
-            InputStream is = Messages.class.getResourceAsStream( fileName );
+            is = Messages.class.getResourceAsStream( fileName );
+
             if ( is == null ) {
                 LOG.error( "Error while initializing " + Messages.class.getName() + " : " + " default message file: '"
                            + fileName + " not found." );
             }
             is = Messages.class.getResourceAsStream( fileName );
             defaultProps.load( is );
-            is.close();
 
             // override messages using file "/message_en.properties"
             fileName = "/messages_en.properties";
@@ -108,6 +109,16 @@ public class Messages {
             }
         } catch ( IOException e ) {
             LOG.error( "Error while initializing " + Messages.class.getName() + " : " + e.getMessage(), e );
+        } finally {
+            if ( is != null ) {
+                try {
+                    is.close();
+                } catch ( IOException e ) {
+                    LOG.debug( "Could not close stream: " + e.getLocalizedMessage(), e );
+                    LOG.debug( "Could not close stream: " + e.getLocalizedMessage() );
+
+                }
+            }
         }
     }
 

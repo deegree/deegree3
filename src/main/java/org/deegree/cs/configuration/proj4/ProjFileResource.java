@@ -148,7 +148,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Given id: " + uri + " converted into: " + tmpID );
         }
-        Map<String, String> result = idToParams.get( tmpID );
+        Map<String, String> result = idToParams.get( new CRSCodeType( tmpID ) );
         if ( result != null ) {
             result = new HashMap<String, String>( result );
         }
@@ -247,7 +247,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
         t.wordChars( ',', ',' );
         t.nextToken();
         String identifier = null;
-         /**
+/**
          * PROJ4 type definitions have following format, <number> +proj .... So the first type must start with an '<'
          */
         if ( t.ttype == '<' ) {
@@ -328,7 +328,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
      * @return a human readable String.
      */
     private String getTokenizerSymbolToString( int val ) {
-        String result = new String( "" + val );
+        String result = Integer.toString( val );
         if ( val == StreamTokenizer.TT_EOF ) {
             result = "End of file";
         } else if ( val == StreamTokenizer.TT_EOL ) {

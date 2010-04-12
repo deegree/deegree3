@@ -339,21 +339,21 @@ public class CRSIdentifiable {
      * @return the areasOfUse or <code>null</code> if no areasOfUse were given.
      */
     public final String[] getAreasOfUse() {
-        return areasOfUse;
+        return areasOfUse == null ? null : Arrays.copyOf( areasOfUse, areasOfUse.length );
     }
 
     /**
      * @return the descriptions or <code>null</code> if no descriptions were given.
      */
     public final String[] getDescriptions() {
-        return descriptions;
+        return descriptions == null ? null : Arrays.copyOf( descriptions, descriptions.length );
     }
 
     /**
      * @return the identifiers, each identifiable object has atleast one id.
      */
     public final CRSCodeType[] getCodes() {
-        return codes;
+        return Arrays.copyOf( codes, codes.length );
     }
 
     /**
@@ -371,14 +371,14 @@ public class CRSIdentifiable {
      * @return the names or <code>null</code> if no names were given.
      */
     public final String[] getNames() {
-        return names;
+        return names == null ? null : Arrays.copyOf( names, names.length );
     }
 
     /**
      * @return the versions or <code>null</code> if no versions were given.
      */
     public final String[] getVersions() {
-        return versions;
+        return versions == null ? null : Arrays.copyOf( versions, versions.length );
     }
 
     /**

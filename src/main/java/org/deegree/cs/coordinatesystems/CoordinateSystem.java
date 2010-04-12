@@ -93,7 +93,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     private static final Logger LOG = getLogger( CoordinateSystem.class );
 
-    private final String LOCK = "LOCK";
+    private final Object LOCK = new Object();
 
     private Axis[] axisOrder;
 
@@ -179,7 +179,16 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     public CoordinateSystem( List<Transformation> transformations, Datum datum, Axis[] axisOrder,
                              CRSIdentifiable identity ) {
         super( identity );
-        this.axisOrder = axisOrder;
+        if ( axisOrder != null ) {
+            this.axisOrder = new Axis[axisOrder.length];
+            for ( int i = 0; i < axisOrder.length; ++i ) {
+                this.axisOrder[i] = axisOrder[i];
+            }
+        } else {
+            // rb: what to do
+            this.axisOrder = null;
+        }
+
         this.usedDatum = datum;
         if ( transformations == null ) {
             transformations = new LinkedList<Transformation>();
@@ -191,7 +200,11 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @return (all) axis' in their defined order.
      */
     public Axis[] getAxis() {
-        return axisOrder;
+        Axis[] result = new Axis[axisOrder.length];
+        for ( int i = 0; i < axisOrder.length; ++i ) {
+            result[i] = axisOrder[i];
+        }
+        return result;
     }
 
     /**

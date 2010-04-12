@@ -133,6 +133,15 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
             LOG.error( e.getLocalizedMessage(), e );
             throw new IllegalArgumentException( "File: " + fileName + " is an invalid xml file resource because: "
                                                 + e.getLocalizedMessage() );
+        } finally {
+            if ( is != null ) {
+                try {
+                    is.close();
+                } catch ( IOException e ) {
+                    LOG.debug( "Could not close inputstream: " + e.getLocalizedMessage(), e );
+                    LOG.debug( "Could not close inputstream: " + e.getLocalizedMessage() );
+                }
+            }
         }
         this.provider = provider;
     }

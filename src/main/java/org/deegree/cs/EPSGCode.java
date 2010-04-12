@@ -36,10 +36,9 @@
 
 package org.deegree.cs;
 
-
 /**
- * The <code>EPSGCode</code> class formalizes the CRSIdentifiables object codes that were issued by EPSG. An instance
- * of this class will represent all the EPSG codes variants that denote the same object.
+ * The <code>EPSGCode</code> class formalizes the CRSIdentifiables object codes that were issued by EPSG. An instance of
+ * this class will represent all the EPSG codes variants that denote the same object.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -71,6 +70,43 @@ public class EPSGCode extends CRSCodeType {
      */
     public int getCodeNo() {
         return codeNo;
+    }
+
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof EPSGCode ) {
+            final EPSGCode that = (EPSGCode) other;
+            return this.codeNo == that.codeNo;
+        }
+        return false;
+    }
+
+    /**
+     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
+     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
+     * <ul>
+     * <li>boolean -- code = (f ? 0 : 1)</li>
+     * <li>byte, char, short, int -- code = (int)f</li>
+     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+     * <li>float -- code = Float.floatToIntBits(f);</li>
+     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
+     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
+     * <li>Array -- Apply above rules to each element</li>
+     * </ul>
+     * <p>
+     * Combining the hash code(s) computed above: result = 37 * result + code;
+     * </p>
+     * 
+     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        // the 2nd millionth prime, :-)
+        long result = 32452843;
+        result = result * 37 + codeNo;
+        return (int) ( result >>> 32 ) ^ (int) result;
     }
 
 }

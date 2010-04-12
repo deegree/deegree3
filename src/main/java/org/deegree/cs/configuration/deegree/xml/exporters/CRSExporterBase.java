@@ -40,8 +40,8 @@ import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -739,10 +739,10 @@ public class CRSExporterBase {
      * 
      * @param args
      * @throws XMLStreamException
-     * @throws FileNotFoundException
+     * @throws IOException
      */
     public static void main( String[] args )
-                            throws XMLStreamException, FileNotFoundException {
+                            throws XMLStreamException, IOException {
         // CoordinateSystem lookup = CRSRegistry.lookup( "EPSG:31466" );
         CRSConfiguration config = CRSConfiguration.getInstance();
         CRSProvider provider = config.getProvider();
@@ -788,6 +788,6 @@ public class CRSExporterBase {
         FileOutputStream out = new FileOutputStream( new File( "new_crs.xml" ) );
         XMLStreamWriter writer = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( out ) );
         exporter.export( one, writer );
-
+        writer.close();
     }
 }

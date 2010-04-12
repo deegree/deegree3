@@ -650,7 +650,7 @@ public class ProjectionUtils {
      *            to be converted to radians.
      * @return the radian equivalent of the inCoord.
      */
-    public static double DecMinSecToRadians( double inCoord ) {
+    public static double decMinSecToRadians( double inCoord ) {
         // get decimal minutes
         double remainder = getRemainder( inCoord ) * 100;
         // add the decimal minutes to the decimal seconds
@@ -667,7 +667,7 @@ public class ProjectionUtils {
      *            to be converted to degrees.minsec
      * @return the radian equivalent of the inCoord.
      */
-    public static double RadiansToDecMinSec( double inCoord ) {
+    public static double radiansToDecMinSec( double inCoord ) {
 
         double degrees = RTD * inCoord;
         double remainder = getRemainder( degrees );

@@ -1442,7 +1442,7 @@ public class CRSExporter extends CRSExporterBase {
 
     }
 
-    class IdComparer implements Comparator<CRSIdentifiable> {
+    static class IdComparer implements Comparator<CRSIdentifiable> {
 
         @Override
         public int compare( CRSIdentifiable o1, CRSIdentifiable o2 ) {

@@ -390,17 +390,18 @@ public class LambertConformalConic extends ConicProjection {
         return "lambertConformalConic";
     }
 
-    @Override
-    public boolean equals( Object other ) {
-        if ( other != null && other instanceof LambertConformalConic ) {
-            final LambertConformalConic that = (LambertConformalConic) other;
-            return super.equals( that ) /*
-                                         * && ( Math.abs( this.n - that.n ) < EPS11 ) && ( Math.abs( this.largeF -
-                                         * that.largeF ) < EPS11 ) && ( Math.abs( this.rho0 - that.rho0 ) < EPS11 )
-                                         */;
-        }
-        return false;
-    }
+    //
+    // @Override
+    // public boolean equals( Object other ) {
+    // if ( other != null && other instanceof LambertConformalConic ) {
+    // final LambertConformalConic that = (LambertConformalConic) other;
+    // return super.equals( that ) /*
+    // * && ( Math.abs( this.n - that.n ) < EPS11 ) && ( Math.abs( this.largeF -
+    // * that.largeF ) < EPS11 ) && ( Math.abs( this.rho0 - that.rho0 ) < EPS11 )
+    // */;
+    // }
+    // return false;
+    // }
 
     @Override
     public Projection clone( GeographicCRS newCRS ) {
