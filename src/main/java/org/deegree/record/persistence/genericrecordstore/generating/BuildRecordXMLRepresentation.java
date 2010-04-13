@@ -42,6 +42,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -114,10 +115,10 @@ public class BuildRecordXMLRepresentation {
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
                 sqlStatement.write( "UPDATE " + databaseTable + " SET "
-                                    + PostGISMappingsISODC.commonColumnNames.data.name() + " = '"
+                                    + PostGISMappingsISODC.CommonColumnNames.data.name() + " = '"
                                     + omElement.toString() + "' WHERE "
-                                    + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = " + fk_datasets
-                                    + " AND " + PostGISMappingsISODC.commonColumnNames.format.name() + " = " + 1 );
+                                    + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = " + fk_datasets
+                                    + " AND " + PostGISMappingsISODC.CommonColumnNames.format.name() + " = " + 1 );
 
                 buf = sqlStatement.getBuffer();
                 stm.executeUpdate( sqlStatement.toString() );
@@ -125,9 +126,9 @@ public class BuildRecordXMLRepresentation {
 
                 // ISO-update
                 sqlStatement.write( "UPDATE " + databaseTable + " SET "
-                                    + PostGISMappingsISODC.commonColumnNames.data.name() + " = '" + isoOMElement
-                                    + "' WHERE " + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " = "
-                                    + fk_datasets + " AND " + PostGISMappingsISODC.commonColumnNames.format.name()
+                                    + PostGISMappingsISODC.CommonColumnNames.data.name() + " = '" + isoOMElement
+                                    + "' WHERE " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = "
+                                    + fk_datasets + " AND " + PostGISMappingsISODC.CommonColumnNames.format.name()
                                     + " = " + 2 );
 
                 buf = sqlStatement.getBuffer();
@@ -158,11 +159,12 @@ public class BuildRecordXMLRepresentation {
      * 
      * @throws IOException
      */
-    public int generateISO( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement )
+    public int generateISO( Connection connection, int operatesOnId, ParsedProfileElement parsedElement )
                             throws IOException {
 
         int idDatabaseTable;
         for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+            PreparedStatement stm = null;
             StringWriter sqlStatement = new StringWriter( 500 );
             OMElement isoElement;
             if ( databaseTable.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
@@ -179,12 +181,17 @@ public class BuildRecordXMLRepresentation {
                 idDatabaseTable++;
 
                 sqlStatement.append( "INSERT INTO " + databaseTable + " ("
-                                     + PostGISMappingsISODC.commonColumnNames.id.name() + ", "
-                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", "
-                                     + PostGISMappingsISODC.commonColumnNames.format.name() + ", "
-                                     + PostGISMappingsISODC.commonColumnNames.data.name() + ") VALUES ("
-                                     + idDatabaseTable + "," + operatesOnId + ", 2, '" + isoElement.toString() + "');" );
-                stm.executeUpdate( sqlStatement.toString() );
+                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + ", "
+                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", "
+                                     + PostGISMappingsISODC.CommonColumnNames.format.name() + ", "
+                                     + PostGISMappingsISODC.CommonColumnNames.data.name() + ") VALUES (?,?,?,?);" );
+                stm = connection.prepareStatement( sqlStatement.toString() );
+                stm.setObject( 1, idDatabaseTable );
+                stm.setObject( 2, operatesOnId );
+                stm.setObject( 3, 2 );
+                stm.setObject( 4, isoElement.toString() );
+                stm.executeUpdate();
+                stm.close();
 
             } catch ( SQLException e ) {
 
@@ -196,7 +203,7 @@ public class BuildRecordXMLRepresentation {
          * additional it generates the Dublin Core representation
          */
 
-        return generateDC( connection, stm, operatesOnId, parsedElement );
+        return generateDC( connection, operatesOnId, parsedElement );
 
     }
 
@@ -210,14 +217,16 @@ public class BuildRecordXMLRepresentation {
      * 
      * @return an integer that is the primarykey from the inserted record
      */
-    public int generateDC( Connection connection, Statement stm, int operatesOnId, ParsedProfileElement parsedElement ) {
+    public int generateDC( Connection connection, int operatesOnId, ParsedProfileElement parsedElement ) {
 
         int recordsAffectedID = 0;
+
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace namespaceCSW = factory.createOMNamespace( CSW_202_NS, CSW_PREFIX );
 
         int idDatabaseTable;
         for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+            PreparedStatement stm = null;
             StringWriter sqlStatement = new StringWriter( 500 );
 
             try {
@@ -242,13 +251,18 @@ public class BuildRecordXMLRepresentation {
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
                 sqlStatement.append( "INSERT INTO " + databaseTable + " ("
-                                     + PostGISMappingsISODC.commonColumnNames.id.name() + ", "
-                                     + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + ", "
-                                     + PostGISMappingsISODC.commonColumnNames.format.name() + ", "
-                                     + PostGISMappingsISODC.commonColumnNames.data.name() + ") VALUES ("
-                                     + idDatabaseTable + "," + operatesOnId + ", 1, '" + omElement.toString() + "');" );
+                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + ", "
+                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", "
+                                     + PostGISMappingsISODC.CommonColumnNames.format.name() + ", "
+                                     + PostGISMappingsISODC.CommonColumnNames.data.name() + ") VALUES (?,?,?,?);" );
 
-                stm.executeUpdate( sqlStatement.toString() );
+                stm = connection.prepareStatement( sqlStatement.toString() );
+                stm.setObject( 1, idDatabaseTable );
+                stm.setObject( 2, operatesOnId );
+                stm.setObject( 3, 1 );
+                stm.setObject( 4, omElement.toString() );
+                stm.executeUpdate();
+                stm.close();
 
             } catch ( SQLException e ) {
 
@@ -258,6 +272,7 @@ public class BuildRecordXMLRepresentation {
                 LOG.debug( "error: " + e.getMessage(), e );
             }
         }
+
         return recordsAffectedID;
 
     }
@@ -305,8 +320,8 @@ public class BuildRecordXMLRepresentation {
     private int getLastDatasetId( Connection conn, String databaseTable )
                             throws SQLException {
         int result = 0;
-        String selectIDRows = "SELECT " + PostGISMappingsISODC.commonColumnNames.id.name() + " from " + databaseTable
-                              + " ORDER BY " + PostGISMappingsISODC.commonColumnNames.id.name() + " DESC LIMIT 1";
+        String selectIDRows = "SELECT " + PostGISMappingsISODC.CommonColumnNames.id.name() + " from " + databaseTable
+                              + " ORDER BY " + PostGISMappingsISODC.CommonColumnNames.id.name() + " DESC LIMIT 1";
         ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
 
         while ( rsBrief.next() ) {

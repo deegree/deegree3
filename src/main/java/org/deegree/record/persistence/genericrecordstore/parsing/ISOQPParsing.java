@@ -882,7 +882,7 @@ public final class ISOQPParsing extends XMLAdapter {
             uuid = uuid.replaceFirst( "[0-9]", String.valueOf( firstChar ) );
         }
         boolean uuidIsEqual = false;
-        ResultSet rs;
+        ResultSet rs = null;
         String compareIdentifier = "SELECT identifier FROM qp_identifier WHERE identifier = '" + uuid + "'";
         try {
             rs = connection.createStatement().executeQuery( compareIdentifier );
@@ -892,6 +892,15 @@ public final class ISOQPParsing extends XMLAdapter {
         } catch ( SQLException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
+        } finally {
+            try {
+                if ( rs != null ) {
+                    rs.close();
+                }
+            } catch ( SQLException e ) {
+
+                e.printStackTrace();
+            }
         }
 
         if ( uuidIsEqual == true ) {

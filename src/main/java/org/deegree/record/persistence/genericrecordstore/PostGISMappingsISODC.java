@@ -51,7 +51,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.SQLValueMangler;
 import org.deegree.commons.tom.primitive.XMLValueMangler;
 import org.deegree.filter.FilterEvaluationException;
@@ -323,7 +322,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
      * 
      * @version $Revision: $, $Date: $
      */
-    public enum commonColumnNames {
+    public enum CommonColumnNames {
 
         /**
          * the primarykey of a databasetable
@@ -355,7 +354,7 @@ public class PostGISMappingsISODC implements PostGISMapping {
      * 
      * @version $Revision: $, $Date: $
      */
-    public enum databaseTables {
+    public enum DatabaseTables {
         /**
          * main databasetable, all of the other tables derive from this table
          */
@@ -624,8 +623,6 @@ public class PostGISMappingsISODC implements PostGISMapping {
                 throw new FilterEvaluationException( column + " doesn't exist!" );
                 // pgValue = literal.getValue().toString();
             }
-
-            PrimitiveType t = getMapping( new PropertyName( requestedProperty ) ).getDbColumnType();
 
             Object internalValue = XMLValueMangler.xmlToInternal(
                                                                   literal.getValue().toString(),

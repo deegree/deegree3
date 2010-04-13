@@ -108,6 +108,7 @@ public class GenerateWhereClauseList {
         Iterator<Object> iter = whereParamsForGenerating.iterator();
 
         String[] match = ANDOR.split( whereBuilderHelper );
+
         for ( String matchee : match ) {
             clauseParamPair = new Pair<StringBuilder, Object>();
 

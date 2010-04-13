@@ -40,9 +40,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.util.List;
 
@@ -63,8 +63,6 @@ import org.slf4j.Logger;
 public class ExecuteStatements {
 
     private static final Logger LOG = getLogger( ExecuteStatements.class );
-
-    private Statement stm;
 
     private GenerateQueryableProperties generateQP;
 
@@ -88,16 +86,18 @@ public class ExecuteStatements {
         buildRecXML = new BuildRecordXMLRepresentation();
 
         try {
-            stm = connection.createStatement();
+            PreparedStatement stm = null;
             boolean isUpdate = false;
 
             /*
              * Question if there already exists the identifier.
              */
             for ( String identifier : parsedElement.getQueryableProperties().getIdentifier() ) {
-                String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.databaseTables.qp_identifier.name()
-                           + " AS i WHERE i.identifier = '" + identifier + "';";
-                ResultSet r = stm.executeQuery( s );
+                String s = "SELECT i.identifier FROM " + PostGISMappingsISODC.DatabaseTables.qp_identifier.name()
+                           + " AS i WHERE i.identifier = ?;";
+                stm = connection.prepareStatement( s );
+                stm.setObject( 1, identifier );
+                ResultSet r = stm.executeQuery();
                 LOG.debug( s );
 
                 if ( r.next() ) {
@@ -110,14 +110,15 @@ public class ExecuteStatements {
             int operatesOnId = generateQP.generateMainDatabaseDataset( connection, stm, parsedElement );
 
             if ( isDC == true ) {
-                insertedIds.add( buildRecXML.generateDC( connection, stm, operatesOnId, parsedElement ) );
+                insertedIds.add( buildRecXML.generateDC( connection, operatesOnId, parsedElement ) );
             } else {
-                insertedIds.add( buildRecXML.generateISO( connection, stm, operatesOnId, parsedElement ) );
+                insertedIds.add( buildRecXML.generateISO( connection, operatesOnId, parsedElement ) );
 
             }
-            generateQP.executeQueryableProperties( isUpdate, connection, stm, operatesOnId, parsedElement );
-            stm.close();
-
+            generateQP.executeQueryableProperties( isUpdate, connection, operatesOnId, parsedElement );
+            if ( stm != null ) {
+                stm.close();
+            }
         } catch ( SQLException e ) {
             LOG.debug( "error: " + e.getMessage(), e );
         }
@@ -135,8 +136,8 @@ public class ExecuteStatements {
     public void executeUpdateStatement( Connection connection, List<Integer> updatedIds,
                                         ParsedProfileElement parsedElement ) {
 
-        final String databaseTable = PostGISMappingsISODC.databaseTables.datasets.name();
-        final String qp_identifier = PostGISMappingsISODC.databaseTables.qp_identifier.name();
+        final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
+        final String qp_identifier = PostGISMappingsISODC.DatabaseTables.qp_identifier.name();
         boolean isUpdate = true;
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildRecordXMLRepresentation();
@@ -145,19 +146,22 @@ public class ExecuteStatements {
 
         int requestedId = 0;
         String modifiedAttribute = "null";
+
         try {
-            stm = connection.createStatement();
+            PreparedStatement stm = null;
             for ( String identifierString : parsedElement.getQueryableProperties().getIdentifier() ) {
 
                 sqlStatementUpdate.append( "SELECT " + databaseTable + "."
-                                           + PostGISMappingsISODC.commonColumnNames.id.name() + " FROM "
+                                           + PostGISMappingsISODC.CommonColumnNames.id.name() + " FROM "
                                            + databaseTable + "," + qp_identifier + " WHERE " + databaseTable + "."
-                                           + PostGISMappingsISODC.commonColumnNames.id.name() + " = " + qp_identifier
-                                           + "." + PostGISMappingsISODC.commonColumnNames.fk_datasets.name() + " AND "
-                                           + qp_identifier + ".identifier = '" + identifierString + "'" );
+                                           + PostGISMappingsISODC.CommonColumnNames.id.name() + " = " + qp_identifier
+                                           + "." + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " AND "
+                                           + qp_identifier + ".identifier = ?" );
                 LOG.debug( sqlStatementUpdate.toString() );
                 StringBuffer buf = sqlStatementUpdate.getBuffer();
-                ResultSet rs = connection.createStatement().executeQuery( sqlStatementUpdate.toString() );
+                stm = connection.prepareStatement( sqlStatementUpdate.toString() );
+                stm.setObject( 1, identifierString );
+                ResultSet rs = stm.executeQuery();
 
                 while ( rs.next() ) {
                     requestedId = rs.getInt( 1 );
@@ -181,47 +185,47 @@ public class ExecuteStatements {
 
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET anyText = '"
                                                   + parsedElement.getQueryableProperties().getAnyText() + "' WHERE "
-                                                  + PostGISMappingsISODC.commonColumnNames.id.name() + " = "
+                                                  + PostGISMappingsISODC.CommonColumnNames.id.name() + " = "
                                                   + requestedId );
 
-                        executeSQLStatementUpdate( sqlStatementUpdate );
+                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
 
                     }
 
                     // modified
                     if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET modified = " + modifiedAttribute
-                                                  + " WHERE " + PostGISMappingsISODC.commonColumnNames.id.name()
+                                                  + " WHERE " + PostGISMappingsISODC.CommonColumnNames.id.name()
                                                   + " = " + requestedId );
-                        executeSQLStatementUpdate( sqlStatementUpdate );
+                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
                     }
                     // hassecurityconstraints
                     if ( parsedElement.getQueryableProperties().isHasSecurityConstraints() == true ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET hassecurityconstraints = '"
                                                   + parsedElement.getQueryableProperties().isHasSecurityConstraints()
-                                                  + "' WHERE " + PostGISMappingsISODC.commonColumnNames.id.name()
+                                                  + "' WHERE " + PostGISMappingsISODC.CommonColumnNames.id.name()
                                                   + " = " + requestedId );
 
-                        executeSQLStatementUpdate( sqlStatementUpdate );
+                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
                     }
 
                     // language
                     if ( parsedElement.getQueryableProperties().getLanguage() != null ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET language = '"
                                                   + parsedElement.getQueryableProperties().getLanguage() + "' WHERE "
-                                                  + PostGISMappingsISODC.commonColumnNames.id.name() + " = "
+                                                  + PostGISMappingsISODC.CommonColumnNames.id.name() + " = "
                                                   + requestedId );
 
-                        executeSQLStatementUpdate( sqlStatementUpdate );
+                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
                     }
                     // parentidentifier
                     if ( parsedElement.getQueryableProperties().getParentIdentifier() != null ) {
                         sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET parentidentifier = '"
                                                   + parsedElement.getQueryableProperties().getParentIdentifier()
-                                                  + "' WHERE " + PostGISMappingsISODC.commonColumnNames.id.name()
+                                                  + "' WHERE " + PostGISMappingsISODC.CommonColumnNames.id.name()
                                                   + " = " + requestedId );
 
-                        executeSQLStatementUpdate( sqlStatementUpdate );
+                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
                     }
                     // TODO source
 
@@ -230,7 +234,7 @@ public class ExecuteStatements {
                     // recordBrief, recordSummary, recordFull update
                     updatedIds.add( buildRecXML.updateRecord( requestedId, parsedElement, stm ) );
 
-                    generateQP.executeQueryableProperties( isUpdate, connection, stm, requestedId, parsedElement );
+                    generateQP.executeQueryableProperties( isUpdate, connection, requestedId, parsedElement );
 
                 } else {
                     // TODO think about what response should be written if there is no such dataset in the backend??
@@ -239,8 +243,9 @@ public class ExecuteStatements {
                     throw new SQLException( msg );
                 }
             }
-            stm.close();
-
+            if ( stm != null ) {
+                stm.close();
+            }
         } catch ( SQLException e ) {
 
             LOG.debug( "error: " + e.getMessage(), e );
@@ -261,7 +266,7 @@ public class ExecuteStatements {
      *            the statement that is responsible for updating the backend
      * @throws SQLException
      */
-    private void executeSQLStatementUpdate( StringWriter sqlStatementUpdate )
+    private void executeSQLStatementUpdate( StringWriter sqlStatementUpdate, PreparedStatement stm )
                             throws SQLException {
         StringBuffer buf = sqlStatementUpdate.getBuffer();
         LOG.debug( sqlStatementUpdate.toString() );
