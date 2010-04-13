@@ -73,7 +73,7 @@ import com.sun.opengl.util.GLUT;
  */
 public class OpenGLEventHandler implements GLEventListener {
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( OpenGLEventHandler.class );
+    private final static Logger LOG = LoggerFactory.getLogger( OpenGLEventHandler.class );
 
     private List<WorldRenderableObject> worldRenderableObjects = new ArrayList<WorldRenderableObject>();
 
@@ -93,7 +93,7 @@ public class OpenGLEventHandler implements GLEventListener {
     // Distance to end of scene
     private float farClippingPlane;
 
-    private final float testObjectSize = 0.3f;
+    private final float testObjectSize = 10f;
 
     private final float cubeHalf = testObjectSize * 0.5f;
 
@@ -104,12 +104,6 @@ public class OpenGLEventHandler implements GLEventListener {
                                         { -cubeHalf, -cubeHalf, -cubeHalf }, { cubeHalf, -cubeHalf, -cubeHalf },
                                         { cubeHalf, cubeHalf, -cubeHalf }, { -cubeHalf, cubeHalf, -cubeHalf } };
 
-    private double zoomX = .1;
-
-    private double zoomY = .1;
-
-    private double zoomZ = .1;
-
     private GLU glu = new GLU();
 
     private GLUT glut = new GLUT();
@@ -117,6 +111,10 @@ public class OpenGLEventHandler implements GLEventListener {
     private int width;
 
     private int height;
+
+    private float fov = 60;
+
+    private double nearClippingPlane;
 
     /**
      * 
@@ -133,8 +131,8 @@ public class OpenGLEventHandler implements GLEventListener {
     }
 
     private Envelope getDefaultBBox() {
-        return new GeometryFactory().createEnvelope( new double[] { -1, -1, -1 }, new double[] { 1, 1, 1 },
-                                                             null );
+        return new GeometryFactory().createEnvelope( new double[] { -sphereSize, -sphereSize, -sphereSize },
+                                                     new double[] { sphereSize, sphereSize, sphereSize }, null );
     }
 
     /**
@@ -144,10 +142,31 @@ public class OpenGLEventHandler implements GLEventListener {
         centroid = new float[] { (float) bbox.getCentroid().get0(), (float) bbox.getCentroid().get1(),
                                 (float) bbox.getCentroid().get2() };
         lookAt = new float[] { centroid[0], centroid[1], centroid[2] };
-        farClippingPlane = 20 * (float) Math.max( bbox.getSpan0(), bbox.getSpan1() );
-        eye = new float[] { centroid[0], centroid[1] + ( farClippingPlane * .5f ),
-                           centroid[2] + ( farClippingPlane * .5f ) };
+        eye = calcOptimalEye( bbox );
+        float dist = Vectors3f.distance( centroid, eye );
+        System.out.println( "dist: " + dist );
+        System.out.println( "eye: " + Vectors3f.asString( eye ) );
+        System.out.println( "lookat: " + Vectors3f.asString( lookAt ) );
+        System.out.println( "centroid: " + Vectors3f.asString( centroid ) );
+        farClippingPlane = 2 * dist;
+        nearClippingPlane = 0.01 * farClippingPlane;
+
         trackBall.reset();
+    }
+
+    private float[] calcOptimalEye( Envelope bBox ) {
+        float[] eye = new float[] { 0, 1, 1 };
+        if ( bBox != null ) {
+            double[] min = bBox.getMin().getAsArray();
+            double[] max = bBox.getMax().getAsArray();
+            double centerX = min[0] + ( ( max[0] - min[0] ) * 0.5f );
+            double centerY = min[1] + ( ( max[1] - min[1] ) * 0.5f );
+
+            // float centerZ = bBox[2] + ( ( bBox[2] - bBox[5] ) * 0.5f );
+            double eyeZ = 2 * ( sphereSize / Math.tan( Math.toRadians( fov * 0.5 ) ) );
+            eye = new float[] { (float) centerX, (float) centerY, (float) eyeZ };
+        }
+        return eye;
     }
 
     @Override
@@ -155,21 +174,22 @@ public class OpenGLEventHandler implements GLEventListener {
         GL gl = theDrawable.getGL();
         gl.glClear( GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT );
         gl.glLoadIdentity();
-        glu.gluLookAt( eye[0], eye[1], eye[2], lookAt[0], lookAt[1], lookAt[2], 0, 0, 1 );
+        glu.gluLookAt( eye[0], eye[1], eye[2], lookAt[0], lookAt[1], lookAt[2], 0, 1, 0 );
         trackBall.multModelMatrix( gl, centroid );
-
-        LOG.trace( "farClippingPlane:" + farClippingPlane );
-        LOG.trace( "centroid:" + centroid[0] + "," + centroid[1] + "," + centroid[2] );
-        LOG.trace( "lookAt:" + lookAt[0] + "," + lookAt[1] + "," + lookAt[2] );
-        LOG.trace( "eye:" + eye[0] + "," + eye[1] + "," + eye[2] );
-
         float[] newEye = JOGLUtils.getEyeFromModelView( gl );
-        LOG.trace( "Eye in model space: " + Vectors3f.asString( newEye ) );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "farClippingPlane:" + farClippingPlane );
+            LOG.debug( "centroid:" + centroid[0] + "," + centroid[1] + "," + centroid[2] );
+            LOG.debug( "lookAt:" + lookAt[0] + "," + lookAt[1] + "," + lookAt[2] );
+            LOG.debug( "eye:" + eye[0] + "," + eye[1] + "," + eye[2] );
+            LOG.debug( "Eye in model space: " + Vectors3f.asString( newEye ) );
+        }
 
         Point3d newEyeP = new Point3d( newEye[0], newEye[1], newEye[2] );
         Point3d center = new Point3d( lookAt[0], lookAt[1], lookAt[2] );
         Vector3d up = new Vector3d( 0, 0, 1 );
-        ViewFrustum vf = new ViewFrustum( newEyeP, center, up, 60.0, (double) width / height, 0.5, farClippingPlane );
+        ViewFrustum vf = new ViewFrustum( newEyeP, center, up, fov, (double) width / height, nearClippingPlane,
+                                          farClippingPlane );
         ViewParams params = new ViewParams( vf, width, height );
         RenderContext context = new RenderContext( params );
         context.setContext( gl );
@@ -219,27 +239,14 @@ public class OpenGLEventHandler implements GLEventListener {
      * Update the view by evaluating the given key,
      * 
      * @param keyTyped
-     *            x/X , y/Y, z/Z, move along positive/negative axis, r/R(reset view), all thers will be ignored.
+     *            r/R(reset view), all others will be ignored.
      * @return true if the view should be redrawn, false otherwise.
      */
     public boolean updateView( char keyTyped ) {
         boolean changed = true;
-        if ( keyTyped == 'x' ) {
-            centroid[0] += zoomX;
-        } else if ( keyTyped == 'X' ) {
-            centroid[0] -= zoomX;
-        } else if ( keyTyped == 'y' ) {
-            centroid[1] += zoomY;
-        } else if ( keyTyped == 'Y' ) {
-            centroid[1] -= zoomY;
-        } else if ( keyTyped == 'z' ) {
-            centroid[2] += zoomZ;
-        } else if ( keyTyped == 'Z' ) {
-            centroid[2] -= zoomZ;
-        } else if ( keyTyped == 'r' || keyTyped == 'R' ) {
+        if ( keyTyped == 'r' || keyTyped == 'R' ) {
             calcViewParameters();
-        } else {
-            changed = false;
+            changed = true;
         }
         return changed;
 
@@ -348,7 +355,7 @@ public class OpenGLEventHandler implements GLEventListener {
         GL gl = d.getGL();
         gl.glMatrixMode( GL.GL_PROJECTION );
         gl.glLoadIdentity();
-        glu.gluPerspective( 60.0, (float) width / height, farClippingPlane * 0.01, farClippingPlane );
+        glu.gluPerspective( fov, (float) width / height, nearClippingPlane, farClippingPlane );
         gl.glMatrixMode( GL.GL_MODELVIEW );
 
     }

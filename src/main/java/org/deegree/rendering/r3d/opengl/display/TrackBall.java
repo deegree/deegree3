@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,39 +32,43 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.display;
 
 import java.awt.Point;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 
+import org.deegree.commons.utils.JOGLUtils;
+import org.deegree.commons.utils.math.Vectors3f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>TrackBall</code> pretends that a ball encloses the 3d view. You roll this ball with the mouse. For
- * example, if you click on the center of the ball and move the ball directly right, you rotate around y. Click on edge
- * of ball and roll to get a z rotation.
- *
+ * The <code>TrackBall</code> pretends that a ball encloses the 3d view. You roll this ball with the mouse. For example,
+ * if you click on the center of the ball and move the ball directly right, you rotate around y. Click on edge of ball
+ * and roll to get a z rotation.
+ * 
  * The idea isn't too hard. Start with a vector from the first mouse click to the center of the 3d view. Set the radius
  * of the ball to the smaller dimension of the 3d view. As you drag around, a second vector is determined from the
  * surface to center of the ball. Axis of rotation is cross-product of those two vectors, and the angle is the angle
  * between the vectors.
- *
+ * 
  * This class was copied from a cpp file I once used in my Computer Graphic classes. I don't know who the original
  * author was, but since I only created the java representation of the working code, I would like to thank him/her.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author: rbezema $
- *
+ * 
  * @version $Revision: 15531 $, $Date: 2009-01-07 15:05:43 +0100 (Mi, 07 Jan 2009) $
- *
+ * 
  */
 public class TrackBall extends MouseAdapter {
     private final static Logger LOG = LoggerFactory.getLogger( TrackBall.class );
@@ -85,6 +89,8 @@ public class TrackBall extends MouseAdapter {
 
     private float[] rotationVector;
 
+    private float translation;
+
     private float[] tbRot;
 
     private boolean isDragging;
@@ -100,6 +106,7 @@ public class TrackBall extends MouseAdapter {
         rotationVector = new float[] { 0, 1, 0, 0 };
         tbRot = new float[] { 0, 1, 0, 0 };
         isDragging = false;
+        translation = 0;
     }
 
     @Override
@@ -116,6 +123,25 @@ public class TrackBall extends MouseAdapter {
                 start( (GLAutoDrawable) e.getSource(), e.getPoint() );
                 isDragging = true;
             }
+        }
+    }
+
+    @Override
+    public void mouseWheelMoved( MouseWheelEvent e ) {
+        if ( e.getSource() instanceof GLAutoDrawable ) {
+
+            double moveStep = 1;
+
+            if ( ( e.getModifiersEx() & ( InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK ) ) == InputEvent.SHIFT_DOWN_MASK ) {
+                // SHIFT (and not CTRL)
+                moveStep *= 10.0;
+            } else if ( ( e.getModifiersEx() & ( InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK ) ) == InputEvent.CTRL_DOWN_MASK ) {
+                // CTRL (and not SHIFT)
+                moveStep /= 10.0;
+            }
+            //
+            translation += ( -e.getWheelRotation() * moveStep );
+            ( (GLAutoDrawable) e.getSource() ).display();
         }
     }
 
@@ -152,12 +178,12 @@ public class TrackBall extends MouseAdapter {
 
     /**
      * Multiply the rotation vectors on top of the current context, the multiplication also uses the translation
-     *
+     * 
      * @param context
      *            to multiply the rotations upon.
      * @param worldTranslation
-     *            a float[3] which contains a translation vector (normally the center of the scene ), if null or length !=
-     *            3 no translation will be done.
+     *            a float[3] which contains a translation vector (normally the center of the scene ), if null or length
+     *            != 3 no translation will be done.
      */
     @SuppressWarnings("null")
     public void multModelMatrix( GL context, float[] worldTranslation ) {
@@ -172,27 +198,36 @@ public class TrackBall extends MouseAdapter {
         if ( translate ) {
             context.glTranslatef( worldTranslation[0], worldTranslation[1], worldTranslation[2] );
         }
+        // context.glPushMatrix();
         context.glRotatef( tbRot[0], tbRot[1], tbRot[2], tbRot[3] );
         context.glRotatef( rotationVector[0], rotationVector[1], rotationVector[2], rotationVector[3] );
+
         if ( translate ) {
             context.glTranslatef( -worldTranslation[0], -worldTranslation[1], -worldTranslation[2] );
         }
+        // calculate the zoom level.
+        float[] newEye = JOGLUtils.getEyeFromModelView( context );
+        float[] viewVec = Vectors3f.sub( worldTranslation, newEye );
+        Vectors3f.normalizeInPlace( viewVec );
+        Vectors3f.scale( -translation, viewVec );
+        context.glTranslatef( viewVec[0], viewVec[1], viewVec[2] );
     }
 
     /**
      * Reset the rotation vectors
      */
     public void reset() {
-        rotationVector[0] = tbRot[0] = 0;
+        rotationVector[0] = tbRot[0] = translation = 0;
         rotationVector[1] = tbRot[1] = 1;
         rotationVector[2] = tbRot[2] = 0;
         rotationVector[3] = tbRot[3] = 0;
+
     }
 
     /**
      * Initialize a new rotation by calculating the startposition on as well as the center and radius of the (imaginary)
      * sphere.
-     *
+     * 
      * @param drawable
      *            to get the window height and width from.
      * @param point
@@ -236,11 +271,11 @@ public class TrackBall extends MouseAdapter {
     /**
      * Calculate the current rotation while dragging, by identifying the current position relative to the start position
      * and normalizing the rotation axis calculate using simple trigonometry.
-     *
+     * 
      * @param mousePosition
      *            while dragging
-     * @return <code>null</code> if the dragging distance was to small, otherwise the new temporary rotation axis
-     *         since the last rotation.
+     * @return <code>null</code> if the dragging distance was to small, otherwise the new temporary rotation axis since
+     *         the last rotation.
      */
     private float[] rollTo( Point mousePosition ) {
 
@@ -295,8 +330,7 @@ public class TrackBall extends MouseAdapter {
      * A' = A . da
      * for quaternions: let q0 <- A, and q1 <- dA.
      * Figure out: q2 = q1 + q0 (note order)
-     * </code>
-     * if the identity rotation was found ( cos (0.5*angle) == 1 ) the rotation vector will be set to identity
+     * </code> if the identity rotation was found ( cos (0.5*angle) == 1 ) the rotation vector will be set to identity
      */
     private void addToRotation() {
         // A' <- q3
@@ -335,7 +369,7 @@ public class TrackBall extends MouseAdapter {
 
     /**
      * Set the rotation angle while dragging
-     *
+     * 
      * @param r
      *            the new rotation parameters
      */
@@ -349,7 +383,7 @@ public class TrackBall extends MouseAdapter {
     /**
      * convert GL rotation to a quaternion. GL looks like: {ang, x, y, z} and quat looks like: {{v}, cos(angle/2)} where
      * {v} is (x,y,z)/sin(angle/2)
-     *
+     * 
      * @param A
      *            The original opengl rotation
      * @return the quaternion
