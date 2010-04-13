@@ -441,7 +441,7 @@ public class CRSIdentifiable {
                     String bboxString = areasOfUse[i];
                     try {
                         double[] ords = parseAreaBBox( bboxString );
-                        for ( int co = 0; i < 4; co++ ) {
+                        for ( int co = 0; co < 4; co++ ) {
                             if ( Double.isNaN( areaOfUseBBox[co] ) || areaOfUseBBox[i] > ords[co] ) {
                                 areaOfUseBBox[co] = ords[co];
                             }
