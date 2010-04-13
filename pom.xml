@@ -56,16 +56,28 @@
         <artifactId>buildnumber-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>validate</id>
             <phase>validate</phase>
             <goals>
               <goal>create</goal>
             </goals>
+	        <configuration>
+	          <doCheck>false</doCheck>
+	          <doUpdate>false</doUpdate>
+	        </configuration>            
+          </execution>
+          <execution>
+            <id>deploy</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+	        <configuration>
+	          <doCheck>true</doCheck>
+	          <doUpdate>false</doUpdate>
+	        </configuration>
           </execution>
         </executions>
-        <configuration>
-          <doCheck>false</doCheck>
-          <doUpdate>false</doUpdate>
-        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -198,11 +210,6 @@
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
-      <version>2.1.10</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-xjc</artifactId>
       <version>2.1.10</version>
     </dependency>
     <dependency>
