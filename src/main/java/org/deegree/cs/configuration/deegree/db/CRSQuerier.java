@@ -150,6 +150,7 @@ public class CRSQuerier {
             if ( rs.next() ) {
                 return rs.getInt( 1 );
             }
+            ps.close();
             LOG.warn( "CRSIdentifiable was unable to find an internal ID for the supplied identifiable object" );
             return -1;
 

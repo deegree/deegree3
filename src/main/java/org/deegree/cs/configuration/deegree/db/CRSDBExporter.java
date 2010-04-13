@@ -1162,6 +1162,7 @@ public class CRSDBExporter {
         ResultSet rs = ps.executeQuery();
         rs.next();
         internalID = rs.getInt( 1 ) + 1; // if rs.getInt(1) is NULL the value returned is 0 anyway
+        ps.close();
 
         for ( CoordinateSystem crs : crsList ) {
             if ( crs != null ) {

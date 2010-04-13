@@ -117,11 +117,21 @@ public class CRSRemover {
      */
     void removeIdentifiableAttributes( int internalID )
                             throws SQLException {
-        connection.prepareStatement( "DELETE FROM code WHERE ref_id = " + internalID ).execute();
-        connection.prepareStatement( "DELETE FROM name WHERE ref_id = " + internalID ).execute();
-        connection.prepareStatement( "DELETE FROM version WHERE ref_id = " + internalID ).execute();
-        connection.prepareStatement( "DELETE FROM description WHERE ref_id = " + internalID ).execute();
-        connection.prepareStatement( "DELETE FROM area WHERE ref_id = " + internalID ).execute();
+        PreparedStatement ps = connection.prepareStatement( "DELETE FROM code WHERE ref_id = " + internalID );
+        ps.execute();
+        ps.close();
+        ps = connection.prepareStatement( "DELETE FROM name WHERE ref_id = " + internalID );
+        ps.execute();
+        ps.close();
+        ps = connection.prepareStatement( "DELETE FROM version WHERE ref_id = " + internalID );
+        ps.execute();
+        ps.close();
+        ps = connection.prepareStatement( "DELETE FROM description WHERE ref_id = " + internalID );
+        ps.execute();
+        ps.close();
+        ps = connection.prepareStatement( "DELETE FROM area WHERE ref_id = " + internalID );
+        ps.execute();
+        ps.close();
     }
 
     /**
