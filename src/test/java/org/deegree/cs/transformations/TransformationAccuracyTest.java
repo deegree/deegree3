@@ -275,6 +275,7 @@ public class TransformationAccuracyTest implements CRSDefines {
     @Test
     public void testCompoundToGeographic()
                             throws TransformationException {
+
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS(
                                                  heightAxis,
@@ -294,6 +295,67 @@ public class TransformationAccuracyTest implements CRSDefines {
 
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, new Point3d( METER_EPSILON,
                                                                                                      0.17, 0.6 ) );
+    }
+
+    /**
+     * Test the transformation from a compound_projected crs (EPSG:28992_compound) to a geographic crs (EPSG:4258)
+     * coordinate system .
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testCompoundToGeographicEqualOnEllips()
+                            throws TransformationException {
+        // urn:x-ogc:def:crs:EPSG:4979
+        // urn:x-ogc:def:crs:EPSG:4326
+        // EPSG:4326
+        CompoundCRS sourceCRS = new CompoundCRS(
+                                                 heightAxis,
+                                                 GeographicCRS.WGS84_YX,
+                                                 20,
+                                                 new CRSIdentifiable(
+                                                                      new CRSCodeType[] { new CRSCodeType(
+                                                                                                           "urn:x-ogc:def:crs:EPSG:4979" ) } ) );
+
+        // Target crs espg:4258
+        GeographicCRS targetCRS = GeographicCRS.WGS84_YX;
+
+        // taken from wfs cite 1.1.0 test
+        Point3d sourcePoint = new Point3d( 46.074, 9.799, 600.2 );
+        Point3d targetPoint = new Point3d( 46.074, 9.799, Double.NaN );
+
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_D );
+    }
+
+    /**
+     * Test the transformation from a compound_projected crs (EPSG:28992_compound) to a geographic crs (EPSG:4258)
+     * coordinate system .
+     * 
+     * @throws TransformationException
+     */
+    @Test
+    public void testCompoundToGeographicEqualOnEllipsNotOnAxis()
+                            throws TransformationException {
+        // urn:x-ogc:def:crs:EPSG:4979
+        // urn:x-ogc:def:crs:EPSG:4326
+        // EPSG:4326
+        CompoundCRS sourceCRS = new CompoundCRS(
+                                                 heightAxis,
+                                                 GeographicCRS.WGS84_YX,
+                                                 20,
+                                                 new CRSIdentifiable(
+                                                                      new CRSCodeType[] { new CRSCodeType(
+                                                                                                           "urn:x-ogc:def:crs:EPSG:4979" ) } ) );
+
+        // Target crs espg:4258
+        GeographicCRS targetCRS = GeographicCRS.WGS84;
+
+        // taken from wfs cite 1.1.0 test
+        Point3d sourcePoint = new Point3d( 46.074, 9.799, 600.2 );
+        Point3d targetPoint = new Point3d( 9.799, 46.074, Double.NaN );
+
+        LOG.warn( "Accuracy test, Compound->Geographic EqualOnEllipsNotOnAxis, This issue has to be fixed yet." );
+        // doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_D );
     }
 
     /**
