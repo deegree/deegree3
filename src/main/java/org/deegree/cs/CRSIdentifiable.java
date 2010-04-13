@@ -266,6 +266,7 @@ public class CRSIdentifiable {
                 }
             }
         }
+        sb.append( "]" );
         return sb.toString();
     }
 

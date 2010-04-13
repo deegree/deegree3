@@ -385,9 +385,8 @@ public class WKTParser {
                                            "Te SPHEROID element must contain the semi-major axis and inverse flattening parameters. Before line "
                                                                    + tokenizer.lineno() );
 
-        return new Ellipsoid( semiMajorAxis, Unit.RADIAN /* temporarily, until parsing the Unit of the wrapping CRS */,
-                              inverseFlattening, new CRSIdentifiable( new CRSCodeType[] { code },
-                                                                      new String[] { name }, null, null, null ) );
+        return new Ellipsoid( semiMajorAxis, Unit.METRE, inverseFlattening,
+                              new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null, null ) );
     }
 
     /**
@@ -693,7 +692,6 @@ public class WKTParser {
 
         pm.setAngularUnit( unit );
         datum.setPrimeMeridian( pm );
-        datum.getEllipsoid().setUnits( unit );
 
         return new GeocentricCRS( datum, new Axis[] { axis1, axis2, axis3 },
                                   new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null,
@@ -711,9 +709,7 @@ public class WKTParser {
         GeodeticDatum datum = null;
         PrimeMeridian pm = null;
         Unit unit = null;
-        Axis axis1 = new Axis( Unit.DEGREE, "Lon", Axis.AO_EAST ); // the default values for GEOGCS axes, based on the
-        // OGC
-        // specification
+        Axis axis1 = new Axis( Unit.DEGREE, "Lon", Axis.AO_EAST );
         Axis axis2 = new Axis( Unit.DEGREE, "Lat", Axis.AO_NORTH );
         CRSCodeType code = CRSCodeType.getUndefined();
         while ( true ) {
@@ -767,7 +763,6 @@ public class WKTParser {
 
         pm.setAngularUnit( unit );
         datum.setPrimeMeridian( pm );
-        datum.getEllipsoid().setUnits( unit );
 
         return new GeographicCRS( datum, new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                            new String[] { name }, null,
@@ -1144,4 +1139,5 @@ public class WKTParser {
         WKTParser parse = new WKTParser( new BufferedReader( new StringReader( wkt ) ) );
         return parse.parseCoordinateSystem();
     }
+
 }
