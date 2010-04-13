@@ -99,7 +99,7 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
 
     public String translateNamespacePrefixToUri( String prefix ) {
         // TODO remove this hack
-        if ( prefix == "" ) {
+        if ( prefix.equals( "" ) ) {
             return null;
         }
         if ( javaNsc != null ) {
@@ -114,7 +114,7 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
      * @return namespcae URI assigned to a prefix
      */
     public String getURI( String prefix ) {
-        if ( prefix == "" ) {
+        if ( prefix.equals( "" ) ) {
             return null;
         }
         return namespaceMap.get( prefix );
