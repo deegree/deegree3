@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.simplesql;
 
 import static java.lang.Boolean.TRUE;
+import static java.lang.System.currentTimeMillis;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
@@ -129,6 +130,8 @@ public class SimpleSQLDatastore implements FeatureStore {
 
     TreeMap<Integer, String> lods;
 
+    private Pair<Long, Envelope> cachedEnvelope = new Pair<Long, Envelope>();
+
     /**
      * @param connId
      * @param crs
@@ -175,57 +178,65 @@ public class SimpleSQLDatastore implements FeatureStore {
     }
 
     public Envelope getEnvelope( QName ftName ) {
-        ResultSet set = null;
-        PreparedStatement stmt = null;
-        Connection conn = null;
-        try {
-            conn = getConnection( connId );
-            stmt = conn.prepareStatement( bbox );
-            LOG.debug( "Getting bbox with query '{}'.", stmt );
-            stmt.execute();
-            set = stmt.getResultSet();
-            if ( set.next() ) {
-                Geometry g = WKTReader.read( set.getString( "bbox" ) );
-                g.setCoordinateSystem( crs );
-                return g.getEnvelope();
+        synchronized ( cachedEnvelope ) {
+            long current = currentTimeMillis();
+            if ( cachedEnvelope.first != null && ( current - cachedEnvelope.first ) < 1000 ) {
+                return cachedEnvelope.second;
             }
-        } catch ( SQLException e ) {
-            LOG.info( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            available = false;
+            ResultSet set = null;
+            PreparedStatement stmt = null;
+            Connection conn = null;
+            try {
+                conn = getConnection( connId );
+                stmt = conn.prepareStatement( bbox );
+                LOG.debug( "Getting bbox with query '{}'.", stmt );
+                stmt.execute();
+                set = stmt.getResultSet();
+                if ( set.next() ) {
+                    Geometry g = WKTReader.read( set.getString( "bbox" ) );
+                    g.setCoordinateSystem( crs );
+                    cachedEnvelope.first = current;
+                    cachedEnvelope.second = g.getEnvelope();
+                    return cachedEnvelope.second;
+                }
+            } catch ( SQLException e ) {
+                LOG.info( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+                available = false;
+                return null;
+            } catch ( ParseException e ) {
+                LOG.info( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+                available = false;
+                return null;
+            } finally {
+                if ( set != null ) {
+                    try {
+                        set.close();
+                    } catch ( SQLException e ) {
+                        LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    }
+                }
+                if ( stmt != null ) {
+                    try {
+                        stmt.close();
+                    } catch ( SQLException e ) {
+                        LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    }
+                }
+                if ( conn != null ) {
+                    try {
+                        conn.close();
+                    } catch ( SQLException e ) {
+                        LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    }
+                }
+            }
             return null;
-        } catch ( ParseException e ) {
-            LOG.info( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            available = false;
-            return null;
-        } finally {
-            if ( set != null ) {
-                try {
-                    set.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
         }
-        return null;
     }
 
     public LockManager getLockManager()
