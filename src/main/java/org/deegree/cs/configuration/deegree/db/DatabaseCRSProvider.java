@@ -164,7 +164,17 @@ public class DatabaseCRSProvider implements CRSProvider {
         if ( dbDriver == null )
             dbDriver = "org.apache.derby.jdbc.EmbeddedDriver";
 
-        // connect to the database
+        connect();
+
+        querier = new CRSQuerier();
+        querier.setConnection( conn );
+        exporter = new CRSDBExporter();
+        exporter.setConnection( conn );
+        remover = new CRSRemover();
+        remover.setConnection( conn );
+    }
+
+    private synchronized void connect() {
         try {
             Class.forName( dbDriver );
             conn = DriverManager.getConnection( dbConnectionURL, dbUser, dbPass );
@@ -173,13 +183,6 @@ public class DatabaseCRSProvider implements CRSProvider {
         } catch ( SQLException e ) {
             LOG.error( e.getMessage(), e );
         }
-
-        querier = new CRSQuerier();
-        querier.setConnection( conn );
-        exporter = new CRSDBExporter();
-        exporter.setConnection( conn );
-        remover = new CRSRemover();
-        remover.setConnection( conn );
     }
 
     /**
