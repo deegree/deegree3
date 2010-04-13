@@ -337,6 +337,9 @@ public class WKTParser {
             throw new WKTParsingException( "The PRIMEM element must containt the longitude paramaeter. Before line  "
                                            + tokenizer.lineno() );
 
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
+        }
         return new PrimeMeridian( Unit.RADIAN /* temporarily, until parsing the Unit of the wrapping CRS */, longitude,
                                   new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null,
                                                        null ) );
@@ -385,6 +388,9 @@ public class WKTParser {
                                            "Te SPHEROID element must contain the semi-major axis and inverse flattening parameters. Before line "
                                                                    + tokenizer.lineno() );
 
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
+        }
         return new Ellipsoid( semiMajorAxis, Unit.METRE, inverseFlattening,
                               new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null, null ) );
     }
@@ -494,6 +500,9 @@ public class WKTParser {
             throw new WKTParsingException( "The DATUM element must contain a SPHEROID. Before line "
                                            + tokenizer.lineno() );
 
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
+        }
         return new GeodeticDatum( ellipsoid, helmert, code, name );
     }
 
@@ -532,10 +541,14 @@ public class WKTParser {
             if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
                 break;
         }
-        if ( name == null )
+        if ( name == null ) {
             throw new WKTParsingException(
                                            "The VERT_DATUM element must contain a name as a quoted String. Before line "
                                                                    + tokenizer.lineno() );
+        }
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
+        }
 
         return new VerticalDatum( code, name, null, null, null );
     }
@@ -621,6 +634,9 @@ public class WKTParser {
             throw new WKTParsingException( "The VERT_CS element must contain a VERT_DATUM. Before line "
                                            + tokenizer.lineno() );
 
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
+        }
         return new VerticalCRS( verticalDatum, new Axis[] { axis }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                          new String[] { name }, null,
                                                                                          null, null ) );
@@ -637,8 +653,8 @@ public class WKTParser {
         GeodeticDatum datum = null;
         PrimeMeridian pm = null;
         Unit unit = null;
-        Axis axis1 = new Axis( "X", Axis.AO_OTHER ); // the default values of GEOCCS axes, based on the OGC
-        // specification
+        // the default values of GEOCCS axes, based on the OGC specification
+        Axis axis1 = new Axis( "X", Axis.AO_OTHER );
         Axis axis2 = new Axis( "Y", Axis.AO_EAST );
         Axis axis3 = new Axis( "Z", Axis.AO_NORTH );
         CRSCodeType code = CRSCodeType.getUndefined();
@@ -693,6 +709,9 @@ public class WKTParser {
         pm.setAngularUnit( unit );
         datum.setPrimeMeridian( pm );
 
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
+        }
         return new GeocentricCRS( datum, new Axis[] { axis1, axis2, axis3 },
                                   new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null,
                                                        null ) );
@@ -764,6 +783,9 @@ public class WKTParser {
         pm.setAngularUnit( unit );
         datum.setPrimeMeridian( pm );
 
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
+        }
         return new GeographicCRS( datum, new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                            new String[] { name }, null,
                                                                                            null, null ) );
@@ -917,6 +939,14 @@ public class WKTParser {
             params.put( "standard_parallel2", 0.0 );
         } else {
             params.put( "standard_parallel2", params.get( stdParallel2 ) );
+        }
+
+        if ( projectionCode.equals( CRSCodeType.getUndefined() ) ) {
+            projectionCode = new CRSCodeType( projectionType );
+        }
+
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
         }
 
         if ( projectionType.equalsIgnoreCase( "transverse_mercator" )
@@ -1078,6 +1108,9 @@ public class WKTParser {
                                            + tokenizer.lineno() );
         }
 
+        if ( code.equals( CRSCodeType.getUndefined() ) ) {
+            code = new CRSCodeType( name );
+        }
         return new CompoundCRS( verticalCRS.getVerticalAxis(), underlyingCRS, 0.0,
                                 new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null,
                                                      null ) );
@@ -1138,6 +1171,11 @@ public class WKTParser {
                             throws IOException {
         WKTParser parse = new WKTParser( new BufferedReader( new StringReader( wkt ) ) );
         return parse.parseCoordinateSystem();
+    }
+
+    public static void main( String[] args )
+                            throws IOException {
+        System.out.println( parse( "PROJCS[\"DHDN_3_Degree_Gauss_Zone_3\",GEOGCS[\"GCS_Deutsches_Hauptdreiecksnetz\",DATUM[\"D_Deutsches_Hauptdreiecksnetz\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",3500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",9.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]" ) );
     }
 
 }
