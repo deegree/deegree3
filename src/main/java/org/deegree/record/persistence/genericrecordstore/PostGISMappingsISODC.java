@@ -342,8 +342,12 @@ public class PostGISMappingsISODC implements PostGISMapping {
         /**
          * the format of the record, 1 == DC, 2 == ISO
          */
-        format
+        format,
 
+        /**
+         * the identifier of the record
+         */
+        identifier;
     }
 
     /**
