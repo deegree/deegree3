@@ -77,9 +77,7 @@ public interface Property extends TypedObjectNode {
     public PropertyType getType();
 
     /**
-     * Returns whether the property is nilled.
-     * 
-     * TODO Does this always correspond to a value of <code>null</code>?
+     * Returns whether the property is nilled (corresponds to xsi:nil in an XML representation of the property element).
      * 
      * @return true, if the property is nilled, false otherwise
      */
@@ -88,7 +86,7 @@ public interface Property extends TypedObjectNode {
     /**
      * Returns the value of this property.
      * 
-     * @return the value of this property, or <code>null</code> if it is nilled
+     * @return the value of this property can be <code>null</code>
      */
     public TypedObjectNode getValue();
     

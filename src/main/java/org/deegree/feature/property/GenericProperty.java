@@ -58,13 +58,15 @@ public class GenericProperty implements Property {
 
     private TypedObjectNode value;
 
+    private boolean nilled;
+
     /**
      * Creates a new {@link GenericProperty} instance that is of type {@link SimplePropertyType}.
      * 
      * @param declaration
      *            type information
      * @param value
-     *            property value, can be <code>null</code> (property is nilled)
+     *            property value, can be <code>null</code>
      */
     public GenericProperty( PropertyType declaration, TypedObjectNode value ) {
         this( declaration, null, value );
@@ -78,7 +80,7 @@ public class GenericProperty implements Property {
      * @param name
      *            name of the property (does not necessarily match the name in the type information)
      * @param value
-     *            property value
+     *            property value, can be <code>null</code>
      */
     public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value ) {
         this.declaration = declaration;
@@ -107,7 +109,7 @@ public class GenericProperty implements Property {
 
     @Override
     public boolean isNilled() {
-        return value == null;
+        return nilled;
     }
 
     @Override
