@@ -36,6 +36,7 @@
 
 package org.deegree.cs.configuration.wkt;
 
+import static org.deegree.cs.utilities.ProjectionUtils.DTR;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -110,22 +111,8 @@ public class WKTParser {
         return false;
     }
 
-    /**
-     * Checks if the params contains the candidate, underscores will be stripped.
-     * 
-     * @param params
-     * @param candidate
-     * @return the key found in the params or <code>null</code> if not found.
-     */
-    protected String containsVariantsKey( Map<String, Double> params, String candidate ) {
-        String candidateVariant = candidate.replaceAll( "_", "" );
-        for ( String key : params.keySet() ) {
-            String keyVariant = key.replaceAll( "_", "" );
-            if ( keyVariant.equalsIgnoreCase( candidateVariant ) ) {
-                return key;
-            }
-        }
-        return null;
+    protected String makeInvariantKey( String candidate ) {
+        return candidate.replaceAll( "_", "" ).toLowerCase();
     }
 
     /**
@@ -821,9 +808,10 @@ public class WKTParser {
                 } else if ( tokenizer.sval.equalsIgnoreCase( "PROJECTION" ) ) {
                     passOverOpeningBracket();
                     tokenizer.nextToken();
-                    if ( tokenizer.ttype != '"' )
+                    if ( tokenizer.ttype != '"' ) {
                         throw new WKTParsingException( "The PROJECTION element must contain a quoted String. At line "
                                                        + tokenizer.lineno() );
+                    }
                     projectionType = tokenizer.sval;
                     tokenizer.nextToken();
                     if ( tokenizer.ttype == ',' ) {
@@ -835,17 +823,19 @@ public class WKTParser {
                 } else if ( tokenizer.sval.equalsIgnoreCase( "PARAMETER" ) ) {
                     passOverOpeningBracket();
                     tokenizer.nextToken();
-                    if ( tokenizer.ttype != '"' )
-                        throw new WKTParsingException(
-                                                       "The PARAMETER element must contain a quoted String as parameter name. At line "
-                                                                               + tokenizer.lineno() );
-                    String paramName = tokenizer.sval.toLowerCase();
+                    if ( tokenizer.ttype != '"' ) {
+                        String msg = "The PARAMETER element must contain a quoted String as parameter name. At line "
+                                     + tokenizer.lineno();
+                        throw new WKTParsingException( msg );
+                    }
+                    String paramName = makeInvariantKey( tokenizer.sval );
                     passOverChar( ',' );
                     tokenizer.nextToken();
-                    if ( tokenizer.ttype != StreamTokenizer.TT_NUMBER )
-                        throw new WKTParsingException(
-                                                       "The PARAMETER element must contain a number as parameter value. At line "
-                                                                               + tokenizer.lineno() );
+                    if ( tokenizer.ttype != StreamTokenizer.TT_NUMBER ) {
+                        String msg = "The PARAMETER element must contain a number as parameter value. At line "
+                                     + tokenizer.lineno();
+                        throw new WKTParsingException( msg );
+                    }
                     Double paramValue = tokenizer.nval;
                     params.put( paramName, paramValue );
                     passOverClosingBracket();
@@ -885,61 +875,7 @@ public class WKTParser {
             throw new WKTParsingException( "The PROJCS element must contain a UNIT keyword element. Before line "
                                            + tokenizer.lineno() );
 
-        // default value for parameters
-        String semiMajor = null;
-        if ( ( semiMajor = containsVariantsKey( params, "semi_major" ) ) == null ) {
-            params.put( "semi_major", 0.0 );
-        } else {
-            params.put( "semi_major", params.get( semiMajor ) );
-        }
-        String semiMinor = null;
-        if ( ( semiMinor = containsVariantsKey( params, "semi_minor" ) ) == null ) {
-            params.put( "semi_minor", 0.0 );
-        } else {
-            params.put( "semi_minor", params.get( semiMinor ) );
-        }
-        String latOrigin = null;
-        if ( ( latOrigin = containsVariantsKey( params, "latitude_of_origin" ) ) == null ) {
-            params.put( "latitude_of_origin", 0.0 );
-        } else {
-            params.put( "latitude_of_origin", params.get( latOrigin ) );
-        }
-        String centralMeridian = null;
-        if ( ( centralMeridian = containsVariantsKey( params, "central_meridian" ) ) == null ) {
-            params.put( "central_meridian", 0.0 );
-        } else {
-            params.put( "central_meridian", params.get( centralMeridian ) );
-        }
-        String scaleFactor = null;
-        if ( ( scaleFactor = containsVariantsKey( params, "scale_factor" ) ) == null ) {
-            params.put( "scale_factor", 1.0 );
-        } else {
-            params.put( "scale_factor", params.get( scaleFactor ) );
-        }
-        String falseEasting = null;
-        if ( ( falseEasting = containsVariantsKey( params, "false_easting" ) ) == null ) {
-            params.put( "false_easting", 0.0 );
-        } else {
-            params.put( "false_easting", params.get( falseEasting ) );
-        }
-        String falseNorthing = null;
-        if ( ( falseNorthing = containsVariantsKey( params, "false_northing" ) ) == null ) {
-            params.put( "false_northing", 0.0 );
-        } else {
-            params.put( "false_northing", params.get( falseNorthing ) );
-        }
-        String stdParallel1 = null;
-        if ( ( stdParallel1 = containsVariantsKey( params, "standard_parallel_1" ) ) == null ) {
-            params.put( "standard_parallel1", 0.0 );
-        } else {
-            params.put( "standard_parallel1", params.get( stdParallel1 ) );
-        }
-        String stdParallel2 = null;
-        if ( ( stdParallel2 = containsVariantsKey( params, "standard_parallel_2" ) ) == null ) {
-            params.put( "standard_parallel2", 0.0 );
-        } else {
-            params.put( "standard_parallel2", params.get( stdParallel2 ) );
-        }
+        params = setDefaultParameterValues( params );
 
         if ( projectionCode.equals( CRSCodeType.getUndefined() ) ) {
             projectionCode = new CRSCodeType( projectionType );
@@ -951,11 +887,11 @@ public class WKTParser {
 
         if ( projectionType.equalsIgnoreCase( "transverse_mercator" )
              || projectionType.equalsIgnoreCase( "Gauss_Kruger" ) ) {
-            return new ProjectedCRS( new TransverseMercator( true, geographicCRS, params.get( "false_northing" ),
-                                                             params.get( "false_easting" ),
-                                                             new Point2d( params.get( "central_meridian" ),
-                                                                          params.get( "latitude_of_origin" ) ), unit,
-                                                             params.get( "scale_factor" ),
+            return new ProjectedCRS( new TransverseMercator( true, geographicCRS, params.get( "falsenorthing" ),
+                                                             params.get( "falseeasting" ),
+                                                             new Point2d( params.get( "centralmeridian" ),
+                                                                          params.get( "latitudeoforigin" ) ), unit,
+                                                             params.get( "scalefactor" ),
                                                              new CRSIdentifiable( new CRSCodeType[] { projectionCode },
                                                                                   new String[] { projectionType },
                                                                                   null, null, null ) ),
@@ -966,12 +902,12 @@ public class WKTParser {
             return new ProjectedCRS(
                                      new LambertConformalConic(
                                                                 geographicCRS,
-                                                                params.get( "false_northing" ),
-                                                                params.get( "false_easting" ),
-                                                                new Point2d( params.get( "central_meridian" ),
-                                                                             params.get( "latitude_of_origin" ) ),
+                                                                params.get( "falsenorthing" ),
+                                                                params.get( "falseeasting" ),
+                                                                new Point2d( params.get( "centralmeridian" ),
+                                                                             params.get( "latitudeoforigin" ) ),
                                                                 unit,
-                                                                params.get( "scale_factor" ),
+                                                                params.get( "scalefactor" ),
                                                                 new CRSIdentifiable(
                                                                                      new CRSCodeType[] { projectionCode },
                                                                                      new String[] { projectionType },
@@ -983,15 +919,15 @@ public class WKTParser {
                     || projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic" ) ) {
             return new ProjectedCRS(
                                      new LambertConformalConic(
-                                                                params.get( "standard_parallel1" ),
-                                                                params.get( "standard_parallel2" ),
+                                                                params.get( "standardparallel1" ),
+                                                                params.get( "standardparallel2" ),
                                                                 geographicCRS,
-                                                                params.get( "false_northing" ),
-                                                                params.get( "false_easting" ),
-                                                                new Point2d( params.get( "central_meridian" ),
-                                                                             params.get( "latitude_of_origin" ) ),
+                                                                params.get( "falsenorthing" ),
+                                                                params.get( "falseeasting" ),
+                                                                new Point2d( params.get( "centralmeridian" ),
+                                                                             params.get( "latitudeoforigin" ) ),
                                                                 unit,
-                                                                params.get( "scale_factor" ),
+                                                                params.get( "scalefactor" ),
                                                                 new CRSIdentifiable(
                                                                                      new CRSCodeType[] { projectionCode },
                                                                                      new String[] { projectionType },
@@ -1005,12 +941,12 @@ public class WKTParser {
             return new ProjectedCRS(
                                      new StereographicAlternative(
                                                                    geographicCRS,
-                                                                   params.get( "false_northing" ),
-                                                                   params.get( "false_easting" ),
-                                                                   new Point2d( params.get( "central_meridian" ),
-                                                                                params.get( "latitude_of_origin" ) ),
+                                                                   params.get( "falsenorthing" ),
+                                                                   params.get( "falseeasting" ),
+                                                                   new Point2d( params.get( "centralmeridian" ),
+                                                                                params.get( "latitudeoforigin" ) ),
                                                                    unit,
-                                                                   params.get( "scale_factor" ),
+                                                                   params.get( "scalefactor" ),
                                                                    new CRSIdentifiable(
                                                                                         new CRSCodeType[] { projectionCode },
                                                                                         new String[] { projectionType },
@@ -1023,12 +959,12 @@ public class WKTParser {
             return new ProjectedCRS(
                                      new StereographicAzimuthal(
                                                                  geographicCRS,
-                                                                 params.get( "false_northing" ),
-                                                                 params.get( "false_easting" ),
-                                                                 new Point2d( params.get( "central_meridian" ),
-                                                                              params.get( "latitude_of_origin" ) ),
+                                                                 params.get( "falsenorthing" ),
+                                                                 params.get( "falseeasting" ),
+                                                                 new Point2d( params.get( "centralmeridian" ),
+                                                                              params.get( "latitudeoforigin" ) ),
                                                                  unit,
-                                                                 params.get( "scale_factor" ),
+                                                                 params.get( "scalefactor" ),
                                                                  new CRSIdentifiable(
                                                                                       new CRSCodeType[] { projectionCode },
                                                                                       new String[] { projectionType },
@@ -1039,6 +975,50 @@ public class WKTParser {
         } else {
             throw new WKTParsingException( "The projection type " + projectionType + " is not supported." );
         }
+    }
+
+    private Map<String, Double> setDefaultParameterValues( Map<String, Double> params ) {
+        if ( params.get( "semimajor" ) == null ) {
+            params.put( "semimajor", 0.0 );
+        }
+
+        if ( params.get( "semiminor" ) == null ) {
+            params.put( "semiminor", 0.0 );
+        }
+
+        if ( params.get( "latitudeoforigin" ) == null ) {
+            params.put( "latitudeoforigin", 0.0 );
+        } else {
+            params.put( "latitudeoforigin", DTR * params.get( "latitudeoforigin" ) );
+        }
+
+        if ( params.get( "centralmeridian" ) == null ) {
+            params.put( "centralmeridian", 0.0 );
+        } else {
+            params.put( "centralmeridian", DTR * params.get( "centralmeridian" ) );
+        }
+
+        if ( params.get( "scalefactor" ) == null ) {
+            params.put( "scalefactor", 1.0 );
+        }
+
+        if ( params.get( "false_easting" ) == null ) {
+            params.put( "false_easting", 0.0 );
+        }
+
+        if ( params.get( "false_northing" ) == null ) {
+            params.put( "false_northing", 0.0 );
+        }
+
+        if ( params.get( "standard_parallel_1" ) == null ) {
+            params.put( "standard_parallel1", 0.0 );
+        }
+
+        if ( params.get( "standard_parallel_2" ) == null ) {
+            params.put( "standard_parallel2", 0.0 );
+        }
+
+        return params;
     }
 
     /**
@@ -1171,11 +1151,6 @@ public class WKTParser {
                             throws IOException {
         WKTParser parse = new WKTParser( new BufferedReader( new StringReader( wkt ) ) );
         return parse.parseCoordinateSystem();
-    }
-
-    public static void main( String[] args )
-                            throws IOException {
-        System.out.println( parse( "PROJCS[\"DHDN_3_Degree_Gauss_Zone_3\",GEOGCS[\"GCS_Deutsches_Hauptdreiecksnetz\",DATUM[\"D_Deutsches_Hauptdreiecksnetz\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",3500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",9.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]" ) );
     }
 
 }
