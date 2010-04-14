@@ -90,6 +90,7 @@ import org.slf4j.Logger;
  * 
  */
 public class WKTParser {
+
     private static final Logger LOG = getLogger( WKTParser.class );
 
     private StreamTokenizer tokenizer;
@@ -861,19 +862,25 @@ public class WKTParser {
                                                + tokenizer.lineno() );
             }
             tokenizer.nextToken();
-            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' )
+            if ( tokenizer.ttype == ']' || tokenizer.ttype == ')' ) {
                 break;
+            }
         }
-        if ( geographicCRS == null )
+        if ( geographicCRS == null ) {
             throw new WKTParsingException( "The PROJCS element must contain a GEOGCS. Before line "
                                            + tokenizer.lineno() );
-        if ( projectionType == null || params.size() == 0 )
-            throw new WKTParsingException(
-                                           "The PROJCS element must contain a PROJECTION type as a String and a series of PARAMETERS. Before line "
-                                                                   + tokenizer.lineno() );
-        if ( unit == null )
+        }
+
+        if ( projectionType == null || params.size() == 0 ) {
+            String msg = "The PROJCS element must contain a PROJECTION type as a String and a series of PARAMETERS. Before line "
+                         + tokenizer.lineno();
+            throw new WKTParsingException( msg );
+        }
+
+        if ( unit == null ) {
             throw new WKTParsingException( "The PROJCS element must contain a UNIT keyword element. Before line "
                                            + tokenizer.lineno() );
+        }
 
         params = setDefaultParameterValues( params );
 
@@ -885,93 +892,47 @@ public class WKTParser {
             code = new CRSCodeType( name );
         }
 
+        CRSIdentifiable baseCRS = new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null,
+                                                       null );
+        CRSIdentifiable baseProjCRS = new CRSIdentifiable( new CRSCodeType[] { projectionCode },
+                                                           new String[] { projectionType }, null, null, null );
+        Point2d pointOrigin = new Point2d( params.get( "centralmeridian" ), params.get( "latitudeoforigin" ) );
+        Axis[] axes = new Axis[] { axis1, axis2 };
         if ( projectionType.equalsIgnoreCase( "transverse_mercator" )
              || projectionType.equalsIgnoreCase( "Gauss_Kruger" ) ) {
             return new ProjectedCRS( new TransverseMercator( true, geographicCRS, params.get( "falsenorthing" ),
-                                                             params.get( "falseeasting" ),
-                                                             new Point2d( params.get( "centralmeridian" ),
-                                                                          params.get( "latitudeoforigin" ) ), unit,
-                                                             params.get( "scalefactor" ),
-                                                             new CRSIdentifiable( new CRSCodeType[] { projectionCode },
-                                                                                  new String[] { projectionType },
-                                                                                  null, null, null ) ),
-                                     new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
-                                                                                       new String[] { name }, null,
-                                                                                       null, null ) );
+                                                             params.get( "falseeasting" ), pointOrigin, unit,
+                                                             params.get( "scalefactor" ), baseProjCRS ), axes, baseCRS );
+
         } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_1SP" ) ) {
-            return new ProjectedCRS(
-                                     new LambertConformalConic(
-                                                                geographicCRS,
-                                                                params.get( "falsenorthing" ),
-                                                                params.get( "falseeasting" ),
-                                                                new Point2d( params.get( "centralmeridian" ),
-                                                                             params.get( "latitudeoforigin" ) ),
-                                                                unit,
-                                                                params.get( "scalefactor" ),
-                                                                new CRSIdentifiable(
-                                                                                     new CRSCodeType[] { projectionCode },
-                                                                                     new String[] { projectionType },
-                                                                                     null, null, null ) ),
-                                     new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
-                                                                                       new String[] { name }, null,
-                                                                                       null, null ) );
+            return new ProjectedCRS( new LambertConformalConic( geographicCRS, params.get( "falsenorthing" ),
+                                                                params.get( "falseeasting" ), pointOrigin, unit,
+                                                                params.get( "scalefactor" ), baseProjCRS ), axes,
+                                     baseCRS );
+
         } else if ( projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic_2SP" )
                     || projectionType.equalsIgnoreCase( "Lambert_Conformal_Conic" ) ) {
-            return new ProjectedCRS(
-                                     new LambertConformalConic(
-                                                                params.get( "standardparallel1" ),
-                                                                params.get( "standardparallel2" ),
-                                                                geographicCRS,
+            return new ProjectedCRS( new LambertConformalConic( params.get( "standardparallel1" ),
+                                                                params.get( "standardparallel2" ), geographicCRS,
                                                                 params.get( "falsenorthing" ),
-                                                                params.get( "falseeasting" ),
-                                                                new Point2d( params.get( "centralmeridian" ),
-                                                                             params.get( "latitudeoforigin" ) ),
-                                                                unit,
-                                                                params.get( "scalefactor" ),
-                                                                new CRSIdentifiable(
-                                                                                     new CRSCodeType[] { projectionCode },
-                                                                                     new String[] { projectionType },
-                                                                                     null, null, null ) ),
-                                     new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
-                                                                                       new String[] { name }, null,
-                                                                                       null, null ) );
+                                                                params.get( "falseeasting" ), pointOrigin, unit,
+                                                                params.get( "scalefactor" ), baseProjCRS ), axes,
+                                     baseCRS );
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" )
                     || projectionType.equalsIgnoreCase( "Double_Stereographic" )
                     || projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) ) {
-            return new ProjectedCRS(
-                                     new StereographicAlternative(
-                                                                   geographicCRS,
-                                                                   params.get( "falsenorthing" ),
-                                                                   params.get( "falseeasting" ),
-                                                                   new Point2d( params.get( "centralmeridian" ),
-                                                                                params.get( "latitudeoforigin" ) ),
-                                                                   unit,
-                                                                   params.get( "scalefactor" ),
-                                                                   new CRSIdentifiable(
-                                                                                        new CRSCodeType[] { projectionCode },
-                                                                                        new String[] { projectionType },
-                                                                                        null, null, null ) ),
-                                     new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
-                                                                                       new String[] { name }, null,
-                                                                                       null, null ) );
+            return new ProjectedCRS( new StereographicAlternative( geographicCRS, params.get( "falsenorthing" ),
+                                                                   params.get( "falseeasting" ), pointOrigin, unit,
+                                                                   params.get( "scalefactor" ), baseProjCRS ), axes,
+                                     baseCRS );
+
         } else if ( projectionType.equalsIgnoreCase( "Stereographic_Azimuthal" ) ) {
             LOG.warn( "True scale latitude is not read from the StereoGraphic azimuthal projection yet." );
-            return new ProjectedCRS(
-                                     new StereographicAzimuthal(
-                                                                 geographicCRS,
-                                                                 params.get( "falsenorthing" ),
-                                                                 params.get( "falseeasting" ),
-                                                                 new Point2d( params.get( "centralmeridian" ),
-                                                                              params.get( "latitudeoforigin" ) ),
-                                                                 unit,
-                                                                 params.get( "scalefactor" ),
-                                                                 new CRSIdentifiable(
-                                                                                      new CRSCodeType[] { projectionCode },
-                                                                                      new String[] { projectionType },
-                                                                                      null, null, null ) ),
-                                     new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
-                                                                                       new String[] { name }, null,
-                                                                                       null, null ) );
+            return new ProjectedCRS( new StereographicAzimuthal( geographicCRS, params.get( "falsenorthing" ),
+                                                                 params.get( "falseeasting" ), pointOrigin, unit,
+                                                                 params.get( "scalefactor" ), baseProjCRS ), axes,
+                                     baseCRS );
+
         } else {
             throw new WKTParsingException( "The projection type " + projectionType + " is not supported." );
         }
@@ -1002,20 +963,24 @@ public class WKTParser {
             params.put( "scalefactor", 1.0 );
         }
 
-        if ( params.get( "false_easting" ) == null ) {
-            params.put( "false_easting", 0.0 );
+        if ( params.get( "falseeasting" ) == null ) {
+            params.put( "falseeasting", 0.0 );
         }
 
-        if ( params.get( "false_northing" ) == null ) {
-            params.put( "false_northing", 0.0 );
+        if ( params.get( "falsenorthing" ) == null ) {
+            params.put( "falsenorthing", 0.0 );
         }
 
-        if ( params.get( "standard_parallel_1" ) == null ) {
-            params.put( "standard_parallel1", 0.0 );
+        if ( params.get( "standardparallel1" ) == null ) {
+            params.put( "standardparallel1", 0.0 );
+        } else {
+            params.put( "standardparallel1", DTR * params.get( "standardparallel1" ) );
         }
 
-        if ( params.get( "standard_parallel_2" ) == null ) {
-            params.put( "standard_parallel2", 0.0 );
+        if ( params.get( "standardparallel2" ) == null ) {
+            params.put( "standardparallel2", 0.0 );
+        } else {
+            params.put( "standardparallel2", DTR * params.get( "standardparallel2" ) );
         }
 
         return params;
@@ -1153,4 +1118,8 @@ public class WKTParser {
         return parse.parseCoordinateSystem();
     }
 
+    public static void main( String[] args )
+                            throws IOException {
+        System.out.println( parse( "PROJCS[\"DHDN_3_Degree_Gauss_Zone_3\",GEOGCS[\"GCS_Deutsches_Hauptdreiecksnetz\",DATUM[\"D_Deutsches_Hauptdreiecksnetz\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",3500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",9.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]" ) );
+    }
 }
