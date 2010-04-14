@@ -1247,7 +1247,7 @@ public class ISORecordStore implements RecordStore {
                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + " AND i."
                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = ds."
                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + " AND i."
-                                    + PostGISMappingsISODC.DatabaseTables.qp_identifier.name() + " = ?" + " AND rf."
+                                    + PostGISMappingsISODC.CommonColumnNames.identifier.name() + " = ?" + " AND rf."
                                     + PostGISMappingsISODC.CommonColumnNames.format.name() + " = ?;";
                 stmt = conn.prepareStatement( selectFull );
                 break;
@@ -1391,12 +1391,13 @@ public class ISORecordStore implements RecordStore {
      */
     private void writeResultSet( ResultSet resultSet, XMLStreamWriter writer )
                             throws SQLException {
-
+        boolean idIsMatching = false;
+        InputStreamReader isr = null;
+        Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
         while ( resultSet.next() ) {
+            idIsMatching = true;
             BufferedInputStream bais = new BufferedInputStream( resultSet.getBinaryStream( 1 ) );
 
-            Charset charset = encoding == null ? Charset.defaultCharset() : Charset.forName( encoding );
-            InputStreamReader isr = null;
             try {
                 isr = new InputStreamReader( bais, charset );
             } catch ( Exception e ) {
@@ -1406,6 +1407,11 @@ public class ISORecordStore implements RecordStore {
 
             readXMLFragment( isr, writer );
 
+        }
+
+        if ( idIsMatching == false ) {
+
+            throw new SQLException();
         }
 
     }
