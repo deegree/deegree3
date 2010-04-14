@@ -45,7 +45,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 
 import org.apache.axiom.om.OMAbstractFactory;
@@ -80,7 +79,7 @@ public class BuildRecordXMLRepresentation {
      * @return an integer that indicates if there is a record updated
      * @throws IOException
      */
-    public int updateRecord( int fk_datasets, ParsedProfileElement parsedElement, Statement stm )
+    public int updateRecord( int fk_datasets, ParsedProfileElement parsedElement, Connection connection )
                             throws IOException {
 
         StringWriter isoOMElement = new StringWriter( 2000 );
@@ -92,6 +91,7 @@ public class BuildRecordXMLRepresentation {
 
             StringWriter sqlStatement = new StringWriter( 500 );
             StringBuffer buf = new StringBuffer();
+            PreparedStatement stm = null;
 
             try {
                 // DC-update
@@ -121,7 +121,8 @@ public class BuildRecordXMLRepresentation {
                                     + " AND " + PostGISMappingsISODC.CommonColumnNames.format.name() + " = " + 1 );
 
                 buf = sqlStatement.getBuffer();
-                stm.executeUpdate( sqlStatement.toString() );
+                stm = connection.prepareStatement( sqlStatement.toString() );
+                stm.executeUpdate();
                 buf.setLength( 0 );
 
                 // ISO-update
@@ -132,8 +133,10 @@ public class BuildRecordXMLRepresentation {
                                     + " = " + 2 );
 
                 buf = sqlStatement.getBuffer();
-                stm.executeUpdate( sqlStatement.toString() );
+                stm = connection.prepareStatement( sqlStatement.toString() );
+                stm.executeUpdate();
                 buf.setLength( 0 );
+                stm.close();
 
             } catch ( SQLException e ) {
 

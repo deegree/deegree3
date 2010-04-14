@@ -39,6 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -1224,16 +1225,20 @@ public class ParseIdentificationInfo extends XMLAdapter {
      */
     private boolean getCoupledDataMetadatasets( String resourceIdentifier ) {
         boolean gotOneDataset = false;
+        ResultSet rs = null;
+        PreparedStatement stm = null;
 
-        String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = '"
-                   + resourceIdentifier + "';";
-        ResultSet rs;
+        String s = "SELECT resourceidentifier FROM isoqp_resourceidentifier WHERE resourceidentifier = ?;";
 
         try {
-            rs = connection.createStatement().executeQuery( s );
+            stm = connection.prepareStatement( s );
+            stm.setObject( 1, resourceIdentifier );
+            rs = stm.executeQuery();
             while ( rs.next() ) {
                 gotOneDataset = true;
             }
+            stm.close();
+            rs.close();
         } catch ( SQLException e ) {
 
             e.printStackTrace();

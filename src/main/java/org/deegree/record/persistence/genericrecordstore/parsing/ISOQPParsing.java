@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -883,9 +884,12 @@ public final class ISOQPParsing extends XMLAdapter {
         }
         boolean uuidIsEqual = false;
         ResultSet rs = null;
-        String compareIdentifier = "SELECT identifier FROM qp_identifier WHERE identifier = '" + uuid + "'";
+        PreparedStatement stm = null;
+        String compareIdentifier = "SELECT identifier FROM qp_identifier WHERE identifier = ?";
         try {
-            rs = connection.createStatement().executeQuery( compareIdentifier );
+            stm = connection.prepareStatement( compareIdentifier );
+            stm.setObject( 1, uuid );
+            rs = stm.executeQuery();
             while ( rs.next() ) {
                 uuidIsEqual = true;
             }
@@ -894,9 +898,13 @@ public final class ISOQPParsing extends XMLAdapter {
             LOG.debug( "error: " + e.getMessage(), e );
         } finally {
             try {
+                if ( stm != null ) {
+                    stm.close();
+                }
                 if ( rs != null ) {
                     rs.close();
                 }
+
             } catch ( SQLException e ) {
 
                 e.printStackTrace();

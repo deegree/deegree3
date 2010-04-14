@@ -43,7 +43,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 
 import org.deegree.commons.tom.datetime.Date;
@@ -84,11 +83,12 @@ public class GenerateQueryableProperties {
      * @return the primarykey of the inserted dataset which is the foreignkey for the queryable properties
      *         databasetables
      */
-    public int generateMainDatabaseDataset( Connection connection, Statement stm, ParsedProfileElement parsedElement ) {
+    public int generateMainDatabaseDataset( Connection connection, ParsedProfileElement parsedElement ) {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
         StringWriter sqlStatement = new StringWriter( 1000 );
         String modifiedAttribute = "null";
         boolean isCaseSensitive = true;
+        PreparedStatement stm = null;
         int operatesOnId = 0;
         try {
 
@@ -114,7 +114,9 @@ public class GenerateQueryableProperties {
                                  + parsedElement.getQueryableProperties().getLanguage() + "','"
                                  + parsedElement.getQueryableProperties().getParentIdentifier() + "',null, null);" );
 
-            stm.executeUpdate( sqlStatement.toString() );
+            stm = connection.prepareStatement( sqlStatement.toString() );
+            stm.executeUpdate();
+            stm.close();
 
         } catch ( SQLException e ) {
 

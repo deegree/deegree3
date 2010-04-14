@@ -107,7 +107,7 @@ public class ExecuteStatements {
                                            + "' already exists!" );
                 }
             }
-            int operatesOnId = generateQP.generateMainDatabaseDataset( connection, stm, parsedElement );
+            int operatesOnId = generateQP.generateMainDatabaseDataset( connection, parsedElement );
 
             if ( isDC == true ) {
                 insertedIds.add( buildRecXML.generateDC( connection, operatesOnId, parsedElement ) );
@@ -232,7 +232,7 @@ public class ExecuteStatements {
                     // TODO association
 
                     // recordBrief, recordSummary, recordFull update
-                    updatedIds.add( buildRecXML.updateRecord( requestedId, parsedElement, stm ) );
+                    updatedIds.add( buildRecXML.updateRecord( requestedId, parsedElement, connection ) );
 
                     generateQP.executeQueryableProperties( isUpdate, connection, requestedId, parsedElement );
 
