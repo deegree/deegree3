@@ -144,13 +144,8 @@ public class OpenGLEventHandler implements GLEventListener {
         lookAt = new float[] { centroid[0], centroid[1], centroid[2] };
         eye = calcOptimalEye( bbox );
         float dist = Vectors3f.distance( centroid, eye );
-        System.out.println( "dist: " + dist );
-        System.out.println( "eye: " + Vectors3f.asString( eye ) );
-        System.out.println( "lookat: " + Vectors3f.asString( lookAt ) );
-        System.out.println( "centroid: " + Vectors3f.asString( centroid ) );
         farClippingPlane = 2 * dist;
         nearClippingPlane = 0.01 * farClippingPlane;
-
         trackBall.reset();
     }
 
@@ -163,7 +158,7 @@ public class OpenGLEventHandler implements GLEventListener {
             double centerY = min[1] + ( ( max[1] - min[1] ) * 0.5f );
 
             // float centerZ = bBox[2] + ( ( bBox[2] - bBox[5] ) * 0.5f );
-            double eyeZ = 2 * ( sphereSize / Math.tan( Math.toRadians( fov * 0.5 ) ) );
+            double eyeZ = 2 * ( ( Math.max( bBox.getSpan0(), bBox.getSpan1() ) / 2 ) / Math.tan( Math.toRadians( fov * 0.5 ) ) );
             eye = new float[] { (float) centerX, (float) centerY, (float) eyeZ };
         }
         return eye;
