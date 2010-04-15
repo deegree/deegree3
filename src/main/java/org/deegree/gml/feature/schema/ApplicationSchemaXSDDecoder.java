@@ -844,8 +844,6 @@ public class ApplicationSchemaXSDDecoder {
         } catch ( Exception e ) {
             LOG.warn( "Un mappable geometry type: " + gmlGeometryName.toString() );
         }
-        System.out.println( "Assert.assertEquals( GeometryType." + result.name() + ", GeometryType.fromString(\""
-                            + gmlGeometryName.getLocalPart() + "\") );" );
         LOG.trace( "Mapping '" + gmlGeometryName + "' -> " + result );
         return result;
     }
