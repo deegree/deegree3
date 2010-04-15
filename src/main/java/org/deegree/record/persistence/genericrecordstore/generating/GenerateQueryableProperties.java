@@ -103,18 +103,21 @@ public class GenerateQueryableProperties {
                                  + databaseTable
                                  + " ("
                                  + PostGISMappingsISODC.CommonColumnNames.id.name()
-                                 + ", version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES ("
-                                 + operatesOnId
-                                 + ",null,null,'"
-                                 + generateISOQP_AnyTextStatement( isCaseSensitive,
-                                                                   parsedElement.getQueryableProperties(),
-                                                                   parsedElement.getReturnableProperties() ) + "',"
-                                 + modifiedAttribute + ","
-                                 + parsedElement.getQueryableProperties().isHasSecurityConstraints() + ",'"
-                                 + parsedElement.getQueryableProperties().getLanguage() + "','"
-                                 + parsedElement.getQueryableProperties().getParentIdentifier() + "',null, null);" );
+                                 + ", version, status, anyText, modified, hassecurityconstraints, language, parentidentifier, source, association) VALUES (?,?,?,?,?,?,?,?,?,?);" );
 
             stm = connection.prepareStatement( sqlStatement.toString() );
+            stm.setObject( 1, operatesOnId );
+            stm.setObject( 2, null );
+            stm.setObject( 3, null );
+            stm.setObject( 4, generateISOQP_AnyTextStatement( isCaseSensitive,
+                                                              parsedElement.getQueryableProperties(),
+                                                              parsedElement.getReturnableProperties() ) );
+            stm.setObject( 5, modifiedAttribute );
+            stm.setObject( 6, parsedElement.getQueryableProperties().isHasSecurityConstraints() );
+            stm.setObject( 7, parsedElement.getQueryableProperties().getLanguage() );
+            stm.setObject( 8, parsedElement.getQueryableProperties().getParentIdentifier() );
+            stm.setObject( 9, null );
+            stm.setObject( 10, null );
             stm.executeUpdate();
             stm.close();
 
