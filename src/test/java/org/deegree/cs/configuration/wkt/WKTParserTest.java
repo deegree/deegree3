@@ -35,6 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.configuration.wkt;
 
+import static org.deegree.cs.projections.SupportedProjectionParameters.FALSE_EASTING;
+import static org.deegree.cs.projections.SupportedProjectionParameters.FALSE_NORTHING;
+import static org.deegree.cs.projections.SupportedProjectionParameters.FIRST_PARALLEL_LATITUDE;
+import static org.deegree.cs.projections.SupportedProjectionParameters.LATITUDE_OF_NATURAL_ORIGIN;
+import static org.deegree.cs.projections.SupportedProjectionParameters.LONGITUDE_OF_NATURAL_ORIGIN;
+import static org.deegree.cs.projections.SupportedProjectionParameters.SCALE_AT_NATURAL_ORIGIN;
+import static org.deegree.cs.projections.SupportedProjectionParameters.SECOND_PARALLEL_LATITUDE;
+import static org.deegree.cs.utilities.ProjectionUtils.DTR;
+
 import java.io.IOException;
 
 import junit.framework.Assert;
@@ -53,7 +62,7 @@ import org.deegree.cs.utilities.ProjectionUtils;
 import org.junit.Test;
 
 /**
- * The <code>WKTParserTest</code> class provides a detailed test case for the {@link WKTParser} class.
+ * The <code>WKTParserTest</code> class provides a detailed check for the {@link WKTParser} class.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -64,91 +73,160 @@ import org.junit.Test;
  */
 public class WKTParserTest {
 
+    final String projCRSName = "Custom projected BBR crs";
+
+    final String projCRSCode = "bbr:0001";
+
+    final String geogCRSName = "WGS 84";
+
+    final String geogCRSCode = "epsg:4326";
+
+    final String datumName = "WGS_1984";
+
+    final String ellipsoidName = "WGS84_Ellipsoid";
+
+    final String ellipsoidCode = "epsg:7030";
+
+    final double semiMajorAxis = 6378137.0;
+
+    final double inverseFlattening = 298.257223563;
+
+    final String pmName = "Greenwich";
+
+    final String pmCode = "urn:opengis:def:crs:epsg::8901";
+
+    final double pmLongitude = 0.0;
+
+    /** Projection parameters **/
+    final double falseEasting = 0.0;
+
+    final double falseNorthing = 0.0;
+
+    final double scaleFactor = 1.0;
+
+    final double lonNatOrigin = 10.5;
+
+    final double latNatOrigin = 51.0;
+
+    final double stdParallel1 = 48.666666666666664;
+
+    final double stdParallel2 = 53.66666666666665;
+
     @Test
     public void testProjectedCS()
                             throws IOException {
-        String s = createProjectedCS();
+        String s = buildPROJCS( projCRSName, projCRSCode, "Meter", 1.0 );
 
         CoordinateSystem cs = WKTParser.parse( s );
         Assert.assertTrue( cs instanceof ProjectedCRS );
         ProjectedCRS projCRS = (ProjectedCRS) cs;
-        Assert.assertEquals( "Custom projected BBR crs", projCRS.getName() );
-        Assert.assertEquals( "Custom projected BBR crs:bbr:0001", projCRS.getCode().getOriginal() );
+        Assert.assertEquals( projCRSName, projCRS.getName() );
+        Assert.assertEquals( projCRSName + ":" + projCRSCode, projCRS.getCode().getOriginal() );
         Assert.assertEquals( "x", projCRS.getAxis()[0].getName() );
         Assert.assertEquals( "east", projCRS.getAxis()[0].getOrientationAsString() );
         Assert.assertEquals( "y", projCRS.getAxis()[1].getName() );
         Assert.assertEquals( "north", projCRS.getAxis()[1].getOrientationAsString() );
 
         GeographicCRS geographicCRS = projCRS.getGeographicCRS();
-        Assert.assertEquals( "WGS 84", geographicCRS.getName() );
-        Assert.assertEquals( "WGS 84:epsg:4326", geographicCRS.getCode().getOriginal() );
+        Assert.assertEquals( geogCRSName, geographicCRS.getName() );
+        Assert.assertEquals( geogCRSName + ":" + geogCRSCode, geographicCRS.getCode().getOriginal() );
         Assert.assertEquals( "Longitude", geographicCRS.getAxis()[0].getName() );
         Assert.assertEquals( "east", geographicCRS.getAxis()[0].getOrientationAsString() );
         Assert.assertEquals( "Latitude", geographicCRS.getAxis()[1].getName() );
         Assert.assertEquals( "north", geographicCRS.getAxis()[1].getOrientationAsString() );
 
         Datum datum = geographicCRS.getDatum();
-        Assert.assertEquals( "WGS_1984", datum.getName() );
+        Assert.assertEquals( datumName, datum.getName() );
         Ellipsoid ellipsoid = ( (GeodeticDatum) datum ).getEllipsoid();
-        Assert.assertEquals( "WGS84_Ellipsoid", ellipsoid.getName() );
-        Assert.assertEquals( "WGS84_Ellipsoid:epsg:7030", ellipsoid.getCode().getOriginal() );
-        Assert.assertEquals( 6378137.0, ellipsoid.getSemiMajorAxis() );
-        Assert.assertEquals( 298.257223563, ellipsoid.getInverseFlattening() );
+        Assert.assertEquals( ellipsoidName, ellipsoid.getName() );
+        Assert.assertEquals( ellipsoidName + ":" + ellipsoidCode, ellipsoid.getCode().getOriginal() );
+        Assert.assertEquals( semiMajorAxis, ellipsoid.getSemiMajorAxis() );
+        Assert.assertEquals( inverseFlattening, ellipsoid.getInverseFlattening() );
 
         PrimeMeridian pm = ( (GeodeticDatum) datum ).getPrimeMeridian();
-        Assert.assertEquals( "Greenwich", pm.getName() );
-        Assert.assertEquals( "Greenwich:urn:opengis:def:crs:epsg::8901", pm.getCode().getOriginal() );
+        Assert.assertEquals( pmName, pm.getName() );
+        Assert.assertEquals( pmName + ":" + pmCode, pm.getCode().getOriginal() );
         Assert.assertEquals( Unit.DEGREE, pm.getAngularUnit() );
-        Assert.assertEquals( 0.0, pm.getLongitude() );
+        Assert.assertEquals( pmLongitude, pm.getLongitude() );
         Projection proj = projCRS.getProjection();
         Assert.assertTrue( proj instanceof LambertConformalConic );
 
         LambertConformalConic lcc = (LambertConformalConic) proj;
-        Assert.assertEquals( 0.0, lcc.getFalseEasting() );
-        Assert.assertEquals( 0.0, lcc.getFalseNorthing() );
-        Assert.assertEquals( ProjectionUtils.DTR * 48.666666666666664, lcc.getFirstParallelLatitude(), 1e-12 );
-        Assert.assertEquals( ProjectionUtils.DTR * 53.66666666666665, lcc.getSecondParallelLatitude(), 1e-12 );
-        Assert.assertEquals( ProjectionUtils.DTR * 10.5, lcc.getNaturalOrigin().getX() );
-        Assert.assertEquals( ProjectionUtils.DTR * 51.0, lcc.getNaturalOrigin().getY() );
-        Assert.assertEquals( 1.0, lcc.getScale() );
+        Assert.assertEquals( falseEasting, lcc.getFalseEasting() );
+        Assert.assertEquals( falseNorthing, lcc.getFalseNorthing() );
+        Assert.assertEquals( DTR * stdParallel1, lcc.getFirstParallelLatitude(), 1e-12 );
+        Assert.assertEquals( DTR * stdParallel2, lcc.getSecondParallelLatitude(), 1e-12 );
+        Assert.assertEquals( DTR * lonNatOrigin, lcc.getNaturalOrigin().getX() );
+        Assert.assertEquals( DTR * latNatOrigin, lcc.getNaturalOrigin().getY() );
+        Assert.assertEquals( scaleFactor, lcc.getScale() );
     }
 
-    private String createProjectedCS() {
+    private String buildPROJCS( String name, String code, String unitName, double unitConversion ) {
         String s = "PROJCS[";
-        s += "\"Custom projected BBR crs\"";
-        s += ",GEOGCS[";
-        s += "\"WGS 84\"";
-        s += ",DATUM[";
-        s += "\"WGS_1984\"";
-        s += ",SPHEROID[";
-        s += "\"WGS84_Ellipsoid\"";
-        s += ",6378137.0";
-        s += ",298.257223563";
-        s += ",AUTHORITY[\"WGS84_Ellipsoid\",\"epsg:7030\"]";
-        s += "]";
-        s += "]";
-        s += ",PRIMEM[";
-        s += "\"Greenwich\"";
-        s += ",0.0";
-        s += ",AUTHORITY[\"Greenwich\",\"urn:opengis:def:crs:epsg::8901\"]";
-        s += "]";
-        s += ",UNIT[\"Degree\",0.174532925199433]";
-        s += ",AXIS[\"Longitude\",EAST]";
-        s += ",AXIS[\"Latitude\",NORTH]";
-        s += ",AUTHORITY[\"WGS 84\",\"epsg:4326\"]";
-        s += "]";
-        s += ",PROJECTION[\"lambert_conformal_conic\",AUTHORITY[\"projection_for_bbr:0001\",\"projection_for_bbr:0001\"]]";
-        s += ",PARAMETER[\"Latitude_Of_Origin\",51.0]";
-        s += ",PARAMETER[\"Central_Meridian\",10.5]";
-        s += ",PARAMETER[\"Scale_Factor\",1.0]";
-        s += ",PARAMETER[\"False_Easting\",0.0]";
-        s += ",PARAMETER[\"False_Northing\",0.0]";
-        s += ",PARAMETER[\"Standard_Parallel1\",48.666666666666664]";
-        s += ",PARAMETER[\"Standard_Parallel2\",53.66666666666665]";
-        s += ",UNIT[\"Meter\",1.0]";
+        s += "\"" + name + "\"";
+        s += "," + buildGEOGCS( geogCRSName, geogCRSCode, "Degree", ProjectionUtils.DTR );
+        s += ","
+             + buildProjAndParams( "lambert_conformal_conic", "projection_for_bbr:0001", "projection_for_bbr:0001",
+                                   latNatOrigin, lonNatOrigin, scaleFactor, falseEasting, falseNorthing, stdParallel1,
+                                   stdParallel2 );
+        s += ",UNIT[\"" + unitName + "\"," + unitConversion + "]";
         s += ",AXIS[\"x\",EAST]";
         s += ",AXIS[\"y\",NORTH]";
-        s += ",AUTHORITY[\"Custom projected BBR crs\",\"bbr:0001\"]";
+        s += ",AUTHORITY[\"" + name + "\",\"" + code + "\"]";
+        s += "]";
+        return s;
+    }
+
+    private String buildProjAndParams( String type, String name, String code, double latNatOrigP, double lonNatOrigP,
+                                       double scaleFactorP, double falseEastingP, double falseNorthingP,
+                                       double stdParallel1P, double stdParallel2P ) {
+        String s = "PROJECTION[\"" + type + "\",AUTHORITY[\"" + name + "\",\"" + code + "\"]]";
+        s += ",PARAMETER[\"" + LATITUDE_OF_NATURAL_ORIGIN + "\"," + latNatOrigP + "]";
+        s += ",PARAMETER[\"" + LONGITUDE_OF_NATURAL_ORIGIN + "\"," + lonNatOrigP + "]";
+        s += ",PARAMETER[\"" + SCALE_AT_NATURAL_ORIGIN + "\"," + scaleFactorP + "]";
+        s += ",PARAMETER[\"" + FALSE_EASTING + "\"," + falseEastingP + "]";
+        s += ",PARAMETER[\"" + FALSE_NORTHING + "\"," + falseNorthingP + "]";
+        s += ",PARAMETER[\"" + FIRST_PARALLEL_LATITUDE + "\"," + stdParallel1P + "]";
+        s += ",PARAMETER[\"" + SECOND_PARALLEL_LATITUDE + "\"," + stdParallel2P + "]";
+        return s;
+    }
+
+    private String buildGEOGCS( String name, String code, String unitName, double unitConversion ) {
+        String s = "GEOGCS[";
+        s += "\"" + name + "\"";
+        s += "," + buildDatum( datumName );
+        s += "," + buildPrimeMeridian( pmName, pmCode, pmLongitude );
+        s += ",UNIT[\"" + unitName + "\"," + unitConversion + "]";
+        s += ",AXIS[\"Longitude\",EAST]";
+        s += ",AXIS[\"Latitude\",NORTH]";
+        s += ",AUTHORITY[\"" + name + "\",\"" + code + "\"]";
+        s += "]";
+        return s;
+    }
+
+    private String buildPrimeMeridian( String name, String code, double longitude ) {
+        String s = "PRIMEM[";
+        s += "\"" + name + "\"";
+        s += "," + longitude;
+        s += ",AUTHORITY[\"" + name + "\",\"" + code + "\"]";
+        s += "]";
+        return s;
+    }
+
+    private String buildDatum( String name ) {
+        String s = "DATUM[";
+        s += "\"" + name + "\"";
+        s += "," + buildEllipsoid( ellipsoidName, ellipsoidCode, semiMajorAxis, inverseFlattening );
+        s += "]";
+        return s;
+    }
+
+    private String buildEllipsoid( String name, String code, double semiMajorAxisP, double inverseFlatteningP ) {
+        String s = "SPHEROID[";
+        s += "\"" + name + "\"";
+        s += "," + semiMajorAxisP;
+        s += "," + inverseFlatteningP;
+        s += ",AUTHORITY[\"" + name + "\",\"" + code + "\"]";
         s += "]";
         return s;
     }

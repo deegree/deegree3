@@ -103,27 +103,22 @@ public enum SupportedProjectionParameters {
         }
         for ( CRSCodeType name : codes ) {
             if ( name != null ) {
-                String compare = name.getOriginal();
-                if ( "Latitude of natural origin".equalsIgnoreCase( compare )
-                     || "Latitude of false origin".equalsIgnoreCase( compare )
-                     || "central latitude".equalsIgnoreCase( compare )
-                     || "latitude of origin".equalsIgnoreCase( compare )
-                     || "latitudeOfNaturalOrigin".equalsIgnoreCase( compare )
+                String compare = name.getOriginal().toLowerCase();
+                if ( ( compare.contains( "latitude" ) && ( compare.contains( "origin" ) || compare.contains( "central" ) ) )
                      || matchEPSGString( compare, "parameter", "8801" )
                      || matchEPSGString( compare, "parameter", "8811" )
                      || matchEPSGString( compare, "parameter", "8821" ) ) {
                     return SupportedProjectionParameters.LATITUDE_OF_NATURAL_ORIGIN;
-                } else if ( "Longitude of natural origin".equalsIgnoreCase( compare )
-                            || "Central Meridian".equalsIgnoreCase( compare ) || "CM".equalsIgnoreCase( compare )
-                            || "Longitude of origin".equalsIgnoreCase( compare )
-                            || "Longitude of false origin".equalsIgnoreCase( compare )
-                            || "longitudeOfNaturalOrigin".equalsIgnoreCase( compare )
+                } else if ( ( compare.contains( "longitude" ) && ( compare.contains( "origin" ) || compare.contains( "central" ) ) )
+                            || "Central Meridian".equalsIgnoreCase( compare )
+                            || "CM".equalsIgnoreCase( compare )
                             || matchEPSGString( compare, "parameter", "8802" )
                             || matchEPSGString( compare, "parameter", "8812" )
                             || matchEPSGString( compare, "parameter", "8822" ) ) {
                     return SupportedProjectionParameters.LONGITUDE_OF_NATURAL_ORIGIN;
                 } else if ( "Scale factor at natural origin".equalsIgnoreCase( compare )
-                            || "scaleFactor".equalsIgnoreCase( compare )
+                            || ( compare.contains( "scale" ) && compare.contains( "factor" ) )
+                            || ( compare.contains( "scale" ) && compare.contains( "natural" ) && compare.contains( "origin" ) )
                             || matchEPSGString( compare, "parameter", "8805" ) ) {
                     return SupportedProjectionParameters.SCALE_AT_NATURAL_ORIGIN;
                 } else if ( "Latitude of pseudo standard parallel ".equalsIgnoreCase( compare )
