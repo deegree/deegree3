@@ -73,8 +73,11 @@ public class CombinedResultSet implements FeatureResultSet {
 
     @Override
     public void close() {
-        if ( currentResultSet != null && !lastClosed ) {
+        if ( currentResultSet != null ) {
             currentResultSet.close();
+        }
+        while ( resultSetIter.hasNext() ) {
+            resultSetIter.next().close();
         }
     }
 
@@ -84,6 +87,7 @@ public class CombinedResultSet implements FeatureResultSet {
         for ( Feature feature : this ) {
             members.add( feature );
         }
+        close();
         return new GenericFeatureCollection( null, members );
     }
 

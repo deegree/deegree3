@@ -84,6 +84,7 @@ public class FilteredFeatureResultSet implements FeatureResultSet {
         for ( Feature feature : this ) {
             members.add( feature );
         }
+        close();
         return new GenericFeatureCollection( null, members );
     }
 
