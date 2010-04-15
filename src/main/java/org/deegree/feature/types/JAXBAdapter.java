@@ -62,6 +62,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 
 /**
  * Adapter for converting the contents of a deegree application schema declaration document to an
@@ -157,7 +158,7 @@ public class JAXBAdapter {
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         // TODO
         CoordinateDimension dim = CoordinateDimension.DIM_2_OR_3;
-        return new GeometryPropertyType( propName, minOccurs, maxOccurs, null, dim, false, null, BOTH );
+        return new GeometryPropertyType( propName, minOccurs, maxOccurs, GeometryType.GEOMETRY, dim, false, null, BOTH );
     }
 
     private FeaturePropertyType convertFeaturePropertyDecl( FeaturePropertyDecl jaxbPropertyDecl ) {

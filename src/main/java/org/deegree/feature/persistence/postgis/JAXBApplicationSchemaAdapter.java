@@ -68,7 +68,6 @@ import org.deegree.feature.persistence.postgis.jaxbconfig.SimplePropertyMappingT
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -76,6 +75,7 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 
 /**
  * Adapter between JAXB {@link ApplicationSchemaDecl} and {@link ApplicationSchema} objects.
@@ -157,12 +157,10 @@ public class JAXBApplicationSchemaAdapter {
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         // identical types due to convention
         PrimitiveType type = PrimitiveType.valueOf( jaxbPropertyDecl.getType().name() );
-        return new Pair<SimplePropertyType, SimplePropertyMappingType>( new SimplePropertyType( propName,
-                                                                                                           minOccurs,
-                                                                                                           maxOccurs,
-                                                                                                           type, false,
-                                                                                                           null ),
-                                                                           jaxbPropertyDecl.getSimplePropertyMapping() );
+        return new Pair<SimplePropertyType, SimplePropertyMappingType>( new SimplePropertyType( propName, minOccurs,
+                                                                                                maxOccurs, type, false,
+                                                                                                null ),
+                                                                        jaxbPropertyDecl.getSimplePropertyMapping() );
     }
 
     private static Pair<GeometryPropertyType, GeometryPropertyMappingType> toGeometryPropertyType(
@@ -173,10 +171,13 @@ public class JAXBApplicationSchemaAdapter {
         // TODO
         CoordinateDimension dim = CoordinateDimension.DIM_2_OR_3;
         return new Pair<GeometryPropertyType, GeometryPropertyMappingType>(
-                                                                            new GeometryPropertyType( propName,
+                                                                            new GeometryPropertyType(
+                                                                                                      propName,
                                                                                                       minOccurs,
-                                                                                                      maxOccurs, null,
-                                                                                                      dim, false, null, BOTH ),
+                                                                                                      maxOccurs,
+                                                                                                      GeometryType.GEOMETRY,
+                                                                                                      dim, false, null,
+                                                                                                      BOTH ),
                                                                             jaxbPropertyDecl.getGeometryPropertyMapping() );
     }
 

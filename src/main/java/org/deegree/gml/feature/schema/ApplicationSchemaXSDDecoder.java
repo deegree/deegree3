@@ -390,10 +390,9 @@ public class ApplicationSchemaXSDDecoder {
             case XSTypeDefinition.SIMPLE_TYPE: {
                 QName typeName = typeDef.getName() != null ? new QName( typeDef.getNamespace(), typeDef.getName() )
                                                           : null;
-                pt = new SimplePropertyType( ptName, minOccurs, maxOccurs,
-                                                     getPrimitiveType( (XSSimpleType) typeDef ),
-                                                     elementDecl.getAbstract(), ptSubstitutions,
-                                                     (XSSimpleTypeDefinition) typeDef );
+                pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, getPrimitiveType( (XSSimpleType) typeDef ),
+                                             elementDecl.getAbstract(), ptSubstitutions,
+                                             (XSSimpleTypeDefinition) typeDef );
                 ( (SimplePropertyType) pt ).setCodeList( getCodeListId( elementDecl ) );
                 break;
             }
@@ -725,22 +724,28 @@ public class ApplicationSchemaXSDDecoder {
                     LOG.trace( "Found sequence." );
                     XSObjectList sequence = modelGroup.getParticles();
                     if ( sequence.getLength() != 1 ) {
-                        LOG.trace( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
+                        LOG.trace( "Length = '" + sequence.getLength() + "' -> cannot be a geometry property." );
                         return null;
                     }
                     XSParticle particle2 = (XSParticle) sequence.item( 0 );
-                    switch ( particle2.getTerm().getType() ) {
+                    XSTerm geomTerm = particle2.getTerm();
+                    switch ( geomTerm.getType() ) {
                     case XSConstants.ELEMENT_DECLARATION: {
-                        XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
+                        XSElementDeclaration elementDecl2 = (XSElementDeclaration) geomTerm;
+                        // min occurs check should be done, in regards to the xlinking.
                         int minOccurs2 = particle2.getMinOccurs();
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
+                        if ( maxOccurs2 > 1 ) {
+                            LOG.warn( "Only single geometries are currently supported." );
+                            return null;
+                        }
                         QName elementName = createQName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( geometryNameToGeometryElement.get( elementName ) != null ) {
                             LOG.trace( "Identified a geometry property." );
                             GeometryType geometryType = getGeometryType( elementName );
                             return new GeometryPropertyType( ptName, minOccurs, maxOccurs, geometryType,
-                                                             CoordinateDimension.DIM_2_OR_3,
-                                                             elementDecl2.getAbstract(), ptSubstitutions, BOTH );
+                                                             CoordinateDimension.DIM_2_OR_3, elementDecl.getAbstract(),
+                                                             ptSubstitutions, BOTH );
                         }
                     }
                     case XSConstants.WILDCARD: {
@@ -748,6 +753,58 @@ public class ApplicationSchemaXSDDecoder {
                         break;
                     }
                     case XSConstants.MODEL_GROUP: {
+                        // more then one kind of geometries allowed
+                        XSModelGroup geomModelGroup = (XSModelGroup) geomTerm;
+                        switch ( geomModelGroup.getType() ) {
+                        case XSModelGroup.COMPOSITOR_ALL: {
+                            // all geometries?, lets make it a custom property
+                            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
+                            break;
+                        }
+                        case XSModelGroup.COMPOSITOR_CHOICE: {
+                            XSObjectList geomChoice = geomModelGroup.getParticles();
+                            int length = geomChoice.getLength();
+                            Set<GeometryType> allowedTypes = new HashSet<GeometryType>();
+                            for ( int i = 0; i < length; ++i ) {
+                                XSParticle geomChoiceParticle = (XSParticle) sequence.item( i );
+                                XSTerm geomChoiceTerm = geomChoiceParticle.getTerm();
+                                if ( geomChoiceTerm.getType() == XSConstants.ELEMENT_DECLARATION ) {
+                                    // other types are not supported
+                                    XSElementDeclaration geomChoiceElement = (XSElementDeclaration) geomChoiceTerm;
+                                    // min occurs check should be done, in regards to the xlinking.
+                                    int minOccurs3 = geomChoiceParticle.getMinOccurs();
+                                    int maxOccurs3 = geomChoiceParticle.getMaxOccursUnbounded() ? -1
+                                                                                               : particle2.getMaxOccurs();
+                                    if ( maxOccurs3 > 1 ) {
+                                        LOG.warn( "Only single geometries are currently supported, ignoring in choice." );
+                                        // return null;
+                                    }
+                                    QName elementName = createQName( geomChoiceElement.getNamespace(),
+                                                                     geomChoiceElement.getName() );
+                                    if ( geometryNameToGeometryElement.get( elementName ) != null ) {
+                                        LOG.trace( "Identified a geometry property." );
+                                        GeometryType geometryType = getGeometryType( elementName );
+                                        allowedTypes.add( geometryType );
+                                    } else {
+                                        LOG.warn( "Unknown geometry type." );
+                                    }
+                                } else {
+                                    LOG.warn( "Unsupported type particle type." );
+                                }
+                            }
+                            if ( !allowedTypes.isEmpty() ) {
+                                return new GeometryPropertyType( ptName, minOccurs, maxOccurs, allowedTypes,
+                                                                 CoordinateDimension.DIM_2_OR_3,
+                                                                 elementDecl.getAbstract(), ptSubstitutions, BOTH );
+                            }
+                        }
+                        case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                            // sequence of geometries?, lets make it a custom property
+                            LOG.debug( "Unhandled model group: COMPOSITOR_SEQUENCE" );
+                            break;
+                        }
+                        }
+
                         LOG.debug( "Unhandled particle: MODEL_GROUP" );
                         break;
                     }
@@ -780,8 +837,17 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     private GeometryType getGeometryType( QName gmlGeometryName ) {
-        LOG.trace( "Mapping '" + gmlGeometryName + "'..." );
-        return null;
+        String localPart = gmlGeometryName.getLocalPart();
+        GeometryType result = GeometryType.GEOMETRY;
+        try {
+            result = GeometryType.fromString( localPart );
+        } catch ( Exception e ) {
+            LOG.warn( "Un mappable geometry type: " + gmlGeometryName.toString() );
+        }
+        System.out.println( "Assert.assertEquals( GeometryType." + result.name() + ", GeometryType.fromString(\""
+                            + gmlGeometryName.getLocalPart() + "\") );" );
+        LOG.trace( "Mapping '" + gmlGeometryName + "' -> " + result );
+        return result;
     }
 
     private PrimitiveType getPrimitiveType( XSSimpleType typeDef ) {
