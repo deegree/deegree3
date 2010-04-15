@@ -118,10 +118,11 @@ public class BuildRecordXMLRepresentation {
                                     + PostGISMappingsISODC.CommonColumnNames.data.name() + " = '"
                                     + omElement.toString() + "' WHERE "
                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = " + fk_datasets
-                                    + " AND " + PostGISMappingsISODC.CommonColumnNames.format.name() + " = " + 1 );
+                                    + " AND " + PostGISMappingsISODC.CommonColumnNames.format.name() + " = ?" );
 
                 buf = sqlStatement.getBuffer();
                 stm = connection.prepareStatement( sqlStatement.toString() );
+                stm.setObject( 1, 1 );
                 stm.executeUpdate();
                 buf.setLength( 0 );
 
@@ -130,10 +131,11 @@ public class BuildRecordXMLRepresentation {
                                     + PostGISMappingsISODC.CommonColumnNames.data.name() + " = '" + isoOMElement
                                     + "' WHERE " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = "
                                     + fk_datasets + " AND " + PostGISMappingsISODC.CommonColumnNames.format.name()
-                                    + " = " + 2 );
+                                    + " = ?" );
 
                 buf = sqlStatement.getBuffer();
                 stm = connection.prepareStatement( sqlStatement.toString() );
+                stm.setObject( 1, 2 );
                 stm.executeUpdate();
                 buf.setLength( 0 );
                 stm.close();
