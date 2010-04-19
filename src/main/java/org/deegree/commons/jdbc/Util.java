@@ -174,4 +174,59 @@ public class Util {
         }
     }
 
+    /**
+     * @param connId
+     * @return all tables (currently only PostGIS)
+     */
+    public static LinkedList<String> fetchTables( String connId ) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet set = null;
+        LinkedList<String> result = new LinkedList<String>();
+        try {
+            conn = getConnection( connId );
+            // make this configurable via argument?
+            stmt = conn.prepareStatement( "select probe_geometry_columns()" );
+            stmt.executeQuery();
+            stmt = conn.prepareStatement( "select f_table_name from geometry_columns" );
+            set = stmt.executeQuery();
+            LOG.debug( "Getting all geometry tables." );
+
+            while ( set.next() ) {
+                result.add( set.getString( "f_table_name" ) );
+            }
+
+            return result;
+        } catch ( SQLException e ) {
+            LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return null;
+        } finally {
+            if ( set != null ) {
+                try {
+                    set.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+
 }
