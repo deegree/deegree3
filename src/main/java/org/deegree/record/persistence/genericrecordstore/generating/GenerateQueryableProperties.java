@@ -86,7 +86,6 @@ public class GenerateQueryableProperties {
     public int generateMainDatabaseDataset( Connection connection, ParsedProfileElement parsedElement ) {
         final String databaseTable = PostGISMappingsISODC.DatabaseTables.datasets.name();
         StringWriter sqlStatement = new StringWriter( 1000 );
-        String modifiedAttribute = "null";
         boolean isCaseSensitive = true;
         PreparedStatement stm = null;
         int operatesOnId = 0;
@@ -94,10 +93,6 @@ public class GenerateQueryableProperties {
 
             operatesOnId = getLastDatasetId( connection, databaseTable );
             operatesOnId++;
-
-            if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
-                modifiedAttribute = "'" + parsedElement.getQueryableProperties().getModified() + "'";
-            }
 
             sqlStatement.append( "INSERT INTO "
                                  + databaseTable
@@ -109,10 +104,14 @@ public class GenerateQueryableProperties {
             stm.setObject( 1, operatesOnId );
             stm.setObject( 2, null );
             stm.setObject( 3, null );
-            stm.setObject( 4, generateISOQP_AnyTextStatement( isCaseSensitive,
-                                                              parsedElement.getQueryableProperties(),
+            stm.setObject( 4, generateISOQP_AnyTextStatement( isCaseSensitive, parsedElement.getQueryableProperties(),
                                                               parsedElement.getReturnableProperties() ) );
-            stm.setObject( 5, modifiedAttribute );
+            if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
+                stm.setObject( 5, "'" + parsedElement.getQueryableProperties().getModified() + "'" );
+            } else {
+                stm.setObject( 5, "null" );
+            }
+
             stm.setObject( 6, parsedElement.getQueryableProperties().isHasSecurityConstraints() );
             stm.setObject( 7, parsedElement.getQueryableProperties().getLanguage() );
             stm.setObject( 8, parsedElement.getQueryableProperties().getParentIdentifier() );

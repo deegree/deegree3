@@ -230,7 +230,7 @@ public class GenerateRecord {
             isoSummaryElement.addChild( metadataStandardVersion );
         }
         // ReferenceInfoSystem
-        if ( referenceSystemInfo != null || referenceSystemInfo.size() != 0 ) {
+        if ( referenceSystemInfo != null ) {
             for ( OMElement refSysInfoElem : referenceSystemInfo ) {
                 isoSummaryElement.addChild( refSysInfoElem );
             }
@@ -328,7 +328,7 @@ public class GenerateRecord {
             }
         }
         // ReferenceInfoSystem
-        if ( referenceSystemInfo != null || referenceSystemInfo.size() != 0 ) {
+        if ( referenceSystemInfo != null ) {
             for ( OMElement refSysInfoElem : referenceSystemInfo ) {
                 isoFullElement.addChild( refSysInfoElem );
             }
