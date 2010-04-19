@@ -176,21 +176,104 @@ public class Util {
 
     /**
      * @param connId
-     * @return all tables (currently only PostGIS)
+     * @return a list of all schemas with geometry tables
      */
-    public static LinkedList<String> fetchTables( String connId ) {
+    public static LinkedList<String> fetchGeometrySchemas( String connId ) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet set = null;
         LinkedList<String> result = new LinkedList<String>();
         try {
             conn = getConnection( connId );
-            // make this configurable via argument?
-            stmt = conn.prepareStatement( "select probe_geometry_columns()" );
-            stmt.executeQuery();
-            stmt = conn.prepareStatement( "select f_table_name from geometry_columns" );
+            try {
+                // make this configurable via argument?
+                stmt = conn.prepareStatement( "select probe_geometry_columns()" );
+                stmt.executeQuery();
+            } catch ( SQLException e ) {
+                LOG.debug( "Could not update the geometry_columns table: '{}'", e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+            if ( stmt != null ) {
+                stmt.close();
+            }
+            stmt = conn.prepareStatement( "select distinct(f_table_schema) from geometry_columns" );
             set = stmt.executeQuery();
-            LOG.debug( "Getting all geometry tables." );
+            LOG.debug( "Getting all schemas with geometry tables." );
+
+            while ( set.next() ) {
+                result.add( set.getString( "f_table_schema" ) );
+            }
+
+            return result;
+        } catch ( SQLException e ) {
+            LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return null;
+        } finally {
+            if ( set != null ) {
+                try {
+                    set.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+
+    /**
+     * @param connId
+     * @param schema
+     * @return all tables (currently only PostGIS)
+     */
+    public static LinkedList<String> fetchGeometryTables( String connId, String schema ) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet set = null;
+        LinkedList<String> result = new LinkedList<String>();
+        try {
+            conn = getConnection( connId );
+            try {
+                // make this configurable via argument?
+                stmt = conn.prepareStatement( "select probe_geometry_columns()" );
+                stmt.executeQuery();
+            } catch ( SQLException e ) {
+                LOG.debug( "Could not update the geometry_columns table: '{}'", e.getLocalizedMessage() );
+                LOG.trace( "Stack trace:", e );
+            }
+            if ( stmt != null ) {
+                stmt.close();
+            }
+            StringBuilder query = new StringBuilder( "select f_table_name from geometry_columns" );
+            if ( schema != null ) {
+                query.append( " where f_table_schema = ?" );
+            }
+            stmt = conn.prepareStatement( query.toString() );
+            if ( schema != null ) {
+                stmt.setString( 1, schema );
+            }
+            set = stmt.executeQuery();
+            if ( schema == null ) {
+                LOG.debug( "Getting all geometry tables for schema '{}'." );
+            } else {
+                LOG.debug( "Getting all geometry tables." );
+            }
 
             while ( set.next() ) {
                 result.add( set.getString( "f_table_name" ) );
