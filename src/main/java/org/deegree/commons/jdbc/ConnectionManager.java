@@ -43,6 +43,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -239,4 +240,12 @@ public class ConnectionManager {
             idToPools.put( id, pool );
         }
     }
+    
+    /**
+     * @return all currently available connection ids
+     */
+    public static Set<String> getConnectionIds(){
+        return idToPools.keySet();
+    }
+    
 }
