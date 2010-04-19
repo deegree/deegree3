@@ -28,8 +28,7 @@ To accommodate these transformation the deegree crs package defines different tr
 systems into another.</p>
 
 <h3>Automatic loading of transformation classes</h3>
-It is possible to create your own transformation classes, which the default provider {@link
-org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider} will load automatically.
+It is possible to create your own transformation classes, which the default provider {@link org.deegree.cs.configuration.deegree.xml.DeegreeCRSProvider} will load automatically.
 <p>You can achieve this loading by supplying the <b><code>class</code></b> attribute to a <code>crs:TransformationDefinitions/crs:UserDefined</code>
 element in the 'transformation-definitions.xml'. This attribute must contain the full class name (with package), e.g. <code>&lt;crs:UserDefined
 class='my.package.and.transformation.Implementation'&gt;</code></p>
@@ -41,7 +40,7 @@ Because the loading is done with reflections your classes must sustain following
   &emsp;&emsp;&emsp;&emsp;{@link org.deegree.cs.CRSIdentifiable},<br />
   &emsp;&emsp;&emsp;&emsp;{@link org.deegree.cs.coordinatesystems.CoordinateSystem} sourceCRS,<br />
   &emsp;&emsp;&emsp;&emsp;{@link org.deegree.cs.coordinatesystems.CoordinateSystem} targetCRS,<br />  
-  &emsp;&emsp;&emsp;&emsp;{@link javax.xml.stream.XMLStreamReader reader<br />
+  &emsp;&emsp;&emsp;&emsp;{@link javax.xml.stream.XMLStreamReader} reader<br />
   );<br />
   </code>
   <p>The first three parameters are common to all transformations (for an explanation of their meaning take a look
