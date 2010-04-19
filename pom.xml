@@ -17,7 +17,7 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>false</filtering>
-      </resource>    
+      </resource>
       <resource>
         <directory>src/main/filtered</directory>
         <filtering>true</filtering>
@@ -61,10 +61,10 @@
             <goals>
               <goal>create</goal>
             </goals>
-	        <configuration>
-	          <doCheck>false</doCheck>
-	          <doUpdate>false</doUpdate>
-	        </configuration>            
+                <configuration>
+                  <doCheck>false</doCheck>
+                  <doUpdate>false</doUpdate>
+                </configuration>
           </execution>
           <execution>
             <id>deploy</id>
@@ -72,10 +72,10 @@
             <goals>
               <goal>create</goal>
             </goals>
-	        <configuration>
-	          <doCheck>true</doCheck>
-	          <doUpdate>false</doUpdate>
-	        </configuration>
+                <configuration>
+                  <doCheck>true</doCheck>
+                  <doUpdate>false</doUpdate>
+                </configuration>
           </execution>
         </executions>
       </plugin>
@@ -334,14 +334,20 @@
       <version>1.4.1</version>
     </dependency>
     <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>8.4-701.jdbc4</version>
-    </dependency>
-    <dependency>
       <groupId>org.postgis</groupId>
       <artifactId>postgis-jdbc</artifactId>
       <version>1.3.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.postgis</groupId>
+          <artifactId>postgis-stubs</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>8.4-701.jdbc4</version>
     </dependency>
     <dependency>
       <groupId>jogl</groupId>
