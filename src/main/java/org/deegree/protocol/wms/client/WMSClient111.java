@@ -36,6 +36,7 @@
 
 package org.deegree.protocol.wms.client;
 
+import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.HttpUtils.XML;
@@ -325,6 +326,13 @@ public class WMSClient111 {
         }
 
         return null;
+    }
+
+    /**
+     * @return the names of all layers that have a name
+     */
+    public List<String> getNamedLayers() {
+        return asList( capabilities.getNodesAsStrings( capabilities.getRootElement(), new XPath( "//Layer/Name", null ) ) );
     }
 
     /**
@@ -656,7 +664,7 @@ public class WMSClient111 {
                             throws MalformedURLException {
         WMSClient111 client = new WMSClient111(
                                                 new URL(
-                                                         "http://stadtplan.bonn.de/Deegree2wms/services?request=GetCapabilities&version=1.1.1&service=WMS" ) );
+                                                         "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1" ) );
         System.out.println( client.getAddress( GetMap, true ) );
     }
 }
