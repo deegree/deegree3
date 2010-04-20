@@ -747,7 +747,7 @@ public class TransformationFactory {
             }
         }
         if ( result == null || "Helmert".equalsIgnoreCase( result.getImplementationName() )
-             || ( "NTv2".equals( result.getImplementationName() ) && this.preferredDSTransform == DSTransform.HELMERT ) ) {
+             || ! this.preferredDSTransform.isPreferred( result ) ) {
 
             LOG.debug( "Creating geographic ->geographic transformation: from (source): " + sourceCRS.getCode()
                        + " to(target): " + targetCRS.getCode() );

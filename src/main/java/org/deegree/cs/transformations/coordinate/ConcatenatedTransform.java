@@ -222,8 +222,11 @@ public class ConcatenatedTransform extends Transformation {
             } else if ( m2 == null ) {
                 return first;
             }
-
+            if( m2.getNumCol() != m1.getNumCol() || m2.getNumRow() != m1.getNumRow() ){
+                return new ConcatenatedTransform( first, second );
+            }
             m2.mul( m1 );
+            
             // m1.mul( m2 );
             LOG.debug( "Concatenate: both transforms are matrices, resulting multiply:\n" + m2 );
             MatrixTransform result = new MatrixTransform( first.getSourceCRS(), second.getTargetCRS(), m2 );

@@ -342,7 +342,7 @@ public class TransformationAccuracyTest implements CRSDefines {
         CompoundCRS sourceCRS = new CompoundCRS(
                                                  heightAxis,
                                                  GeographicCRS.WGS84_YX,
-                                                 20,
+                                                 600.2,
                                                  new CRSIdentifiable(
                                                                       new CRSCodeType[] { new CRSCodeType(
                                                                                                            "urn:x-ogc:def:crs:EPSG:4979" ) } ) );
@@ -354,8 +354,7 @@ public class TransformationAccuracyTest implements CRSDefines {
         Point3d sourcePoint = new Point3d( 46.074, 9.799, 600.2 );
         Point3d targetPoint = new Point3d( 9.799, 46.074, Double.NaN );
 
-        LOG.warn( "Accuracy test, Compound->Geographic EqualOnEllipsNotOnAxis, This issue has to be fixed yet." );
-        // doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_D );
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_D );
     }
 
     /**
