@@ -51,8 +51,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -86,6 +84,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.FilterEvaluationException;
@@ -397,7 +396,7 @@ public class ISORecordStore implements RecordStore {
 
             doHitsOnGetRecord( writer, typeNameFormatNumber, profileFormatNumberOutputSchema, recordStoreOptions,
                                formatTypeInISORecordStore.get( recordStoreOptions.getSetOfReturnableElements() ),
-                               ResultType.hits, builder, new ArrayList<Pair<Writer, Collection<Object>>>( 0 ) );
+                               ResultType.hits, builder, new ArrayList<Pair<StringBuilder, Collection<Object>>>( 0 ) );
             break;
 
         case validate:
@@ -426,7 +425,7 @@ public class ISORecordStore implements RecordStore {
     private void doHitsOnGetRecord( XMLStreamWriter writer, int typeNameFormatNumber,
                                     int profileFormatNumberOutputSchema, RecordStoreOptions recordStoreOptions,
                                     String formatType, ResultType resultType, PostGISWhereBuilder builder,
-                                    List<Pair<Writer, Collection<Object>>> wList )
+                                    List<Pair<StringBuilder, Collection<Object>>> wList )
                             throws SQLException, XMLStreamException, IOException {
 
         int countRows = 0;
@@ -512,7 +511,7 @@ public class ISORecordStore implements RecordStore {
 
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
-        List<Pair<Writer, Collection<Object>>> preparedStatementList = new ArrayList<Pair<Writer, Collection<Object>>>();
+        List<Pair<StringBuilder, Collection<Object>>> preparedStatementList = new ArrayList<Pair<StringBuilder, Collection<Object>>>();
 
         List<Pair<StringBuilder, Collection<Object>>> whereClauseList = new GenerateWhereClauseList(
                                                                                                      builder.getWhereClause(),
@@ -522,13 +521,13 @@ public class ISORecordStore implements RecordStore {
 
         case brief:
             for ( Pair<StringBuilder, Collection<Object>> whereBuilderPair : whereClauseList ) {
-                Pair<Writer, Collection<Object>> selectBrief = generateSELECTStatement(
-                                                                                        formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                                                                                        recordStoreOptions,
-                                                                                        typeNameFormatNumber,
-                                                                                        profileFormatNumberOutputSchema,
-                                                                                        false, builder,
-                                                                                        whereBuilderPair );
+                Pair<StringBuilder, Collection<Object>> selectBrief = generateSELECTStatement(
+                                                                                               formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                                                                               recordStoreOptions,
+                                                                                               typeNameFormatNumber,
+                                                                                               profileFormatNumberOutputSchema,
+                                                                                               false, builder,
+                                                                                               whereBuilderPair );
 
                 preparedStatementList.add( selectBrief );
 
@@ -540,13 +539,13 @@ public class ISORecordStore implements RecordStore {
         case summary:
 
             for ( Pair<StringBuilder, Collection<Object>> whereBuilderPair : whereClauseList ) {
-                Pair<Writer, Collection<Object>> selectSummary = generateSELECTStatement(
-                                                                                          formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
-                                                                                          recordStoreOptions,
-                                                                                          typeNameFormatNumber,
-                                                                                          profileFormatNumberOutputSchema,
-                                                                                          false, builder,
-                                                                                          whereBuilderPair );
+                Pair<StringBuilder, Collection<Object>> selectSummary = generateSELECTStatement(
+                                                                                                 formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.summary ),
+                                                                                                 recordStoreOptions,
+                                                                                                 typeNameFormatNumber,
+                                                                                                 profileFormatNumberOutputSchema,
+                                                                                                 false, builder,
+                                                                                                 whereBuilderPair );
 
                 preparedStatementList.add( selectSummary );
 
@@ -559,12 +558,13 @@ public class ISORecordStore implements RecordStore {
         case full:
 
             for ( Pair<StringBuilder, Collection<Object>> whereBuilderPair : whereClauseList ) {
-                Pair<Writer, Collection<Object>> selectFull = generateSELECTStatement(
-                                                                                       formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
-                                                                                       recordStoreOptions,
-                                                                                       typeNameFormatNumber,
-                                                                                       profileFormatNumberOutputSchema,
-                                                                                       false, builder, whereBuilderPair );
+                Pair<StringBuilder, Collection<Object>> selectFull = generateSELECTStatement(
+                                                                                              formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.full ),
+                                                                                              recordStoreOptions,
+                                                                                              typeNameFormatNumber,
+                                                                                              profileFormatNumberOutputSchema,
+                                                                                              false, builder,
+                                                                                              whereBuilderPair );
 
                 preparedStatementList.add( selectFull );
 
@@ -600,36 +600,38 @@ public class ISORecordStore implements RecordStore {
      * @return
      * @throws SQLException
      */
-    private PreparedStatement combinePreparedStatement( List<Pair<Writer, Collection<Object>>> preparedStatementList,
+    private PreparedStatement combinePreparedStatement(
+                                                        List<Pair<StringBuilder, Collection<Object>>> preparedStatementList,
                                                         RecordStoreOptions recordStoreOptions, Connection conn,
                                                         boolean setCount, PostGISWhereBuilder builder )
                             throws SQLException {
-        String COUNT_PRE;
-        String COUNT_SUF;
-        String SET_OFFSET;
+        StringBuilder COUNT_PRE;
+        StringBuilder COUNT_SUF;
+        StringBuilder SET_OFFSET;
         PreparedStatement stmt = null;
 
-        StringWriter s = new StringWriter();
+        StringBuilder s = new StringBuilder();
 
         /*
          * precondition if there is a counting of rows needed
          */
         if ( setCount == true ) {
-            COUNT_PRE = "SELECT COUNT(*) FROM ( ";
-            COUNT_SUF = " ) AS rowCount";
-            SET_OFFSET = "";
+            COUNT_PRE = new StringBuilder().append( "SELECT COUNT(*) FROM ( " );
+            COUNT_SUF = new StringBuilder().append( " ) AS rowCount" );
+            SET_OFFSET = new StringBuilder();
         } else {
-            COUNT_PRE = "";
-            COUNT_SUF = "";
-            SET_OFFSET = " OFFSET " + Integer.toString( recordStoreOptions.getStartPosition() - 1 ) + " LIMIT "
-                         + recordStoreOptions.getMaxRecords();
+            COUNT_PRE = new StringBuilder();
+            COUNT_SUF = new StringBuilder();
+            SET_OFFSET = new StringBuilder().append( " OFFSET " ).append(
+                                                                          Integer.toString( recordStoreOptions.getStartPosition() - 1 ) );
+            SET_OFFSET.append( " LIMIT " ).append( recordStoreOptions.getMaxRecords() );
         }
         s.append( COUNT_PRE );
         for ( int i = 0; i < preparedStatementList.size(); i++ ) {
             if ( i == preparedStatementList.size() - 1 ) {
                 s.append( preparedStatementList.get( i ).first.toString() );
                 if ( recordStoreOptions.getMaxRecords() != 0 ) {
-                    s.append( " " + SET_OFFSET );
+                    s.append( ' ' ).append( SET_OFFSET );
                 }
             } else {
                 s.append( preparedStatementList.get( i ).first.toString() );
@@ -647,7 +649,7 @@ public class ISORecordStore implements RecordStore {
         if ( builder != null && preparedStatementList.size() > 0 ) {
             int i = 0;
 
-            for ( Pair<Writer, Collection<Object>> pair : preparedStatementList )
+            for ( Pair<StringBuilder, Collection<Object>> pair : preparedStatementList )
                 for ( Object arg : (Collection<Object>) pair.second ) {
                     i++;
 
@@ -681,25 +683,25 @@ public class ISORecordStore implements RecordStore {
      * @throws IOException
      * @throws SQLException
      */
-    private Pair<Writer, Collection<Object>> generateSELECTStatement(
-                                                                      String formatType,
-                                                                      RecordStoreOptions recordStoreOptions,
-                                                                      int typeNameFormatNumber,
-                                                                      int profileFormatNumberOutputSchema,
-                                                                      boolean setCount,
-                                                                      PostGISWhereBuilder builder,
-                                                                      Pair<StringBuilder, Collection<Object>> whereBuilder )
+    private Pair<StringBuilder, Collection<Object>> generateSELECTStatement(
+                                                                             String formatType,
+                                                                             RecordStoreOptions recordStoreOptions,
+                                                                             int typeNameFormatNumber,
+                                                                             int profileFormatNumberOutputSchema,
+                                                                             boolean setCount,
+                                                                             PostGISWhereBuilder builder,
+                                                                             Pair<StringBuilder, Collection<Object>> whereBuilder )
                             throws IOException, SQLException {
 
-        Pair<Writer, Collection<Object>> pair = new Pair<Writer, Collection<Object>>();
-        Writer s = new StringWriter();
-        StringWriter constraintExpression = new StringWriter();
+        Pair<StringBuilder, Collection<Object>> pair = new Pair<StringBuilder, Collection<Object>>();
+        StringBuilder s = new StringBuilder();
+        StringBuilder constraintExpression = new StringBuilder();
         String constraintExpressionTemp = "";
         List<Pair<String, String>> aliasMapping = new ArrayList<Pair<String, String>>();
         String formatTypeAlias = formatType + Integer.toString( 0 );
         String datasetsAlias = "";
 
-        StringWriter stringINNER_FROM = new StringWriter();
+        StringBuilder stringINNER_FROM = new StringBuilder();
 
         /*
          * appends the tables identified in the WHERE-builder to the FROM clause with aliasnames
@@ -721,8 +723,8 @@ public class ISORecordStore implements RecordStore {
                 datasetsAlias = PostGISMappingsISODC.DatabaseTables.datasets.name() + Integer.toString( aliasCount );
                 aliasMapping.add( new Pair<String, String>( PostGISMappingsISODC.DatabaseTables.datasets.name(),
                                                             datasetsAlias ) );
-                stringINNER_FROM.append( ", " + PostGISMappingsISODC.DatabaseTables.datasets.name() + " AS "
-                                         + datasetsAlias );
+                stringINNER_FROM.append( ',' ).append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
+                stringINNER_FROM.append( " AS " ).append( datasetsAlias );
 
                 aliasCount++;
             }
@@ -738,8 +740,8 @@ public class ISORecordStore implements RecordStore {
                         aliasPair = new Pair<String, String>( PostGISMappingsISODC.DatabaseTables.datasets.name(),
                                                               datasetsAlias );
                         aliasMapping.add( aliasPair );
-                        stringINNER_FROM.append( ", " + PostGISMappingsISODC.DatabaseTables.datasets.name() + " AS "
-                                                 + datasetsAlias );
+                        stringINNER_FROM.append( ',' ).append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
+                        stringINNER_FROM.append( " AS " ).append( datasetsAlias );
                         Pattern p = Pattern.compile( aliasPair.first.toString() + "[.]" );
                         Matcher m = p.matcher( (CharSequence) whereBuilder.first );
 
@@ -758,8 +760,9 @@ public class ISORecordStore implements RecordStore {
                         Matcher m = p.matcher( (CharSequence) whereBuilder.first );
 
                         if ( m.find() ) {
-                            stringINNER_FROM.append( ", " + propName.getTable() + " AS " + propName.getTable()
-                                                     + Integer.toString( aliasCount ) );
+                            stringINNER_FROM.append( ',' ).append( propName.getTable() ).append( " AS " ).append(
+                                                                                                                  propName.getTable() );
+                            stringINNER_FROM.append( Integer.toString( aliasCount ) );
 
                             aliasMapping.add( aliasPair );
                             constraintExpressionTemp = m.replaceFirst( aliasPair.second.toString() + "." );
@@ -785,18 +788,20 @@ public class ISORecordStore implements RecordStore {
         if ( ( (StringBuilder) whereBuilder.first ).length() != 0 ) {
             constraintExpression.append( " AND (" + whereBuilder.first + ") " );
         } else {
-            constraintExpression.append( " " );
+            constraintExpression.append( ' ' );
         }
 
-        s.append( "SELECT " + formatTypeAlias + "." + PostGISMappingsISODC.CommonColumnNames.data.name() + " FROM "
-                  + formatType + " AS " + formatTypeAlias );
+        s.append( "SELECT " ).append( formatTypeAlias ).append( '.' );
+        s.append( PostGISMappingsISODC.CommonColumnNames.data.name() ).append( " FROM " );
+        s.append( formatType ).append( " AS " ).append( formatTypeAlias );
 
-        s.append( stringINNER_FROM.toString() );
+        s.append( stringINNER_FROM );
 
-        s.append( " WHERE " + formatTypeAlias + "." + PostGISMappingsISODC.CommonColumnNames.format.name() + " = "
-                  + typeNameFormatNumber + " AND " + formatTypeAlias + "."
-                  + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = " + datasetsAlias + "."
-                  + PostGISMappingsISODC.CommonColumnNames.id.name() + " " );
+        s.append( " WHERE " ).append( formatTypeAlias ).append( '.' );
+        s.append( PostGISMappingsISODC.CommonColumnNames.format.name() ).append( '=' );
+        s.append( typeNameFormatNumber ).append( " AND " ).append( formatTypeAlias ).append( '.' );
+        s.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( '=' ).append( datasetsAlias );
+        s.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( ' ' );
 
         /*
          * appends the tables with their columns identified in the WHERE-builder to the WHERE clause and binds it to the
@@ -806,8 +811,10 @@ public class ISORecordStore implements RecordStore {
 
             for ( Pair<String, String> pair1 : aliasMapping ) {
                 if ( !pair1.first.equals( PostGISMappingsISODC.DatabaseTables.datasets.name() ) ) {
-                    s.append( " AND " + pair1.second + "." + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name()
-                              + " = " + datasetsAlias + "." + PostGISMappingsISODC.CommonColumnNames.id.name() + " " );
+                    s.append( " AND " ).append( pair1.second ).append( '.' );
+                    s.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( '=' );
+                    s.append( datasetsAlias ).append( '.' );
+                    s.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( ' ' );
                 }
             }
 
@@ -818,7 +825,7 @@ public class ISORecordStore implements RecordStore {
         /*
          * appends the constraint expression from the WHERE-builder and puts the Writer into a pair object
          */
-        s.append( "" + constraintExpression );
+        s.append( constraintExpression );
         pair.first = s;
         pair.second = (Collection<Object>) whereBuilder.second;
         return pair;
@@ -965,19 +972,26 @@ public class ISORecordStore implements RecordStore {
                     }
                     str.close();
                     rsUpdatableDatasets.close();
+
                     if ( updatableDatasets.size() != 0 ) {
                         PreparedStatement stmt = null;
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.append( "SELECT " ).append(
+                                                                  formatTypeInISORecordStore.get( SetOfReturnableElements.full ) );
+                        stringBuilder.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.data.name() );
+                        stringBuilder.append( " FROM " ).append(
+                                                                 formatTypeInISORecordStore.get( SetOfReturnableElements.full ) );
+                        stringBuilder.append( " WHERE " ).append(
+                                                                  formatTypeInISORecordStore.get( SetOfReturnableElements.full ) );
+                        stringBuilder.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.format.name() );
+                        stringBuilder.append( " = 2 AND " ).append(
+                                                                    formatTypeInISORecordStore.get( SetOfReturnableElements.full ) );
+                        stringBuilder.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append(
+                                                                                                                                " = ?;" );
                         for ( int i : updatableDatasets ) {
-                            String stri = "SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.full )
-                                          + "." + PostGISMappingsISODC.CommonColumnNames.data.name() + " FROM "
-                                          + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + " WHERE "
-                                          + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + "."
-                                          + PostGISMappingsISODC.CommonColumnNames.format.name() + " = ? AND "
-                                          + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + "."
-                                          + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = ?;";
-                            stmt = conn.prepareStatement( stri );
-                            stmt.setObject( 1, 2 );
-                            stmt.setObject( 2, i );
+
+                            stmt = conn.prepareStatement( stringBuilder.toString() );
+                            stmt.setObject( 1, i );
                             ResultSet rsGetStoredFullRecordXML = stmt.executeQuery();
 
                             while ( rsGetStoredFullRecordXML.next() ) {
@@ -1112,6 +1126,12 @@ public class ISORecordStore implements RecordStore {
             }
 
             List<Integer> deletableDatasets = new ArrayList<Integer>();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append( "DELETE FROM " );
+            stringBuilder.append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
+            stringBuilder.append( " WHERE " ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+            stringBuilder.append( " = ?" );
+            PreparedStatement stmt = null;
             if ( rsDeletableDatasets != null ) {
                 while ( rsDeletableDatasets.next() ) {
                     deletableDatasets.add( rsDeletableDatasets.getInt( 1 ) );
@@ -1120,15 +1140,17 @@ public class ISORecordStore implements RecordStore {
                 rsDeletableDatasets.close();
 
                 for ( int i : deletableDatasets ) {
-                    conn.createStatement().executeUpdate(
-                                                          "DELETE FROM "
-                                                                                  + PostGISMappingsISODC.DatabaseTables.datasets.name()
-                                                                                  + " WHERE "
-                                                                                  + PostGISMappingsISODC.CommonColumnNames.id.name()
-                                                                                  + " = " + i );
+
+                    stmt = conn.prepareStatement( stringBuilder.toString() );
+                    stmt.setObject( 1, i );
+                    stmt.executeUpdate();
+
                 }
             }
 
+            if ( stmt != null ) {
+                stmt.close();
+            }
             affectedIds = deletableDatasets;
 
             break;
@@ -1201,61 +1223,50 @@ public class ISORecordStore implements RecordStore {
             }
         }
 
+        StringBuilder select = new StringBuilder().append( "SELECT ?." );
+        select.append( PostGISMappingsISODC.CommonColumnNames.data.name() ).append( " FROM ? AS recordAlias, " );
+        select.append( PostGISMappingsISODC.DatabaseTables.datasets.name() ).append( " AS ds, " );
+        select.append( PostGISMappingsISODC.DatabaseTables.qp_identifier.name() ).append( " AS i WHERE recordAlias." );
+        select.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( " = ds." );
+        select.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " AND i." );
+        select.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( " = ds." );
+        select.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " AND i." );
+        select.append( PostGISMappingsISODC.DatabaseTables.qp_identifier.name() ).append( " = ? AND recordAlias." );
+        select.append( PostGISMappingsISODC.CommonColumnNames.format.name() ).append( " = ?;" );
+
         ResultSet rs = null;
 
         for ( String identifier : idList ) {
             PreparedStatement stmt = null;
+            String elementSetNameString;
             switch ( elementSetName ) {
 
             case brief:
 
-                String selectBrief = "SELECT rb." + PostGISMappingsISODC.CommonColumnNames.data.name() + " FROM "
-                                     + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + " AS rb, "
-                                     + PostGISMappingsISODC.DatabaseTables.datasets.name() + " AS ds, "
-                                     + PostGISMappingsISODC.DatabaseTables.qp_identifier.name() + " AS i WHERE rb."
-                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = ds."
-                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + " AND i."
-                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = ds."
-                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + " AND i."
-                                     + PostGISMappingsISODC.DatabaseTables.qp_identifier.name() + " = ?" + " AND rb."
-                                     + PostGISMappingsISODC.CommonColumnNames.format.name() + " = ?;";
-
-                stmt = conn.prepareStatement( selectBrief );
+                elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.brief );
+                stmt = conn.prepareStatement( select.toString() );
                 break;
             case summary:
 
-                String selectSummary = "SELECT rs." + PostGISMappingsISODC.CommonColumnNames.data.name() + " FROM "
-                                       + formatTypeInISORecordStore.get( SetOfReturnableElements.summary ) + " AS rs, "
-                                       + PostGISMappingsISODC.DatabaseTables.datasets.name() + " AS ds, "
-                                       + PostGISMappingsISODC.DatabaseTables.qp_identifier.name() + " AS i WHERE rs."
-                                       + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = ds."
-                                       + PostGISMappingsISODC.CommonColumnNames.id.name() + " AND i."
-                                       + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = ds."
-                                       + PostGISMappingsISODC.CommonColumnNames.id.name() + " AND i."
-                                       + PostGISMappingsISODC.DatabaseTables.qp_identifier.name() + " = ?" + " AND rs."
-                                       + PostGISMappingsISODC.CommonColumnNames.format.name() + " = ?;";
-                LOG.debug( selectSummary );
-                stmt = conn.prepareStatement( selectSummary );
+                elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.summary );
+                stmt = conn.prepareStatement( select.toString() );
                 break;
             case full:
 
-                String selectFull = "SELECT rf." + PostGISMappingsISODC.CommonColumnNames.data.name() + " FROM "
-                                    + formatTypeInISORecordStore.get( SetOfReturnableElements.full ) + " AS rf, "
-                                    + PostGISMappingsISODC.DatabaseTables.datasets.name() + " AS ds, "
-                                    + PostGISMappingsISODC.DatabaseTables.qp_identifier.name() + " AS i WHERE rf."
-                                    + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = ds."
-                                    + PostGISMappingsISODC.CommonColumnNames.id.name() + " AND i."
-                                    + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = ds."
-                                    + PostGISMappingsISODC.CommonColumnNames.id.name() + " AND i."
-                                    + PostGISMappingsISODC.CommonColumnNames.identifier.name() + " = ?" + " AND rf."
-                                    + PostGISMappingsISODC.CommonColumnNames.format.name() + " = ?;";
-                stmt = conn.prepareStatement( selectFull );
+                elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.full );
+                stmt = conn.prepareStatement( select.toString() );
+                break;
+            default:
+
+                elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.brief );
+                stmt = conn.prepareStatement( select.toString() );
                 break;
             }
             if ( stmt != null ) {
 
-                stmt.setObject( 1, identifier );
-                stmt.setObject( 2, profileFormatNumberOutputSchema );
+                stmt.setObject( 1, elementSetNameString );
+                stmt.setObject( 2, identifier );
+                stmt.setObject( 3, profileFormatNumberOutputSchema );
 
                 rs = stmt.executeQuery();
                 writeResultSet( rs, writer );
@@ -1284,45 +1295,51 @@ public class ISORecordStore implements RecordStore {
                                                        int formatNumber, PostGISWhereBuilder builder, Connection conn )
                             throws IOException, SQLException {
 
-        StringWriter s = new StringWriter();
+        StringBuilder s = new StringBuilder();
         PreparedStatement stmt = null;
-        Writer constraintExpression = new StringWriter();
+        StringBuilder constraintExpression = new StringBuilder();
 
-        StringBuilder stringWriter = builder.getWhereClause();
+        StringBuilder stringBuilder = builder.getWhereClause();
 
-        if ( stringWriter.length() != 0 ) {
-            constraintExpression.append( " AND (" + builder.getWhereClause() + ") " );
+        if ( stringBuilder.length() != 0 ) {
+            constraintExpression.append( " AND (" ).append( builder.getWhereClause() ).append( ')' );
         } else {
-            constraintExpression.append( " " );
+            constraintExpression.append( ' ' );
         }
 
-        s.append( "SELECT " + formatType + "." + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " FROM "
-                  + PostGISMappingsISODC.DatabaseTables.datasets.name() + ", " + formatType );
+        s.append( "SELECT " ).append( formatType ).append( '.' );
+        s.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( " FROM " );
+        s.append( PostGISMappingsISODC.DatabaseTables.datasets.name() ).append( ',' ).append( formatType );
 
         for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
             if ( propName.getTable() == null ) {
                 s.append( ' ' );
             } else {
-                s.append( ", " + propName.getTable() + " " );
+                s.append( ',' ).append( propName.getTable() ).append( ' ' );
             }
         }
 
-        s.append( "WHERE " + formatType + "." + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = "
-                  + PostGISMappingsISODC.DatabaseTables.datasets.name() + ".id AND " + formatType + "."
-                  + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " >= " + constraint.getStartPosition()
-                  + " AND " + formatType + ".format = " + formatNumber );
+        s.append( " WHERE " ).append( formatType ).append( '.' );
+        s.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( '=' );
+        s.append( PostGISMappingsISODC.DatabaseTables.datasets.name() ).append( '.' );
+        s.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " AND " );
+        s.append( formatType ).append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
+        s.append( " >= " ).append( constraint.getStartPosition() );
+        s.append( " AND " ).append( formatType ).append( '.' );
+        s.append( PostGISMappingsISODC.CommonColumnNames.format.name() ).append( '=' ).append( formatNumber );
 
         for ( PropertyNameMapping propName : builder.getPropNameMappingList() ) {
             if ( propName.getTable() == null ) {
                 s.append( ' ' );
             } else {
-                s.append( " AND " + propName.getTable() + "."
-                          + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = "
-                          + PostGISMappingsISODC.DatabaseTables.datasets.name() + ".id " );
+                s.append( " AND " ).append( propName.getTable() ).append( '.' );
+                s.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( '=' );
+                s.append( PostGISMappingsISODC.DatabaseTables.datasets.name() ).append( '.' );
+                s.append( PostGISMappingsISODC.CommonColumnNames.id.name() );
             }
         }
 
-        s.append( constraintExpression + "" );
+        s.append( constraintExpression );
 
         stmt = conn.prepareStatement( s.toString() );
 
@@ -1351,22 +1368,22 @@ public class ISORecordStore implements RecordStore {
                             throws SQLException, IOException {
         Connection conn = ConnectionManager.getConnection( connectionId );
         ResultSet rsInsertedDatasets = null;
+
+        StringBuilder s = new StringBuilder().append( " SELECT " );
+        s.append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
+        s.append( PostGISMappingsISODC.CommonColumnNames.data.name() );
+        s.append( " FROM " ).append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
+        s.append( ',' ).append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
+        s.append( " WHERE " ).append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
+        s.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
+        s.append( '=' ).append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
+        s.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+        s.append( " AND " ).append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
+        s.append( '.' ).append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " = ?" );
+
         for ( int i : transactionIds ) {
-            PreparedStatement stmt = null;
-            Writer s = new StringWriter();
-            s.append( " SELECT " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + ".data " + "FROM "
-                      + PostGISMappingsISODC.DatabaseTables.datasets.name() + ", "
-                      + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + " " );
-
-            s.append( " WHERE " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "."
-                      + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = "
-                      + PostGISMappingsISODC.DatabaseTables.datasets.name() + "."
-                      + PostGISMappingsISODC.CommonColumnNames.id.name() );
-
-            s.append( " AND " + formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) + "."
-                      + PostGISMappingsISODC.CommonColumnNames.id.name() + " = " + i );
-
-            stmt = conn.prepareStatement( s.toString() );
+            PreparedStatement stmt = conn.prepareStatement( s.toString() );
+            stmt.setObject( 1, i );
             rsInsertedDatasets = stmt.executeQuery();
             writeResultSet( rsInsertedDatasets, writer );
             stmt.close();
@@ -1411,7 +1428,7 @@ public class ISORecordStore implements RecordStore {
 
         if ( idIsMatching == false ) {
 
-            throw new SQLException();
+            throw new InvalidParameterValueException();
         }
 
     }

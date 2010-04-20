@@ -69,6 +69,32 @@ public class BuildRecordXMLRepresentation {
 
     private static final Logger LOG = getLogger( BuildRecordXMLRepresentation.class );
 
+    private static final StringBuilder dataColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.data.name() );
+
+    private static final StringBuilder idColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+
+    private static final StringBuilder fk_datasetsColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
+
+    private static final StringBuilder formatColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.format.name() );
+
+    private static final StringBuilder sqlStatementUpdate = new StringBuilder().append( "UPDATE ? SET " ).append(
+                                                                                                                  dataColumn ).append(
+                                                                                                                                       " = ? WHERE " ).append(
+                                                                                                                                                               fk_datasetsColumn ).append(
+                                                                                                                                                                                           " = ? AND " ).append(
+                                                                                                                                                                                                                 formatColumn ).append(
+                                                                                                                                                                                                                                        " = ?;" );
+
+    private static final StringBuilder sqlStatementInsert = new StringBuilder().append( "INSERT INTO ? ( " ).append(
+                                                                                                                     idColumn ).append(
+                                                                                                                                        ", " ).append(
+                                                                                                                                                       fk_datasetsColumn ).append(
+                                                                                                                                                                                   ", " ).append(
+                                                                                                                                                                                                  formatColumn ).append(
+                                                                                                                                                                                                                         ", " ).append(
+                                                                                                                                                                                                                                        dataColumn ).append(
+                                                                                                                                                                                                                                                             " ) VALUES (?, ?, ?, ?);" );
+
     /**
      * Updating the XML representation of a record in DC and ISO.
      * 
@@ -89,8 +115,7 @@ public class BuildRecordXMLRepresentation {
         int counter = 0;
         for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
 
-            StringWriter sqlStatement = new StringWriter( 500 );
-            StringBuffer buf = new StringBuffer();
+            // StringBuilder sqlStatement = new StringBuilder( 500 );
             PreparedStatement stm = null;
 
             try {
@@ -114,30 +139,21 @@ public class BuildRecordXMLRepresentation {
 
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
-                sqlStatement.write( "UPDATE " + databaseTable + " SET "
-                                    + PostGISMappingsISODC.CommonColumnNames.data.name() + " = '"
-                                    + omElement.toString() + "' WHERE "
-                                    + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = " + fk_datasets
-                                    + " AND " + PostGISMappingsISODC.CommonColumnNames.format.name() + " = ?" );
-
-                buf = sqlStatement.getBuffer();
-                stm = connection.prepareStatement( sqlStatement.toString() );
-                stm.setObject( 1, 1 );
+                stm = connection.prepareStatement( sqlStatementUpdate.toString() );
+                stm.setObject( 1, databaseTable );
+                stm.setObject( 2, omElement );
+                stm.setObject( 3, fk_datasets );
+                stm.setObject( 4, 1 );
                 stm.executeUpdate();
-                buf.setLength( 0 );
+                sqlStatementUpdate.setLength( 0 );
 
                 // ISO-update
-                sqlStatement.write( "UPDATE " + databaseTable + " SET "
-                                    + PostGISMappingsISODC.CommonColumnNames.data.name() + " = '" + isoOMElement
-                                    + "' WHERE " + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " = "
-                                    + fk_datasets + " AND " + PostGISMappingsISODC.CommonColumnNames.format.name()
-                                    + " = ?" );
-
-                buf = sqlStatement.getBuffer();
-                stm = connection.prepareStatement( sqlStatement.toString() );
-                stm.setObject( 1, 2 );
+                stm = connection.prepareStatement( sqlStatementUpdate.toString() );
+                stm.setObject( 1, databaseTable );
+                stm.setObject( 2, isoOMElement );
+                stm.setObject( 3, fk_datasets );
+                stm.setObject( 4, 2 );
                 stm.executeUpdate();
-                buf.setLength( 0 );
                 stm.close();
 
             } catch ( SQLException e ) {
@@ -170,7 +186,6 @@ public class BuildRecordXMLRepresentation {
         int idDatabaseTable;
         for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
             PreparedStatement stm = null;
-            StringWriter sqlStatement = new StringWriter( 500 );
             OMElement isoElement;
             if ( databaseTable.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
                 isoElement = parsedElement.getGenerateRecord().getIsoBriefElement();
@@ -185,16 +200,11 @@ public class BuildRecordXMLRepresentation {
                 idDatabaseTable = getLastDatasetId( connection, databaseTable );
                 idDatabaseTable++;
 
-                sqlStatement.append( "INSERT INTO " + databaseTable + " ("
-                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + ", "
-                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", "
-                                     + PostGISMappingsISODC.CommonColumnNames.format.name() + ", "
-                                     + PostGISMappingsISODC.CommonColumnNames.data.name() + ") VALUES (?,?,?,?);" );
-                stm = connection.prepareStatement( sqlStatement.toString() );
+                stm = connection.prepareStatement( sqlStatementInsert.toString() );
                 stm.setObject( 1, idDatabaseTable );
                 stm.setObject( 2, operatesOnId );
                 stm.setObject( 3, 2 );
-                stm.setObject( 4, isoElement.toString() );
+                stm.setObject( 4, isoElement );
                 stm.executeUpdate();
                 stm.close();
 
@@ -232,7 +242,6 @@ public class BuildRecordXMLRepresentation {
         int idDatabaseTable;
         for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
             PreparedStatement stm = null;
-            StringWriter sqlStatement = new StringWriter( 500 );
 
             try {
 
@@ -255,17 +264,11 @@ public class BuildRecordXMLRepresentation {
 
                 setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
 
-                sqlStatement.append( "INSERT INTO " + databaseTable + " ("
-                                     + PostGISMappingsISODC.CommonColumnNames.id.name() + ", "
-                                     + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + ", "
-                                     + PostGISMappingsISODC.CommonColumnNames.format.name() + ", "
-                                     + PostGISMappingsISODC.CommonColumnNames.data.name() + ") VALUES (?,?,?,?);" );
-
-                stm = connection.prepareStatement( sqlStatement.toString() );
+                stm = connection.prepareStatement( sqlStatementInsert.toString() );
                 stm.setObject( 1, idDatabaseTable );
                 stm.setObject( 2, operatesOnId );
                 stm.setObject( 3, 1 );
-                stm.setObject( 4, omElement.toString() );
+                stm.setObject( 4, omElement );
                 stm.executeUpdate();
                 stm.close();
 
@@ -327,7 +330,9 @@ public class BuildRecordXMLRepresentation {
         int result = 0;
         String selectIDRows = "SELECT " + PostGISMappingsISODC.CommonColumnNames.id.name() + " from " + databaseTable
                               + " ORDER BY " + PostGISMappingsISODC.CommonColumnNames.id.name() + " DESC LIMIT 1";
-        ResultSet rsBrief = conn.createStatement().executeQuery( selectIDRows );
+        PreparedStatement prepState = conn.prepareStatement( selectIDRows );
+
+        ResultSet rsBrief = prepState.executeQuery();
 
         while ( rsBrief.next() ) {
 

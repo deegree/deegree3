@@ -38,7 +38,6 @@ package org.deegree.record.persistence.genericrecordstore;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -142,7 +141,7 @@ public class ExecuteStatements {
         generateQP = new GenerateQueryableProperties();
         buildRecXML = new BuildRecordXMLRepresentation();
 
-        StringWriter sqlStatementUpdate = new StringWriter( 500 );
+        StringBuilder sqlStatementUpdate = new StringBuilder( 500 );
 
         int requestedId = 0;
         String modifiedAttribute = "null";
@@ -151,23 +150,28 @@ public class ExecuteStatements {
             PreparedStatement stm = null;
             for ( String identifierString : parsedElement.getQueryableProperties().getIdentifier() ) {
 
-                sqlStatementUpdate.append( "SELECT " + databaseTable + "."
-                                           + PostGISMappingsISODC.CommonColumnNames.id.name() + " FROM "
-                                           + databaseTable + "," + qp_identifier + " WHERE " + databaseTable + "."
-                                           + PostGISMappingsISODC.CommonColumnNames.id.name() + " = " + qp_identifier
-                                           + "." + PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() + " AND "
-                                           + qp_identifier + ".identifier = ?" );
+                sqlStatementUpdate.append( "SELECT " ).append( databaseTable ).append( '.' );
+                sqlStatementUpdate.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " FROM " );
+                sqlStatementUpdate.append( databaseTable ).append( ',' ).append( qp_identifier ).append( " WHERE " );
+                sqlStatementUpdate.append( databaseTable ).append( '.' ).append(
+                                                                                 PostGISMappingsISODC.CommonColumnNames.id.name() );
+                sqlStatementUpdate.append( '=' ).append( qp_identifier ).append( '.' ).append(
+                                                                                               PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() );
+                sqlStatementUpdate.append( " AND " ).append( qp_identifier ).append( '.' ).append(
+                                                                                                   PostGISMappingsISODC.CommonColumnNames.identifier.name() ).append(
+                                                                                                                                                                      " = ?" );
                 LOG.debug( sqlStatementUpdate.toString() );
-                StringBuffer buf = sqlStatementUpdate.getBuffer();
+
                 stm = connection.prepareStatement( sqlStatementUpdate.toString() );
                 stm.setObject( 1, identifierString );
                 ResultSet rs = stm.executeQuery();
+                sqlStatementUpdate.setLength( 0 );
 
                 while ( rs.next() ) {
                     requestedId = rs.getInt( 1 );
                     LOG.debug( "resultSet: " + rs.getInt( 1 ) );
                 }
-                buf.setLength( 0 );
+
                 rs.close();
 
                 if ( requestedId != 0 ) {
@@ -183,49 +187,60 @@ public class ExecuteStatements {
                     // anyText
                     if ( parsedElement.getQueryableProperties().getAnyText() != null ) {
 
-                        sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET anyText = '"
-                                                  + parsedElement.getQueryableProperties().getAnyText() + "' WHERE "
-                                                  + PostGISMappingsISODC.CommonColumnNames.id.name() + " = "
-                                                  + requestedId );
-
-                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
+                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET anyText = '" );
+                        sqlStatementUpdate.append( parsedElement.getQueryableProperties().getAnyText() ).append(
+                                                                                                                 "' WHERE " );
+                        sqlStatementUpdate.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( '=' );
+                        sqlStatementUpdate.append( requestedId );
+                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        sqlStatementUpdate.setLength( 0 );
 
                     }
 
                     // modified
                     if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
-                        sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET modified = " + modifiedAttribute
-                                                  + " WHERE " + PostGISMappingsISODC.CommonColumnNames.id.name()
-                                                  + " = " + requestedId );
-                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
+                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET modified = " ).append(
+                                                                                                                            modifiedAttribute );
+                        sqlStatementUpdate.append( " WHERE " ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+                        sqlStatementUpdate.append( '=' ).append( requestedId );
+                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        sqlStatementUpdate.setLength( 0 );
                     }
                     // hassecurityconstraints
                     if ( parsedElement.getQueryableProperties().isHasSecurityConstraints() == true ) {
-                        sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET hassecurityconstraints = '"
-                                                  + parsedElement.getQueryableProperties().isHasSecurityConstraints()
-                                                  + "' WHERE " + PostGISMappingsISODC.CommonColumnNames.id.name()
-                                                  + " = " + requestedId );
+                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append(
+                                                                                               " SET hassecurityconstraints = '" );
+                        sqlStatementUpdate.append( parsedElement.getQueryableProperties().isHasSecurityConstraints() );
+                        sqlStatementUpdate.append( "' WHERE " ).append(
+                                                                        PostGISMappingsISODC.CommonColumnNames.id.name() );
+                        sqlStatementUpdate.append( '=' ).append( requestedId );
 
-                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
+                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        sqlStatementUpdate.setLength( 0 );
                     }
 
                     // language
                     if ( parsedElement.getQueryableProperties().getLanguage() != null ) {
-                        sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET language = '"
-                                                  + parsedElement.getQueryableProperties().getLanguage() + "' WHERE "
-                                                  + PostGISMappingsISODC.CommonColumnNames.id.name() + " = "
-                                                  + requestedId );
+                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append( " SET language = '" );
+                        sqlStatementUpdate.append( parsedElement.getQueryableProperties().getLanguage() ).append(
+                                                                                                                  "' WHERE " );
+                        sqlStatementUpdate.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( '=' );
+                        sqlStatementUpdate.append( requestedId );
 
-                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
+                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        sqlStatementUpdate.setLength( 0 );
                     }
                     // parentidentifier
                     if ( parsedElement.getQueryableProperties().getParentIdentifier() != null ) {
-                        sqlStatementUpdate.write( "UPDATE " + databaseTable + " SET parentidentifier = '"
-                                                  + parsedElement.getQueryableProperties().getParentIdentifier()
-                                                  + "' WHERE " + PostGISMappingsISODC.CommonColumnNames.id.name()
-                                                  + " = " + requestedId );
+                        sqlStatementUpdate.append( "UPDATE " ).append( databaseTable ).append(
+                                                                                               " SET parentidentifier = '" );
+                        sqlStatementUpdate.append( parsedElement.getQueryableProperties().getParentIdentifier() );
+                        sqlStatementUpdate.append( "' WHERE " ).append(
+                                                                        PostGISMappingsISODC.CommonColumnNames.id.name() );
+                        sqlStatementUpdate.append( '=' ).append( requestedId );
 
-                        executeSQLStatementUpdate( sqlStatementUpdate, stm );
+                        stm.executeUpdate( sqlStatementUpdate.toString() );
+                        sqlStatementUpdate.setLength( 0 );
                     }
                     // TODO source
 
@@ -256,23 +271,6 @@ public class ExecuteStatements {
 
             LOG.debug( "error: " + e.getMessage(), e );
         }
-    }
-
-    /**
-     * Executes the SQL statement and cleans the size.<br>
-     * It can be seen as a helper method to keep the code easy.
-     * 
-     * @param sqlStatementUpdate
-     *            the statement that is responsible for updating the backend
-     * @throws SQLException
-     */
-    private void executeSQLStatementUpdate( StringWriter sqlStatementUpdate, PreparedStatement stm )
-                            throws SQLException {
-        StringBuffer buf = sqlStatementUpdate.getBuffer();
-        LOG.debug( sqlStatementUpdate.toString() );
-        stm.executeUpdate( sqlStatementUpdate.toString() );
-        buf.setLength( 0 );
-
     }
 
 }
