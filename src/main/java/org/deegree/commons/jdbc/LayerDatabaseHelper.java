@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.slf4j.Logger;
@@ -63,23 +64,52 @@ public class LayerDatabaseHelper {
      * @param connId
      * @param table
      * @param crs
+     * @return true, if actually added
      */
-    public static void addLayer( String layersConnId, String name, String title, String connId, String table, String crs ) {
+    public static boolean addLayer( String layersConnId, String name, String title, String connId, String table,
+                                    String crs ) {
+        Connection otherConn = null;
         Connection conn = null;
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
+            otherConn = getConnection( connId );
             conn = getConnection( layersConnId );
-            stmt = conn.prepareStatement( "insert into layers (name, title, connid, sourcetable, crs) values (?, ?, ?, ?, ?)" );
+
+            String tableName = table;
+            String tableSchema = "public";
+            if ( tableName.indexOf( "." ) != -1 ) {
+                tableSchema = table.substring( 0, table.indexOf( "." ) );
+                tableName = table.substring( table.indexOf( "." ) + 1 );
+            }
+
+            rs = otherConn.getMetaData().getTables( null, tableSchema, tableName, new String[] { "TABLE" } );
+            if ( !rs.next() ) {
+                LOG.info( "Table with name '{}' could not be found.", table );
+                return false;
+            }
+
+            stmt = conn.prepareStatement( "insert into layers (name, title, connectionid, sourcetable, crs) values (?, ?, ?, ?, ?)" );
             stmt.setString( 1, name );
             stmt.setString( 2, title == null ? name : title );
             stmt.setString( 3, connId );
             stmt.setString( 4, table );
             stmt.setString( 5, crs );
             stmt.executeUpdate();
+            return true;
         } catch ( SQLException e ) {
             LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
+            return false;
         } finally {
+            if ( rs != null ) {
+                try {
+                    rs.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
             if ( stmt != null ) {
                 try {
                     stmt.close();
@@ -91,6 +121,14 @@ public class LayerDatabaseHelper {
             if ( conn != null ) {
                 try {
                     conn.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( otherConn != null ) {
+                try {
+                    otherConn.close();
                 } catch ( SQLException e ) {
                     LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
                     LOG.trace( "Stack trace:", e );

@@ -269,8 +269,8 @@ public class Util {
                 stmt.setString( 1, schema );
             }
             set = stmt.executeQuery();
-            if ( schema == null ) {
-                LOG.debug( "Getting all geometry tables for schema '{}'." );
+            if ( schema != null ) {
+                LOG.debug( "Getting all geometry tables for schema '{}'.", schema );
             } else {
                 LOG.debug( "Getting all geometry tables." );
             }
