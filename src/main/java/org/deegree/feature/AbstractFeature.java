@@ -65,7 +65,7 @@ import org.jaxen.XPath;
  * 
  * @version $Revision:$, $Date:$
  */
-abstract class AbstractFeature implements Feature {
+public abstract class AbstractFeature implements Feature {
 
     /** Stores the default GML properties that every GML feature allows for (gml:name, gml:description, ...). */
     protected StandardGMLFeatureProps standardProps;
