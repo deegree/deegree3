@@ -301,8 +301,8 @@ public class OffsetStroke implements Stroke {
     }
 
     private static void maybeLineTo( Path2D path, double x, double y ) {
-        if ( Double.isNaN( x ) || Double.isNaN( y ) ) {
-            LOG.debug( "NaN detected!" );
+        if ( Double.isNaN( x ) || Double.isNaN( y ) || Double.isInfinite( x ) || Double.isInfinite( y ) ) {
+            LOG.debug( "NaN/Infinity detected!" );
             return;
         }
         path.lineTo( x, y );
