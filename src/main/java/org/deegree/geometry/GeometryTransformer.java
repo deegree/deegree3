@@ -458,12 +458,6 @@ public class GeometryTransformer extends Transformer {
         return geomFactory.createCompositeSolid( cSolid.getId(), getWrappedTargetCRS(), tSolids );
     }
 
-    /**
-     * @param sCRS
-     * @param in
-     * @return
-     * @throws ProcessletException
-     */
     private boolean insideValidDomain( Envelope validDomain, Geometry geom ) {
         boolean result = false;
         if ( validDomain != null && geom != null ) {
@@ -563,7 +557,7 @@ public class GeometryTransformer extends Transformer {
             axis1Max = Math.max( p.y, axis1Max );
         }
         return geomFactory.createEnvelope( new double[] { axis0Min, axis1Min }, new double[] { axis0Max, axis1Max },
-                                           envelope.getCoordinateSystem() );
+                                           new CRS( this.getTargetCRS() ) );
     }
 
     private LineString transform( LineString geo, Transformation trans )
