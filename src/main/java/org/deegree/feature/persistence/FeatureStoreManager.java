@@ -318,13 +318,13 @@ public class FeatureStoreManager {
                     URL docURL = resolver.resolve( datasetFile.getValue().trim() );
                     GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( version, docURL );
                     gmlStream.setApplicationSchema( schema );
-                    LOG.debug( "Populating feature store with features from file '" + docURL + "'..." );
+                    LOG.info( "Populating feature store with features from file '" + docURL + "'..." );
                     FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
                     gmlStream.getIdContext().resolveLocalRefs();
 
                     FeatureStoreTransaction ta = fs.acquireTransaction();
-                    List<String> fids = ta.performInsert( fc, IDGenMode.GENERATE_NEW );
-                    LOG.debug( "Inserted " + fids.size() + " features." );
+                    List<String> fids = ta.performInsert( fc, IDGenMode.USE_EXISTING );
+                    LOG.info( "Inserted " + fids.size() + " features." );
                     ta.commit();
                 } catch ( Exception e ) {
                     String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
