@@ -256,9 +256,10 @@ public class Util {
             } catch ( SQLException e ) {
                 LOG.debug( "Could not update the geometry_columns table: '{}'", e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
-            }
-            if ( stmt != null ) {
-                stmt.close();
+            } finally {
+                if ( stmt != null ) {
+                    stmt.close();
+                }
             }
             StringBuilder query = new StringBuilder( "select f_table_name from geometry_columns" );
             if ( schema != null ) {
