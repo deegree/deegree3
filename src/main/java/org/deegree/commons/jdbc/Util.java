@@ -313,4 +313,57 @@ public class Util {
         }
     }
 
+    /**
+     * @param connid
+     * @param tableName
+     * @param tableSchema
+     * @return -2, if an error occurred (can be -1 if srid is -1 in the db, or if not found in geometry_columns
+     *         metadata)
+     */
+    public static int findSrid( String connid, String tableName, String tableSchema ) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection( connid );
+            stmt = conn.prepareStatement( "select srid from geometry_columns where f_table_name = ? and f_table_schema = ?" );
+            stmt.setString( 1, tableName );
+            stmt.setString( 2, tableSchema );
+            rs = stmt.executeQuery();
+            if ( rs.next() ) {
+                return rs.getInt( 1 );
+            }
+            return -1;
+        } catch ( SQLException e ) {
+            LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return -2;
+        } finally {
+            if ( rs != null ) {
+                try {
+                    rs.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+
 }

@@ -60,7 +60,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-@LoggingNotes(debug="logs information about pool usage")
+@LoggingNotes(debug = "logs information about pool usage")
 class ConnectionPool {
 
     private static final Logger LOG = getLogger( ConnectionPool.class );
@@ -109,7 +109,8 @@ class ConnectionPool {
      */
     Connection getConnection()
                             throws SQLException {
-        LOG.debug( "Active connections: {}, idle connections: {}", pool.getNumActive(), pool.getNumIdle() );
+        LOG.debug( "For connection id '{}': active connections: {}, idle connections: {}",
+                   new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
         return ds.getConnection();
     }
 
