@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.simplesql;
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.currentTimeMillis;
 import static org.deegree.commons.jdbc.ConnectionManager.getConnection;
+import static org.deegree.cs.CRS.EPSG_4326;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_LOOSE_BBOX;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_NO_GEOMETRIES;
 import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
@@ -193,7 +194,12 @@ public class SimpleSQLDatastore implements FeatureStore {
                 stmt.execute();
                 set = stmt.getResultSet();
                 if ( set.next() ) {
-                    Geometry g = WKTReader.read( set.getString( "bbox" ) );
+                    String bboxString = set.getString( "bbox" );
+                    if ( bboxString == null ) {
+                        LOG.info( "Could not determine envelope of database table, using world bbox instead." );
+                        return fac.createEnvelope( -180, -90, 180, 90, EPSG_4326 );
+                    }
+                    Geometry g = WKTReader.read( bboxString );
                     g.setCoordinateSystem( crs );
                     cachedEnvelope.first = current;
                     cachedEnvelope.second = g.getEnvelope();
