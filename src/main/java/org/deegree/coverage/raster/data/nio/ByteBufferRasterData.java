@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.nio;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.nio.ByteBuffer;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -46,6 +48,7 @@ import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterReader;
+import org.slf4j.Logger;
 
 /**
  * This abstract class implements the RasterData interface for ByteBuffer based raster.
@@ -77,6 +80,8 @@ import org.deegree.coverage.raster.io.RasterReader;
  * 
  */
 public abstract class ByteBufferRasterData implements RasterData {
+
+    private static final Logger LOG = getLogger( ByteBufferRasterData.class );
 
     // /**
     // * The view of this data
@@ -567,14 +572,7 @@ public abstract class ByteBufferRasterData implements RasterData {
             ByteBuffer wrap = ByteBuffer.wrap( getView().dataInfo.noDataPixel );
             return wrap.getFloat( getView().getBandOffset( band ) * getView().dataInfo.dataSize );
         }
-        float result = 0;
-        try {
-            result = getByteBuffer().getFloat( pos );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            System.out.println( "nothgin" + e.getLocalizedMessage() );
-        }
-        return result;
+        return getByteBuffer().getFloat( pos );
         // return data.getFloat( calculatePos( x, y, band ) );
     }
 
@@ -703,17 +701,19 @@ public abstract class ByteBufferRasterData implements RasterData {
             ByteBuffer wrap = ByteBuffer.wrap( getView().dataInfo.noDataPixel );
             return wrap.getShort( getView().getBandOffset( band ) * getView().dataInfo.dataSize );
         }
-        short result = 0;
-        try {
-            result = getByteBuffer().asReadOnlyBuffer().getShort( pos );
-        } catch ( Exception e ) {
-
-            // e.printStackTrace();
-            System.out.println( Thread.currentThread().getName() + "->(x,y)|band->pos: " + x + "," + y + "|" + band
-                                + "->" + pos + "\n-view: " + getView() + "\n-rdi: " + getView().dataInfo + "\n-buffer:"
-                                + getByteBuffer() );
+        if ( LOG.isDebugEnabled() ) {
+            short result = 0;
+            try {
+                result = getByteBuffer().getShort( pos );
+            } catch ( Exception e ) {
+                System.out.println( Thread.currentThread().getName() + "->(x,y)|band->pos: " + x + "," + y + "|" + band
+                                    + "->" + pos + "\n-view: " + getView() + "\n-rdi: " + getView().dataInfo
+                                    + "\n-buffer:" + getByteBuffer() );
+            }
+            return result;
         }
-        return result;
+        return getByteBuffer().getShort( pos );
+
         // return data.getShort( calculatePos( x, y, band ) );
     }
 
