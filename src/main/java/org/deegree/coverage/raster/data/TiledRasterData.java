@@ -225,13 +225,12 @@ public class TiledRasterData implements RasterData {
     @Override
     public byte getByteSample( int x, int y, int band ) {
         MappedTile tile = getTile( x, y );
-        byte res;
         if ( tile == null ) {
-            res = dataInfo.getByteNoDataForBand( band );
-        } else {
-            res = tile.data.getByteSample( tile.mappedX, tile.mappedY, band );
+            return dataInfo.getByteNoDataForBand( band );
         }
-        return res;
+        synchronized ( tiles ) {
+            return tile.data.getByteSample( tile.mappedX, tile.mappedY, band );
+        }
     }
 
     @Override
@@ -269,8 +268,10 @@ public class TiledRasterData implements RasterData {
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
                             // get the result
-                            final byte[] tileResult = tile.getBytes( tReq.x, tReq.y, tReq.width, tReq.height, band,
-                                                                     null );
+                            byte[] tileResult = null;
+                            synchronized ( tiles ) {
+                                tileResult = tile.getBytes( tReq.x, tReq.y, tReq.width, tReq.height, band, null );
+                            }
 
                             // calculate the offset in the result array.
                             final int offsetInResult = ( intersectionWithTile.y * requestedRect.width )
@@ -317,7 +318,9 @@ public class TiledRasterData implements RasterData {
         if ( tile == null ) {
             return dataInfo.getDoubleNoDataForBand( band );
         }
-        return tile.data.getDoubleSample( tile.mappedX, tile.mappedY, band );
+        synchronized ( tiles ) {
+            return tile.data.getDoubleSample( tile.mappedX, tile.mappedY, band );
+        }
     }
 
     @Override
@@ -355,8 +358,10 @@ public class TiledRasterData implements RasterData {
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
                             // get the result
-                            final double[] tileResult = tile.getDoubles( tReq.x, tReq.y, tReq.width, tReq.height, band,
-                                                                         null );
+                            double[] tileResult = null;
+                            synchronized ( tiles ) {
+                                tileResult = tile.getDoubles( tReq.x, tReq.y, tReq.width, tReq.height, band, null );
+                            }
 
                             // calculate the offset in the result array.
                             final int offsetInResult = ( intersectionWithTile.y * requestedRect.width )
@@ -433,8 +438,10 @@ public class TiledRasterData implements RasterData {
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
                             // get the result
-                            final float[] tileResult = tile.getFloats( tReq.x, tReq.y, tReq.width, tReq.height, band,
-                                                                       null );
+                            float[] tileResult = null;
+                            synchronized ( tiles ) {
+                                tileResult = tile.getFloats( tReq.x, tReq.y, tReq.width, tReq.height, band, null );
+                            }
 
                             // calculate the offset in the result array.
                             final int offsetInResult = ( intersectionWithTile.y * requestedRect.width )
@@ -476,7 +483,9 @@ public class TiledRasterData implements RasterData {
         if ( tile == null ) {
             return dataInfo.getIntNoDataForBand( band );
         }
-        return tile.data.getIntSample( tile.mappedX, tile.mappedY, band );
+        synchronized ( tiles ) {
+            return tile.data.getIntSample( tile.mappedX, tile.mappedY, band );
+        }
     }
 
     @Override
@@ -514,8 +523,10 @@ public class TiledRasterData implements RasterData {
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
                             // get the result
-                            final int[] tileResult = tile.getInts( tReq.x, tReq.y, tReq.width, tReq.height, band, null );
-
+                            int[] tileResult = null;
+                            synchronized ( tiles ) {
+                                tileResult = tile.getInts( tReq.x, tReq.y, tReq.width, tReq.height, band, null );
+                            }
                             // calculate the offset in the result array.
                             final int offsetInResult = ( intersectionWithTile.y * requestedRect.width )
                                                        + intersectionWithTile.x;
@@ -558,7 +569,9 @@ public class TiledRasterData implements RasterData {
         if ( tile == null ) {
             return dataInfo.getNoDataSample( band, result );
         }
-        return tile.data.getSample( tile.mappedX, tile.mappedY, band, result );
+        synchronized ( tiles ) {
+            return tile.data.getSample( tile.mappedX, tile.mappedY, band, result );
+        }
     }
 
     @Override
@@ -578,7 +591,9 @@ public class TiledRasterData implements RasterData {
         if ( tile == null ) {
             return dataInfo.getShortNoDataForBand( band );
         }
-        return tile.data.getShortSample( tile.mappedX, tile.mappedY, band );
+        synchronized ( tiles ) {
+            return tile.data.getShortSample( tile.mappedX, tile.mappedY, band );
+        }
     }
 
     @Override
@@ -615,8 +630,10 @@ public class TiledRasterData implements RasterData {
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
                             // get the result
-                            final short[] tileResult = tile.getShorts( tReq.x, tReq.y, tReq.width, tReq.height, band,
-                                                                       null );
+                            short[] tileResult = null;
+                            synchronized ( tiles ) {
+                                tileResult = tile.getShorts( tReq.x, tReq.y, tReq.width, tReq.height, band, null );
+                            }
 
                             // calculate the offset in the result array.
                             final int offsetInResult = ( intersectionWithTile.y * requestedRect.width )
@@ -652,7 +669,9 @@ public class TiledRasterData implements RasterData {
     public void setByteSample( int x, int y, int band, byte value ) {
         MappedTile tile = getTile( x, y );
         if ( tile != null ) {
-            tile.data.setByteSample( tile.mappedX, tile.mappedY, band, value );
+            synchronized ( tiles ) {
+                tile.data.setByteSample( tile.mappedX, tile.mappedY, band, value );
+            }
         }
     }
 
@@ -695,7 +714,9 @@ public class TiledRasterData implements RasterData {
                                                                     ( intersectionWithTile.y - heightOffset ),
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
-                            tile.setBytes( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            synchronized ( tiles ) {
+                                tile.setBytes( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            }
                         }
                     }
                 }
@@ -714,7 +735,9 @@ public class TiledRasterData implements RasterData {
     public void setDoubleSample( int x, int y, int band, double value ) {
         MappedTile tile = getTile( x, y );
         if ( tile != null ) {
-            tile.data.setDoubleSample( tile.mappedX, tile.mappedY, band, value );
+            synchronized ( tiles ) {
+                tile.data.setDoubleSample( tile.mappedX, tile.mappedY, band, value );
+            }
         }
     }
 
@@ -758,7 +781,9 @@ public class TiledRasterData implements RasterData {
                                                                     ( intersectionWithTile.y - heightOffset ),
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
-                            tile.setDoubles( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            synchronized ( tiles ) {
+                                tile.setDoubles( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            }
                         }
                     }
                 }
@@ -778,7 +803,9 @@ public class TiledRasterData implements RasterData {
     public void setFloatSample( int x, int y, int band, float value ) {
         MappedTile tile = getTile( x, y );
         if ( tile != null ) {
-            tile.data.setFloatSample( tile.mappedX, tile.mappedY, band, value );
+            synchronized ( tiles ) {
+                tile.data.setFloatSample( tile.mappedX, tile.mappedY, band, value );
+            }
         }
     }
 
@@ -822,7 +849,9 @@ public class TiledRasterData implements RasterData {
                                                                     ( intersectionWithTile.y - heightOffset ),
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
-                            tile.setFloats( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            synchronized ( tiles ) {
+                                tile.setFloats( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            }
                         }
                     }
                 }
@@ -841,7 +870,9 @@ public class TiledRasterData implements RasterData {
     public void setIntSample( int x, int y, int band, int value ) {
         MappedTile tile = getTile( x, y );
         if ( tile != null ) {
-            tile.data.setIntSample( tile.mappedX, tile.mappedY, band, value );
+            synchronized ( tiles ) {
+                tile.data.setIntSample( tile.mappedX, tile.mappedY, band, value );
+            }
         }
     }
 
@@ -884,7 +915,9 @@ public class TiledRasterData implements RasterData {
                                                                     ( intersectionWithTile.y - heightOffset ),
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
-                            tile.setInts( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            synchronized ( tiles ) {
+                                tile.setInts( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            }
                         }
                     }
                 }
@@ -916,7 +949,9 @@ public class TiledRasterData implements RasterData {
         }
         MappedTile tile = getTile( x, y );
         if ( tile != null ) {
-            tile.data.setSample( tile.mappedX, tile.mappedY, band, values );
+            synchronized ( tiles ) {
+                tile.data.setSample( tile.mappedX, tile.mappedY, band, values );
+            }
         }
     }
 
@@ -931,7 +966,9 @@ public class TiledRasterData implements RasterData {
     public void setShortSample( int x, int y, int band, short value ) {
         MappedTile tile = getTile( x, y );
         if ( tile != null ) {
-            tile.data.setShortSample( tile.mappedX, tile.mappedY, band, value );
+            synchronized ( tiles ) {
+                tile.data.setShortSample( tile.mappedX, tile.mappedY, band, value );
+            }
         }
     }
 
@@ -975,7 +1012,9 @@ public class TiledRasterData implements RasterData {
                                                                     ( intersectionWithTile.y - heightOffset ),
                                                                     intersectionWithTile.width,
                                                                     intersectionWithTile.height );
-                            tile.setShorts( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            synchronized ( tiles ) {
+                                tile.setShorts( tReq.x, tReq.y, tileRect.width, tileRect.height, band, tileValues );
+                            }
                         }
                     }
                 }

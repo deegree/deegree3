@@ -406,8 +406,9 @@ public class IIORasterDataReader implements RasterDataReader {
                 if ( img != null ) {
                     Raster raster = img.getRaster();
                     if ( resultBuffer == null ) {
-                        resultBuffer = ByteBufferPool.allocate( getRasterDataInfo().bands
-                                                                * getRasterDataInfo().dataSize * intersection.width
+                        RasterDataInfo rdi = getRasterDataInfo();
+
+                        resultBuffer = ByteBufferPool.allocate( rdi.bands * rdi.dataSize * intersection.width
                                                                 * intersection.height, false );
                     }
 

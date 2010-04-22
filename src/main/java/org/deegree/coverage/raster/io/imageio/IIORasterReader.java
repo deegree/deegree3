@@ -183,6 +183,7 @@ public class IIORasterReader implements RasterReader {
         // RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy()
         // );
         RasterDataInfo rdi = reader.getRasterDataInfo();
+
         RasterCache cache = RasterCache.getInstance( opts );
         SimpleRaster result = cache.createFromCache( this, this.dataLocationId );
         if ( result == null ) {

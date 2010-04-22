@@ -567,7 +567,14 @@ public abstract class ByteBufferRasterData implements RasterData {
             ByteBuffer wrap = ByteBuffer.wrap( getView().dataInfo.noDataPixel );
             return wrap.getFloat( getView().getBandOffset( band ) * getView().dataInfo.dataSize );
         }
-        return getByteBuffer().getFloat( pos );
+        float result = 0;
+        try {
+            result = getByteBuffer().getFloat( pos );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            System.out.println( "nothgin" + e.getLocalizedMessage() );
+        }
+        return result;
         // return data.getFloat( calculatePos( x, y, band ) );
     }
 
@@ -696,7 +703,17 @@ public abstract class ByteBufferRasterData implements RasterData {
             ByteBuffer wrap = ByteBuffer.wrap( getView().dataInfo.noDataPixel );
             return wrap.getShort( getView().getBandOffset( band ) * getView().dataInfo.dataSize );
         }
-        return getByteBuffer().getShort( pos );
+        short result = 0;
+        try {
+            result = getByteBuffer().asReadOnlyBuffer().getShort( pos );
+        } catch ( Exception e ) {
+
+            // e.printStackTrace();
+            System.out.println( Thread.currentThread().getName() + "->(x,y)|band->pos: " + x + "," + y + "|" + band
+                                + "->" + pos + "\n-view: " + getView() + "\n-rdi: " + getView().dataInfo + "\n-buffer:"
+                                + getByteBuffer() );
+        }
+        return result;
         // return data.getShort( calculatePos( x, y, band ) );
     }
 
