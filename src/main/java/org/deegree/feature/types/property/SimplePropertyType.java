@@ -107,4 +107,10 @@ public class SimplePropertyType extends AbstractPropertyType {
                    + ", type: " + primitiveType;
         return s;
     }
+    
+    @Override
+    public boolean isNillable() {
+        // TODO pipe this value through
+        return true;
+    }    
 }

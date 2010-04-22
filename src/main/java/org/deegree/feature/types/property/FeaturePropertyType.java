@@ -110,4 +110,10 @@ public class FeaturePropertyType extends AbstractPropertyType {
                    + ", value feature type: " + valueFtName;
         return s;
     }
+    
+    @Override
+    public boolean isNillable() {
+        // TODO pipe this value through
+        return true;
+    }
 }

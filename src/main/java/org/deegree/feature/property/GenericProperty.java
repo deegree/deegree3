@@ -102,6 +102,23 @@ public class GenericProperty implements Property {
         }
     }
 
+    /**
+     * Creates a new {@link GenericProperty} instance that is of type {@link SimplePropertyType}.
+     * 
+     * @param declaration
+     *            type information
+     * @param name
+     *            name of the property (does not necessarily match the name in the type information)
+     * @param value
+     *            property value, can be <code>null</code>
+     * @param isNilled
+     *            true, if the property is explicitly nilled, false otherwise
+     */
+    public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value, boolean isNilled ) {
+        this (declaration, name, value);
+        this.nilled = isNilled;
+    }
+    
     @Override
     public QName getName() {
         return name;

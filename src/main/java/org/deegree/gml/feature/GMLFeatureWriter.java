@@ -417,16 +417,21 @@ public class GMLFeatureWriter {
             }
         }
 
-        if ( property.isNilled() ) {
-            writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            writer.writeAttribute( XSINS, "nil", "true" );
-        } else {
-            // TODO check for GML 2 properties (gml:pointProperty, ...) and export
-            // as "app:gml2PointProperty" for GML 3
-            Object value = property.getValue();
-            if ( propertyType instanceof FeaturePropertyType ) {
+        // TODO check for GML 2 properties (gml:pointProperty, ...) and export
+        // as "app:gml2PointProperty" for GML 3
+        Object value = property.getValue();
+        if ( propertyType instanceof FeaturePropertyType ) {
+            if ( property.isNilled() ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XSINS, "nil", "true" );
+            } else {
                 exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, inlineLevels );
-            } else if ( propertyType instanceof SimplePropertyType ) {
+            }
+        } else if ( propertyType instanceof SimplePropertyType ) {
+            if ( property.isNilled() ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XSINS, "nil", "true" );
+            } else {
                 // must be a primitive value
                 PrimitiveValue pValue = (PrimitiveValue) value;
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -434,7 +439,12 @@ public class GMLFeatureWriter {
                     writer.writeCharacters( pValue.getAsText() );
                 }
                 writer.writeEndElement();
-            } else if ( propertyType instanceof GeometryPropertyType ) {
+            }
+        } else if ( propertyType instanceof GeometryPropertyType ) {
+            if ( property.isNilled() ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XSINS, "nil", "true" );
+            } else {
                 Geometry gValue = (Geometry) value;
                 if ( !exportSf && gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
                     writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -444,17 +454,25 @@ public class GMLFeatureWriter {
                     geometryWriter.export( (Geometry) value );
                     writer.writeEndElement();
                 }
-            } else if ( propertyType instanceof CodePropertyType ) {
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                CodeType codeType = (CodeType) value;
-                if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 ) {
-                    if ( GML_2 != version ) {
-                        writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
-                    }
+            }
+        } else if ( propertyType instanceof CodePropertyType ) {
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            if ( property.isNilled() ) {
+                writer.writeAttribute( XSINS, "nil", "true" );
+            }
+            CodeType codeType = (CodeType) value;
+            if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 ) {
+                if ( GML_2 != version ) {
+                    writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
                 }
-                writer.writeCharacters( codeType.getCode() );
-                writer.writeEndElement();
-            } else if ( propertyType instanceof EnvelopePropertyType ) {
+            }
+            writer.writeCharacters( codeType.getCode() );
+            writer.writeEndElement();
+        } else if ( propertyType instanceof EnvelopePropertyType ) {
+            if ( property.isNilled() ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XSINS, "nil", "true" );
+            } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( value != null ) {
                     geometryWriter.exportEnvelope( (Envelope) value );
@@ -464,46 +482,63 @@ public class GMLFeatureWriter {
                     writer.writeEndElement();
                 }
                 writer.writeEndElement();
-            } else if ( propertyType instanceof LengthPropertyType ) {
-                Length length = (Length) value;
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                if ( GML_2 != version ) {
-                    writer.writeAttribute( "uom", length.getUomUri() );
+            }
+        } else if ( propertyType instanceof LengthPropertyType ) {
+            Length length = (Length) value;
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            if ( GML_2 != version ) {
+                if ( property.isNilled() ) {
+                    writer.writeAttribute( XSINS, "nil", "true" );
                 }
+                writer.writeAttribute( "uom", length.getUomUri() );
+            }
+            if ( !property.isNilled() ) {
                 writer.writeCharacters( String.valueOf( length.getValue() ) );
-                writer.writeEndElement();
-            } else if ( propertyType instanceof MeasurePropertyType ) {
-                Measure measure = (Measure) value;
+            }
+            writer.writeEndElement();
+        } else if ( propertyType instanceof MeasurePropertyType ) {
+            Measure measure = (Measure) value;
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            if ( GML_2 != version ) {
+                writer.writeAttribute( "uom", measure.getUomUri() );
+            }
+            writer.writeCharacters( String.valueOf( measure.getValue() ) );
+            writer.writeEndElement();
+        } else if ( propertyType instanceof StringOrRefPropertyType ) {
+            StringOrRef stringOrRef = (StringOrRef) value;
+            if ( stringOrRef.getString() == null || stringOrRef.getString().length() == 0 ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                if ( stringOrRef.getRef() != null ) {
+                    writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
+                }
+                if ( property.isNilled() ) {
+                    writer.writeAttribute( XSINS, "nil", "true" );
+                }
+            } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                if ( GML_2 != version ) {
-                    writer.writeAttribute( "uom", measure.getUomUri() );
+                if ( property.isNilled() ) {
+                    writer.writeAttribute( XSINS, "nil", "true" );
                 }
-                writer.writeCharacters( String.valueOf( measure.getValue() ) );
-                writer.writeEndElement();
-            } else if ( propertyType instanceof StringOrRefPropertyType ) {
-                StringOrRef stringOrRef = (StringOrRef) value;
-                if ( stringOrRef.getString() == null || stringOrRef.getString().length() == 0 ) {
-                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                    if ( stringOrRef.getRef() != null ) {
-                        writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
-                    }
-                } else {
-                    writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
 
-                    if ( stringOrRef.getRef() != null ) {
-                        writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
-                    }
-                    if ( stringOrRef.getString() != null ) {
-                        writer.writeCharacters( stringOrRef.getString() );
-                    }
-                    writer.writeEndElement();
+                if ( stringOrRef.getRef() != null ) {
+                    writer.writeAttribute( XLNNS, "href", stringOrRef.getRef() );
                 }
-            } else if ( propertyType instanceof CustomPropertyType ) {
-                if ( property.getValue() != null ) {
-                    writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                    export( (TypedObjectNode) property.getValue(), inlineLevels );
-                    writer.writeEndElement();
+                if ( !property.isNilled() && stringOrRef.getString() != null ) {
+                    writer.writeCharacters( stringOrRef.getString() );
                 }
+                writer.writeEndElement();
+            }
+        } else if ( propertyType instanceof CustomPropertyType ) {
+            if ( property.isNilled() ) {
+                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XSINS, "nil", "true" );                
+                // TODO make sure that only attributes are exported and nothing else 
+                export( (TypedObjectNode) property.getValue(), inlineLevels );
+                writer.writeEndElement();
+            } else {
+                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                export( (TypedObjectNode) property.getValue(), inlineLevels );
+                writer.writeEndElement();
             }
         }
     }
@@ -604,14 +639,15 @@ public class GMLFeatureWriter {
                 String uri = ref.getURI();
                 try {
                     new URL( uri );
-                    throw new UnsupportedOperationException("Inlining of remote feature references is not implemented yet.");
-//                    LOG.warn( "Inlining of remote feature references is not implemented yet." );
-//                    writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-//                    writer.writeAttribute( XLNNS, "href", ref.getURI() );
-//                    writer.writeComment( "Reference to remote feature '"
-//                                         + ref.getURI()
-//                                         + "' (should have been inlined, but inlining of remote features is not implemented yet)." );
-//                    writer.writeEndElement();
+                    throw new UnsupportedOperationException(
+                                                             "Inlining of remote feature references is not implemented yet." );
+                    // LOG.warn( "Inlining of remote feature references is not implemented yet." );
+                    // writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
+                    // writer.writeAttribute( XLNNS, "href", ref.getURI() );
+                    // writer.writeComment( "Reference to remote feature '"
+                    // + ref.getURI()
+                    // + "' (should have been inlined, but inlining of remote features is not implemented yet)." );
+                    // writer.writeEndElement();
                 } catch ( MalformedURLException e ) {
                     LOG.warn( "Not inlining remote feature reference -- not a valid URI." );
                     writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );

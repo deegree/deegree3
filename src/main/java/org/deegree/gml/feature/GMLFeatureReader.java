@@ -408,9 +408,20 @@ public class GMLFeatureReader extends XMLAdapter {
         LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
         LOG.debug( "- property declaration: " + propDecl );
 
+        boolean isNilled = false;
+        if ( propDecl.isNillable() ) {
+            isNilled = StAXParsingHelper.getAttributeValueAsBoolean( xmlStream, XSINS, "nil", false );
+        }
+
         if ( propDecl instanceof SimplePropertyType ) {
-            property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
-                                             xmlStream.getElementText().trim() );
+            if ( isNilled ) {
+                property = new GenericProperty( propDecl, propName, null, isNilled );
+                // TODO need to check that element is indeed empty?
+                StAXParsingHelper.nextElement( xmlStream );
+            } else {
+                property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
+                                                 xmlStream.getElementText().trim() );
+            }
         } else if ( propDecl instanceof GeometryPropertyType ) {
             String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
             if ( href != null ) {
@@ -422,17 +433,17 @@ public class GMLFeatureReader extends XMLAdapter {
                     refGeometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
                 }
                 idContext.addReference( refGeometry );
-                property = new GenericProperty( propDecl, propName, refGeometry );
+                property = new GenericProperty( propDecl, propName, refGeometry, isNilled );
                 xmlStream.nextTag();
             } else {
                 if ( xmlStream.nextTag() == START_ELEMENT ) {
                     Geometry geometry = null;
                     geometry = geomReader.parse( xmlStream, crs );
-                    property = new GenericProperty( propDecl, propName, geometry );
+                    property = new GenericProperty( propDecl, propName, geometry, isNilled );
                     xmlStream.nextTag();
                 } else {
                     // yes, empty geometry property elements are actually valid
-                    property = new GenericProperty( propDecl, propName, null );
+                    property = new GenericProperty( propDecl, propName, null, isNilled );
                 }
             }
         } else if ( propDecl instanceof FeaturePropertyType ) {
@@ -445,7 +456,7 @@ public class GMLFeatureReader extends XMLAdapter {
                     refFeature = new FeatureReference( idContext, href, xmlStream.getSystemId() );
                 }
                 idContext.addReference( refFeature );
-                property = new GenericProperty( propDecl, propName, refFeature );
+                property = new GenericProperty( propDecl, propName, refFeature, isNilled);
                 xmlStream.nextTag();
             } else {
                 // inline feature
@@ -462,15 +473,15 @@ public class GMLFeatureReader extends XMLAdapter {
                         }
                     }
                     Feature subFeature = parseFeature( xmlStream, crs );
-                    property = new GenericProperty( propDecl, propName, subFeature );
+                    property = new GenericProperty( propDecl, propName, subFeature, isNilled );
                     xmlStream.skipElement();
                 } else {
                     // yes, empty feature property elements are actually valid
-                    property = new GenericProperty( propDecl, propName, null );
+                    property = new GenericProperty( propDecl, propName, null, isNilled );
                 }
             }
         } else if ( propDecl instanceof CustomPropertyType ) {
-            property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs );
+            property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs, isNilled);
         } else if ( propDecl instanceof EnvelopePropertyType ) {
             Envelope env = null;
             xmlStream.nextTag();
@@ -479,31 +490,32 @@ public class GMLFeatureReader extends XMLAdapter {
                 StAXParsingHelper.skipElement( xmlStream );
             } else {
                 env = geomReader.parseEnvelope( xmlStream, crs );
-                property = new GenericProperty( propDecl, propName, env );
+                property = new GenericProperty( propDecl, propName, env, isNilled );
             }
             xmlStream.nextTag();
         } else if ( propDecl instanceof CodePropertyType ) {
             String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
             String code = xmlStream.getElementText().trim();
             CodeType value = new CodeType( code, codeSpace );
-            property = new GenericProperty( propDecl, propName, value );
+            property = new GenericProperty( propDecl, propName, value, isNilled );
         } else if ( propDecl instanceof MeasurePropertyType ) {
             String uom = xmlStream.getAttributeValue( null, "uom" );
             Measure value = new Measure( xmlStream.getElementText(), uom );
-            property = new GenericProperty( propDecl, propName, value );
+            property = new GenericProperty( propDecl, propName, value, isNilled );
         } else if ( propDecl instanceof StringOrRefPropertyType ) {
             String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
             String string = xmlStream.getElementText().trim();
-            property = new GenericProperty( propDecl, propName, new StringOrRef( string, ref ) );
+            property = new GenericProperty( propDecl, propName, new StringOrRef( string, ref ), isNilled );
         }
 
         LOG.debug( " - parsing property (end): " + xmlStream.getCurrentEventInfo() );
         return property;
     }
 
-    private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, CRS crs )
+    private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, CRS crs, boolean isNilled )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
+        QName propName = xmlStream.getName();
         TypedObjectNode value = parseGenericXMLElement( xmlStream, propDecl.getXSDValueType(), crs );
 
         if ( value instanceof GenericXMLElement ) {
@@ -512,7 +524,7 @@ public class GMLFeatureReader extends XMLAdapter {
             GenericXMLElement xmlEl = (GenericXMLElement) value;
             value = new GenericXMLElementContent( xmlEl.getXSType(), xmlEl.getAttributes(), xmlEl.getChildren() );
         }
-        return new GenericProperty( propDecl, value );
+        return new GenericProperty( propDecl, propName, value, isNilled );
     }
 
     private TypedObjectNode parseGenericXMLElement( XMLStreamReaderWrapper xmlStream, XSTypeDefinition xsdValueType,

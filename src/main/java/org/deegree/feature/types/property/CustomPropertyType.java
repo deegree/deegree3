@@ -69,4 +69,9 @@ public class CustomPropertyType extends AbstractPropertyType {
                    + ", content xsd type: " + xsdType;
         return s;
     }
+    @Override
+    public boolean isNillable() {
+        // TODO pipe this value through
+        return true;
+    }    
 }

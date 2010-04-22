@@ -355,4 +355,10 @@ public class GeometryPropertyType extends AbstractPropertyType {
                    + ", geometry type: " + geomType;
         return s;
     }
+    
+    @Override
+    public boolean isNillable() {
+        // TODO pipe this value through
+        return true;
+    }    
 }

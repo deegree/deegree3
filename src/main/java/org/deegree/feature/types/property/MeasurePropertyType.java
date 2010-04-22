@@ -61,4 +61,10 @@ public class MeasurePropertyType extends AbstractPropertyType {
         String s = "- measure property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
         return s;
     }
+    
+    @Override
+    public boolean isNillable() {
+        // TODO pipe this value through
+        return true;
+    }    
 }

@@ -89,4 +89,12 @@ public interface PropertyType {
      *         least one entry
      */
     public PropertyType[] getSubstitutions();
+
+    /**
+     * Returns whether this {@link PropertyType} declaration allows for setting the <code>xsi:nil="true"</code>
+     * attribute in a GML representation.
+     * 
+     * @return true, if code>xsi:nil="true"</code> is permitted, false otherwise
+     */
+    public boolean isNillable();
 }

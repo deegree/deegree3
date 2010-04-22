@@ -61,4 +61,10 @@ public class StringOrRefPropertyType extends AbstractPropertyType {
         String s = "- stringOrRef property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
         return s;
     }
+    
+    @Override
+    public boolean isNillable() {
+        // TODO pipe this value through
+        return true;
+    }    
 }
