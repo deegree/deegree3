@@ -45,8 +45,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
+import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
@@ -133,6 +135,46 @@ public class RasterBuilder {
             }
         }
         return mrr;
+    }
+
+    /**
+     * Creates a coverage from the given raster location. Supported are loading from:
+     * <ul>
+     * <li>a raster file</li>
+     * <li>a raster directory containing a tiled raster</li>
+     * <li>a directory containing several sub directories named with doubles, containing different resolutions (a
+     * multiresolution raster tree).</li>
+     * </ul>
+     * 
+     * @param rasterLocation
+     *            may be a raster file or a raster directory containing a tiled raster or several sub directories named
+     *            with doubles, containing different resolutions (a multiresolution raster tree).
+     * @param recursive
+     *            if the directory should be searched recursively.
+     * @param options
+     *            containing configured values for the loading of the coverage.
+     * @return an AbstractCoverage created from the given raster location. Result can be a {@link SimpleRaster} a
+     *         {@link TiledRaster} or a {@link MultiResolutionRaster}.
+     * @throws IOException
+     *             if the raster location could not be read.
+     */
+    public static AbstractCoverage buildCoverage( File rasterLocation, boolean recursive, RasterIOOptions options )
+                            throws IOException {
+        if ( rasterLocation == null ) {
+            throw new IOException( "Raster location may not be null." );
+        }
+        if ( !rasterLocation.exists() ) {
+            throw new IOException( "Raster location (" + rasterLocation + ") does not exist." );
+        }
+        if ( rasterLocation.isFile() ) {
+            return RasterFactory.loadRasterFromFile( rasterLocation, options );
+        }
+        List<File> resolutions = findResolutionDirs( rasterLocation );
+        if ( resolutions.isEmpty() ) {
+            return buildTiledRaster( rasterLocation, recursive, options );
+        }
+        return buildMultiResolutionRaster( resolutions, recursive, options );
+
     }
 
     /**
@@ -316,4 +358,5 @@ public class RasterBuilder {
         }
 
     }
+
 }
