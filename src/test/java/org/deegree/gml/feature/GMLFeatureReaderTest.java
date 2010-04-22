@@ -98,7 +98,7 @@ public class GMLFeatureReaderTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureReader decoder = new GMLFeatureReader( GMLVersion.GML_31, null, null );
+        GMLFeatureReader decoder = new GMLFeatureReader( GMLVersion.GML_31, null, null, 2 );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) decoder.parseFeature( wrapper, null );
         decoder.getDocumentIdContext().resolveLocalRefs();
@@ -114,7 +114,7 @@ public class GMLFeatureReaderTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLFeatureReader gmlAdapter = new GMLFeatureReader( GMLVersion.GML_31, null, null );
+        GMLFeatureReader gmlAdapter = new GMLFeatureReader( GMLVersion.GML_31, null, null, 2 );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
         gmlAdapter.getDocumentIdContext().resolveLocalRefs();

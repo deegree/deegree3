@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.gml.validation;
 
 import java.io.IOException;
@@ -56,10 +56,10 @@ import org.junit.Test;
 
 /**
  * Tests that check the expected generation of validation events in the {@link GML3GeometryValidator}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GMLGeometryValidatorTest {
@@ -73,7 +73,7 @@ public class GMLGeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "Curve.gml" );
         DummyGMLValidationEventHandler eventHandler = new DummyGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler, 2 );
         validator.validateGeometries();
     }
 
@@ -84,7 +84,7 @@ public class GMLGeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Curve_discontinuity.gml" );
         DummyGMLValidationEventHandler eventHandler = new DummyGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler, 2 );
         validator.validateGeometries();
     }
 
@@ -94,7 +94,7 @@ public class GMLGeometryValidatorTest {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Ring_not_closed.gml" );
         DummyGMLValidationEventHandler eventHandler = new DummyGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler, 2 );
         validator.validateGeometries();
     }
 
@@ -103,7 +103,7 @@ public class GMLGeometryValidatorTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Polygon_exterior_clockwise.gml" );
         DummyGMLValidationEventHandler eventHandler = new DummyGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler, 2 );
         validator.validateGeometries();
     }
 
@@ -112,7 +112,7 @@ public class GMLGeometryValidatorTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Polygon_noexterior.gml" );
         DummyGMLValidationEventHandler eventHandler = new DummyGMLValidationEventHandler();
-        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler );
+        GML3GeometryValidator validator = new GML3GeometryValidator( GMLVersion.GML_31, xmlReader, eventHandler, 2 );
         validator.validateGeometries();
     }
 
@@ -120,7 +120,7 @@ public class GMLGeometryValidatorTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        GML3GeometryReaderTest.class.getResource( BASE_DIR
-                                                                                                                   + fileName ) );
+                                                                                                                 + fileName ) );
         return xmlReader;
     }
 

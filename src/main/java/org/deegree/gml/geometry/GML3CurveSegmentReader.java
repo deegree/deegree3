@@ -114,8 +114,8 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
      * @param geometryParser
      * @param geomFac
      */
-    GML3CurveSegmentReader( GML3GeometryReader geometryParser, GeometryFactory geomFac ) {
-        super( geometryParser.version, geomFac );
+    GML3CurveSegmentReader( GML3GeometryReader geometryParser, GeometryFactory geomFac, int defaultCoordDim ) {
+        super( geometryParser.version, geomFac, defaultCoordDim );
         this.geometryParser = geometryParser;
     }
 

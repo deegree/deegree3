@@ -367,6 +367,6 @@ public class GML3CurveSegmentReaderTest {
     private GML3CurveSegmentReader getParser()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-        return new GML3CurveSegmentReader( new GML3GeometryReader( GMLVersion.GML_31, null, null ), geomFac );
+        return new GML3CurveSegmentReader( new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ), geomFac, 2 );
     }
 }

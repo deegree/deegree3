@@ -89,9 +89,10 @@ class GML3SurfacePatchReader extends GML3GeometryBaseReader {
     /**
      * @param geometryParser
      * @param geomFac
+     * @param defaultCoordDim 
      */
-    GML3SurfacePatchReader( GML3GeometryReader geometryParser, GeometryFactory geomFac ) {
-        super( geometryParser.version, geomFac );
+    GML3SurfacePatchReader( GML3GeometryReader geometryParser, GeometryFactory geomFac, int defaultCoordDim ) {
+        super( geometryParser.version, geomFac, defaultCoordDim );
         this.geometryParser = geometryParser;
     }
 

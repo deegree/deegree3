@@ -92,12 +92,15 @@ public class GML3GeometryValidator extends XMLAdapter {
      *            either {@link GMLVersion#GML_30}, {@link GMLVersion#GML_31} or {@link GMLVersion#GML_32}
      * @param xmlStream
      * @param gmlErrorHandler
+     * @param defaultCoordDim
+     *            defaultValue for coordinate dimension, only used when a posList is parsed and no dimension information
+     *            from CRS is available (unknown CRS)
      */
     public GML3GeometryValidator( GMLVersion version, XMLStreamReaderWrapper xmlStream,
-                                  GMLValidationEventHandler gmlErrorHandler ) {
+                                  GMLValidationEventHandler gmlErrorHandler, int defaultCoordDim ) {
         this.xmlStream = xmlStream;
         geomParser = new GML3GeometryReader( version, new GeometryFactory(),
-                                              new GMLDocumentIdContext( GMLVersion.GML_31 ) );
+                                             new GMLDocumentIdContext( GMLVersion.GML_31 ), defaultCoordDim );
         this.gmlErrorHandler = gmlErrorHandler;
     }
 

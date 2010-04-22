@@ -255,16 +255,17 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @param idContext
      *            id context for keeping track of objects and references, can be <code>null</code>
      */
-    public GML3GeometryReader( GMLVersion version, GeometryFactory geomFac, GMLDocumentIdContext idContext ) {
-        super( version, geomFac != null ? geomFac : new GeometryFactory() );
+    public GML3GeometryReader( GMLVersion version, GeometryFactory geomFac, GMLDocumentIdContext idContext,
+                               int defaultCoordDim ) {
+        super( version, geomFac != null ? geomFac : new GeometryFactory(), defaultCoordDim );
         if ( idContext != null ) {
             this.idContext = idContext;
         } else {
             this.idContext = new GMLDocumentIdContext( version );
         }
         propsParser = new GMLStdPropsReader( version );
-        curveSegmentParser = new GML3CurveSegmentReader( this, this.geomFac );
-        surfacePatchParser = new GML3SurfacePatchReader( this, this.geomFac );
+        curveSegmentParser = new GML3CurveSegmentReader( this, this.geomFac, defaultCoordDim );
+        surfacePatchParser = new GML3SurfacePatchReader( this, this.geomFac, defaultCoordDim );
     }
 
     /**
@@ -377,8 +378,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * </ul>
      * 
      * @param xmlStream
-     *            cursor must point at the <code>jec</code> event (&lt;gml:_Geometry&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;) afterwards
+     *            cursor must point at the <code>jec</code> event (&lt;gml:_Geometry&gt;), points at the corresponding
+     *            <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute

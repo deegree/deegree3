@@ -490,7 +490,7 @@ public class WKTWriterTest extends TestCase {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        this.getClass().getResource( BASE_DIR + fileName ) );
         xmlReader.nextTag();
-        Envelope envelope = new GML3GeometryReader( GMLVersion.GML_31, null, null ).parseEnvelope( xmlReader, null );
+        Envelope envelope = new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ).parseEnvelope( xmlReader, null );
         return envelope;
     }
 

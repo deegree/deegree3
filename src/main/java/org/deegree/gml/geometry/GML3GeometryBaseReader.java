@@ -87,10 +87,13 @@ class GML3GeometryBaseReader {
 
     private final QName GML_Z;
 
-    protected GML3GeometryBaseReader( GMLVersion version, GeometryFactory geomFac ) {
+    private final int defaultCoordDim;
+
+    protected GML3GeometryBaseReader( GMLVersion version, GeometryFactory geomFac, int defaultCoordDim ) {
         this.version = version;
         this.gmlNs = version.getNamespace();
         this.geomFac = geomFac;
+        this.defaultCoordDim = defaultCoordDim;
         GML_X = new QName( gmlNs, "X" );
         GML_Y = new QName( gmlNs, "Y" );
         GML_Z = new QName( gmlNs, "Z" );
@@ -132,8 +135,9 @@ class GML3GeometryBaseReader {
             }
         }
         if ( coordDim == -1 ) {
-            LOG.warn( "No coordinate dimension information available. Defaulting to 2." );
-            coordDim = 2;
+            LOG.debug( "Parsing posList, but not coordinate dimension information from CRS available. Defaulting to "
+                       + defaultCoordDim );
+            coordDim = defaultCoordDim;
         }
 
         String s = xmlStream.getElementText();

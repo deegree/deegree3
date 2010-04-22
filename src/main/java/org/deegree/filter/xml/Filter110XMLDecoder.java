@@ -890,7 +890,7 @@ public class Filter110XMLDecoder {
         xmlStream.nextTag();
 
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlStream, null );
-        GML3GeometryReader geomParser = new GML3GeometryReader( GMLVersion.GML_31, null, null );
+        GML3GeometryReader geomParser = new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 );
 
         try {
             switch ( type ) {

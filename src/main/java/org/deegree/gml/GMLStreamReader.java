@@ -62,7 +62,7 @@ import org.deegree.gml.geometry.GMLGeometryReader;
  * <p>
  * Instances of this class are not thread-safe.
  * </p>
- *
+ * 
  * @see GMLObject
  * @see GMLInputFactory
  * 
@@ -86,6 +86,8 @@ public class GMLStreamReader {
     private CRS defaultCRS;
 
     private GeometryFactory geomFac;
+
+    private int defaultCoordDim = 2;
 
     private GMLGeometryReader geometryReader;
 
@@ -145,7 +147,7 @@ public class GMLStreamReader {
         case GML_30:
         case GML_31:
         case GML_32: {
-            geometryReader = new GML3GeometryReader( version, geomFac, idContext );
+            geometryReader = new GML3GeometryReader( version, geomFac, idContext, defaultCoordDim );
             break;
         }
         }
@@ -334,7 +336,7 @@ public class GMLStreamReader {
 
     private GMLFeatureReader getFeatureReader() {
         if ( featureReader == null ) {
-            featureReader = new GMLFeatureReader( version, schema, idContext, resolver );
+            featureReader = new GMLFeatureReader( version, schema, idContext, defaultCoordDim, resolver );
             if ( geometryReader != null ) {
                 featureReader.setGeometryReader( geometryReader );
             }
@@ -352,7 +354,7 @@ public class GMLStreamReader {
             case GML_30:
             case GML_31:
             case GML_32: {
-                geometryReader = new GML3GeometryReader( version, new GeometryFactory(), idContext );
+                geometryReader = new GML3GeometryReader( version, new GeometryFactory(), idContext, defaultCoordDim );
                 break;
             }
             }

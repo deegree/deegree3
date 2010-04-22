@@ -171,7 +171,7 @@ public class GMLGeometryWriterTest {
                             FactoryConfigurationError, IOException, TransformationException {
         for ( String source : sources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-            GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext );
+            GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
             URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -213,8 +213,8 @@ public class GMLGeometryWriterTest {
         for ( String patchSource : patchSources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
             GeometryFactory geomFactory = new GeometryFactory();
-            GML3GeometryReader geometryParser = new GML3GeometryReader( GMLVersion.GML_31, geomFactory, idContext );
-            GML3SurfacePatchReader parser = new GML3SurfacePatchReader( geometryParser, geomFactory );
+            GML3GeometryReader geometryParser = new GML3GeometryReader( GMLVersion.GML_31, geomFactory, idContext, 2 );
+            GML3SurfacePatchReader parser = new GML3SurfacePatchReader( geometryParser, geomFactory, 2 );
             URL docURL = GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource );
             if ( docURL == null )
                 LOG.debug( "patch dir: " + GMLGeometryWriterTest.class.getResource( PATCH_DIR + patchSource ) );
@@ -258,8 +258,8 @@ public class GMLGeometryWriterTest {
         for ( String segmentSource : segmentSources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
             GeometryFactory geomFactory = new GeometryFactory();
-            GML3GeometryReader geometryParser = new GML3GeometryReader( GMLVersion.GML_31, geomFactory, idContext );
-            GML3CurveSegmentReader parser = new GML3CurveSegmentReader( geometryParser, geomFactory );
+            GML3GeometryReader geometryParser = new GML3GeometryReader( GMLVersion.GML_31, geomFactory, idContext, 2 );
+            GML3CurveSegmentReader parser = new GML3CurveSegmentReader( geometryParser, geomFactory, 2 );
             URL docURL = GMLGeometryWriterTest.class.getResource( SEGMENT_DIR + segmentSource );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -300,7 +300,7 @@ public class GMLGeometryWriterTest {
                             UnknownCRSException, TransformationException {
         for ( String envelopeSource : envelopeSources ) {
             GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-            GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext );
+            GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
             URL docURL = GMLGeometryWriterTest.class.getResource( DIR + envelopeSource );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -343,7 +343,7 @@ public class GMLGeometryWriterTest {
 
         String source = "XLinkMultiGeometry1.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext );
+        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
         URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();
@@ -376,7 +376,7 @@ public class GMLGeometryWriterTest {
                             UnknownCRSException, TransformationException, ReferenceResolvingException {
         String source = "XLinkMultiGeometry2.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext );
+        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
         URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();
@@ -409,7 +409,7 @@ public class GMLGeometryWriterTest {
                             UnknownCRSException, TransformationException, ReferenceResolvingException {
         String source = "XLinkMultiLineString.gml";
         GMLDocumentIdContext idContext = new GMLDocumentIdContext( GMLVersion.GML_31 );
-        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext );
+        GML3GeometryReader parser = new GML3GeometryReader( GMLVersion.GML_31, new GeometryFactory(), idContext, 2 );
         URL docURL = GMLGeometryWriterTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();

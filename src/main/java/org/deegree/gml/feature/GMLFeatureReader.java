@@ -157,15 +157,19 @@ public class GMLFeatureReader extends XMLAdapter {
      * @param idContext
      *            id context to be used for registering gml:ids (features and geometries) and resolving local xlinks,
      *            can be <code>null</code>
+     * @param defaultCoordDim
+     *            defaultValue for coordinate dimension, only used when a posList is parsed and no dimension information
+     *            from CRS is available (unknown CRS)
      */
-    public GMLFeatureReader( GMLVersion version, ApplicationSchema schema, GMLDocumentIdContext idContext ) {
+    public GMLFeatureReader( GMLVersion version, ApplicationSchema schema, GMLDocumentIdContext idContext,
+                             int defaultCoordDim ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext != null ? idContext : new GMLDocumentIdContext( version );
         if ( version.equals( GMLVersion.GML_2 ) ) {
             this.geomReader = new GML2GeometryReader( geomFac, idContext );
         } else {
-            this.geomReader = new GML3GeometryReader( version, geomFac, idContext );
+            this.geomReader = new GML3GeometryReader( version, geomFac, idContext, defaultCoordDim );
         }
         this.version = version;
         if ( version.equals( GMLVersion.GML_32 ) ) {
@@ -185,10 +189,13 @@ public class GMLFeatureReader extends XMLAdapter {
      *            application schema that defines the feature types, must not be <code>null</code>
      * @param idContext
      *            id context to be used for registering gml:ids (features and geometries and resolving local xlinks and
+     * @param defaultCoordDim
+     *            defaultValue for coordinate dimension, only used when a posList is parsed and no dimension information
+     *            from CRS is available (unknown CRS) *
      * @param resolver
      */
     public GMLFeatureReader( GMLVersion version, ApplicationSchema schema, GMLDocumentIdContext idContext,
-                             GMLReferenceResolver resolver ) {
+                             int defaultCoordDim, GMLReferenceResolver resolver ) {
         this.schema = schema;
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
@@ -196,7 +203,7 @@ public class GMLFeatureReader extends XMLAdapter {
         if ( version.equals( GMLVersion.GML_2 ) ) {
             this.geomReader = new GML2GeometryReader( geomFac, idContext );
         } else {
-            this.geomReader = new GML3GeometryReader( version, geomFac, idContext );
+            this.geomReader = new GML3GeometryReader( version, geomFac, idContext, defaultCoordDim );
         }
         this.version = version;
         if ( version.equals( GMLVersion.GML_32 ) ) {
@@ -456,7 +463,7 @@ public class GMLFeatureReader extends XMLAdapter {
                     refFeature = new FeatureReference( idContext, href, xmlStream.getSystemId() );
                 }
                 idContext.addReference( refFeature );
-                property = new GenericProperty( propDecl, propName, refFeature, isNilled);
+                property = new GenericProperty( propDecl, propName, refFeature, isNilled );
                 xmlStream.nextTag();
             } else {
                 // inline feature
@@ -481,7 +488,7 @@ public class GMLFeatureReader extends XMLAdapter {
                 }
             }
         } else if ( propDecl instanceof CustomPropertyType ) {
-            property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs, isNilled);
+            property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof EnvelopePropertyType ) {
             Envelope env = null;
             xmlStream.nextTag();
@@ -512,7 +519,8 @@ public class GMLFeatureReader extends XMLAdapter {
         return property;
     }
 
-    private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, CRS crs, boolean isNilled )
+    private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, CRS crs,
+                                          boolean isNilled )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
         QName propName = xmlStream.getName();

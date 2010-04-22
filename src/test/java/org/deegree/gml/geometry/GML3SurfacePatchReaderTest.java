@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
 import java.io.IOException;
@@ -54,17 +54,16 @@ import org.deegree.geometry.primitive.patches.Rectangle;
 import org.deegree.geometry.primitive.patches.Sphere;
 import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.geometry.GML3GeometryReader;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Tests that check the correct parsing of GML 3.1.1 surface patches, i.e. of elements that are substitutable for
  * <code>gml:_SurfacePatch</code>.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GML3SurfacePatchReaderTest {
@@ -109,25 +108,31 @@ public class GML3SurfacePatchReaderTest {
     }
 
     @Test
-    public void parseCone() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+    public void parseCone()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Cone.gml" );
-        Cone patch = (Cone) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Cone patch = (Cone) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 3, patch.getNumColumns() );
         Assert.assertEquals( 2, patch.getNumRows() );
     }
 
     @Test
-    public void parseCylinder() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+    public void parseCylinder()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Cylinder.gml" );
-        Cylinder patch = (Cylinder) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Cylinder patch = (Cylinder) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 3, patch.getNumColumns() );
         Assert.assertEquals( 2, patch.getNumRows() );
     }
 
     @Test
-    public void parseSphere() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+    public void parseSphere()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Sphere.gml" );
-        Sphere patch = (Sphere) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Sphere patch = (Sphere) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 3, patch.getNumColumns() );
         Assert.assertEquals( 2, patch.getNumRows() );
     }
@@ -136,13 +141,13 @@ public class GML3SurfacePatchReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        GML3SurfacePatchReaderTest.class.getResource( "../../geometry/gml/testdata/patches/"
-                                                                                                                       + fileName ) );
+                                                                                                                     + fileName ) );
         xmlReader.nextTag();
         return xmlReader;
     }
 
     private GML3SurfacePatchReader getPatchParser() {
         GeometryFactory geomFac = new GeometryFactory();
-        return new GML3SurfacePatchReader( new GML3GeometryReader(GMLVersion.GML_31, null, null), geomFac );
+        return new GML3SurfacePatchReader( new GML3GeometryReader( GMLVersion.GML_31, null, null, 2 ), geomFac, 2 );
     }
 }
