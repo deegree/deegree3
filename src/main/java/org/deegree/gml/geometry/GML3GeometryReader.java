@@ -377,7 +377,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * </ul>
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt;), points at the
+     *            cursor must point at the <code>jec</code> event (&lt;gml:_Geometry&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own

@@ -63,6 +63,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.FeatureReference;
 
@@ -328,12 +329,28 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 updated = newFc.size();
                 for ( Feature feature : newFc ) {
                     for ( Property prop : replacementProps ) {
-                        // check compatibility (CRS) for geometry replacements (CITE wfs:wfs-1.1.0-Transaction-tc7.2)
+
                         if ( prop.getValue() instanceof Geometry ) {
-                            Geometry geom = (Geometry) feature.getProperty( prop.getType().getName() ).getValue();
+                            Geometry geom = (Geometry) prop.getValue();
                             if ( geom != null ) {
+                                // check compatibility (CRS) for geometry replacements (CITE
+                                // wfs:wfs-1.1.0-Transaction-tc7.2)
                                 if ( geom.getCoordinateDimension() != ( (Geometry) prop.getValue() ).getCoordinateDimension() ) {
-                                    throw new InvalidParameterValueException( "Cannot replace given geometry property '" + prop.getType().getName() + "' with given value (wrong dimension).");
+                                    throw new InvalidParameterValueException(
+                                                                              "Cannot replace given geometry property '"
+                                                                                                      + prop.getType().getName()
+                                                                                                      + "' with given value (wrong dimension)." );
+                                }
+                                // check compatibility (geometry type) for geometry replacements (CITE
+                                // wfs:wfs-1.1.0-Transaction-tc10.1)
+                                if ( !( geom instanceof Surface )
+                                     && prop.getName().equals(
+                                                               new QName( "http://cite.opengeospatial.org/gmlsf",
+                                                                          "surfaceProperty" ) ) ) {
+                                    throw new InvalidParameterValueException(
+                                                                              "Cannot replace given geometry property '"
+                                                                                                      + prop.getType().getName()
+                                                                                                      + "' with given value (wrong type)." );
                                 }
                             }
                         }
