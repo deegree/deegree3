@@ -197,6 +197,7 @@ public class CacheRasterReader extends GridFileReader {
                 // create new cacheFile
             }
             try {
+                LOG.debug( "Writing to file: " + cacheFile.getAbsolutePath() );
                 this.gridWriter = new GridWriter( columns, rows, env, geoRef, cacheFile, dInfo );
             } catch ( IOException e ) {
                 LOG.warn( "Could not create a cache file writer because: {}. Only in memory caching is enabled.",
@@ -491,6 +492,12 @@ public class CacheRasterReader extends GridFileReader {
      * @return the amount of freed memory.
      */
     public long dispose( boolean memoryBuffersAsWell ) {
+
+        if ( cachedReader != null ) {
+            // close the file in the reader as well.
+            cachedReader.dispose();
+            super.dispose();
+        }
         long result = 0;
         if ( gridWriter != null ) {
             result = writeCache( true, false );
@@ -702,12 +709,12 @@ public class CacheRasterReader extends GridFileReader {
      */
     private ByteBuffer getTileBuffer( int column, int row ) {
         ByteBuffer result = null;
-        // allocation of the buffer should not be in the synchronized block, it may cause a dead lock with the raster
-        // cache.
         if ( row < tiles.length && column < tiles[row].length ) {
+            // allocation of the buffer should not be in the synchronized block, it may cause a dead lock with the
+            // raster cache.
+            ByteBuffer tileBuffer = allocateTileBuffer( false, true );
             synchronized ( tiles ) {
                 if ( tiles[row][column] == null || tilesInMemory[row][column] == 0 ) {
-                    ByteBuffer tileBuffer = allocateTileBuffer( false, true );
                     // check the cache file
                     if ( tilesOnFile != null && tilesOnFile[row][column] > 0 ) {
                         try {

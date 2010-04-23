@@ -42,6 +42,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 import java.awt.image.PixelInterleavedSampleModel;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -653,14 +654,8 @@ public class RasterFactory {
         byteBuffer.clear();
         switch ( type ) {
         case BYTE:
-            // DataBufferByte data = ( (DataBufferByte) imageRaster.getDataBuffer() );
-            // int banks = data.getNumBanks();
-            byteBuffer.put( (byte[]) imageRaster.getDataElements( x, y, width, height, null ) );
-            // rb: because the getDataElements uses the bankofset of the data
-            // for ( int bank = 0; bank < banks; ++bank ) {
-            // byte[] bs = data.getData( bank );
-            // byteBuffer.put( bs );
-            // }
+            // rb: use the databuffer directly, to make sure no pixel 'inversion' is done.
+            byteBuffer.put( ( (DataBufferByte) imageRaster.getDataBuffer() ).getBankData()[0] );
             break;
         case DOUBLE:
             DoubleBuffer dbuf = byteBuffer.asDoubleBuffer();

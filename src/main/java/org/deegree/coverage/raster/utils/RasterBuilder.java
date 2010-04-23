@@ -106,8 +106,9 @@ public class RasterBuilder {
                 if ( !Double.isNaN( res ) ) {
                     result.add( f );
                 } else {
-                    LOG.info( "Skipping directory: " + f.getAbsolutePath()
-                              + "  because it does not denote a resolution." );
+                    LOG.info( "Directory: "
+                              + f.getAbsolutePath()
+                              + " can not be added to a Multiresolution raster, because it does not denote a resolution." );
                 }
             }
         }
@@ -194,8 +195,8 @@ public class RasterBuilder {
             try {
                 result = Double.parseDouble( dirRes );
             } catch ( NumberFormatException e ) {
-                LOG.warn( "No resolution found in raster datasource defintion, nor in the directory name: " + dirRes
-                          + " returning 0" );
+                LOG.debug( "No resolution found in raster datasource defintion, nor in the directory name: " + dirRes
+                           + " returning 0" );
                 result = Double.NaN;
             }
         }
@@ -232,7 +233,11 @@ public class RasterBuilder {
             opts.copyOf( options );
             String cacheDir = opts.get( RasterIOOptions.LOCAL_RASTER_CACHE_DIR );
             if ( cacheDir == null ) {
-                opts.add( RasterIOOptions.LOCAL_RASTER_CACHE_DIR, directory.getName() );
+                String dir = directory.getName();
+                if ( directory.getParentFile() != null ) {
+                    dir = directory.getParentFile().getName() + "_" + directory.getName();
+                }
+                opts.add( RasterIOOptions.LOCAL_RASTER_CACHE_DIR, dir );
             }
             if ( opts.get( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
                 opts.add( RasterIOOptions.CREATE_RASTER_MISSING_CACHE_DIR, "yes" );
@@ -275,7 +280,7 @@ public class RasterBuilder {
         Envelope rasterEnvelope = null;
         for ( File filename : coverageFiles ) {
             try {
-                LOG.info( "{}) Creating raster from file: {}", System.currentTimeMillis(), filename );
+                LOG.info( "Creating raster from file: {}", filename );
                 RasterIOOptions newOpts = RasterIOOptions.forFile( filename );
                 newOpts.copyOf( options );
                 AbstractRaster raster = RasterFactory.loadRasterFromFile( filename, newOpts );

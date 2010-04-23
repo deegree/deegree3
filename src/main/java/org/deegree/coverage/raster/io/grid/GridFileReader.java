@@ -74,6 +74,8 @@ public class GridFileReader extends GridReader {
 
     private FileInputStream fileAccess;
 
+    private final Object LOCK = new Object();
+
     private File gridFile;
 
     private boolean leaveOpen = false;
@@ -154,7 +156,7 @@ public class GridFileReader extends GridReader {
 
     private final FileChannel getFileChannel()
                             throws FileNotFoundException {
-        synchronized ( gridFile ) {
+        synchronized ( LOCK ) {
             if ( this.fileAccess == null ) {
                 this.fileAccess = new FileInputStream( gridFile );
             }
@@ -164,7 +166,7 @@ public class GridFileReader extends GridReader {
 
     private final void closeReadStream()
                             throws IOException {
-        synchronized ( gridFile ) {
+        synchronized ( LOCK ) {
             if ( this.fileAccess != null && !this.leaveOpen ) {
                 this.fileAccess.close();
                 this.fileAccess = null;
@@ -232,7 +234,7 @@ public class GridFileReader extends GridReader {
             if ( resultBuffer == null ) {
                 resultBuffer = ByteBufferPool.allocate( size, false );
             }
-            synchronized ( gridFile ) {
+            synchronized ( LOCK ) {
                 FileChannel channel = getFileChannel();
                 RasterRect tmpRect = new RasterRect( 0, 0, fRect.width, fRect.height );
                 for ( int col = minCRmaxCR[0]; col <= minCRmaxCR[2]; ++col ) {
@@ -256,7 +258,7 @@ public class GridFileReader extends GridReader {
         int tileInBlob = tileId % getTilesPerBlob();
         // transfer the data from the blob
         try {
-            synchronized ( gridFile ) {
+            synchronized ( LOCK ) {
                 FileChannel channel = getFileChannel();
                 // MappedByteBuffer map = channel.map( MapMode.READ_ONLY, tileInBlob * getBytesPerTile(),
                 // buffer.remaining() );
@@ -354,7 +356,17 @@ public class GridFileReader extends GridReader {
     }
 
     public void dispose() {
-        // nothing to do.
+        leaveStreamOpen( false );
+        try {
+            closeReadStream();
+        } catch ( IOException e ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
+            } else {
+                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
+            }
+        }
+
     }
 
 }

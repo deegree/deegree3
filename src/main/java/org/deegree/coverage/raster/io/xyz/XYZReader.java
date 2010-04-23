@@ -100,6 +100,8 @@ public class XYZReader implements RasterReader {
 
     private String dataLocationId;
 
+    private Envelope envelope;
+
     // saves a point in the raster grid (eg. each line becomes a GridPoint)
     private static class GridPoint {
         /**
@@ -206,7 +208,7 @@ public class XYZReader implements RasterReader {
      * @return new SimpleRaster with data from file
      * @throws IOException
      */
-    private SimpleRaster readASCIIGrid( BufferedReader reader, RasterIOOptions options )
+    private ByteBufferRasterData readASCIIGrid( BufferedReader reader, RasterIOOptions options )
                             throws IOException {
 
         geoReference = options.getRasterGeoReference();
@@ -261,7 +263,6 @@ public class XYZReader implements RasterReader {
         height = size[1];
         // the first data should not be added to the cache, it is only temporary
         RasterData data = RasterDataFactory.createRasterData( size[0], size[1], DataType.FLOAT, false );
-        data.setNoDataValue( options.getNoDataValue() );
 
         for ( GridPoint p : gridPoints ) {
             int[] pos = geoReference.getRasterCoordinate( p.x, p.y );
@@ -273,13 +274,9 @@ public class XYZReader implements RasterReader {
         // System.gc();
 
         this.rasterDataInfo = data.getDataInfo();
-        ByteBuffer byteBuffer = ( (ByteBufferRasterData) data ).getByteBuffer();
-        data = RasterDataFactory.createRasterData( width, height, data.getDataInfo(), geoReference, byteBuffer, true,
-                                                   FileUtils.getFilename( this.file ), options );
+        this.envelope = rasterEnvelope;
+        return ( (ByteBufferRasterData) data );
 
-        SimpleRaster simpleRaster = new SimpleRaster( data, rasterEnvelope, geoReference );
-
-        return simpleRaster;
     }
 
     /**
@@ -355,7 +352,7 @@ public class XYZReader implements RasterReader {
                     LOG.debug( "Could not read xyz world file: " + e.getLocalizedMessage(), e );
                 }
             }
-            result = readASCIIGrid( reader, nOpts );
+            result = createSimpleRaster( reader, nOpts );
             reader.close();
         } else {
             LOG.info( "Cache seems coherent using cachefile: {}.", cache.createCacheFile( dataLocationId ) );
@@ -368,6 +365,24 @@ public class XYZReader implements RasterReader {
         return result;
     }
 
+    /**
+     * @param reader
+     * @param nOpts
+     * @return
+     * @throws IOException
+     */
+    private SimpleRaster createSimpleRaster( BufferedReader reader, RasterIOOptions nOpts )
+                            throws IOException {
+        ByteBufferRasterData data = readASCIIGrid( reader, nOpts );
+        ByteBuffer byteBuffer = data.getByteBuffer();
+        data = RasterDataFactory.createRasterData( width, height, data.getDataInfo(), geoReference, byteBuffer, true,
+                                                   FileUtils.getFilename( this.file ), nOpts );
+
+        SimpleRaster simpleRaster = new SimpleRaster( data, this.envelope, geoReference );
+
+        return simpleRaster;
+    }
+
     @Override
     public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException {
@@ -377,7 +392,7 @@ public class XYZReader implements RasterReader {
             nOpts = new RasterIOOptions();
         }
         setID( nOpts );
-        return readASCIIGrid( reader, nOpts );
+        return createSimpleRaster( reader, nOpts );
     }
 
     @Override
@@ -403,8 +418,12 @@ public class XYZReader implements RasterReader {
     @Override
     public BufferResult read( RasterRect rect, ByteBuffer buffer )
                             throws IOException {
-        // yes, do this
-        return null;
+        // rb: not very optimized yet..
+        BufferedReader reader = new BufferedReader( new FileReader( this.file ) );
+        ByteBufferRasterData grid = readASCIIGrid( reader, null );
+        reader.close();
+        ByteBufferRasterData subset = grid.getSubset( rect );
+        return new BufferResult( rect, subset.getByteBuffer() );
     }
 
     @Override

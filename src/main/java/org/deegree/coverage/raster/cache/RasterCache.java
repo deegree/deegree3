@@ -68,6 +68,27 @@ import org.slf4j.Logger;
  */
 public class RasterCache {
 
+    // private static final File out = new File( "/tmp/disposing.txt" );
+
+    // private static PrintWriter writer;
+    // static {
+    // if ( out.exists() ) {
+    // out.delete();
+    // }
+    // try {
+    // out.createNewFile();
+    // } catch ( IOException e ) {
+    // System.out.println( "Exception occurred: " + e.getLocalizedMessage() );
+    // }
+    // try {
+    // writer = new PrintWriter( new FileWriter( out ) );
+    // } catch ( IOException e ) {
+    // System.out.println( "Exception occurred: " + e.getLocalizedMessage() );
+    //
+    // }
+    //
+    // }
+
     private static final Logger LOG = getLogger( RasterCache.class );
 
     /**
@@ -84,6 +105,8 @@ public class RasterCache {
     public static final String FILE_EXTENSION = ".d3rcache";
 
     private static final Object MEM_LOCK = new Object();
+
+    private static final Object CURRENT_CACHE_LOCK = new Object();
 
     private final static Map<String, RasterCache> currentCaches = new ConcurrentHashMap<String, RasterCache>();
 
@@ -129,7 +152,9 @@ public class RasterCache {
                 mm *= 0.5;
             }
         }
+        mm = 32160200;
         maxCacheMem = mm;
+
     }
 
     private static long currentlyUsedMemory = 0;
@@ -163,15 +188,7 @@ public class RasterCache {
                 }
                 result = new CacheRasterReader( reader, cacheFile, this );
             }
-            synchronized ( MEM_LOCK ) {
-                if ( !cache.contains( result ) ) {
-                    currentlyUsedMemory += result.currentApproxMemory();
-                    addReader( result );
-                } else {
-                    LOG.debug( "Not adding reader ({}) to cache because it is already in the cache.", reader );
-                }
-            }
-
+            addReader( result );
         } else {
             LOG.debug( "Not adding reader to cache, because it is was null." );
         }
@@ -183,8 +200,17 @@ public class RasterCache {
     }
 
     private static void addReader( CacheRasterReader reader ) {
+        boolean added = false;
         synchronized ( MEM_LOCK ) {
-            cache.add( reader );
+            // System.out.println( Thread.currentThread().getName() + "-> adding reader currentMem: "
+            // + currentlyUsedMemory );
+            currentlyUsedMemory += reader.currentApproxMemory();
+            // System.out.println( Thread.currentThread().getName() + "-> after adding reader currentMem: "
+            // + currentlyUsedMemory );
+            added = cache.add( reader );
+        }
+        if ( !added ) {
+            LOG.debug( "Not adding reader ({}) to cache because it is already in the cache.", reader );
         }
     }
 
@@ -212,7 +238,7 @@ public class RasterCache {
      *            true if the directory should be created if missing.
      * @return a raster cache for the given directory.
      */
-    public synchronized static RasterCache getInstance( File directory, boolean create ) {
+    public static RasterCache getInstance( File directory, boolean create ) {
         File cacheDir = DEFAULT_CACHE_DIR;
         if ( directory != null ) {
             if ( !directory.exists() ) {
@@ -236,7 +262,7 @@ public class RasterCache {
                 cacheDir = directory;
             }
         }
-        synchronized ( MEM_LOCK ) {
+        synchronized ( CURRENT_CACHE_LOCK ) {
             if ( !currentCaches.containsKey( cacheDir.getAbsolutePath() ) ) {
                 currentCaches.put( cacheDir.getAbsolutePath(), new RasterCache( cacheDir ) );
             }
@@ -259,7 +285,7 @@ public class RasterCache {
      *            which can contain cache information.
      * @return a raster cache for the given directory.
      */
-    public synchronized static RasterCache getInstance( RasterIOOptions options ) {
+    public static RasterCache getInstance( RasterIOOptions options ) {
         File directory = DEFAULT_CACHE_DIR;
         boolean create = false;
         if ( options != null ) {
@@ -281,16 +307,16 @@ public class RasterCache {
      * 
      * @return a raster cache for the default directory.
      */
-    public synchronized static RasterCache getInstance() {
+    public static RasterCache getInstance() {
         return getInstance( DEFAULT_CACHE_DIR, false );
     }
 
     /**
      * Iterates over all known readers and (re) calculates their in memory data.
      */
-    public static void updateCurrentlyUsedMemory() {
-        LOG.debug( "Updating estimation of in-memory cache." );
+    private static void updateCurrentlyUsedMemory() {
         synchronized ( MEM_LOCK ) {
+            LOG.debug( "Updating estimation of in-memory cache." );
             long cum = 0;
             Iterator<CacheRasterReader> it = cache.iterator();
             while ( it != null && it.hasNext() ) {
@@ -333,15 +359,34 @@ public class RasterCache {
         synchronized ( MEM_LOCK ) {
             if ( currentlyUsedMemory + requiredMemory > maxCacheMem ) {
                 Iterator<CacheRasterReader> it = cache.iterator();
+                final double halfMem = maxCacheMem * 0.5;
+                // writer.println( "+++++++++++++++++++++++++++ dispose memory +++++++++++++++++++++++++++" );
+                // writer.println( Thread.currentThread().getName() + "\n-> - current mem: " + currentlyUsedMemory
+                // + "\n - cache size: " + cache.size() + "\n - requested mem: " + requiredMemory
+                // + "\n - halfmem: " + halfMem );
+                int i = 0;
                 while ( it != null && it.hasNext() ) {
                     CacheRasterReader next = it.next();
                     if ( next != null ) {
+                        ++i;
+                        // writer.println( ( i ) + ") " + Thread.currentThread().getName() + "-> Disposing reader: "
+                        // + next.getDataLocationId() );
                         currentlyUsedMemory -= next.dispose( false );
                     }
-                    if ( currentlyUsedMemory + requiredMemory < maxCacheMem ) {
+                    if ( currentlyUsedMemory + requiredMemory < halfMem ) {
                         break;
                     }
                 }
+                if ( currentlyUsedMemory > halfMem || i > cache.size() * 0.5 ) {
+                    // disposed all, but could not get required memory..., update the real memory.
+                    // writer.println( Thread.currentThread().getName()
+                    // + "-> After unsuccessful cleaning, updating memory." );
+                    updateCurrentlyUsedMemory();
+                }
+                // writer.println( "After cleaning: " + Thread.currentThread().getName() + "\n-> - current mem: "
+                // + currentlyUsedMemory + "\n - cache size: " + cache.size() + "\n - requested mem: "
+                // + requiredMemory + "\n - halfmem: " + halfMem );
+                // writer.flush();
             }
         }
     }

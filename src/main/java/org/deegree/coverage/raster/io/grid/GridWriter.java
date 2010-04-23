@@ -430,6 +430,7 @@ public class GridWriter implements RasterWriter {
             if ( !this.leaveStreamOpen ) {
                 try {
                     closeWriteStream();
+                    closeReadStream();
                 } catch ( IOException e ) {
                     LOG.debug( "Could not close stream because: {}", e.getLocalizedMessage(), e );
                 }
