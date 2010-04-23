@@ -42,6 +42,8 @@ import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.FeatureType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link PropertyType} that defines a property with a {@link Feature} value.
@@ -52,6 +54,8 @@ import org.deegree.feature.types.FeatureType;
  * @version $Revision:$, $Date:$
  */
 public class FeaturePropertyType extends AbstractPropertyType {
+
+    private static final Logger LOG = LoggerFactory.getLogger( FeaturePropertyType.class );
 
     private QName valueFtName;
 
@@ -69,12 +73,17 @@ public class FeaturePropertyType extends AbstractPropertyType {
     /**
      * Returns the name of the contained feature type.
      * 
-     * @return the name of the contained feature type, or null if unrestricted (any feature is allowed)
+     * @return the name of the contained feature type, or null if unrestricted (any feature type is allowed)
      */
     public QName getFTName() {
         return valueFtName;
     }
 
+    /**
+     * Returns the contained feature type.
+     * 
+     * @return the contained feature type, or null if unrestricted (any feature type is allowed)
+     */
     public FeatureType getValueFt() {
         // if ( valueFt == null ) {
         // String msg = "Internal error. Reference to feature type '" + valueFtName + "' has not been resolved.";
@@ -85,8 +94,9 @@ public class FeaturePropertyType extends AbstractPropertyType {
 
     public void resolve( FeatureType valueFt ) {
         if ( valueFt == null ) {
-            String msg = "Internal error. Reference to feature type '" + valueFtName + "' cannot be null.";
-            throw new IllegalArgumentException( msg );
+            LOG.warn( "Setting reference to feature type '" + valueFtName
+                      + "' to null -- repairing definition by clearing value feature type name as well." );
+            valueFtName = null;
         }
         if ( this.valueFt != null ) {
             String msg = "Internal error. Reference to feature type '" + valueFtName + "' has already been resolved.";
@@ -110,7 +120,7 @@ public class FeaturePropertyType extends AbstractPropertyType {
                    + ", value feature type: " + valueFtName;
         return s;
     }
-    
+
     @Override
     public boolean isNillable() {
         // TODO pipe this value through

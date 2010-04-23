@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wfs.describefeaturetype;
 
@@ -59,11 +59,11 @@ import org.deegree.protocol.wfs.WFSConstants;
  * Adapter between KVP <code>DescribeFeatureType</code> requests and {@link DescribeFeatureType} objects.
  * <p>
  * TODO code for exporting to KVP form
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter {
@@ -77,7 +77,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
      * <li>WFS 1.1.0</li>
      * <li>WFS 2.0.0 (tentative)</li>
      * </ul>
-     *
+     * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
      * @return parsed {@link DescribeFeatureType} request
@@ -109,7 +109,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
 
     /**
      * Parses a normalized KVP-map as a WFS 1.0.0 {@link DescribeFeatureType} request.
-     *
+     * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
      * @return parsed {@link DescribeFeatureType} request
@@ -119,18 +119,21 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
     public static DescribeFeatureType parse100( Map<String, String> kvpParams )
                             throws InvalidParameterValueException {
 
+        // optional: 'NAMESPACE' (deegree specific extension, not mentioned in the WFS 1.0.0 specification)
+        Map<String, String> nsBindings = extractNamespaceBindings( kvpParams );
+
         // optional: 'TYPENAME'
         QName[] typeNames = extractTypeNames( kvpParams, null );
 
         // optional: 'OUTPUTFORMAT'
         String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
 
-        return new DescribeFeatureType( WFSConstants.VERSION_100, null, outputFormat, typeNames );
+        return new DescribeFeatureType( WFSConstants.VERSION_100, null, outputFormat, typeNames, nsBindings );
     }
 
     /**
      * Parses a normalized KVP-map as a WFS 1.1.0 {@link DescribeFeatureType} request.
-     *
+     * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
      * @return parsed {@link DescribeFeatureType} request
@@ -149,12 +152,12 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
         // optional: 'OUTPUTFORMAT'
         String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
 
-        return new DescribeFeatureType( WFSConstants.VERSION_110, null, outputFormat, typeNames );
+        return new DescribeFeatureType( WFSConstants.VERSION_110, null, outputFormat, typeNames, nsBindings );
     }
 
     /**
      * Parses a normalized KVP-map as a WFS 2.0.0 {@link DescribeFeatureType} request.
-     *
+     * 
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
      * @return parsed {@link DescribeFeatureType} request
@@ -173,12 +176,12 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
         // optional: 'OUTPUTFORMAT'
         String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
 
-        return new DescribeFeatureType( WFSConstants.VERSION_200, null, outputFormat, typeNames );
+        return new DescribeFeatureType( WFSConstants.VERSION_200, null, outputFormat, typeNames, nsBindings );
     }
 
     /**
      * Exports the given {@link DescribeFeatureType} request as a KVP-encoded string (with encoded values).
-     *
+     * 
      * @param request
      *            request to be exported
      * @param version
@@ -231,6 +234,23 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
                 }
                 appendKVP( sb, "NAMESPACE", namespaceList.toString() );
             }
+        } else if ( request.getNsBindings() != null && !request.getNsBindings().isEmpty() ) {
+            StringBuffer namespaceList = new StringBuffer();
+            Map<String, String> prefixToNs = request.getNsBindings();
+            for ( String prefix : prefixToNs.keySet() ) {
+                String namespace = prefixToNs.get( prefix );
+                if ( namespaceList.length() > 0 ) {
+                    namespaceList.append( ',' );
+                }
+                namespaceList.append( "xmlns(" );
+                if ( !prefix.isEmpty() ) {
+                    namespaceList.append( prefix );
+                    namespaceList.append( '=' );
+                }
+                namespaceList.append( namespace );
+                namespaceList.append( ')' );
+            }
+            appendKVP( sb, "NAMESPACE", namespaceList.toString() );
         }
         return sb.toString();
     }
@@ -238,7 +258,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
     /**
      * Augment the given map of prefix to namespace bindings with generated namespace prefices, so that every qualified
      * feature type name has a proper namespace prefix.
-     *
+     * 
      * @param nsBindings
      * @param ftNames
      */
@@ -247,7 +267,7 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
             if ( name.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
                 if ( nsBindings.get( name.getNamespaceURI() ) == null ) {
                     String prefix = getUniquePrefix( nsBindings.keySet() );
-                    nsBindings.put( name.getNamespaceURI(), prefix);
+                    nsBindings.put( name.getNamespaceURI(), prefix );
                 }
             }
         }

@@ -131,7 +131,7 @@ public class ApplicationSchema {
                             String msg = Messages.getMessage( "ERROR_SCHEMA_UNKNOWN_FEATURE_TYPE_IN_PROPERTY",
                                                               referencedFtName, pt.getName() );
                             LOG.warn( msg );
-                            // throw new IllegalArgumentException( msg );
+                            ( (FeaturePropertyType) pt ).resolve( null );
                         } else {
                             ( (FeaturePropertyType) pt ).resolve( referencedFt );
                         }
@@ -163,18 +163,23 @@ public class ApplicationSchema {
     /**
      * Returns all feature types that are defined in this application schema, limited by the options.
      * 
+     * @param namespace
+     *            may be <code>null</code> (include all feature types from all namespaces)
      * @param includeCollections
      * @param includeAbstracts
      * 
      * @return all feature types, never <code>null</code>
      */
-    public ArrayList<FeatureType> getFeatureTypes( boolean includeCollections, boolean includeAbstracts ) {
-        ArrayList<FeatureType> fts = new ArrayList<FeatureType>( ftNameToFt.values().size() );
+    public List<FeatureType> getFeatureTypes( String namespace, boolean includeCollections,
+                                                   boolean includeAbstracts ) {
+        List<FeatureType> fts = new ArrayList<FeatureType>( ftNameToFt.values().size() );
 
         for ( FeatureType ft : ftNameToFt.values() ) {
-            if ( ( includeAbstracts || !ft.isAbstract() )
-                 && ( includeCollections || !( ft instanceof FeatureCollectionType ) ) ) {
-                fts.add( ft );
+            if ( namespace == null || namespace.equals( ft.getName().getNamespaceURI() ) ) {
+                if ( ( includeAbstracts || !ft.isAbstract() )
+                     && ( includeCollections || !( ft instanceof FeatureCollectionType ) ) ) {
+                    fts.add( ft );
+                }
             }
         }
         return fts;

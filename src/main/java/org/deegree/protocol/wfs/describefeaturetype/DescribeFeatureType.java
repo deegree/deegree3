@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.describefeaturetype;
+
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -42,10 +44,10 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
 
 /**
  * Represents a <code>DescribeFeatureType</code> request to a WFS.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class DescribeFeatureType extends AbstractWFSRequest {
@@ -54,9 +56,11 @@ public class DescribeFeatureType extends AbstractWFSRequest {
 
     private QName[] typeNames;
 
+    private Map<String, String> nsBindings;
+
     /**
      * Creates a new {@link DescribeFeatureType} request.
-     *
+     * 
      * @param version
      *            protocol version, may not be null
      * @param handle
@@ -65,16 +69,22 @@ public class DescribeFeatureType extends AbstractWFSRequest {
      *            requested output format, may be null
      * @param typeNames
      *            requested type names, may be null
+     * @param nsBindings
+     *            mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
+     *            the binding of the default namespace, null is returned if no <code>NAMESPACE</code> parameter is
+     *            present, may be null
      */
-    public DescribeFeatureType( Version version, String handle, String outputFormat, QName[] typeNames ) {
+    public DescribeFeatureType( Version version, String handle, String outputFormat, QName[] typeNames,
+                                Map<String, String> nsBindings ) {
         super( version, handle );
         this.outputFormat = outputFormat;
         this.typeNames = typeNames;
+        this.nsBindings = nsBindings;
     }
 
     /**
      * Returns the requested output format.
-     *
+     * 
      * @return the requested output format, or null if unspecified
      */
     public String getOutputFormat() {
@@ -83,21 +93,32 @@ public class DescribeFeatureType extends AbstractWFSRequest {
 
     /**
      * Returns the names of the feature types for which the schema is requested.
-     *
+     * 
      * @return the names of the feature types for which the schema is requested, or null if unspecified
      */
     public QName[] getTypeNames() {
         return typeNames;
     }
 
+    /**
+     * Returns mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
+     * the binding of the default namespace, null is returned if no <code>NAMESPACE</code> parameter is present.
+     * 
+     * @return mapping between prefices and namespaces, or null if unspecified
+     */
+    public Map<String, String> getNsBindings() {
+        return nsBindings;
+    }
+
     @Override
     public String toString() {
-        String s = "{version=" + getVersion() + ",handle=" + getHandle() + ",outputFormat=" + outputFormat + ",typeNames=";
-        if (typeNames != null ) {
+        String s = "{version=" + getVersion() + ",handle=" + getHandle() + ",outputFormat=" + outputFormat
+                   + ",typeNames=";
+        if ( typeNames != null ) {
             s += "{";
             for ( int i = 0; i < typeNames.length; i++ ) {
-                s += typeNames [i];
-                if (i != typeNames.length -1) {
+                s += typeNames[i];
+                if ( i != typeNames.length - 1 ) {
                     s += ",";
                 }
             }
@@ -105,6 +126,20 @@ public class DescribeFeatureType extends AbstractWFSRequest {
         } else {
             s += "null";
         }
+        s += ",namespace=";
+        if ( nsBindings != null ) {
+            s += "{";
+            int i = 0;
+            for ( String ns : nsBindings.keySet() ) {
+                s +=  ns + "=" + nsBindings.get( ns );
+                if ( i != nsBindings.size() - 1 ) {
+                    s += ",";
+                }
+            }
+            s += "}";
+        } else {
+            s += "null";
+        }        
         s += "}";
         return s;
     }

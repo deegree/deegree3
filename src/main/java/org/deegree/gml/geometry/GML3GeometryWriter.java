@@ -874,7 +874,13 @@ public class GML3GeometryWriter implements GMLGeometryWriter {
 
         Envelope env = getTransformedEnvelope( envelope );
 
-        startGeometry( "Envelope", env );
+        // Envelope does not have gml:id (actually it is not a gml:Geometry element)
+        writer.writeStartElement( "gml", "Envelope", gmlNs );
+        if ( outputCRS != null ) {
+            writer.writeAttribute( "srsName", outputCRS.getName() );
+        } else if ( envelope.getCoordinateSystem() != null ) {
+            writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getName() );
+        }
 
         if ( version == GML_30 ) {
             writer.writeStartElement( "gml", "pos", gmlNs );

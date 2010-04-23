@@ -82,7 +82,7 @@ public class ApplicationSchemaXSDEncoder {
 
     private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );
 
-    public static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
+    public static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2/feature.xsd";
 
     public static final String GML_30_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.0.1/base/gml.xsd";
 
@@ -381,7 +381,12 @@ public class ApplicationSchemaXSDEncoder {
                 writer.writeStartElement( XSNS, "sequence" );
                 writer.writeEmptyElement( XSNS, "element" );
                 // TODO
-                writer.writeAttribute( "ref", "app:" + containedFt.getLocalPart() );
+                if ( containedFt.getPrefix() != null ) {
+                    writer.setPrefix( containedFt.getPrefix(), containedFt.getNamespaceURI() );
+                    writer.writeAttribute( "ref", containedFt.getPrefix() + ":" + containedFt.getLocalPart() );
+                } else {
+                    writer.writeAttribute( "ref", "app:" + containedFt.getLocalPart() );
+                }
                 writer.writeAttribute( "minOccurs", "0" );
                 // end 'xs:sequence'
                 writer.writeEndElement();
@@ -491,7 +496,7 @@ public class ApplicationSchemaXSDEncoder {
 
         String baseTypeName = xsSimpleType.getBaseType().getName();
         String baseTypeNs = xsSimpleType.getBaseType().getNamespace();
-        if ( baseTypeName == null ) {
+        if ( baseTypeName == null || xsSimpleType.getLexicalEnumeration().getLength() == 0 ) {
             LOG.warn( "Custom simple type '{" + xsSimpleType.getNamespace() + "}" + xsSimpleType.getName()
                       + "' is based on unnamed type. Defaulting to xs:string." );
             writer.writeAttribute( "base", "xs:string" );

@@ -135,7 +135,7 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
             }
         }
 
-        return new DescribeFeatureType( VERSION_100, null, outputFormat, typeNames );
+        return new DescribeFeatureType( VERSION_100, null, outputFormat, typeNames, null );
     }
 
     private QName mangleTypeName( String s ) {
@@ -182,7 +182,7 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
             }
         }
 
-        return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames );
+        return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames, null );
     }
 
     /**
@@ -212,6 +212,6 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
             }
         }
 
-        return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames );
+        return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames, null );
     }
 }
