@@ -56,7 +56,7 @@ import static org.deegree.feature.types.property.GeometryPropertyType.GeometryTy
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.SURFACE;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.TRIANGULATED_SURFACE;
 import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.determineMinimalBaseGeometry;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.fromString;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.fromGMLTypeName;
 
 import java.util.HashSet;
 
@@ -80,7 +80,7 @@ public class GeometryTypeTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testGrid() {
-        fromString( "Grid" );
+        fromGMLTypeName( "Grid" );
     }
 
     /**
@@ -88,7 +88,7 @@ public class GeometryTypeTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testRectifiedGrid() {
-        fromString( "RectifiedGrid" );
+        fromGMLTypeName( "RectifiedGrid" );
     }
 
     /**
@@ -96,20 +96,20 @@ public class GeometryTypeTest {
      */
     @Test
     public void mapFromString() {
-        Assert.assertEquals( GEOMETRY, fromString( "_Geometry" ) );
-        Assert.assertEquals( MULTI_CURVE, fromString( "MultiCurve" ) );
-        Assert.assertEquals( MULTI_POINT, fromString( "MultiPoint" ) );
-        Assert.assertEquals( MULTI_SOLID, fromString( "MultiSolid" ) );
-        Assert.assertEquals( MULTI_SURFACE, fromString( "MultiSurface" ) );
-        Assert.assertEquals( POINT, fromString( "Point" ) );
-        Assert.assertEquals( POLYGON, fromString( "Polygon" ) );
-        Assert.assertEquals( SOLID, fromString( "_Solid" ) );
-        Assert.assertEquals( SURFACE, fromString( "_Surface" ) );
-        Assert.assertEquals( TRIANGULATED_SURFACE, fromString( "TriangulatedSurface" ) );
+        Assert.assertEquals( GEOMETRY, fromGMLTypeName( "_Geometry" ) );
+        Assert.assertEquals( MULTI_CURVE, fromGMLTypeName( "MultiCurve" ) );
+        Assert.assertEquals( MULTI_POINT, fromGMLTypeName( "MultiPoint" ) );
+        Assert.assertEquals( MULTI_SOLID, fromGMLTypeName( "MultiSolid" ) );
+        Assert.assertEquals( MULTI_SURFACE, fromGMLTypeName( "MultiSurface" ) );
+        Assert.assertEquals( POINT, fromGMLTypeName( "Point" ) );
+        Assert.assertEquals( POLYGON, fromGMLTypeName( "Polygon" ) );
+        Assert.assertEquals( SOLID, fromGMLTypeName( "_Solid" ) );
+        Assert.assertEquals( SURFACE, fromGMLTypeName( "_Surface" ) );
+        Assert.assertEquals( TRIANGULATED_SURFACE, fromGMLTypeName( "TriangulatedSurface" ) );
 
-        Assert.assertEquals( GEOMETRY, fromString( "AbstractGeometry" ) );
-        Assert.assertEquals( SOLID, fromString( "AbstractSolid" ) );
-        Assert.assertEquals( SURFACE, fromString( "AbstractSurface" ) );
+        Assert.assertEquals( GEOMETRY, fromGMLTypeName( "AbstractGeometry" ) );
+        Assert.assertEquals( SOLID, fromGMLTypeName( "AbstractSolid" ) );
+        Assert.assertEquals( SURFACE, fromGMLTypeName( "AbstractSurface" ) );
     }
 
     /**

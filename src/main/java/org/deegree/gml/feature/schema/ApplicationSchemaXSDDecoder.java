@@ -840,9 +840,10 @@ public class ApplicationSchemaXSDDecoder {
         String localPart = gmlGeometryName.getLocalPart();
         GeometryType result = GeometryType.GEOMETRY;
         try {
-            result = GeometryType.fromString( localPart );
+            result = GeometryType.fromGMLTypeName( localPart );
         } catch ( Exception e ) {
-            LOG.warn( "Un-mappable geometry type: " + gmlGeometryName.toString() );
+            LOG.warn( "Unmappable geometry type: " + gmlGeometryName.toString()
+                      + " (currently not supported by geometry model)" );
         }
         LOG.trace( "Mapping '" + gmlGeometryName + "' -> " + result );
         return result;

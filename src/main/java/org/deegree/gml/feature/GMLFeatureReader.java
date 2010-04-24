@@ -44,6 +44,7 @@ import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
 import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.net.MalformedURLException;
@@ -101,9 +102,11 @@ import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.StringOrRefPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.GMLDocumentIdContext;
 import org.deegree.gml.GMLReferenceResolver;
 import org.deegree.gml.GMLVersion;
@@ -410,8 +413,6 @@ public class GMLFeatureReader extends XMLAdapter {
     public Property parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, CRS crs, int occurence )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        Property property = null;
-        QName propName = xmlStream.getName();
         LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
         LOG.debug( "- property declaration: " + propDecl );
 
@@ -420,103 +421,185 @@ public class GMLFeatureReader extends XMLAdapter {
             isNilled = StAXParsingHelper.getAttributeValueAsBoolean( xmlStream, XSINS, "nil", false );
         }
 
+        Property property = null;
         if ( propDecl instanceof SimplePropertyType ) {
-            if ( isNilled ) {
-                property = new GenericProperty( propDecl, propName, null, isNilled );
-                // TODO need to check that element is indeed empty?
-                StAXParsingHelper.nextElement( xmlStream );
-            } else {
-                property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
-                                                 xmlStream.getElementText().trim() );
-            }
+            property = parseSimpleProperty( xmlStream, (SimplePropertyType) propDecl, isNilled );
         } else if ( propDecl instanceof GeometryPropertyType ) {
-            String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-            if ( href != null ) {
-                // TODO respect geometry type information (Point, Surface, etc.)
-                GeometryReference<Geometry> refGeometry = null;
-                if ( specialResolver != null ) {
-                    refGeometry = new GeometryReference<Geometry>( specialResolver, href, xmlStream.getSystemId() );
-                } else {
-                    refGeometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
-                }
-                idContext.addReference( refGeometry );
-                property = new GenericProperty( propDecl, propName, refGeometry, isNilled );
-                xmlStream.nextTag();
-            } else {
-                if ( xmlStream.nextTag() == START_ELEMENT ) {
-                    Geometry geometry = null;
-                    geometry = geomReader.parse( xmlStream, crs );
-                    property = new GenericProperty( propDecl, propName, geometry, isNilled );
-                    xmlStream.nextTag();
-                } else {
-                    // yes, empty geometry property elements are actually valid
-                    property = new GenericProperty( propDecl, propName, null, isNilled );
-                }
-            }
+            property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof FeaturePropertyType ) {
-            String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-            if ( href != null ) {
-                FeatureReference refFeature = null;
-                if ( specialResolver != null ) {
-                    refFeature = new FeatureReference( specialResolver, href, xmlStream.getSystemId() );
-                } else {
-                    refFeature = new FeatureReference( idContext, href, xmlStream.getSystemId() );
-                }
-                idContext.addReference( refFeature );
-                property = new GenericProperty( propDecl, propName, refFeature, isNilled );
-                xmlStream.nextTag();
-            } else {
-                // inline feature
-                if ( xmlStream.nextTag() == START_ELEMENT ) {
-                    // TODO make this check (no constraints on contained feature
-                    // type) better
-                    if ( ( (FeaturePropertyType) propDecl ).getFTName() != null ) {
-                        FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
-                        FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
-                        if ( !schema.isSubType( expectedFt, presentFt ) ) {
-                            String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE",
-                                                              expectedFt.getName(), propName, presentFt.getName() );
-                            throw new XMLParsingException( xmlStream, msg );
-                        }
-                    }
-                    Feature subFeature = parseFeature( xmlStream, crs );
-                    property = new GenericProperty( propDecl, propName, subFeature, isNilled );
-                    xmlStream.skipElement();
-                } else {
-                    // yes, empty feature property elements are actually valid
-                    property = new GenericProperty( propDecl, propName, null, isNilled );
-                }
-            }
+            property = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof CustomPropertyType ) {
             property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof EnvelopePropertyType ) {
-            Envelope env = null;
-            xmlStream.nextTag();
-            if ( xmlStream.getName().equals( new QName( gmlNs, "Null" ) ) ) {
-                // TODO
-                StAXParsingHelper.skipElement( xmlStream );
-            } else {
-                env = geomReader.parseEnvelope( xmlStream, crs );
-                property = new GenericProperty( propDecl, propName, env, isNilled );
-            }
-            xmlStream.nextTag();
+            property = parseEnvelopeProperty( xmlStream, (EnvelopePropertyType) propDecl, crs, isNilled );
         } else if ( propDecl instanceof CodePropertyType ) {
-            String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
-            String code = xmlStream.getElementText().trim();
-            CodeType value = new CodeType( code, codeSpace );
-            property = new GenericProperty( propDecl, propName, value, isNilled );
+            property = parseCodeProperty( xmlStream, (CodePropertyType) propDecl, isNilled );
         } else if ( propDecl instanceof MeasurePropertyType ) {
-            String uom = xmlStream.getAttributeValue( null, "uom" );
-            Measure value = new Measure( xmlStream.getElementText(), uom );
-            property = new GenericProperty( propDecl, propName, value, isNilled );
+            property = parseMeasureProperty( xmlStream, (MeasurePropertyType) propDecl, isNilled );
         } else if ( propDecl instanceof StringOrRefPropertyType ) {
-            String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-            String string = xmlStream.getElementText().trim();
-            property = new GenericProperty( propDecl, propName, new StringOrRef( string, ref ), isNilled );
+            property = parseStringOrRefProperty( xmlStream, (StringOrRefPropertyType) propDecl, isNilled );
+        } else {
+            throw new RuntimeException( "Internal error in GMLFeatureReader: property type " + propDecl.getClass()
+                                        + " not handled." );
         }
 
         LOG.debug( " - parsing property (end): " + xmlStream.getCurrentEventInfo() );
         return property;
+    }
+
+    private Property parseSimpleProperty( XMLStreamReaderWrapper xmlStream, SimplePropertyType propDecl,
+                                          boolean isNilled )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
+
+        QName propName = xmlStream.getName();
+        Property property = null;
+        if ( isNilled ) {
+            property = new GenericProperty( propDecl, propName, null, isNilled );
+            // TODO need to check that element is indeed empty?
+            StAXParsingHelper.nextElement( xmlStream );
+        } else {
+            property = createSimpleProperty( xmlStream, (SimplePropertyType) propDecl,
+                                             xmlStream.getElementText().trim() );
+        }
+        return property;
+    }
+
+    private Property parseFeatureProperty( XMLStreamReaderWrapper xmlStream, FeaturePropertyType propDecl, CRS crs,
+                                           boolean isNilled )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        QName propName = xmlStream.getName();
+        Property property = null;
+
+        String href = xmlStream.getAttributeValue( XLNNS, "href" );
+        if ( href != null ) {
+            FeatureReference refFeature = null;
+            if ( specialResolver != null ) {
+                refFeature = new FeatureReference( specialResolver, href, xmlStream.getSystemId() );
+            } else {
+                refFeature = new FeatureReference( idContext, href, xmlStream.getSystemId() );
+            }
+            idContext.addReference( refFeature );
+            property = new GenericProperty( propDecl, propName, refFeature, isNilled );
+            xmlStream.nextTag();
+        } else {
+            // inline feature
+            if ( xmlStream.nextTag() == START_ELEMENT ) {
+                // TODO make this check (no constraints on contained feature
+                // type) better
+                if ( ( (FeaturePropertyType) propDecl ).getFTName() != null ) {
+                    FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
+                    FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
+                    if ( !schema.isSubType( expectedFt, presentFt ) ) {
+                        String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE", expectedFt.getName(),
+                                                          propName, presentFt.getName() );
+                        throw new XMLParsingException( xmlStream, msg );
+                    }
+                }
+                Feature subFeature = parseFeature( xmlStream, crs );
+                property = new GenericProperty( propDecl, propName, subFeature, isNilled );
+                xmlStream.skipElement();
+            } else {
+                // yes, empty feature property elements are actually valid
+                property = new GenericProperty( propDecl, propName, null, isNilled );
+            }
+        }
+        return property;
+    }
+
+    private Property parseGeometryProperty( XMLStreamReaderWrapper xmlStream, GeometryPropertyType propDecl, CRS crs,
+                                            boolean isNilled )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        QName propName = xmlStream.getName();
+        Property property = null;
+
+        String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+        if ( href != null ) {
+            GeometryReference<Geometry> refGeometry = null;
+            // TODO respect allowed geometry types (Point, Surface, etc.)
+            if ( specialResolver != null ) {
+                refGeometry = new GeometryReference<Geometry>( specialResolver, href, xmlStream.getSystemId() );
+            } else {
+                refGeometry = new GeometryReference<Geometry>( idContext, href, xmlStream.getSystemId() );
+            }
+            idContext.addReference( refGeometry );
+            property = new GenericProperty( propDecl, propName, refGeometry, isNilled );
+            xmlStream.nextTag();
+        } else {
+            if ( xmlStream.nextTag() == START_ELEMENT ) {
+                Geometry geometry = null;
+                geometry = geomReader.parse( xmlStream, crs );
+                boolean compatible = false;
+                for ( GeometryType allowedType : propDecl.getAllowedGeometryTypes() ) {
+                    if ( allowedType.isCompatible( geometry ) ) {
+                        compatible = true;
+                        break;
+                    }
+                }
+                if ( !compatible ) {
+                    String msg = "Value for geometry property is invalid. Specified geometry value "
+                                 + geometry.getClass() + " is not allowed here. Allowed geometries are: "
+                                 + ( (GeometryPropertyType) propDecl ).getAllowedGeometryTypes();
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                property = new GenericProperty( propDecl, propName, geometry, isNilled );
+                xmlStream.nextTag();
+            } else {
+                // yes, empty geometry property elements are actually valid
+                property = new GenericProperty( propDecl, propName, null, isNilled );
+            }
+        }
+        return property;
+    }
+
+    private Property parseEnvelopeProperty( XMLStreamReaderWrapper xmlStream, EnvelopePropertyType propDecl, CRS crs,
+                                            boolean isNilled )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        QName propName = xmlStream.getName();
+        Property property = null;
+        Envelope env = null;
+        xmlStream.nextTag();
+        if ( xmlStream.getName().equals( new QName( gmlNs, "Null" ) ) ) {
+            // TODO
+            StAXParsingHelper.skipElement( xmlStream );
+        } else {
+            env = geomReader.parseEnvelope( xmlStream, crs );
+            property = new GenericProperty( propDecl, propName, env, isNilled );
+        }
+        xmlStream.nextTag();
+        return property;
+    }
+
+    private Property parseCodeProperty( XMLStreamReaderWrapper xmlStream, CodePropertyType propDecl, boolean isNilled )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
+
+        QName propName = xmlStream.getName();
+        String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
+        String code = xmlStream.getElementText().trim();
+        CodeType value = new CodeType( code, codeSpace );
+        return new GenericProperty( propDecl, propName, value, isNilled );
+    }
+
+    private Property parseMeasureProperty( XMLStreamReaderWrapper xmlStream, MeasurePropertyType propDecl,
+                                           boolean isNilled )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
+
+        QName propName = xmlStream.getName();
+        String uom = xmlStream.getAttributeValue( null, "uom" );
+        Measure value = new Measure( xmlStream.getElementText(), uom );
+        return new GenericProperty( propDecl, propName, value, isNilled );
+    }
+
+    private Property parseStringOrRefProperty( XMLStreamReaderWrapper xmlStream, StringOrRefPropertyType propDecl,
+                                               boolean isNilled )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException {
+
+        QName propName = xmlStream.getName();
+        String ref = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+        String string = xmlStream.getElementText().trim();
+        return new GenericProperty( propDecl, propName, new StringOrRef( string, ref ), isNilled );
     }
 
     private Property parseCustomProperty( XMLStreamReaderWrapper xmlStream, CustomPropertyType propDecl, CRS crs,

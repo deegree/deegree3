@@ -80,11 +80,7 @@ import org.deegree.geometry.primitive.TriangulatedSurface;
  */
 public class GeometryPropertyType extends AbstractPropertyType {
 
-    /**
-     * 
-     * The flattened geometry types supported by the iso scheme.
-     * 
-     */
+    /** The flattened geometry hierarchy supported by deegree's ISO geometry model. */
     public enum GeometryType {
         /** Any kind of geometry (primitive, composite or aggregate). */
         GEOMETRY( Geometry.class, null ),
@@ -193,7 +189,7 @@ public class GeometryPropertyType extends AbstractPropertyType {
          *            to get the type for
          * @return the geometry type.
          */
-        public static GeometryType fromString( String geomString ) {
+        public static GeometryType fromGMLTypeName( String geomString ) {
             GeometryType result = GEOMETRY;
             if ( StringUtils.isSet( geomString ) ) {
                 String t = geomString.toLowerCase();
@@ -269,6 +265,64 @@ public class GeometryPropertyType extends AbstractPropertyType {
                 }
             }
             return result;
+        }
+
+        public boolean isCompatible( Geometry geometry ) {
+            switch (this) {
+            case COMPOSITE:
+                return geometry instanceof CompositeGeometry<?>;
+            case COMPOSITE_CURVE:
+                return geometry instanceof CompositeCurve;
+            case COMPOSITE_SOLID:
+                return geometry instanceof CompositeSolid;
+            case COMPOSITE_SURFACE:
+                return geometry instanceof CompositeSurface;
+            case CURVE:
+                return geometry instanceof Curve;
+            case GEOMETRY:
+                return true;
+            case LINE_STRING:
+                return geometry instanceof LineString;
+            case LINEAR_RING:
+                return geometry instanceof LinearRing;
+            case MULTI_CURVE:
+                return geometry instanceof MultiCurve;
+            case MULTI_GEOMETRY:
+                return geometry instanceof MultiGeometry<?>;
+            case MULTI_LINE_STRING:
+                return geometry instanceof MultiLineString;
+            case MULTI_POINT:
+                return geometry instanceof MultiPoint;
+            case MULTI_POLYGON:
+                return geometry instanceof MultiPolygon;
+            case MULTI_SOLID:
+                return geometry instanceof MultiSolid;
+            case MULTI_SURFACE:
+                return geometry instanceof MultiSurface;
+            case ORIENTABLE_CURVE:
+                return geometry instanceof OrientableCurve;
+            case ORIENTABLE_SURFACE:
+                return geometry instanceof OrientableSurface;
+            case POINT:
+                return geometry instanceof Point;
+            case POLYGON:
+                return geometry instanceof Polygon;
+            case POLYHEDRAL_SURFACE:
+                return geometry instanceof PolyhedralSurface;
+            case PRIMITIVE:
+                return geometry instanceof GeometricPrimitive;
+            case RING:
+                return geometry instanceof PolyhedralSurface;
+            case SOLID:
+                return geometry instanceof Solid;
+            case SURFACE:
+                return geometry instanceof Surface;
+            case TIN:
+                return geometry instanceof Tin;
+            case TRIANGULATED_SURFACE:
+                return geometry instanceof TriangulatedSurface;
+            }
+            return false;
         }
     }
 
