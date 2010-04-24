@@ -417,7 +417,7 @@ public class MemoryFeatureStore implements FeatureStore {
 
     @Override
     public CRS getStorageSRS() {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO make this configurable
+        return new CRS ("urn:x-ogc:def:crs:EPSG:6.11.2:4326");
     }
 }

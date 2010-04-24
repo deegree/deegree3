@@ -334,7 +334,12 @@ public class GMLStreamReader {
         xmlStream.close();
     }
 
-    private GMLFeatureReader getFeatureReader() {
+    /**
+     * Returns a configured {@link GMLFeatureReader} instance for calling specific feature parsing methods.
+     * 
+     * @return a configured {@link GMLFeatureReader} instance, never <code>null</code>
+     */
+    public GMLFeatureReader getFeatureReader() {
         if ( featureReader == null ) {
             featureReader = new GMLFeatureReader( version, schema, idContext, defaultCoordDim, resolver );
             if ( geometryReader != null ) {
@@ -344,7 +349,12 @@ public class GMLStreamReader {
         return featureReader;
     }
 
-    private GMLGeometryReader getGeometryReader() {
+    /**
+     * Returns a configured {@link GMLGeometryReader} instance for calling specific geometry parsing methods.
+     * 
+     * @return a configured {@link GMLGeometryReader} instance, never <code>null</code>
+     */
+    public GMLGeometryReader getGeometryReader() {
         if ( geometryReader == null ) {
             switch ( version ) {
             case GML_2: {
@@ -362,7 +372,12 @@ public class GMLStreamReader {
         return geometryReader;
     }
 
-    private GMLDictionaryReader getDictionaryReader() {
+    /**
+     * Returns a configured {@link GMLDictionaryReader} instance for calling specific dictionary parsing methods.
+     * 
+     * @return a configured {@link GMLDictionaryReader} instance, never <code>null</code>
+     */
+    public GMLDictionaryReader getDictionaryReader() {
         if ( dictReader == null ) {
             dictReader = new GMLDictionaryReader( version, xmlStream, idContext );
         }
