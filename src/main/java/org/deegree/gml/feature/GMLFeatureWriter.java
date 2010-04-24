@@ -44,6 +44,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -129,6 +130,9 @@ public class GMLFeatureWriter {
     // TODO handle properties that are more complex XPath-expressions
     private final Set<QName> propNames = new HashSet<QName>();
 
+    // TODO handle properties that are more complex XPath-expressions
+    private final Map<QName, XLinkPropertyName> xlinkPropNames = new HashMap<QName, XLinkPropertyName>();
+
     // export all levels by default
     private int traverseXlinkDepth = -1;
 
@@ -190,7 +194,7 @@ public class GMLFeatureWriter {
                 // TODO what about non-simple property names
                 QName qName = xlinkProp.getPropertyName().getAsQName();
                 if ( qName != null ) {
-                    // this.propNames.add( qName );
+                    this.xlinkPropNames.put( qName, xlinkProp );
                 }
             }
         }
@@ -213,7 +217,7 @@ public class GMLFeatureWriter {
 
     public void export( Feature feature )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        export( feature, 0 );
+        export( feature, 0, traverseXlinkDepth );
     }
 
     /**
@@ -329,14 +333,14 @@ public class GMLFeatureWriter {
             if ( memberFid != null && exportedIds.contains( memberFid ) ) {
                 writer.writeAttribute( XLNNS, "href", "#" + memberFid );
             } else {
-                export( member, 0 );
+                export( member, 0, traverseXlinkDepth );
             }
             writer.writeEndElement();
         }
         writer.writeEndElement();
     }
 
-    private void export( Feature feature, int inlineLevels )
+    private void export( Feature feature, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( feature.getId() != null ) {
@@ -359,7 +363,7 @@ public class GMLFeatureWriter {
                 if ( memberFid != null && exportedIds.contains( memberFid ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + memberFid );
                 } else {
-                    export( member, inlineLevels + 1 );
+                    export( member, currentLevel + 1, maxInlineLevels );
                 }
                 writer.writeEndElement();
             }
@@ -376,8 +380,6 @@ public class GMLFeatureWriter {
                 writer.writeStartElement( prefix, localName, namespaceURI );
             }
 
-            // writeStartElementWithNS( featureName.getNamespaceURI(),
-            // featureName.getLocalPart() );
             if ( feature.getId() != null ) {
                 if ( fidAttr.getNamespaceURI() == NULL_NS_URI ) {
                     writer.writeAttribute( fidAttr.getLocalPart(), feature.getId() );
@@ -386,25 +388,34 @@ public class GMLFeatureWriter {
                 }
             }
             for ( Property prop : feature.getProperties( version ) ) {
-                // // hack to work around CITE 1.1.0 problems (BTW, export
-                // Envelopes?)
-                // if (prop.getType() instanceof EnvelopePropertyType) {
-                // continue;
-                // }
-                export( prop, inlineLevels );
+                if ( currentLevel == 0 ) {
+                    maxInlineLevels = getInlineLevels( prop );
+                }
+                export( prop, currentLevel, maxInlineLevels );
             }
             writer.writeEndElement();
         }
     }
 
+    private int getInlineLevels( Property prop ) {
+        XLinkPropertyName xlinkPropName = xlinkPropNames.get( prop.getName() );
+        if ( xlinkPropName != null ) {
+            if ( xlinkPropName.getTraverseXlinkDepth().equals( "*" ) ) {
+                return -1;
+            }
+            return Integer.parseInt( xlinkPropName.getTraverseXlinkDepth() );
+        }
+        return traverseXlinkDepth;
+    }
+
     /**
      * @param property
-     * @param inlineLevels
+     * @param currentLevel
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws TransformationException
      */
-    protected void export( Property property, int inlineLevels )
+    protected void export( Property property, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
@@ -425,7 +436,8 @@ public class GMLFeatureWriter {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeAttribute( XSINS, "nil", "true" );
             } else {
-                exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, inlineLevels );
+                exportFeatureProperty( (FeaturePropertyType) propertyType, (Feature) value, currentLevel,
+                                       maxInlineLevels );
             }
         } else if ( propertyType instanceof SimplePropertyType ) {
             if ( property.isNilled() ) {
@@ -447,10 +459,16 @@ public class GMLFeatureWriter {
             } else {
                 Geometry gValue = (Geometry) value;
                 if ( !exportSf && gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
-                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     writer.writeAttribute( XLNNS, "href", "#" + gValue.getId() );
+                    writer.writeComment( "Reference to geometry '" + gValue.getId() + "'" );
+                    writer.writeEndElement();
                 } else {
                     writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    if ( gValue.getId() != null ) {
+                        // WFS CITE 1.1.0 test requirement (wfs:GetFeature.XLink-POST-XML-10)
+                        writer.writeComment( "Inlined geometry '" + gValue.getId() + "'" );
+                    }
                     geometryWriter.export( (Geometry) value );
                     writer.writeEndElement();
                 }
@@ -531,23 +549,23 @@ public class GMLFeatureWriter {
         } else if ( propertyType instanceof CustomPropertyType ) {
             if ( property.isNilled() ) {
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                writer.writeAttribute( XSINS, "nil", "true" );                
-                // TODO make sure that only attributes are exported and nothing else 
-                export( (TypedObjectNode) property.getValue(), inlineLevels );
+                writer.writeAttribute( XSINS, "nil", "true" );
+                // TODO make sure that only attributes are exported and nothing else
+                export( (TypedObjectNode) property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             } else {
                 writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                export( (TypedObjectNode) property.getValue(), inlineLevels );
+                export( (TypedObjectNode) property.getValue(), currentLevel, maxInlineLevels );
                 writer.writeEndElement();
             }
         }
     }
 
-    private void export( TypedObjectNode genericXML, int inlineLevels )
+    private void export( TypedObjectNode genericXML, int currentLevel, int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( genericXML instanceof GMLObject ) {
             if ( genericXML instanceof Feature ) {
-                export( (Feature) genericXML, inlineLevels - 1 );
+                export( (Feature) genericXML, currentLevel, maxInlineLevels );
             } else if ( genericXML instanceof Geometry ) {
                 geometryWriter.export( (Geometry) genericXML );
             } else {
@@ -564,7 +582,7 @@ public class GMLFeatureWriter {
             }
             if ( xmlContent.getChildren() != null ) {
                 for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
-                    export( childNode, inlineLevels );
+                    export( childNode, currentLevel, maxInlineLevels );
                 }
             }
             writer.writeEndElement();
@@ -577,7 +595,7 @@ public class GMLFeatureWriter {
             }
             if ( xmlContent.getChildren() != null ) {
                 for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
-                    export( childNode, inlineLevels );
+                    export( childNode, currentLevel, maxInlineLevels );
                 }
             }
         } else if ( genericXML instanceof PrimitiveValue ) {
@@ -585,7 +603,8 @@ public class GMLFeatureWriter {
         }
     }
 
-    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, int inlineLevels )
+    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, int currentLevel,
+                                        int maxInlineLevels )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = pt.getName();
@@ -597,10 +616,10 @@ public class GMLFeatureWriter {
             // normal feature or local feature reference
             String subFid = subFeature.getId();
             if ( subFid == null ) {
-                // no feature id -> must put it inline then
+                // no feature id -> no other chance than putting it inline then
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writer.writeComment( "Inlined feature '" + subFid + "'" );
-                export( subFeature, inlineLevels + 1 );
+                export( subFeature, currentLevel + 1, maxInlineLevels );
                 writer.writeEndElement();
             } else {
                 // has feature id
@@ -613,13 +632,13 @@ public class GMLFeatureWriter {
                     writer.writeEndElement();
                 } else {
                     // not exported yet
-                    if ( ( traverseXlinkDepth > 0 && inlineLevels < traverseXlinkDepth ) || referenceTemplate == null
-                         || traverseXlinkDepth == -1 ) {
+                    if ( ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) || referenceTemplate == null
+                         || maxInlineLevels == -1 ) {
                         // must be exported inline
                         exportedIds.add( subFeature.getId() );
                         writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                         writer.writeComment( "Inlined feature '" + subFid + "'" );
-                        export( subFeature, inlineLevels + 1 );
+                        export( subFeature, currentLevel + 1, maxInlineLevels );
                         writer.writeEndElement();
                     } else {
                         // must be exported by reference
@@ -634,8 +653,8 @@ public class GMLFeatureWriter {
         } else {
             FeatureReference ref = (FeatureReference) subFeature;
             // remote feature reference
-            if ( ( traverseXlinkDepth > 0 && inlineLevels < traverseXlinkDepth ) || referenceTemplate == null
-                 || traverseXlinkDepth == -1 ) {
+            if ( ( maxInlineLevels > 0 && currentLevel < maxInlineLevels ) || referenceTemplate == null
+                 || maxInlineLevels == -1 ) {
                 String uri = ref.getURI();
                 try {
                     new URL( uri );
@@ -726,6 +745,6 @@ public class GMLFeatureWriter {
 
     private boolean isPropertyRequested( QName propName ) {
         // TODO compare names properly (different types)
-        return propNames.size() == 0 || propNames.contains( propName );
+        return ( propNames.size() == 0 || propNames.contains( propName ) ) || xlinkPropNames.containsKey( propName );
     }
 }
