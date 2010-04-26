@@ -655,7 +655,8 @@ public class RasterFactory {
         switch ( type ) {
         case BYTE:
             // rb: use the databuffer directly, to make sure no pixel 'inversion' is done.
-            byteBuffer.put( ( (DataBufferByte) imageRaster.getDataBuffer() ).getBankData()[0] );
+//            byteBuffer.put( ( (DataBufferByte) imageRaster.getDataBuffer() ).getBankData()[0] );
+            byteBuffer.put( (byte[]) imageRaster.getDataElements( x, y, width, height, null ) );
             break;
         case DOUBLE:
             DoubleBuffer dbuf = byteBuffer.asDoubleBuffer();
