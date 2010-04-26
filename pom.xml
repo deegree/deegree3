@@ -36,7 +36,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>commons/0.5.0/commons.xsd,crs/0.5.0/crsdefinition.xsd,datasource/0.5.0/all_datasources.xsd</schemaFiles>
+          <schemaFiles>commons/0.5.0/commons.xsd,datasource/0.5.0/all_datasources.xsd</schemaFiles>
           <!-- schemaFiles>feature/0.5.0/appschema.xsd</schemaFiles>
           <schemaFiles>feature/0.5.0/postgis_appschema.xsd</schemaFiles>
           <schemaFiles>se/1.1.0/Symbolizer-deegree.xsd</schemaFiles>-->         
