@@ -122,6 +122,11 @@ public class CSWConstants {
     public static final String DC_LOCAL_PART = "Record";
 
     /**
+     * LOCAL_PART = "dc"
+     */
+    public static final String DC_PREFIX = "dc";
+
+    /**
      * Common local part of a qualified name for elements from the ISO AP specification <br>
      * LOCAL_PART = "MD_Metadata"
      */
