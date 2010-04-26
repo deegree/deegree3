@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:ft="http://www.deegree.org/feature/featuretype"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://www.deegree.org/feature/featuretype"
+  elementFormDefault="qualified" attributeFormDefault="unqualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.feature.types.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <!--
+    === Root element (container for all feature type declarations) ===
+  -->
+  <element name="ApplicationSchema">
+    <annotation>
+      <documentation>Root element (container for all feature type
+        declarations)</documentation>
+      <appinfo>
+        <jaxb:class name="ApplicationSchemaDecl" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="ft:FeatureType" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>      
+    </complexType>
+  </element>
+  <!--
+    === Feature type definition ===
+  -->
+  <element name="FeatureType">
+    <complexType>
+      <annotation>
+        <documentation>Declaration of a feature type of the schema.</documentation>
+        <appinfo>
+          <jaxb:class name="FeatureTypeDecl" />
+        </appinfo>
+      </annotation>
+      <sequence>
+        <element ref="ft:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="QName">
+        <annotation>
+          <documentation>
+            Qualified name of the feature type.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="abstract" type="boolean" use="optional">
+        <annotation>
+          <documentation>
+            If true, the feature type is abstract and cannot be
+            instantiated.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="substitutionGroup" type="QName" use="optional">
+        <annotation>
+          <documentation>
+            Name of the feature type that this feature type may
+            substitute, i.e. features of this type may be used wherever the
+            other type is requested.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="javaClass" type="string" use="optional">
+        <annotation>
+          <documentation>
+            Optional: Name of the java class used to represent
+            instances of this feature type in memory. 
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!--
+    === Abstract property definition ===
+  -->
+  <element name="AbstractProperty" type="ft:AbstractPropertyType"
+    abstract="true" />
+  <complexType name="AbstractPropertyType" abstract="true">
+    <annotation>
+      <documentation>Declaration of a property of a feature type.</documentation>
+      <appinfo>
+        <jaxb:class name="AbstractPropertyDecl" />
+      </appinfo>
+    </annotation>
+    <attribute name="name" type="QName">
+      <annotation>
+        <documentation>
+          Qualified name of the property.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="minOccurs" type="nonNegativeInteger" use="optional">
+      <annotation>
+        <documentation>
+          The minimum number of times that values for this
+          parameter are required in an Execute request. If "0", this data input
+          is optional. If
+          greater than "0" then this process input is required.
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="maxOccurs" use="optional">
+      <annotation>
+        <documentation>
+          The maximum number of times that values for this
+          parameter are permitted in an Execute request. If "1" then this
+          parameter may appear only
+          once in an Execute request. If greater than
+          "1", then this input parameter may appear that many times in an
+          Execute request.
+        </documentation>
+      </annotation>
+      <simpleType>
+        <union memberTypes="positiveInteger">
+          <simpleType>
+            <restriction base="token">
+              <enumeration value="unbounded" />
+            </restriction>
+          </simpleType>
+        </union>
+      </simpleType>
+    </attribute>
+  </complexType>
+  <!--
+    === Simple property definition ===
+  -->
+  <element name="SimpleProperty" substitutionGroup="ft:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a simple property of a feature
+          type.</documentation>
+        <appinfo>
+          <jaxb:class name="SimplePropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="ft:AbstractPropertyType">
+          <attribute name="type" type="ft:PrimitiveType">
+            <annotation>
+              <documentation>
+                Type of the property.
+            </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+<simpleType name="PrimitiveType">
+    <restriction base="string">
+      <enumeration value="STRING">
+        <annotation>
+          <documentation>String-valued property (=xs:string)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="BOOLEAN">
+        <annotation>
+          <documentation>Boolean-valued property (=xs:boolean)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="DECIMAL">
+        <annotation>
+          <documentation>Decimal-valued property (=xs:decimal)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="DOUBLE">
+        <annotation>
+          <documentation>Double-valued property (=xs:double)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="INTEGER">
+        <annotation>
+          <documentation>Integer-valued property (=xs:integer)</documentation>
+        </annotation>
+      </enumeration>      
+      <enumeration value="DATE">
+        <annotation>
+          <documentation>Date-valued property (=xs:date)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="DATE_TIME">
+        <annotation>
+          <documentation>Date-valued property (=xs:dateTime)</documentation>
+        </annotation>        
+      </enumeration>
+      <enumeration value="TIME">
+        <annotation>
+          <documentation>Time-valued property (=xs:time)</documentation>
+        </annotation>        
+      </enumeration>      
+      <!-- TODO other primitive data types -->
+    </restriction>
+  </simpleType>
+  <!--
+    === Feature property definition ===
+  -->
+  <element name="FeatureProperty" substitutionGroup="ft:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a feature-valued property of a
+          feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="FeaturePropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="ft:AbstractPropertyType">
+          <attribute name="type" type="QName" use="optional">
+            <annotation>
+              <documentation>
+                Defines the allowed content, i.e. the name of the
+                type of the allowed features.
+            </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!--
+    === Geometry property definition ===
+  -->
+  <element name="GeometryProperty" substitutionGroup="ft:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a geometry-valued property of a
+          feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="GeometryPropertyDecl" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="ft:AbstractPropertyType">
+          <attribute name="type" type="ft:GeometryType">
+            <annotation>
+              <documentation>
+                Allowed geometry values.
+            </documentation>
+            </annotation>
+          </attribute>
+          <attribute name="coordinateDimension" use="optional">
+            <annotation>
+              <documentation>
+                Dimensionality of the geometry coordinates.
+            </documentation>
+            </annotation>
+            <simpleType>
+              <restriction base="NMTOKENS">
+                <enumeration value="2D" />
+                <enumeration value="3D" />
+                <enumeration value="2D or 3D" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <simpleType name="GeometryType">
+    <restriction base="string">
+      <enumeration value="Geometry" />
+      <enumeration value="PrimitiveGeometry" />
+      <enumeration value="CompositeGeometry" />
+      <!--  Primitive types (0D) -->
+      <enumeration value="Point" />
+      <!--  Primitive types (1D) -->
+      <enumeration value="Curve" />
+      <enumeration value="LineString" />
+      <enumeration value="Ring" />
+      <enumeration value="LinearRing" />
+      <enumeration value="OrientableCurve" />
+      <enumeration value="CompositeCurve" />
+      <!--  Primitive types (2D) -->
+      <enumeration value="Surface" />
+      <enumeration value="PolyhedralSurface" />
+      <enumeration value="TriangulatedSurface" />
+      <enumeration value="Tin" />
+      <enumeration value="Polygon" />
+      <enumeration value="OrientableSurface" />
+      <enumeration value="CompositeSurface" />
+      <!--  Primitive types (3D) -->
+      <enumeration value="Solid" />
+      <enumeration value="CompositeSolid" />
+      <!-- Aggregate types -->
+      <enumeration value="MultiGeometry" />
+      <enumeration value="MultiPoint" />
+      <enumeration value="MultiCurve" />
+      <enumeration value="MultiLineString" />
+      <enumeration value="MultiSurface" />
+      <enumeration value="MultiPolygon" />
+      <enumeration value="MultiSolid" />
+    </restriction>
+  </simpleType>
+  <!--
+    === Custom complex property definition ===
+  -->
+  <element name="CustomComplexProperty" substitutionGroup="ft:AbstractProperty">
+    <annotation>
+      <documentation>Definition of a complex-valued property of a
+        feature type.</documentation>
+      <appinfo>
+        <jaxb:class name="CustomComplexPropertyDecl" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="ft:AbstractPropertyType" />
+      </complexContent>
+    </complexType>
+  </element>
+</schema>

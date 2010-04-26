@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
+  <include schemaLocation="./constrained_datasource.xsd" />
+
+  <element name="WMSDataSource" type="ds:WMSDataSourceType"
+    substitutionGroup="ds:AbstractWebBasedDataSource" />
+  <complexType name="WMSDataSourceType">
+    <annotation>
+      <documentation>
+        A WMS datasource defines the access to a 'remote' wms. For
+        this purpose it holds information about the request type (GetMap,
+        GetFeatureInfo)
+        and the layers.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <extension base="ds:AbstractWebBasedDataSourceType">
+        <sequence>
+          <element name="RequestedLayers" type="string" />
+          <element name="RequestedFormat" minOccurs="0">
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                   <attribute name="transparent" type="boolean" />
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="RequestTimeout" type="integer" minOccurs="0" default="60"/>
+          <element name="MaxMapDimensions" minOccurs="0">
+            <complexType>
+              <attribute name="width" type="integer" />
+              <attribute name="height" type="integer" />
+            </complexType>
+          </element>
+          <element name="DefaultSRS" type="string" minOccurs="0" />
+          <element name="RestrictedRequestParameter" type="ds:RestrictedRequestParameterType"
+            minOccurs="0" maxOccurs="unbounded" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="RestrictedRequestParameterType">
+    <annotation>
+      <documentation>
+        Defines the parameters for a single request. The attribute
+        and value parameters can be used to supply additional information to the
+        request.
+      </documentation>
+    </annotation>
+    <attribute name="request" type="ds:RequestNamesType" />
+    <attribute name="attribute" type="string" />
+    <attribute name="value" type="string" />
+  </complexType>
+
+  <simpleType name="RequestNamesType">
+    <annotation>
+      <documentation>The WMS datasource allows the cascading of GetMap and
+        GetFeatureInfo requests.</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="GetMap" />
+      <enumeration value="GetFeatureInfo" />
+    </restriction>
+  </simpleType>
+
+</schema>

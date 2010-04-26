@@ -26,6 +26,24 @@
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <schemaFiles>commons/0.5.0/commons.xsd,crs/0.5.0/crsdefinition.xsd,datasource/0.5.0/all_datasources.xsd</schemaFiles>
+          <!-- schemaFiles>feature/0.5.0/appschema.xsd</schemaFiles>
+          <schemaFiles>feature/0.5.0/postgis_appschema.xsd</schemaFiles>
+          <schemaFiles>se/1.1.0/Symbolizer-deegree.xsd</schemaFiles>-->         
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.5</version>
         <executions>
@@ -61,10 +79,10 @@
             <goals>
               <goal>create</goal>
             </goals>
-                <configuration>
-                  <doCheck>false</doCheck>
-                  <doUpdate>false</doUpdate>
-                </configuration>
+            <configuration>
+              <doCheck>false</doCheck>
+              <doUpdate>false</doUpdate>
+            </configuration>
           </execution>
           <execution>
             <id>deploy</id>
@@ -72,10 +90,10 @@
             <goals>
               <goal>create</goal>
             </goals>
-                <configuration>
-                  <doCheck>true</doCheck>
-                  <doUpdate>false</doUpdate>
-                </configuration>
+            <configuration>
+              <doCheck>true</doCheck>
+              <doUpdate>false</doUpdate>
+            </configuration>
           </execution>
         </executions>
       </plugin>
