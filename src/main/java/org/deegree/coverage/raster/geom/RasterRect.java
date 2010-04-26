@@ -103,6 +103,14 @@ public class RasterRect {
         this.height = rect.height;
     }
 
+    /**
+     * @param rasterRect
+     *            to copy data of
+     */
+    public RasterRect( RasterRect rasterRect ) {
+        this( rasterRect.x, rasterRect.y, rasterRect.width, rasterRect.height );
+    }
+
     @Override
     public String toString() {
         return "{x=" + x + ",y=" + y + ", width=" + width + ", height=" + height + "}";

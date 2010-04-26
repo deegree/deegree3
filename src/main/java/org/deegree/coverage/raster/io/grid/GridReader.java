@@ -72,13 +72,6 @@ public abstract class GridReader implements RasterReader {
 
     private Envelope envelope;
 
-    /**
-     * @return the envelope
-     */
-    public final Envelope getEnvelope() {
-        return envelope;
-    }
-
     private int bytesPerTile;
 
     private int tilesPerBlob;
@@ -136,8 +129,7 @@ public abstract class GridReader implements RasterReader {
      * @return the tile's id
      */
     protected int getTileId( int columnId, int rowId ) {
-        int idx = rowId * infoFile.columns() + columnId;
-        return idx;
+        return rowId * infoFile.columns() + columnId;
     }
 
     /**
@@ -384,6 +376,13 @@ public abstract class GridReader implements RasterReader {
     @Override
     public RasterDataInfo getRasterDataInfo() {
         return rasterDataInfo;
+    }
+
+    /**
+     * @return the envelope
+     */
+    public final Envelope getEnvelope() {
+        return envelope;
     }
 
 }

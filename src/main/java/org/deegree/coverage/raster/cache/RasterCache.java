@@ -49,6 +49,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
@@ -68,27 +69,6 @@ import org.slf4j.Logger;
  */
 public class RasterCache {
 
-    // private static final File out = new File( "/tmp/disposing.txt" );
-
-    // private static PrintWriter writer;
-    // static {
-    // if ( out.exists() ) {
-    // out.delete();
-    // }
-    // try {
-    // out.createNewFile();
-    // } catch ( IOException e ) {
-    // System.out.println( "Exception occurred: " + e.getLocalizedMessage() );
-    // }
-    // try {
-    // writer = new PrintWriter( new FileWriter( out ) );
-    // } catch ( IOException e ) {
-    // System.out.println( "Exception occurred: " + e.getLocalizedMessage() );
-    //
-    // }
-    //
-    // }
-
     private static final Logger LOG = getLogger( RasterCache.class );
 
     /**
@@ -98,6 +78,49 @@ public class RasterCache {
 
     /** A key which can be given to the JVM to define the amount of memory used for caching. */
     public static final String DEF_RASTER_CACHE = "deegree.raster.cache";
+
+    /** A key which can be given to the JVM to define the amount of memory used for caching. */
+    public static final String DEF_RASTER_DIR_SIZE = "deegree.raster.cache.disksize";
+
+    private static final long maxCacheMem;
+
+    private static final long maxCacheDisk;
+
+    static {
+        String cacheSize = System.getProperty( DEF_RASTER_CACHE );
+        long mm = StringUtils.parseByteSize( cacheSize );
+        if ( mm == 0 ) {
+            if ( StringUtils.isSet( cacheSize ) ) {
+                LOG.warn(
+                          "Ignoring supplied property: {} because it could not be parsed. Using 0.5 of the total memory for raster caching.",
+                          DEF_RASTER_CACHE );
+            }
+            mm = Runtime.getRuntime().maxMemory();
+            if ( mm == Long.MAX_VALUE ) {
+                mm = Math.round( Runtime.getRuntime().totalMemory() * 0.5 );
+            } else {
+                mm *= 0.5;
+            }
+        } else {
+            LOG.info( "Using {} of memory for raster caching (because it was set with the {} property).",
+                      ( mm * 1024 * 1024 ) + "Mb", DEF_RASTER_CACHE );
+        }
+        maxCacheMem = mm;
+        String t = System.getProperty( DEF_RASTER_DIR_SIZE );
+        mm = StringUtils.parseByteSize( t );
+        if ( mm == 0 ) {
+            if ( StringUtils.isSet( t ) ) {
+                LOG.warn(
+                          "Ignoring supplied property: {} because it could not be parsed. Using 20G of disk space for raster caching.",
+                          DEF_RASTER_CACHE );
+            }
+            mm = 20 * ( 1024 * 1024 * 1024 );
+        } else {
+            LOG.info( "Using {} of disk space for raster caching (because it was set with the {} property).",
+                      ( mm * 1024 * 1024 ) + "Mb", DEF_RASTER_DIR_SIZE );
+        }
+        maxCacheDisk = mm;
+    }
 
     /**
      * Standard name for a deegree cache file.
@@ -112,52 +135,9 @@ public class RasterCache {
 
     private final File cacheDir;
 
-    private static final long maxCacheMem;
-    static {
-        String cacheSize = System.getProperty( DEF_RASTER_CACHE );
-        long mm = 0;
-        if ( cacheSize != null ) {
-            int byteConvert = 1;
-            // split on no numbers.
-            String[] split = cacheSize.split( "\\D" );
-            // only the first split is of importance
-            String bytes = split[0];
-            if ( bytes.length() != cacheSize.length() ) {
-                // some characters were used after the split.
-                String unit = cacheSize.substring( bytes.length(), bytes.length() + 1 );
-                if ( unit.equalsIgnoreCase( "k" ) ) {
-                    byteConvert = 1024;
-                } else if ( unit.equalsIgnoreCase( "m" ) ) {
-                    byteConvert = 1024 * 1024;
-                } else if ( unit.equalsIgnoreCase( "g" ) ) {
-                    byteConvert = 1024 * 1024 * 1024;
-                }
-            }
-            try {
-                mm = Long.parseLong( bytes ) * byteConvert;
-                LOG.info( "Using {} of memory for raster caching (because it was set with the {} property).",
-                          ( mm * 1024 * 1024 ) + "Mb", DEF_RASTER_CACHE );
-            } catch ( NumberFormatException e ) {
-                LOG.warn(
-                          "Ignoring supplied property: {} because it could not be parsed: {}. Using 0.5 of the total memory for raster caching.",
-                          DEF_RASTER_CACHE, e.getLocalizedMessage() );
-            }
-
-        }
-        if ( mm == 0 ) {
-            mm = Runtime.getRuntime().maxMemory();
-            if ( mm == Long.MAX_VALUE ) {
-                mm = Math.round( Runtime.getRuntime().totalMemory() * 0.5 );
-            } else {
-                mm *= 0.5;
-            }
-        }
-        mm = 32160200;
-        maxCacheMem = mm;
-
-    }
-
     private static long currentlyUsedMemory = 0;
+
+    private static long currentlyUsedDisk = 0;
 
     private final static ConcurrentSkipListSet<CacheRasterReader> cache = new ConcurrentSkipListSet<CacheRasterReader>(
                                                                                                                         new CacheComparator() );
@@ -166,68 +146,6 @@ public class RasterCache {
 
     private RasterCache( File cacheDir ) {
         this.cacheDir = cacheDir;
-    }
-
-    /**
-     * Adds a raster reader to this cache, all cache files will be written to this cache directory.
-     * 
-     * @param reader
-     *            to add to the cache.
-     * @return a new CachedReader which was added to the cache.
-     */
-    public RasterReader addReader( RasterReader reader ) {
-        CacheRasterReader result = null;
-        if ( reader != null ) {
-            if ( reader instanceof CacheRasterReader ) {
-                result = (CacheRasterReader) reader;
-            } else {
-                boolean createCache = reader.shouldCreateCacheFile();
-                File cacheFile = null;
-                if ( createCache ) {
-                    cacheFile = createCacheFile( reader.getDataLocationId() );
-                }
-                result = new CacheRasterReader( reader, cacheFile, this );
-            }
-            addReader( result );
-        } else {
-            LOG.debug( "Not adding reader to cache, because it is was null." );
-        }
-        if ( LOG.isDebugEnabled() && result != null && reader != null ) {
-            LOG.debug( "Adding reader to cache {} with id: {}.", reader, reader.getDataLocationId() );
-        }
-        // System.out.println( "size: " + cache.size() );
-        return result;
-    }
-
-    private static void addReader( CacheRasterReader reader ) {
-        boolean added = false;
-        synchronized ( MEM_LOCK ) {
-            // System.out.println( Thread.currentThread().getName() + "-> adding reader currentMem: "
-            // + currentlyUsedMemory );
-            currentlyUsedMemory += reader.currentApproxMemory();
-            // System.out.println( Thread.currentThread().getName() + "-> after adding reader currentMem: "
-            // + currentlyUsedMemory );
-            added = cache.add( reader );
-        }
-        if ( !added ) {
-            LOG.debug( "Not adding reader ({}) to cache because it is already in the cache.", reader );
-        }
-    }
-
-    /**
-     * Writes all data the files and removes all readers from the cache.
-     */
-    public static void clear() {
-        synchronized ( MEM_LOCK ) {
-            Iterator<CacheRasterReader> it = cache.iterator();
-            while ( it != null && it.hasNext() ) {
-                CacheRasterReader next = it.next();
-                if ( next != null ) {
-                    currentlyUsedMemory -= next.dispose( true );
-                }
-            }
-        }
-        LOG.debug( "After removing all readers used cache memory is calculated to be: {}", currentlyUsedMemory );
     }
 
     /**
@@ -312,22 +230,57 @@ public class RasterCache {
     }
 
     /**
-     * Iterates over all known readers and (re) calculates their in memory data.
+     * Writes all data the files and removes all readers from the cache.
      */
-    private static void updateCurrentlyUsedMemory() {
+    public static void clear() {
         synchronized ( MEM_LOCK ) {
-            LOG.debug( "Updating estimation of in-memory cache." );
-            long cum = 0;
             Iterator<CacheRasterReader> it = cache.iterator();
             while ( it != null && it.hasNext() ) {
                 CacheRasterReader next = it.next();
                 if ( next != null ) {
-                    cum += next.currentApproxMemory();
+                    currentlyUsedMemory -= next.dispose( true );
                 }
             }
-            LOG.debug( "Resetting currently used memory from:{} to:{}", ( currentlyUsedMemory / ( 1024 * 1024d ) ),
-                       ( cum / ( 1024 * 1024d ) ) );
-            currentlyUsedMemory = cum;
+        }
+        LOG.debug( "After removing all readers used cache memory is calculated to be: {}", currentlyUsedMemory );
+    }
+
+    /**
+     * Writes all current caches to their cache files, but leaves the in memory cached rasters alone.
+     */
+    public static void flush() {
+        synchronized ( MEM_LOCK ) {
+            Iterator<CacheRasterReader> it = cache.iterator();
+            while ( it != null && it.hasNext() ) {
+                CacheRasterReader next = it.next();
+                if ( next != null ) {
+                    next.flush();
+                }
+            }
+        }
+    }
+
+    /**
+     * Iterates over all current cache directories and calls dispose on their cache files.
+     */
+    public static void dispose() {
+        // System.out.println( cache.size() + ") Cache: " + cache );
+        // Set<CacheRasterReader> c = cache.descendingSet();
+        // System.out.println( "Cache: " + c + ", size: " + c.size() );
+        synchronized ( MEM_LOCK ) {
+            Iterator<CacheRasterReader> it = cache.iterator();
+            long allocatedMem = 0;
+            int i = 1;
+            while ( it != null && it.hasNext() ) {
+                CacheRasterReader next = it.next();
+                if ( next != null ) {
+                    LOG.debug( "{}: Disposing for file: {}", i++, next.file() );
+                    // currentlyUsedMemory -= next.dispose( false );
+                    allocatedMem += next.dispose( false );
+                }
+            }
+            LOG.debug( "Disposing allocated {} MB on the heap.",
+                       ( Math.round( ( allocatedMem / ( 1024 * 1024d ) ) * 100d ) / 100d ) );
         }
     }
 
@@ -371,7 +324,19 @@ public class RasterCache {
                         ++i;
                         // writer.println( ( i ) + ") " + Thread.currentThread().getName() + "-> Disposing reader: "
                         // + next.getDataLocationId() );
-                        currentlyUsedMemory -= next.dispose( false );
+                        long onDisk = next.cacheFileSize();
+                        if ( currentlyUsedDisk + onDisk > maxCacheDisk ) {
+                            // just delete the cache file and any in memory data from the last recently used cache file.
+                            currentlyUsedMemory -= next.clear( true );
+                            currentlyUsedDisk -= onDisk;
+                        } else {
+                            long mem = next.currentApproxMemory();
+                            if ( mem > 0 ) {
+                                currentlyUsedMemory -= next.dispose( false );
+                                // add the new cache file size
+                                currentlyUsedDisk += ( next.cacheFileSize() - onDisk );
+                            }
+                        }
                     }
                     if ( currentlyUsedMemory + requiredMemory < halfMem ) {
                         break;
@@ -381,7 +346,7 @@ public class RasterCache {
                     // disposed all, but could not get required memory..., update the real memory.
                     // writer.println( Thread.currentThread().getName()
                     // + "-> After unsuccessful cleaning, updating memory." );
-                    updateCurrentlyUsedMemory();
+                    updateCurrentlyUsedSpace();
                 }
                 // writer.println( "After cleaning: " + Thread.currentThread().getName() + "\n-> - current mem: "
                 // + currentlyUsedMemory + "\n - cache size: " + cache.size() + "\n - requested mem: "
@@ -389,6 +354,83 @@ public class RasterCache {
                 // writer.flush();
             }
         }
+    }
+
+    /**
+     * Iterates over all known readers and (re) calculates their in memory data.
+     */
+    private static void updateCurrentlyUsedSpace() {
+        synchronized ( MEM_LOCK ) {
+            LOG.debug( "Updating estimation of in-memory cache." );
+            long cum = 0;
+            long onDisk = 0;
+            Iterator<CacheRasterReader> it = cache.iterator();
+            while ( it != null && it.hasNext() ) {
+                CacheRasterReader next = it.next();
+                if ( next != null ) {
+                    cum += next.currentApproxMemory();
+                    onDisk += next.cacheFileSize();
+                }
+            }
+            LOG.debug( "Resetting currently used memory from:{} to:{}", ( currentlyUsedMemory / ( 1024 * 1024d ) ),
+                       ( cum / ( 1024 * 1024d ) ) );
+
+            LOG.debug( "Resetting currently used space on diskfrom:{} to:{}", ( currentlyUsedDisk / ( 1024 * 1024d ) ),
+                       ( onDisk / ( 1024 * 1024d ) ) );
+            currentlyUsedMemory = cum;
+            currentlyUsedDisk = onDisk;
+        }
+    }
+
+    /**
+     * Adds the reader to the global map
+     * 
+     * @param reader
+     */
+    private static void addReader( CacheRasterReader reader ) {
+        boolean added = false;
+        synchronized ( MEM_LOCK ) {
+            // System.out.println( Thread.currentThread().getName() + "-> adding reader currentMem: "
+            // + currentlyUsedMemory );
+            currentlyUsedMemory += reader.currentApproxMemory();
+            currentlyUsedDisk += reader.cacheFileSize();
+            // System.out.println( Thread.currentThread().getName() + "-> after adding reader currentMem: "
+            // + currentlyUsedMemory );
+            added = cache.add( reader );
+        }
+        if ( !added ) {
+            LOG.debug( "Not adding reader ({}) to cache because it is already in the cache.", reader );
+        }
+    }
+
+    /**
+     * Adds a raster reader to this cache, all cache files will be written to this cache directory.
+     * 
+     * @param reader
+     *            to add to the cache.
+     * @return a new CachedReader which was added to the cache.
+     */
+    public RasterReader addReader( RasterReader reader ) {
+        CacheRasterReader result = null;
+        if ( reader != null ) {
+            if ( reader instanceof CacheRasterReader ) {
+                result = (CacheRasterReader) reader;
+            } else {
+                boolean createCache = reader.shouldCreateCacheFile();
+                File cacheFile = null;
+                if ( createCache ) {
+                    cacheFile = createCacheFile( reader.getDataLocationId() );
+                }
+                result = new CacheRasterReader( reader, cacheFile, this );
+            }
+            addReader( result );
+        } else {
+            LOG.debug( "Not adding reader to cache, because it is was null." );
+        }
+        if ( LOG.isDebugEnabled() && result != null && reader != null ) {
+            LOG.debug( "Adding reader to cache {} with id: {}.", reader, reader.getDataLocationId() );
+        }
+        return result;
     }
 
     /**
@@ -421,22 +463,6 @@ public class RasterCache {
     }
 
     /**
-     * Writes all current caches to their cache files, but leaves the in memory cached rasters alone.
-     */
-    public static void flush() {
-        synchronized ( MEM_LOCK ) {
-            Iterator<CacheRasterReader> it = cache.iterator();
-            while ( it != null && it.hasNext() ) {
-                CacheRasterReader next = it.next();
-                if ( next != null ) {
-                    next.flush();
-                }
-            }
-        }
-
-    }
-
-    /**
      * Tries to find the file with given id from the current cache directory and instantiates a cachedraster for it.
      * 
      * @param reader
@@ -462,37 +488,6 @@ public class RasterCache {
             }
         }
         return result;
-    }
-
-    /**
-     * @return the maximum allowed in memory cache size in bytes.
-     */
-    public static long getMaximumCacheMemory() {
-        return maxCacheMem;
-    }
-
-    /**
-     * Iterates over all current cache directories and calls dispose on their cache files.
-     */
-    public static void dispose() {
-        // System.out.println( cache.size() + ") Cache: " + cache );
-        // Set<CacheRasterReader> c = cache.descendingSet();
-        // System.out.println( "Cache: " + c + ", size: " + c.size() );
-        synchronized ( MEM_LOCK ) {
-            Iterator<CacheRasterReader> it = cache.iterator();
-            long allocatedMem = 0;
-            int i = 1;
-            while ( it != null && it.hasNext() ) {
-                CacheRasterReader next = it.next();
-                if ( next != null ) {
-                    LOG.debug( "{}: Disposing for file: {}", i++, next.file() );
-                    // currentlyUsedMemory -= next.dispose( false );
-                    allocatedMem += next.dispose( false );
-                }
-            }
-            LOG.debug( "Disposing allocated {} MB on the heap.",
-                       ( Math.round( ( allocatedMem / ( 1024 * 1024d ) ) * 100d ) / 100d ) );
-        }
     }
 
     /**

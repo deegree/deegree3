@@ -38,6 +38,11 @@
 
 package org.deegree.coverage.raster.utils;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import org.deegree.coverage.raster.geom.RasterRect;
+
 /**
  * <code>Rasters</code> supplies handy methods for rasters.
  * 
@@ -90,5 +95,64 @@ public class Rasters {
             result++;
         }
         return result;
+    }
+
+    /**
+     * Copies the data from the given source databuffer to the target databuffer.
+     * 
+     * @param srcRect
+     *            the rectangle specifying the layout of the data in the source buffer.
+     * @param destRect
+     *            the rectangle specifying the layout of the data in the result buffer.
+     * @param srcBuffer
+     *            containing the data fitting the srcRect
+     * @param destBuffer
+     *            which will hold the result
+     * @param sampleSize
+     *            size in bytes of a sample (depends on the band size and the datatype)
+     * @throws IOException
+     */
+    public static void copyValuesFromTile( RasterRect srcRect, RasterRect destRect, ByteBuffer srcBuffer,
+                                           ByteBuffer destBuffer, int sampleSize )
+                            throws IOException {
+        RasterRect inter = RasterRect.intersection( srcRect, destRect );
+        if ( inter != null ) {
+            // rewind the buffer, to be on the right side with the limit.
+            srcBuffer.clear();
+
+            // the size of one line of the intersection.
+            int lineSize = inter.width * sampleSize;
+
+            // offset to the byte buffer.
+            int dstOffsetY = inter.y - destRect.y;
+            int dstOffsetX = inter.x - destRect.x;
+
+            // offset in the tile channel
+            int srcOffsetX = inter.x - srcRect.x;
+            int srcOffsetY = inter.y - srcRect.y;
+
+            // keep track of the number of rows in a tile.
+            int currentIntersectRow = srcOffsetY;
+
+            // position of the buffer.
+            int dstPos = 0;
+            // limit of the buffer.
+            int srcLimit = 0;
+            // the current file position.
+            int srcPos = 0;
+            // loop over the intersection rows and put them into the right place in the bytebuffer.
+            // get the intersection inside the tile, then read row-wise into the buffer.
+            for ( int row = dstOffsetY; row < ( dstOffsetY + inter.height ); ++row, ++currentIntersectRow ) {
+                srcPos = ( ( srcOffsetX + ( currentIntersectRow * srcRect.width ) ) * sampleSize );
+                srcLimit = srcPos + lineSize;
+                srcBuffer.limit( srcLimit );
+                srcBuffer.position( srcPos );
+                dstPos = ( dstOffsetX + ( destRect.width * row ) ) * sampleSize;
+                // then the position.
+                destBuffer.position( dstPos );
+                destBuffer.put( srcBuffer );
+            }
+        }
+
     }
 }

@@ -42,16 +42,14 @@ import static java.lang.System.currentTimeMillis;
 import static org.deegree.coverage.raster.cache.RasterCache.FILE_EXTENSION;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -66,11 +64,10 @@ import org.deegree.coverage.raster.io.grid.GridFileReader;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.coverage.raster.io.grid.GridWriter;
 import org.deegree.coverage.raster.utils.Rasters;
-import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
 /**
- * The <code>CacheRasterFile</code> is a grid based caching mechanism for raster readers.
+ * The <code>CacheRasterReader</code> is a grid based caching mechanism for raster readers.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -80,110 +77,81 @@ import org.slf4j.Logger;
 public class CacheRasterReader extends GridFileReader {
     private static final Logger LOG = getLogger( CacheRasterReader.class );
 
-    private int width;
+    private static final int TILE_SIZE = 500;
 
-    private int height;
+    private final Object LOCK = new Object();
 
-    /** in raster coordinates */
-    private int tileWidth;
-
-    /** in raster coordinates */
-    private int tileHeight;
+    private final Map<Integer, TileEntry> tiles;
 
     private RasterReader cachedReader;
 
     private GridWriter gridWriter;
 
-    private static final int TILE_SIZE = 500;
-
-    private final ByteBuffer[][] tiles;
-
-    private final long[][] tilesOnFile;
-
-    // last read time from original, or cache
-    private final long[][] tilesInMemory;
-
-    private RasterGeoReference geoRef;
-
     private long lastReadAccess;
+
+    private long inMemorySize;
 
     private RasterCache cacheManager;
 
-    private CacheRasterReader( CacheInfo readValues, File cacheFile, RasterReader reader, RasterCache cacheManager ) {
+    /**
+     * Instantiate the map
+     * 
+     * @return a new map
+     */
+    private Map<Integer, TileEntry> instantiateTiles() {
+        synchronized ( LOCK ) {
+            Map<Integer, TileEntry> result = new ConcurrentHashMap<Integer, TileEntry>( getTileColumns()
+                                                                                        * getTileRows() );
+            for ( int c = 0; c < getTileColumns(); ++c ) {
+                for ( int r = 0; r < getTileRows(); ++r ) {
+                    RasterRect rect = new RasterRect( c * getTileRasterWidth(), r * getTileRasterHeight(),
+                                                      getTileRasterWidth(), getTileRasterHeight() );
+                    result.put( getTileId( c, r ), new TileEntry( rect ) );
+                }
+            }
+            return result;
+        }
+    }
+
+    private CacheRasterReader( CacheInfoFile readValues, File cacheFile, RasterReader reader, RasterCache cacheManager ) {
         this.cachedReader = reader;
-        this.width = readValues.rWidth;
-        this.height = readValues.rHeight;
-        GridMetaInfoFile gmif = readValues.gmif;
-        this.tileHeight = gmif.getTileRasterHeight();
-        this.tileWidth = gmif.getTileRasterWidth();
-        // be sure the georeference is outer.
-        this.geoRef = gmif.getGeoReference().createRelocatedReference( OriginLocation.OUTER );
-
-        RasterDataInfo dInfo = gmif.getDataInfo();
-        int columns = gmif.columns();
-        int rows = gmif.rows();
-
-        tiles = new ByteBuffer[rows][columns];
-        tilesInMemory = new long[rows][columns];
-
-        Envelope env = geoRef.getEnvelope( width, height, null );
-        gmif.setEnvelope( env );
-
+        // GridMetaInfoFile gmif = readValues.gmif;
         this.cacheManager = cacheManager;
         if ( this.cacheManager == null ) {
             // get the default cache manager
             this.cacheManager = RasterCache.getInstance();
         }
-        tilesOnFile = readValues.tilesInFile;
-
+        super.instantiate( readValues, cacheFile );
         try {
-            this.gridWriter = new GridWriter( columns, rows, env, geoRef, cacheFile, dInfo );
+            this.gridWriter = new GridWriter( getTileColumns(), getTileRows(), getEnvelope(), getGeoReference(),
+                                              cacheFile, getRasterDataInfo() );
         } catch ( IOException e ) {
             LOG.warn( "Could not create a cache file writer because: {}. Only in memory caching is enabled.",
                       e.getLocalizedMessage() );
         }
-        super.instantiate( gmif, cacheFile );
-        lastReadAccess = currentTimeMillis();
+        tiles = instantiateTiles();
     }
 
     /**
-     * @param width
-     * @param height
+     * @param rasterWidth
+     * @param rasterHeight
      * @param cacheFile
      * @param dataInfo
      */
-    private CacheRasterReader( int width, int height, File cacheFile, boolean shouldUseCachefile,
+    private CacheRasterReader( int rasterWidth, int rasterHeight, File cacheFile, boolean shouldUseCachefile,
                                RasterDataInfo dataInfo, RasterGeoReference geoReference, RasterCache cacheManager ) {
-        CacheInfo readValues = instantiateFromFile( cacheFile );
-        GridMetaInfoFile gmif = null;
-        this.width = width;
-        this.height = height;
-        int columns = 0;
-        int rows = 0;
-        RasterDataInfo dInfo = dataInfo;
-        if ( readValues != null ) {
-            this.width = readValues.rWidth;
-            this.height = readValues.rHeight;
-            gmif = readValues.gmif;
-            this.tileHeight = gmif.getTileRasterHeight();
-            this.tileWidth = gmif.getTileRasterWidth();
-            this.geoRef = gmif.getGeoReference();
-            dInfo = gmif.getDataInfo();
-            columns = gmif.columns();
-            rows = gmif.rows();
-        } else {
-            int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
-            this.tileWidth = Rasters.calcTileSize( width, numberOfTiles );
-            this.tileHeight = Rasters.calcTileSize( height, numberOfTiles );
-            columns = (int) Math.ceil( ( (double) width ) / tileWidth );
-            rows = (int) Math.ceil( (double) height / tileHeight );
-            this.geoRef = geoReference.createRelocatedReference( OriginLocation.OUTER );
-            gmif = new GridMetaInfoFile( geoRef, rows, columns, tileWidth, tileHeight, dataInfo );
+        CacheInfoFile readValues = CacheInfoFile.read( cacheFile );
+        // GridMetaInfoFile gmif = null;
+        if ( readValues == null ) {
+            int numberOfTiles = Rasters.calcApproxTiles( rasterWidth, rasterHeight, TILE_SIZE );
+            int tileWidth = Rasters.calcTileSize( rasterWidth, numberOfTiles );
+            int tileHeight = Rasters.calcTileSize( rasterHeight, numberOfTiles );
+            int columns = (int) Math.ceil( ( (double) rasterWidth ) / tileWidth );
+            int rows = (int) Math.ceil( (double) rasterHeight / tileHeight );
+            RasterGeoReference geoRef = geoReference.createRelocatedReference( OriginLocation.OUTER );
+            readValues = new CacheInfoFile( geoRef, rows, columns, tileWidth, tileHeight, dataInfo, rasterWidth,
+                                            rasterHeight, null, 0 );
         }
-        tiles = new ByteBuffer[rows][columns];
-        tilesInMemory = new long[rows][columns];
-
-        Envelope env = geoRef.getEnvelope( OriginLocation.OUTER, width, height, null );
         this.cacheManager = cacheManager;
         if ( this.cacheManager == null ) {
             // get the default cache manager
@@ -191,25 +159,27 @@ public class CacheRasterReader extends GridFileReader {
         }
 
         if ( shouldUseCachefile ) {
-            tilesOnFile = ( readValues == null ) ? new long[rows][columns] : readValues.tilesInFile;
             if ( cacheFile == null ) {
-                cacheFile = this.cacheManager.createCacheFile( createId( this.width, this.height, dInfo, geoRef ) );
-                // create new cacheFile
+                cacheFile = this.cacheManager.createCacheFile( createId(
+                                                                         readValues.getRasterWidth(),
+                                                                         readValues.getRasterHeight(),
+                                                                         readValues.getDataInfo(),
+                                                                         readValues.getGeoReference().createRelocatedReference(
+                                                                                                                                OriginLocation.OUTER ) ) );
             }
+        }
+        super.instantiate( readValues, cacheFile );
+        if ( shouldUseCachefile ) {
             try {
                 LOG.debug( "Writing to file: " + cacheFile.getAbsolutePath() );
-                this.gridWriter = new GridWriter( columns, rows, env, geoRef, cacheFile, dInfo );
+                this.gridWriter = new GridWriter( getTileColumns(), getTileRows(), getEnvelope(), getGeoReference(),
+                                                  cacheFile, getRasterDataInfo() );
             } catch ( IOException e ) {
                 LOG.warn( "Could not create a cache file writer because: {}. Only in memory caching is enabled.",
                           e.getLocalizedMessage() );
             }
-
-        } else {
-            tilesOnFile = null;
         }
-
-        super.instantiate( gmif, cacheFile );
-        lastReadAccess = currentTimeMillis();
+        tiles = instantiateTiles();
     }
 
     /**
@@ -237,6 +207,38 @@ public class CacheRasterReader extends GridFileReader {
                               RasterCache cache ) {
         this( width, height, cacheFile, shouldCreateCachefile, dataInfo, geoReference, cache );
         createTilesFromFilledBuffer( filledBuffer, width, height );
+    }
+
+    /**
+     * only called from constructor, no synchronization needed.
+     * 
+     * @param filledBuffer
+     */
+    private void createTilesFromFilledBuffer( ByteBuffer filledBuffer, int width, int height ) {
+        if ( filledBuffer != null ) {
+            // create tiling
+            RasterRect dataRect = new RasterRect( 0, 0, width, height );
+            ByteBuffer origBuffer = filledBuffer.asReadOnlyBuffer();
+            for ( int row = 0; row < getTileRows(); ++row ) {
+                for ( int col = 0; col < getTileColumns(); ++col ) {
+                    TileEntry entry = getEntry( col, row );
+                    if ( entry != null ) {
+                        ByteBuffer entryBuffer = allocateTileBuffer( false, true );
+                        try {
+                            Rasters.copyValuesFromTile( dataRect, entry.getRasterRect(), origBuffer, entryBuffer,
+                                                        sampleSize );
+                        } catch ( IOException e ) {
+                            LOG.error( "Could not create tile from buffer because: " + e.getLocalizedMessage(), e );
+                        }
+                        this.inMemorySize += entry.setBuffer( entryBuffer );
+                    }
+                }
+            }
+            // remove the old buffer from memory
+            filledBuffer = null;
+            origBuffer = null;
+        }
+
     }
 
     /**
@@ -268,75 +270,6 @@ public class CacheRasterReader extends GridFileReader {
     }
 
     /**
-     * @param cacheFile
-     * @throws IOException
-     * @throws NumberFormatException
-     */
-    private static CacheInfo instantiateFromFile( File cacheFile ) {
-        CacheInfo result = null;
-        if ( cacheFile != null && cacheFile.exists() ) {
-            String parent = cacheFile.getParent();
-            File metaInfo = GridMetaInfoFile.fileNameFromOptions( parent, FileUtils.getFilename( cacheFile ), null );
-            if ( !metaInfo.exists() ) {
-                LOG.warn(
-                          "Instantiation from file: {}, was unsuccessful, because no info file was present. Creating new cache file.",
-                          cacheFile.getAbsolutePath() );
-
-            }
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader( new FileReader( metaInfo ) );
-                GridMetaInfoFile gmif = GridMetaInfoFile.read( reader, null );
-                if ( gmif == null ) {
-                    throw new NullPointerException( "no info file could be read" );
-                }
-                String r = reader.readLine();
-                int width = 0;
-                try {
-                    width = Integer.decode( r );
-                } catch ( NumberFormatException n ) {
-                    throw new NullPointerException( "no width could be read" );
-                }
-                r = reader.readLine();
-                int height = 0;
-                try {
-                    height = Integer.decode( r );
-                } catch ( NumberFormatException n ) {
-                    throw new NullPointerException( "no height could be read " );
-                }
-                // String[] tileInfos = new String[rows];
-                long current = currentTimeMillis();
-                long[][] tilesInFile = new long[gmif.rows()][gmif.columns()];
-                int rows = gmif.rows();
-                for ( int row = 0; row < rows; ++row ) {
-                    String s = reader.readLine();
-                    if ( s == null || s.length() != gmif.columns() ) {
-                        throw new NullPointerException( "the number of rows|columns read was not correct" );
-                    }
-                    for ( int col = 0; col < s.length(); ++col ) {
-                        tilesInFile[row][col] = ( s.charAt( col ) == '1' ) ? current : 0;
-                    }
-
-                }
-                result = new CacheInfo( gmif, width, height, tilesInFile );
-            } catch ( Exception e ) {
-                LOG.warn( "Instantiation from file: {}, was unsuccessful, because {}. Creating new cache file.",
-                          cacheFile.getAbsolutePath(), e.getLocalizedMessage() );
-            } finally {
-                if ( reader != null ) {
-                    try {
-                        reader.close();
-                    } catch ( IOException e ) {
-                        // what ever.
-                    }
-                }
-            }
-
-        }
-        return result;
-    }
-
-    /**
      * Creates a CachedRasterReader from the given cacheFile.
      * 
      * @param reader
@@ -348,7 +281,7 @@ public class CacheRasterReader extends GridFileReader {
      * @return a {@link CacheRasterReader} or <code>null</code> if the cacheFile could not be read.
      */
     public static CacheRasterReader createFromCache( RasterReader reader, File cacheFile, RasterCache cache ) {
-        CacheInfo readValues = instantiateFromFile( cacheFile );
+        CacheInfoFile readValues = CacheInfoFile.read( cacheFile );
         if ( readValues != null ) {
             return new CacheRasterReader( readValues, cacheFile, reader, cache );
         }
@@ -373,10 +306,12 @@ public class CacheRasterReader extends GridFileReader {
     public BufferResult read( RasterRect rect, ByteBuffer resultBuffer )
                             throws IOException {
         BufferResult res = null;
-        lastReadAccess = currentTimeMillis();
         if ( rect != null ) {
             // check if the reader has new data
-            cacheFileUpToDate();
+            if ( !cacheFileUpToDate() ) {
+                clear( true );
+            }
+            lastReadAccess = currentTimeMillis();
 
             // now get the data in memory
             RasterRect intersection = snapToGrid( rect );
@@ -387,8 +322,8 @@ public class CacheRasterReader extends GridFileReader {
                         resultBuffer = ByteBufferPool.allocate( intersection.height * intersection.width * sampleSize,
                                                                 false, false );
                     }
-                    for ( int row = minCRmaxCR[1]; row < tiles.length && row <= minCRmaxCR[3]; ++row ) {
-                        for ( int col = minCRmaxCR[0]; col < tiles[row].length && col <= minCRmaxCR[2]; ++col ) {
+                    for ( int row = minCRmaxCR[1]; row <= minCRmaxCR[3]; ++row ) {
+                        for ( int col = minCRmaxCR[0]; col <= minCRmaxCR[2]; ++col ) {
                             leaveStreamOpen( true );
                             // getTileBuffer will get a read only (copy-of the tiles[row][col]) bytebuffer.
                             ByteBuffer tileBuffer = getTileBuffer( col, row );
@@ -401,6 +336,58 @@ public class CacheRasterReader extends GridFileReader {
             }
         }
         return res;
+    }
+
+    /**
+     * Clears all memory buffers and deletes the cache file if requested. Note this method will not write any data to
+     * the cachefile.
+     * 
+     * @param deleteCacheFile
+     *            true if the cache file should be deleted as well.
+     * @return the number of memory bytes freed up after cleaning.
+     */
+    public long clear( boolean deleteCacheFile ) {
+        long result = 0;
+        synchronized ( LOCK ) {
+            for ( TileEntry entry : tiles.values() ) {
+                if ( entry != null ) {
+                    long r = entry.clear( deleteCacheFile );
+                    inMemorySize -= r;
+                    result += r;
+                }
+            }
+            if ( deleteCacheFile ) {
+                deleteCacheFile();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Delete the file this cache reader is using.
+     * 
+     * @return true if this cached reader no longer references an existing file.
+     */
+    public boolean deleteCacheFile() {
+        boolean result = true;
+        synchronized ( LOCK ) {
+            super.dispose();
+            File f = super.file();
+            if ( f != null ) {
+                if ( f.exists() && f.isDirectory() ) {
+                    result = f.delete();
+                    File metaInfo = GridMetaInfoFile.fileNameFromOptions( file().getParent(),
+                                                                          FileUtils.getFilename( file() ), null );
+                    if ( metaInfo.exists() ) {
+                        boolean mR = metaInfo.delete();
+                        if ( !mR ) {
+                            LOG.warn( "Could not delete meta info file for raster cache file: " + f.getAbsolutePath() );
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -427,21 +414,6 @@ public class CacheRasterReader extends GridFileReader {
     }
 
     @Override
-    public RasterGeoReference getGeoReference() {
-        return geoRef;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
     public String getDataLocationId() {
         return ( cachedReader != null ) ? cachedReader.getDataLocationId() : super.getDataLocationId();
     }
@@ -460,26 +432,19 @@ public class CacheRasterReader extends GridFileReader {
      * 
      */
     public long currentApproxMemory() {
-        long result = 0;
-        synchronized ( tiles ) {
-            for ( int i = 0; i < tiles.length; ++i ) {
-                for ( int j = 0; j < tiles[i].length; ++j ) {
-                    if ( tiles[i][j] != null ) {
-                        result += tiles[i][j].capacity();
-                    }
-                }
-            }
-        }
+        return inMemorySize;
+    }
 
-        return result;
+    /**
+     * @return the size of the cache file on disk.
+     */
+    public long cacheFileSize() {
+        return ( file() != null && file().exists() ) ? file().length() : 0;
     }
 
     @Override
     public void dispose() {
         this.dispose( cachedReader != null && !cachedReader.shouldCreateCacheFile() );
-        if ( cachedReader != null ) {
-            cachedReader.dispose();
-        }
     }
 
     /**
@@ -492,7 +457,6 @@ public class CacheRasterReader extends GridFileReader {
      * @return the amount of freed memory.
      */
     public long dispose( boolean memoryBuffersAsWell ) {
-
         if ( cachedReader != null ) {
             // close the file in the reader as well.
             cachedReader.dispose();
@@ -500,24 +464,243 @@ public class CacheRasterReader extends GridFileReader {
         }
         long result = 0;
         if ( gridWriter != null ) {
-            result = writeCache( true, false );
+            result = writeCache( true );
         } else {
             if ( memoryBuffersAsWell ) {
-                synchronized ( tiles ) {
-                    // no writer, but still delete the buffers if requested.
-                    for ( int row = 0; row < tiles.length; ++row ) {
-                        for ( int column = 0; column < tiles[row].length; ++column ) {
-                            if ( tiles[row][column] != null ) {
-                                result += tiles[row][column].capacity();
-                                tiles[row][column] = null;
-                                tilesInMemory[row][column] = 0;
+                clear( false );
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Writes all current in memory byte buffers to the cache file (if existing).
+     */
+    public void flush() {
+        writeCache( false );
+    }
+
+    private String createId( int width, int height, RasterDataInfo rdi, RasterGeoReference geoRef ) {
+        StringBuilder sb = new StringBuilder( geoRef.toString() );
+        sb.append( "_bands_" ).append( rdi.bands );
+        sb.append( "_datatype_" ).append( rdi.dataType );
+        sb.append( "_w_" ).append( width );
+        sb.append( "_h_" ).append( height );
+        String result = sb.toString();
+        result = result.replaceAll( "\\{", "_" );
+        result = result.replaceAll( "\\}", "_" );
+        result = result.replaceAll( "\\:", "_" );
+        result = result.replaceAll( "\\s", "_" );
+        return result;
+    }
+
+    private void copyValuesFromTile( int tileColumn, int tileRow, RasterRect dstRect, ByteBuffer srcBuffer,
+                                     ByteBuffer dstBuffer )
+                            throws IOException {
+        int tileWidth = getTileRasterWidth();
+        int tileHeight = getTileRasterHeight();
+        RasterRect tileRect = new RasterRect( tileWidth * tileColumn, tileHeight * tileRow, tileWidth, tileHeight );
+        Rasters.copyValuesFromTile( tileRect, dstRect, srcBuffer, dstBuffer, sampleSize );
+    }
+
+    /**
+     * 
+     * @return true if the last access time later then the last modification to the backed file.
+     */
+    private boolean cacheFileUpToDate() {
+        if ( cachedReader != null && cachedReader.file() != null ) {
+            return lastReadAccess > cachedReader.file().lastModified();
+        }
+        return true;
+    }
+
+    /**
+     * Get a tile buffer from the cache, it will be read only.
+     * 
+     * @param column
+     * @param row
+     */
+    private ByteBuffer getTileBuffer( int column, int row ) {
+        ByteBuffer result = null;
+        TileEntry entry = getEntry( column, row );
+        if ( entry != null ) {
+
+            ByteBuffer entryBuffer = null;
+            synchronized ( LOCK ) {
+                entryBuffer = entry.getBuffer();
+            }
+            if ( entryBuffer == null ) {
+                // allocation of the buffer should not be in the synchronized block, it may cause a dead lock with the
+                // raster cache.
+                entryBuffer = allocateTileBuffer( false, true );
+            }
+
+            synchronized ( LOCK ) {
+                if ( !entry.isInMemory() ) {
+                    // check the cache file
+                    if ( entry.isOnFile() ) {
+                        try {
+                            entryBuffer = super.getTileData( column, row, entryBuffer );
+                        } catch ( IOException e ) {
+                            // could not read from the tile, so get rid of the tilesOnFile
+                            entry.setTileOnFile( false );
+                        }
+                    }
+                    if ( !entry.isOnFile() ) {
+                        // this can happen if the file could not be read from the cache file because of an IOException.
+                        readTileFromReader( entry, entryBuffer );
+                    }
+                    this.inMemorySize += entry.setBuffer( entryBuffer );
+                }
+            }
+            result = entryBuffer.asReadOnlyBuffer();
+        }
+        return result;
+    }
+
+    /**
+     * @param column
+     * @param row
+     * @param tileBuffer
+     *            may be <code>null</code>
+     */
+    private ByteBuffer readTileFromReader( TileEntry entry, ByteBuffer tileBuffer ) {
+        // this method is only called from within synchronized blocks on the tiles, there for only one thread will
+        // access it at a time.
+        ByteBuffer result = tileBuffer;
+        if ( cachedReader != null ) {
+            RasterRect tileRect = new RasterRect( entry.getRasterRect() );
+            try {
+                BufferResult read = cachedReader.read( tileRect, result );
+                if ( read == null ) {
+                    return result;
+                }
+                RasterRect rect = read.getRect();
+                if ( !rect.equals( tileRect ) ) {
+                    // the tile rect was not filled correctly with data, make the data fit the grid
+                    // layout.
+                    ByteBuffer src = read.getResult();
+                    if ( src == result ) {
+                        // if the result is the same instance, create a copy
+                        LOG.debug( "The rectangle did not fit, creating copy." );
+                        src = ByteBuffer.allocate( tileBuffer.capacity() );
+                        tileBuffer.clear();
+                        src.put( tileBuffer );
+                    }
+                    Rasters.copyValuesFromTile( rect, tileRect, src, result, sampleSize );
+                }
+            } catch ( IOException e ) {
+                LOG.error( "Unable to read data from the reader because: {}, creating emtpy tile.",
+                           e.getLocalizedMessage() );
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 
+     */
+    private long writeCache( boolean clearBuffer ) {
+        long freedUpMemory = 0;
+        if ( gridWriter != null ) {
+            synchronized ( LOCK ) {
+                if ( !cacheFileUpToDate() ) {
+                    // the original file is newer, don't save anything and remove the memory buffers as well.
+                    freedUpMemory = this.inMemorySize;
+                    clear( true );
+                    if ( this.inMemorySize != 0 ) {
+                        LOG.warn( "After clearing the cache entry some allocated memory remains, this may not be!" );
+                    }
+                } else {
+                    gridWriter.leaveStreamOpen( true );
+                    boolean rewriteInfo = false;
+                    for ( int row = 0; row < getTileRows(); ++row ) {
+                        for ( int column = 0; column < getTileColumns(); ++column ) {
+                            TileEntry entry = getEntry( column, row );
+                            if ( entry != null ) {
+                                if ( !entry.isOnFile() ) {
+                                    if ( entry.isInMemory() ) {
+                                        try {
+                                            gridWriter.writeTile( column, row, entry.getBuffer() );
+                                            rewriteInfo = true;
+                                        } catch ( IOException e ) {
+                                            if ( LOG.isDebugEnabled() ) {
+                                                LOG.debug(
+                                                           "(Stack) Exception occurred while writing tile to cache file: "
+                                                                                   + e.getLocalizedMessage(), e );
+                                            } else {
+                                                LOG.error( "Exception occurred while writing tile to cache file: "
+                                                           + e.getLocalizedMessage() );
+                                            }
+                                        }
+                                    }
+                                }
+                                if ( clearBuffer ) {
+                                    if ( entry.isOnFile() && entry.isInMemory() ) {
+                                        long mem = entry.clear( false );
+                                        this.inMemorySize -= mem;
+                                        freedUpMemory += mem;
+                                    }
+                                }
                             }
                         }
+                        if ( rewriteInfo ) {
+                            if ( !writeCacheInfo() ) {
+                                if ( !deleteCacheFile() ) {
+                                    LOG.debug( "Could not delete grid file." );
+                                }
+                            }
+                        }
+                        gridWriter.leaveStreamOpen( false );
                     }
                 }
             }
         }
+        return freedUpMemory;
+    }
+
+    private boolean writeCacheInfo() {
+        boolean result = false;
+        if ( gridWriter != null && file() != null ) {
+            File metaInfo = GridMetaInfoFile.fileNameFromOptions( file().getParent(), FileUtils.getFilename( file() ),
+                                                                  null );
+            boolean[][] tilesOnFiles = new boolean[getTileRows()][getTileColumns()];
+            for ( int row = 0; row <= getTileRows(); ++row ) {
+                for ( int col = 0; col <= getTileColumns(); ++col ) {
+                    TileEntry entry = getEntry( col, row );
+                    tilesOnFiles[row][col] = ( entry != null && entry.isOnFile() );
+                }
+            }
+            CacheInfoFile info = new CacheInfoFile( getGeoReference(), getTileRows(), getTileColumns(),
+                                                    getTileRasterWidth(), getTileRasterHeight(), getRasterDataInfo(),
+                                                    getWidth(), getHeight(), tilesOnFiles, file().lastModified() );
+            try {
+                CacheInfoFile.write( metaInfo, info );
+                result = true;
+            } catch ( IOException e ) {
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "Writing of info file failed, this will make the cachefile invalid. Reason: {}.",
+                               e.getLocalizedMessage(), e );
+                } else {
+                    LOG.debug( "Writing of info file failed, this will make the cachefile invalid. Reason: {}.",
+                               e.getLocalizedMessage() );
+                }
+
+            }
+        }
         return result;
+    }
+
+    /**
+     * Get the entry for the given column and row.
+     * 
+     * @param column
+     * @param row
+     * @return the tile for the given column and row, maybe <code>null</code>
+     */
+    private TileEntry getEntry( int column, int row ) {
+        Integer key = getTileId( column, row );
+        return tiles.get( key );
     }
 
     @Override
@@ -555,383 +738,6 @@ public class CacheRasterReader extends GridFileReader {
         long result = 32452843;
         result = result * 37 + this.file().hashCode();
         return (int) ( result >>> 32 ) ^ (int) result;
-    }
-
-    /**
-     * Writes all current in memory byte buffers to the cache file (if existing).
-     */
-    public void flush() {
-        writeCache( false, false );
-    }
-
-    private String createId( int width, int height, RasterDataInfo rdi, RasterGeoReference geoRef ) {
-        StringBuilder sb = new StringBuilder( geoRef.toString() );
-        sb.append( "_bands_" ).append( rdi.bands );
-        sb.append( "_datatype_" ).append( rdi.dataType );
-        sb.append( "_w_" ).append( width );
-        sb.append( "_h_" ).append( height );
-        String result = sb.toString();
-        result = result.replaceAll( "\\{", "_" );
-        result = result.replaceAll( "\\}", "_" );
-        result = result.replaceAll( "\\:", "_" );
-        result = result.replaceAll( "\\s", "_" );
-        return result;
-    }
-
-    /**
-     * only called from constructor, no synchronization needed.
-     * 
-     * @param filledBuffer
-     */
-    private void createTilesFromFilledBuffer( ByteBuffer filledBuffer, int width, int height ) {
-        if ( filledBuffer != null ) {
-            if ( tiles.length == 1 && tiles[0].length == 1 ) {
-                tiles[0][0] = filledBuffer.asReadOnlyBuffer();
-                tilesInMemory[0][0] = currentTimeMillis();
-            } else {
-                // create tiling
-                RasterRect tileRect = new RasterRect( 0, 0, tileWidth, tileHeight );
-                RasterRect dataRect = new RasterRect( 0, 0, width, height );
-                ByteBuffer origBuffer = filledBuffer.asReadOnlyBuffer();
-                for ( int row = 0; row < tiles.length; ++row ) {
-                    for ( int col = 0; col < tiles[row].length; ++col ) {
-                        tileRect.x = col * tileWidth;
-                        tileRect.y = row * tileHeight;
-                        tiles[row][col] = allocateTileBuffer( false, true );
-                        try {
-                            copyValuesFromTile( dataRect, tileRect, origBuffer, tiles[row][col] );
-                            tilesInMemory[row][col] = currentTimeMillis();
-                        } catch ( IOException e ) {
-                            LOG.error( "Could not create tile from buffer because: " + e.getLocalizedMessage(), e );
-                        }
-                    }
-                }
-                // remove the old buffer from memory
-                filledBuffer = null;
-                origBuffer = null;
-            }
-        }
-    }
-
-    private void copyValuesFromTile( int tileColumn, int tileRow, RasterRect dstRect, ByteBuffer srcBuffer,
-                                     ByteBuffer dstBuffer )
-                            throws IOException {
-        RasterRect tileRect = new RasterRect( this.tileWidth * tileColumn, tileHeight * tileRow, tileWidth, tileHeight );
-        copyValuesFromTile( tileRect, dstRect, srcBuffer, dstBuffer );
-    }
-
-    /**
-     * Copies the data from the given source databuffer to the target databuffer.
-     * 
-     * @param srcRect
-     * @param destRect
-     * @param srcBuffer
-     * @param destBuffer
-     * @throws IOException
-     */
-    private void copyValuesFromTile( RasterRect srcRect, RasterRect destRect, ByteBuffer srcBuffer,
-                                     ByteBuffer destBuffer )
-                            throws IOException {
-        RasterRect inter = RasterRect.intersection( srcRect, destRect );
-        if ( inter != null ) {
-            // rewind the buffer, to be on the right side with the limit.
-            srcBuffer.clear();
-
-            // the size of one line of the intersection.
-            int lineSize = inter.width * sampleSize;
-
-            // offset to the byte buffer.
-            int dstOffsetY = inter.y - destRect.y;
-            int dstOffsetX = inter.x - destRect.x;
-
-            // offset in the tile channel
-            int srcOffsetX = inter.x - srcRect.x;
-            int srcOffsetY = inter.y - srcRect.y;
-
-            // keep track of the number of rows in a tile.
-            int currentIntersectRow = srcOffsetY;
-
-            // position of the buffer.
-            int dstPos = 0;
-            // limit of the buffer.
-            int srcLimit = 0;
-            // the current file position.
-            int srcPos = 0;
-            // loop over the intersection rows and put them into the right place in the bytebuffer.
-            // get the intersection inside the tile, then read row-wise into the buffer.
-            for ( int row = dstOffsetY; row < ( dstOffsetY + inter.height ); ++row, ++currentIntersectRow ) {
-                srcPos = ( ( srcOffsetX + ( currentIntersectRow * srcRect.width ) ) * sampleSize );
-                srcLimit = srcPos + lineSize;
-                srcBuffer.limit( srcLimit );
-                srcBuffer.position( srcPos );
-                dstPos = ( dstOffsetX + ( destRect.width * row ) ) * sampleSize;
-                // then the position.
-                destBuffer.position( dstPos );
-                destBuffer.put( srcBuffer );
-            }
-        }
-
-    }
-
-    /**
-     * 
-     * @return the last access time to the cached gridfile.
-     */
-    private long cacheFileUpToDate() {
-        long result = 0;
-        if ( gridWriter != null ) {
-            if ( cachedReader != null && cachedReader.file() != null ) {
-                result = cachedReader.file().lastModified();
-                // mark the cache tile as invalid if they were read before the last modified.
-                synchronized ( tiles ) {
-                    for ( int row = 0; row < tilesOnFile.length; ++row ) {
-                        for ( int column = 0; column < tilesOnFile[row].length; ++column ) {
-                            if ( tilesOnFile[row][column] < result ) {
-                                tilesOnFile[row][column] = 0;
-                            }
-                            if ( tilesInMemory[row][column] < result ) {
-                                tilesInMemory[row][column] = 0;
-                                tiles[row][column] = null;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Get a tile buffer from the cache, it will be read only.
-     * 
-     * @param column
-     * @param row
-     */
-    private ByteBuffer getTileBuffer( int column, int row ) {
-        ByteBuffer result = null;
-        if ( row < tiles.length && column < tiles[row].length ) {
-            // allocation of the buffer should not be in the synchronized block, it may cause a dead lock with the
-            // raster cache.
-            ByteBuffer tileBuffer = allocateTileBuffer( false, true );
-            synchronized ( tiles ) {
-                if ( tiles[row][column] == null || tilesInMemory[row][column] == 0 ) {
-                    // check the cache file
-                    if ( tilesOnFile != null && tilesOnFile[row][column] > 0 ) {
-                        try {
-                            super.getTileData( column, row, tileBuffer );
-                            tilesInMemory[row][column] = currentTimeMillis();
-                        } catch ( IOException e ) {
-                            // could not read from the tile, so get rid of the tilesOnFile
-                            tilesOnFile[row][column] = 0;
-                        }
-
-                    }
-                    if ( tilesOnFile == null || tilesOnFile[row][column] == 0 ) {
-                        readTileFromReader( column, row, tileBuffer );
-                        // this can happen if the file could not be read from the cache file.
-                    }
-                    tiles[row][column] = tileBuffer;
-                }
-                result = tiles[row][column].asReadOnlyBuffer();
-            }
-        }
-        return result;
-
-    }
-
-    /**
-     * @param column
-     * @param row
-     * @param tileBuffer
-     *            may be <code>null</code>
-     */
-    private ByteBuffer readTileFromReader( int column, int row, ByteBuffer tileBuffer ) {
-        // this method is only called from within synchronized blocks on the tiles, there for only one thread will
-        // access it at a time.
-        ByteBuffer result = tileBuffer;
-        if ( cachedReader != null ) {
-            RasterRect tileRect = new RasterRect( column * tileWidth, row * tileHeight, tileWidth, tileHeight );
-            try {
-                BufferResult read = cachedReader.read( tileRect, result );
-                if ( read == null ) {
-                    return result;
-                }
-                RasterRect rect = read.getRect();
-                if ( !rect.equals( tileRect ) ) {
-                    // the tile rect was not filled correctly with data, make the data fit the grid
-                    // layout.
-                    ByteBuffer src = read.getResult();
-                    if ( src == result ) {
-                        // create a copy
-                        LOG.debug( "The rectangle did not fit, creating copy." );
-                        src = ByteBuffer.allocate( tileBuffer.capacity() );
-                        tileBuffer.clear();
-                        src.put( tileBuffer );
-                    }
-                    copyValuesFromTile( rect, tileRect, src, result );
-                }
-                // still synchronized on the tiles, so ok.
-                tilesInMemory[row][column] = currentTimeMillis();
-            } catch ( IOException e ) {
-                LOG.error( "Unable to read data from the reader because: {}, creating emtpy tile.",
-                           e.getLocalizedMessage() );
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 
-     */
-    private long writeCache( boolean clearBuffer, boolean readMissingTiles ) {
-        long freedUpMemory = 0;
-        if ( gridWriter != null ) {
-            synchronized ( tiles ) {
-                gridWriter.leaveStreamOpen( true );
-                // synchronizing on the tiles is valid, because of re-entrance capabilities of the Thread.
-                if ( cacheFileUpToDate() == 0 ) {
-                    return 0;
-                }
-                // update the cachefile.
-                RasterRect tileRect = new RasterRect( 0, 0, tileWidth, tileHeight );
-                // don't use the byte buffer pool, it could initiate an endless loop.
-                ByteBuffer tmpBuffer = ByteBuffer.allocate( tileWidth * tileHeight * sampleSize );
-                int rows = getTileRows();
-                int columns = getTileColumns();
-                boolean rewriteInfo = false;
-                // write row first.
-                for ( int row = 0; row < rows; ++row ) {
-                    for ( int column = 0; column < columns; ++column ) {
-                        boolean writeSuccessul = false;
-                        if ( tilesOnFile[row][column] == 0 ) {
-                            try {
-                                LOG.debug( "{}->{},{}) Writing: {},{}, Tile: {}", new Object[] { file(), rows, columns,
-                                                                                                row, column,
-                                                                                                tiles[row][column] } );
-                                // tile is not valid on file
-                                if ( tiles[row][column] != null ) {
-                                    // will be null if the tile was not valid.
-                                    tiles[row][column].clear();
-                                    writeSuccessul = gridWriter.writeTile( column, row,
-                                                                           tiles[row][column].asReadOnlyBuffer() );
-                                    if ( clearBuffer ) {
-                                        freedUpMemory += tiles[row][column].capacity();
-                                        tiles[row][column] = null;
-                                        tilesInMemory[row][column] = 0;
-                                    }
-                                } else {
-                                    if ( cachedReader != null && readMissingTiles ) {
-                                        tmpBuffer.clear();
-                                        readTileFromReader( column, row, tmpBuffer );
-                                        tmpBuffer.clear();
-                                        gridWriter.writeTile( column, row, tmpBuffer );
-                                        writeSuccessul = true;
-                                    }
-                                }
-
-                            } catch ( IOException e ) {
-                                LOG.error( "Writing of tile {}{} failed, Reason: {}.",
-                                           new Object[] { row, column, e.getLocalizedMessage(), e } );
-                                writeSuccessul = false;
-                            }
-
-                        } else {
-                            if ( clearBuffer ) {
-                                // the tile is on file, check if in memory
-                                if ( tiles[row][column] != null ) {
-                                    // will be null if the tile was not valid.
-                                    tiles[row][column].clear();
-                                    if ( clearBuffer ) {
-                                        freedUpMemory += tiles[row][column].capacity();
-                                        tiles[row][column] = null;
-                                        tilesInMemory[row][column] = 0;
-                                    }
-                                }
-                            }
-                        }
-                        if ( writeSuccessul ) {
-                            tilesOnFile[row][column] = currentTimeMillis();
-                            rewriteInfo = true;
-                        }
-                        // next tile.
-                        tileRect.x += tileWidth;
-                    }
-                    tileRect.x = 0;
-                    tileRect.y += tileHeight;
-                }
-                if ( rewriteInfo ) {
-                    // write cache information..
-                    try {
-                        writeCacheInfo();
-                    } catch ( IOException e ) {
-                        LOG.error( "Writing of info file failed, this will make the cachefile invalid. Reason: {}.",
-                                   e.getLocalizedMessage(), e );
-                    }
-                }
-                tmpBuffer.clear();
-                tmpBuffer = null;
-
-                gridWriter.leaveStreamOpen( false );
-            }
-        }
-        return freedUpMemory;
-    }
-
-    /**
-     * @throws IOException
-     * 
-     */
-    private void writeCacheInfo()
-                            throws IOException {
-        if ( gridWriter != null && file() != null ) {
-            File metaInfo = GridMetaInfoFile.fileNameFromOptions( file().getParent(), FileUtils.getFilename( file() ),
-                                                                  null );
-            if ( !metaInfo.exists() ) {
-                boolean nFileCreated = metaInfo.createNewFile();
-                if ( !nFileCreated ) {
-                    throw new IOException( "Could not write cache info, because the file: " + metaInfo
-                                           + " could not be created." );
-                }
-            }
-            PrintWriter writer = new PrintWriter( new FileWriter( metaInfo ) );
-            GridMetaInfoFile.write( writer, infoFile, null );
-            // original data size.
-            writer.println( width );
-            writer.println( height );
-
-            for ( int row = 0; row < tilesOnFile.length; ++row ) {
-                StringBuilder sb = new StringBuilder();
-                for ( int col = 0; col < tilesOnFile[row].length; ++col ) {
-                    sb.append( tilesOnFile[row][col] == 0 ? 0 : 1 );
-                }
-                writer.println( sb.toString() );
-            }
-            writer.flush();
-            writer.close();
-        }
-    }
-
-    private static class CacheInfo {
-        /**
-         * @param gmif
-         * @param width
-         * @param height
-         * @param tilesInFile
-         */
-        public CacheInfo( GridMetaInfoFile gmif, int width, int height, long[][] tilesInFile ) {
-            this.gmif = gmif;
-            this.rWidth = width;
-            this.rHeight = height;
-            this.tilesInFile = tilesInFile;
-        }
-
-        int rHeight = 0;
-
-        int rWidth = 0;
-
-        GridMetaInfoFile gmif;
-
-        long[][] tilesInFile;
     }
 
 }

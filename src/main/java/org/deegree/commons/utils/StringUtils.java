@@ -274,6 +274,8 @@ public class StringUtils {
     }
 
     /**
+     * Test if given string is not <code>null</code> and not is the empty string "".
+     * 
      * @param s
      *            the string to test.
      * @return true iff s is not <code>null</code> and s not is the empty string "".
@@ -281,6 +283,50 @@ public class StringUtils {
     public final static boolean isSet( String s ) {
         return s != null && !"".equals( s );
 
+    }
+
+    /**
+     * Convert the given String to the number of bytes they represent. Incoming values could be something like:
+     * <ul>
+     * <li>20k, result=20*1024</li>
+     * <li>20M, result=20*(1024*1024)</li>
+     * <li>20G, result=20*(1024*1024*1024)</li>
+     * </ul>
+     * If the String could not be parsed, 0 will be returned.
+     * 
+     * @param size
+     *            the size representation
+     * @return the size in bytes, or 0 if not parsable.
+     */
+    public final static long parseByteSize( String size ) {
+        String s = size;
+        long result = 0;
+        if ( isSet( s ) ) {
+            int byteConvert = 1;
+            // split on no numbers.
+            String[] split = s.split( "\\D" );
+            // only the first split is of importance
+            String bytes = split[0];
+            if ( bytes.length() != s.length() ) {
+                // some characters were used after the split.
+                String unit = s.substring( bytes.length(), bytes.length() + 1 );
+                if ( unit.equalsIgnoreCase( "k" ) ) {
+                    byteConvert = 1024;
+                } else if ( unit.equalsIgnoreCase( "m" ) ) {
+                    byteConvert = 1024 * 1024;
+                } else if ( unit.equalsIgnoreCase( "g" ) ) {
+                    byteConvert = 1024 * 1024 * 1024;
+                }
+            }
+            try {
+                result = Long.parseLong( bytes ) * byteConvert;
+            } catch ( NumberFormatException e ) {
+
+                // nothing, just return 0
+
+            }
+        }
+        return result;
     }
 
 }
