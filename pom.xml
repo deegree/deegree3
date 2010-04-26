@@ -147,6 +147,7 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>0.9.2</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
