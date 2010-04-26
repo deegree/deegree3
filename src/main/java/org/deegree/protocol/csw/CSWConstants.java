@@ -74,6 +74,11 @@ public class CSWConstants {
     public static final String DCT_NS = "http://purl.org/dc/terms/";
 
     /**
+     * LOCAL_PART = "dct"
+     */
+    public static final String DCT_PREFIX = "dct";
+
+    /**
      * APISO application profile <br>
      * "http://www.opengis.net/cat/csw/apiso/1.0"
      */
