@@ -195,6 +195,7 @@ public class GeometryPropertyType extends AbstractPropertyType {
                 String t = geomString.toLowerCase();
                 t = t.replace( "_", "" );
                 t = t.replace( "abstract", "" );
+
                 if ( "geometry".equals( t ) ) {
                     result = GEOMETRY;
                 } else if ( "curve".equals( t ) ) {
@@ -229,7 +230,7 @@ public class GeometryPropertyType extends AbstractPropertyType {
                     result = TIN;
                 } else if ( "TriangulatedSurface".equalsIgnoreCase( t ) ) {
                     result = TRIANGULATED_SURFACE;
-                } else if ( "MultiGeometry".equalsIgnoreCase( t ) ) {
+                } else if ( "MultiGeometry".equalsIgnoreCase( t ) || "GeometricAggregate".equalsIgnoreCase( t ) ) {
                     result = MULTI_GEOMETRY;
                 } else if ( "MultiCurve".equalsIgnoreCase( t ) ) {
                     result = MULTI_CURVE;
@@ -268,7 +269,7 @@ public class GeometryPropertyType extends AbstractPropertyType {
         }
 
         public boolean isCompatible( Geometry geometry ) {
-            switch (this) {
+            switch ( this ) {
             case COMPOSITE:
                 return geometry instanceof CompositeGeometry<?>;
             case COMPOSITE_CURVE:
@@ -409,10 +410,10 @@ public class GeometryPropertyType extends AbstractPropertyType {
                    + ", geometry type: " + geomType;
         return s;
     }
-    
+
     @Override
     public boolean isNillable() {
         // TODO pipe this value through
         return true;
-    }    
+    }
 }
