@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:ds="http://www.deegree.org/datasource" xmlns:cm="http://www.deegree.org/commons" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
+  <annotation>
+    <documentation>A datasource defines a location which supplies data.</documentation>
+  </annotation>
+  <include schemaLocation="./datasource.xsd" />
+  <import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.2.0/commons.xsd" />
+  
+  <element name="AbstractConstraint" type="ds:AbstractConstraintType" abstract="true">
+    <annotation>
+      <documentation>Base declaration of a constraint, it can be used to define a constraint on a datasource.</documentation>
+    </annotation>
+  </element>
+  
+  <element name="BBoxConstraint" substitutionGroup="ds:AbstractConstraint">
+    <annotation>
+      <documentation>Define a boundingbox constrained on a data sources.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="ds:AbstractConstraintType">
+          <sequence>
+            <element ref="cm:BoundingBox" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  
+  <element name="ScaleConstraint" substitutionGroup="ds:AbstractConstraint">
+    <annotation>
+      <documentation>Base declaration of a constraint, it can be used to define a constraint on a datasource.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="ds:AbstractConstraintType">
+          <sequence>
+            <element ref="cm:ScaleDenominators" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  
+  <!-- ==============================================================
+    Define the base datasource, it only supplies a name. 
+    ============================================================== -->
+  <complexType name="AbstractConstraintType" abstract="true">
+    <annotation>
+      <documentation>Base type of all constraints.</documentation>
+    </annotation>
+  </complexType>
+  
+  <!-- ==============================================================
+    Define the a datasource with constraint wrapping. 
+    ============================================================== -->
+  <element name="AbstractGeospatialDataSource" type="ds:AbstractGeospatialDataSourceType" abstract="true" substitutionGroup="ds:AbstractDataSource" />
+  <complexType name="AbstractGeospatialDataSourceType" abstract="true">
+    <annotation>
+      <documentation>Base type of all data sources.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="ds:AbstractDataSourceType">
+        <sequence>
+          <element ref="ds:BBoxConstraint" minOccurs="0" />
+          <element ref="ds:ScaleConstraint" minOccurs="0" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  
+  <!-- ==============================================================
+    Define the web based datasource, anything that uses an OGC web service as a datasource. 
+    ============================================================== -->
+  <element name="AbstractWebBasedDataSource" type="ds:AbstractWebBasedDataSourceType" substitutionGroup="ds:AbstractGeospatialDataSource" />
+  <complexType name="AbstractWebBasedDataSourceType" abstract="true">
+    <annotation>
+      <documentation>
+        A web based data source, sends a request to a service some were in the web using the http protocol. The CapabilitesDocument location defines
+        the location of the service, refresh can be true if the capabilities should not be cached and/or evaluated anew.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <extension base="ds:AbstractGeospatialDataSourceType">
+        <sequence>
+          <element name="CapabilitiesDocumentLocation">
+            <complexType>
+              <attribute name="location" type="string" use="required" />
+              <attribute name="refreshTime" type="int" default="-1" />
+              <!-- attribute name="refresh" type="boolean" default="false" /-->
+              <!-- In seconds -->
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  
+  <!-- ==============================================================
+    Define the file system datasource, anything that might be using the file system as a single file or a directory. 
+    ============================================================== -->
+  <element name="GeospatialFileSystemDataSource" type="ds:GeospatialFileSystemDataSourceType" substitutionGroup="ds:AbstractGeospatialDataSource" />
+  <complexType name="GeospatialFileSystemDataSourceType">
+    <annotation>
+      <documentation>
+        The filesystem is a common datasource, examples are rasters, elevationmodels or xml files. Heck... every file can be a datasource.
+      </documentation>
+    </annotation>
+    <complexContent>
+      <extension base="ds:AbstractGeospatialDataSourceType">
+        <choice>
+          <element ref="ds:AbstractFile" maxOccurs="unbounded" />
+          <element ref="ds:AbstractFileSet" />
+        </choice>
+      </extension>
+    </complexContent>
+  </complexType>
+</schema>

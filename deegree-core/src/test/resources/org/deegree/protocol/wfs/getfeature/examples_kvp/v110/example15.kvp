@@ -1,0 +1,7 @@
+SERVICE=WFS
+VERSION=1.1.0
+REQUEST=GetFeature
+NAMESPACE=xmlns(uk=http://www.theuknamespace.uk)
+PROPERTYNAME=uk:Town/gml:name,uk:Town/gml:directedNode
+TYPENAME=uk:Town
+FEATUREID=t1

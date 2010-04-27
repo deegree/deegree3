@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" />
+
+  <element name="ComplexFeature" type="app:ComplexFeatureType" substitutionGroup="gml:_Feature" />
+  <complexType name="ComplexFeatureType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="custom1" type="app:SimpleContentPropertyType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="custom2" type="app:SequenceChoicePropertyType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="custom3" type="app:ChoiceGeometryPropertyType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="custom4" type="app:AuditTrailPropertyType" minOccurs="0" maxOccurs="unbounded" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="SimpleContentPropertyType">
+    <simpleContent>
+      <extension base="base64Binary">
+        <attribute name="url" type="anyURI" use="optional" />
+        <attribute name="mimeType" type="string" use="required" />
+        <attribute name="role" type="string" use="optional" />
+        <attribute name="length" type="positiveInteger" use="optional" />
+      </extension>
+    </simpleContent>
+  </complexType>
+
+  <complexType name="SequenceChoicePropertyType">
+    <sequence minOccurs="0" maxOccurs="2">
+      <choice minOccurs="0" maxOccurs="1">
+        <element name="A" type="string" />
+        <element name="B" type="integer" />
+      </choice>
+      <element name="C" type="integer" minOccurs="2" maxOccurs="2" />
+    </sequence>
+  </complexType>
+
+  <complexType name="ChoiceGeometryPropertyType">
+    <choice minOccurs="1" maxOccurs="1">
+      <element ref="gml:Surface" />
+      <element ref="gml:MultiSurface" />
+    </choice>
+  </complexType>
+  
+  <complexType name="AuditTrailPropertyType">
+    <sequence>
+      <element name="Event" type="app:EventType" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>  
+  <complexType name="EventType">
+    <sequence>
+      <element name="action" type="app:ActionType" />
+      <element name="timestamp" type="dateTime" />
+      <element name="userid" type="string" />
+    </sequence>
+  </complexType> 
+  <simpleType name="ActionType">
+    <restriction base="string">
+      <enumeration value="Insert"/>
+      <enumeration value="Update"/>
+      <enumeration value="Delete"/>
+    </restriction>
+  </simpleType>
+
+</schema>
