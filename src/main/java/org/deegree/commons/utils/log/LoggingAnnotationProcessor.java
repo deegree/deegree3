@@ -36,6 +36,7 @@
 package org.deegree.commons.utils.log;
 
 import static java.lang.Integer.parseInt;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -56,6 +57,8 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+import org.slf4j.Logger;
+
 /**
  * <code>LoggingAnnotationProcessor</code>
  * 
@@ -71,6 +74,8 @@ import javax.lang.model.element.TypeElement;
 @SupportedOptions( { "log4j.outputfile", "width" })
 public class LoggingAnnotationProcessor extends AbstractProcessor {
 
+    private static final Logger LOG = getLogger( LoggingAnnotationProcessor.class );
+
     private String outFile;
 
     private int width;
@@ -81,6 +86,10 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
         outFile = env.getOptions().get( "log4j.outputfile" );
         String w = env.getOptions().get( "width" );
         width = w == null ? 80 : parseInt( w );
+        if ( outFile == null ) {
+            outFile = System.getProperty( "java.io.tmpdir" ) + "/log4j.snippet";
+            LOG.info( "Outputting log4j snippet to '{}'.", outFile );
+        }
     }
 
     // breaks the lines at max width
