@@ -137,4 +137,42 @@ public class LayerDatabaseHelper {
         }
     }
 
+    /**
+     * @param layersConnId
+     * @param id
+     * @return true, if a layer was deleted
+     */
+    public static boolean removeLayer( String layersConnId, int id ) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection( layersConnId );
+
+            stmt = conn.prepareStatement( "delete from layers where id = ?" );
+            stmt.setInt( 1, id );
+            return stmt.executeUpdate() == 1;
+        } catch ( SQLException e ) {
+            LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return false;
+        } finally {
+            if ( stmt != null ) {
+                try {
+                    stmt.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+            if ( conn != null ) {
+                try {
+                    conn.close();
+                } catch ( SQLException e ) {
+                    LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+
 }
