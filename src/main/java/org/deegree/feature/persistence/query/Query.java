@@ -92,6 +92,8 @@ public class Query {
 
     private final Map<QueryHint, Object> hints = new HashMap<QueryHint, Object>();
 
+    private int maxFeatures = -1;
+
     /**
      * Creates a new {@link Query} instance.
      * 
@@ -107,13 +109,16 @@ public class Query {
      *            {@link QueryHint#HINT_NO_GEOMETRIES}
      * @param scale
      *            if scale is positive, a scale query hint will be used
+     * @param maxFeatures
+     *            may be -1 if no limit needs to be exercised
      */
-    public Query( QName ftName, Envelope looseBbox, Filter filter, boolean withGeometries, int scale ) {
+    public Query( QName ftName, Envelope looseBbox, Filter filter, boolean withGeometries, int scale, int maxFeatures ) {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
         this.featureVersion = null;
         this.srsName = null;
         this.sortBy = null;
+        this.maxFeatures = maxFeatures;
         hints.put( HINT_LOOSE_BBOX, looseBbox );
         if ( !withGeometries ) {
             hints.put( HINT_NO_GEOMETRIES, Boolean.TRUE );
@@ -180,4 +185,12 @@ public class Query {
     public SortProperty[] getSortProperties() {
         return sortBy;
     }
+
+    /**
+     * @return -1, if no limit has been set
+     */
+    public int getMaxFeatures() {
+        return maxFeatures;
+    }
+
 }

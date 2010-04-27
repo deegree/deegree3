@@ -312,6 +312,10 @@ public class SimpleSQLDatastore implements FeatureStore {
                     }
                 }
 
+                if ( q.getMaxFeatures() > 0 ) {
+                    sql += " limit " + q.getMaxFeatures();
+                }
+
                 conn = getConnection( connId );
                 stmt = conn.prepareStatement( sql );
                 try {
