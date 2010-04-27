@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Ly Le (Galdos Systems Inc.) -->
+<!-- amilanovic: Added URN -->
+<xsd:schema targetNamespace="http://www.opengis.net/ogc" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:appinfo source="urn:x-opengis:specification:filter:schema-xsd:expr:v1.0.0">expr.xsd v1.0.0 2002-08</xsd:appinfo>
+		<xsd:documentation>OGC Filter Expression schema. Copyright (c) 2002  OpenGIS Consortium, All Rights Reserved.</xsd:documentation>
+	</xsd:annotation>
+	<xsd:element name="Add" type="ogc:BinaryOperatorType" substitutionGroup="ogc:expression"/>
+	<xsd:element name="Sub" type="ogc:BinaryOperatorType" substitutionGroup="ogc:expression"/>
+	<xsd:element name="Mul" type="ogc:BinaryOperatorType" substitutionGroup="ogc:expression"/>
+	<xsd:element name="Div" type="ogc:BinaryOperatorType" substitutionGroup="ogc:expression"/>
+	<xsd:element name="PropertyName" type="ogc:PropertyNameType" substitutionGroup="ogc:expression"/>
+	<xsd:element name="Function" type="ogc:FunctionType" substitutionGroup="ogc:expression"/>
+	<xsd:element name="Literal" type="ogc:LiteralType" substitutionGroup="ogc:expression"/>
+	<!-- expression element set to anyType so that both simpleTypes (e.g. string content) and complexTypes may substitute for this element.  This removes the need for mixed content -->
+	<xsd:element name="expression" abstract="true"/>
+	<xsd:complexType name="ExpressionType" abstract="true"/>
+	<xsd:complexType name="BinaryOperatorType">
+		<xsd:complexContent>
+			<xsd:extension base="ogc:ExpressionType">
+				<xsd:sequence>
+					<xsd:element ref="ogc:expression" minOccurs="2" maxOccurs="2"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="FunctionType">
+		<xsd:complexContent>
+			<xsd:extension base="ogc:ExpressionType">
+				<xsd:sequence>
+					<xsd:element ref="ogc:expression" minOccurs="0" maxOccurs="unbounded"/>
+				</xsd:sequence>
+				<xsd:attribute name="name" type="xsd:string" use="required"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:simpleType name="LiteralType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="PropertyNameType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

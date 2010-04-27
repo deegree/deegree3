@@ -1,0 +1,907 @@
+<wfs:Transaction
+  xmlns:cdf="http://www.opengis.net/cite/data"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:wfs="http://www.opengis.net/wfs"
+  version="1.0.0"
+  service="WFS"
+>
+  <wfs:Delete typeName="cdf:Locks">
+    <ogc:Filter>
+      <ogc:PropertyIsNull>
+        <ogc:PropertyName>gml:name</ogc:PropertyName>
+      </ogc:PropertyIsNull>
+    </ogc:Filter>
+  </wfs:Delete>
+  <wfs:Insert>
+    <!-- LockAction test data -->
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfla0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfla0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfla0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfla0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlla0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlla0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlla0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlla0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <!-- Basic Lock Transactions test data -->
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfbt0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfbt0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfbt0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfbt0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfbt0005</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfbt0006</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlbt0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlbt0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlbt0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlbt0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlbt0005</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlbt0006</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <!-- Lock expiry test data -->
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfe0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfe0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfe0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfe0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwle0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwle0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwle0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwle0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <!-- Release Action ALL test data -->
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0005</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0006</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0007</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0008</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0009</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfra0010</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0005</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0006</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0007</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0008</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0009</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlra0010</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <!-- Release Action SOME test data -->
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0005</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0006</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0007</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0008</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0009</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>lfrs0010</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0001</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0002</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0003</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0004</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0005</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0006</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0007</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0008</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0009</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+    <cdf:Locks>
+      <gml:boundedBy>
+        <gml:Box srsName="EPSG:32615">
+          <gml:coordinates>500000,500000 500100,500100</gml:coordinates>
+        </gml:Box>
+      </gml:boundedBy>
+      <cdf:id>gfwlrs0010</cdf:id>
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:32615">
+          <gml:coordinates>500050,500050</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+    </cdf:Locks>
+  </wfs:Insert>
+</wfs:Transaction>

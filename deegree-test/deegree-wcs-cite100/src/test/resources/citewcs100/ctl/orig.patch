@@ -1,0 +1,307 @@
+Index: wcs.xml
+===================================================================
+--- wcs.xml	(revision 23339)
++++ wcs.xml	(working copy)
+@@ -72,15 +72,15 @@
+       <ctl:assertion>The WCS 1.0.0 implementation being tested behaves properly</ctl:assertion>
+       <ctl:code>
+       <!-- wcs test url -->
+-      <xsl:variable name="VAR_WCS_CAPABILITIES_URL">http://127.0.0.1:18080/cite-wcs-100/services?request=GetCapabilities&amp;service=WCS</xsl:variable>  
++      <xsl:variable name="VAR_WCS_CAPABILITIES_URL">http://localhost:18083/deegree-wcs-cite100/services?request=GetCapabilities&amp;service=WCS</xsl:variable>
+       <!-- MIME header -->
+-      <xsl:variable name="VAR_WCS_FORMAT_1_HEADER">image/tiff</xsl:variable>  
++      <xsl:variable name="VAR_WCS_FORMAT_1_HEADER">image/tiff</xsl:variable>
+       <!-- A value that is lexically higher than the current updateSequence value-->
+-      <xsl:variable name="VAR_HIGH_UPDATESEQUENCE">1</xsl:variable>  
++      <xsl:variable name="VAR_HIGH_UPDATESEQUENCE">1</xsl:variable>
+       <!--A value that is lexically lower than the current updateSequence value -->
+-      <xsl:variable name="VAR_LOW_UPDATESEQUENCE">-1</xsl:variable>  
++      <xsl:variable name="VAR_LOW_UPDATESEQUENCE">-1</xsl:variable>
+       <!-- A value that is lexically representing RESX -->
+-      <xsl:variable name="VAR_WCS_COVERAGE_1_RESX">16</xsl:variable>  
++      <xsl:variable name="VAR_WCS_COVERAGE_1_RESX">16</xsl:variable>
+       <!--  A value that is lexically representing RESY -->
+       <xsl:variable name="VAR_WCS_COVERAGE_1_RESY">16</xsl:variable>
+       <!-- Verify that the server supports XML encoding.-->
+@@ -2124,7 +2124,7 @@
+                <ctl:header name="Content-type">text/xml</ctl:header>
+                <ctl:body><![CDATA[<DescribeCoverage xmlns="http://www.opengis.net/wcs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd"  service="WCS" >
+ <Coverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</Coverage>
+- 
++
+ </DescribeCoverage >]]></ctl:body>
+             </ctl:request>
+          </xsl:variable>
+@@ -2152,7 +2152,7 @@
+                <ctl:header name="Content-type">text/xml</ctl:header>
+                <ctl:body><![CDATA[<DescribeCoverage xmlns="http://www.opengis.net/wcs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd"  service="WCS"  version="0.0.0">
+ <Coverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</Coverage>
+- 
++
+ </DescribeCoverage >]]></ctl:body>
+             </ctl:request>
+          </xsl:variable>
+@@ -2961,7 +2961,7 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCapabilities xmlns="http://www.opengis.net/wcs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/wcsCapabilities.xsd" version="1.0.0" service="WCS" > 
++               <ctl:body><![CDATA[<GetCapabilities xmlns="http://www.opengis.net/wcs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/wcsCapabilities.xsd" version="1.0.0" service="WCS" >
+ </GetCapabilities>]]></ctl:body>
+                <xsl:copy-of select="$parser"/>
+             </ctl:request>
+@@ -3485,8 +3485,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_OUTSIDE_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_OUTSIDE_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_OUTSIDE_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_OUTSIDE_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -3560,8 +3560,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -4035,8 +4035,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="1.0.0" service="WCS" ><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="1.0.0" service="WCS" ><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                  <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -4124,8 +4124,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="1.0.0" service="WCS" ><sourceCoverage>WCS_COVERAGE_NOT_DEFINED</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="1.0.0" service="WCS" ><sourceCoverage>WCS_COVERAGE_NOT_DEFINED</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -4529,8 +4529,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="WCS_CRS_NOT_IN_REQUEST_OR_REQUESTRESPONSE_CRS">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="WCS_CRS_NOT_IN_REQUEST_OR_REQUESTRESPONSE_CRS">                        <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -4552,7 +4552,7 @@
+       <ctl:param name="VAR_WCS_FORMAT_1_HEADER"/>
+       <ctl:param name="VAR_WCS_DESCRIBE_COVERAGE_HTTP_GET_URL"/>
+       <ctl:param name="VAR_WCS_GET_COVERAGE_HTTP_GET_URL"/>
+-      <ctl:assertion>When a GetCoverage request is made with EXCEPTIONS contains value  "application/vnd.ogc.se_xml", the server recognize it. 
++      <ctl:assertion>When a GetCoverage request is made with EXCEPTIONS contains value  "application/vnd.ogc.se_xml", the server recognize it.
+ </ctl:assertion>
+       <ctl:comment><![CDATA[Check for content-type header = [[VAR_WCS_FORMAT_1_HEADER]]]]></ctl:comment>
+       <ctl:link title="OGC 03-065r6: cl. 9.2.2.13">http://cite.opengeospatial.org/OGCTestData/wcs/1.0.0/specs/03-065r6.html#9.2.2.13_EXCEPTIONS</ctl:link>
+@@ -4748,7 +4748,7 @@
+       <ctl:param name="VAR_WCS_FORMAT_1_HEADER"/>
+       <ctl:param name="VAR_WCS_DESCRIBE_COVERAGE_HTTP_GET_URL"/>
+       <ctl:param name="VAR_WCS_GET_COVERAGE_HTTP_POST_URL"/>
+-      <ctl:assertion>When a GetCoverage request is made with EXCEPTIONS contains value  "application/vnd.ogc.se_xml", the server recognize it. 
++      <ctl:assertion>When a GetCoverage request is made with EXCEPTIONS contains value  "application/vnd.ogc.se_xml", the server recognize it.
+ </ctl:assertion>
+       <ctl:comment><![CDATA[Check for content-type header = [[VAR_WCS_FORMAT_1_HEADER]]]]></ctl:comment>
+       <ctl:link title="OGC 03-065r6: cl. 9.2.2.13">http://cite.opengeospatial.org/OGCTestData/wcs/1.0.0/specs/03-065r6.html#9.2.2.13_EXCEPTIONS</ctl:link>
+@@ -5353,8 +5353,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>WCS_FORMAT_INVALID</format></output></GetCoverage>]]></ctl:body>
+@@ -5435,8 +5435,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output></output></GetCoverage>]]></ctl:body>
+@@ -5813,8 +5813,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low></gml:low><gml:high></gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low></gml:low><gml:high></gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+             </ctl:request>
+          </xsl:variable>
+@@ -5990,8 +5990,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset><interpolationMethod>]]><xsl:value-of select="$VAR_WCS_INTERPLATION_METHOD"/><![CDATA[</interpolationMethod>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -6079,8 +6079,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset><interpolationMethod>WCS_INTERPLATION_METHOD_INVALID</interpolationMethod>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -6689,12 +6689,12 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset><rangeSubset>
+-	<axisSubset name="]]><xsl:value-of select="$VAR_WCS_PARAMETER"/><![CDATA[">
+-		<singleValue>WCS_PARAMETER_VALUE_INVALID</singleValue>	</axisSubset>
++        <axisSubset name="]]><xsl:value-of select="$VAR_WCS_PARAMETER"/><![CDATA[">
++                <singleValue>WCS_PARAMETER_VALUE_INVALID</singleValue>  </axisSubset>
+ </rangeSubset>
+ 
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -6825,12 +6825,12 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset><rangeSubset>
+-	<axisSubset name="]]><xsl:value-of select="$VAR_WCS_PARAMETER"/><![CDATA[">
+-		<singleValue>]]><xsl:value-of select="$VAR_WCS_PARAMETER_VALUE"/><![CDATA[</singleValue>	</axisSubset>
++        <axisSubset name="]]><xsl:value-of select="$VAR_WCS_PARAMETER"/><![CDATA[">
++                <singleValue>]]><xsl:value-of select="$VAR_WCS_PARAMETER_VALUE"/><![CDATA[</singleValue>        </axisSubset>
+ </rangeSubset>
+ 
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -7362,8 +7362,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><crs>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_RESPONSE_CRS"/><![CDATA[</crs><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -7451,8 +7451,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><crs>WCS_COVERAGE_RESPONSE_CRS_INVALID</crs><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -8133,8 +8133,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -8227,8 +8227,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/0.0.1/getCoverage.xsd" version="0.0.1" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/0.0.1/getCoverage.xsd" version="0.0.1" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -8322,7 +8322,7 @@
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+                <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="1.0.0" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA["><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope> 	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++        </gml:Envelope>         <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -8799,7 +8799,7 @@
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+                <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><temporalSubset>
+-	<gml:timePosition>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_TIME"/><![CDATA[</timePosition>
++        <gml:timePosition>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_TIME"/><![CDATA[</timePosition>
+ </temporalSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+                <parsers:HeadersParser/>
+@@ -8871,7 +8871,7 @@
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+                <ctl:body><![CDATA[  <GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><temporalSubset>
+-	<gml:timePosition>WCS_TIME_INVALID</timePosition>
++        <gml:timePosition>WCS_TIME_INVALID</timePosition>
+ </temporalSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+             </ctl:request>
+@@ -9522,8 +9522,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_OVERLAP_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_OVERLAP_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_OVERLAP_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_OVERLAP_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>
+@@ -9824,8 +9824,8 @@
+                </ctl:url>
+                <ctl:method>post</ctl:method>
+                <ctl:header name="Content-type">text/xml</ctl:header>
+-               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">			<gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_INSIDE_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_INSIDE_POSITION_SECOND"/><![CDATA[</gml:pos>
+-	</gml:Envelope>	<gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
++               <ctl:body><![CDATA[<GetCoverage xmlns="http://www.opengis.net/wcs" xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd" version="]]><xsl:value-of select="$VAR_WCS_VERSION"/><![CDATA[" service="WCS" ><sourceCoverage>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1"/><![CDATA[</sourceCoverage><domainSubset><spatialSubset><gml:Envelope srsName="]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_CRS"/><![CDATA[">                 <gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_INSIDE_POSITION_FIRST"/><![CDATA[</gml:pos><gml:pos>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_BBOX_INSIDE_POSITION_SECOND"/><![CDATA[</gml:pos>
++        </gml:Envelope> <gml:Grid dimension="2"><gml:limits><gml:GridEnvelope><gml:low>0 0 </gml:low><gml:high>]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_WIDTH"/><![CDATA[
+                   ]]><xsl:value-of select="' '"/><![CDATA[
+                   ]]><xsl:value-of select="$VAR_WCS_COVERAGE_1_HEIGHT"/><![CDATA[ </gml:high></gml:GridEnvelope></gml:limits><gml:axisName>width</gml:axisName><gml:axisName>height</gml:axisName></gml:Grid></spatialSubset></domainSubset>
+ <output><format>]]><xsl:value-of select="$VAR_WCS_FORMAT_1"/><![CDATA[</format></output></GetCoverage>]]></ctl:body>

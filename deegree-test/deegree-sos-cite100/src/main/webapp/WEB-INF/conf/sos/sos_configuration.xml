@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeSOS configVersion="0.5.0" xmlns="http://www.deegree.org/services/sos" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/sos ../../../schema/sos/0.5.0/sos_configuration.xsd">
+  <PublishedInformation>
+    <SupportedVersions>
+      <Version>1.0.0</Version>
+    </SupportedVersions>
+    <OWSOptions>
+      <!-- The default,  compliant with OWS 1.1.0 spec. -->
+      <!-- HTTPStatusCodeForExceptions>400</HTTPStatusCodeForExceptions -->
+      <!-- Non standard code for CITE/TeamEngine tests. They expect 200 :/ -->
+      <!-- HTTPStatusCodeForExceptions>200</HTTPStatusCodeForExceptions -->
+    </OWSOptions>
+  </PublishedInformation>
+  <ServiceConfiguration>
+    <Offering>
+      <name>utah_climate</name>
+      <srsName>EPSG:26912</srsName>
+      <Datastore>
+        <Connection>
+          <Driver>org.apache.derby.jdbc.EmbeddedDriver</Driver>
+          <Url>jdbc:derby:classpath:utah_climate_2004</Url>
+          <User/>
+          <Password/>
+        </Connection>
+        <Class>org.deegree.services.sos.storage.SimpleObservationDatastore</Class>
+        <Table>utah_climate_2004</Table>
+        <Column type="timestamp" name="obs_time"/>
+        <Column type="procedure" name="s_id"/>
+        <Option name="db_timezone" value="GMT"/>
+      </Datastore>
+      <Procedure xlink:href="urn:ogc:object:Sensor:latlon:salt_lake_city">
+        <FeatureOfInterest xlink:href="http://testing.deegree.org/deegree-wfs/services?request=GetFeature&amp;service=WFS&amp;version=1.1.0&amp;featureid=ZI_263"/>
+        <Sensor xlink:href="../../data/sos/utah-sensorml.xml"/>
+        <Option name="value" value="427598"/>
+        <Option name="long_lat_position" value="-111.969000000000193 40.778099999999959"/>
+      </Procedure>
+      <Property xlink:href="urn:ogc:def:phenomenon:OGC:precipitation">
+        <Column type="property" name="precipitation"/>
+        <Option name="uom" value="in"/>
+      </Property>
+      <Property xlink:href="urn:ogc:def:phenomenon:OGC:snowfall">
+        <Column type="property" name="snow_fall"/>
+        <Option name="uom" value="in"/>
+      </Property>
+      <Property xlink:href="urn:ogc:def:phenomenon:OGC:snowdepth">
+        <Column type="property" name="snow_depth"/>
+        <Option name="uom" value="in"/>
+      </Property>
+      <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature_max">
+        <Column type="property" name="max_temp"/>
+        <Option name="uom" value="degF"/>
+      </Property>
+      <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature_min">
+        <Column type="property" name="min_temp"/>
+        <Option name="uom" value="degF"/>
+      </Property>
+      <Property xlink:href="urn:ogc:def:phenomenon:OGC:temperature">
+        <Column type="property" name="obs_temp"/>
+        <Option name="uom" value="degF"/>
+      </Property>
+    </Offering>
+  </ServiceConfiguration>
+</deegreeSOS>

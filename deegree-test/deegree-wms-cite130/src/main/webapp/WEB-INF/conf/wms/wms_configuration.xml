@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWMS xmlns="http://www.deegree.org/services/wms" xmlns:ds="http://www.deegree.org/datasource" xmlns:cm="http://www.deegree.org/commons" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices" configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/services/wms ../../../schema/wms/0.5.0/wms_configuration.xsd">
+
+  <ServiceConfiguration>
+
+    <UnrequestableLayer>
+      <Title>CITE WMS root layer</Title>
+      <CRS>EPSG:4326 CRS:84</CRS>
+
+      <RequestableLayer>
+        <Name>cite:BasicPolygons</Name>
+        <Title>cite:BasicPolygons</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/BasicPolygons.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/BasicPolygons.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:Forests</Name>
+        <Title>cite:Forests</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/Forests.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/Forests.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:Lakes</Name>
+        <Title>cite:Lakes</Title>
+        <Dimension isElevation="true">
+          <Property>ELEV</Property>
+          <DefaultValue>500</DefaultValue>
+          <NearestValue>true</NearestValue>
+          <Extent>500,490,480</Extent>
+        </Dimension>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/Lakes.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/Lakes.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:Ponds</Name>
+        <Title>cite:Ponds</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/Ponds.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/Ponds.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:NamedPlaces</Name>
+        <Title>cite:NamedPlaces</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/NamedPlaces.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/NamedPlaces.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:Buildings</Name>
+        <Title>cite:Buildings</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/Buildings.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/Buildings.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:BuildingCenters</Name>
+        <Title>cite:BuildingCenters</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/BuildingCenters.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/BuildingCenters.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:DividedRoutes</Name>
+        <Title>cite:DividedRoutes</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/DividedRoutes.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/DividedRoutes.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:RoadSegments</Name>
+        <Title>cite:RoadSegments</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/RoadSegments.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/RoadSegments.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:MapNeatline</Name>
+        <Title>cite:MapNeatline</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/MapNeatline.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/MapNeatline.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:Streams</Name>
+        <Title>cite:Streams</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/Streams.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/Streams.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:Bridges</Name>
+        <Title>cite:Bridges</Title>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/Bridges.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/Bridges.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:Autos</Name>
+        <Title>cite:Autos</Title>
+        <Dimension isTime="true">
+          <Property>TIME</Property>
+          <DefaultValue>2000-01-01T00:00:00Z</DefaultValue>
+          <MultipleValues>true</MultipleValues>
+          <NearestValue>true</NearestValue>
+          <Current>true</Current>
+          <Extent>2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S</Extent>
+        </Dimension>
+        <ds:ShapefileDataSource>
+          <ds:File>../../data/cite/Autos.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <DirectStyle>
+          <File>styles/Autos.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+      <RequestableLayer>
+        <Name>cite:Terrain</Name>
+        <Title>cite:Terrain</Title>
+        <Dimension isElevation="true">
+          <Property>ELEV</Property>
+          <DefaultValue>0/425</DefaultValue>
+          <MultipleValues>true</MultipleValues>
+          <NearestValue>false</NearestValue>
+          <Extent>0/425/1</Extent>
+        </Dimension>
+        <ds:RasterDataSource crs="EPSG:4326" originLocation="outer">
+          <ds:RasterFile fileType="tif">../../data/cite/terrain.tif</ds:RasterFile>
+        </ds:RasterDataSource>
+        <DirectStyle>
+          <File>styles/terrain2.xml</File>
+        </DirectStyle>
+        <DirectStyle>
+          <File>styles/terrain1.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
+
+    </UnrequestableLayer>
+
+  </ServiceConfiguration>
+</deegreeWMS>

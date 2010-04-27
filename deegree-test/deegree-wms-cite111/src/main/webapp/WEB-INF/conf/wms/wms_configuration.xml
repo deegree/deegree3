@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wms:deegreeWMS xmlns:wms="http://www.deegree.org/services/wms" xmlns:ds="http://www.deegree.org/datasource" xmlns:cm="http://www.deegree.org/commons" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices" configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/services/wms ../../../schema/wms/0.5.0/wms_configuration.xsd">
+
+  <wms:ServiceConfiguration>
+
+    <wms:RequestableLayer>
+      <wms:Name>root</wms:Name>
+      <wms:Title>My Root Layer</wms:Title>
+      <wms:CRS>EPSG:4326</wms:CRS>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:BasicPolygons</wms:Name>
+        <wms:Title>cite:BasicPolygons</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/BasicPolygons.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/BasicPolygons.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:Forests</wms:Name>
+        <wms:Title>cite:Forests</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/Forests.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/Forests.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:Lakes</wms:Name>
+        <wms:Title>cite:Lakes</wms:Title>
+        <wms:Dimension isElevation="true">
+          <wms:Property>ELEV</wms:Property>
+          <wms:DefaultValue>500</wms:DefaultValue>
+          <wms:NearestValue>true</wms:NearestValue>
+          <wms:Extent>500,490,480</wms:Extent>
+        </wms:Dimension>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/Lakes.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/Lakes.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:Ponds</wms:Name>
+        <wms:Title>cite:Ponds</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/Ponds.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/Ponds.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:NamedPlaces</wms:Name>
+        <wms:Title>cite:NamedPlaces</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/NamedPlaces.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/NamedPlaces.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:Buildings</wms:Name>
+        <wms:Title>cite:Buildings</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/Buildings.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/Buildings.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:BuildingCenters</wms:Name>
+        <wms:Title>cite:BuildingCenters</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/BuildingCenters.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/BuildingCenters.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:DividedRoutes</wms:Name>
+        <wms:Title>cite:DividedRoutes</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/DividedRoutes.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/DividedRoutes.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:RoadSegments</wms:Name>
+        <wms:Title>cite:RoadSegments</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/RoadSegments.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/RoadSegments.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:MapNeatline</wms:Name>
+        <wms:Title>cite:MapNeatline</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/MapNeatline.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/MapNeatline.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:Streams</wms:Name>
+        <wms:Title>cite:Streams</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/Streams.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/Streams.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:Bridges</wms:Name>
+        <wms:Title>cite:Bridges</wms:Title>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/Bridges.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/Bridges.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cite:Autos</wms:Name>
+        <wms:Title>cite:Autos</wms:Title>
+        <wms:Dimension isTime="true">
+          <wms:Property>TIME</wms:Property>
+          <wms:MultipleValues>true</wms:MultipleValues>
+          <wms:NearestValue>true</wms:NearestValue>
+          <wms:Current>true</wms:Current>
+          <wms:Extent>2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S</wms:Extent>
+        </wms:Dimension>
+        <ds:ShapefileDataSource>
+          <ds:StorageSRS>EPSG:4326</ds:StorageSRS>
+          <ds:File>../../data/cite/Autos.shp</ds:File>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/Autos.xml</wms:File>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+    </wms:RequestableLayer>
+
+  </wms:ServiceConfiguration>
+
+  <wms:PublishedInformation>
+    <wms:SupportedVersions>
+      <wms:Version>1.1.1</wms:Version>
+    </wms:SupportedVersions>
+  </wms:PublishedInformation>
+
+</wms:deegreeWMS>

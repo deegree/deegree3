@@ -1,0 +1,18 @@
+body {
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: Arial, sans-serif;
+	font-size: 10pt;
+}
+
+h2 {
+	color: Red;
+}
+
+h3 {
+	color: Green;
+}
+
+h4 {
+	color: Blue;
+}

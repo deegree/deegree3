@@ -1,0 +1,197 @@
+<wfs:WFS_Capabilities updateSequence="0" version="1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs ../../../../xml/xsd/WFS-1.0.0/WFS-capabilities.xsd">
+  <wfs:Service>
+    <wfs:Name>WFS</wfs:Name>
+    <wfs:Title>Galdos Systems Inc. Cartagena</wfs:Title>
+    <wfs:OnlineResource>http://wfs.galdosinc.com:8581/wfs/http</wfs:OnlineResource>
+  </wfs:Service>
+  <wfs:Capability>
+    <wfs:Request>
+      <wfs:GetCapabilities>
+        <wfs:DCPType>
+          <wfs:HTTP>
+            <wfs:Get onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+            <wfs:Post onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+          </wfs:HTTP>
+        </wfs:DCPType>
+      </wfs:GetCapabilities>
+      <wfs:DescribeFeatureType>
+        <wfs:SchemaDescriptionLanguage>
+          <wfs:XMLSCHEMA/>
+        </wfs:SchemaDescriptionLanguage>
+        <wfs:DCPType>
+          <wfs:HTTP>
+            <wfs:Get onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+            <wfs:Post onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+          </wfs:HTTP>
+        </wfs:DCPType>
+      </wfs:DescribeFeatureType>
+      <wfs:GetFeature>
+        <wfs:ResultFormat>
+          <wfs:GML2/>
+        </wfs:ResultFormat>
+        <wfs:DCPType>
+          <wfs:HTTP>
+            <wfs:Get onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+            <wfs:Post onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+          </wfs:HTTP>
+        </wfs:DCPType>
+      </wfs:GetFeature>
+      <wfs:Transaction>
+        <wfs:DCPType>
+          <wfs:HTTP>
+            <wfs:Post onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+          </wfs:HTTP>
+        </wfs:DCPType>
+      </wfs:Transaction>
+      <wfs:GetFeatureWithLock>
+        <wfs:ResultFormat>
+          <wfs:GML2/>
+        </wfs:ResultFormat>
+        <wfs:DCPType>
+          <wfs:HTTP>
+            <wfs:Post onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+          </wfs:HTTP>
+        </wfs:DCPType>
+      </wfs:GetFeatureWithLock>
+      <wfs:LockFeature>
+        <wfs:DCPType>
+          <wfs:HTTP>
+            <wfs:Post onlineResource="http://wfs.galdosinc.com:8581/wfs/http"/>
+          </wfs:HTTP>
+        </wfs:DCPType>
+      </wfs:LockFeature>
+    </wfs:Request>
+  </wfs:Capability>
+  <wfs:FeatureTypeList>
+    <wfs:Operations>
+      <wfs:Query/>
+      <wfs:Update/>
+      <wfs:Insert/>
+      <wfs:Delete/>
+      <wfs:Lock/>
+    </wfs:Operations>
+    <!--Data feature types-->
+    <wfs:FeatureType xmlns:cdf="http://www.opengis.net/cite/data">
+      <wfs:Name>cdf:Deletes</wfs:Name>
+      <wfs:Title>Feature for testing delete operations</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cdf="http://www.opengis.net/cite/data">
+      <wfs:Name>cdf:Inserts</wfs:Name>
+      <wfs:Title>Feature for testing insert operations</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cdf="http://www.opengis.net/cite/data">
+      <wfs:Name>cdf:Updates</wfs:Name>
+      <wfs:Title>Feature for testing update operations</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cdf="http://www.opengis.net/cite/data">
+      <wfs:Name>cdf:Other</wfs:Name>
+      <wfs:Title>Feature for testing data operations</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cdf="http://www.opengis.net/cite/data">
+      <wfs:Name>cdf:Seven</wfs:Name>
+      <wfs:Title>Feature for testing number of results</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cdf="http://www.opengis.net/cite/data">
+      <wfs:Name>cdf:Fifteen</wfs:Name>
+      <wfs:Title>Feature for testing number of results</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cdf="http://www.opengis.net/cite/data">
+      <wfs:Name>cdf:Nulls</wfs:Name>
+      <wfs:Title>Feature for testing null values</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cdf="http://www.opengis.net/cite/data">
+      <wfs:Name>cdf:Locks</wfs:Name>
+      <wfs:Title>Feature for testing lock operations</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <!--Complex feature types-->
+    <wfs:FeatureType xmlns:ccf="http://www.opengis.net/cite/complex">
+      <wfs:Name>ccf:Complex</wfs:Name>
+      <wfs:Title>Feature for testing complex values</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <!--geometry feature types-->
+    <wfs:FeatureType xmlns:cgf="http://www.opengis.net/cite/geometry">
+      <wfs:Name>cgf:Points</wfs:Name>
+      <wfs:Title>Feature for testing point geometry</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cgf="http://www.opengis.net/cite/geometry">
+      <wfs:Name>cgf:MPoints</wfs:Name>
+      <wfs:Title>Feature for testing multi point geometry</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cgf="http://www.opengis.net/cite/geometry">
+      <wfs:Name>cgf:Lines</wfs:Name>
+      <wfs:Title>Feature for testing line string geometry</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cgf="http://www.opengis.net/cite/geometry">
+      <wfs:Name>cgf:MLines</wfs:Name>
+      <wfs:Title>Feature for testing multi line string geometry</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cgf="http://www.opengis.net/cite/geometry">
+      <wfs:Name>cgf:Polygons</wfs:Name>
+      <wfs:Title>Feature for testing polygon geometry</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+    <wfs:FeatureType xmlns:cgf="http://www.opengis.net/cite/geometry">
+      <wfs:Name>cgf:MPolygons</wfs:Name>
+      <wfs:Title>Feature for testing multi polygon geometry</wfs:Title>
+      <wfs:SRS>EPSG:32615</wfs:SRS>
+      <wfs:LatLongBoundingBox minx="500000" miny="500000" maxx="501000" maxy="501000"/>
+    </wfs:FeatureType>
+  </wfs:FeatureTypeList>
+  <!-- ADDITIONAL CAPABILITIES -->
+  <ogc:Filter_Capabilities>
+    <ogc:Spatial_Capabilities>
+      <ogc:Spatial_Operators>
+        <ogc:BBOX/>
+        <ogc:Beyond/>
+        <ogc:Contains/>
+        <ogc:Crosses/>
+        <ogc:Disjoint/>
+        <ogc:Equals/>
+        <ogc:Intersect/>
+        <ogc:Overlaps/>
+        <ogc:Touches/>
+        <ogc:Within/>
+        <ogc:DWithin/>
+      </ogc:Spatial_Operators>
+    </ogc:Spatial_Capabilities>
+    <ogc:Scalar_Capabilities>
+      <ogc:Logical_Operators/>
+      <ogc:Comparison_Operators>
+        <ogc:Simple_Comparisons/>
+        <ogc:Like/>
+        <ogc:NullCheck/>
+        <ogc:Between/>
+      </ogc:Comparison_Operators>
+      <ogc:Arithmetic_Operators>
+        <ogc:Simple_Arithmetic/>
+      </ogc:Arithmetic_Operators>
+    </ogc:Scalar_Capabilities>
+  </ogc:Filter_Capabilities>
+</wfs:WFS_Capabilities>

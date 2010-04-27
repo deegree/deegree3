@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.deegree</groupId>
+  <artifactId>deegree-test</artifactId>
+  <packaging>pom</packaging>
+  <version>3.0-SNAPSHOT</version>
+  <name>deegree-test</name>
+  <url>http://www.deegree.org</url>
+  <scm>
+    <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/test/trunk</developerConnection>
+    <url>http://svn.wald.intevation.org/svn/deegree/deegree3/test/trunk</url>
+  </scm>
+  <modules>
+    <module>deegree-wfs-cite110</module>
+    <module>deegree-wfs-cite100</module>
+    <module>deegree-wms-cite111</module>
+    <module>deegree-wms-cite130</module>
+    <module>deegree-wms-similarity-tests</module>
+    <module>deegree-wcs-cite100</module>
+    <module>deegree-sos-cite100</module>
+  </modules>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+  </properties>
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>deegree-repository</id>
+      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+</project>

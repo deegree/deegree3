@@ -1,0 +1,20 @@
+<config>
+	<organization>
+		<name>OGC</name>
+	</organization>
+	<standard>
+		<name>WFS</name>
+	</standard>
+	<version>
+		<name>1.1.0</name>
+	</version>
+	<suite>
+		<namespace-uri>http://www.occamlab.com/ctl</namespace-uri>
+		<prefix>ctl</prefix>
+		<local-name>wfs-1.1.0-compliance-suite</local-name>
+	</suite>
+	<source>ctl/all.xml</source>
+	<resources>resources</resources>
+	<web>web</web>
+</config>
+

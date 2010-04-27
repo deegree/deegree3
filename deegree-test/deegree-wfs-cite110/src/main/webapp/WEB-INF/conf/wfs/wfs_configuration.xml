@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWFS configVersion="0.5.0" xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/wfs/0.5.0/wfs_configuration.xsd">
+  <ServiceConfiguration>
+    <MemoryFeatureStore xmlns="http://www.deegree.org/datasource">
+      <NamespaceHint prefix="sf" namespaceURI="http://cite.opengeospatial.org/gmlsf" />
+      <GMLSchemaFileURL gmlVersion="GML_31">datastores/gml/cite110/cite-gmlsf2.xsd</GMLSchemaFileURL>
+      <GMLFeatureCollectionFileURL gmlVersion="GML_31">datastores/gml/cite110/dataset-sf0-2.xml
+      </GMLFeatureCollectionFileURL>
+    </MemoryFeatureStore>
+  </ServiceConfiguration>
+  <PublishedInformation>
+    <SupportedVersions>
+      <Version>1.0.0</Version>
+      <Version>1.1.0</Version>
+    </SupportedVersions>
+    <EnableTransactions>true</EnableTransactions>
+    <EnableStreaming>false</EnableStreaming>
+    <QuerySRS>urn:x-ogc:def:crs:EPSG:6.11.2:4326</QuerySRS>
+  </PublishedInformation>
+</deegreeWFS>

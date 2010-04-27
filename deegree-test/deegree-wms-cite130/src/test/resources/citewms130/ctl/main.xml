@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ctl:package
+ xmlns:wms-1.3.0="https://cite.opengeospatial.org/wms-1.3.0/src/ctl"
+ xmlns:main="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/main.xml"
+ xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml"
+ xmlns:basic_elements="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic_elements.xml"
+ xmlns:getcapabilities="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getcapabilities.xml"
+ xmlns:getmap="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getmap.xml"
+ xmlns:getfeatureinfo="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getfeatureinfo.xml"
+ xmlns:recommendations="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/recomendations.xml"
+ xmlns:interactive="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/interactive.xml"
+ xmlns:ccf="http://www.opengis.net/cite/complex"
+ xmlns:cdf="http://www.opengis.net/cite/data"
+ xmlns:cgf="http://www.opengis.net/cite/geometry"
+ xmlns:citef="http://www.opengis.net/cite/functions"
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:parsers="http://www.occamlab.com/te/parsers"
+ xmlns:saxon="http://saxon.sf.net/"
+ xmlns:wms="http://www.opengis.net/wms"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+>
+
+   <ctl:suite name="wms-1.3.0:compliance_suite">
+      <ctl:title>Web Map Service (WMS) 1.3.0</ctl:title>
+      <ctl:description>Validates that a WMS 1.3.0 is compliant.</ctl:description>
+      <ctl:link>docs/wms/1.3.0/</ctl:link>
+      <ctl:link>data/data-wms-1.3.0.zip</ctl:link>
+      <ctl:starting-test>main:main</ctl:starting-test>
+   </ctl:suite>
+
+   <ctl:test name="main:main">
+      <ctl:assertion>WMS 1.3.0 Tests</ctl:assertion>
+      <ctl:code>
+<!--         <xsl:variable name="form-values">
+            <ctl:form xmlns="">
+                  <h3>Web Map Service 1.3.0</h3>
+                  <h4>Capabilities Setup</h4>
+                  <br/>
+                  <p>
+                     Enter a capabilities document URL below. main may be the URL to
+                     a static capabilities document, or a GetCapabilities request from a
+                     WMS. A typical GetCapabilities request will take main form:
+                  </p>
+                  <pre>http://hostname/path?SERVICE=WMS&amp;REQUEST=GetCapabilities&amp;VERSION=1.3.0</pre>
+                  <br/>
+                  <blockquote>
+                     <table border="3" padding="3">
+                        <tr>
+                           <td align="center">
+                              <input name="capabilities-url" size="100" type="text" value=""/>
+                           </td>
+                           <td align="left">Capabilities URL</td>
+                        </tr>
+                     </table>
+                  </blockquote>
+
+                  <h4>UpdateSequence Values</h4>
+                  <br/>
+                  <p>
+                     The WMS spec allows servers to use an UpdateSequence value for
+                     maintaining cache consistency as described in
+                     <a href="http://cite.occamlab.com/OGCTestData/wms/1.3.0/spec/wms1_3.html#wmsops.getcapabilities.params.updatesequence">Section 7.2.3.5 of the specification</a>.
+                     If the server advertises an UpdateSequence value and the
+                     Automatic option is selected below, the test suite will attempt to
+                     test the UpdateSequence behavior automatically. However, the
+                     lexical ordering of UpdateSequence values is determined by the
+                     server, so the tests may not always be correct. If you suspect a
+                     problem, select the Manual option and enter the updateSequence
+                     values requested below.
+                  </p>
+                  <blockquote>
+                     <table border="3" padding="3">
+                        <tr>
+                           <td align="center">
+                              <input checked="checked" name="updatesequence" type="radio" value="auto"/>
+                           </td>
+                           <td align="left">Automatic - The updateSequence tests will use automatically generated updateSequence values</td>
+                        </tr>
+                        <tr>
+                           <td align="center">
+                              <input name="updatesequence" type="radio" value="manual"/>
+                           </td>
+                           <td align="left">Manual - The updateSequence tests will use the values supplied below</td>
+                        </tr>
+                     </table>
+                  </blockquote>
+                  <p>(Fill in these boxes if the Manual option is selected above)</p>
+                  <blockquote>
+                     <table border="3" padding="3">
+                        <tr>
+                           <td align="center">
+                              <input name="high-updatesequence" size="25" type="text" value=""/>
+                           </td>
+                           <td align="left">A value that is lexically higher than the current updateSequence value</td>
+                        </tr>
+                        <tr>
+                           <td align="center">
+                              <input name="low-updatesequence" size="25" type="text" value=""/>
+                           </td>
+                           <td align="left">A value that is lexically lower than the current updateSequence value</td>
+                        </tr>
+                     </table>
+                  </blockquote>
+
+                  <h4>Certification Profile</h4>
+                  <br/>
+                  <p>
+                     Certification is available for servers that implement either the
+                     BASIC profile or the QUERYABLE profile. In order to be certified,
+                     the server must implement the requirements for the profile as
+                     described <a href="/tsOGC/ViewTestSpec?SPEC=Web_Map_Server.html&amp;TYPE=AVAILABLE&amp;sesstype=OGC#A.-Certification%20Requirements" target="otherwindow">
+                     here</a>. Select which profile you want to test below.
+                  </p>
+                  <blockquote>
+                     <table border="3" padding="3">
+                        <tr>
+                           <td align="center">
+                              <input name="profile" type="radio" value="none"/>
+                           </td>
+                           <td align="left">NONE - Do not certify that the server meets requirements for any test profile</td>
+                        </tr>
+                        <tr>
+                           <td align="center">
+                              <input name="profile" type="radio" value="basic"/>
+                           </td>
+                           <td align="left">BASIC - Certify that the server meets all requirements for the BASIC profile</td>
+                        </tr>
+                        <tr>
+                           <td align="center">
+                              <input checked="checked" name="profile" type="radio" value="queryable"/>
+                           </td>
+                           <td align="left">QUERYABLE - Certify that the server meets all requirements for the QUERYABLE profile</td>
+                        </tr>
+                     </table>
+                  </blockquote>
+
+                  <h4>Recommendations</h4>
+                  <br/>
+                  <p>
+                     These tests are not required for certification, but may
+                     prove informative or be useful as a debugging aid.
+                  </p>
+                  <blockquote>
+                     <table border="3" padding="3">
+                        <tr>
+                           <td align="center">
+                              <input name="recommended" type="checkbox" value="recommended"/>
+                           </td>
+                           <td align="left">Verify that the server supports fuctionality which is recommended in the specification.</td>
+                        </tr>
+                     </table>
+                  </blockquote>
+                  <input type="submit" value="OK"/>
+            </ctl:form>
+         </xsl:variable>-->
+
+         <xsl:variable name="capabilities">
+            <ctl:request>
+               <ctl:url>http://localhost:18082/deegree-wms-cite130/services?request=GetCapabilities&amp;service=WMS&amp;version=1.3.0</ctl:url>
+               <ctl:method>get</ctl:method>
+            </ctl:request>
+         </xsl:variable>
+
+         <xsl:variable name="high-updatesequence">
+           <xsl:value-of select="functions:increment-updatesequence($capabilities/wms:WMS_Capabilities/@updateSequence, 1)"/>
+         </xsl:variable>
+
+         <xsl:variable name="low-updatesequence">
+           <xsl:value-of select="functions:increment-updatesequence($capabilities/wms:WMS_Capabilities/@updateSequence, -1)"/>
+         </xsl:variable>
+
+         <xsl:variable name="profile">queryable</xsl:variable>
+
+         <xsl:variable name="recommended">false</xsl:variable>
+
+         <xsl:variable name="free">false</xsl:variable>
+
+         <xsl:if test="not($capabilities/wms:WMS_Capabilities)">
+            <ctl:message>Error: The capabilities document does not contain a root element named WMS_Capabilities in the &quot;http://www.opengis.net/wms&quot; namespace.</ctl:message>
+            <ctl:message>Further processing suspended.</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+
+         <ctl:for-each select="$capabilities/wms:WMS_Capabilities">
+<!--            <ctl:call-test name="interactive:main">
+               <ctl:with-param name="profile" select="$profile"/>
+            </ctl:call-test>-->
+
+            <xsl:if test="$profile='basic'">
+               <ctl:call-test name="main:basic-profile"/>
+            </xsl:if>
+
+            <xsl:if test="$profile='queryable'">
+               <ctl:call-test name="main:queryable-profile"/>
+            </xsl:if>
+
+            <ctl:call-test name="basic_elements:main"/>
+
+            <ctl:call-test name="getcapabilities:main">
+               <ctl:with-param name="high-updatesequence" select="$high-updatesequence"/>
+               <ctl:with-param name="low-updatesequence" select="$low-updatesequence"/>
+            </ctl:call-test>
+
+            <ctl:call-test name="getmap:main">
+               <ctl:with-param name="profile" select="$profile"/>
+            </ctl:call-test>
+
+            <ctl:call-test name="getfeatureinfo:main">
+               <ctl:with-param name="profile" select="$profile"/>
+            </ctl:call-test>
+
+            <xsl:if test="$recommended = 'recommended'">
+               <ctl:call-test name="recommendations:main"/>
+            </xsl:if>
+         </ctl:for-each>
+
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="main:basic-profile">
+      <ctl:context>Capabilities XML</ctl:context>
+      <ctl:assertion>If the Basic certification profile was selected, the Basic profile conditions are met.</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="main:std-data-present"/>
+         <ctl:call-test name="main:gif-or-png"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="main:queryable-profile">
+      <ctl:context>Capabilities XML</ctl:context>
+      <ctl:assertion>If the Queryable certification profile was selected, the Queryable profile conditions are met.</ctl:assertion>
+      <ctl:code>
+         <ctl:call-test name="main:std-data-present"/>
+         <ctl:call-test name="main:gif-or-png"/>
+         <ctl:call-test name="main:getfeatureinfo-supported"/>
+         <ctl:call-test name="main:std-data-queryable"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="main:std-data-present">
+      <ctl:context>Capabilities XML</ctl:context>
+      <ctl:assertion>The server implements the CITE standard dataset in subsettable, resizable layers that support CRS:84.</ctl:assertion>
+      <ctl:link title="Test requirements">docs/wms/1.3.0/#requirements</ctl:link>
+      <ctl:code>
+         <xsl:variable name="root-layer" select="wms:Capability/wms:Layer"/>
+         <xsl:variable name="titles">
+            <title>cite:BasicPolygons</title>
+            <title>cite:Bridges</title>
+            <title>cite:Buildings</title>
+            <title>cite:DividedRoutes</title>
+            <title>cite:Forests</title>
+            <title>cite:Lakes</title>
+            <title>cite:MapNeatline</title>
+            <title>cite:NamedPlaces</title>
+            <title>cite:Ponds</title>
+            <title>cite:RoadSegments</title>
+            <title>cite:Streams</title>
+         </xsl:variable>
+         <xsl:for-each select="$titles/title">
+            <xsl:variable name="title" select="."/>
+            <xsl:variable name="layer" select="$root-layer/descendant-or-self::wms:Layer[wms:Title = $title]"/>
+            <xsl:choose>
+               <xsl:when test="not($layer/wms:Title)">
+                  <ctl:message>Error: No layer titled <xsl:value-of select="$title"/> found.</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:if test="not($layer/ancestor-or-self::wms:Layer[wms:CRS = 'CRS:84'])">
+                     <ctl:message>Error: Layer titled <xsl:value-of select="$title"/> must support CRS:84.</ctl:message>
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="functions:boolean-as-integer($layer/@noSubsets) = 1">
+                     <ctl:message>Error: Layer titled <xsl:value-of select="$title"/> must allow subsets.</ctl:message>
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="functions:boolean-as-integer($layer/@fixedWidth) != 0">
+                     <ctl:message>Error: Layer titled <xsl:value-of select="$title"/> must not have a fixed size.</ctl:message>
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="main:gif-or-png">
+      <ctl:context>Capabilities XML</ctl:context>
+      <ctl:assertion>The server supports GetMap format image/gif and/or image/png.</ctl:assertion>
+      <ctl:link title="Test requirements">docs/wms/1.3.0/#requirements</ctl:link>
+      <ctl:code>
+         <xsl:for-each select="wms:Capability/wms:Request/wms:GetMap">
+            <xsl:if test="not(wms:Format[. = 'image/gif' or . = 'image/png'])">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="main:getfeatureinfo-supported">
+      <ctl:context>Capabilities XML</ctl:context>
+      <ctl:assertion>GetFeatureInfo requests are supported.</ctl:assertion>
+      <ctl:link title="Test requirements">docs/wms/1.3.0/#requirements</ctl:link>
+      <ctl:code>
+         <xsl:if test="not(wms:Capability/wms:Request/wms:GetFeatureInfo)">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="main:std-data-queryable">
+      <ctl:context>Capabilities XML</ctl:context>
+      <ctl:assertion>The CITE standard dataset layers containing polygons are queryable.</ctl:assertion>
+      <ctl:link title="Test requirements">docs/wms/1.3.0/#requirements</ctl:link>
+      <ctl:code>
+         <xsl:variable name="root-layer" select="wms:Capability/wms:Layer"/>
+         <xsl:variable name="titles">
+            <title>cite:BasicPolygons</title>
+            <title>cite:Forests</title>
+            <title>cite:Lakes</title>
+            <title>cite:NamedPlaces</title>
+         </xsl:variable>
+         <xsl:for-each select="$titles/title">
+            <xsl:variable name="title" select="."/>
+            <xsl:variable name="layer" select="$root-layer/descendant-or-self::wms:Layer[wms:Title = $title]"/>
+            <xsl:choose>
+               <xsl:when test="not($layer/wms:Title)">
+                  <ctl:message>Error: No layer titled <xsl:value-of select="$title"/> found.</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:otherwise>
+                  <xsl:if test="functions:boolean-as-integer($layer/@queryable) = 0">
+                     <ctl:message>Error: Layer titled <xsl:value-of select="$title"/> must be queryable.</ctl:message>
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:otherwise>
+            </xsl:choose>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+</ctl:package>

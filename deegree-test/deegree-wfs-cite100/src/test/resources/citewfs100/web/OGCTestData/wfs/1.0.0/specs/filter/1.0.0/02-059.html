@@ -1,0 +1,1517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Web Feature Service Implementation Specification</title><link xmlns="" href="ogc.css" rel="stylesheet" type="text/css" /><meta content="DocBook XSL Stylesheets V1.60.1" name="generator" /></head><body><div class="article" lang="en"><div class="titlepage"><div><div><h2 class="title"><a id="N10001" />Web Feature Service Implementation Specification</h2></div><div xmlns=""><h3 class="corpauthor">OpenGIS Consortium Inc.</h3></div><div><div class="authorgroup"><h4 class="editedby">Edited by</h4><h3 class="editor"><span class="firstname">Panagiotis</span> <span xmlns="" class="surname">A. Vretanos</span></h3><div xmlns="" class="author"><h3 class="author"><span class="firstname">Allan</span> <span xmlns="" class="othername">adoyle@intl-interfaces.com</span> <span xmlns="" class="surname">Doyle</span></h3><div xmlns="" class="affiliation"><span class="orgname">International Interfaces, Inc.<br /></span></div></div><div class="author"><h3 class="author"><span class="firstname">Edric</span> <span xmlns="" class="othername">ekeighan@cubewerx.com</span> <span xmlns="" class="surname">Keighan</span></h3><div xmlns="" class="affiliation"><span class="orgname">CubeWerx Inc.<br /></span></div></div><div class="author"><h3 class="author"><span class="firstname">Jonathan</span> <span xmlns="" class="othername">jrclark@intergraph.com</span> <span xmlns="" class="surname">Clark</span></h3><div xmlns="" class="affiliation"><span class="orgname">Intergraph Corp.<br /></span></div></div><div class="author"><h3 class="author"><span class="firstname">Serge</span> <span xmlns="" class="othername">Serge.Margoulies@ionicsoft.com</span> <span xmlns="" class="surname">Margoulies</span></h3><div xmlns="" class="affiliation"><span class="orgname">IONIC Software<br /></span></div></div><div class="author"><h3 class="author"><span class="firstname">Peter</span> <span xmlns="" class="othername">peterw@lsl.co.uk</span> <span xmlns="" class="surname">Woodsford</span></h3><div xmlns="" class="affiliation"><span class="orgname">Laser-Scan Ltd.<br /></span></div></div></div></div><div><p class="releaseinfo">1.0.0</p></div><div><p class="copyright">Copyright © 1999, 2000, 2001, 2002 CubeWerx Inc.</p></div><div><p class="copyright">Copyright © 1999, 2000, 2001, 2002 Intergraph Corp.</p></div><div><p class="copyright">Copyright © 1999, 2000, 2001, 2002 IONIC Software s.a.</p></div><div><p class="copyright">Copyright © 1999, 2000, 2001, 2002 Laser-Scan Limited</p></div><div><div class="legalnotice"><p><a id="N100A7ai" />WARNING: The Open GIS Consortium (OGC) releases this specification
+      to the public without warranty. It is subject to change without notice.
+      This specification is currently under active revision by the OGC
+      Technical Committee.</p><p><a id="N100AAai" />Requests for clarification and/or revision can be made by
+      contacting the OGC at <tt class="email">&lt;<a href="mailto:revisions@opengis.org">revisions@opengis.org</a>&gt;</tt>.</p><p><a id="N100B0ai" />Permission to use, copy, and distribute this document in any
+      medium for any purpose and without fee or royalty is hereby granted,
+      provided that you include the above list of copyright holders and the
+      entire text of this NOTICE.</p><p><a id="N100B3ai" />We request that authorship attribution be provided in any
+      software, documents, or other items or products that you create pursuant
+      to the implementation of the contents of this document, or any portion
+      thereof.</p><p><a id="N100B6ai" />No right to create modifications or derivatives of OGC documents
+      is granted pursuant to this license. However, if additional requirements
+      (as documented in the Copyright FAQ at <a ="" target="_top">http://www.opengis.org/legal/ipr_faq.htm</a>)
+      are satisfied, the right to create modifications or derivatives is
+      sometimes granted by the OGC to individuals complying with those
+      requirements.</p><p><a id="N100BDai" />THIS DOCUMENT IS PROVIDED "AS IS," AND COPYRIGHT HOLDERS
+      MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING,
+      BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+      PARTICULAR PURPOSE, NON-INFRINGEMENT, OR TITLE; THAT THE CONTENTS OF THE
+      DOCUMENT ARE SUITABLE FOR ANY PURPOSE; NOR THAT THE IMPLEMENTATION OF
+      SUCH CONTENTS WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS,
+      TRADEMARKS OR OTHER RIGHTS.</p><p><a id="N100C0ai" />COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT,
+      SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE DOCUMENT
+      OR THE PERFORMANCE OR IMPLEMENTATION OF THE CONTENTS THEREOF.</p><p><a id="N100C3ai" />The name and trademarks of copyright holders may NOT be used in
+      advertising or publicity pertaining to this document or its contents
+      without specific, written prior permission. Title to copyright in this
+      document will at all times remain with copyright holders.</p><p><a id="N100C6ai" />RESTRICTED RIGHTS LEGEND. Use, duplication, or disclosure by
+      government is subject to restrictions as set forth in subdivision
+      (c)(1)(ii) of the Right in Technical Data and Computer Software Clause
+      at DFARS 252.227.7013</p><p><a id="N100C9ai" />
+      <span class="trademark">OpenGIS</span>® is a trademark
+      or registered trademark of Open GIS Consortium, Inc. in the United
+      States and in other countries.</p><p><a id="N100D0ai" />This document does not represent a commitment to implement any
+      portion of this specification in any company's products.</p><p><a id="N100D3ai" />OGC® Legal, IPR and Copyright Statements are found at <a ="" target="_top">http://www.opengis.org/legal/ipr.htm</a>
+    </p><p><a id="N100DAai" />The companies listed below have granted the Open GIS Consortium,
+      Inc. (OGC) a nonexclusive, royalty-free, paid up, worldwide license to
+      copy and distribute this document and to modify this document and
+      distribute copies of the modified version.</p></div></div><div><div class="revhistory"><table summary="Revision history" width="100%" border="1"><tr><th colspan="2" valign="top" align="left"><b>Revision History</b></th></tr><tr><td align="left">Revision 1.0.0</td><td align="left">2002-09-19</td></tr><tr><td colspan="2" align="left">Address RFC comments.</td></tr><tr><td align="left">Revision 0.0.7</td><td align="left">?</td></tr><tr><td colspan="2" align="left">Reformat document for RFC Re-Submission; Add use of XPath expressions for refering to complex attributes.</td></tr><tr><td align="left">Revision 0.0.6</td><td align="left">?</td></tr><tr><td colspan="2" align="left">Prepare for RFC Submission</td></tr><tr><td align="left">Revision 0.0.5</td><td align="left">?</td></tr><tr><td colspan="2" align="left">Define a capabilities section.</td></tr><tr><td align="left">Revision 0.0.4</td><td align="left">?</td></tr><tr><td colspan="2" align="left">Add support for arithmetic expressions.</td></tr><tr><td align="left">Revision 0.0.3</td><td align="left">?</td></tr><tr><td colspan="2" align="left">Add support for functions.</td></tr><tr><td align="left">Revision 0.0.2</td><td align="left">?</td></tr><tr><td colspan="2" align="left">Correct typographic errors.</td></tr><tr><td align="left">Revision 0.0.1</td><td align="left">?</td></tr><tr><td colspan="2" align="left">First version derived from the Open GIS Web Feature Server Specification [14]</td></tr></table></div></div></div><div /><hr /></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>1. <a href="#N10001i">Preface</a></dt><dt>2. <a href="#N10001ii">Submitting organizations</a></dt><dt>3. <a href="#N10001iii">Submission contact points</a></dt><dt>4. <a href="#N10001v">Changes to the OpenGIS® Abstract Specification</a></dt><dt>5. <a href="#N10001vi">Future work</a></dt><dt>6. <a href="#N10001vii">Forward</a></dt><dt>7. <a href="#N10001viii">Introduction</a></dt><dt>8. <a href="#N100011">Scope</a></dt><dt>9. <a href="#N100012">Conformance</a></dt><dt>10. <a href="#N100013">Normative references</a></dt><dt>11. <a href="#N4000014">Terms and definitions</a></dt><dt>12. <a href="#N4000015">Conventions</a></dt><dd><dl><dt>12.1. <a href="#N4000075">Normative verbs</a></dt><dt>12.2. <a href="#N4000385">Abbreviated terms</a></dt></dl></dd><dt>13. <a href="#N100016">Properties</a></dt><dd><dl><dt>13.1. <a href="#N100076">Introduction</a></dt><dt>13.2. <a href="#N100106">Property names</a></dt><dt>13.3. <a href="#N100476">Property references</a></dt><dd><dl><dt>13.3.1. <a href="#N1004C6">Introduction</a></dt><dt>13.3.2. <a href="#N1005C6">XPath expressions</a></dt></dl></dd></dl></dd><dt>14. <a href="#N100017">Filter</a></dt><dd><dl><dt>14.1. <a href="#N100077">Introduction</a></dt><dt>14.2. <a href="#N100147">Encoding</a></dt></dl></dd><dt>15. <a href="#N100018">Spatial operators</a></dt><dd><dl><dt>15.1. <a href="#N100078">Introduction</a></dt><dt>15.2. <a href="#N100108">Encoding</a></dt></dl></dd><dt>16. <a href="#N100019">Comparison operators</a></dt><dd><dl><dt>16.1. <a href="#N100079">Introduction</a></dt><dt>16.2. <a href="#N100109">Encoding</a></dt></dl></dd><dt>17. <a href="#N1000110">Logical operators</a></dt><dd><dl><dt>17.1. <a href="#N1000710">Introduction</a></dt><dt>17.2. <a href="#N1001010">Encoding</a></dt></dl></dd><dt>18. <a href="#N1000111">Feature identifiers</a></dt><dd><dl><dt>18.1. <a href="#N1000711">Introduction</a></dt><dt>18.2. <a href="#N1001011">Encoding</a></dt></dl></dd><dt>19. <a href="#N1000112">Expressions</a></dt><dd><dl><dt>19.1. <a href="#N1000712">Introduction</a></dt><dt>19.2. <a href="#N1001012">Encoding</a></dt></dl></dd><dt>20. <a href="#N1000113">Arithmetic operators</a></dt><dd><dl><dt>20.1. <a href="#N1000713">Introduction</a></dt><dt>20.2. <a href="#N1001013">Encoding</a></dt></dl></dd><dt>21. <a href="#N1000114">Literals</a></dt><dd><dl><dt>21.1. <a href="#N1000714">Introduction</a></dt><dt>21.2. <a href="#N1001014">Encoding</a></dt></dl></dd><dt>22. <a href="#N1000115">Functions</a></dt><dd><dl><dt>22.1. <a href="#N1000715">Introduction</a></dt><dt>22.2. <a href="#N1001015">Encoding</a></dt></dl></dd><dt>23. <a href="#N1000116">Filter capabilities</a></dt><dt>24. <a href="#N10001A">ANNEX A - Examples (Informative)</a></dt><dd><dl><dt>24.1. <a href="#N10007A">Introduction</a></dt><dt>24.2. <a href="#N10010A">Examples</a></dt></dl></dd><dt>25. <a href="#N10001B">Filter schema definitions (Normative)</a></dt><dd><dl><dt>25.1. <a href="#N10007B">Introduction</a></dt><dt>25.2. <a href="#N10018B">expr.xsd</a></dt><dt>25.3. <a href="#N10024B">filter.xsd</a></dt><dt>25.4. <a href="#N10030B">filterCapabilities.xsd</a></dt></dl></dd><dt>26. <a href="#N400001B">Conformance tests (normative)</a></dt><dt><a href="#N10804">Bibliography</a></dt></dl></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001i" />1. Preface</h2></div></div><div xmlns="" /></div><p><a id="N10007i" />This document was originally part of version 0.0.10 of
+  the Web Feature Server (WFS) Implementation Specification [14]. It was
+  decided that the contents of this specification would be put into their own
+  document since the Filter encoding described herein can be used by a broad
+  range of services that require the ability to express predicates in XML.
+  Such services include Web Feature Service, Web Coverage Service, Gazetteer,
+  Web Registries, etc...</p><p><a id="N1000Ai" />The predicate language defined in this document is based
+  on the productions for the Common Query Language (CQL) found in the OpenGIS®
+  Catalog Interface Implementation Specification V1.0 [2]. The spatial
+  operators included in this specification are derived from [2] and from the
+  OpenGIS® Simple Features Specification For SQL, Revision 1.1[2].</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001ii" />2. Submitting organizations</h2></div></div><div xmlns="" /></div><p><a id="N10007ii" />The following companies submitted this specification to the OGC as a
+    Request for Comment:</p><div class="literallayout"><p><span style="white-space: pre;">
+    <span class="bold"><b>CubeWerx Inc.</b></span>
+Edric Keighan
+200 Rue Montcalm, Suite R-13
+Hull, Quebec
+Canada  J8Y 3B5
+<tt class="email">&lt;<a href="mailto:ekeighan@cubewerx.com">ekeighan@cubewerx.com</a>&gt;</tt>
+    <span class="bold"><b>Intergraph Corp.</b></span>
+Jonathan Clark
+1881 Campus Commons Drive
+Reston, VA 20191
+U.S.A
+<tt class="email">&lt;<a href="mailto:jrclark@intergraph.com">jrclark@intergraph.com</a>&gt;</tt>
+    <span class="bold"><b>IONIC Software</b></span>
+Serge Margoulies
+128 Avenue de l'Observatoire
+B-4000 LIEGE
+Belgium
+<tt class="email">&lt;<a href="mailto:Serge.Margoulies@ionicsoft.com">Serge.Margoulies@ionicsoft.com</a>&gt;</tt>
+    <span class="bold"><b>Laser-Scan Ltd.</b></span>
+Peter Woodsford
+101 Cambridgbe Science Park
+Milton Road
+Cambridge CB4 0FY
+U.K.
+<tt class="email">&lt;<a href="mailto:peterw@lsl.co.uk">peterw@lsl.co.uk</a>&gt;</tt>
+  </span></p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001iii" />3. Submission contact points</h2></div></div><div xmlns="" /></div><p><a id="N10007iii" />All questions regarding this submission should be directed to the
+    Editor or to the WWW Mapping SIG chair:</p><p><a id="N1000Aiii" />Panagiotis A. Vretanos CubeWerx, Inc. 200 Rue Montcalm, Suite R-13
+    Hull, Quebec J8Y 3B5 CANADA +1 416 701 1985 <tt class="email">&lt;<a href="mailto:pvretano@cubewerx.com">pvretano@cubewerx.com</a>&gt;</tt>
+  </p><p><a id="N10010iii" />Allan Doyle (WWW Mapping SIG Chair) International Interfaces, Inc.
+    948 Great Plain Ave. PMB-182 Needham, MA 02492 USA +1 781 433 2695
+    <tt class="email">&lt;<a href="mailto:adoyle@intl-interfaces.com">adoyle@intl-interfaces.com</a>&gt;</tt>
+  </p><p><a id="N10016iii" />
+    <span class="bold"><b>Additional contributors</b></span>
+  </p><div class="literallayout"><p><span style="white-space: pre;">Rob Atkinson (Social Change Online) <tt class="email">&lt;<a href="mailto:rob@socialchange.net.au">rob@socialchange.net.au</a>&gt;</tt>
+Craig Bruce (CubeWerx) <tt class="email">&lt;<a href="mailto:csbruce@cubwerx.com">csbruce@cubwerx.com</a>&gt;</tt>
+Jonathan Clark (Intergraph) <tt class="email">&lt;<a href="mailto:jrclark@intergraph.com">jrclark@intergraph.com</a>&gt;</tt>
+Adrian Cuthbert (SpotOn MOBILE) <tt class="email">&lt;<a href="mailto:adrian@spotonmobile.com">adrian@spotonmobile.com</a>&gt;</tt>
+Paul Daisey (U.S. Census) <tt class="email">&lt;<a href="mailto:pdaisey@geo.census.gov">pdaisey@geo.census.gov</a>&gt;</tt>
+Ignacio Guerrero (Intergraph) <tt class="email">&lt;<a href="mailto:IGuerrer@ingr.com">IGuerrer@ingr.com</a>&gt;</tt>
+Sandra Johnson (Mapinfo) <tt class="email">&lt;<a href="mailto:Sandra_Johnson@mapinfo.com">Sandra_Johnson@mapinfo.com</a>&gt;</tt>
+Edric Keighan (CubeWerx) <tt class="email">&lt;<a href="mailto:ekeighan@cubewerx.com">ekeighan@cubewerx.com</a>&gt;</tt>
+Ron Lake (Galdos Systems Inc.) <tt class="email">&lt;<a href="mailto:rlake@galdosinc.com">rlake@galdosinc.com</a>&gt;</tt>
+Jeff Lansing (Polexis) <tt class="email">&lt;<a href="mailto:jeff@polexis.com">jeff@polexis.com</a>&gt;</tt>
+Seb Lessware (Laser-Scan Ltd.) <tt class="email">&lt;<a href="mailto:sebl@lsl.co.uk">sebl@lsl.co.uk</a>&gt;</tt>
+Marwa Mabrouk (ESRI) <tt class="email">&lt;<a href="mailto:mmabrouk@esri.com">mmabrouk@esri.com</a>&gt;</tt>
+Serge Margoulies (Ionic) <tt class="email">&lt;<a href="mailto:Serge.Margoulies@ionicsoft.com">Serge.Margoulies@ionicsoft.com</a>&gt;</tt>
+Brian May (CubeWerx) <tt class="email">&lt;<a href="mailto:bmay@cubewerx.com">bmay@cubewerx.com</a>&gt;</tt>
+Richard Martell (Galdos Systems Inc.) <tt class="email">&lt;<a href="mailto:rmartell@galdosinc.com">rmartell@galdosinc.com</a>&gt;</tt>
+Aleksander Milanovic (Glados Systems Inc.) <tt class="email">&lt;<a href="mailto:amilanovic@gladosinc.com">amilanovic@gladosinc.com</a>&gt;</tt>
+Dimitri Monie (Ionic) <tt class="email">&lt;<a href="mailto:dimitri.monie@ionicsoft.com">dimitri.monie@ionicsoft.com</a>&gt;</tt>
+Paul Pilkington (Laser-Scan Ltd.) <tt class="email">&lt;<a href="mailto:paulpi@lsiva.com">paulpi@lsiva.com</a>&gt;</tt>
+Keith Pomakis (CubeWerx) <tt class="email">&lt;<a href="mailto:pomakis@cubewerx.com">pomakis@cubewerx.com</a>&gt;</tt>
+Lou Reich (NASA) <tt class="email">&lt;<a href="mailto:louis.i.reich@gsfc.nasa.gov">louis.i.reich@gsfc.nasa.gov</a>&gt;</tt>
+Carl Reed (Open GIS Consortium) <tt class="email">&lt;<a href="mailto:creediii@mindspring.com">creediii@mindspring.com</a>&gt;</tt>
+Martin Schaefer (Cadcorp Ltd.) <tt class="email">&lt;<a href="mailto:martins@cadcorpdev.co.uk">martins@cadcorpdev.co.uk</a>&gt;</tt>
+Bernard Snyers (Ionic) <tt class="email">&lt;<a href="mailto:Bernard.Snyers@ionicsoft.com">Bernard.Snyers@ionicsoft.com</a>&gt;</tt>
+Daniel Specht (TEC) <tt class="email">&lt;<a href="mailto:specht@tec.army.mil">specht@tec.army.mil</a>&gt;</tt>
+James T. Stephens (Lockheed Martin) <tt class="email">&lt;<a href="mailto:james.t.stephens@lmco.com">james.t.stephens@lmco.com</a>&gt;</tt>
+Glenn Stowe (CubeWerx) <tt class="email">&lt;<a href="mailto:gstowe@cubwerx.com">gstowe@cubwerx.com</a>&gt;</tt>
+Milan Trninic (Galdos Systems Inc.) <tt class="email">&lt;<a href="mailto:mtrninic@galdosinc.com">mtrninic@galdosinc.com</a>&gt;</tt>
+Peter Woodsford (Laser-Scan Ltd.) <tt class="email">&lt;<a href="mailto:peterw@lsl.co.uk">peterw@lsl.co.uk</a>&gt;</tt>
+Arliss Whitesize (BAE Systems) <tt class="email">&lt;<a href="mailto:Arliss.Whiteside@baesystems.com">Arliss.Whiteside@baesystems.com</a>&gt;</tt>
+  </span></p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001v" />4. Changes to the OpenGIS® Abstract Specification</h2></div></div><div xmlns="" /></div><p><a id="N10007v" />No further revisions to the OGC Abstract Specification are required.  This specification represents an implementation of a predicate language required to support the discover, query of geospatial resources as discussed in section 2.2 and 3.2 of Topic 13, "Catalog Services".</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001vi" />5. Future work</h2></div></div><div xmlns="" /></div><p><a id="N10007vi" />This specification defines a feature identifier as an identifier that is unique within the context of the server serving the feature.  The specification also describes how such a local identifier can be made globally unique by combining it with the URL of the service serving the feature.  However what is described in this specification is informative.  A future work item is to normatively describe how globally unique identifiers should be generated.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001vii" />6. Forward</h2></div></div><div xmlns="" /></div><p><a id="N10007vii" />Attention is drawn to the possibility that some of the elements of
+    this standard may be the subject of patent rights. Open GIS Consortium
+    Inc. shall not be held responsible for identifying any or all such patent
+    rights. However, to date, no such rights have been claimed or identified.</p><p><a id="N1000Avii" />This version of the specification cancels and replaces all previous
+    versions.</p><p><a id="N1000Dvii" />
+    <span class="bold"><b>Normative annexes</b></span>
+  </p><p><a id="N10014vii" />Annexes B and C are normative.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001viii" />7. Introduction</h2></div></div><div xmlns="" /></div><p><a id="N10007viii" />This document defines an XML encoding for filter expressions based on the BNF definition of the OpenGIS® Common Catalog Query Language as described in the OpenGIS® Catalog Interface Implementation Specification, Version 1.0 [2].</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N100011" />8. Scope</h2></div></div><div xmlns="" /></div><p><a id="N100071" />A <span class="emphasis"><em>filter expression</em></span> is a construct used to
+  constraints the property values of an object type for the purpose of
+  identifying a subset of object instances to be operated upon in some manner.</p><p><a id="N1000D1" />The intent of this document is to describe an XML encoding of the OGC
+  Common Catalog Query Language (CQL) [2] as a system neutral representation
+  of a query predicate. Using the numerous XML tools available today, such an
+  XML representation can be easily validated, parsed and then transformed into
+  whatever target language is required to retrieve or modify object instances
+  stored in some a persistent object store. For example, an XML encoded filter
+  could be transformed into a WHERE clause for a SQL SELECT statement to fetch
+  data stored in a SQL-based relational database. Similarly, and XML encoded
+  filter expression could be transformed into an XPath or XPointer expression
+  for fetching data from XML documents.</p><p><a id="N100101" />A large class of OpenGIS® web based service require the ability to
+  express filter expressions in XML.</p><p><b>Relation to other OGC web services. </b>The filter encoding described in this document is a common component
+    that can be used by a number of OGC web services. Any service that
+    requires the ability to query objects from a web-accessible repository can
+    make use of the XML filter encoding described in this document. For
+    example, a web feature service may use the XML filter encoding in a
+    <span class="emphasis"><em>GetFeature</em></span> operation to define query constraints.
+    Other services based of the web feature service, such as <span class="bold"><b>Gazetteer</b></span> or the <span class="bold"><b>Web Registry
+    Service</b></span>, could also make use of this filter encoding.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N100012" />9. Conformance</h2></div></div><div xmlns="" /></div><p><a id="N100072" />Conformance with this specification shall be checked using all the
+  relevant tests specified in Annex B (normative). The framework, concepts,
+  and methodology for testing, and the criteria to be achieved to claim
+  conformance are specified in ISO 19105: Geographic information - Conformance
+  and Testing.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N100013" />10. Normative references</h2></div></div><div xmlns="" /></div><div class="orderedlist"><ol type="1"><li><p><a id="N1000B3" />Bradner, Scott, "RFC 2119 Key words for use in RFCs to
+      Indicate Requirement Levels," March 1997, <a ="" target="_top">ftp://ftp.isi.edu/in-notes/rfc2119.txt</a>.</p></li><li><p><a id="N100153" />Percivall, George, ed., "The OpenGIS® Abstract Specification,
+      Topic 12: Service Architecture", 2002</p></li><li><p><a id="N1001B3" />Kottman, C., ed., "The OpenGIS® Abstract Specification, Topic
+      13: Catalog Services", Version 4, 1999</p></li><li><p><a id="N100213" />Enloe, Yonsook, Nebert, Doug, Stphens, Larry (eds.), "OpenGIS®
+      Implementation Specification #99-051s: Catalog Interface Implementation
+      Specification, Version 1.0", 1999</p></li><li><p><a id="N100273" />OpenGIS® Implementation Specification #99-049, "OpenGIS®
+      Simple Features Specification For SQL, Revision 1.1", May 1999</p></li><li><p><a id="N1002D3" />Vretanos, Panagiotis (ed.), "OpenGIS® Implementation
+      Specification #01-067: Filter Encoding Implementation
+      Specification", May 2001</p></li><li><p><a id="N100333" />Bray, Paoli, Sperberg-McQueen, eds., "Extensible Markup
+      Language (XML) 1.0", 2nd edition, October 2000, W3C Recommendation,
+      http://www.w3.org/TR/2000/REC-xml.</p></li><li><p><a id="N100393" />Beech, David, Maloney, Murry, Mendelson, Noah, Thompson, Harry S.,
+      "XML Schema Part 1: Structures", May 2001, W3C Recommendation,
+      http://www.w3c.org/TR/xmlschema-1.</p></li><li><p><a id="N1003F3" />Bray, Hollander, Layman, eds., "Namespaces In XML",
+      January 1999, W3C Recommendation,
+      http://www.w3.org/TR/2000/REC-xml-names.</p></li><li><p><a id="N100453" />Clark, James, DeRose, Steve, "XML Path Language (XPATH),
+      Version 1.0", November 1999, W3C Recommendation,
+      http://www.w3c.org/TR/XPath.</p></li><li><p><a id="N1004B3" />Berners-Lee, T., Fielding, N., and Masinter, L., "Uniform
+      Resource Identifiers (URI): Generic Syntax", IETF RFC 2396, <a ="" target="_top">http://www.ietf.org/rfc/rfc2396.txt</a>.</p></li><li><p><a id="N100553" />Cox, S., Cuthbert, A., Lake, R., and Martell, R. (eds.),
+      "OpenGIS Implementation Specification #02-009: OpenGIS® Geography
+      Markup Language (GML) Implementation Specification, version 2.1.1",
+      April 2002</p></li><li><p><a id="N1005B3" />Fielding et. al., "Hypertext Transfer Protocol -
+      HTTP/1.1," IETF RFC 2616, June 1999, <a ="" target="_top">http://www.ietf.org/rfc/rfc2616.txt</a>.</p></li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N4000014" />11. Terms and definitions</h2></div></div><div xmlns="" /></div><p><a id="N4000074" />For the purposes of this document, the following terms
+  and definitions apply.</p><div class="variablelist"><dl><dt><span class="term">4.1 operation</span></dt><dd><p><a id="N4000134" />pecification of a transformation or query that an
+        object may be called to execute [4]</p></dd><dt><span class="term">4.2 interface</span></dt><dd><p><a id="N40001F4" />a named set of operations that characterize the
+        behavior of an entity [4]</p></dd><dt><span class="term">4.3 service</span></dt><dd><p><a id="N40002B4" />a distinct part of the functionality that is
+        provided by an entity through interfaces [4]</p></dd><dt><span class="term">4.4 service instance</span></dt><dd><p><a id="N4000374" />an actual implementation of a service; service
+        instance is synonymous with server</p></dd><dt><span class="term">4.5 client</span></dt><dd><p><a id="N4000434" />a software component that can invoke an operation
+        from a server</p></dd><dt><span class="term">4.6 request</span></dt><dd><p><a id="N40004F4" />an invocation by a client of an operation.</p></dd><dt><span class="term">4.7 response</span></dt><dd><p><a id="N40005B4" />the result of an operation returned from a server
+        to a client.</p></dd><dt><span class="term">4.8 capabilities XML</span></dt><dd><p><a id="N4000674" />service-level metadata describing the operations
+        and content available at a service instance</p></dd><dt><span class="term">4.9 spatial reference system</span></dt><dd><p><a id="N4000734" />as defined in ISO19111</p></dd><dt><span class="term">4.10 opaque</span></dt><dd><p><a id="N40007F4" />not visible, accessible or meaningful to a client
+        application</p></dd><dt><span class="term">4.11 filter expression processor</span></dt><dd><p><a id="N100974" />a component of a system that process a filter expression as
+        defined in this specification</p></dd><dt><span class="term">4.12 property</span></dt><dd><p><a id="N100A34" />a facet or attribute or an object referenced by a name</p></dd><dt><span class="term">4.13 function</span></dt><dd><p><a id="N100AF4" />a function is a named procedure that accepts zero or more
+        arguments, performs a distinct computation and returns a single result</p></dd></dl></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N4000015" />12. Conventions</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N4000075" />12.1. Normative verbs</h3></div></div><div xmlns="" /></div><p><a id="N40000C5" />In the sections labeled as normative, the key words
+    "<span class="bold"><b>must</b></span>", "<span class="bold"><b>must not</b></span>", "<span class="bold"><b>required</b></span>",
+    "<span class="bold"><b>shall</b></span>", "<span class="bold"><b>shall not</b></span>", "<span class="bold"><b>should</b></span>",
+    "<span class="bold"><b>should not</b></span>", "<span class="bold"><b>recommended</b></span>", "<span class="bold"><b>may</b></span>",
+    and "<span class="bold"><b>optional</b></span>" in this document
+    are to be interpreted as described in Internet RFC 2119 [1].</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N4000385" />12.2. Abbreviated terms</h3></div></div><div xmlns="" /></div><div class="informaltable"><a id="N40003D5" /><table border="1"><colgroup><col /><col /></colgroup><tbody><tr><td>CQL</td><td>Common Catalog Query Language</td></tr><tr><td>EPSG</td><td>European Petroleum Survey Group</td></tr><tr><td>GIS</td><td>Geographic Information System</td></tr><tr><td>GML</td><td>Geography Markup Language</td></tr><tr><td>HTTP</td><td>Hypertext Transfer Protocol</td></tr><tr><td>IETF</td><td>Internet Engineering Task Force</td></tr><tr><td>MIME</td><td>Multipurpose Internet Mail Extensions</td></tr><tr><td>OGC</td><td>Open GIS Consortium</td></tr><tr><td>OWS</td><td>OGC Web Service</td></tr><tr><td>URL</td><td>Uniform Resource Locator</td></tr><tr><td>WFS</td><td>Web Feature Service</td></tr><tr><td>XML</td><td>Extensible Markup Language</td></tr></tbody></table></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N100016" />13. Properties</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100076" />13.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C6" />This specification assumes that general objects are composed of
+    simple and/or complex or aggregate non-geometric properties. This
+    specification further assumes that the properties of an object are mapped
+    to XML elements (or nested sets of elements for complex objects) or XML
+    attributes where the name of the element or attribute is the name of the
+    property being mapped.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100106" />13.2. Property names</h3></div></div><div xmlns="" /></div><p><a id="N100156" />The <span class="bold"><b>&lt;PropertyName&gt;</b></span> element
+    is used to encode the name of any property of an object. The property name
+    can be used in scalar or spatial expressions to represent the value of
+    that property for a particular instance of an object.</p><p><a id="N1001C6" />Since this specification assumes that objects are encoded in XML,
+    property names must also be valid element or attribute names as described
+    in the Extensible Markup Language (XML) 1.0 [7] specification. In
+    addition, property names may be qualified with a namespace prefix in which
+    case the name must conform to the Namespaces In XML [9] specification. The
+    following definition is taken from sections 2 &amp; 3, of that document:</p><p><a id="N1001F6" />Names and Tokens</p><pre class="programlisting">[4]  NCName ::=  (Letter | '_') (NCNameChar)*                          
+/*  An XML Name, minus the ":" */
+[5]  NCNameChar ::=  Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
+[6]  QName ::=  (Prefix ':')? LocalPart
+[7]  Prefix ::=  NCName
+[8]  LocalPart ::=  NCName</pre><p><a id="N100256" />The definitions of the components Letter, Digit, CombiningChar and
+    Extender are defined in annex B of [7].</p><p><a id="N100286" />Examples</p><div class="variablelist"><dl><dt><span class="term">Examples of valid property names are:</span></dt><dd><p><a id="N100346" />Age, Temperature, _KHz, INWATERA_1M.WKB_GEOM</p></dd><dt><span class="term">Examples of invalid property names are:</span></dt><dd><p><a id="N100406" />+Domain, 123_SomeName</p></dd></dl></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100476" />13.3. Property references</h3></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="N1004C6" />13.3.1. Introduction</h4></div></div><div xmlns="" /></div><p><a id="N100516" />Simple properties may be are referenced using their name. However,
+      since objects can also include complex or aggregate non-geometric
+      properties a problem arises concerning how such properties should be
+      referenced in the various places where property references are required
+      in filter expressions.</p><p><a id="N100546" />In order to handle property references in a consistent manner, a
+      filter expression processor <span class="bold"><b>must</b></span> use
+      the subset of XPath [10] expressions defined in this document for
+      referencing simple properties and the properties and sub-properties of
+      objects with complex or aggregate non-geometric properties or properties
+      encoded as XML attributes.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="N1005C6" />13.3.2. XPath expressions</h4></div></div><div xmlns="" /></div><p><a id="N100616" />Properties of an object may be mapped, in XML, to elements or
+      attributes of elements. Thus it is required that a filter expression be
+      able to address properties encoded as XML elements or attributes.</p><p><a id="N100646" />The XML Path Language [10] specification is a language for
+      addressing parts of a XML document or in the case of this specification
+      for referencing feature properties encoded as XML elements or
+      attributes.</p><p><a id="N100676" />This specification does not require that a filter expression
+      processor support the full XPath language. In order to keep the
+      implementation entry cost as low as possible, this specification
+      mandates that a filter expression processor <span class="bold"><b>must</b></span>
+      support the following subset of the XPath language:</p><div class="orderedlist"><ol type="1"><li><p><a id="N100726" />A filter expression processor <span class="bold"><b>must</b></span>
+          support <span class="emphasis"><em>abbreviated relative location</em></span> paths.</p></li><li><p><a id="N1007F6" />Relative location paths are composed of one or more
+          <span class="emphasis"><em>steps</em></span> separated by the path separator
+          '/'.</p></li><li><p><a id="N100886" />The first step of a relative location path <span class="bold"><b>may</b></span> correspond to the root element of the
+          object property being referenced <span class="bold"><b>or</b></span>
+          to the root element of the object with the next step corresponding
+          to the root element of the object property being referenced.</p></li><li><p><a id="N100966" />Each subsequent step in the path <span class="bold"><b>must</b></span>
+          be composed of the abbreviated form of the <span class="emphasis"><em>child::</em></span>
+          axis specifier and the name of the object property encoded as the
+          principal node type of <span class="emphasis"><em>element</em></span>. The abbreviated
+          form of the <span class="emphasis"><em>child::</em></span> axis specifier is to simply
+          omit the specifier from the location step.</p></li><li><p><a id="N100A96" />The final step in a path may optionally be composed of the
+          abbreviated form of the <span class="emphasis"><em>attribute::</em></span> axis
+          specifier, '@', and the name of an object property encoded
+          as the principal node type of <span class="emphasis"><em>attribute</em></span>.</p></li></ol></div><p><a id="N100B46" />Example</p><p><a id="N100B76" />To practically illustrate the use of XPath expressions for
+      referencing simple and complex properties of an object (encoded as
+      elements or attributes), consider the fictitious GML feature
+      <span class="emphasis"><em>Person</em></span> defined by the following XML Schema
+      document:</p><pre class="programlisting">&lt;?xml version="1.0" ?&gt;
+&lt;schema
+   targetNamespace="http://www.cubewerx.com/myns"
+   xmlns:myns="http://www.cubewerx.com/myns"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   version="1.0"&gt;
+
+   &lt;import namespace="http://www.opengis.net/gml"
+           schemaLocation="../gml/2.1/feature.xsd"/&gt;
+
+   &lt;element name="Person" type="myns:PersonType"
+            substitutionGroup="gml:_Feature"/&gt;
+   &lt;complexType name="PersonType"&gt;
+      &lt;complexContent&gt;
+         &lt;extension base="gml:AbstractFeatureType"&gt;
+            &lt;sequence&gt;
+               &lt;element name="LastName" nillable="true"&gt;
+                  &lt;simpleType&gt;
+                     &lt;restriction base="string"&gt;
+                        &lt;maxLength value="30"/&gt;
+                     &lt;/restriction&gt;
+                  &lt;/simpleType&gt;
+               &lt;/element&gt;
+               &lt;element name="FirstName" nillable="true"&gt;
+                  &lt;simpleType&gt;
+                     &lt;restriction base="string"&gt;
+                        &lt;maxLength value="10"/&gt;
+                     &lt;/restriction&gt;
+                  &lt;/simpleType&gt;
+               &lt;/element&gt;
+               &lt;element name="Age" type="integer" nillable="true"/&gt;
+               &lt;element name="Sex" type="string"/&gt;
+               &lt;element name="Spouse"&gt;
+                  &lt;complexType&gt;
+                     &lt;attribute name="sin" type="xsd:anyURI" use="required" /&gt;
+                  &lt;/complexType&gt;
+               &lt;/element&gt;
+               &lt;element name="Location" 
+                        type="gml:PointPropertyType"
+                        nillable="true"/&gt;
+               &lt;element name="Address" type="myns:AddressType" nillable="true"/&gt;
+            &lt;/sequence&gt;
+            &lt;attribute name="sin" type="xsd:anyURI" use="required"/&gt;
+         &lt;/extension&gt;
+      &lt;/complexContent&gt;
+   &lt;/complexType&gt;
+
+   &lt;complexType name="AddressType"&gt;
+      &lt;sequence&gt;
+         &lt;element name="StreetName" nillable="true"&gt;
+            &lt;simpleType&gt;
+               &lt;restriction base="string"&gt;
+                  &lt;maxLength value="30"/&gt;
+               &lt;/restriction&gt;
+            &lt;/simpleType&gt;
+         &lt;/element&gt;
+         &lt;element name="StreetNumber" nillable="true"&gt;
+            &lt;simpleType&gt;
+               &lt;restriction base="string"&gt;
+                  &lt;maxLength value="10"/&gt;
+               &lt;/restriction&gt;
+            &lt;/simpleType&gt;
+         &lt;/element&gt;
+         &lt;element name="City" nillable="true"&gt;
+            &lt;simpleType&gt;
+               &lt;restriction base="string"&gt;
+                  &lt;maxLength value="30"/&gt;
+               &lt;/restriction&gt;
+            &lt;/simpleType&gt;
+         &lt;/element&gt;
+         &lt;element name="Province" nillable="true"&gt;
+            &lt;simpleType&gt;
+               &lt;restriction base="string"&gt;
+                  &lt;maxLength value="30"/&gt;
+               &lt;/restriction&gt;
+            &lt;/simpleType&gt;
+         &lt;/element&gt;
+         &lt;element name="PostalCode" nillable="true"&gt;
+            &lt;simpleType&gt;
+               &lt;restriction base="string"&gt;
+                  &lt;maxLength value="15"/&gt;
+               &lt;/restriction&gt;
+            &lt;/simpleType&gt;
+         &lt;/element&gt;
+         &lt;element name="Country" nillable="true"&gt;
+            &lt;simpleType&gt;
+               &lt;restriction base="string"&gt;
+                  &lt;maxLength value="30"/&gt;
+               &lt;/restriction&gt;
+            &lt;/simpleType&gt;
+         &lt;/element&gt;
+      &lt;/sequence&gt;
+   &lt;/complexType&gt;
+&lt;/schema&gt;</pre><p><a id="N100C06" />Note that the property <span class="emphasis"><em>Address</em></span> is a complex
+      property of type <span class="emphasis"><em>AddressType</em></span>. An example instance
+      of the feature <span class="emphasis"><em>Person</em></span> might be:</p><pre class="programlisting">&lt;?xml version="1.0" ?&gt;
+&lt;myns:Person
+   sin="111222333" 
+   xmlns:myns="http://www.opengis.net/myns"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/myns Person.xsd"&gt;
+
+   &lt;myns:LastName&gt;Smith&lt;/myns:LastName&gt;
+   &lt;myns:FirstName&gt;Fred&lt;/myns:FirstName&gt;
+   &lt;myns:Age&gt;35&lt;/myns:Age&gt;
+   &lt;myns:Sex&gt;Male&lt;/myns:Sex&gt;
+   &lt;myns:Spouse sin="444555666" /&gt;
+   &lt;myns:Location&gt;
+      &lt;gml:Point&gt;&lt;gml:coordinates&gt;15,15&lt;/gml:coordinates&gt;&lt;/gml:Point&gt;
+   &lt;/myns:Location&gt;
+   &lt;myns:Address&gt;
+      &lt;myns:StreetName&gt;Main St.&lt;/myns:StreetName&gt;
+      &lt;myns:StreetNumber&gt;5&lt;/myns:StreetNumber&gt;
+      &lt;myns:City&gt;SomeCity&lt;/myns:City&gt;
+      &lt;myns:Province&gt;SomeProvince&lt;/myns:Province&gt;
+      &lt;myns:PostalCode&gt;X1X 1X1&lt;/myns:PostalCode&gt;
+      &lt;myns:Country&gt;Canada&lt;/myns:Country&gt;
+   &lt;/myns:Address&gt;
+&lt;/myns:Person&gt;</pre><p><a id="N100CF6" />Using XPath [10] expressions, each property of a
+      <span class="emphasis"><em>Person</em></span> feature can be referenced. Table 1 shows the
+      XPath expressions that may be used to reference all the properties of
+      the <span class="emphasis"><em>Person</em></span> feature as well as the corresponding
+      value of each property.</p><div class="table"><a id="N100D86" /><p class="title"><b>Table 1. Table 1: XPath expressions and property values for
+        <span xmlns="http://www.w3.org/1999/xhtml" class="emphasis"><em>Person</em></span> example</b></p><table xmlns="" summary="Table 1: XPath expressions and property values for&#10;        Person example" border="1"><colgroup><col /><col /><col /></colgroup><thead><tr><th>XPath Expression</th><th>Alternate XPath Expression</th><th>Property Value</th></tr></thead><tbody><tr><td>LastName</td><td>Person/LastName</td><td>Smith</td></tr><tr><td>FirstName</td><td>Person/FirstName</td><td>Fred</td></tr><tr><td>Age</td><td>Person/Age</td><td>35</td></tr><tr><td>Sex</td><td>Person/Sex</td><td>Male</td></tr><tr><td>Spouce/@sin</td><td>Person/Spouce/@sin</td><td>444555666</td></tr><tr><td>Location</td><td>Person/Location</td><td>&lt;gml:Point&gt;
+              &lt;gml:coordinates&gt;15,15&lt;/gml:coordinates&gt;
+              &lt;/gml:Point&gt;</td></tr><tr><td>Address/StreeNumber</td><td>Person/Address/StreetNumber</td><td>5</td></tr><tr><td>Address/StreetName</td><td>Person/Address/StreetName</td><td>Main St.</td></tr><tr><td>Address/City</td><td>Person/Address/City</td><td>SomeCiattributety</td></tr><tr><td>Address/Province</td><td>Person/Address/Province</td><td>SomeProvince</td></tr><tr><td>Address/PostalCode</td><td>Person/Address/Postal_Code</td><td>X1X 1X1</td></tr><tr><td>Address/Country</td><td>Person/Address/Country</td><td>Canada</td></tr><tr><td>Person/@sin</td><td>Person/@sin</td><td>111222333</td></tr></tbody></table></div><p><a id="N101936" />Notice that each relative location paths may begin with the root
+      element name of the property being referenced or with the root element
+      name of the object, <span class="emphasis"><em>Person</em></span>. Each step of the path
+      is composed of the abbreviated <span class="emphasis"><em>child::</em></span> axis
+      specifier (i.e. the axis specifier <span class="emphasis"><em>child::</em></span> is
+      omitted) and the name of the specified property which is of node type
+      <span class="emphasis"><em>element</em></span>.</p><p><a id="N101A26" />In addition, the <span class="bold"><b>sin</b></span>
+<sup>[<a href="#ftn.N1046E" id="N1046E">1</a>]</sup> attribute on the <span class="bold"><b>&lt;Person&gt;</b></span> and <span class="bold"><b>&lt;Spouse&gt;</b></span>
+      elements is referenced using the following XPath [10] expressions:</p><pre class="programlisting">Person/@sin
+Person/Spouse/@sin</pre><p><a id="N101B76" />In these cases the final step of the path contains the abbreviated
+      axis specifier <span class="emphasis"><em>attribute::</em></span> (i.e. @) and the node
+      type is <span class="emphasis"><em>attribute</em></span> (i.e. sin in this case).</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N100017" />14. Filter</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100077" />14.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C7" />A filter is any valid expression that can be formed using the
+    elements defined in this specification. The root element <span class="bold"><b>&lt;Filter&gt;</b></span> contains the expression which is
+    created by combining the elements defined in this speification.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100147" />14.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N100197" />The root element of a filter expression, &lt;Filter&gt;, is
+    defined by the following XML Schema fragment:</p><pre class="programlisting">&lt;xsd:element name="Filter" type="ogc:FilterType"/&gt;
+&lt;xsd:complexType name="FilterType"&gt;
+   &lt;xsd:choice&gt;
+      &lt;xsd:element ref="ogc:spatialOps"/&gt;
+      &lt;xsd:element ref="ogc:comparisonOps"/&gt;
+      &lt;xsd:element ref="ogc:logicOps"/&gt;
+      &lt;xsd:element ref="ogc:FeatureId" maxOccurs="unbounded"/&gt;
+   &lt;/xsd:choice&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001F7" />The elements <span class="bold"><b>&lt;logicalOps&gt;</b></span>,
+    <span class="bold"><b>&lt;comparisonOps&gt;</b></span> and <span class="bold"><b>&lt;spatialOps&gt;</b></span> are substitution groups for
+    logical, spatial and comparison operators. In addition, using the
+    <span class="bold"><b>&lt;FeatureId&gt;</b></span> element, a filter can
+    conveniently encode a reference to one or more enumerated feature
+    instances.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N100018" />15. Spatial operators</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100078" />15.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C8" />A spatial operator determines whether its geometric arguments
+    satisfy the stated spatial relationship. The operator evaluates to TRUE if
+    the spatial relationship is satisfied. Otherwise the operator evaluates to
+    FALSE.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100108" />15.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N100158" />The XML encoding for spatial operators is defined by the following
+    XML Schema fragment:</p><pre class="programlisting">&lt;xsd:element name="Equals" 
+             type="ogc:BinarySpatialOpType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="Disjoint" 
+             type="ogc:BinarySpatialOpType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="Touches" 
+             type="ogc:BinarySpatialOpType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="Within" 
+             type="ogc:BinarySpatialOpType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="Overlaps" 
+             type="ogc:BinarySpatialOpType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="Crosses" 
+             type="ogc:BinarySpatialOpType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="Intersects" 
+             type="ogc:BinarySpatialOpType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="Contains" 
+             type="ogc:BinarySpatialOpType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="DWithin" 
+             type="ogc:DistanceBufferType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="Beyond" 
+             type="ogc:DistanceBufferType" substitutionGroup="ogc:spatialOps"/&gt;
+&lt;xsd:element name="BBOX" 
+             type="ogc:BBOXType" substitutionGroup="ogc:spatialOps"/&gt;
+
+&lt;xsd:complexType name="SpatialOpsType" abstract="true"/&gt;
+&lt;xsd:element name="spatialOps" type="ogc:SpatialOpsType" abstract="true"/&gt;
+
+&lt;xsd:complexType name="BinarySpatialOpType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:SpatialOpsType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element ref="ogc:PropertyName"/&gt;
+            &lt;xsd:choice&gt;
+               &lt;xsd:element ref="gml:_Geometry"/&gt;
+               &lt;xsd:element ref="gml:Box"/&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;
+
+&lt;xsd:complexType name="BBOXType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:SpatialOpsType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element ref="ogc:PropertyName"/&gt;
+            &lt;xsd:element ref="gml:Box"/&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;
+
+&lt;xsd:complexType name="DistanceBufferType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:SpatialOpsType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element ref="ogc:PropertyName"/&gt;
+            &lt;xsd:element ref="gml:_Geometry"/&gt;
+            &lt;xsd:element name="Distance" type="ogc:DistanceType"/&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;
+
+&lt;xsd:complexType name="DistanceType" mixed="true"&gt;
+   &lt;xsd:attribute name="units" type="xsd:anyURI" use="required"/&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001B8" />As defined in this specification, spatial operators are used to test
+    whether the value of a geometric property, referenced using the name of
+    the property, and a literal geometric value satisfy the spatial
+    relationship implied by the operator. For example, the <span class="bold"><b>&lt;Overlap&gt;</b></span> operator evaluates whether the
+    value of the specified geometric property and the specified literal
+    geometric value spatially overlap. Literal geometric values are expressed
+    using GML [12].</p><p><a id="N100228" />The <span class="bold"><b>&lt;BBOX&gt;</b></span> element is
+    defined as a convenient and more compact way of encoding the very common
+    bounding box constraint based on the <span class="bold"><b>gml:Box</b></span>
+    geometry. It is equivalent to the spatial operation <span class="bold"><b>&lt;Not&gt;&lt;Disjoint&gt;
+    ... &lt;/Disjoint&gt;&lt;/Not&gt;</b></span> meaning that the
+    <span class="bold"><b>&lt;BBOX&gt;</b></span> operator should identify
+    all geometries that spatially interact with the box in some manner.</p><p><a id="N100358" />The Bounding Box (BBOX) is a set of four comma-separated decimal,
+    scientific notation, or integer values (if integers are provided where
+    floating point is needed, the decimal point is assumed at the end of the
+    number). These values specify the minimum X, minimum Y, maximum X, and
+    maximum Y ranges, in that order, expressed in units of the SRS of the
+    feature type(s) begin queried. The four bounding box values indicate the
+    outside edges of a rectangle, as in Figure 5; minimum X is the left edge,
+    maximum X the right, minimum Y the bottom, and maximum Y the top.</p><div class="figure"><a id="N104E2" /><p class="title"><b>Figure 1. Figure 5 - Bounding Box representation</b></p><div xmlns="" class="mediaobject"><img src="images\08_BBox.gif" alt="Figure 5 - Bounding Box representation" /></div></div><p><a id="N100478" />The semantics of the other operators <span class="bold"><b>Equals</b></span>,
+    <span class="bold"><b>Disjoint</b></span>, <span class="bold"><b>Touches</b></span>,
+    <span class="bold"><b>Within</b></span>, <span class="bold"><b>Overlaps</b></span>,
+    <span class="bold"><b>Crosses</b></span>, <span class="bold"><b>Intersects</b></span>,
+    and <span class="bold"><b>Contains</b></span> are defined in section
+    3.2.19.2 of the OpenGIS® Simple Feature Specification for SQL [5].</p><p><a id="N1006A8" />The spatial operators <span class="bold"><b>DWithin</b></span> and
+    <span class="bold"><b>Beyond</b></span> test whether the value of a
+    geometric property is within or beyond a specified distance of the
+    specified literal geometric value. Distance values are expressed using the
+    <span class="bold"><b>&lt;Distance&gt;</b></span> element. The content
+    of the <span class="bold"><b>&lt;Distance&gt;</b></span> element
+    represents the magnitude of the distance and the <span class="bold"><b>units</b></span>
+    attribute is used to specify the units of measure. The <span class="bold"><b>units</b></span> attribute is of type <span class="emphasis"><em>anyURI</em></span>
+    so that it may be used to reference a units dictionary. For example, the
+    following XML fragment:</p><pre class="programlisting">&lt;Distance unit="http://www.uomdict.com/uom.html#meters"&gt;10&lt;/Distance&gt;</pre><p><a id="N1008B8" />encodes a distance value of 10 meters. The semantics of these
+    operators are defined in section 4 of the OpenGIS Catalog Interface
+    Implementation Specification [4].</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N100019" />16. Comparison operators</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100079" />16.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C9" />A comparison operator is used to form expressions that evaluate the
+    mathematical comparison between two arguments. If the arguments satisfy
+    the comparison then the expression evaluates to TRUE. Otherwise the
+    expression evaluates to false.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N100109" />16.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N100159" />The XML encoding for comparison operators is defined by the
+    following XML Schema fragment:</p><pre class="programlisting">&lt;xsd:element name="PropertyIsEqualTo"
+             type="ogc:BinaryComparisonOpType" substitutionGroup="ogc:comparisonOps"/&gt;
+&lt;xsd:element name="PropertyIsNotEqualTo"
+             type="ogc:BinaryComparisonOpType" substitutionGroup="ogc:comparisonOps"/&gt;
+&lt;xsd:element name="PropertyIsLessThan"
+             type="ogc:BinaryComparisonOpType" substitutionGroup="ogc:comparisonOps"/&gt;
+&lt;xsd:element name="PropertyIsGreaterThan"
+             type="ogc:BinaryComparisonOpType" substitutionGroup="ogc:comparisonOps"/&gt;
+&lt;xsd:element name="PropertyIsLessThanOrEqualTo"
+             type="ogc:BinaryComparisonOpType" substitutionGroup="ogc:comparisonOps"/&gt;
+&lt;xsd:element name="PropertyIsGreaterThanOrEqualTo"
+             type="ogc:BinaryComparisonOpType" substitutionGroup="ogc:comparisonOps"/&gt;
+&lt;xsd:element name="PropertyIsLike" 
+             type="ogc:PropertyIsLikeType" substitutionGroup="ogc:comparisonOps"/&gt;
+&lt;xsd:element name="PropertyIsNull" 
+             type="ogc:PropertyIsNullType" substitutionGroup="ogc:comparisonOps"/&gt;
+&lt;xsd:element name="PropertyIsBetween" 
+             type="ogc:PropertyIsBetweenType" substitutionGroup="ogc:comparisonOps"/&gt;
+
+&lt;xsd:complexType name="ComparisonOpsType" abstract="true"/&gt;
+&lt;xsd:element name="comparisonOps" type="ogc:ComparisonOpsType" abstract="true"/&gt;
+
+&lt;xsd:complexType name="BinaryComparisonOpType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:ComparisonOpsType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element ref="ogc:expression" minOccurs="2" maxOccurs="2"/&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;
+
+&lt;xsd:complexType name="PropertyIsLikeType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:ComparisonOpsType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element ref="ogc:PropertyName"/&gt;
+            &lt;xsd:element ref="ogc:Literal"/&gt;
+         &lt;/xsd:sequence&gt;
+         &lt;xsd:attribute name="wildCard" type="xsd:string" use="required"/&gt;
+         &lt;xsd:attribute name="singleChar" type="xsd:string" use="required"/&gt;
+         &lt;xsd:attribute name="escape" type="xsd:string" use="required"/&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;
+
+&lt;xsd:complexType name="PropertyIsNullType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:ComparisonOpsType"&gt;
+         &lt;xsd:choice&gt;
+            &lt;xsd:element ref="ogc:PropertyName"/&gt;
+            &lt;xsd:element ref="ogc:Literal"/&gt;
+         &lt;/xsd:choice&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;
+
+&lt;xsd:complexType name="PropertyIsBetweenType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:ComparisonOpsType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element ref="ogc:expression"/&gt;
+            &lt;xsd:element name="LowerBoundary" type="ogc:LowerBoundaryType"/&gt;
+            &lt;xsd:element name="UpperBoundary" type="ogc:UpperBoundaryType"/&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;
+
+&lt;xsd:complexType name="LowerBoundaryType"&gt;
+   &lt;xsd:choice&gt;
+      &lt;xsd:element ref="ogc:expression"/&gt;
+   &lt;/xsd:choice&gt;
+&lt;/xsd:complexType&gt;
+
+&lt;xsd:complexType name="UpperBoundaryType"&gt;
+   &lt;xsd:sequence&gt;
+      &lt;xsd:element ref="ogc:expression"/&gt;
+   &lt;/xsd:sequence&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001B9" />The Common Catalog Query Language [4] defines a standard set of
+    comparison operators. In addition to the standard set
+    (=,&lt;,&gt;,&gt;=,&lt;=,&lt;&gt;) of comparison operators, this
+    specification defines the elements <span class="bold"><b>&lt;PropertyIsLike&gt;</b></span>,
+    <span class="bold"><b>&lt;PropertyIsBetween&gt;</b></span> and <span class="bold"><b>&lt;PropertyIsNull&gt;</b></span>.</p><p><a id="N1002A9" />The <span class="bold"><b>&lt;PropertyIsLike&gt;</b></span>
+    element is intended to encode a character string comparison operator with
+    pattern matching. The pattern is defined by a combination of regular
+    characters, the <span class="bold"><b>wildCard</b></span> character, the
+    <span class="bold"><b>singleChar</b></span> character, and the <span class="bold"><b>escapeChar</b></span> character. The <span class="bold"><b>wildCard</b></span>
+    character matches zero or more characters. The <span class="bold"><b>singleChar</b></span>
+    character matches exactly one character. The <span class="bold"><b>escapeChar</b></span>
+    character is used to escape the meaning of the <span class="bold"><b>wildCard</b></span>,
+    <span class="bold"><b>singleChar</b></span> and <span class="bold"><b>escapeChar</b></span>
+    itself.</p><p><a id="N100559" />The <span class="bold"><b>&lt;PropertyIsNull&gt;</b></span>
+    element encodes an operator that checks to see if the value of its content
+    is NULL. A NULL is equivalent to no value present. The value 0 is a valid
+    value and is not considered NULL.</p><p><a id="N1005C9" />The <span class="bold"><b>&lt;PropertyIsBetween&gt;</b></span>
+    element is defined as a compact way of encoding a range check. The lower
+    and upper boundary values are inclusive.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N1000110" />17. Logical operators</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1000710" />17.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C10" />A logical operator can be used to combine one or more conditional
+    expressions. The logical operator AND evaluates to TRUE if all the
+    combined expressions evaluate to TRUE. The operator OR operator evaluates
+    to TRUE is any of the combined expressions evaluate to TRUE. The NOT
+    operator reverses the logical value of an expression.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1001010" />17.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N1001510" />The XML encoding for the logical operators AND, OR and NOT is
+    defined by the following XML Schema fragment:</p><pre class="programlisting">&lt;xsd:element name="And" type="ogc:BinaryLogicOpType" substitutionGroup="ogc:logicOps"/&gt;
+&lt;xsd:element name="Or"  type="ogc:BinaryLogicOpType" substitutionGroup="ogc:logicOps"/&gt;
+&lt;xsd:element name="Not" type="ogc:UnaryLogicOpType" substitutionGroup="ogc:logicOps"/&gt;
+&lt;xsd:element name="logicOps" type="ogc:LogicOpsType" abstract="true"/&gt;
+&lt;xsd:complexType name="LogicOpsType" abstract="true"/&gt;
+&lt;xsd:complexType name="BinaryLogicOpType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:LogicOpsType"&gt;
+         &lt;xsd:choice minOccurs="2" maxOccurs="unbounded"&gt;
+            &lt;xsd:element ref="ogc:comparisonOps"/&gt;
+            &lt;xsd:element ref="ogc:spatialOps"/&gt;
+            &lt;xsd:element ref="ogc:logicOps"/&gt;
+         &lt;/xsd:choice&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;
+&lt;xsd:complexType name="UnaryLogicOpType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:LogicOpsType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:choice&gt;
+               &lt;xsd:element ref="ogc:comparisonOps"/&gt;
+               &lt;xsd:element ref="ogc:spatialOps"/&gt;
+               &lt;xsd:element ref="ogc:logicOps"/&gt;
+            &lt;/xsd:choice&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001B10" /> The elements <span class="bold"><b>&lt;And&gt;</b></span>,
+    <span class="bold"><b>&lt;Or&gt;</b></span> and <span class="bold"><b>&lt;Not&gt;</b></span>
+    can be used to combine scalar, spatial and other logical expressions to
+    form more complex compound expressions.</p><p><a id="N1002A10" />The comparisonOps and spatialOps elements are abstract elements that
+    can be substituted for the comparison operators [sec 9]
+    (&lt;,&gt;,=,etc...) and the spatial operators [sec 8].</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N1000111" />18. Feature identifiers</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1000711" />18.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C11" />A feature identifier is meant to represent a unique identifier for a
+    geographic feature instance within the context of the web service that is
+    serving the feature.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1001011" />18.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N1001511" />The <span class="bold"><b>&lt;FeatureId&gt;</b></span> element is
+    defined by the following XML Schema fragment:</p><pre class="programlisting">&lt;xsd:element name="FeatureId" type="ogc:FeatureIdType"/&gt;
+&lt;xsd:complexType name="FeatureIdType"&gt;
+   &lt;xsd:attribute name="fid" type="xsd:anyURI" use="required"/&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001F11" />The <span class="bold"><b>&lt;FeatureId&gt;</b></span> element can
+    be used to reference instances of geographic features in filter
+    expressions and other XML documents.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N1000112" />19. Expressions</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1000712" />19.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C12" />An expression is a combination of one or more symbols that evaluate
+    to single boolean value of true or false. In this specification, valid
+    symbols are encoded using XML elements and expressions are formed by
+    nesting elements to form XML fragments that validate against the schemas
+    in ANNEX A.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1001012" />19.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N1001512" />An expression can be formed using the elements: </p><p><a id="N1001812" />
+<span class="bold"><b>&lt;Add&gt;</b></span>, <span class="bold"><b>&lt;Sub&gt;</b></span>, <span class="bold"><b>&lt;Mul&gt;</b></span>,
+    <span class="bold"><b>&lt;Div&gt;</b></span>, <span class="bold"><b>&lt;PropertyName&gt;</b></span>,
+    <span class="bold"><b>&lt;Literal&gt;</b></span> and <span class="bold"><b>&lt;Function&gt;</b></span>.</p><p><a id="N1003612" />They all belong to the <span class="emphasis"><em>substitution group</em></span>
+    <span class="bold"><b>expression</b></span> which means that any of them
+    can be used wherever an expression is called for. In addition, the XML
+    fragments formed by combining these elements are themselves
+    <span class="emphasis"><em>expressions</em></span> and can be used wherever an
+    <span class="emphasis"><em>expression</em></span> is called for.</p><p><a id="N1004612" />The <span class="bold"><b>&lt;expression&gt;</b></span> element is
+    an <span class="emphasis"><em>abstract</em></span> element which means that it does not
+    really exist and its only purpose is to act as a placeholder for the
+    elements and combinations of elements that can be used to form
+    expressions.</p><p><a id="N1005012" />The XML Schema fragment that defines the abstract <span class="bold"><b>&lt;expression&gt;</b></span> element is:</p><pre class="programlisting">&lt;xsd:element name="expression" type="ogc:ExpressionType" abstract="true"/&gt;
+&lt;xsd:complexType name="ExpressionType" abstract="true"/&gt;</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N1000113" />20. Arithmetic operators</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1000713" />20.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C13" />The elements defined in this section are used to encode the
+    fundamental arithmetic operations of addition, subtraction, multiplication
+    and division. Arithmetic operators are binary operators meaning that they
+    accept two arguments and evaluate to a single result.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1001013" />20.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N1001513" />The XML encoding for arithmetic expressions is defined by the
+    following XML Schema fragment:</p><pre class="programlisting">&lt;xsd:element name="Add"
+             type="ogc:BinaryOperatorType"
+             substitutionGroup="ogc:expression"/&gt;
+&lt;xsd:element name="Sub"
+             type="ogc:BinaryOperatorType"
+             substitutionGroup="ogc:expression"/&gt;
+&lt;xsd:element name="Mul"
+             type="ogc:BinaryOperatorType"
+             substitutionGroup="ogc:expression"/&gt;
+&lt;xsd:element name="Div"
+             type="ogc:BinaryOperatorType"
+             substitutionGroup="ogc:expression"/&gt;
+&lt;xsd:complexType name="BinaryOperatorType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:ExpressionType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element ref="ogc:expression" minOccurs="2" maxOccurs="2"/&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001B13" />The <span class="bold"><b>&lt;Add&gt;</b></span> element encodes
+    the operation of addition and contains the arguments which can be any
+    <span class="emphasis"><em>expression</em></span> that validates according to this
+    specification.</p><p><a id="N1002513" />The <span class="bold"><b>&lt;Sub&gt;</b></span> element encodes
+    the operation of subtraction where the second argument is subtracted from
+    the first. The <span class="bold"><b>&lt;Sub&gt;</b></span> element
+    contains the argument when can be any <span class="emphasis"><em>expression</em></span> that
+    validates according to this specification.</p><p><a id="N1003313" />The <span class="bold"><b>&lt;Mul&gt;</b></span> element encodes
+    the operation multiplication. The <span class="bold"><b>&lt;Mul&gt;</b></span>
+    element contains the two argument to be multiplied which can be any
+    <span class="emphasis"><em>expression</em></span> that validates according to this
+    specification.</p><p><a id="N1004113" />The <span class="bold"><b>&lt;Div&gt;</b></span> element encodes
+    the operation of division where the first argument is divided by the
+    second argument. The <span class="bold"><b>&lt;Div&gt;</b></span>
+    element contains the arguments which can be any valid
+    <span class="emphasis"><em>expression</em></span> that validates according to this
+    specification. The second argument or expression cannot evaluate to zero.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N1000114" />21. Literals</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1000714" />21.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C14" />This section defines how the filter encoding defined in this
+    specification encodes literal values. A literal value is any part of a
+    statement or expression that is to be used exactly as it is specified,
+    rather than as a variable or other element.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1001014" />21.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N1001514" />The following XML Schema fragment defines the <span class="bold"><b>&lt;Literal&gt;</b></span>
+    element:</p><pre class="programlisting">&lt;xsd:element name="Literal"
+             type="ogc:LiteralType"
+             substitutionGroup="ogc:expression"/&gt;
+&lt;xsd:complexType name="LiteralType"&gt;
+   &lt;xsd:complexContent mixed="true"&gt;
+      &lt;xsd:extension base="ogc:ExpressionType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:any minOccurs="0"/&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001F14" />The <span class="bold"><b>&lt;Literal&gt;</b></span> element is
+    used to encode literal scalar and geometric values.</p><p><a id="N1002614" />Literal geometric values must be encoded as the content of the
+    <span class="bold"><b>&lt;Literal&gt;</b></span> element, according to
+    the geometry.xsd schema of GML as described in the Geography Markup
+    Language (GML) Implementation Specification [12]. That is to say that any
+    literal GML geometry instance must validate against the XML Schema
+    geometry.xsd.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N1000115" />22. Functions</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1000715" />22.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000C15" />This section defines the encoding of single value functions using
+    the &lt;Function&gt; element. A function is a named procedure that
+    performs a distinct computation. A function may accept zero or more
+    arguments as input and generates a single result.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N1001015" />22.2. Encoding</h3></div></div><div xmlns="" /></div><p><a id="N1001515" />The following XML Schema fragment defines the <span class="bold"><b>&lt;Function&gt;</b></span>
+    element:</p><pre class="programlisting">&lt;xsd:element name="Function"
+             type="ogc:FunctionType"
+             substitutionGroup="ogc:expression"/&gt;
+&lt;xsd:complexType name="FunctionType"&gt;
+   &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:ExpressionType"&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element ref="ogc:expression"
+                         minOccurs="0" maxOccurs="unbounded"/&gt;
+         &lt;/xsd:sequence&gt;
+         &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;
+      &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001F15" />A function is composed of the name of the function, encoded using
+    the attribute <span class="bold"><b>name</b></span>, and zero or more
+    arguments contained within the <span class="bold"><b>&lt;Function&gt;</b></span>
+    element. The arguments themselves are <span class="bold"><b>expressions</b></span>
+    discussed in section 11.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N1000116" />23. Filter capabilities</h2></div></div><div xmlns="" /></div><p><a id="N1000716" />This section of the document defines a capabilities schema that can be
+  included in the capabilities document of services that use filter encoding.
+  The documents describes what specific filter capabilities are supported by a
+  service. For example, a web feature service that uses filter encoding would
+  include this fragment in its capabilities document to advertise what filter
+  capabilities it supports.</p><p><a id="N1000A16" />Filter capabilities are divided into two categories: spatial
+  capabilities and scalar capabilities. The following XML Schema fragment
+  defines the root element of the filter capabilities:</p><pre class="programlisting">&lt;xsd:element name="Filter_Capabilities"&gt;
+   &lt;xsd:complexType&gt;
+      &lt;xsd:sequence&gt;
+         &lt;xsd:element name="Spatial_Capabilities"
+                      type="ogc:Spatial_CapabilitiesType"/&gt;
+         &lt;xsd:element name="Scalar_Capabilities"
+                      type="ogc:Scalar_CapabilitiesType"/&gt;
+      &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+&lt;/xsd:element&gt;</pre><p><a id="N1001016" />A service that supports spatial filtering would include a spatial
+  capabilities section. Spatial capabilities include the ability to filter
+  spatial data based on the definition of a bounding box (BBOX) as well as the
+  ability to process the spatial operators defined by CQL [4] and the Simple
+  Features for SQL [5] specification: Equals, Disjoint, Touches, Within,
+  Overlaps, Crosses, Intersects, Contains, DWithin and Beyond. Spatial
+  capabilities are encoded according to the following XML Schema fragment:</p><pre class="programlisting">&lt;xsd:complexType name="Spatial_CapabilitiesType"&gt;
+   &lt;xsd:sequence&gt;
+      &lt;xsd:element name="Spatial_Operators"
+                  type="ogc:Spatial_OperatorsType"/&gt;
+   &lt;/xsd:sequence&gt;
+&lt;/xsd:complexType&gt;
+&lt;xsd:complexType name="Spatial_OperatorsType"&gt;
+   &lt;xsd:choice maxOccurs="unbounded"&gt;
+      &lt;xsd:element ref="ogc:Equals"/&gt;
+      &lt;xsd:element ref="ogc:Disjoint"/&gt;
+      &lt;xsd:element ref="ogc:Touches"/&gt;
+      &lt;xsd:element ref="ogc:Within"/&gt;
+      &lt;xsd:element ref="ogc:Overlaps"/&gt;
+      &lt;xsd:element ref="ogc:Crosses"/&gt;
+      &lt;xsd:element ref="ogc:Intersect"/&gt;
+      &lt;xsd:element ref="ogc:Contains"/&gt;
+      &lt;xsd:element ref="ogc:DWithin"/&gt;
+      &lt;xsd:element ref="ogc:Beyond"/&gt;
+      &lt;xsd:element ref="ogc:BBOX"/&gt;
+   &lt;/xsd:choice&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001616" />Scalar capabilities include the ability to process logical
+  expressions, comparisons and arithmetic operations including the ability to
+  process a list of named functions. The following XML Schema defines how
+  scalar capabilities are encoded:</p><pre class="programlisting">&lt;xsd:complexType name="Scalar_CapabilitiesType"&gt;
+   &lt;xsd:choice maxOccurs="unbounded"&gt;
+      &lt;xsd:element ref="ogc:Logical_Operators"/&gt;
+      &lt;xsd:element name="Comparison_Operators"
+                   type="ogc:Comparison_OperatorsType"/&gt;
+      &lt;xsd:element name="Arithmetic_Operators"
+                   type="ogc:Arithmetic_OperatorsType"/&gt;
+   &lt;/xsd:choice&gt;
+&lt;/xsd:complexType&gt;</pre><p><a id="N1001C16" />The <span class="bold"><b>&lt;Logical_Operators&gt;</b></span>
+  element is used to indicate that the filter can process
+  <span class="emphasis"><em>And</em></span>, <span class="emphasis"><em>Or</em></span> and <span class="emphasis"><em>Not</em></span>
+  operators.</p><p><a id="N1002C16" />The <span class="bold"><b>&lt;Comparison_Operators&gt;</b></span>
+  element is used to indicate what types of comparison operators are supported
+  by a service. The <span class="bold"><b>&lt;Simple_Comparisons&gt;</b></span>
+  element is used to indicate that the operators =, &lt;, &lt;=, &gt;,
+  &gt;= are supported. The elements <span class="bold"><b>&lt;Like&gt;</b></span>,
+  <span class="bold"><b>&lt;Between&gt;</b></span> and <span class="bold"><b>&lt;NullCheck&gt;</b></span>
+  are used to indicate that the service can support the operators LIKE,
+  BETWEEN and NULL.</p><p><a id="N1004316" />The <span class="bold"><b>&lt;Arithmetic_Operators&gt;</b></span>
+  element is used to indicate what arithmetic operators the a service can
+  support. The contained element <span class="bold"><b>&lt;Simple_Arithmetic&gt;</b></span>
+  is used to indicate that the service can support addition, subtraction,
+  multiplication and division. The contained element <span class="bold"><b>&lt;Functions&gt;</b></span>
+  is used to list the function names that are supported and the number of
+  arguments each function requires. Function arguments are encoded as nested
+  elements within the <span class="bold"><b>&lt;Function&gt;</b></span> tag
+  as defined in Section 15, <span class="emphasis"><em>Encoding Functions</em></span>.</p><div class="example"><a id="N1070C" /><p class="title"><b>Example 1. Example</b></p><p xmlns=""><a id="N1005E16" />The following example shows a capabilities fragment for a service
+    that supports all filtering capabilities defined in this document include
+    a list of named functions:</p><pre class="programlisting">&lt;Filter_Capabilities&gt;
+   &lt;Spatial_Capabilities&gt;
+      &lt;Spatial_Operators&gt;
+         &lt;BBOX /&gt;
+         &lt;Equals /&gt;
+         &lt;Disjoint /&gt;
+         &lt;Intersect /&gt;
+         &lt;Touches /&gt;
+         &lt;Crosses /&gt;
+         &lt;Within /&gt;
+         &lt;Contains /&gt;
+         &lt;Overlaps /&gt;
+         &lt;Beyond /&gt;
+      &lt;/Spatial_Operators&gt;
+   &lt;/Spatial_Capabilities&gt;
+   &lt;Scalar_Capabilities&gt;
+      &lt;Logical_Operators /&gt;
+      &lt;Comparison_Operators&gt;
+         &lt;Simple_Comparisons /&gt;
+         &lt;Like /&gt;
+         &lt;Between /&gt;
+         &lt;NullCheck /&gt;
+      &lt;/Comparison_Operators&gt;
+      &lt;Arithmetic_Operators&gt;
+         &lt;Simple_Arithmetic /&gt;
+         &lt;Functions&gt;
+            &lt;Function_Names&gt;
+               &lt;FunctionName nArgs="1"&gt;MIN&lt;/FunctionName&gt;
+               &lt;FunctionName nArgs="1"&gt;MAX&lt;/FunctionName&gt;
+               &lt;FunctionName nArgs="1"&gt;SIN&lt;/FunctionName&gt;
+               &lt;FunctionName nArgs="1"&gt;COS&lt;/FunctionName&gt;
+               &lt;!--.
+                   . ... more functions defined here ...
+                   .
+               --&gt;
+            &lt;/Function_Names&gt;
+         &lt;/Functions&gt;
+      &lt;/Arithmetic_Operators&gt;
+   &lt;/Scalar_Capabilities&gt;  
+&lt;/Filter_Capabilities&gt;</pre></div><div class="example"><a id="N10714" /><p class="title"><b>Example 2. Example</b></p><p xmlns=""><a id="N1006A16" />The following example is a filter capabilities document for a
+    service that support a limited set of filter capabilities:</p><pre class="programlisting">&lt;Filter_Capabilities&gt;
+   &lt;Spatial_Capabilities&gt;
+      &lt;Spatial_Operators&gt;
+         &lt;BBOX /&gt;
+      &lt;/Spatial_Operators&gt;
+   &lt;/Spatial_Capabilities&gt;
+   &lt;Scalar_Capabilities&gt;
+      &lt;Logical_Operators /&gt;
+      &lt;Comparison_Operators&gt;
+         &lt;Simple_Comparisons /&gt;
+         &lt;Like /&gt;
+         &lt;Between /&gt;
+         &lt;NullCheck /&gt;
+      &lt;/Comparison_Operators&gt;
+      &lt;Arithmetic_Operators&gt;
+         &lt;Simple_Arithmetic /&gt;
+      &lt;/Arithmetic_Operators&gt;
+   &lt;/Scalar_Capabilities&gt;  
+&lt;/Filter_Capabilities&gt;</pre><p><a id="N1007016" />Specifically, this service support the BBOX spatial operator,
+    logical operations, comparison operations and simple arithmetic.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001A" />24. ANNEX A - Examples (Informative)</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N10007A" />24.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000CA" />This annex contains a number of examples of filters. Since filter
+    are meant to be part of larger schemas, these examples represent XML
+    fragments that would likely be embedded in another XML document such as
+    web feature service request.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N10010A" />24.2. Examples</h3></div></div><div xmlns="" /></div><div class="example"><a id="N1072E" /><p class="title"><b>Example 3. Example 1</b></p><p xmlns=""><a id="N1001AA" />A simple non-spatial filter checking to see if
+      <span class="emphasis"><em>SomeProperty</em></span> is equal to 100.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;PropertyIsEqualTo&gt;
+      &lt;PropertyName&gt;SomeProperty&lt;/PropertyName&gt;
+      &lt;Literal&gt;100&lt;/Literal&gt;
+   &lt;/PropertyIsEqualTo&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N10739" /><p class="title"><b>Example 4. Example 2</b></p><p xmlns=""><a id="N10029A" />A simple non-spatial filter comparing a property value to a
+      literal. In this case, the DEPTH is checked to find instances where it
+      is less than 30 - possibly to identify areas that need dredging.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;PropertyIsLessThan&gt;
+      &lt;PropertyName&gt;DEPTH&lt;/PropertyName&gt;
+      &lt;Literal&gt;30&lt;/Literal&gt;
+   &lt;/PropertyIsLessThan&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N10741" /><p class="title"><b>Example 5. Example 3</b></p><p xmlns=""><a id="N10035A" />This example encodes a simple spatial filter. In this case we are
+      finding all features that have a geometry that spatially interacts with
+      the specified bounding box. The expression NOT DISJOINT is used to
+      exclude all features that do not interact with the bounding box; in
+      other words identify all the features that interact with the bounding
+      box in some way.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;Not&gt;
+      &lt;Disjoint&gt;
+         &lt;PropertyName&gt;Geometry&lt;/PropertyName&gt;
+         &lt;gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"&gt;
+            &lt;gml:coordinates&gt;13.0983,31.5899 35.5472,42.8143&lt;/gml:coordinates&gt;
+         &lt;/gml:Box&gt;
+      &lt;/Disjoint&gt;
+   &lt;/Not&gt;
+&lt;/Filter&gt;</pre><p><a id="N1003BA" />An alternative encoding of this filter could have used to
+      <span class="bold"><b>&lt;BBOX&gt;</b></span> element:</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;BBOX&gt;
+      &lt;PropertyName&gt;Geometry&lt;/PropertyName&gt;
+      &lt;gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"&gt;
+         &lt;gml:coordinates&gt;13.0983,31.5899 35.5472,42.8143&lt;/gml:coordinates&gt;
+      &lt;/gml:Box&gt;
+   &lt;/BBOX&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N10752" /><p class="title"><b>Example 6. Example 4</b></p><p xmlns=""><a id="N1004BA" />In this example we combine examples 2 and 3 with the logical
+      operator AND. The predicate is thus interpreted as seeking all features
+      that interact with the specified bounding box and have a DEPTH value of
+      less than 30 meters.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;And&gt;
+      &lt;PropertyIsLessThan&gt;
+         &lt;PropertyName&gt;DEPTH&lt;/PropertyName&gt;
+         &lt;Literal&gt;30&lt;/Literal&gt;
+      &lt;/PropertyIsLessThan&gt;
+      &lt;Not&gt;
+         &lt;Disjoint&gt;
+            &lt;PropertyName&gt;Geometry&lt;/PropertyName&gt;
+            &lt;gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"&gt;
+               &lt;gml:coordinates&gt;13.0983,31.5899 35.5472,42.8143&lt;/gml:coordinates&gt;
+            &lt;/gml:Box&gt;
+         &lt;/Disjoint&gt;
+      &lt;/Not&gt;
+   &lt;/And&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N1075A" /><p class="title"><b>Example 7. Example 5</b></p><p xmlns=""><a id="N10057A" />This example encodes a simple filter block identifying a specific
+      feature instance of the feature type TREESA_1M. Any operation that
+      included this filter block would be applied to that specific feature.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;FeatureId fid="TREESA_1M.1234"/&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N10762" /><p class="title"><b>Example 8. Example 6</b></p><p xmlns=""><a id="N10063A" />A <span class="bold"><b>&lt;Filter&gt;</b></span> element can
+      also be used to identify an enumerated set of feature instances. In this
+      case, any operation that included this filter block would be limited to
+      the feature instances listed within the <span class="bold"><b>&lt;Filter&gt;</b></span>
+      tags.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;FeatureId fid="TREESA_1M.1234"/&gt;
+   &lt;FeatureId fid="TREESA_1M.5678"/&gt;
+   &lt;FeatureId fid="TREESA_1M.9012"/&gt;
+   &lt;FeatureId fid="INWATERA_1M.3456"/&gt;
+   &lt;FeatureId fid="INWATERA_1M.7890"/&gt;
+   &lt;FeatureId fid="BUILTUPA_1M.4321"/&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N10772" /><p class="title"><b>Example 9. Example 7</b></p><p xmlns=""><a id="N10077A" />The following filter includes the encoding of a function. This
+      filter identifies all features where the sin() of the property named
+      DISPERSION_ANGLE is 1.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;PropertyIsEqualTo&gt;
+      &lt;Function name="SIN"&gt;
+         &lt;PropertyName&gt;DISPERSION_ANGLE&lt;/PropertyName&gt;
+      &lt;/Function&gt;
+      &lt;Literal&gt;1&lt;/Literal&gt;
+   &lt;/PropertyIsEqualTo&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N1077A" /><p class="title"><b>Example 10. Example 8</b></p><p xmlns=""><a id="N10083A" />This example encodes a filter that includes an arithmetic
+      expression. This filter is equivalent to the expression A = B + 100.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;PropertyIsEqualTo&gt;
+      &lt;PropertyName&gt;PROPA&lt;/PropertyName&gt;
+      &lt;Add&gt;
+         &lt;PropertyName&gt;PROPB&lt;/PropertyName&gt;
+         &lt;Literal&gt;100&lt;/Literal&gt;
+      &lt;/Add&gt;
+   &lt;/PropertyIsEqualTo&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N10782" /><p class="title"><b>Example 11. Example 9</b></p><p xmlns=""><a id="N1008FA" />This example encodes a filter using the BETWEEN operator. The
+      filter identifies all features where the DEPTH is between 100 and 200
+      meters.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;PropertyIsBetween&gt;
+      &lt;PropertyName&gt;DEPTH&lt;/PropertyName&gt;
+      &lt;LowerBoundary&gt;100&lt;/LowerBoundary&gt;
+      &lt;UpperBoundary&gt;200&lt;/UpperBoundary&gt;
+   &lt;/PropertyIsBetween&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N1078A" /><p class="title"><b>Example 12. Example 10</b></p><p xmlns=""><a id="N1009BA" />This example is similar to example 9 except that in this case the
+      filter is checking to see if the SAMPLE_DATE property is within a
+      specified date range. The dates are represented as described in the
+      Annex B of the Web Map Service Implementation Specification [6].</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;Between&gt;
+      &lt;PropertyName&gt;SAMPLE_DATE&lt;/PropertyName&gt;
+      &lt;LowerBoundary&gt;
+         &lt;Literal&gt;2001-01-15T20:07:48.11&lt;/Literal&gt;
+      &lt;/LowerBoundary&gt;
+      &lt;UpperBoundary&gt;
+         &lt;Literal&gt;2001-03-06T12:00:00.00&lt;/Literal&gt;
+      &lt;/UpperBoundary&gt;
+   &lt;/Between&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N10792" /><p class="title"><b>Example 13. Example 11</b></p><p xmlns=""><a id="N100A7A" />This example encodes a filter using the LIKE operation to perform
+      a pattern matching comparison. In this case, the filter identifies all
+      features where the value of the property named LAST_NAME begins with the
+      letters "JOHN".</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;PropertyIsLike wildCard="*" singleChar="#" escapeChar="!"&gt;
+      &lt;PropertyName&gt;LAST_NAME&lt;/PropertyName&gt;
+      &lt;Literal&gt;JOHN*&lt;/Literal&gt;
+   &lt;/PropertyIsLike&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N1079A" /><p class="title"><b>Example 14. Example 12</b></p><p xmlns=""><a id="N100B3A" />This example encodes a spatial filter that identifies all features
+      that OVERLAP a polygonal area of interest.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;Overlaps&gt;
+      &lt;PropertyName&gt;Geometry&lt;/PropertyName&gt;
+      &lt;gml:Polygon srsName="http://www.opengis.net/gml/srs/epsg.xml#4326"&gt;
+         &lt;gml:outerBoundaryIs&gt;
+            &lt;gml:LinearRing&gt;
+               &lt;gml:coordinates&gt; ... &lt;/gml:coordinates&gt;
+            &lt;/gml:LinearRing&gt;
+         &lt;/gml:outerBoundaryIs&gt;
+      &lt;/gml:Polygon&gt;
+   &lt;/Overlaps&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N107A2" /><p class="title"><b>Example 15. Example 13</b></p><p xmlns=""><a id="N100BFA" />In this example, a more complex scalar predicate is encoded using
+      the logical operators AND and OR. The example is equivalent to the
+      expression:</p><pre class="programlisting">((FIELD1=10 OR FIELD1=20) AND (STATUS="VALID").</pre><pre class="programlisting">&lt;Filter&gt;
+   &lt;And&gt;
+      &lt;Or&gt;
+         &lt;PropertyIsEqualTo&gt;
+            &lt;PropertyName&gt;FIELD1&lt;/PropertyName&gt;
+            &lt;Literal&gt;10&lt;/Literal&gt;
+         &lt;/PropertyIsEqualTo&gt;
+         &lt;PropertyIsEqualTo&gt;
+            &lt;PropertyName&gt;FIELD1&lt;/PropertyName&gt;
+            &lt;Literal&gt;20&lt;/Literal&gt;
+         &lt;/PropertyIsEqualTo&gt;
+      &lt;/Or&gt;
+      &lt;PropertyIsEqualTo&gt;
+         &lt;PropertyName&gt;STATUS&lt;/PropertyName&gt;
+         &lt;Literal&gt;VALID&lt;/Literal&gt;
+      &lt;/PropertyIsEqualTo&gt;
+   &lt;/And&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N107AC" /><p class="title"><b>Example 16. Example 14</b></p><p xmlns=""><a id="N100CEA" />Spatial and non-spatial predicates can be encoded in a single
+      filter expression. In this example, a spatial predicate checks to see if
+      the geometric property <span class="emphasis"><em>WKB_GEOM</em></span> lies within a
+      region of interest defined by a polygon and a scalar predicate check to
+      see if the scalar property <span class="emphasis"><em>DEPTH</em></span> lies within a
+      specified range. This encoding is equivalent to the expression :
+      (geometry INSIDE ``some polygon'') AND (depth between 400 and
+      800)</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;And&gt;
+      &lt;Within&gt;
+         &lt;PropertyName&gt;WKB_GEOM&lt;/PropertyName&gt;
+         &lt;Polygon name="1" srsName="EPSG:4326"&gt;
+            &lt;outerBoundaryIs&gt;
+               &lt;LinearRing&gt;
+                  &lt;coordinates&gt;
+                     -98.5485,24.2633 ...
+                  &lt;/coordinates&gt;
+               &lt;/LinearRing&gt;
+            &lt;/outerBoundaryIs&gt;
+         &lt;/Polygon&gt;
+      &lt;/Within&gt;
+      &lt;PropertyIsBetween&gt;
+         &lt;PropertyName&gt;DEPTH&lt;/PropertyName&gt;
+         &lt;LowerBoundary&gt;400&lt;/LowerBoundary&gt;
+         &lt;UpperBoundary&gt;800&lt;/UpperBoundary&gt;
+      &lt;/PropertyIsBetween&gt;
+   &lt;/And&gt;
+&lt;/Filter&gt;</pre></div><div class="example"><a id="N107BA" /><p class="title"><b>Example 17. Example 15</b></p><p xmlns=""><a id="N100E0A" />The following example restricts the active set of objects to those
+      instances of the <span class="emphasis"><em>Person</em></span> type that are older than 50
+      years old and live in Toronto. This filter expression uses an XPath
+      expression to reference the complex attributes of the
+      <span class="emphasis"><em>Person</em></span> type.</p><pre class="programlisting">&lt;Filter&gt;
+   &lt;And&gt;
+      &lt;PropertyIsGreaterThan&gt;
+         &lt;PropertyName&gt;Person/Age&lt;/PropertyName&gt;
+         &lt;Literal&gt;50&lt;/Literal&gt;
+      &lt;/PropertyIsGreaterThan&gt;
+      &lt;PropertyIsEqualTo&gt;
+         &lt;PropertyName&gt;Person/Address/City&lt;/PropertyName&gt;
+         &lt;Literal&gt;Toronto&lt;/Literal&gt;
+      &lt;/PropertyIsEqualTo&gt;
+   &lt;/And&gt;
+&lt;/Filter&gt;</pre></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N10001B" />25. Filter schema definitions (Normative)</h2></div></div><div xmlns="" /></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N10007B" />25.1. Introduction</h3></div></div><div xmlns="" /></div><p><a id="N1000CB" />The schemas contained in this section are the normative XML Schema
+    definitions for expressions, filters and filter capabilities. The schema
+    <span class="bold"><b>filter.xsd</b></span> should be imported into any
+    schema that intends to use the filter encoding described in this
+    specification. The schema, <span class="bold"><b>filterCapabilities.xsd</b></span>
+    should be imported into any capabilities schema that intends to advertise
+    the capabilities of a particular filter processing module.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N10018B" />25.2. expr.xsd</h3></div></div><div xmlns="" /></div><pre class="programlisting">
+﻿&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsd:schema
+   targetNamespace="http://www.opengis.net/ogc"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"&gt;
+
+  &lt;xsd:element name="Add"
+               type="ogc:BinaryOperatorType"
+               substitutionGroup="ogc:expression"/&gt;
+  &lt;xsd:element name="Sub"
+               type="ogc:BinaryOperatorType"
+               substitutionGroup="ogc:expression"/&gt;
+  &lt;xsd:element name="Mul"
+               type="ogc:BinaryOperatorType"
+               substitutionGroup="ogc:expression"/&gt;
+  &lt;xsd:element name="Div"
+               type="ogc:BinaryOperatorType"
+               substitutionGroup="ogc:expression"/&gt;
+  &lt;xsd:element name="PropertyName"
+               type="ogc:PropertyNameType"
+               substitutionGroup="ogc:expression"/&gt;
+  &lt;xsd:element name="Function"
+               type="ogc:FunctionType"
+               substitutionGroup="ogc:expression"/&gt;
+  &lt;xsd:element name="Literal"
+               type="ogc:LiteralType"
+               substitutionGroup="ogc:expression"/&gt;
+
+  &lt;xsd:element name="expression" type="ogc:ExpressionType" abstract="true"/&gt;
+
+  &lt;xsd:complexType name="ExpressionType" abstract="true"/&gt;
+  &lt;xsd:complexType name="BinaryOperatorType"&gt;
+    &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:ExpressionType"&gt;
+        &lt;xsd:sequence&gt;
+          &lt;xsd:element ref="ogc:expression" minOccurs="2" maxOccurs="2"/&gt;
+        &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+    &lt;/xsd:complexContent&gt;
+  &lt;/xsd:complexType&gt;
+  &lt;xsd:complexType name="FunctionType"&gt;
+    &lt;xsd:complexContent&gt;
+      &lt;xsd:extension base="ogc:ExpressionType"&gt;
+        &lt;xsd:sequence&gt;
+          &lt;xsd:element ref="ogc:expression"
+                       minOccurs="0" maxOccurs="unbounded"/&gt;
+        &lt;/xsd:sequence&gt;
+        &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;
+      &lt;/xsd:extension&gt;
+    &lt;/xsd:complexContent&gt;
+  &lt;/xsd:complexType&gt;
+  &lt;xsd:complexType name="LiteralType"&gt;
+    &lt;xsd:complexContent mixed="true"&gt;
+      &lt;xsd:extension base="ogc:ExpressionType"&gt;
+        &lt;xsd:sequence&gt;
+          &lt;xsd:any minOccurs="0"/&gt;
+        &lt;/xsd:sequence&gt;
+      &lt;/xsd:extension&gt;
+    &lt;/xsd:complexContent&gt;
+  &lt;/xsd:complexType&gt;
+  &lt;xsd:complexType name="PropertyNameType"&gt;
+    &lt;xsd:complexContent mixed="true"&gt;
+      &lt;xsd:extension base="ogc:ExpressionType"/&gt;
+    &lt;/xsd:complexContent&gt;
+  &lt;/xsd:complexType&gt;
+&lt;/xsd:schema&gt;
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N10024B" />25.3. filter.xsd</h3></div></div><div xmlns="" /></div><pre class="programlisting">
+﻿&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsd:schema
+   targetNamespace="http://www.opengis.net/ogc"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"&gt;
+
+   &lt;xsd:include schemaLocation="expr.xsd" /&gt;
+   &lt;xsd:import namespace="http://www.opengis.net/gml" 
+               schemaLocation="../../gml/2.1/geometry.xsd"/&gt;
+ 
+   &lt;!-- ============================================= --&gt;
+   &lt;!-- FILTER EXPRESSION                             --&gt;
+   &lt;!-- ============================================= --&gt;
+   &lt;xsd:element name="FeatureId" type="ogc:FeatureIdType"/&gt;
+   &lt;xsd:element name="Filter" type="ogc:FilterType"/&gt;
+ 
+   &lt;!-- ============================================= --&gt;
+   &lt;!-- COMPARISON OPERATORS                          --&gt;
+   &lt;!-- ============================================= --&gt;
+   &lt;xsd:element name="comparisonOps"
+                type="ogc:ComparisonOpsType" abstract="true"/&gt;
+   &lt;xsd:element name="PropertyIsEqualTo"
+                type="ogc:BinaryComparisonOpType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:element name="PropertyIsNotEqualTo"
+                type="ogc:BinaryComparisonOpType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:element name="PropertyIsLessThan"
+                type="ogc:BinaryComparisonOpType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:element name="PropertyIsGreaterThan"
+                type="ogc:BinaryComparisonOpType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:element name="PropertyIsLessThanOrEqualTo"
+                type="ogc:BinaryComparisonOpType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:element name="PropertyIsGreaterThanOrEqualTo"
+                type="ogc:BinaryComparisonOpType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:element name="PropertyIsLike"
+                type="ogc:PropertyIsLikeType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:element name="PropertyIsNull"
+                type="ogc:PropertyIsNullType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:element name="PropertyIsBetween"
+                type="ogc:PropertyIsBetweenType"
+                substitutionGroup="ogc:comparisonOps"/&gt;
+   &lt;xsd:complexType name="ComparisonOpsType" abstract="true"/&gt;
+ 
+   &lt;!-- ============================================= --&gt;
+   &lt;!-- SPATIAL OPERATORS (sec 3.2.19.2 99-049)       --&gt;
+   &lt;!-- ============================================= --&gt;
+   &lt;xsd:element name="spatialOps"
+                type="ogc:SpatialOpsType" abstract="true"/&gt;
+   &lt;xsd:element name="Equals"
+                type="ogc:BinarySpatialOpType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:element name="Disjoint"
+                type="ogc:BinarySpatialOpType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:element name="Touches"
+                type="ogc:BinarySpatialOpType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:element name="Within"
+                type="ogc:BinarySpatialOpType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:element name="Overlaps"
+                type="ogc:BinarySpatialOpType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:element name="Crosses"
+                type="ogc:BinarySpatialOpType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:element name="Intersects"
+                type="ogc:BinarySpatialOpType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:element name="Contains"
+                type="ogc:BinarySpatialOpType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;!-- These operatons are from sec 4.2 of OpenGIS Catalog Interface --&gt;
+   &lt;xsd:element name="DWithin"
+                type="ogc:DistanceBufferType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:element name="Beyond"
+                type="ogc:DistanceBufferType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;!-- This is a convenience operator to allow simple BBOX queries --&gt;
+   &lt;xsd:element name="BBOX"
+                type="ogc:BBOXType"
+                substitutionGroup="ogc:spatialOps"/&gt;
+   &lt;xsd:complexType name="SpatialOpsType" abstract="true"/&gt;
+ 
+   &lt;!-- ============================================= --&gt;
+   &lt;!-- LOGICAL OPERATORS                             --&gt;
+   &lt;!-- ============================================= --&gt;
+   &lt;xsd:element name="logicOps"
+                type="ogc:LogicOpsType" abstract="true"/&gt;
+   &lt;xsd:element name="And"
+                type="ogc:BinaryLogicOpType"
+                substitutionGroup="ogc:logicOps"/&gt;
+   &lt;xsd:element name="Or"
+                type="ogc:BinaryLogicOpType"
+                substitutionGroup="ogc:logicOps"/&gt;
+   &lt;xsd:element name="Not"
+                type="ogc:UnaryLogicOpType"
+                substitutionGroup="ogc:logicOps"/&gt;
+   &lt;xsd:complexType name="LogicOpsType" abstract="true"/&gt;
+ 
+   &lt;!-- ============================================= --&gt;
+   &lt;!-- COMPLEX TYPES                                 --&gt;
+   &lt;!-- ============================================= --&gt;
+   &lt;xsd:complexType name="FilterType"&gt;
+      &lt;xsd:choice&gt;
+         &lt;xsd:element ref="ogc:spatialOps"/&gt;
+         &lt;xsd:element ref="ogc:comparisonOps"/&gt;
+         &lt;xsd:element ref="ogc:logicOps"/&gt;
+         &lt;xsd:element ref="ogc:FeatureId" maxOccurs="unbounded"/&gt;
+      &lt;/xsd:choice&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="FeatureIdType"&gt;
+      &lt;xsd:attribute name="fid" type="xsd:anyURI" use="required"/&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="BinaryComparisonOpType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:ComparisonOpsType"&gt;
+            &lt;xsd:sequence&gt;
+               &lt;xsd:element ref="ogc:expression" minOccurs="2" maxOccurs="2"/&gt;
+            &lt;/xsd:sequence&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="PropertyIsLikeType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:ComparisonOpsType"&gt;
+            &lt;xsd:sequence&gt;
+               &lt;xsd:element ref="ogc:PropertyName"/&gt;
+               &lt;xsd:element ref="ogc:Literal"/&gt;
+            &lt;/xsd:sequence&gt;
+            &lt;xsd:attribute name="wildCard" type="xsd:string" use="required"/&gt;
+            &lt;xsd:attribute name="singleChar" type="xsd:string" use="required"/&gt;
+            &lt;xsd:attribute name="escape" type="xsd:string" use="required"/&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="PropertyIsNullType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:ComparisonOpsType"&gt;
+            &lt;xsd:choice&gt;
+               &lt;xsd:element ref="ogc:PropertyName"/&gt;
+               &lt;xsd:element ref="ogc:Literal"/&gt;
+            &lt;/xsd:choice&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="PropertyIsBetweenType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:ComparisonOpsType"&gt;
+            &lt;xsd:sequence&gt;
+               &lt;xsd:element ref="ogc:expression"/&gt;
+               &lt;xsd:element name="LowerBoundary" type="ogc:LowerBoundaryType"/&gt;
+               &lt;xsd:element name="UpperBoundary" type="ogc:UpperBoundaryType"/&gt;
+            &lt;/xsd:sequence&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="LowerBoundaryType"&gt;
+      &lt;xsd:choice&gt;
+         &lt;xsd:element ref="ogc:expression"/&gt;
+      &lt;/xsd:choice&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="UpperBoundaryType"&gt;
+      &lt;xsd:sequence&gt;
+         &lt;xsd:element ref="ogc:expression"/&gt;
+      &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="BinarySpatialOpType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:SpatialOpsType"&gt;
+            &lt;xsd:sequence&gt;
+               &lt;xsd:element ref="ogc:PropertyName"/&gt;
+               &lt;xsd:choice&gt;
+                  &lt;xsd:element ref="gml:_Geometry"/&gt;
+                  &lt;xsd:element ref="gml:Box"/&gt;
+               &lt;/xsd:choice&gt;
+            &lt;/xsd:sequence&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="BBOXType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:SpatialOpsType"&gt;
+            &lt;xsd:sequence&gt;
+               &lt;xsd:element ref="ogc:PropertyName"/&gt;
+               &lt;xsd:element ref="gml:Box"/&gt;
+            &lt;/xsd:sequence&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="DistanceBufferType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:SpatialOpsType"&gt;
+            &lt;xsd:sequence&gt;
+               &lt;xsd:element ref="ogc:PropertyName"/&gt;
+               &lt;xsd:element ref="gml:_Geometry"/&gt;
+               &lt;xsd:element name="Distance" type="ogc:DistanceType"/&gt;
+            &lt;/xsd:sequence&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="DistanceType" mixed="true"&gt;
+      &lt;xsd:attribute name="units" type="xsd:string" use="required"/&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="BinaryLogicOpType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:LogicOpsType"&gt;
+            &lt;xsd:choice minOccurs="2" maxOccurs="unbounded"&gt;
+               &lt;xsd:element ref="ogc:comparisonOps"/&gt;
+               &lt;xsd:element ref="ogc:spatialOps"/&gt;
+               &lt;xsd:element ref="ogc:logicOps"/&gt;
+            &lt;/xsd:choice&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="UnaryLogicOpType"&gt;
+      &lt;xsd:complexContent&gt;
+         &lt;xsd:extension base="ogc:LogicOpsType"&gt;
+            &lt;xsd:sequence&gt;
+               &lt;xsd:choice&gt;
+                  &lt;xsd:element ref="ogc:comparisonOps"/&gt;
+                  &lt;xsd:element ref="ogc:spatialOps"/&gt;
+                  &lt;xsd:element ref="ogc:logicOps"/&gt;
+               &lt;/xsd:choice&gt;
+            &lt;/xsd:sequence&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:complexContent&gt;
+   &lt;/xsd:complexType&gt;
+&lt;/xsd:schema&gt;
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="N10030B" />25.4. filterCapabilities.xsd</h3></div></div><div xmlns="" /></div><pre class="programlisting">
+﻿&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsd:schema
+   targetNamespace="http://www.opengis.net/ogc"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   elementFormDefault="qualified"&gt;
+
+   &lt;xsd:complexType name="Arithmetic_OperatorsType"&gt;
+      &lt;xsd:choice maxOccurs="unbounded"&gt;
+         &lt;xsd:element ref="ogc:Simple_Arithmetic"/&gt;
+         &lt;xsd:element name="Functions" type="ogc:FunctionsType"/&gt;
+      &lt;/xsd:choice&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:element name="BBOX"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Between"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Beyond"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:complexType name="Comparison_OperatorsType"&gt;
+      &lt;xsd:choice maxOccurs="unbounded"&gt;
+         &lt;xsd:element ref="ogc:Simple_Comparisons"/&gt;
+         &lt;xsd:element ref="ogc:Like"/&gt;
+         &lt;xsd:element ref="ogc:Between"/&gt;
+         &lt;xsd:element ref="ogc:NullCheck"/&gt;
+      &lt;/xsd:choice&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:element name="Contains"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Crosses"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Disjoint"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Equals"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Filter_Capabilities"&gt;
+      &lt;xsd:complexType&gt;
+         &lt;xsd:sequence&gt;
+            &lt;xsd:element name="Spatial_Capabilities"
+                         type="ogc:Spatial_CapabilitiesType"/&gt;
+            &lt;xsd:element name="Scalar_Capabilities"
+                         type="ogc:Scalar_CapabilitiesType"/&gt;
+         &lt;/xsd:sequence&gt;
+      &lt;/xsd:complexType&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:complexType name="Function_NameType"&gt;
+      &lt;xsd:simpleContent&gt;
+         &lt;xsd:extension base="xsd:string"&gt;
+            &lt;xsd:attribute name="nArgs" type="xsd:string" use="required"/&gt;
+         &lt;/xsd:extension&gt;
+      &lt;/xsd:simpleContent&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="Function_NamesType"&gt;
+      &lt;xsd:sequence maxOccurs="unbounded"&gt;
+         &lt;xsd:element name="Function_Name" type="ogc:Function_NameType"/&gt;
+      &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="FunctionsType"&gt;
+      &lt;xsd:sequence&gt;
+         &lt;xsd:element name="Function_Names" type="ogc:Function_NamesType"/&gt;
+      &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:element name="Intersect"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Like"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Logical_Operators"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="NullCheck"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Overlaps"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:complexType name="Scalar_CapabilitiesType"&gt;
+      &lt;xsd:choice maxOccurs="unbounded"&gt;
+         &lt;xsd:element ref="ogc:Logical_Operators"/&gt;
+         &lt;xsd:element name="Comparison_Operators"
+                      type="ogc:Comparison_OperatorsType"/&gt;
+         &lt;xsd:element name="Arithmetic_Operators"
+                      type="ogc:Arithmetic_OperatorsType"/&gt;
+      &lt;/xsd:choice&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:element name="Simple_Arithmetic"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Simple_Comparisons"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:complexType name="Spatial_CapabilitiesType"&gt;
+      &lt;xsd:sequence&gt;
+         &lt;xsd:element name="Spatial_Operators"
+                      type="ogc:Spatial_OperatorsType"/&gt;
+      &lt;/xsd:sequence&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:complexType name="Spatial_OperatorsType"&gt;
+      &lt;xsd:choice maxOccurs="unbounded"&gt;
+         &lt;xsd:element ref="ogc:BBOX"/&gt;
+         &lt;xsd:element ref="ogc:Equals"/&gt;
+         &lt;xsd:element ref="ogc:Disjoint"/&gt;
+         &lt;xsd:element ref="ogc:Intersect"/&gt;
+         &lt;xsd:element ref="ogc:Touches"/&gt;
+         &lt;xsd:element ref="ogc:Crosses"/&gt;
+         &lt;xsd:element ref="ogc:Within"/&gt;
+         &lt;xsd:element ref="ogc:Contains"/&gt;
+         &lt;xsd:element ref="ogc:Overlaps"/&gt;
+         &lt;xsd:element ref="ogc:Beyond"/&gt;
+      &lt;/xsd:choice&gt;
+   &lt;/xsd:complexType&gt;
+   &lt;xsd:element name="Touches"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+   &lt;xsd:element name="Within"&gt;
+      &lt;xsd:complexType/&gt;
+   &lt;/xsd:element&gt;
+&lt;/xsd:schema&gt;
+</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="N400001B" />26. Conformance tests (normative)</h2></div></div><div xmlns="" /></div><p><a id="N400007B" />Specific conformance tests for a filter encoding
+  processor have not yet been determine and will be added in a future revision
+  of this specification.</p><p><a id="N40000AB" />At the moment, a filter encoding processor
+  implementation must satisfy the following system characteristics to be
+  minimally conformant with this specification:</p><div class="orderedlist"><ol type="1"><li><p><a id="N400011B" />An XML filter expression encoded according to this
+      specification must validate relative to the normative schemas defined in
+      Annex A.</p></li><li><p><a id="N400017B" />A filter capabilities document encoded as defined in
+      this document must validate relative to the schema defined in Annex A.</p></li><li><p><a id="N40001DB" />All clauses in the normative sections of this
+      specification that use the keywords "must", "must not",
+      "required", "shall", and "shall not" have been
+      satisfied.</p></li></ol></div></div><div class="bibliography"><div class="titlepage"><div><div><h2 class="title"><a id="N10804" />Bibliography</h2></div></div><div xmlns="" /></div><div class="biblioentry"><p><span class="title"><i>OpenGIS® Implementation Specification #01-065: Web Feature Service Implementation Specification</i>. </span><span class="author"><span class="firstname">Panagiotis</span> <span xmlns="" class="surname">Vretanos</span>. </span><span xmlns="" class="date">July 2002. </span></p></div><div class="biblioentry"><p><span class="title"><i>The Common Gateway Interface http://hoohoo.ncsa.uiuc.edu/cgi/</i>. </span><span class="orgname">National Center for Supercomputing Applications. </span></p></div><div class="biblioentry"><p><span class="title"><i>Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies. IETF RFC 2045. http://www.ietf.org/rfc/rfc2045.txt</i>. </span><span class="author"><span class="firstname">N</span> <span xmlns="" class="surname">Freed</span>. </span><span xmlns="" class="author"><span class="firstname">N</span> <span xmlns="" class="surname">Borenstein</span>. </span><span xmlns="" class="date">November 1996. </span></p></div><div class="biblioentry"><p><span class="title"><i>http://www.isi.edu/in-notes/iana/assignments/media-types/</i>. </span><span class="orgname">Internet Assigned Numbers Authority. </span></p></div></div><div class="footnotes"><br /><hr align="left" width="100" /><div class="footnote"><p><sup>[<a href="#N1046E" id="ftn.N1046E">1</a>] </sup>SIN
+      = Social Insurance Number</p></div></div></div></body></html>

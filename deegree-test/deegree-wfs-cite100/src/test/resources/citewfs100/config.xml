@@ -1,0 +1,19 @@
+<config>
+	<organization>
+		<name>OGC</name>
+	</organization>
+	<standard>
+		<name>WFS</name>
+	</standard>
+	<version>
+		<name>1.0.0</name>
+	</version>
+	<suite>
+		<namespace-uri>http://www.opengis.net/wfs</namespace-uri>
+		<prefix>wfs</prefix>
+		<local-name>main_wfs</local-name>
+	</suite>
+	<source>ctl</source>
+	<web>web</web>
+</config>
+

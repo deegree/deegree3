@@ -1,0 +1,2038 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ctl:package
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:dims="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/dimensions.xml"
+ xmlns:fn="http://www.w3.org/2005/xpath-functions"
+ xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml"
+ xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:parsers="http://www.occamlab.com/te/parsers"
+ xmlns:wms="http://www.opengis.net/wms"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+>
+
+   <ctl:parser name="dims:autos-parser">
+      <ctl:java class="com.occamlab.te.parsers.ImageParser" method="parseAsInitialized" initialized="true">
+         <ctl:with-param name="instructions">
+            <parsers:ImageParser>
+               <parsers:model value="RGB">
+
+                  <!-- 1: Auto 1.1 -->
+                  <parsers:subimage x="135" y="105" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 2: Auto 1.2 -->
+                  <parsers:subimage x="95" y="115" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 3: Auto 1.3 -->
+                  <parsers:subimage x="60" y="125" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 4: Auto 1.4 -->
+                  <parsers:subimage x="45" y="135" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 5: Auto 1.5 and Auto 2.8 -->
+                  <parsers:subimage x="45" y="155" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 6: Auto 1.6 -->
+                  <parsers:subimage x="45" y="185" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 7: Auto 1.7 -->
+                  <parsers:subimage x="45" y="225" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 8: Auto 2.5 -->
+                  <parsers:subimage x="45" y="5" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 9: Auto 2.6 -->
+                  <parsers:subimage x="45" y="55" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 10: Auto 2.7 -->
+                  <parsers:subimage x="45" y="105" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 11: Auto 2.9 -->
+                  <parsers:subimage x="45" y="205" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 12: Auto 3.9 -->
+                  <parsers:subimage x="75" y="215" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 13: Auto 3.10 -->
+                  <parsers:subimage x="75" y="175" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 14: Auto 3.11 -->
+                  <parsers:subimage x="75" y="135" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 15: Auto 3.12 -->
+                  <parsers:subimage x="75" y="95" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 16: Auto 3.13 -->
+                  <parsers:subimage x="75" y="55" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 17: Auto 4.12 -->
+                  <parsers:subimage x="350" y="20" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+                  <!-- 18: Auto 4.13 -->
+                  <parsers:subimage x="345" y="45" width="10" height="10">
+                     <parsers:count bands="RGB" sample="0xffffff"/>
+                  </parsers:subimage>
+
+               </parsers:model>
+            </parsers:ImageParser>
+         </ctl:with-param>
+      </ctl:java>
+   </ctl:parser>
+
+   <ctl:test name="dims:main">
+      <ctl:param name="raster_elevation"/>
+      <ctl:param name="vector_elevation"/>
+      <ctl:param name="time"/>
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Support for dimensional data is correct.</ctl:assertion>
+      <ctl:code>
+         <xsl:if test="$raster_elevation='raster_elevation'">
+            <ctl:call-test name="dims:terrain"/>
+         </xsl:if>
+         <xsl:if test="$vector_elevation='vector_elevation'">
+            <ctl:call-test name="dims:geometry"/>
+         </xsl:if>
+         <xsl:if test="$time='time'">
+            <ctl:call-test name="dims:time"/>
+         </xsl:if>
+         <ctl:call-test name="dims:missing-no-default"/>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:missing-no-default">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a layer that has a dimension without a default value is requested without supplying the dimension parameter, the response is an exception with code=MissingDimensionValue.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section C.4.1">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.responses.incorrect</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="dimension" select="//wms:Layer/wms:Dimension[not(@default) or @default='0' or @default='false'][1]"/>
+         <xsl:variable name="layer" select="string($dimension/../descendant-or-self::wms:Layer[wms:Name][1]/wms:Name)"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="$layer"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox"/>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:choose>
+            <xsl:when test="$layer = ''">
+               <ctl:message>No Named layers that have a dimension without a default value.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="CrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='MissingDimensionValue'])">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Support for a raster layer that supports the elevation dimension is correct.</ctl:assertion>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="//wms:Layer[wms:Title = 'cite:Terrain']/ancestor-or-self::wms:Layer/wms:Dimension[functions:to-lowercase(@name)='elevation']">
+               <ctl:call-test name="dims:terrain-low-range"/>
+               <ctl:call-test name="dims:terrain-mid-range"/>
+               <ctl:call-test name="dims:terrain-high-range"/>
+               <ctl:call-test name="dims:terrain-low-and-high-ranges"/>
+               <ctl:call-test name="dims:terrain-range-and-value"/>
+               <ctl:call-test name="dims:terrain-value"/>
+               <ctl:call-test name="dims:terrain-invalid"/>
+               <ctl:call-test name="dims:terrain-default"/>
+               <ctl:call-test name="dims:terrain-and-other-layer"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <ctl:message>No layers titled cite:Terrain that support the elevation dimension.</ctl:message>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-low-range">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When elevations in a low range are requested, only the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=0/200 and verify that the pixels in the "low spot" are solid and all the other pixels are transparent.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.5,-0.5,0.5,0.5</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="TrAnSpArEnT">TRUE</ctl:param>
+               <ctl:param name="ElEvAtIoN">
+                  <xsl:value-of select="functions:encode('0/200')"/>
+               </ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="ARGB">
+                     <parsers:subimage x="450" y="450" width="150" height="150">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="0" y="0" width="600" height="600">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) != 337500">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-mid-range">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When elevations in a mid range are requested, only the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=200/335 and verify that the pixels in the "low spot" and the "high spot" are transparent and all the other pixels are solid.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.5,-0.5,0.5,0.5</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="TrAnSpArEnT">TRUE</ctl:param>
+               <ctl:param name="ElEvAtIoN">
+                  <xsl:value-of select="functions:encode('200/335')"/>
+               </ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="ARGB">
+                     <parsers:subimage x="0" y="0" width="150" height="150">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="450" y="450" width="150" height="150">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="0" y="0" width="600" height="600">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) != 22500">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) != 22500">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[3]/parsers:count) != 45000">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-high-range">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When elevations in a high range are requested, only the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=335/425 and verify that the pixels in the "low spot" are solid and all the other pixels are transparent.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.5,-0.5,0.5,0.5</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="TrAnSpArEnT">TRUE</ctl:param>
+               <ctl:param name="ElEvAtIoN">
+                  <xsl:value-of select="functions:encode('335/425')"/>
+               </ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="ARGB">
+                     <parsers:subimage x="0" y="0" width="150" height="150">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="0" y="0" width="600" height="600">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) != 337500">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-low-and-high-ranges">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When elevations in a low range and a high range are requested, only the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=0/200,335/425 and verify that the pixels in the "low spot" and the "high spot" are solid and all the other pixels are transparent.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.5,-0.5,0.5,0.5</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="TrAnSpArEnT">TRUE</ctl:param>
+               <ctl:param name="ElEvAtIoN">
+                  <xsl:value-of select="functions:encode('0/200')"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode('335/425')"/>
+               </ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="ARGB">
+                     <parsers:subimage x="0" y="0" width="150" height="150">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="450" y="450" width="150" height="150">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="0" y="0" width="600" height="600">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[3]/parsers:count) != 315000">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-range-and-value">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When elevations in an interval range and at a single value are requested, only the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=0/200,250 and verify that all of the pixels in the "low spot" as well as some of the other pixels are not transparent.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.5,-0.5,0.5,0.5</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="TrAnSpArEnT">TRUE</ctl:param>
+               <ctl:param name="ElEvAtIoN">
+                  <xsl:value-of select="functions:encode('0/200')"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode('250')"/>
+               </ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="ARGB">
+                     <parsers:subimage x="0" y="0" width="150" height="150">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="450" y="450" width="150" height="150">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="0" y="0" width="600" height="600">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) != 22500">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="not(number(parsers:subimage[3]/parsers:count) &gt; 22500)">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-value">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When elevations at a single value are requested, only the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=250 and verify that some pixels in the response are not transparent.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.5,-0.5,0.5,0.5</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="TrAnSpArEnT">TRUE</ctl:param>
+               <ctl:param name="ElEvAtIoN">250</ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="ARGB">
+                     <parsers:subimage x="0" y="0" width="600" height="600">
+                        <parsers:count bands="A" sample="0"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:variable name="count" select="number(parsers:subimage[1]/parsers:count)"/>
+            <xsl:if test="not($count &gt; 45000 and $count &lt; 360000)">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-invalid">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When an elevation outside of the advertised range is requested, the response is an exception with code=InvalidDimensionValue.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=1000 and verify that the service returns an exception with code=InvalidDimensionValue.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.4.1">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.responses.incorrect</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.5,-0.5,0.5,0.5</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="TrAnSpArEnT">TRUE</ctl:param>
+               <ctl:param name="ElEvAtIoN">1000</ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='InvalidDimensionValue'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-default">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When the elevation parameter is missing but there is a default elevation value, the default value is used and a warning header is set.</ctl:assertion>
+      <ctl:comment>Method: Submit a request without an ELEVATION parameter and verify that the response is equivalent to the default value and the "default value used" warning header is returned.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.4.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.responses.default</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.5,-0.5,0.5,0.5</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="TrAnSpArEnT">TRUE</ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:ImageParser>
+                        <parsers:model value="ARGB">
+                           <parsers:subimage x="0" y="0" width="600" height="600">
+                              <parsers:count bands="A" sample="0"/>
+                           </parsers:subimage>
+                        </parsers:model>
+                     </parsers:ImageParser>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+            <ctl:message>Content-type header is not corrrect</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:if test="not($response/response/headers/header[@name='Warning' and starts-with(functions:to-lowercase(.), '99 default value used: elevation=0/425') and starts-with(., '99 D')])">
+            <ctl:message>A correct "Default value used" warning header was not set</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:variable name="count" select="number(parsers:subimage[1]/parsers:count)"/>
+            <xsl:if test="not($count != 0)">
+               <ctl:message>Image is not correct</ctl:message>
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:terrain-and-other-layer">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a terrain layer that supports elevation and a layer that does not support elevation are both requested, the response is a map.</ctl:assertion>
+      <ctl:comment>Method: Submit a request involving both the Terrain layer and a layer that does not support the ELEVATION dimension and verify that the response is a map.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.5">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.applicability</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer1" select="string(//wms:Layer[wms:Title = 'cite:BasicPolygons']/wms:Name)"/>
+         <xsl:variable name="layer2" select="string(//wms:Layer[wms:Title = 'cite:Terrain']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-1,-1,1,1</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer1)"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode($layer2)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">600</ctl:param>
+               <ctl:param name="HeIgHt">600</ctl:param>
+               <ctl:param name="ElEvAtIoN">
+                  <xsl:value-of select="functions:encode('0/425')"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:geometry">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Support for a geometric layer that supports the elevation dimension is correct.</ctl:assertion>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="//wms:Layer[wms:Title = 'cite:Lakes']/ancestor-or-self::wms:Layer/wms:Dimension[functions:to-lowercase(@name)='elevation']">
+               <ctl:call-test name="dims:geometry-low"/>
+               <ctl:call-test name="dims:geometry-med"/>
+               <ctl:call-test name="dims:geometry-high"/>
+               <ctl:call-test name="dims:geometry-multiple-values"/>
+               <ctl:call-test name="dims:geometry-nearest-value"/>
+               <ctl:call-test name="dims:geometry-default-value"/>
+               <ctl:call-test name="dims:geometry-and-other-layer"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <ctl:message>No layers titled cite:Lakes that support the elevation dimension.</ctl:message>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:geometry-low">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When the geometry at a low elevation is requested, the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=480 and verify that the response is correct.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">0,-0.002,0.004,0</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="ElEvAtIoN">480</ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="RGB">
+                     <parsers:subimage x="0" y="0" width="50" height="100">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="65" y="35" width="10" height="30">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="100" y="0" width="100" height="100">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) != 5000">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[3]/parsers:count) != 10000">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:geometry-med">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When the geometry at a medium elevation is requested, the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=490 and verify that the response is correct.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">0,-0.002,0.004,0</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="ElEvAtIoN">490</ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="RGB">
+                     <parsers:subimage x="0" y="0" width="40" height="100">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="60" y="30" width="15" height="45">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="60" y="60" width="60" height="10">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="100" y="0" width="100" height="50">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="130" y="50" width="70" height="50">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="parsers:count[1]/parsers:count != 4000">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[3]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[4]/parsers:count) != 5000">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[5]/parsers:count) != 3500">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:geometry-high">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When the geometry at a high elevation is requested, the matching pixels are returned.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=500 and verify that the response is correct.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">0,-0.002,0.004,0</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="ElEvAtIoN">500</ctl:param>
+               <parsers:ImageParser>
+                  <parsers:model value="RGB">
+                     <parsers:subimage x="0" y="0" width="20" height="100">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="50" y="30" width="35" height="50">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="85" y="55" width="55" height="20">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                     <parsers:subimage x="170" y="0" width="30" height="100">
+                        <parsers:count bands="RGB" sample="0xffffff"/>
+                     </parsers:subimage>
+                  </parsers:model>
+               </parsers:ImageParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) != 2000">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[3]/parsers:count) != 0">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[4]/parsers:count) != 3000">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:geometry-multiple-values">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When the geometries for a list of elevations are requested and multiple values are not supported, the response is an exception with code=InvalidDimensionValue.</ctl:assertion>
+      <ctl:comment>Method: Request ELEVATION=500,480 and verify that the response is an exception with code=InvalidDimensionValue. </ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.4">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.single_vs_multiple</ctl:link>
+      <ctl:link title="WMS 1.3.0 section C.4.1">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.responses.incorrect</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">0,-0.002,0.004,0</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="ElEvAtIoN">500,480</ctl:param>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='InvalidDimensionValue'])">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:geometry-nearest-value">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a request for the geometry at an unadvertised elevation value is requested and support for nearest values is advertised, the nearest value is used and a warning header is set.</ctl:assertion>
+      <ctl:comment>Method: Submit a request with ELEVATION=492 and verify that the response is equivalent to the 490 value and the "nearest value used" warning header is returned.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.4.3">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.responses.nearest</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">0,-0.002,0.004,0</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="ElEvAtIoN">492</ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:ImageParser>
+                        <parsers:model value="RGB">
+                           <parsers:subimage x="0" y="0" width="40" height="100">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                           <parsers:subimage x="60" y="30" width="15" height="45">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                           <parsers:subimage x="60" y="60" width="60" height="10">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                           <parsers:subimage x="100" y="0" width="100" height="50">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                           <parsers:subimage x="130" y="50" width="70" height="50">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                        </parsers:model>
+                     </parsers:ImageParser>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+            <ctl:message>Content-type header is not corrrect</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:if test="not($response/response/headers/header[@name='Warning' and starts-with(functions:to-lowercase(.), '99 nearest value used: elevation=490') and starts-with(., '99 N')])">
+            <ctl:message>A correct "Nearest value used" warning header was not set</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:for-each select="$response/response/content/parsers:ImageParser/parsers:model">
+            <xsl:choose>
+               <xsl:when test="parsers:count[1]/parsers:count != 4000">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:when test="number(parsers:subimage[2]/parsers:count) != 0">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:when test="number(parsers:subimage[3]/parsers:count) != 0">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:when test="number(parsers:subimage[4]/parsers:count) != 5000">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:when test="number(parsers:subimage[5]/parsers:count) != 3500">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+            </xsl:choose>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:geometry-default-value">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When the elevation parameter is missing but there is a default elevation value, the default value is used and a warning header is set.</ctl:assertion>
+      <ctl:comment>Method: Submit a request without an ELEVATION parameter and verify that the response is equivalent to the default value and the "default value used" warning header is returned.</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.4.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.responses.default</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">0,-0.002,0.004,0</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:ImageParser>
+                        <parsers:model value="RGB">
+                           <parsers:subimage x="0" y="0" width="20" height="100">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                           <parsers:subimage x="50" y="30" width="35" height="50">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                           <parsers:subimage x="85" y="55" width="55" height="20">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                           <parsers:subimage x="170" y="0" width="30" height="100">
+                              <parsers:count bands="RGB" sample="0xffffff"/>
+                           </parsers:subimage>
+                        </parsers:model>
+                     </parsers:ImageParser>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+            <ctl:message>Content-type header is not corrrect</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:if test="not($response/response/headers/header[@name='Warning' and starts-with(functions:to-lowercase(.), '99 default value used: elevation=500') and starts-with(., '99 D')])">
+            <ctl:message>A correct "Default value used" warning header was not set</ctl:message>
+            <ctl:fail/>
+         </xsl:if>
+         <xsl:for-each select="$response/response/content/parsers:ImageParser/parsers:model">
+            <xsl:choose>
+               <xsl:when test="number(parsers:subimage[1]/parsers:count) != 2000">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:when test="number(parsers:subimage[2]/parsers:count) != 0">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:when test="number(parsers:subimage[3]/parsers:count) != 0">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+               <xsl:when test="number(parsers:subimage[4]/parsers:count) != 3000">
+                  <ctl:message>Image is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:when>
+            </xsl:choose>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:geometry-and-other-layer">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a geometry layer that supports elevation and a layer that does not support elevation are both requested, the response is a map.</ctl:assertion>
+      <ctl:comment>Method: Submit a request invloving both the Lakes layer and a layer that does not support the ELEVATION dimension and verify that the response is a map</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.5">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.applicability</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer1" select="string(//wms:Layer[wms:Title = 'cite:Lakes']/wms:Name)"/>
+         <xsl:variable name="layer2" select="string(//wms:Layer[wms:Title = 'cite:Streams']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">0,-0.002,0.004,0</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer1)"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode($layer2)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">200</ctl:param>
+               <ctl:param name="HeIgHt">100</ctl:param>
+               <ctl:param name="ElEvAtIoN">480</ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>Support for a layer that supports the time dimension is correct.</ctl:assertion>
+      <ctl:code>
+         <xsl:choose>
+            <xsl:when test="//wms:Layer[wms:Title = 'cite:Autos']/ancestor-or-self::wms:Layer/wms:Dimension[functions:to-lowercase(@name)='time']">
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">1</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">2</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">3</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">4</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">5</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">6</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">7</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">8</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">9</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">10</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">11</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">12</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-each-instant">
+                  <ctl:with-param name="instant-num">13</ctl:with-param>
+               </ctl:call-test>
+               <ctl:call-test name="dims:time-interval"/>
+               <ctl:call-test name="dims:time-interval-and-instant"/>
+               <ctl:call-test name="dims:time-interval-list"/>
+               <ctl:call-test name="dims:time-instant-list"/>
+               <ctl:call-test name="dims:time-current-instant"/>
+               <ctl:call-test name="dims:time-current-interval"/>
+               <ctl:call-test name="dims:time-default"/>
+<!--                <ctl:call-test name="dims:time-missing-dim"/> -->
+               <ctl:call-test name="dims:time-and-other-layer"/>
+            </xsl:when>
+            <xsl:otherwise>
+               <ctl:message>No layers titled cite:Autos that support the time dimension.</ctl:message>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time-each-instant">
+      <ctl:param name="instant-num"/>
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For time instant {$instant-num}, the appropriate map is returned.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Autos']/wms:Name)"/>
+         <xsl:variable name="instant">
+            <xsl:text>2000-01-01T00:</xsl:text>
+            <xsl:choose>
+               <xsl:when test="$instant-num = 13">01:</xsl:when>
+               <xsl:otherwise>00:</xsl:otherwise>
+            </xsl:choose>
+            <xsl:value-of select="format-number((($instant-num - 1) mod 12) * 5, '00')"/>
+            <xsl:text>Z</xsl:text>
+         </xsl:variable>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.0042,-0.0024,0.0042,0.0024</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">420</ctl:param>
+               <ctl:param name="HeIgHt">240</ctl:param>
+               <ctl:param name="TiMe">
+                  <xsl:value-of select="functions:encode($instant)"/>
+               </ctl:param>
+               <dims:autos-parser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:choose>
+               <xsl:when test="$instant-num = 1">
+                  <xsl:if test="number(parsers:subimage[1]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 17">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 2">
+                  <xsl:if test="number(parsers:subimage[2]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 17">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 3">
+                  <xsl:if test="number(parsers:subimage[3]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 17">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 4">
+                  <xsl:if test="number(parsers:subimage[4]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 17">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 5">
+                  <xsl:if test="number(parsers:subimage[5]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="number(parsers:subimage[8]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 16">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 6">
+                  <xsl:if test="number(parsers:subimage[6]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="number(parsers:subimage[9]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 16">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 7">
+                  <xsl:if test="number(parsers:subimage[7]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="number(parsers:subimage[10]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 16">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 8">
+                  <xsl:if test="number(parsers:subimage[5]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 17">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 9">
+                  <xsl:if test="number(parsers:subimage[11]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="number(parsers:subimage[12]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 16">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 10">
+                  <xsl:if test="number(parsers:subimage[13]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 17">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 11">
+                  <xsl:if test="number(parsers:subimage[14]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 17">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 12">
+                  <xsl:if test="number(parsers:subimage[15]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="number(parsers:subimage[17]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 16">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+               <xsl:when test="$instant-num = 13">
+                  <xsl:if test="number(parsers:subimage[16]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="number(parsers:subimage[18]/parsers:count) = 100">
+                     <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 16">
+                     <ctl:fail/>
+                  </xsl:if>
+               </xsl:when>
+            </xsl:choose>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time-interval">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For a time interval, the appropriate map is returned.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Autos']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.0042,-0.0024,0.0042,0.0024</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">420</ctl:param>
+               <ctl:param name="HeIgHt">240</ctl:param>
+               <ctl:param name="TiMe">
+                  <xsl:value-of select="functions:encode('2000-01-01T00:00:50Z/2000-01-01T00:01:00Z')"/>
+               </ctl:param>
+               <dims:autos-parser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[14]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[15]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[16]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[17]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[18]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 13">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time-interval-and-instant">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For a time value consiting of a time interval and a time instant, the appropriate map is returned.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Autos']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.0042,-0.0024,0.0042,0.0024</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">420</ctl:param>
+               <ctl:param name="HeIgHt">240</ctl:param>
+               <ctl:param name="TiMe">
+                  <xsl:value-of select="functions:encode('2000-01-01T00:00:00Z')"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode('2000-01-01T00:00:50Z/2000-01-01T00:01:00Z')"/>
+               </ctl:param>
+               <dims:autos-parser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[14]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[15]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[16]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[17]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[18]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 12">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time-interval-list">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For a time value consiting of a list of time intervals, the appropriate map is returned.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Autos']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.0042,-0.0024,0.0042,0.0024</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">420</ctl:param>
+               <ctl:param name="HeIgHt">240</ctl:param>
+               <ctl:param name="TiMe">
+                  <xsl:value-of select="functions:encode('2000-01-01T00:00:00Z/2000-01-01T00:00:10Z')"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode('2000-01-01T00:00:50Z/2000-01-01T00:01:00Z')"/>
+               </ctl:param>
+               <dims:autos-parser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[2]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[3]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[14]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[15]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[16]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[17]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[18]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 10">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time-instant-list">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>For a time value consiting of a list of time instants, the appropriate map is returned.</ctl:assertion>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Title = 'cite:Autos']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.0042,-0.0024,0.0042,0.0024</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">420</ctl:param>
+               <ctl:param name="HeIgHt">240</ctl:param>
+               <ctl:param name="TiMe">
+                  <xsl:value-of select="functions:encode('2000-01-01T00:00:00Z')"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode('2000-01-01T00:01:00Z')"/>
+               </ctl:param>
+               <dims:autos-parser/>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:for-each select="$response/parsers:ImageParser/parsers:model">
+            <xsl:if test="number(parsers:subimage[1]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[16]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="number(parsers:subimage[18]/parsers:count) = 100">
+               <ctl:fail/>
+            </xsl:if>
+            <xsl:if test="count(parsers:subimage/parsers:count[number(.) = 100]) != 15">
+               <ctl:fail/>
+            </xsl:if>
+         </xsl:for-each>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time-current-instant">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>If the time dimension supports the current keyword, a request for TIME=current returns a map.</ctl:assertion>
+      <ctl:comment>Method: If the dimension decalaration sets the current attribute, submit a request with TIME=current and verify that the service returns a map</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="layer" select="string(//wms:Layer[wms:Name and ancestor-or-self::wms:Layer/wms:Dimension[@name='time' and (@current='1' or @current='true')]][1]/wms:Name)"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="$layer"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox"/>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:choose>
+            <xsl:when test="$layer = ''">
+               <ctl:message>No Named layers that support the current keyword for the time dimension.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="CrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                     <ctl:param name="TiMe">current</ctl:param>
+                     <parsers:HTTPParser>
+                        <parsers:parse>
+                           <parsers:NullParser/>
+                        </parsers:parse>
+                     </parsers:HTTPParser>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time-current-interval">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>If the time dimension supports the current keyword and advertises an interval ending with current, a request for that interval returns a map.</ctl:assertion>
+      <ctl:comment>Method: If the dimension decalaration sets the current attribute and advertises an interval ending with current, submit a request with TIME=current and verify that the service returns a map</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.elevation_and_time</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="dimension" select="//wms:Layer/wms:Dimension[@name='time' and (@current='1' or @current='true') and contains(., '/current')][1]"/>
+         <xsl:variable name="layer" select="string($dimension/../descendant-or-self::wms:Layer[wms:Name][1]/wms:Name)"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="$layer"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox"/>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:choose>
+            <xsl:when test="$layer = ''">
+               <ctl:message>No Named layers that advertise an interval ending with current for the time dimension.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="CrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                     <ctl:param name="TiMe">
+                        <xsl:value-of select="functions:encode(fn:tokenize(string($dimension), ',\s*')[contains(., '/current')][1])"/>
+                     </ctl:param>
+                     <parsers:HTTPParser>
+                        <parsers:parse>
+                           <parsers:NullParser/>
+                        </parsers:parse>
+                     </parsers:HTTPParser>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+
+   <ctl:test name="dims:time-default">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>If the dimension decalaration includes a default value, a request without a TIME parameter returns a map and sets the "default value used" warning header.</ctl:assertion>
+      <ctl:comment>Method: If the dimension decalaration includes a default value, submit a request without a TIME parameter and verify that the service returns a map and sets the "default value used" warning header</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.4.2">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.responses.default</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="dimension" select="//wms:Layer/wms:Dimension[@name='time' and @default][1]"/>
+         <xsl:variable name="layer" select="string($dimension/../descendant-or-self::wms:Layer[wms:Name][1]/wms:Name)"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="$layer"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox"/>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:choose>
+            <xsl:when test="$layer = ''">
+               <ctl:message>No Named layers with a default value for the time dimension.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="CrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                     <parsers:HTTPParser>
+                        <parsers:parse>
+                           <parsers:NullParser/>
+                        </parsers:parse>
+                     </parsers:HTTPParser>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+                  <ctl:message>Content-type header is not corrrect</ctl:message>
+                  <ctl:fail/>
+               </xsl:if>
+               <xsl:if test="not($response/response/headers/header[@name='Warning' and starts-with(., '99 D') and starts-with(functions:to-lowercase(.), '99 default value used: time=') and starts-with(substring(., 29), $dimension/@default)])">
+                  <ctl:message>A correct "Default value used" warning header was not set</ctl:message>
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+<!--
+   <ctl:test name="dims:time-missing-dim">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>If the dimension decalaration does not include a default value, a request without a TIME parameter produces an exception with code=MissingDimensionValue.</ctl:assertion>
+      <ctl:comment>Method: If the dimension decalaration does not include a default value, submit a request without a TIME parameter and verify that the service returns an exception with code=MissingDimensionValue</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.4.1">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.responses.incorrect</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[1]"/>
+         <xsl:variable name="dimension" select="//wms:Layer/wms:Dimension[@name='time' and (not(@default) or @default='0' or @default='false')][1]"/>
+         <xsl:variable name="layer" select="string($dimension/../descendant-or-self::wms:Layer[wms:Name][1]/wms:Name)"/>
+         <xsl:variable name="layer-info">
+            <ctl:call-function name="functions:layer-info">
+               <ctl:with-param name="root-layer" select="wms:Capability/wms:Layer"/>
+               <ctl:with-param name="preferred-name" select="$layer"/>
+               <ctl:with-param name="preferred-crs">CRS:84</ctl:with-param>
+               <ctl:with-param name="preferred-bbox"/>
+               <ctl:with-param name="preferred-width">100</ctl:with-param>
+               <ctl:with-param name="preferred-height">100</ctl:with-param>
+            </ctl:call-function>
+         </xsl:variable>
+         <xsl:choose>
+            <xsl:when test="$layer = ''">
+               <ctl:message>No Named layers with a time dimension without a default value.</ctl:message>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:variable name="response">
+                  <ctl:request>
+                     <ctl:url>
+                        <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+                     </ctl:url>
+                     <ctl:method>get</ctl:method>
+                     <ctl:param name="LaYeRs">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@name)"/>
+                     </ctl:param>
+                     <ctl:param name="BbOx">
+                        <xsl:value-of select="$layer-info/LayerInfo/@bbox"/>
+                     </ctl:param>
+                     <ctl:param name="CrS">
+                        <xsl:value-of select="functions:encode($layer-info/LayerInfo/@crs)"/>
+                     </ctl:param>
+                     <ctl:param name="WiDtH">
+                        <xsl:value-of select="$layer-info/LayerInfo/@width"/>
+                     </ctl:param>
+                     <ctl:param name="FoRmAt">
+                        <xsl:value-of select="functions:encode($image-format)"/>
+                     </ctl:param>
+                     <ctl:param name="HeIgHt">
+                        <xsl:value-of select="$layer-info/LayerInfo/@height"/>
+                     </ctl:param>
+                     <ctl:param name="VeRsIoN">
+                        <xsl:value-of select="functions:version()"/>
+                     </ctl:param>
+                     <ctl:param name="StYlEs"/>
+                     <ctl:param name="ReQuEsT">GetMap</ctl:param>
+                  </ctl:request>
+               </xsl:variable>
+               <xsl:if test="not($response/ogc:ServiceExceptionReport/ogc:ServiceException[@code='MissingDimensionValue'])">
+                  <ctl:fail/>
+               </xsl:if>
+            </xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+-->
+   <ctl:test name="dims:time-and-other-layer">
+      <ctl:context>WMS_Capabilities element</ctl:context>
+      <ctl:assertion>When a layer that supports time and other layers that do not support time are requested, the response is a map.</ctl:assertion>
+      <ctl:comment>Method: Submit a request involving both the Autos layer and a layer that does not support the TIME dimension and verify that the response is a map</ctl:comment>
+      <ctl:link title="WMS 1.3.0 section C.3.5">http://cite.opengeospatial.org/OGCTestData/wms/1.3.0/spec/wms1_3.html#dims.requests.applicability</ctl:link>
+      <ctl:code>
+         <xsl:variable name="image-format" select="wms:Capability/wms:Request/wms:GetMap/wms:Format[starts-with(., 'image/png') or starts-with(., 'image/gif')][1]"/>
+         <xsl:variable name="layer1" select="string(//wms:Layer[wms:Title = 'cite:DividedRoutes']/wms:Name)"/>
+         <xsl:variable name="layer2" select="string(//wms:Layer[wms:Title = 'cite:RoadSegments']/wms:Name)"/>
+         <xsl:variable name="layer3" select="string(//wms:Layer[wms:Title = 'cite:Autos']/wms:Name)"/>
+         <xsl:variable name="response">
+            <ctl:request>
+               <ctl:url>
+                  <xsl:value-of select="wms:Capability/wms:Request/wms:GetMap/wms:DCPType/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href"/>
+               </ctl:url>
+               <ctl:method>get</ctl:method>
+               <ctl:param name="ReQuEsT">GetMap</ctl:param>
+               <ctl:param name="VeRsIoN">
+                  <xsl:value-of select="functions:version()"/>
+               </ctl:param>
+               <ctl:param name="BbOx">-0.0042,-0.0024,0.0042,0.0024</ctl:param>
+               <ctl:param name="StYlEs"/>
+               <ctl:param name="FoRmAt">
+                  <xsl:value-of select="functions:encode($image-format)"/>
+               </ctl:param>
+               <ctl:param name="LaYeRs">
+                  <xsl:value-of select="functions:encode($layer1)"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode($layer2)"/>
+                  <xsl:text>,</xsl:text>
+                  <xsl:value-of select="functions:encode($layer3)"/>
+               </ctl:param>
+               <ctl:param name="CrS">
+                  <xsl:value-of select="functions:encode('CRS:84')"/>
+               </ctl:param>
+               <ctl:param name="WiDtH">420</ctl:param>
+               <ctl:param name="HeIgHt">240</ctl:param>
+               <ctl:param name="TiMe">
+                  <xsl:value-of select="functions:encode('2000-01-01T00:00:30Z')"/>
+               </ctl:param>
+               <parsers:HTTPParser>
+                  <parsers:parse>
+                     <parsers:NullParser/>
+                  </parsers:parse>
+               </parsers:HTTPParser>
+            </ctl:request>
+         </xsl:variable>
+         <xsl:if test="functions:mime-match($response/response/headers/header[functions:to-lowercase(@name) = 'content-type'], $image-format) = 'false'">
+            <ctl:fail/>
+         </xsl:if>
+      </ctl:code>
+   </ctl:test>
+</ctl:package>
+

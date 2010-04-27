@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <link rel="stylesheet" href="http://www.openlayers.org/api/theme/default/style.css" type="text/css">
+    <script src=" http://www.openlayers.org/api/OpenLayers.js"></script>
+    <script type="text/javascript">
+        function init(){
+        var loc = window.location + ""
+        if(loc.lastIndexOf("/") != loc.length - 1) loc = loc.substring(0, loc.lastIndexOf("/") + 1)
+
+        var map = new OpenLayers.Map( 'map', {minResolution: "auto",
+        minExtent: new OpenLayers.Bounds(-0.00000001, -0.0000001, 0.0000001, 0.00000001),
+        allOverlays: true,
+        maxResolution: "auto",
+        maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90)} )
+
+        var req = new XMLHttpRequest()
+
+        req.open("GET", loc + "services?request=GetCapabilities&service=WMS&version=1.1.1", false)
+        req.send(null)
+        var res = req.responseXML
+
+        res = res.evaluate('//Layer/Name', res.documentElement, null, 0, null)
+        var next = res.iterateNext()
+        while(next){
+        var layer = new OpenLayers.Layer.WMS( next.nodeValue, loc + "services", {layers: next.textContent, transparent: true}, {})
+        layer.setName(next.textContent)
+        layer.setVisibility(false)
+        map.addLayer(layer)
+        next = res.iterateNext()
+        }
+
+        map.setCenter(new OpenLayers.LonLat(0, 0), 0)
+        map.addControl( new OpenLayers.Control.LayerSwitcher() )
+        map.addControl(new OpenLayers.Control.WMSGetFeatureInfo())
+        }
+    </script>
+  </head>
+  <body onload="init()">
+    <h1 id="title">Your WMS</h1>
+    <div id="tags">
+    </div>
+    <p id="shortdesc">
+      This is an OpenLayers instance which is automatically configured with all the WMS layers.
+    </p>
+    <div id="map" class="largemap"/>
+  </body>
+</html>

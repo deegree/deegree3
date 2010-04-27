@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="1.0">
+  <info organisation="${module.organisation}" module="deegree-${module.name}" />
+  <configurations>
+    <!-- include file="${core.dir}/ivy.xml" /-->
+    <conf name="${module.name}-build" description="Use core+services jars and dependent jars" />
+    <conf name="${module.name}-javadoc" description="The source" visibility="private" />
+    <conf name="${module.name}-src" description="The sources" visibility="private" />
+    <conf name="${module.name}-report" description="The report" visibility="private" />
+    <conf name="${module.name}-deployservices" description="The deployment of services" visibility="private" />
+  </configurations>
+  <publications>
+    <artifact name="${jar.name}" type="jar" conf="${module.name}-build" ext="jar" />
+    <artifact name="${javadoc.name}" type="zip" conf="${module.name}-javadoc" />
+    <artifact name="${src.name}" type="zip" conf="${module.name}-src" />
+    <artifact name="${report.name}" type="html" conf="${module.name}-report" />
+    <artifact name="${war.name}" type="war" conf="${module.name}-deployservices" />
+  </publications>
+  <dependencies defaultconfmapping="${module.name}-build->default">
+    <!--
+      NOTE: dependencies on all needed deegree-modules must be set explicitly (relying on transitive dependencies is not enough),
+      otherwise the identifying of updated module snapshots doesn't seem to work.
+    -->
+    <dependency org="${module.organisation}" name="deegree-core" rev="3.0-SNAPSHOT" revConstraint="latest.integration"
+      changing="true" transitive="true" conf="${module.name}-build->core-build" />
+    <dependency org="${module.organisation}" name="deegree-services" rev="3.0-SNAPSHOT" revConstraint="latest.integration"
+      changing="true" transitive="true" conf="${module.name}-build->services-build" />
+    <dependency org="${module.organisation}" name="deegree-tools" rev="3.0-SNAPSHOT" revConstraint="latest.integration"
+      changing="true" transitive="true" conf="${module.name}-build->tools-build" />
+    <dependency org="junit" name="junit" rev="4.8.1" />
+    <dependency org="jfreechart" name="jfreechart" rev="1.0.13" transitive="false" conf="${module.name}-build" />
+    <dependency org="jfreechart" name="jcommon" rev="1.0.16" transitive="false" conf="${module.name}-build" />
+    <dependency org="cite" name="teamengine" rev="deegreeversion" transitive="false" conf="${module.name}-build" />
+  </dependencies>
+</ivy-module>

@@ -1,0 +1,20 @@
+<project default="all" basedir=".">
+  <target name="clean">
+    <delete dir="ctl"/>
+    <delete file="web/data-wfs-1.1.0.zip"/>
+  </target>
+
+  <target name="xinclude">
+    <mkdir dir="ctl"/>
+    <java fork="true" jar="../../apps/engine/lib/saxon9-9.0.0.6j.jar" output="ctl/all.xml">
+      <arg line="src/main.xml xipr.xsl fix-xml-base=no"/>
+    </java>
+  </target>
+
+  <target name="zip">
+    <zip destfile="web/data-wfs-1.1.0.zip" basedir="data"/>
+  </target>
+
+  <target name="all" depends="xinclude,zip"/>
+</project>
+

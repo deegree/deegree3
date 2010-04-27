@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.opengis.net/ogc" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:appinfo source="urn:x-opengis:specification:service:schema-xsd:wrapper:v1.0.0">OGC-Wrapper.xsd v1.0.0 2002-08</xsd:appinfo>
+		<xsd:documentation>OGC Service Wrapper schema. Copyright (c) 2002  OpenGIS Consortium, All Rights Reserved.</xsd:documentation>
+	</xsd:annotation>
+	<xsd:include schemaLocation="OGC-exception.xsd"/>
+	<xsd:include schemaLocation="filterCapabilities.xsd"/>
+	<xsd:include schemaLocation="filter.xsd"/>
+</xsd:schema>

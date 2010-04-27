@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="wms" basedir="../.." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <import file="../../build.xml" optional="false" />
+
+  <property name="tmp.dir" value="${java.io.tmpdir}" />
+
+  <!-- URL where Tomcat archive (configured for port 18080) is loaded from -->
+  <property name="test-tomcat.srcurl" value="http://download.deegree.org/test-artefacts/tomcat-6-p18080.tar.gz" />
+  <property name="test-tomcat.basedir" value="${tmp.dir}/d3_test_tomcat/" />
+  <property name="test-tomcat.archive" value="${tmp.dir}/tomcat-6-p18080.tar.gz" />
+
+  <target name="build-similarity-wms" description="Create webapp for running WMS similarity tests">
+    <property name="webapp.name" value="similarity-wms" />
+    <property name="webapp.src" value="${basedir}/resources/webapps/wms/similarity-wms/" />
+
+    <delete dir="${webapp.src}/WEB-INF/utah" />
+    <mkdir dir="${webapp.src}/WEB-INF/utah" />
+    <get src="http://havola.lat-lon.de/artifactory/test-artifacts-local/shape-files.zip" dest="${webapp.src}/WEB-INF/shape-files.zip" />
+    <unzip src="${webapp.src}/WEB-INF/shape-files.zip" dest="${webapp.src}/WEB-INF/utah" />
+
+    <antcall target="init-webapp" />
+  </target>
+
+  <target name="run-tests" description="Run all WMS tests">
+    <antcall target="run-similarity-tests" />
+
+    <junitreport todir="${build.dir}">
+      <fileset dir="${build.dir}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" todir="${build.dir}/html" />
+    </junitreport>
+  </target>
+
+  <target name="run-similarity-tests" description="Create webapp for running the similarity WMS tests and run test suite" depends="build-similarity-wms,compile,build">
+
+    <antcall target="setup-tomcat" />
+    <antcall target="start-tomcat" />
+
+    <echo message="Invoking similarity tests for WMS" />
+    <junit maxmemory="1024m" fork="yes" haltonfailure="no" haltonerror="no">
+      <classpath>
+        <pathelement path="${classes.dir}" />
+        <path refid="build.path" />
+      </classpath>
+      <sysproperty key="wms.baseurl" value="http://localhost:18080/similarity-wms/services" />
+      <formatter type="xml" />
+      <test name="org.deegree.test.services.wms.SimilarityJUnitTester" todir="${build.dir}" />
+    </junit>
+
+    <junitreport todir="${build.dir}">
+      <fileset dir="${build.dir}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" todir="${build.dir}/html" />
+    </junitreport>
+
+    <antcall target="stop-tomcat" />
+  </target>
+
+  <target name="setup-tomcat" depends="retrieve-tomcat">
+    <delete dir="${test-tomcat.basedir}" failonerror="false" />
+    <untar src="${test-tomcat.archive}" dest="${test-tomcat.basedir}" compression="gzip" />
+    <copy todir="${test-tomcat.basedir}/webapps/${webapp.name}">
+      <fileset dir="${build.dir}/${webapp.name}" defaultexcludes="true">
+        <include name="**" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="start-tomcat">
+    <java jar="${test-tomcat.basedir}/bin/bootstrap.jar" spawn="true" fork="true">
+      <jvmarg value="-Dcatalina.home=${test-tomcat.basedir}" />
+    </java>
+    <sleep seconds="10" />
+  </target>
+
+  <target name="check-for-tomcat">
+    <echo message="Checking if Tomcat started up" />
+    <get src="http://127.0.0.1:18080" dest="/tmp/tomcat" />
+  </target>
+
+  <target name="stop-tomcat">
+    <java jar="${test-tomcat.basedir}/bin/bootstrap.jar" fork="true">
+      <jvmarg value="-Dcatalina.home=${test-tomcat.basedir}" />
+      <arg line="stop" />
+    </java>
+  </target>
+
+  <target name="init-webapp" depends="load-ivy">
+
+    <property name="webapp.dir" value="${build.dir}/${webapp.name}" />
+
+    <!-- copy webapp skeleton -->
+    <delete dir="${webapp.dir}" failonerror="false" />
+    <mkdir dir="${webapp.dir}" />
+    <copy todir="${webapp.dir}">
+      <fileset dir="${webapp.src}" defaultexcludes="true">
+        <include name="**" />
+      </fileset>
+    </copy>
+
+    <!-- added needed libraries -->
+    <ivy:retrieve pattern="${webapp.dir}/WEB-INF/lib/[artifact](-[revision]).[ext]" file="${ivy.dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
+  </target>
+
+  <!-- Retrieve archive that contains pre-configured Tomcat 6 (port 18080) -->
+  <target name="retrieve-tomcat">
+    <get src="${test-tomcat.srcurl}" dest="${test-tomcat.archive}" usetimestamp="true" />
+  </target>
+
+</project>

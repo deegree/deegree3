@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:Transaction service="WFS" version="1.1.0" 
+  xmlns:wfs="http://www.opengis.net/wfs" 
+  xmlns:gml="http://www.opengis.net/gml" 
+  xmlns:sf="http://cite.opengeospatial.org/gmlsf" 
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  
+  <wfs:Insert handle="SF-2 test data for XLink processing" 
+    srsName="urn:x-ogc:def:crs:EPSG:4326">
+    
+    <sf:LinkedFeature gml:id="f201">
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f201</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#f091" 
+          xlink:role="http://cite.opengeospatial.org/gmlsf#PrimitiveGeoFeature" />
+    </sf:LinkedFeature>
+
+    <sf:LinkedFeature gml:id="f202">
+      <gml:description>description-f202</gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f202</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#f092"
+        xlink:title="A related feature" xlink:actuate="onRequest" 
+        xlink:role="http://cite.opengeospatial.org/gmlsf#PrimitiveGeoFeature" />
+      <sf:extent>
+        <gml:Point gml:id="g202">
+          <gml:pos>49.86136 -2.17433</gml:pos>
+        </gml:Point>
+      </sf:extent>
+    </sf:LinkedFeature>
+
+    <sf:LinkedFeature gml:id="f203">
+      <gml:description>description-f203</gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f203</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#f204" 
+        xlink:role="http://cite.opengeospatial.org/gmlsf#LinkedFeature" />
+    </sf:LinkedFeature>
+    
+    <sf:LinkedFeature gml:id="f204">
+      <gml:description>description-f204</gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f204</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#f201" />
+      <sf:extent>
+        <gml:MultiPoint gml:id="g204">
+          <gml:pointMember xlink:type="simple" xlink:href="#g003" />
+          <gml:pointMember xlink:type="simple" xlink:href="#g202" 
+            xlink:role="http://www.opengis.net/gml#Point" />
+        </gml:MultiPoint>
+      </sf:extent>
+    </sf:LinkedFeature>
+    
+    <sf:LinkedFeature gml:id="f205">
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f205</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#f203" />
+      <sf:extent xlink:type="simple" xlink:href="#g002" 
+        xlink:title="Geometry reference"
+        xlink:role="http://www.opengis.net/gml#Polygon" />
+    </sf:LinkedFeature>
+    
+    <sf:LinkedFeature gml:id="f206">
+      <gml:description>description-f206</gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f206</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#f207" />
+      <sf:extent>
+        <gml:Point>
+          <gml:pos>49.63245 9.19251</gml:pos>
+        </gml:Point>
+      </sf:extent>
+    </sf:LinkedFeature>
+    
+    <sf:LinkedFeature gml:id="f207">
+      <gml:description>description-f207</gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f207</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#f210" />
+    </sf:LinkedFeature>
+
+    <sf:LinkedFeature gml:id="f208">
+      <gml:description>description-f208</gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f208</gml:name>
+      <sf:reference xlink:type="simple" 
+        xlink:title="External feature reference"
+        xlink:href="ftp://vancouver1.demo.galdosinc.com/wfs/http?request=GetFeature&amp;service=WFS&amp;version=1.1.0&amp;typename=sf:LinkedFeature#f205" />
+    </sf:LinkedFeature>
+
+    <sf:LinkedFeature gml:id="f209">
+      <gml:description>description-f209</gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f209</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#_6c566516-a435-11dc-8314-0800200c9a66" />
+    </sf:LinkedFeature>
+    
+    <sf:LinkedFeature gml:id="f210">
+      <gml:description>description-f210</gml:description>
+      <gml:name codeSpace="http://cite.opengeospatial.org/gmlsf">name-f210</gml:name>
+      <sf:reference xlink:type="simple" xlink:href="#f206" />
+    </sf:LinkedFeature>
+  </wfs:Insert>
+
+</wfs:Transaction>
+
