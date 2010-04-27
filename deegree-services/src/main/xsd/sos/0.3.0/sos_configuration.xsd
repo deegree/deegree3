@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:sos="http://www.deegree.org/services/sos" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/sos" elementFormDefault="qualified">
+  <xs:include schemaLocation="sos_published_information.xsd"/>
+  <xs:include schemaLocation="sos_service_configuration.xsd"/>
+  <xs:element name="deegreeSOS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="sos:PublishedInformation"/>
+        <xs:element ref="sos:ServiceConfiguration"/>
+      </xs:sequence>
+      <xs:attribute name="configVersion" use="required" fixed="0.3.0"/>      
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:wms="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ds="http://www.deegree.org/datasource"
+  xmlns:cm="http://www.deegree.org/commons" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  targetNamespace="http://www.deegree.org/services/wms" elementFormDefault="qualified" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.wms.configuration" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <import namespace="http://www.deegree.org/datasource" schemaLocation="../../datasource/0.3.0/all_datasources.xsd" />
+  <import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.3.0/commons.xsd" />
+
+  <element name="ServiceConfiguration">
+    <complexType>
+      <sequence>
+        <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+        <element ref="wms:AbstractLayer" minOccurs="0" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <complexType name="SupportedFeaturesType">
+    <sequence>
+      <element name="AntiAliasing" type="string" minOccurs="0" />
+      <element name="RenderingQuality" type="string" minOccurs="0" />
+      <element name="Interpolation" type="string" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="BaseAbstractLayerType" />
+
+  <element name="AbstractLayer" type="wms:BaseAbstractLayerType" abstract="true" />
+
+  <complexType name="DirectStyleType">
+    <sequence>
+      <element name="File" type="string" />
+      <element name="Name" type="string" minOccurs="0" />
+      <element name="LegendConfigurationFile" type="string" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="SLDStyleType">
+    <sequence>
+      <element name="File" type="string" />
+      <element name="NamedLayer" type="string" />
+      <sequence minOccurs="0" maxOccurs="unbounded">
+        <element name="Name" type="string" minOccurs="0" />
+        <element name="UserStyle" type="string" />
+        <element name="LegendConfigurationFile" type="string" minOccurs="0" />
+      </sequence>
+    </sequence>
+  </complexType>
+
+  <complexType name="DimensionType">
+    <sequence>
+      <element name="Name" type="string" minOccurs="0" />
+      <element name="Property" type="string" />
+      <element name="DefaultValue" type="string" minOccurs="0" />
+      <element name="MultipleValues" type="boolean" default="0" minOccurs="0" />
+      <element name="NearestValue" type="boolean" default="0" minOccurs="0" />
+      <element name="Current" type="boolean" default="0" minOccurs="0" />
+      <element name="Units" type="string" minOccurs="0" />
+      <element name="UnitSymbol" type="string" minOccurs="0" />
+      <element name="Extent" type="string" />
+    </sequence>
+    <attribute name="isTime" type="boolean" use="optional" default="false" />
+    <attribute name="isElevation" type="boolean" use="optional" default="false" />
+  </complexType>
+
+  <complexType name="AbstractLayerType">
+    <complexContent>
+      <extension base="wms:BaseAbstractLayerType">
+        <sequence>
+          <element name="Name" type="string" minOccurs="0" />
+          <element name="Title" type="string" minOccurs="0" />
+          <element name="Abstract" type="string" minOccurs="0" />
+          <element ref="cm:Keywords" minOccurs="0" />
+          <element ref="cm:BoundingBox" minOccurs="0" />
+          <element name="CRS" type="string" minOccurs="0" />
+          <element name="Dimension" type="wms:DimensionType" minOccurs="0" maxOccurs="unbounded" />
+          <choice>
+            <element ref="cm:ScaleDenominators" minOccurs="0" />
+            <element name="ScaleUntil" type="double" minOccurs="0" />
+            <element name="ScaleAbove" type="double" minOccurs="0" />
+          </choice>
+          <element ref="wms:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+          <element ref="ds:AbstractDataSource" minOccurs="0" />
+          <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+          <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="RequestableLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <restriction base="wms:AbstractLayerType">
+          <sequence>
+            <element name="Name" type="string" />
+            <element name="Title" type="string" />
+            <element name="Abstract" type="string" minOccurs="0" />
+            <element ref="cm:Keywords" minOccurs="0" />
+            <element ref="cm:BoundingBox" minOccurs="0" />
+            <element name="CRS" type="string" minOccurs="0" />
+            <element name="Dimension" type="wms:DimensionType" minOccurs="0" maxOccurs="unbounded" />
+            <choice>
+              <element ref="cm:ScaleDenominators" minOccurs="0" />
+              <element name="ScaleUntil" type="double" minOccurs="0" />
+              <element name="ScaleAbove" type="double" minOccurs="0" />
+            </choice>
+            <element ref="wms:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+            <element ref="ds:AbstractDataSource" minOccurs="0" />
+            <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+          </sequence>
+        </restriction>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="UnrequestableLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <restriction base="wms:AbstractLayerType">
+          <sequence>
+            <element name="Title" type="string" />
+            <element name="Abstract" type="string" minOccurs="0" />
+            <element ref="cm:Keywords" minOccurs="0" />
+            <element ref="cm:BoundingBox" minOccurs="0" />
+            <element name="CRS" type="string" minOccurs="0" />
+            <choice>
+              <element ref="cm:ScaleDenominators" minOccurs="0" />
+              <element name="ScaleUntil" type="double" minOccurs="0" />
+              <element name="ScaleAbove" type="double" minOccurs="0" />
+            </choice>
+            <element ref="wms:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+            <element ref="ds:AbstractDataSource" minOccurs="0" />
+            <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+          </sequence>
+        </restriction>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="LogicalLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <restriction base="wms:AbstractLayerType">
+          <sequence>
+            <element ref="cm:BoundingBox" minOccurs="0" />
+            <choice>
+              <element ref="cm:ScaleDenominators" minOccurs="0" />
+              <element name="ScaleUntil" type="double" minOccurs="0" />
+              <element name="ScaleAbove" type="double" minOccurs="0" />
+            </choice>
+            <element ref="wms:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+            <element ref="ds:AbstractDataSource" minOccurs="0" />
+            <element name="DirectStyle" type="wms:DirectStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SLDStyle" type="wms:SLDStyleType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="SupportedFeatures" type="wms:SupportedFeaturesType" minOccurs="0" />
+          </sequence>
+        </restriction>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="DynamicLayer" substitutionGroup="wms:AbstractLayer">
+    <complexType>
+      <complexContent>
+        <extension base="wms:BaseAbstractLayerType">
+          <choice>
+            <element name="ShapefileDirectory" type="string" />
+          </choice>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+</schema>

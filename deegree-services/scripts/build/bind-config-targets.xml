@@ -1,0 +1,162 @@
+<project name="configuration-binding" basedir="../..">
+
+    <import file="${basedir}/build.xml" optional="false"/>
+
+    <target name="bind-md" depends="resolve,create-xjc-task">
+        <property name="schema.file" value="services_metadata.xsd" />
+        <property name="service.name" value="webservices" />
+
+        <property name="schema.dir" value="${basedir}/src/main/xsd/${service.name}/0.5.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/services/controller/configuration" />
+
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true">
+            <depends dir="${schema.dir}" includes="**/*.xsd" />
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+        <delete dir="${src.dir}/org/deegree/commons" failonerror="false" />
+
+        <!-- no build an episode file for the services metadata -->
+        <!--java classpathref="build.path" classname="org.deegree.commons.utils.jaxb.CreateExternalBindings">
+            <arg value="${src.output.dir}" />
+            <arg value="${src.dir}/META-INF/sun-jaxb.episode" />
+            <arg value="http://www.deegree.org/${service.name}" />
+            <arg value="../${schema.file}" />
+        </java-->
+    </target>
+
+
+    <target name="bind-services-metadata" depends="bind-md, publish-local" description="Bind the services-metadata configuration files and publish the result." />
+
+    <target name="create-xjc-task">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+    </target>
+
+
+    <target name="bind-general" depends="resolve,create-xjc-task">
+        <fail message="The parameter 'schema.dir' is not specified.">
+            <condition>
+                <not>
+                    <isset property="schema.dir" />
+                </not>
+            </condition>
+        </fail>
+        <fail message="The parameter 'schema.file' is not specified.">
+            <condition>
+                <not>
+                    <isset property="schema.file" />
+                </not>
+            </condition>
+        </fail>
+        <fail message="The parameter 'produces.dir' is not specified.">
+            <condition>
+                <not>
+                    <isset property="produces.dir" />
+                </not>
+            </condition>
+        </fail>
+        <xjc destdir="${src.dir}" schema="${schema.dir}/${schema.file}" extension="true" removeOldOutput="true">
+            <depends dir="${schema.dir}" includes="${schema.file}" />
+            <produces dir="${produces.dir}" includes="**/*.java" />
+        </xjc>
+    </target>
+
+    <target name="bind-service-configuration">
+        <antcall target="bind-general">
+            <param name="schema.file" value="${service.name}_service_configuration.xsd" />
+            <param name="produces.dir" value="${src.dir}/org/deegree/services/${service.name}/configuration" />
+        </antcall>
+    </target>
+
+
+    <target name="bind-publish-information">
+        <antcall target="bind-general">
+            <param name="schema.file" value="${service.name}_published_information.xsd" />
+            <param name="produces.dir" value="${src.dir}/org/deegree/services/controller/${service.name}/configuration" />
+        </antcall>
+    </target>
+
+    <target name="check-service-param">
+        <fail message="The parameter 'service.name' is not specified.">
+            <condition>
+                <not>
+                    <isset property="service.name" />
+                </not>
+            </condition>
+        </fail>
+        <property name="schema.dir" value="${basedir}/src/main/xsd/${service.name}/${serviceconfig.version}/" />
+    </target>
+
+    <target name="bind-service" depends="check-service-param, bind-service-configuration, bind-publish-information">
+        <delete dir="${src.dir}/org/deegree/commons" failonerror="false" />
+        <antcall target="publish-local" />
+    </target>
+
+    <target name="bind-wms-config" description="Bind the wms configuration files and publish the result.">
+        <property name="service.name" value="wms" />
+        <property name="serviceconfig.version" value="0.5.0" />
+        <antcall target="bind-service" />
+    </target>
+
+        <target name="bind-csw-config" description="Bind the csw configuration files and publish the result.">
+                <property name="service.name" value="csw" />
+                        <property name="serviceconfig.version" value="0.5.0" />
+                <antcall target="bind-service" />
+        </target>
+
+    <target name="bind-wcs-config" description="Bind the wcs configuration files and publish the result.">
+        <property name="service.name" value="wcs" />
+        <property name="serviceconfig.version" value="0.5.0" />
+        <antcall target="bind-service" />
+    </target>
+
+    <target name="bind-wps-config" description="Bind the wps configuration files and publish the result.">
+
+        <property name="service.name" value="wps" />
+        <property name="serviceconfig.version" value="0.5.0" />
+
+        <antcall target="bind-general">
+            <param name="schema.dir" value="${basedir}/src/main/xsd/wps/0.5.0/" />
+            <param name="schema.file" value="process_definition.xsd" />
+            <param name="produces.dir" value="${src.dir}/org/deegree/services/wps/processdefinition" />
+        </antcall>
+
+        <antcall target="bind-service" />
+    </target>
+
+    <target name="bind-sos-config" description="Bind the sos configuration files and publish the result.">
+        <property name="service.name" value="sos" />
+        <property name="serviceconfig.version" value="0.5.0" />
+        <antcall target="bind-service" />
+    </target>
+
+    <target name="bind-wfs-config" description="Bind the wfs configuration files and publish the result.">
+        <property name="service.name" value="wfs" />
+        <property name="serviceconfig.version" value="0.5.0" />
+        <antcall target="bind-service" />
+    </target>
+
+    <target name="bind-wpvs-config" description="Bind the wpvs configuration files and publish the result.">
+        <property name="service.name" value="wpvs" />
+        <property name="serviceconfig.version" value="0.5.0" />
+        <antcall target="bind-service" />
+    </target>
+
+    <target name="upload-schemas">
+        <property name="tmpdir" value="${java.io.tmpdir}/${user.name}/${ant.project.name}" />
+        <!-- Create a copy in ${tmpdir} with adjusted imports/includes -->
+        <delete dir="${tmpdir}"/>
+        <copy todir="${tmpdir}">
+            <fileset dir="${basedir}/resources/schema">
+                <include name="**/*.xsd"/>
+            </fileset>
+        </copy>
+        <!-- Copy adjusted schemas from ${tmpdir} to schemas.deegree.org -->
+        <scp todir="${user.name}@schemas.deegree.org:/var/www/schemas.deegree.org" keyfile="${user.home}/.ssh/id_dsa" passphrase="">
+            <fileset dir="${tmpdir}"/>
+        </scp>
+    </target>
+
+</project>

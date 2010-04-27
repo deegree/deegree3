@@ -1,0 +1,33 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <jaxb:bindings schemaLocation="../process_definition.xsd" xmlns:wps="http://www.deegree.org/services/wps">
+    <jaxb:schemaBindings>
+      <jaxb:package name="org.deegree.services.wps.processdefinition" />
+    </jaxb:schemaBindings>
+    <!-- jaxb:bindings scd="~wps:ProcessInputType">
+      <jaxb:class name="ProcessletInputDefinition" />
+    </jaxb:bindings>
+    <jaxb:bindings scd="wps:LiteralInput">
+      <jaxb:class name="LiteralInputDefinition" />
+      <jaxb:superClass name="ProcessletInputDefinition"/>
+    </jaxb:bindings>
+    <jaxb:bindings scd="wps:BoundingBoxInput">
+      <jaxb:class name="BoundingBoxInputDefinition" />
+    </jaxb:bindings>
+    <jaxb:bindings scd="wps:ComplexInput">
+      <jaxb:class name="ComplexInputDefinition" />
+    </jaxb:bindings>
+    
+    <jaxb:bindings scd="~wps:ProcessOutputType">
+      <jaxb:class name="ProcessletOutputDefinition" />
+    </jaxb:bindings>
+    <jaxb:bindings scd="wps:LiteralOutput">
+      <jaxb:class name="LiteralOutputDefinition" />
+    </jaxb:bindings>
+    <jaxb:bindings scd="wps:BoundingBoxOutput">
+      <jaxb:class name="BoundingBoxOutputDefinition" />
+    </jaxb:bindings>
+    <jaxb:bindings scd="wps:ComplexOutput">
+      <jaxb:class name="ComplexOutputDefinition" />
+    </jaxb:bindings-->
+  </jaxb:bindings>
+</jaxb:bindings>

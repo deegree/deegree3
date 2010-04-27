@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.deegree.org/datasource"
+  targetNamespace="http://www.deegree.org/services/csw" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.csw.configuration" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:import namespace="http://www.deegree.org/datasource" schemaLocation="../../datasource/0.4.0/all_datasources.xsd" />
+  <xs:import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.4.0/commons.xsd" />
+
+  <xs:element name="ServiceConfiguration">
+    <xs:annotation>
+      <xs:documentation>
+        Root element of the service configuration. 
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ds:RecordStore" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="Inspire" type="xs:boolean" default="true" minOccurs="0" />
+        <xs:element name="FileIdentifierAvailable" type="xs:boolean" default="false" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+
+  </xs:element>
+</xs:schema>

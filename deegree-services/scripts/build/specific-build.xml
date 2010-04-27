@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="specific">
+        <target name="copy-resources">
+                <echo message="TODO: improve copying of schemas from core"/>
+                <copy todir="${classes.dir}/META-INF/schemas/" failonerror="false">
+                        <fileset dir="${resources}/schema/">
+                                <include name="**/*.xsd" />
+                        </fileset>
+                </copy>
+                <copy todir="${classes.dir}/META-INF/schemas/" failonerror="false">
+                        <fileset dir="${core.location}/resources/schema/">
+                                <include name="**/*.xsd" />
+                        </fileset>
+                </copy>
+                <replace dir="${classes.dir}/META-INF/schemas/" includes="**/*.xsd" encoding="UTF-8" token="../../../../../deegree-core/resources/schema/" value="../../" />
+        </target>
+</project>

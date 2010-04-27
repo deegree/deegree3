@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:wfs="http://www.deegree.org/services/wfs"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ds="http://www.deegree.org/datasource" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/wfs" elementFormDefault="qualified"
+  xmlns:cm="http://www.deegree.org/commons" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.wfs.configuration" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:import namespace="http://www.deegree.org/datasource" schemaLocation="../../datasource/0.5.0/all_datasources.xsd" />  
+  <xs:import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.5.0/commons.xsd" />  
+
+  <xs:element name="ServiceConfiguration">
+    <xs:complexType>
+      <xs:sequence>        
+        <xs:element ref="ds:FeatureStore" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

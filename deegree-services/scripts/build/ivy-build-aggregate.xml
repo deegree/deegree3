@@ -1,0 +1,43 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant">
+    <import file="ivy-build.xml" />
+
+    <target name="output-warning" if="message">
+        <echo message="Warning. Could not find ${message}, please (re)set the apropriate property in the ${basedir}/ivy-build.properties file, you are now building against libraries from the org.deegree repository." />
+    </target>
+
+    <target name="test-dir">
+        <condition property="message" value="${dir}">
+            <not>
+                <available file="${dir}/build.xml" />
+            </not>
+        </condition>
+        <antcall target="output-warning" />
+    </target>
+
+    <target name="test-missing-directories">
+        <antcall target="test-dir">
+            <param name="dir" value="${core.location}" />
+        </antcall>        
+    </target>
+
+    <target name="module-list" depends="test-missing-directories, load-ivy">
+        <ivy:buildlist reference="module-path">
+            <fileset file="${core.location}/build.xml" erroronmissingdir="false" />
+            <fileset file="${basedir}/build.xml" />
+        </ivy:buildlist>
+    </target>
+
+    <target name="build" depends="module-list" description="-> compile and build jars of all depending modules in the right order.">
+        <subant target="publish-local" buildpathref="module-path" failonerror="true" inheritall="false" />
+    </target>
+
+    <target name="clean-deps" depends="module-list" description="-> deletes all build directories of all dependend modules.">
+        <subant target="clean" buildpathref="module-path" failonerror="true" inheritall="false" />
+    </target>
+
+    <target name="clean-modules-with-cache" depends="module-list">
+        <!--description="-> deletes all build directories, cache and local-build directories of all dependend modules."-->
+        <subant target="clean-cache" buildpathref="module-path" failonerror="true" inheritall="false" />
+    </target>
+
+</project>

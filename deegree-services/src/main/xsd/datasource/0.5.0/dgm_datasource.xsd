@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
+ <include schemaLocation="./constrained_datasource.xsd"/>
+ <element name="ElevationModelDataSource" substitutionGroup="ds:AbstractFileSystemDataSource">
+  <annotation>
+   <documentation>An elevationmodel datasource uses it's own file format read from the file system.</documentation>
+  </annotation>
+  <complexType>
+   <complexContent>
+    <extension base="ds:FileSystemDataSourceType">
+     <attribute name="crs" use="optional" default="epsg:25832"/>
+    </extension>
+   </complexContent>
+  </complexType>
+ </element>
+</schema>

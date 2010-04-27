@@ -1,0 +1,277 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cm="http://www.deegree.org/commons"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" targetNamespace="http://www.deegree.org/commons"
+  elementFormDefault="qualified" jaxb:version="2.1">
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.commons.configuration" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:simpleType name="currentVersionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="0.2.0" />
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- ========================================================== -->
+  <xs:element name="BoundingBox" type="cm:BoundingBoxType" />
+  <!-- =========================================================== -->
+  <xs:complexType name="BoundingBoxType">
+    <xs:annotation>
+      <xs:documentation>XML encoded minimum rectangular bounding box (or
+        region) parameter, surrounding all the associated data.</xs:documentation>
+      <xs:documentation>
+        This type is adapted from the EnvelopeType of GML 3.1,
+        with modified contents and documentation for encoding a MINIMUM size box
+        SURROUNDING
+        all associated data.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="LowerCorner" type="cm:PositionType">
+        <xs:annotation>
+          <xs:documentation>
+            Position of the bounding box corner at which the
+            value of each coordinate normally is the algebraic minimum within
+            this bounding box. In
+            some cases, this position is normally displayed
+            at the top, such as the top left for some image coordinates. For
+            more information, see
+            Subclauses 10.2.5 and C.13.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="UpperCorner" type="cm:PositionType">
+        <xs:annotation>
+          <xs:documentation>
+            Position of the bounding box corner at which the
+            value of each coordinate normally is the algebraic maximum within
+            this bounding box. In
+            some cases, this position is normally displayed
+            at the bottom, such as the bottom right for some image coordinates.
+            For more information,
+            see Subclauses 10.2.5 and C.13.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="crs" type="xs:anyURI" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          Usually references the definition of a CRS, as
+          specified in [OGC Topic 2]. Such a CRS definition can be XML encoded
+          using the
+          gml:CoordinateReferenceSystemType in [GML 3.1]. For well
+          known references, it is not required that a CRS definition exist at
+          the location
+          the URI points to. If no anyURI value is included, the
+          applicable CRS must be either: a) Specified outside the bounding box,
+          but inside a
+          data structure that includes this bounding box, as
+          specified for a specific OWS use of this bounding box type. b) Fixed
+          and specified in the
+          Implementation Specification for a specific OWS
+          use of the bounding box type.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="dimensions" type="xs:int" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          The number of dimensions in this CRS (the length of a
+          coordinate sequence in this use of the PositionType). This number is
+          specified by the
+          CRS definition, but can also be specified here.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="PositionType">
+    <xs:annotation>
+      <xs:documentation>
+        Position instances hold the coordinates of a position in
+        a coordinate reference system (CRS) referenced by the related "crs"
+        attribute or
+        elsewhere. For an angular coordinate axis that is physically
+        continuous for multiple revolutions, but whose recorded values can be
+        discontinuous, special conditions apply when the bounding box is
+        continuous across the value discontinuity: a) If the bounding box is
+        continuous clear around this angular axis, then ordinate values of minus
+        and plus infinity shall be used. b) If the bounding box is continuous
+        across the value discontinuity but is not continuous clear around this
+        angular axis, then some non-normal value can be used if specified for a
+        specific OWS use of the BoundingBoxType. For more information, see
+        Subclauses 10.2.5 and C.13.
+      </xs:documentation>
+      <xs:documentation>
+        This type is adapted from DirectPositionType and
+        doubleList of GML 3.1. The adaptations include omission of all the
+        attributes, since the
+        needed information is included in the
+        BoundingBoxType.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:list itemType="xs:double" />
+  </xs:simpleType>
+  <!-- =========================================================== -->
+  <xs:element name="ScaleDenominators" type="cm:ScaleDenominatorsType" />
+  <!-- =========================================================== -->
+  <xs:complexType name="ScaleDenominatorsType">
+    <xs:annotation>
+      <xs:documentation>
+        The scale denominators define the map resolution to
+        which the datasets are valid. TODO define exact value calculation here!
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="min" type="xs:double" use="required" />
+    <xs:attribute name="max" type="xs:double" use="required" />
+    <xs:attribute name="native" type="xs:double" use="optional" />
+  </xs:complexType>
+  <!-- ========================================================== -->
+  <xs:element name="Keywords" type="cm:KeywordsType" />
+  <!-- ========================================================== -->
+  <xs:complexType name="LanguageStringType">
+    <xs:annotation>
+      <xs:documentation>
+        Text string with the language of the string identified
+        as recommended in the XML 1.0 W3C Recommendation, section 2.12.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="lang" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="CodeType">
+    <xs:annotation>
+      <xs:documentation>
+        Name or code with an (optional) authority. If the
+        codeSpace attribute is present, its value shall reference a dictionary,
+        thesaurus, or
+        authority for the name or code, such as the organisation
+        who assigned the value, or the dictionary from which it is taken.
+      </xs:documentation>
+      <xs:documentation>
+        Type copied from basicTypes.xsd of GML 3 with
+        documentation edited, for possible use outside the ServiceIdentification
+        section of a service
+        metadata document.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="codeSpace" type="xs:anyURI" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="KeywordsType">
+    <xs:annotation>
+      <xs:documentation>
+        Unordered list of one or more commonly used or
+        formalised word(s) or phrase(s) used to describe the subject. When
+        needed, the optional "type"
+        can name the type of the associated list of
+        keywords that shall all have the same type. Also when needed, the
+        codeSpace attribute of that
+        "type" can reference the type name authority
+        and/or thesaurus. If the xml:lang attribute is not included in a Keyword
+        element, then no
+        language is specified for that element unless specified
+        by another means. All Keyword elements in the same Keywords element that
+        share the
+        same xml:lang attribute value represent different keywords in
+        that language.
+      </xs:documentation>
+      <xs:documentation>
+        For OWS use, the optional thesaurusName element was
+        omitted as being complex information that could be referenced by the
+        codeSpace attribute
+        of the Type element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Keyword" type="cm:LanguageStringType"
+        maxOccurs="unbounded" />
+      <xs:element name="Type" type="cm:CodeType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <!-- ========================================================== -->
+  <xs:element name="JDBCConnections">
+    <!-- ========================================================== -->
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>Container element for the definition of one
+          or more JDBC connections.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element ref="cm:PooledConnection" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- ========================================================== -->
+  <xs:element name="PooledConnection">
+    <!-- ========================================================== -->
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>Defines a connection pool that can be
+          referenced in other documents using its identifier.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="DatabaseType" type="cm:DatabaseType"/>
+        <xs:element name="Url" type="xs:string" />
+        <xs:element name="User" type="xs:string" />
+        <xs:element name="Password" type="xs:string" />
+        <xs:element name="PoolMinSize" type="xs:positiveInteger"
+          minOccurs="0" />
+        <xs:element name="PoolMaxSize" type="xs:positiveInteger"
+          minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" />
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="DatabaseType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="POSTGIS" />
+      <xs:enumeration value="ORACLE" />
+      <xs:enumeration value="MYSQL" />
+      <xs:enumeration value="UNDEFINED" />
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- ========================================================== -->
+  <xs:element name="ProxyConfiguration">
+    <!-- ========================================================== -->
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>Parameters that deegree uses to connect to
+          other resources on the network.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ProxyHost" type="xs:string" minOccurs="0" />
+        <xs:element name="HttpProxyHost" type="xs:string" minOccurs="0" />
+        <xs:element name="FtpProxyHost" type="xs:string" minOccurs="0" />
+        <xs:element name="ProxyPort" type="xs:positiveInteger"
+          minOccurs="0" />
+        <xs:element name="HttpProxyPort" type="xs:positiveInteger"
+          minOccurs="0" />
+        <xs:element name="FtpProxyPort" type="xs:positiveInteger"
+          minOccurs="0" />
+        <xs:element name="ProxyUser" type="xs:string" minOccurs="0" />
+        <xs:element name="HttpProxyUser" type="xs:string" minOccurs="0" />
+        <xs:element name="FtpProxyUser" type="xs:string" minOccurs="0" />
+        <xs:element name="ProxyPassword" type="xs:string" minOccurs="0" />
+        <xs:element name="HttpProxyPassword" type="xs:string"
+          minOccurs="0" />
+        <xs:element name="FtpProxyPassword" type="xs:string"
+          minOccurs="0" />
+        <xs:element name="NonProxyHosts" type="xs:string" minOccurs="0" />
+        <xs:element name="HttpNonProxyHosts" type="xs:string"
+          minOccurs="0" />
+        <xs:element name="FtpNonProxyHosts" type="xs:string"
+          minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="overrideSystemSettings" type="xs:boolean"
+        use="optional" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

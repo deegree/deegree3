@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wpvs:deegreeWPVS xmlns:cm="http://www.deegree.org/commons" xmlns:ds="http://www.deegree.org/datasource"
+  xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="0.5.0"
+  xsi:schemaLocation="http://www.deegree.org/services/wpvs ../../../schema/wpvs/0.5.0/wpvs_configuration.xsd">
+  <wpvs:ServiceConfiguration>
+    <wpvs:MaxViewWidth>1200</wpvs:MaxViewWidth>
+    <wpvs:MaxViewHeight>1000</wpvs:MaxViewHeight>
+    <!-- wpvs:MaxRequestFarClippingPlane>15000</wpvs:MaxRequestFarClippingPlane-->
+    <!-- wpvs:NearClippingPlane>0.1</wpvs:NearClippingPlane-->
+    <!-- Rendering quality settings that affect geometry and texture LOD selection -->
+    <wpvs:Copyright>
+      <wpvs:Text>Made by deegree WPVS</wpvs:Text>
+      <wpvs:Image url="../../data/wpvs/copyright/deegree.png" />
+    </wpvs:Copyright>
+    <wpvs:SkyImages>
+      <wpvs:SkyImage file="../../data/wpvs/skies/sunset.jpg" name="sunset" />
+      <wpvs:SkyImage file="../../data/wpvs/skies/cloudy.jpg" name="cloudy" />
+      <wpvs:SkyImage file="../../data/wpvs/skies/cirrus_cloud.jpg" name="cirrus" />
+    </wpvs:SkyImages>
+    <wpvs:DatasetDefinitions>
+      <wpvs:Title>The datasets</wpvs:Title>
+      <wpvs:MetadataURL>http://schemas.deegree.org/services/wpvs/</wpvs:MetadataURL>
+      <wpvs:Abstract>This definition holds all available datasets</wpvs:Abstract>
+      <cm:Keywords>
+        <cm:Keyword lang="de_DE">Beschreibung von der Datasetdefinition</cm:Keyword>
+        <cm:Keyword lang="en_US">Describing the dataset defintion</cm:Keyword>
+        <cm:Type codeSpace="http://www.deegree.org">Description</cm:Type>
+      </cm:Keywords>
+      <cm:BoundingBox dimensions="2" crs="epsg:26192">
+        <cm:LowerCorner>420000.0 4507998.0 1280.5</cm:LowerCorner>
+        <cm:UpperCorner>432001.0 4519999.0 2919.4</cm:UpperCorner>
+      </cm:BoundingBox>
+      <wpvs:TranslationToLocalCRS x="-415430" y="-4497410.0" />
+      <cm:ScaleDenominators min="0" max="1000000" />
+      <!-- Geometry quality after projection -->
+      <wpvs:MaxPixelError>5</wpvs:MaxPixelError>
+      <wpvs:ElevationDataset>
+        <wpvs:Name>dem</wpvs:Name>
+        <wpvs:Title>Elevation model</wpvs:Title>
+        <wpvs:Abstract>The elevation model of the city</wpvs:Abstract>
+        <ds:ElevationModelDataSource>
+          <ds:DataSourceName>deegree dem created with the WPVS</ds:DataSourceName>
+          <ds:Directory>file:/media/storage/utah/dem/geometry</ds:Directory>
+          <!-- <ds:Directory>file:/tmp</ds:Directory>-->
+        </ds:ElevationModelDataSource>
+      </wpvs:ElevationDataset>
+      <wpvs:DEMTextureDataset>
+        <wpvs:Name>saltlakesatellite</wpvs:Name>
+        <wpvs:Title>Aerial photographs of saltlake city</wpvs:Title>
+        <wpvs:Abstract>Aerial photographs of the city, stored in a specialized raw format on the file system.</wpvs:Abstract>
+        <!-- Garantiert größe an pixel die ein texel einnimmt -->
+        <wpvs:MaxProjectedTexelSize>1</wpvs:MaxProjectedTexelSize>
+        <ds:MultiResolutionDataSource crs="EPSG:26192">
+          <ds:Resolution res="1.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/utah/dem/texture/1.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+          <ds:Resolution res="2.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/utah/dem/texture/2.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+          <ds:Resolution res="4.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/utah/dem/texture/4.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+          <ds:Resolution res="8.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/utah/dem/texture/8.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+          <ds:Resolution res="16.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/utah/dem/texture/16.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+          <ds:Resolution res="32.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/utah/dem/texture/32.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+        </ds:MultiResolutionDataSource>
+      </wpvs:DEMTextureDataset>
+      
+      <!--wpvs:DEMTextureDataset>
+        <wpvs:Name>hochwasser_elf</wpvs:Name>
+        <wpvs:Title>hochwasser_elf</wpvs:Title>
+        <wpvs:Abstract>hochwasser_elf</wpvs:Abstract>
+        <ds:MultiResolutionDataSource crs="EPSG:31466">
+          <ds:Resolution res="12.8">
+            <ds:WMSDataSource>
+              <ds:CapabilitiesDocumentLocation
+                location="http://stadtplan.bonn.de/Deegree2wms/services?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities" />
+              <ds:RequestedLayers>hochwasser_elf</ds:RequestedLayers>
+              <ds:RequestedFormat transparent="true">image/png</ds:RequestedFormat>
+              <ds:RequestTimeout>30</ds:RequestTimeout>
+              <ds:MaxMapDimensions width="5000" height="5000" />
+            </ds:WMSDataSource>
+          </ds:Resolution>
+          <ds:Resolution res="25.6">
+            <ds:WMSDataSource>
+              <ds:CapabilitiesDocumentLocation
+                location="http://stadtplan.bonn.de/Deegree2wms/services?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities" />
+              <ds:RequestedLayers>hochwasser_elf</ds:RequestedLayers>
+              <ds:RequestedFormat transparent="true">image/png</ds:RequestedFormat>
+              <ds:RequestTimeout>30</ds:RequestTimeout>
+              <ds:MaxMapDimensions width="5000" height="5000" />
+            </ds:WMSDataSource>
+          </ds:Resolution>
+        </ds:MultiResolutionDataSource>
+      </wpvs:DEMTextureDataset-->
+      <!-- wpvs:Buildings>
+        <wpvs:Name>buildings</wpvs:Name>
+        <wpvs:Title>Buildings and stages of the city</wpvs:Title>
+        <wpvs:Abstract>The building of the city</wpvs:Abstract>
+        <wpvs:MaxPixelError>5</wpvs:MaxPixelError>
+        <wpvs:TextureDirectory>/media/storage/bonn3d/file_backend/building_textures/</wpvs:TextureDirectory>
+        <wpvs:TextureDirectory>/media/storage/bonn3d/file_backend/prototype_textures/</wpvs:TextureDirectory>
+        <ds:GeospatialFileSystemDataSource>
+          <ds:Directory>/media/storage/bonn3d/file_backend/</ds:Directory>
+        </ds:GeospatialFileSystemDataSource>
+        <wpvs:SwitchLevels>
+          <wpvs:Level min="0.0" max="0.03" />
+          <wpvs:Level min="0.03" max="0.05" />
+          <wpvs:Level min="0.05" max="0.09" />
+          <wpvs:Level min="0.09" max="0.85" />
+          <wpvs:Level min="0.85" max="1.1" />
+          <wpvs:Level min="1.1" max="10" />
+        </wpvs:SwitchLevels>
+      </wpvs:Buildings>
+      <wpvs:Trees>
+        <wpvs:Name>trees</wpvs:Name>
+        <wpvs:Title>Trees of the city</wpvs:Title>
+        <wpvs:Abstract>The trees of the city</wpvs:Abstract>
+        <wpvs:MaxPixelError>3</wpvs:MaxPixelError>
+        <wpvs:TextureDirectory>/media/storage/bonn3d/file_backend/tree_textures/</wpvs:TextureDirectory>
+        <ds:GeospatialFileSystemDataSource>
+          <ds:Directory>/media/storage/bonn3d/file_backend/</ds:Directory>
+        </ds:GeospatialFileSystemDataSource>
+      </wpvs:Trees-->
+              <!-- ds:ConstrainedDatabaseDataSource>
+          <ds:DataSourceName>WPVS database connection to the buildings,trees and prototypes</ds:DataSourceName>
+          <ds:ConnectionPoolId>conn1</ds:ConnectionPoolId>
+        </ds:ConstrainedDatabaseDataSource-->
+    </wpvs:DatasetDefinitions>
+  </wpvs:ServiceConfiguration>
+  <wpvs:PublishedInformation>
+    <md:ServiceIdentification>
+      <md:Title>The deegree Web Perspective View Service</md:Title>
+      <md:Abstract>A web service used for the rendering of 3d geospatial data</md:Abstract>
+      <cm:Keywords>
+        <cm:Keyword>Cool</cm:Keyword>
+        <cm:Keyword>JOGL</cm:Keyword>
+        <cm:Keyword>Fast</cm:Keyword>
+      </cm:Keywords>
+      <md:Fees>None, it's free</md:Fees>
+      <md:AccessConstraints>Open to all</md:AccessConstraints>
+    </md:ServiceIdentification>
+    <md:ServiceProvider>
+      <md:ProviderName>lat/lon GmbH</md:ProviderName>
+      <md:ProviderSite>http://www.lat-lon.de</md:ProviderSite>
+      <md:ServiceContact>
+        <md:IndividualName>Rutger Bezema</md:IndividualName>
+        <md:PositionName>Developer</md:PositionName>
+        <md:Phone>0228/18496-0</md:Phone>
+        <md:Facsimile>0228/18496-29</md:Facsimile>
+        <md:ElectronicMailAddress>info@lat-lon.de</md:ElectronicMailAddress>
+        <md:Address>
+          <md:DeliveryPoint>Aennchenstr. 19</md:DeliveryPoint>
+          <md:City>Bonn</md:City>
+          <md:AdministrativeArea>NRW</md:AdministrativeArea>
+          <md:PostalCode>53177</md:PostalCode>
+          <md:Country>Bonn</md:Country>
+        </md:Address>
+        <md:OnlineResource>http://www.deegree.org</md:OnlineResource>
+        <md:HoursOfService>24x7</md:HoursOfService>
+        <md:ContactInstructions>Don't (hesitate) (to) call</md:ContactInstructions>
+        <md:Role>PointOfContact</md:Role>
+      </md:ServiceContact>
+    </md:ServiceProvider>
+    <wpvs:AllowedOperations>
+      <wpvs:GetCapabilities />
+      <wpvs:GetView />
+    </wpvs:AllowedOperations>
+  </wpvs:PublishedInformation>
+</wpvs:deegreeWPVS>

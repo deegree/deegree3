@@ -1,0 +1,7 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <jaxb:bindings schemaLocation="../wcs_published_information.xsd" xmlns:wcs="http://www.deegree.org/services/wcs">
+    <jaxb:schemaBindings>
+      <jaxb:package name="org.deegree.services.controller.wcs.configuration" />
+    </jaxb:schemaBindings>
+  </jaxb:bindings>
+</jaxb:bindings>

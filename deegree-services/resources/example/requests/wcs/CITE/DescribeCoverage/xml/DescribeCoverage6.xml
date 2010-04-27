@@ -1,0 +1,5 @@
+<DescribeCoverage xmlns="http://www.opengis.net/wcs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd" service="WCS"
+    version="1.0.0">
+    <Coverage>invalid</Coverage>
+</DescribeCoverage>

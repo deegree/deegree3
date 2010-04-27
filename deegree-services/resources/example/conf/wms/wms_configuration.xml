@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wms:deegreeWMS configVersion="0.5.0" xmlns:wms="http://www.deegree.org/services/wms" xmlns:ds="http://www.deegree.org/datasource"
+  xmlns:cm="http://www.deegree.org/commons" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:dgws="http://www.deegree.org/webservices" xsi:schemaLocation="http://www.deegree.org/services/wms ../../../schema/wms/0.5.0/wms_configuration.xsd">
+
+
+  <wms:ServiceConfiguration>
+    <wms:SupportedFeatures>
+      <wms:AntiAliasing>true</wms:AntiAliasing>
+    </wms:SupportedFeatures>
+
+    <!-- Example to bind the security into the configuration
+    <wms:SecurityManager>
+      <wms:DummySecurityManager /> 
+    </wms:SecurityManager>
+
+    --><wms:RequestableLayer>
+      <wms:Name>root</wms:Name>
+      <wms:Title>My Root Layer</wms:Title>
+      <wms:CRS>EPSG:4326 EPSG:26912 EPSG:31466 EPSG:31467 EPSG:25832 EPSG:25833</wms:CRS>
+
+      <wms:RequestableLayer>
+        <wms:Name>layerName</wms:Name>
+        <wms:Title>My Layer Title</wms:Title>
+        <wms:Abstract>Also got an abstract here...</wms:Abstract>
+        <cm:Keywords>
+          <cm:Keyword>word1</cm:Keyword>
+          <cm:Keyword>great</cm:Keyword>
+          <cm:Keyword>deegree3</cm:Keyword>
+        </cm:Keywords>
+        <wms:CRS>EPSG:4326 EPSG:31466 EPSG:31467</wms:CRS>
+        <wms:LogicalLayer></wms:LogicalLayer>
+        <wms:LogicalLayer></wms:LogicalLayer>
+      </wms:RequestableLayer>
+
+      <wms:UnrequestableLayer>
+        <wms:Title>Title of the scale hint tests</wms:Title>
+        <wms:Abstract>These layers have a different bbox</wms:Abstract>
+        <cm:BoundingBox>
+          <cm:LowerCorner>-20 -20</cm:LowerCorner>
+          <cm:UpperCorner>20 20</cm:UpperCorner>
+        </cm:BoundingBox>
+        <wms:CRS>EPSG:4326 EPSG:31466 EPSG:31467</wms:CRS>
+
+        <wms:RequestableLayer>
+          <wms:Name>layer11</wms:Name>
+          <wms:Title>The first sublayer</wms:Title>
+          <wms:CRS>EPSG:4326 EPSG:31466 EPSG:31467 EPSG:4326 EPSG:25832</wms:CRS>
+          <cm:ScaleDenominators min="0" max="100000" />
+        </wms:RequestableLayer>
+
+        <wms:RequestableLayer>
+          <wms:Name>layer22</wms:Name>
+          <wms:Title>The second sublayer</wms:Title>
+          <cm:ScaleDenominators min="3000" max="100000" />
+        </wms:RequestableLayer>
+      </wms:UnrequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>someroot1</wms:Name>
+        <wms:Title>Yet Another Title</wms:Title>
+        <wms:Abstract>This layers also have a different bbox</wms:Abstract>
+        <cm:BoundingBox>
+          <cm:LowerCorner>-40 -40</cm:LowerCorner>
+          <cm:UpperCorner>40 50</cm:UpperCorner>
+        </cm:BoundingBox>
+
+        <wms:LogicalLayer>
+          <wms:ScaleUntil>5000</wms:ScaleUntil>
+        </wms:LogicalLayer>
+
+        <wms:LogicalLayer>
+          <wms:ScaleUntil>10000</wms:ScaleUntil>
+        </wms:LogicalLayer>
+
+        <wms:LogicalLayer>
+          <wms:ScaleUntil>20000</wms:ScaleUntil>
+        </wms:LogicalLayer>
+
+        <wms:LogicalLayer>
+          <wms:ScaleUntil>100000</wms:ScaleUntil>
+        </wms:LogicalLayer>
+
+        <wms:LogicalLayer>
+          <wms:ScaleAbove>100000</wms:ScaleAbove>
+        </wms:LogicalLayer>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>someroot2</wms:Name>
+        <wms:Title>Yet Another Title 2</wms:Title>
+        <cm:BoundingBox>
+          <cm:LowerCorner>-40 -40</cm:LowerCorner>
+          <cm:UpperCorner>40 50</cm:UpperCorner>
+        </cm:BoundingBox>
+
+        <wms:UnrequestableLayer>
+          <wms:Title>The first sublayer</wms:Title>
+          <wms:ScaleAbove>5000</wms:ScaleAbove>
+        </wms:UnrequestableLayer>
+
+        <wms:UnrequestableLayer>
+          <wms:Title>The second sublayer</wms:Title>
+          <wms:ScaleAbove>10000</wms:ScaleAbove>
+        </wms:UnrequestableLayer>
+
+        <wms:UnrequestableLayer>
+          <wms:Title>The third sublayer</wms:Title>
+          <wms:ScaleAbove>20000</wms:ScaleAbove>
+        </wms:UnrequestableLayer>
+
+        <wms:UnrequestableLayer>
+          <wms:Title>The fourth sublayer</wms:Title>
+          <wms:ScaleAbove>100000</wms:ScaleAbove>
+        </wms:UnrequestableLayer>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cascaded</wms:Name>
+        <wms:Title>Cascaded from demo.deegree.org</wms:Title>
+        <wms:CRS>EPSG:4326 EPSG:32230 EPSG:32630</wms:CRS>
+        <ds:WMSDataSource>
+          <ds:CapabilitiesDocumentLocation location="demo.xml" refreshTime="-1" />
+          <ds:RequestedLayers>citelayers, cite:BasicPolygons</ds:RequestedLayers>
+          <ds:DefaultSRS>EPSG:4326</ds:DefaultSRS>
+        </ds:WMSDataSource>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>raster</wms:Name>
+        <wms:Title>raster</wms:Title>
+        <wms:CRS>EPSG:4326 EPSG:26912 EPSG:32230</wms:CRS>
+        <ds:MultiResolutionDataSource crs="EPSG:26912">
+          <ds:Resolution res="4.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">
+                /home/stranger/daten/utah/raster/dop/4.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+          <ds:Resolution res="8.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">
+                /home/stranger/daten/utah/raster/dop/8.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+          <ds:Resolution res="16.0">
+            <ds:RasterDataSource>
+              <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">
+                /home/stranger/daten/utah/raster/dop/16.0</ds:RasterDirectory>
+            </ds:RasterDataSource>
+          </ds:Resolution>
+        </ds:MultiResolutionDataSource>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>cascadedpolygons</wms:Name>
+        <wms:Title>Cascaded Polygons from demo.deegree.org</wms:Title>
+        <ds:WMSDataSource>
+          <ds:CapabilitiesDocumentLocation location="demo.xml" refreshTime="-1" />
+          <ds:RequestedLayers>cite:BasicPolygons</ds:RequestedLayers>
+        </ds:WMSDataSource>
+      </wms:RequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>lsg</wms:Name>
+        <wms:Title>Landschaftsschutzgebiete</wms:Title>
+        <wms:CRS>EPSG:4326 EPSG:31466 EPSG:31467</wms:CRS>
+        <ds:WMSDataSource>
+          <ds:CapabilitiesDocumentLocation
+            location="http://egis.kreis-stormarn.de/mywms_neu/servlet/myWMS?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1"
+            refreshTime="-1" />
+          <ds:RequestedLayers>lsg</ds:RequestedLayers>
+        </ds:WMSDataSource>
+      </wms:RequestableLayer>
+
+      <wms:UnrequestableLayer>
+        <wms:Title>Example styles</wms:Title>
+
+        <wms:RequestableLayer>
+          <wms:Name>springs</wms:Name>
+          <wms:Title>Springs</wms:Title>
+          <wms:CRS>EPSG:26912 EPSG:4326</wms:CRS>
+          <ds:ShapefileDataSource>
+            <ds:File>../../../../../../../daten/utah/vector/SGID024_Springs
+            </ds:File>
+            <ds:CoordinateSystem>EPSG:26912</ds:CoordinateSystem>
+          </ds:ShapefileDataSource>
+          <wms:DirectStyle>
+            <wms:File>styles/example-pointsymbolizer1.xml</wms:File>
+          </wms:DirectStyle>
+          <wms:DirectStyle>
+            <wms:File>styles/example-pointsymbolizer2.xml</wms:File>
+          </wms:DirectStyle>
+        </wms:RequestableLayer>
+
+        <wms:RequestableLayer>
+          <wms:Name>zip</wms:Name>
+          <wms:Title>zip codes</wms:Title>
+          <wms:CRS>EPSG:26912 EPSG:4326</wms:CRS>
+          <ds:ShapefileDataSource>
+            <ds:File>../../../../../../../daten/utah/vector/SGID500_ZipCodes
+            </ds:File>
+            <ds:CoordinateSystem>EPSG:26912</ds:CoordinateSystem>
+          </ds:ShapefileDataSource>
+          <wms:DirectStyle>
+            <wms:File>styles/example-polygonsymbolizer.xml</wms:File>
+          </wms:DirectStyle>
+        </wms:RequestableLayer>
+
+        <wms:RequestableLayer>
+          <wms:Name>roads</wms:Name>
+          <wms:Title>roads</wms:Title>
+          <wms:CRS>EPSG:26912 EPSG:4326</wms:CRS>
+          <ds:ShapefileDataSource>
+            <ds:File>../../../../../../../daten/utah/vector/SGID100_RoadsDLG100
+            </ds:File>
+            <ds:CoordinateSystem>EPSG:26912</ds:CoordinateSystem>
+          </ds:ShapefileDataSource>
+          <wms:DirectStyle>
+            <wms:File>styles/example-linesymbolizer.xml</wms:File>
+          </wms:DirectStyle>
+        </wms:RequestableLayer>
+      </wms:UnrequestableLayer>
+
+      <wms:RequestableLayer>
+        <wms:Name>simple</wms:Name>
+        <wms:Title>simple points</wms:Title>
+        <wms:CRS>EPSG:31466 EPSG:4326</wms:CRS>
+        <wms:Dimension isTime="true">
+          <wms:Property>time</wms:Property>
+          <wms:Extent>2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S</wms:Extent>
+        </wms:Dimension>
+        <ds:ShapefileDataSource>
+          <ds:File>../../../../../../../daten/simplepoints.shp</ds:File>
+          <ds:CoordinateSystem>EPSG:31466</ds:CoordinateSystem>
+        </ds:ShapefileDataSource>
+        <wms:DirectStyle>
+          <wms:File>styles/example-pointsymbolizer1.xml</wms:File>
+          <wms:Name>pointsym1</wms:Name>
+        </wms:DirectStyle>
+        <wms:DirectStyle>
+          <wms:File>styles/example-pointsymbolizer2.xml</wms:File>
+          <wms:Name>pointsym2</wms:Name>
+        </wms:DirectStyle>
+      </wms:RequestableLayer>
+
+      <wms:DynamicLayer>
+        <wms:ShapefileDirectory>shapefiles</wms:ShapefileDirectory>
+      </wms:DynamicLayer>
+
+    </wms:RequestableLayer>
+  </wms:ServiceConfiguration>
+
+  <wms:PublishedInformation>
+    <dgws:ServiceIdentification>
+      <dgws:Title>My deegree map service</dgws:Title>
+    </dgws:ServiceIdentification>
+    <dgws:ServiceProvider>
+      <dgws:ProviderName>lat/lon GmbH</dgws:ProviderName>
+      <dgws:ProviderSite>http://www.lat-lon.de/</dgws:ProviderSite>
+      <dgws:ServiceContact>
+        <dgws:IndividualName>Andreas Schmitz</dgws:IndividualName>
+        <dgws:PositionName>No position at all</dgws:PositionName>
+        <dgws:Phone>0228/18496-0</dgws:Phone>
+        <dgws:Facsimile>0228/18496-29</dgws:Facsimile>
+        <dgws:ElectronicMailAddress>info@lat-lon.de</dgws:ElectronicMailAddress>
+        <dgws:Address>
+          <dgws:DeliveryPoint>Aennchenstr. 19</dgws:DeliveryPoint>
+          <dgws:City>Bonn</dgws:City>
+          <dgws:AdministrativeArea>NRW</dgws:AdministrativeArea>
+          <dgws:PostalCode>53177</dgws:PostalCode>
+          <dgws:Country>Bonn</dgws:Country>
+        </dgws:Address>
+        <dgws:OnlineResource>http://www.deegree.org</dgws:OnlineResource>
+        <dgws:HoursOfService>24x7</dgws:HoursOfService>
+        <dgws:ContactInstructions>Don't hesitate to call</dgws:ContactInstructions>
+        <dgws:Role>PointOfContact</dgws:Role>
+      </dgws:ServiceContact>
+    </dgws:ServiceProvider>
+
+    <wms:SupportedVersions>
+      <wms:Version>1.1.1</wms:Version>
+      <wms:Version>1.3.0</wms:Version>
+    </wms:SupportedVersions>
+
+    <wms:AllowedOperations>
+      <wms:GetFeatureInfo />
+      <wms:GetLegendGraphic />
+    </wms:AllowedOperations>
+
+  </wms:PublishedInformation>
+
+</wms:deegreeWMS>

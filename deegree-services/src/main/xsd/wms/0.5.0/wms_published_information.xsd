@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:wms="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:md="http://www.deegree.org/webservices" xmlns:cm="http://www.deegree.org/commons" targetNamespace="http://www.deegree.org/services/wms"
+  elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.controller.wms.configuration" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.5.0/services_metadata.xsd" />
+  <import namespace="http://www.deegree.org/commons" schemaLocation="../../../../../deegree-core/resources/schema/commons/0.5.0/commons.xsd" />
+
+  <element name="PublishedInformation">
+
+    <complexType>
+      <sequence>
+        <element ref="md:ServiceIdentification" minOccurs="0" />
+        <element ref="md:ServiceProvider" minOccurs="0" />
+
+        <element name="SupportedVersions" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="Version" type="string" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+
+        <element name="AllowedOperations" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="GetFeatureInfo" minOccurs="0">
+                <complexType />
+              </element>
+              <element name="GetLegendGraphic" minOccurs="0">
+                <complexType />
+              </element>
+            </sequence>
+          </complexType>
+        </element>
+
+        <element name="GetFeatureInfoFormat" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <choice>
+                <element name="File" type="string" />
+                <element name="Class" type="string" />
+              </choice>
+              <element name="Format" type="string" />
+            </sequence>
+          </complexType>
+        </element>
+
+        <element name="ImageFormat" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <element name="Class" type="string" />
+              <element name="Format" type="string" />
+            </sequence>
+          </complexType>
+        </element>
+
+      </sequence>
+    </complexType>
+  </element>
+
+</schema>

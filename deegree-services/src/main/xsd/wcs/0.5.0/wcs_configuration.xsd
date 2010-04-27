@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:cm="http://www.deegree.org/commons"  xmlns:wcs="http://www.deegree.org/services/wcs" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wcs" elementFormDefault="qualified">
+ <xs:import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.5.0/commons.xsd"/>
+ <xs:include schemaLocation="wcs_published_information.xsd"/>
+ <xs:include schemaLocation="wcs_service_configuration.xsd"/>
+ <xs:element name="deegreeWCS">
+  <xs:complexType>
+   <xs:sequence>
+    <xs:element ref="wcs:ServiceConfiguration"/>
+    <xs:element ref="wcs:PublishedInformation"/>
+   </xs:sequence>
+   <xs:attribute name="configVersion" type="cm:currentVersionType" use="required"/>
+  </xs:complexType>
+ </xs:element>
+</xs:schema>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
+	<include schemaLocation="datasource.xsd" />
+	<element name="ShapefileDataSource" substitutionGroup="ds:AbstractDataSource" type="ds:ShapefileDataSourceType" />
+
+	<complexType name="ShapefileDataSourceType">
+		<annotation>
+			<documentation>Defines the access to a shape file</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="ds:AbstractDataSourceType">
+				<sequence>
+					<element name="File" type="string" />
+					<element name="CoordinateSystem" type="string" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+</schema>

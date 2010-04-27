@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Ant build file for deegree demos. Tested with Ant version 1.7.0.
+
+    This file is part of deegree.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    Copyright (C) 2001-2009 by:
+          EXSE, Department of Geography, University of Bonn
+          http://www.giub.uni-bonn.de/exse/
+          lat/lon GmbH, Bonn, Germany
+          http://www.lat-lon.de
+
+    $HeadURL: svn+ssh://otonnhofer@svn.wald.intevation.org/deegree/deegree3/services/trunk/build.xml $
+    $Revision: 13479 $, $Date: 2008-08-04 15:05:10 +0200 (Mon, 04 Aug 2008) $
+    $Author: otonnhofer $
+-->
+<project name="demo_services" default="get_demo_data" basedir="../..">
+	<description>This ant script will download testdata into the webapp.</description>
+
+	<target name="init">
+		<property name="sos.data.src" value="http://download.deegree.org/data/deegree3/sos/" />
+		<property name="data.dst" value="${basedir}/build/webapp/WEB-INF/classes" />
+		<property name="data.dst.bin" value="${basedir}/bin" />
+
+		<property name="sos.data.file.obs" value="observations.tar.bz2" />
+		<property name="sos.data.file.utah" value="utah_climate_2004.tar.bz2" />
+
+		<fail message="please run 'ant create-webapp-template' before">
+			<condition>
+				<not>
+					<available file="${data.dst}" />
+				</not>
+			</condition>
+		</fail>
+		<!-- direct ant call does not work, because the build files expect to be called from the module root -->
+		<!--ant dir="../" antfile="./build.xml" target="create-webapp-template" inheritrefs="false" inheritAll="false" /-->
+	</target>
+
+	<target name="get_demo_data" depends="init, download_data">
+		<untar compression="bzip2" src="${data.dst}/${sos.data.file.obs}" dest="${data.dst}" />
+		<untar compression="bzip2" src="${data.dst.bin}/${sos.data.file.obs}" dest="${data.dst.bin}" />
+			
+		<untar compression="bzip2" src="${data.dst}/${sos.data.file.utah}" dest="${data.dst}" />
+		<untar compression="bzip2" src="${data.dst.bin}/${sos.data.file.utah}" dest="${data.dst.bin}" />
+	</target>
+
+	<target name="download_data" depends="init">
+		<get src="${sos.data.src}/${sos.data.file.obs}" dest="${data.dst}/${sos.data.file.obs}" usetimestamp="true" />
+		<get src="${sos.data.src}/${sos.data.file.obs}" dest="${data.dst.bin}/${sos.data.file.obs}" usetimestamp="true" />
+		
+		<get src="${sos.data.src}/${sos.data.file.utah}" dest="${data.dst}/${sos.data.file.utah}" usetimestamp="true" />
+		<get src="${sos.data.src}/${sos.data.file.utah}" dest="${data.dst.bin}/${sos.data.file.utah}" usetimestamp="true" />
+	</target>
+
+</project>

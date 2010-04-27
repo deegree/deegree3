@@ -1,0 +1,7 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <jaxb:bindings schemaLocation="../sos_service_configuration.xsd" xmlns:sos="http://www.deegree.org/services/sos">
+    <jaxb:schemaBindings>
+      <jaxb:package name="org.deegree.services.sos.configuration" />
+    </jaxb:schemaBindings>
+  </jaxb:bindings>  
+</jaxb:bindings>

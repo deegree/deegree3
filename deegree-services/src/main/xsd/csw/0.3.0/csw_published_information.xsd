@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<xs:schema xmlns:csw="http://www.deegree.org/services/csw" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/csw" elementFormDefault="qualified"
+  attributeFormDefault="unqualified" xmlns:cm="http://www.deegree.org/commons" xmlns:md="http://www.deegree.org/webservices"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.controller.csw.configuration" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.3.0/services_metadata.xsd" />
+  <xs:import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.3.0/commons.xsd" />
+  <xs:element name="PublishedInformation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="md:ServiceIdentification" minOccurs="0" />
+        <xs:element ref="md:ServiceProvider" minOccurs="0" />
+        <xs:element name="AcceptVersions" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Version" type="xs:string" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="AcceptFormats" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OutputFormat" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
