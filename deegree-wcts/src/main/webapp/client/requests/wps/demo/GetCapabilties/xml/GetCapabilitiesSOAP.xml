@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.w3.org/2003/05/soap-envelope
+    http://www.w3.org/2003/05/soap-envelope">
+  <soap:Body>
+    <wps:GetCapabilities service="WPS"
+      xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.opengis.net/wps/1.0.0
+http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_request.xsd"
+      language="en">
+      <wps:AcceptVersions>
+        <ows:Version>1.0.0</ows:Version>
+        <ows:Version>2.0.0</ows:Version>
+        <ows:Version>1.1.0</ows:Version>
+      </wps:AcceptVersions>
+    </wps:GetCapabilities>
+  </soap:Body>
+</soap:Envelope>
