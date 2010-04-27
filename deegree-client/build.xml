@@ -1,0 +1,11 @@
+<project name="client" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <property file="build.properties" />
+
+    <import file="${ivybuild.dir}/ivy-build-aggregate.xml" />
+
+    <!-- ======================================================
+      Module specific targets are to be placed in the head of this file, the bottom is reserved for targets common in all modules.
+      ======================================================== -->
+
+</project>
