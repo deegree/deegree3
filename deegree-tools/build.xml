@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="main" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <property file="build.properties" />
+    <!-- because this file is imported from the basedir ../ we need to specify the properties with the directory -->
+    <property file="${ivybuild.dir}/std.properties" />
+    <import file="${ivybuild.dir}/specific-build.xml" />
+
+    <target name="build" depends="publish-local" description="-> create module jar" />
+    <target name="build-javadoc" depends="zip-javadoc" description="-> create module javadoc" />
+    <target name="build-src-zip" depends="zip-sources" description="-> create zip of module source artifacts" />	
+    <target name="clean" description="-> clean build directory">
+        <delete dir="${build.dir}" failonerror="false" />
+    </target>
+    <target name="run-tests" depends="junit" description="-> run module tests and create report" />
+    <target name="fetch-libs" depends="resolve" description="-> retrieve all jars needed for building the module" />
+    <target name="print-env" depends="env" description="-> print system environment properties" />
+
+    <!-- Create the paths for the libs (TODO use ivy configurations) -->
+    <path id="build.path">
+        <fileset dir="${lib.dir}" />
+    </path>
+
+    <!-- Check if the ivy jar is already present, so it isn't downloaded every time -->
+    <available file="${ivy.jar.file}" property="download.ivy" />
+    <available file="${svn.svnant.location}" property="download.svn" />
+
+    <target name="init">
+        <mkdir dir="${ivy.jar.dir}" />
+        <mkdir dir="${classes.dir}" />
+        <mkdir dir="${lib.dir}" />
+        <mkdir dir="${lib.dir}" />
+        <mkdir dir="${ivy.local.repository.dir}" />
+        <available property="has.api-src" file="${src-api.dir}/org/deegree/" />
+    </target>
+
+    <target name="download-ivy" depends="init" unless="download.ivy">
+        <!-- try to load ivy here from home ivy dir. -->
+        <!-- in case the user has dropped it into ant's lib dir that copy will always take precedence. -->
+        <get src="${ivy.repository.location}" dest="${ivy.jar.file}" usetimestamp="true" />
+    </target>
+
+
+    <target name="load-ivy" depends="download-ivy">
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar" />
+        </path>
+        <!-- enable ivy tasks -->
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
+        <ivy:settings file="${ivy.settings.file}" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- prints the environment                                              -->
+    <!-- =================================================================== -->
+
+    <target name="env" depends="load-ivy">
+        <echo>Environment:</echo>
+        <echo>------------</echo>
+        <echo message="java.home = ${java.home}" />
+        <echo message="java.version = ${java.version}" />
+        <echo message="ant.home = ${ant.home}" />
+        <echo message="ant.version = ${ant.version}" />
+        <echo message="required ivy version = ${ivy.install.version}" />
+        <echo message="build.by = ${build.by}" />
+        <echo message="user.home = ${user.home}" />
+        <echo message="user.dir = ${user.dir}" />
+        <echo message="java.class.path = ${java.class.path}" />
+        <echo />
+        <echo>Module info:</echo>
+        <echo>------------</echo>
+        <echo message="module name = ${module.name}" />
+        <echo message="lib name = deegree-${module.name}" />
+        <echo message="application.home = ${basedir}" />
+        <echo message="src = ${src.dir}" />
+        <echo message="test.src = ${test.src.dir}" />
+        <echo message="build = ${build.dir}" />
+        <echo message="lib = ${lib.dir}" />
+        <echo message="classes = ${classes.dir}" />
+    </target>
+
+    <!-- =================================
+          target: resolve
+         ================================= -->
+    <target name="resolve" depends="load-ivy">
+        <ivy:retrieve conf="${module.name}-build" pattern="${lib.dir}/[module](-[revision]).[ext]" file="${ivy.dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
+    </target>
+
+    <target name="download-svn" unless="download.svn">
+        <!-- try to load svn client adapter jars here -->
+        <!-- in case the user has dropped them into ant's lib dir those copies will always take precedence. -->
+        <get src="${svn.clientadapter.location}" dest="${svn.clientadapter.jar.file}" usetimestamp="true" />
+        <get src="${svn.svnant.location}" dest="${svn.svnant.jar.file}" usetimestamp="true" />
+    </target>
+
+    <target name="init-svn" depends="download-svn" if="svn.use.lookup">
+        <typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="ivy.lib.path" />
+        <svn javahl="false" failonerror="false">
+            <info target="${basedir}" />
+        </svn>
+        <!-- Display svn revision number -->
+        <echo>Revision found: ${svn.info.lastRev}</echo>
+    </target>
+
+    <target name="version" depends="resolve, init-svn">
+
+        <!-- create moduleinfo file (version) in classpath for later inclusion in JAR -->
+        <propertyfile file="${classes.dir}/${module.name}_moduleinfo.properties">
+            <entry key="build.version" value="${module.version}" />
+            <entry key="build.svnrev" value="${svn.info.lastRev}" />
+            <entry key="build.svnurl" value="${svn.info.url}" />
+            <entry key="build.date" type="date" value="now" pattern="yyyy/MM/dd HH:mm" />
+            <entry key="build.by" value="${user.name}" />
+        </propertyfile>
+
+        <!-- load generated moduleinfo file -->
+        <property file="${classes.dir}/${module.name}_moduleinfo.properties" />
+        <echo message="Building version: ${build.version}" />
+    </target>
+
+    <!-- =================================
+          target: compile
+         ================================= -->
+    <target name="compile" depends="version">
+        <!-- if any of the dependent jars was updated, delete the previously compiled classes. This way the api-dependency is garanteed.
+
+             For clarification, consider you removed a public method in a dependend d3 module. By calling publish-all you will get these changes in the
+             dependee module, but, the java compiler does not recognize that the api has changed (the method is not available anymore) and
+             so no java files will be compiled a new.
+
+             While executing this 'broken' configuration, you will get a 'NoSuchMethodException' because your newly created depend jar
+             does not contain the method the dependee classes were compiled against.
+             -->
+        <dependset>
+            <!-- TODO use ivy configuration -->
+            <srcfileset dir="${lib.dir}" includes="*jar" />
+            <targetfileset dir="${classes.dir}" includes="**/*.class" excludes="**/package-info.class" />
+        </dependset>
+        <!-- for the record: the snipped RIGHT ABOVE does the deleting. What a
+        wonder why I did not notice it, with that name... -->
+        <!-- touch the package-info.java files to ensure one of the three great 1.7.1 ant conditions apply and they're compiled -->
+        <!-- TODO find all places where package-info.class files are deleted and
+        delete their parent directories instead, this would solve the problems
+        better -->
+        <!-- <touch> -->
+        <!--   <fileset dir="${src.dir}"> -->
+        <!--     <include name="**/package-info.java" /> -->
+        <!--   </fileset> -->
+        <!-- </touch> -->
+        <!--updateProperty needs ant 1.7.1 -->
+        <javac updatedProperty="compile.change" destdir="${classes.dir}" classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}">
+            <src path="${src.dir}" />
+            <src path="${src-api.dir}" />
+        </javac>
+    </target>
+
+    <target name="copy-resources" depends="specific.copy-resources">
+        <!-- Needed for the copying of the resources in the sources dir,
+            if any of the resources is changed, all old resources will be deleted and the compile.change property will be set.
+            todo maybe only copy the updated file, the uptodate task just didn't do the trick (or maybe I'm just too stupid :-) ) -->
+        <fileset dir="${classes.dir}" id="classes.resources">
+            <exclude name="${module.name}.properties" />
+            <exclude name="**/package.html" />
+            <exclude name="**/*.class" />
+        </fileset>
+        <fileset dir="${src.dir}" id="sources.resources">
+            <exclude name="**/package.html" />
+            <exclude name="**/*.java" />
+        </fileset>
+        <dependset>
+            <srcfileset refid="sources.resources" />
+            <targetfileset refid="classes.resources" />
+        </dependset>
+
+        <condition property="compile.change">
+            <resourcecount refid="classes.resources" count="0" when="eq" />
+        </condition>
+
+        <copy todir="${classes.dir}">
+            <fileset refid="sources.resources" />
+        </copy>
+    </target>
+
+    <!-- ================================= 
+          target: build-jar
+         ================================= -->
+    <target name="build-jar" depends="compile, copy-resources" if="compile.change">
+        <pathconvert property="lib-path" pathsep=" " refid="build.path">
+            <map from="${lib.dir}/" to="" />
+        </pathconvert>
+        <jar destfile="${jar.file}.jar">
+            <fileset dir="${classes.dir}" />
+            <manifest>
+                <attribute name="Built-By" value="${build.by}" />
+                <attribute name="Build-Version" value="${build.version}" />
+                <attribute name="Class-Path" value="${lib-path}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- ================================= 
+          target: zip-sources packs the whole project (without generated artifacts)             
+         ================================= -->
+
+    <target name="zip-sources" depends="init">
+        <zip destfile="${src.file}.zip" update="true">
+            <zipfileset dir="${basedir}" defaultexcludes="true">
+                <!-- TODO use properties here -->
+                <exclude name="**/build/" />
+                <exclude name="**/lib/" />
+                <exclude name="**/bin/" />
+                <exclude name="**/classes/" />
+            </zipfileset>
+        </zip>
+    </target>
+
+    <!-- ====================================
+         Generate a nice report of dependencies
+         ==================================== -->
+    <target name="report" depends="resolve">
+        <!--description="-> generates a report of dependencies"-->
+        <ivy:report todir="${report.dir}" conf="${module.name}-build" dot="true" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- creates API JavaDoc                                                  -->
+    <!-- =================================================================== -->
+
+    <target name="javadoc-headers">
+        <property name="doc.header" value="${jar.name} (${build.date}) - ${build.by}" />
+        <property name="doc.footer" value="${doc.header}" />
+    </target>
+
+    <target name="javadoc-src-api" depends="javadoc-headers" if="has.api-src">
+        <javadoc source="${source.version}" packagenames="org.deegree.*" destdir="${javadoc.dir}" overview="${src.dir}/overview.html" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8" failonerror="0">
+            <doctitle>${doc.title}</doctitle>
+            <header>${doc.header}</header>
+            <footer>${doc.footer}</footer>
+            <bottom>${doc.bottom}</bottom>
+
+            <link href="${doc.sun.link}" />
+            <packageset dir="${src.dir}" />
+            <packageset dir="${src-api.dir}" />
+            <classpath>
+                <path refid="build.path" />
+            </classpath>
+        </javadoc>
+
+    </target>
+
+    <target name="javadoc" depends="compile,javadoc-src-api" unless="has.api-src">
+        <javadoc source="${source.version}" packagenames="org.deegree.*" overview="${src.dir}/overview.html" destdir="${javadoc.dir}" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8">
+            <doctitle>${doc.title}</doctitle>
+            <header>${doc.header}</header>
+            <footer>${doc.footer}</footer>
+            <bottom>${doc.bottom}</bottom>
+
+            <link href="${doc.sun.link}" />
+            <packageset dir="${src.dir}" />
+            <classpath>
+                <path refid="build.path" />
+            </classpath>
+        </javadoc>
+    </target>
+
+    <target name="zip-javadoc" depends="javadoc">
+        <zip destfile="${javadoc.file}.zip" update="true">
+            <zipfileset dir="${javadoc.dir}">
+                <include name="**" />
+            </zipfileset>
+        </zip>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- JUnit tests                                                         -->
+    <!-- =================================================================== -->
+
+    <target name="compile-test" depends="compile,copy-resources">
+        <mkdir dir="${test.classes.dir}" />
+        <javac updatedProperty="compile.change" destdir="${test.classes.dir}" classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}">
+            <src path="${test.src.dir}" />
+            <classpath>
+                <path refid="build.path" />
+                <pathelement location="${classes.dir}" />
+            </classpath>
+        </javac>
+        <fileset dir="${test.src.dir}" id="test">
+            <exclude name="**/package.html" />
+            <exclude name="**/*.java" />
+        </fileset>
+        <copy todir="${test.classes.dir}">
+            <fileset refid="test" />
+        </copy>
+    </target>
+
+    <target name="junit" depends="compile-test">
+        <mkdir dir="${test.results.dir}" />
+        <junit maxmemory="1024m" fork="yes" haltonfailure="no" haltonerror="no" printsummary="yes">
+            <classpath>
+                <pathelement path="${test.classes.dir}" />
+                <pathelement path="${classes.dir}" />
+                <path refid="build.path" />
+            </classpath>
+            <formatter type="xml" />
+            <test name="org.deegree.CoreTestSuite" todir="${test.results.dir}" />
+        </junit>
+        <junitreport todir="${test.results.dir}">
+            <fileset dir="${test.results.dir}">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="${test.results.dir}/html" />
+        </junitreport>
+    </target>
+
+    <!-- =================================
+          publish targets, publishing means: make the current 'revision' available for all other modules by putting them in a (local) repository.
+         ================================= -->
+
+    <target name="publish-local" depends="build-jar">
+        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-build released with version ${build.version}" />
+    </target>
+
+    <target name="init-publication-properties">
+        <property file="${user.home}/d3_publication.properties" />
+    </target>
+    
+    <target name="publish" depends="clean,init-publication-properties,build,build-javadoc,build-src-zip">
+        <!-- put the result on the deployment server -->
+        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" srcivypattern="${build.dir}/ivy.xml" />
+        <ivy:makepom ivyfile="${build.dir}/ivy.xml" pomfile="${build.dir}/deegree-${module.name}.pom" />
+        <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" publishivy="false" />
+        <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" publishivy="false" />
+        <ivy:report todir="${build.dir}" outputpattern="${report.name}.[ext]" conf="${module.name}-build" xsl="true" xml="false" dot="false" graph="false" />
+        <ivy:publish conf="${module.name}-report" artifactspattern="${build.dir}/[artifact].[ext]" resolver="publish-snapshot" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" publishivy="false" />
+    </target>
+
+</project>
