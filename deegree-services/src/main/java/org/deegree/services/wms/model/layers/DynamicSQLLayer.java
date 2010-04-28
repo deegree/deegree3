@@ -181,7 +181,6 @@ public class DynamicSQLLayer extends Layer {
                                 String[] ss = ( (PrimitiveValue) n ).getAsText().split( "," );
                                 for ( String s : ss ) {
                                     try {
-                                        System.out.println( s );
                                         Style sty = styles.getStyle( Integer.parseInt( s ) );
                                         if ( sty != null ) {
                                             render( f, sty, renderer, textRenderer, gm.getScale() );
