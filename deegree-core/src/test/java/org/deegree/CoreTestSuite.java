@@ -71,6 +71,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.coverage.filter.RasterRangeSetTest.class, org.deegree.coverage.raster.GeoTIFFTest.class,
                 org.deegree.coverage.raster.RasterFactoryTest.class,
                 org.deegree.coverage.raster.WorldFileAccessTest.class,
+                org.deegree.coverage.raster.cache.TestRasterCache.class,
                 org.deegree.coverage.raster.geom.RasterGeoRefTest.class,
                 org.deegree.coverage.raster.geom.RasterRectTest.class,
                 org.deegree.coverage.raster.integration.GriddedTileContainerTest.class,
