@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PooledConnection xmlns="http://www.deegree.org/commons">
+  <DatabaseType>POSTGIS</DatabaseType>
+  <Url>jdbc:postgresql://hurricane:5432/deegree3_csw</Url>
+  <User>postgres</User>
+  <Password>postgres</Password>
+  <PoolMinSize>5</PoolMinSize>
+  <PoolMaxSize>20</PoolMaxSize>
+</PooledConnection>
