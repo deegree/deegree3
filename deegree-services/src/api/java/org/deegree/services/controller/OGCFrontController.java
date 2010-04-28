@@ -104,6 +104,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.configuration.CRSConfiguration;
+import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.configuration.AllowedServices;
 import org.deegree.services.controller.configuration.AuthenticationMethodType;
@@ -975,6 +976,26 @@ public class OGCFrontController extends HttpServlet {
                 LOG.info( "No JDBC connections defined." );
             }
             LOG.info( "" );
+            
+
+            File configurationDir = null;
+            try {
+                configurationDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/featurestores", getServletContext() ).toURI() );
+            } catch ( MalformedURLException e ) {
+                LOG.error( e.getMessage(), e );
+            } catch ( URISyntaxException e ) {
+                LOG.error( e.getMessage(), e );
+            }
+            if (configurationDir.exists()) {
+                LOG.info( "--------------------------------------------------------------------------------" );
+                LOG.info( "Setting up feature stores." );
+                LOG.info( "--------------------------------------------------------------------------------" );                
+                FeatureStoreManager.init (configurationDir);
+                LOG.info( "" );                
+            } else {
+                LOG.info( "No 'featurestores' directory -- skipping initialization of feature stores.");
+                LOG.info( "" );                
+            }
 
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "Starting webservices." );

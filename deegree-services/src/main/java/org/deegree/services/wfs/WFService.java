@@ -47,10 +47,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreManager;
@@ -95,16 +93,13 @@ public class WFService {
     public void init( ServiceConfiguration sc, String baseURL )
                             throws FeatureStoreException {
 
-        LOG.info( "Initializing/looking up configured feature stores." );
+        LOG.info( "Adding configured feature stores." );
 
         // filling prefix map with the provided NamespaceHints
         hintedNamespaces = new HashSet<String>();
 
-        for ( JAXBElement<? extends FeatureStoreType> fsConfigEl : sc.getFeatureStore() ) {
-            FeatureStoreType fsConfig = fsConfigEl.getValue();
-            FeatureStore fs = FeatureStoreManager.create( fsConfig, baseURL );
+        for (FeatureStore fs : FeatureStoreManager.getAll() ) {
             addStore( fs );
-
             addNotYetHintedNamespaces( fs.getSchema().getFeatureTypes() );
         }
 
