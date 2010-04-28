@@ -9,25 +9,8 @@
   <url>http://maven.apache.org</url>
   <repositories>
     <repository>
-      <id>ext-releases</id>
-      <name>havola.lat-lon.de-releases</name>
-      <url>http://artefacts.deegree.org/ext-releases-local</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>ext-snapshots</id>
-      <name>havola.lat-lon.de-snapshots</name>
-      <url>http://artefacts.deegree.org/ext-snapshots-local</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>deegree-snapshots</id>
-      <name>deegree-snapshots</name>
-      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -57,6 +40,12 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-    </plugins>
+<plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+</plugin>
+
+</plugins>
+
   </build>
 </project>
