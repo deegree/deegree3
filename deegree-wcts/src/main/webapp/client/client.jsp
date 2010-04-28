@@ -31,7 +31,7 @@
     <%!
     /** return true if the file should be ignored */
     boolean ignoreFile( String name ) {
-        return name.endsWith( "CVS" );
+        return name.endsWith( "CVS" ) || name.startsWith(".svn");
     }%>
 	<%File requestsBaseDir = new File( getServletContext().getRealPath( "/client/requests" ) );
             String[] serviceTypes = requestsBaseDir.list();
@@ -196,8 +196,6 @@
                 xml = xml.substring (xmlBegin,xmlEnd + 1);
                 document.submitform.GCAction.value=document.editform.host.value;
                 document.submitform.GCXML.value=xml;
-                document.submitform.User.value = document.editform.username.value;
-                document.submitform.Pass.value = document.editform.password.value;
                 document.submitform.submit ();
                 
               }            
@@ -247,15 +245,12 @@
                 <br /><br />
                 <textarea name="xmlarea" cols="120" rows="10"></textarea> <br /><br/> 
                   
-                <input name="host" size="60" type="text" value="<%=targetURL%>" /> <br/>
-            Username: <input name="username" size="20" type="text" value="" /> <br/>
-            Password: <input name="password" size="20" type="password" value="" /><input value="SEND" onclick="postRequest ()" type="button" />
+                <input name="host" size="60" type="text" value="<%=targetURL%>" /><input value="SEND" onclick="postRequest ()" type="button" />
             
                 
             </form>
             <form name="submitform" action="requestHandler.jsp" method="post" target="output" accept-charset="UTF-8">
                 <input type="hidden" name="GCAction" value=""> <input type="hidden" name="GCXML" value="" /> 
-                <input type="hidden" name="User" value="" /> <input type="hidden" name="Pass" value="" />
             </form>
         </blockquote>
     </body>

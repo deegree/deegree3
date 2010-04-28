@@ -1,4 +1,3 @@
-
 <%@page import="org.apache.axiom.om.util.Base64"%><%@ page language="java"
 	import="java.io.OutputStream,java.io.InputStream,java.util.*,java.util.Enumeration,org.apache.commons.httpclient.*,org.apache.commons.httpclient.methods.*"
 	pageEncoding="UTF-8"%><%
@@ -13,11 +12,7 @@
             request.setCharacterEncoding( "UTF-8" );
 
             // KVP or XML request?
-            boolean isXML = request.getParameter( "GCXML" ) != null ? true : false;
-            
-            String user = request.getParameter("User");
-            String pass = request.getParameter("Pass");
-            
+            boolean isXML = request.getParameter( "GCXML" ) != null ? true : false;                      
 
             // GCMethod (GET / POST)
             String method = request.getParameter( "GCMethod" );
@@ -62,12 +57,6 @@
             }
 
             try {
-                String userPlusPassword = user + ":" + pass;
-                String userPasswordEncode = Base64.encode(userPlusPassword.getBytes());
-              	if(!user.equals("") && !pass.equals("")){
-              	  http.setRequestHeader("authorization", "Basic " + userPasswordEncode);
-              	
-                }
               	           
                 client.executeMethod( http );
                 if (http.getStatusCode() == 401) {
