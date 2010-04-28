@@ -197,19 +197,6 @@
     </xs:sequence>
   </xs:complexType>
   <!-- ========================================================== -->
-  <xs:element name="JDBCConnections">
-    <!-- ========================================================== -->
-    <xs:complexType>
-      <xs:annotation>
-        <xs:documentation>Container element for the definition of one
-          or more JDBC connections.</xs:documentation>
-      </xs:annotation>
-      <xs:sequence>
-        <xs:element ref="cm:PooledConnection" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <!-- ========================================================== -->
   <xs:element name="PooledConnection">
     <!-- ========================================================== -->
     <xs:complexType>
