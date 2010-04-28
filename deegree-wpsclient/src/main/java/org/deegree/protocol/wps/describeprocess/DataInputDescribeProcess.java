@@ -63,7 +63,7 @@ public class DataInputDescribeProcess {
 
     private InputFormChoiceDescribeProcess inputFormChoice;
 
-    private List<Object> valueList = new ArrayList();
+    private List<Object> valueList = new ArrayList<Object>();
 
     public String getIdentifier() {
         return identifier;

@@ -34,16 +34,10 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.getcapabilities;
-
-import java.util.LinkedList;
-
-
-
-
    /**
     * 
     *   The class holds the elements which are needed to identify a Service
-    *   accordings to OGC Web Services Common Specification  (Subclause 7.4.4) - ServiceIdentification
+    *   according to OGC Web Services Common Specification  (Subclause 7.4.4) - ServiceIdentification
     *
     * 
     * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
@@ -132,7 +126,5 @@ public class ServiceIdentification {
     public void setKeywords(String[] keywords){
         this.keywords = keywords;
     }
-
-    
 
 }

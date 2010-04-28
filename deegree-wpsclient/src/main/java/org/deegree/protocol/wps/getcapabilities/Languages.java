@@ -34,8 +34,6 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.getcapabilities;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 
@@ -48,25 +46,19 @@ import java.util.List;
  */
 public class Languages {
 	
-	String defauLt;
-	String[] supportedArray;
+	private String defauLt;
+	private String[] supportedArray;
 	
 	public String getDefauLt() {
 		return defauLt;
 	}
 	public void setDefauLt(String defauLt) {
 		this.defauLt = defauLt;
-	}
-	
-	
+	}	
 	public String[] getSupported() {
 		return supportedArray;
 	}
 	public void setSupported(String[] supportedArray) {
 		this.supportedArray=supportedArray;
 	}
-	
-	
-	
-
 }

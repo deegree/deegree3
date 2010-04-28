@@ -52,7 +52,7 @@ public class ComplexData {
 
     private Format defaulT;
 
-    private List<Format> supportedList = new ArrayList();
+    private List<Format> supportedList = new ArrayList<Format>();
 
     private Integer maximumMegaBytes;
 

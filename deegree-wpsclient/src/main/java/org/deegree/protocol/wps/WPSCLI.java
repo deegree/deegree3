@@ -67,9 +67,11 @@ public class WPSCLI {
                             throws Exception {
 
         // Construct a new WPSClient using a WPS capabilities url
-        WPSClient client = new WPSClient( new URL( FULL_SERVICE_URL ) );
+        WPSClient100 client = new WPSClient100( new URL( FULL_SERVICE_URL ) );
         WPSCapabilities capabilities = client.getCapabilities();
         //ProcessInfo pInfo = client.getProcess( "Centroid" );
+        
+        capabilities.getOperationURLasString( "DescribeProcess" , true);
         
         
 
