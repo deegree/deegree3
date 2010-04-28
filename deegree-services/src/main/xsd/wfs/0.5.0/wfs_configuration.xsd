@@ -5,7 +5,7 @@
   <xs:annotation>
     <xs:appinfo>
       <jaxb:schemaBindings>
-        <jaxb:package name="org.deegree.services.controller.wfs.configuration" />
+        <jaxb:package name="org.deegree.services.jaxb.wfs" />
       </jaxb:schemaBindings>
     </xs:appinfo>
   </xs:annotation>

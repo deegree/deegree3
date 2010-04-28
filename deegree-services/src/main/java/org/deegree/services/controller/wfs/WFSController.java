@@ -67,7 +67,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
@@ -75,10 +74,8 @@ import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.cs.CRS;
@@ -119,14 +116,13 @@ import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException100XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wfs.configuration.FeatureTypeMetadata;
-import org.deegree.services.controller.wfs.configuration.PublishedInformation;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.wfs.WFService;
-import org.deegree.services.wfs.configuration.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -198,24 +194,11 @@ public class WFSController extends AbstractOGCServiceController {
         serviceProvider = serviceMetadata.getServiceProvider();
 
         // unmarshall ServiceConfiguration and PublishedInformation
-        ServiceConfiguration sc = null;
-        PublishedInformation pi = null;
-        NamespaceContext nsContext = new NamespaceContext();
-        nsContext.addNamespace( "wfs", "http://www.deegree.org/services/wfs" );
+        DeegreeWFS jaxbConfig = null;
         try {
-            final String additionalClasspath = "org.deegree.services.controller.wfs.configuration:org.deegree.services.wfs.configuration";
-            Unmarshaller u = getUnmarshaller( additionalClasspath, null );
-
-            XPath xpath = new XPath( "wfs:ServiceConfiguration", nsContext );
-            OMElement scElement = controllerConf.getRequiredElement( controllerConf.getRootElement(), xpath );
-
+            Unmarshaller u = JAXBContext.newInstance( "org.deegree.services.jaxb.wfs" ).createUnmarshaller();
             // turn the application schema location into an absolute URL
-            sc = (ServiceConfiguration) u.unmarshal( scElement.getXMLStreamReaderWithoutCaching() );
-
-            u = JAXBContext.newInstance( "org.deegree.services.controller.wfs.configuration" ).createUnmarshaller();
-            xpath = new XPath( "wfs:PublishedInformation", nsContext );
-            OMElement piElement = controllerConf.getRequiredElement( controllerConf.getRootElement(), xpath );
-            pi = (PublishedInformation) u.unmarshal( piElement.getXMLStreamReaderWithoutCaching() );
+            jaxbConfig = (DeegreeWFS) u.unmarshal( controllerConf.getRootElement().getXMLStreamReaderWithoutCaching() );
         } catch ( XMLParsingException e ) {
             LOG.error( e.getMessage(), e );
             throw new ControllerInitException( "Error parsing WFS configuration: " + e.getMessage(), e );
@@ -224,14 +207,15 @@ public class WFSController extends AbstractOGCServiceController {
             throw new ControllerInitException( "Error parsing WFS configuration: " + e.getMessage(), e );
         }
 
-        validateAndSetOfferedVersions( pi.getSupportedVersions().getVersion() );
-        enableTransactions = pi.isEnableTransactions();
-        enableStreaming = ( pi.isEnableStreaming() != null ) ? pi.isEnableStreaming() : false;
+        validateAndSetOfferedVersions( jaxbConfig.getPublishedInformation().getSupportedVersions().getVersion() );
+        enableTransactions = jaxbConfig.getPublishedInformation().isEnableTransactions();
+        enableStreaming = ( jaxbConfig.getPublishedInformation().isEnableStreaming() != null ) ? jaxbConfig.getPublishedInformation().isEnableStreaming()
+                                                                                              : false;
 
         try {
-            if ( pi.getQuerySRS() != null ) {
-                String[] querySrs = StringUtils.split( pi.getQuerySRS(), " ", REMOVE_EMPTY_FIELDS
-                                                                              | REMOVE_DOUBLE_FIELDS );
+            if ( jaxbConfig.getPublishedInformation().getQuerySRS() != null ) {
+                String[] querySrs = StringUtils.split( jaxbConfig.getPublishedInformation().getQuerySRS(), " ",
+                                                       REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS );
                 for ( String srs : querySrs ) {
                     LOG.debug( "Query SRS: " + srs );
                     CRS crs = new CRS( srs );
@@ -245,13 +229,13 @@ public class WFSController extends AbstractOGCServiceController {
         }
 
         // fill metadata map
-        for ( FeatureTypeMetadata ftMd : pi.getFeatureTypeMetadata() ) {
+        for ( FeatureTypeMetadata ftMd : jaxbConfig.getPublishedInformation().getFeatureTypeMetadata() ) {
             ftNameToFtMetadata.put( ftMd.getName(), ftMd );
         }
 
         service = new WFService();
         try {
-            service.init( sc, controllerConf.getSystemId() );
+            service.init( jaxbConfig.getServiceConfiguration(), controllerConf.getSystemId() );
         } catch ( Exception e ) {
             throw new ControllerInitException( "Error initializing WFS / FeatureStores: " + e.getMessage(), e );
         }
