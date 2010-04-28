@@ -35,12 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.getcapabilities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.deegree.protocol.wps.ProcessInfo;
 
 /**
  * 
