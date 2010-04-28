@@ -654,7 +654,8 @@ public abstract class ByteBufferRasterData implements RasterData {
         }
         int pos = calculatePos( x, y, band );
         if ( pos == -1 ) {// the position is outside the databuffer.
-            System.arraycopy( result, getView().getBandOffset( band ), result, 0, getView().dataInfo.dataSize );
+            System.arraycopy( getView().dataInfo.noDataPixel, getView().getBandOffset( band ), result, 0,
+                              getView().dataInfo.dataSize );
         } else {
             ByteBuffer buf = getByteBuffer();
             buf.position( pos );
