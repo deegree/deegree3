@@ -37,6 +37,7 @@
 package org.deegree.commons.jdbc;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -50,7 +51,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.configuration.DatabaseType;
-import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.utils.TempFileManager;
@@ -58,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for accessing JDBC connections in deegree that are defined in configuration files.
+ * Entry point for accessing JDBC connections in deegree that are defined in JDBC configuration files.
  * <p>
  * Configuration of JDBC connections used in deegree is based on simple string identifiers: each configured JDBC
  * connection has a unique identifier. This class allows the retrieval of connections based on their identifier.
@@ -89,6 +89,32 @@ public class ConnectionManager {
                        0, 10 );
     }
 
+    /**
+     * Initializes the {@link ConnectionManager} by loading all JDBC pool configurations from the given directory.
+     * 
+     * @param jdbcDir
+     */
+    public static void init( File jdbcDir ) {
+        File[] fsConfigFiles = jdbcDir.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File dir, String name ) {
+                // TODO Auto-generated method stub
+                return name.toLowerCase().endsWith( ".xml" );
+            }
+        } );
+        for ( File fsConfigFile : fsConfigFiles ) {
+            String fileName = fsConfigFile.getName();
+            // 4 is the length of ".xml"
+            String fsId = fileName.substring( 0, fileName.length() - 4 );
+            LOG.info( "Setting up JDBC connection '" + fsId + "' from file '" + fileName + "'..." + "" );
+            try {
+                addConnection( fsConfigFile.toURI().toURL(), fsId );
+            } catch ( Exception e ) {
+                LOG.error( "Error initializing JDBC connection pool: " + e.getMessage(), e );
+            }
+        }
+    }
+    
     /**
      * 
      */
@@ -137,30 +163,17 @@ public class ConnectionManager {
     }
 
     /**
-     * Adds the connection pools defined in the given file.
+     * Adds the connection pool defined in the given file.
      * 
      * @param jdbcConfigUrl
      * @throws JAXBException
      */
-    public static void addConnections( URL jdbcConfigUrl )
+    public static void addConnection( URL jdbcConfigUrl, String connId )
                             throws JAXBException {
         synchronized ( ConnectionManager.class ) {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.configuration" );
             Unmarshaller u = jc.createUnmarshaller();
-            addConnections( (JDBCConnections) u.unmarshal( jdbcConfigUrl ) );
-        }
-    }
-
-    /**
-     * Adds connection pools for the given pool definitions.
-     * 
-     * @param jaxbConns
-     */
-    public static void addConnections( JDBCConnections jaxbConns ) {
-        synchronized ( ConnectionManager.class ) {
-            for ( PooledConnection jaxbConn : jaxbConns.getPooledConnection() ) {
-                addConnection( jaxbConn );
-            }
+            addConnection( (PooledConnection) u.unmarshal( jdbcConfigUrl ), connId );
         }
     }
 
@@ -169,9 +182,8 @@ public class ConnectionManager {
      * 
      * @param jaxbConn
      */
-    public static void addConnection( PooledConnection jaxbConn ) {
+    public static void addConnection( PooledConnection jaxbConn, String connId ) {
         synchronized ( ConnectionManager.class ) {
-            String id = jaxbConn.getId();
             String url = jaxbConn.getUrl();
             DatabaseType type = jaxbConn.getDatabaseType();
 
@@ -192,21 +204,21 @@ public class ConnectionManager {
             int poolMinSize = jaxbConn.getPoolMinSize().intValue();
             int poolMaxSize = jaxbConn.getPoolMaxSize().intValue();
 
-            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, type, url, user, poolMinSize,
+            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, type, url, user, poolMinSize,
                                             poolMaxSize ) );
-            if ( idToPools.containsKey( id ) ) {
-                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", id ) );
+            if ( idToPools.containsKey( connId ) ) {
+                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
             }
 
-            ConnectionPool pool = new ConnectionPool( id, type, url, user, password, poolMinSize, poolMaxSize );
-            idToPools.put( id, pool );
+            ConnectionPool pool = new ConnectionPool( connId, type, url, user, password, poolMinSize, poolMaxSize );
+            idToPools.put( connId, pool );
         }
     }
 
     /**
      * Adds a connection pool as specified in the parameters.
      * 
-     * @param id
+     * @param connId
      * @param type
      * @param url
      * @param user
@@ -214,14 +226,14 @@ public class ConnectionManager {
      * @param poolMinSize
      * @param poolMaxSize
      */
-    public static void addConnection( String id, DatabaseType type, String url, String user, String password,
+    public static void addConnection( String connId, DatabaseType type, String url, String user, String password,
                                       int poolMinSize, int poolMaxSize ) {
         synchronized ( ConnectionManager.class ) {
 
-            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, type, url, user, poolMinSize,
+            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, type, url, user, poolMinSize,
                                             poolMaxSize ) );
-            if ( idToPools.containsKey( id ) ) {
-                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", id ) );
+            if ( idToPools.containsKey( connId ) ) {
+                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
             }
 
             if ( type != null ) {
@@ -236,8 +248,8 @@ public class ConnectionManager {
                 }
             }
 
-            ConnectionPool pool = new ConnectionPool( id, type, url, user, password, poolMinSize, poolMaxSize );
-            idToPools.put( id, pool );
+            ConnectionPool pool = new ConnectionPool( connId, type, url, user, password, poolMinSize, poolMaxSize );
+            idToPools.put( connId, pool );
         }
     }
     

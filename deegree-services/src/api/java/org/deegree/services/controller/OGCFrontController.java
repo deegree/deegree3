@@ -955,38 +955,39 @@ public class OGCFrontController extends HttpServlet {
 //            LOG.info( "--------------------------------------------------------------------------------" );
 //            TempFileManager.init( config.getServletContext().getContextPath() );
 //            LOG.info( "" );
-//
-//            LOG.info( "--------------------------------------------------------------------------------" );
-//            LOG.info( "Setting up JDBC connection pools." );
-//            LOG.info( "--------------------------------------------------------------------------------" );
-//            JDBCConnections jdbcConfig = serviceConfig.getJDBCConnections();
-//            if ( jdbcConfig != null ) {
-//                try {
-//                    ConnectionManager.addConnections( jdbcConfig );
-//                } catch ( Exception e ) {
-//                    String msg = "Setting up JDBC connection pools failed: " + e.getLocalizedMessage();
-//                    LOG.error( msg, e );
-//                    throw new ServletException( msg, e );
-//                }
-//            } else {
-//                LOG.info( "No JDBC connections defined." );
-//            }
-//            LOG.info( "" );
-            
 
-            File configurationDir = null;
+            File jdbcDir = null;
             try {
-                configurationDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/featurestores", getServletContext() ).toURI() );
+                jdbcDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/jdbc", getServletContext() ).toURI() );
             } catch ( MalformedURLException e ) {
                 LOG.error( e.getMessage(), e );
             } catch ( URISyntaxException e ) {
                 LOG.error( e.getMessage(), e );
             }
-            if (configurationDir.exists()) {
+            if (jdbcDir.exists()) {
+                LOG.info( "--------------------------------------------------------------------------------" );
+                LOG.info( "Setting up JDBC connection pools." );
+                LOG.info( "--------------------------------------------------------------------------------" );                
+                ConnectionManager.init (jdbcDir);
+                LOG.info( "" );                
+            } else {
+                LOG.info( "No 'jdbc' directory -- skipping initialization of feature stores.");
+                LOG.info( "" );                
+            }
+
+            File fsDir = null;
+            try {
+                fsDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/featurestores", getServletContext() ).toURI() );
+            } catch ( MalformedURLException e ) {
+                LOG.error( e.getMessage(), e );
+            } catch ( URISyntaxException e ) {
+                LOG.error( e.getMessage(), e );
+            }
+            if (fsDir.exists()) {
                 LOG.info( "--------------------------------------------------------------------------------" );
                 LOG.info( "Setting up feature stores." );
                 LOG.info( "--------------------------------------------------------------------------------" );                
-                FeatureStoreManager.init (configurationDir);
+                FeatureStoreManager.init (fsDir);
                 LOG.info( "" );                
             } else {
                 LOG.info( "No 'featurestores' directory -- skipping initialization of feature stores.");
