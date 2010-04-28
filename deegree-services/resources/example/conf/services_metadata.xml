@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeServicesMetadata configVersion="0.5.0" xmlns="http://www.deegree.org/webservices"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/webservices ../../../schema/webservices/0.5.0/services_metadata.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/webservices http://schemas.deegree.org/webservices/0.5.0/services_metadata.xsd">
   <!--
     General service information for all services. Used in the GetCapabilities
     responses.
@@ -10,7 +10,7 @@
     <Title>You may supply more than one title (as in OWS 1.1.0)</Title>
     <Abstract>This is the default deegree 3 service configuration. Change it as you like!</Abstract>
     <Abstract>More abstracts are possible (as in OWS 1.1.0)</Abstract>
-    <Keywords xmlns="http://www.deegree.org/commons">
+    <Keywords>
       <Keyword lang="en">OGC services</Keyword>
       <Keyword lang="en">deegree 3</Keyword>
       <Type codeSpace="whatever">TODO: Do we really need this element? What is it supposed to do?</Type>
@@ -53,23 +53,10 @@
       <HTTPPost>http://localhost:8080/deegree/services</HTTPPost> <SOAP>http://localhost:8080/deegree/services</SOAP>
     -->
   </DCP>
-  <!--
-    Database connections used in the service configurations.
-  -->
-   <JDBCConnections xmlns="http://www.deegree.org/commons">
-    <PooledConnection id="conn2">
-      <DatabaseType>POSTGIS</DatabaseType>
-      <Url>jdbc:postgresql://hurricane:5432/deegree3_csw</Url>
-      <User>postgres</User>
-      <Password>postgres</Password>
-      <PoolMinSize>5</PoolMinSize>
-      <PoolMaxSize>20</PoolMaxSize>
-    </PooledConnection>
-  </JDBCConnections> 
-   <AuthenticationMethod>
+  <AuthenticationMethod>
     <!--<HttpBasicAuthentication/> 
-     <DeegreeAuthentication/>--> 
-    <SOAPAuthentication/>
+     <DeegreeAuthentication/>-->
+    <SOAPAuthentication />
   </AuthenticationMethod>
   <!--
     Proxy configuration that is used when services fetch resources over the network. NOTE: Effectively, the proxy

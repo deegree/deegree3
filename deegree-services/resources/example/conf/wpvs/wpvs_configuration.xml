@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeWPVS xmlns:cm="http://www.deegree.org/commons" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.deegree.org/services/wpvs" xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/services/wpvs ../../../schema/wpvs/0.5.0/wpvs_configuration.xsd">
+<deegreeWPVS xmlns:cm="http://www.deegree.org/commons" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.deegree.org/services/wpvs"
+  xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/services/wpvs http://schemas.deegree.org/wpvs/0.5.0/wpvs_configuration.xsd">
   <ServiceConfiguration>
     <!-- Configures the number of textures stored in GPU (Graphic Processing Unit) memory, e.g. ready for rendering. -->
     <TexturesInGPUMem>300</TexturesInGPUMem>
@@ -8,15 +10,12 @@
     <!-- The maximum direct memory (in MegaBytes) to be allocated for texture coordinates -->
     <DirectTextureMemory>400</DirectTextureMemory>
     <!--
-          The number of dem fragments stored in memory, this value depends on following variables: 
-         <ul>
-             <li>width/height of the elevationmodel</li>
-             <li>the number of levels in a macrotriangle</li> <li>the number of rows in a macrotriangle</li> 
-         </ul>
-         <p>for a dem with 32768*32768 meters, 18 levels and 64 rows per macro triangle 1000 is good value.</p>
-         <p>a dem with 32768*32768 meters, with 16 levels and 128 rows per macro 300 is sufficient. </p>
-         <p>In general, the higher the value, the more memory is needed, the less IO is needed.</p>
-        -->
+      The number of dem fragments stored in memory, this value depends on following variables: <ul> <li>width/height of
+      the elevationmodel</li> <li>the number of levels in a macrotriangle</li> <li>the number of rows in a
+      macrotriangle</li> </ul> <p>for a dem with 32768*32768 meters, 18 levels and 64 rows per macro triangle 1000 is
+      good value.</p> <p>a dem with 32768*32768 meters, with 16 levels and 128 rows per macro 300 is sufficient. </p>
+      <p>In general, the higher the value, the more memory is needed, the less IO is needed.</p>
+    -->
     <NumberOfDEMFragmentsCached>1000</NumberOfDEMFragmentsCached>
     <!-- The maximum direct memory (in MegaBytes) to be allocated for reading mesh fragments from the disk -->
     <DirectIOMemory>500</DirectIOMemory>
@@ -31,12 +30,12 @@
     <!-- Rendering quality settings that affect geometry and texture LOD selection -->
     <Copyright>
       <Text>Made by deegree WPVS</Text>
-      <Image url="../../data/wpvs/copyright/deegree.png"/>
+      <Image url="../../data/wpvs/copyright/deegree.png" />
     </Copyright>
     <SkyImages>
-      <SkyImage file="../../data/wpvs/skies/sunset.jpg" name="sunset"/>
-      <SkyImage file="../../data/wpvs/skies/cloudy.jpg" name="cloudy"/>
-      <SkyImage file="../../data/wpvs/skies/cirrus_cloud.jpg" name="cirrus"/>
+      <SkyImage file="../../data/wpvs/skies/sunset.jpg" name="sunset" />
+      <SkyImage file="../../data/wpvs/skies/cloudy.jpg" name="cloudy" />
+      <SkyImage file="../../data/wpvs/skies/cirrus_cloud.jpg" name="cirrus" />
     </SkyImages>
     <DatasetDefinitions>
       <Title>The datasets</Title>
@@ -48,7 +47,7 @@
         <cm:Type codeSpace="http://www.deegree.org">Description</cm:Type>
       </cm:Keywords>
       <BaseCRS>EPSG:31466</BaseCRS>
-      <TranslationToLocalCRS x="-2568000.0" y="-5606000.0"/>
+      <TranslationToLocalCRS x="-2568000.0" y="-5606000.0" />
       <!-- Geometry quality after projection -->
       <MaxPixelError>5</MaxPixelError>
       <ElevationDataset>
@@ -74,52 +73,62 @@
         <ds:MultiResolutionDataSource crs="EPSG:31466">
           <ds:Resolution res="0.1">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/0.1</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/0.1
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="0.2">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/0.2</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/0.2
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="0.4">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/0.4</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/0.4
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="0.8">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/0.8</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/0.8
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="1.6">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/1.6</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/1.6
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="3.2">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/3.2</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/3.2
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="6.4">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/6.4</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/6.4
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="12.8">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/12.8</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/12.8
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="25.6">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/25.6</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/25.6
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
           <ds:Resolution res="51.2">
             <ds:RasterDataSource>
-              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/51.2</ds:RasterDirectory>
+              <ds:RasterDirectory fileType="raw">file:/media/storage/bonn3d/dem/texture/51.2
+              </ds:RasterDirectory>
             </ds:RasterDataSource>
           </ds:Resolution>
         </ds:MultiResolutionDataSource>
@@ -133,35 +142,26 @@
           <SE-StyleFile>/home/rutger/workspace/d3_services/resources/example/conf/wpvs/se-styled_geometry_example.xml</SE-StyleFile>
           <ds:ShapefileDataSource>
             <ds:StorageSRS>EPSG:31466</ds:StorageSRS>
-            <ds:File>/home/rutger/workspace/bonn_3doptimierung/resources/data/closeup_layers/alkobjekte_flurstuecke_out.shp</ds:File>
+            <ds:File>/home/rutger/workspace/bonn_3doptimierung/resources/data/closeup_layers/alkobjekte_flurstuecke_out.shp
+            </ds:File>
           </ds:ShapefileDataSource>
         </StyledGeometryProvider>
       </DEMTextureDataset>
-      <!--DEMTextureDataset>
-        <Title>stadtplan</Title>
-        <Name>Districts of Bonn.</Name>
-        <Abstract>Districts of Bonn, provided by a WMS.</Abstract>
-        <ds:MultiResolutionDataSource crs="EPSG:31466">
-          <ds:Resolution res="12.8">
-            <ds:WMSDataSource>
-              <ds:CapabilitiesDocumentLocation location="http://stadtplan.bonn.de/Deegree2wms/services?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities"/>
-              <ds:RequestedLayers>stadtplan</ds:RequestedLayers>
-              <ds:RequestedFormat transparent="true">image/png</ds:RequestedFormat>
-              <ds:RequestTimeout>30</ds:RequestTimeout>
-              <ds:MaxMapDimensions width="5000" height="5000"/>
-            </ds:WMSDataSource>
-          </ds:Resolution>
-          <ds:Resolution res="25.6">
-            <ds:WMSDataSource>
-              <ds:CapabilitiesDocumentLocation location="http://stadtplan.bonn.de/Deegree2wms/services?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities"/>
-              <ds:RequestedLayers>stadtplan</ds:RequestedLayers>
-              <ds:RequestedFormat transparent="true">image/png</ds:RequestedFormat>
-              <ds:RequestTimeout>30</ds:RequestTimeout>
-              <ds:MaxMapDimensions width="5000" height="5000"/>
-            </ds:WMSDataSource>
-          </ds:Resolution>
-        </ds:MultiResolutionDataSource>
-      </DEMTextureDataset-->
+      <!--
+        DEMTextureDataset> <Title>stadtplan</Title> <Name>Districts of Bonn.</Name> <Abstract>Districts of Bonn,
+        provided by a WMS.</Abstract> <ds:MultiResolutionDataSource crs="EPSG:31466"> <ds:Resolution res="12.8">
+        <ds:WMSDataSource> <ds:CapabilitiesDocumentLocation
+        location="http://stadtplan.bonn.de/Deegree2wms/services?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities"/>
+        <ds:RequestedLayers>stadtplan</ds:RequestedLayers> <ds:RequestedFormat
+        transparent="true">image/png</ds:RequestedFormat> <ds:RequestTimeout>30</ds:RequestTimeout> <ds:MaxMapDimensions
+        width="5000" height="5000"/> </ds:WMSDataSource> </ds:Resolution> <ds:Resolution res="25.6"> <ds:WMSDataSource>
+        <ds:CapabilitiesDocumentLocation
+        location="http://stadtplan.bonn.de/Deegree2wms/services?SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities"/>
+        <ds:RequestedLayers>stadtplan</ds:RequestedLayers> <ds:RequestedFormat
+        transparent="true">image/png</ds:RequestedFormat> <ds:RequestTimeout>30</ds:RequestTimeout> <ds:MaxMapDimensions
+        width="5000" height="5000"/> </ds:WMSDataSource> </ds:Resolution> </ds:MultiResolutionDataSource>
+        </DEMTextureDataset
+      -->
       <wpvs:ColormapDataset>
         <wpvs:Title>colormap</wpvs:Title>
         <wpvs:Name>A linear interpolated colormap with isotrope height lines</wpvs:Name>
@@ -173,7 +173,7 @@
       </wpvs:ColormapDataset>
       <Buildings>
         <Title>buildings</Title>
-        <Name>Buildings and bus stops of the city</Name>        
+        <Name>Buildings and bus stops of the city</Name>
         <Abstract>The building of the city</Abstract>
         <MaxPixelError>5</MaxPixelError>
         <TextureDirectory>/media/storage/bonn3d/file_backend/building_textures/</TextureDirectory>
@@ -183,17 +183,17 @@
           <ds:Directory>/media/storage/bonn3d/file_backend/</ds:Directory>
         </ds:GeospatialFileSystemDataSource>
         <SwitchLevels>
-          <Level min="0.0" max="0.03"/>
-          <Level min="0.03" max="0.05"/>
-          <Level min="0.05" max="0.09"/>
-          <Level min="0.09" max="0.85"/>
-          <Level min="0.85" max="1.1"/>
-          <Level min="1.1" max="10"/>
+          <Level min="0.0" max="0.03" />
+          <Level min="0.03" max="0.05" />
+          <Level min="0.05" max="0.09" />
+          <Level min="0.09" max="0.85" />
+          <Level min="0.85" max="1.1" />
+          <Level min="1.1" max="10" />
         </SwitchLevels>
       </Buildings>
       <Trees>
         <Title>trees</Title>
-        <Name>Trees of the city</Name>        
+        <Name>Trees of the city</Name>
         <Abstract>The trees of the city</Abstract>
         <MaxPixelError>3</MaxPixelError>
         <TextureDirectory>/media/storage/bonn3d/file_backend/tree_textures/</TextureDirectory>
@@ -202,21 +202,22 @@
         </ds:GeospatialFileSystemDataSource>
       </Trees>
       <!-- Following is an example for a db connection, which can be used for a trees/building -->
-      <!-- ds:ConstrainedDatabaseDataSource>
-          <ds:DataSourceName>WPVS database connection to the buildings,trees and prototypes</ds:DataSourceName>
-          <ds:ConnectionPoolId>conn1</ds:ConnectionPoolId>
-        </ds:ConstrainedDatabaseDataSource-->
+      <!--
+        ds:ConstrainedDatabaseDataSource> <ds:DataSourceName>WPVS database connection to the buildings,trees and
+        prototypes</ds:DataSourceName> <ds:ConnectionPoolId>conn1</ds:ConnectionPoolId>
+        </ds:ConstrainedDatabaseDataSource
+      -->
     </DatasetDefinitions>
   </ServiceConfiguration>
   <PublishedInformation>
     <md:ServiceIdentification>
       <md:Title>The deegree Web Perspective View Service</md:Title>
       <md:Abstract>A web service used for the rendering of 3d geospatial data</md:Abstract>
-      <cm:Keywords>
-        <cm:Keyword>Cool</cm:Keyword>
-        <cm:Keyword>JOGL</cm:Keyword>
-        <cm:Keyword>Fast</cm:Keyword>
-      </cm:Keywords>
+      <md:Keywords>
+        <md:Keyword>Cool</md:Keyword>
+        <md:Keyword>JOGL</md:Keyword>
+        <md:Keyword>Fast</md:Keyword>
+      </md:Keywords>
       <md:Fees>None, it's free</md:Fees>
       <md:AccessConstraints>Open to all</md:AccessConstraints>
     </md:ServiceIdentification>
@@ -243,8 +244,8 @@
       </md:ServiceContact>
     </md:ServiceProvider>
     <AllowedOperations>
-      <GetCapabilities/>
-      <GetView/>
+      <GetCapabilities />
+      <GetView />
     </AllowedOperations>
   </PublishedInformation>
 </deegreeWPVS>

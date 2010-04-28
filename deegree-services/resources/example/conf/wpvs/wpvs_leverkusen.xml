@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wpvs:deegreeWPVS xmlns:cm="http://www.deegree.org/commons" xmlns:ds="http://www.deegree.org/datasource"
-  xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="0.5.0"
-  xsi:schemaLocation="http://www.deegree.org/services/wpvs ../../../schema/wpvs/0.5.0/wpvs_configuration.xsd">
+  xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/services/wpvs http://schemas.deegree.org/wpvs/0.5.0/wpvs_configuration.xsd">
   <wpvs:ServiceConfiguration>
 
     <wpvs:MaxViewWidth>1200</wpvs:MaxViewWidth>
@@ -31,20 +30,15 @@
         <cm:Keyword lang="en_US">Describing the dataset defintion</cm:Keyword>
         <cm:Type codeSpace="http://www.deegree.org">Description</cm:Type>
       </cm:Keywords>
-      <cm:BoundingBox dimensions="2" crs="epsg:31466">
-        <cm:LowerCorner>2564005 5651005 33</cm:LowerCorner>
-        <cm:UpperCorner>2576995 5661995 183</cm:UpperCorner>
-      </cm:BoundingBox>
+      <wpvs:BaseCRS>epsg:31466</wpvs:BaseCRS>
       <wpvs:TranslationToLocalCRS x="-2564005" y="-5651005" />
-
-      <cm:ScaleDenominators min="0" max="100000" />
 
       <!-- Geometry quality after projection -->
       <wpvs:MaxPixelError>1</wpvs:MaxPixelError>
-      
+
       <wpvs:ElevationDataset>
-        <wpvs:Name>dem</wpvs:Name>
         <wpvs:Title>Elevation model</wpvs:Title>
+        <wpvs:Name>dem</wpvs:Name>
         <wpvs:Abstract>The elevation model of the city</wpvs:Abstract>
         <ds:ElevationModelDataSource>
           <ds:DataSourceName>deegree dem created with the WPVS</ds:DataSourceName>
@@ -52,10 +46,10 @@
         </ds:ElevationModelDataSource>
       </wpvs:ElevationDataset>
 
-     <wpvs:DEMTextureDataset>
-        <wpvs:Name>DEMTexture</wpvs:Name>
+      <wpvs:DEMTextureDataset>
         <wpvs:Title>shaded DEM</wpvs:Title>
-        <wpvs:Abstract>shaded relief</wpvs:Abstract>        
+        <wpvs:Name>DEMTexture</wpvs:Name>
+        <wpvs:Abstract>shaded relief</wpvs:Abstract>
         <wpvs:MaxProjectedTexelSize>1</wpvs:MaxProjectedTexelSize>
         <ds:MultiResolutionDataSource crs="EPSG:31466">
           <ds:Resolution res="20.0">
@@ -78,11 +72,11 @@
     <md:ServiceIdentification>
       <md:Title>The deegree Web Perspective View Service</md:Title>
       <md:Abstract>A web service used for the rendering of 3d geospatial data</md:Abstract>
-      <cm:Keywords>
-        <cm:Keyword>Cool</cm:Keyword>
-        <cm:Keyword>JOGL</cm:Keyword>
-        <cm:Keyword>Fast</cm:Keyword>
-      </cm:Keywords>
+      <md:Keywords>
+        <md:Keyword>Cool</md:Keyword>
+        <md:Keyword>JOGL</md:Keyword>
+        <md:Keyword>Fast</md:Keyword>
+      </md:Keywords>
       <md:Fees>None, it's free</md:Fees>
       <md:AccessConstraints>Open to all</md:AccessConstraints>
     </md:ServiceIdentification>

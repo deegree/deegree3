@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeWCS configVersion="0.5.0" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.deegree.org/services/wcs"
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:md="http://www.deegree.org/webservices"
-  xmlns:cm="http://www.deegree.org/commons" xsi:schemaLocation="http://www.deegree.org/services/wcs ../../../schema/wcs/0.5.0/wcs_configuration.xsd">
+  xmlns:cm="http://www.deegree.org/commons" xsi:schemaLocation="http://www.deegree.org/services/wcs http://schemas.deegree.org/wcs/0.5.0/wcs_configuration.xsd">
   <ServiceConfiguration>
     <SupportOptions>
-      <OutputFormat>png</OutputFormat>    
+      <OutputFormat>png</OutputFormat>
       <OutputFormat>tiff</OutputFormat>
       <OutputFormat>jpeg</OutputFormat>
       <OutputFormat>bmp</OutputFormat>
@@ -17,45 +17,39 @@
       <Label>deegree demo dataset</Label>
       <ds:MultiResolutionDataSource crs="EPSG:26912">
         <!-- if the configuration is in ~/workspace/d3_services/webapp/WEB-INF/conf/wcs, put the data in ~/tomcat/... -->
-        <!-- ds:Resolution>
-          <ds:RasterDataSource>
-          <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">
-          /home/rutger/raster_test/utah/raster/dop/1.0
-          </ds:RasterDirectory>
-          </ds:RasterDataSource>
-          </ds:Resolution>
-          <ds:Resolution>
-          <ds:RasterDataSource>
-          <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">
-          /home/rutger/raster_test/utah/raster/dop/2.0
-          </ds:RasterDirectory>
-          </ds:RasterDataSource>
-          </ds:Resolution-->
-        <!--ds:Resolution res="4.0">
-          <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/4.0</ds:RasterDirectory>
-          </ds:RasterDataSource>
-        </ds:Resolution-->
+        <!--
+          ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">
+          /home/rutger/raster_test/utah/raster/dop/1.0 </ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution>
+          <ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">
+          /home/rutger/raster_test/utah/raster/dop/2.0 </ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution
+        -->
+        <!--
+          ds:Resolution res="4.0"> <ds:RasterDataSource> <ds:RasterDirectory fileType="jpg" filePattern=".jpg"
+          recursive="true">/home/rutger/raster_test/utah/raster/dop/4.0</ds:RasterDirectory> </ds:RasterDataSource>
+          </ds:Resolution
+        -->
         <ds:Resolution res="8.0">
           <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/8.0</ds:RasterDirectory>
+            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/8.0
+            </ds:RasterDirectory>
           </ds:RasterDataSource>
         </ds:Resolution>
         <ds:Resolution res="16.0">
           <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/16.0</ds:RasterDirectory>
+            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/16.0
+            </ds:RasterDirectory>
           </ds:RasterDataSource>
         </ds:Resolution>
       </ds:MultiResolutionDataSource>
       <RangeSet>
-       <Name>utah_ranges</Name>
-       <AxisDescription name="bands">
-        <AxisValue>
-         <SingleValue>red</SingleValue>
-         <SingleValue>green</SingleValue>
-         <SingleValue>blue</SingleValue>
-        </AxisValue>
-       </AxisDescription>
+        <Name>utah_ranges</Name>
+        <AxisDescription name="bands">
+          <AxisValue>
+            <SingleValue>red</SingleValue>
+            <SingleValue>green</SingleValue>
+            <SingleValue>blue</SingleValue>
+          </AxisValue>
+        </AxisDescription>
       </RangeSet>
       <SupportOptions extend="true">
         <SupportedCRS>EPSG:26912</SupportedCRS>
@@ -67,71 +61,50 @@
       <ds:MultiResolutionDataSource crs="EPSG:26912">
         <ds:Resolution res="8.0">
           <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/8.0</ds:RasterDirectory>
+            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/8.0
+            </ds:RasterDirectory>
           </ds:RasterDataSource>
         </ds:Resolution>
         <ds:Resolution res="16.0">
           <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/16.0</ds:RasterDirectory>
+            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">/home/rutger/raster_test/utah/raster/dop/16.0
+            </ds:RasterDirectory>
           </ds:RasterDataSource>
         </ds:Resolution>
       </ds:MultiResolutionDataSource>
       <SupportOptions extend="true">
         <SupportedCRS>EPSG:26912</SupportedCRS>
       </SupportOptions>
-    </Coverage>    
-    <!-- Coverage>
-      <Identifier>utah</Identifier>
-      <Name>foo coverage</Name>
-      <ds:MultiResolutionDataSource>
-      <!- - if the configuration is in ~/workspace/d3_services/webapp/WEB-INF/conf/wcs, put the data in ~/workspace/tmp/tiles... - ->
-      <ds:Resolution>
-      <ds:RasterDataSource>
-      <ds:RasterDirectory fileType="tiff" filePattern=".tiff" recursive="true">../../../../../tmp/tiles512/0</ds:RasterDirectory>
-      </ds:RasterDataSource>
-      </ds:Resolution>
-      <ds:Resolution>
-      <ds:RasterDataSource>
-      <ds:RasterDirectory fileType="tiff" filePattern=".tiff" recursive="true">../../../../../tmp/tiles512/1</ds:RasterDirectory>
-      </ds:RasterDataSource>
-      </ds:Resolution>
-      <ds:Resolution>
-      <ds:RasterDataSource>
-      <ds:RasterDirectory fileType="tiff" filePattern=".tiff" recursive="true">../../../../../tmp/tiles512/2</ds:RasterDirectory>
-      </ds:RasterDataSource>
-      </ds:Resolution>
-      <ds:Resolution>
-      <ds:RasterDataSource>
-      <ds:RasterDirectory fileType="tiff" filePattern=".tiff" recursive="true">../../../../../tmp/tiles512/3</ds:RasterDirectory>
-      </ds:RasterDataSource>
-      </ds:Resolution>
-      <ds:Resolution>
-      <ds:RasterDataSource>
-      <ds:RasterDirectory fileType="tiff" filePattern=".tiff" recursive="true">../../../../../tmp/tiles512/4</ds:RasterDirectory>
-      </ds:RasterDataSource>
-      </ds:Resolution>
-      <ds:Resolution>
-      <ds:RasterDataSource>
-      <ds:RasterDirectory fileType="tiff" filePattern=".tiff" recursive="true">../../../../../tmp/tiles512/5</ds:RasterDirectory>
-      </ds:RasterDataSource>
-      </ds:Resolution>
-      <ds:Resolution>
-      <ds:RasterDataSource>
-      <ds:RasterDirectory fileType="tiff" filePattern=".tiff" recursive="true">../../../../../tmp/tiles512/6</ds:RasterDirectory>
-      </ds:RasterDataSource>
-      </ds:Resolution>
-      </ds:MultiResolutionDataSource>
-      </Coverage-->
+    </Coverage>
+    <!--
+      Coverage> <Identifier>utah</Identifier> <Name>foo coverage</Name> <ds:MultiResolutionDataSource> <!- - if the
+      configuration is in ~/workspace/d3_services/webapp/WEB-INF/conf/wcs, put the data in ~/workspace/tmp/tiles... - ->
+      <ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="tiff" filePattern=".tiff"
+      recursive="true">../../../../../tmp/tiles512/0</ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution>
+      <ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="tiff" filePattern=".tiff"
+      recursive="true">../../../../../tmp/tiles512/1</ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution>
+      <ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="tiff" filePattern=".tiff"
+      recursive="true">../../../../../tmp/tiles512/2</ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution>
+      <ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="tiff" filePattern=".tiff"
+      recursive="true">../../../../../tmp/tiles512/3</ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution>
+      <ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="tiff" filePattern=".tiff"
+      recursive="true">../../../../../tmp/tiles512/4</ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution>
+      <ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="tiff" filePattern=".tiff"
+      recursive="true">../../../../../tmp/tiles512/5</ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution>
+      <ds:Resolution> <ds:RasterDataSource> <ds:RasterDirectory fileType="tiff" filePattern=".tiff"
+      recursive="true">../../../../../tmp/tiles512/6</ds:RasterDirectory> </ds:RasterDataSource> </ds:Resolution>
+      </ds:MultiResolutionDataSource> </Coverage
+    -->
   </ServiceConfiguration>
   <PublishedInformation>
     <md:ServiceIdentification>
       <md:Title>The deegree Web Coverage Service</md:Title>
       <md:Abstract>A web service used for delivering Coverage information</md:Abstract>
-      <cm:Keywords>
-        <cm:Keyword>No validating schemas</cm:Keyword>
-        <cm:Keyword>Using deegree3 Coverage API</cm:Keyword>
-        <cm:Keyword>Fast</cm:Keyword>
-      </cm:Keywords>
+      <md:Keywords>
+        <md:Keyword>No validating schemas</md:Keyword>
+        <md:Keyword>Using deegree3 Coverage API</md:Keyword>
+        <md:Keyword>Fast</md:Keyword>
+      </md:Keywords>
       <md:Fees>None, it's free</md:Fees>
       <md:AccessConstraints>Open to all</md:AccessConstraints>
     </md:ServiceIdentification>
@@ -141,7 +114,7 @@
     <AllowedOperations>
       <GetCapabilities />
       <DescribeCoverage />
-      <GetCoverage/>
+      <GetCoverage />
     </AllowedOperations>
   </PublishedInformation>
 </deegreeWCS>

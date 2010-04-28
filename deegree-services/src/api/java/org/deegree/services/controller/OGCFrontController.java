@@ -89,11 +89,13 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.deegree.commons.configuration.ProxyConfiguration;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.utils.LogUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.commons.xml.XMLAdapter;
@@ -937,116 +939,17 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "- temp directory    : " + defaultTMPDir );
             LOG.info( "" );
 
-//            LOG.info( "--------------------------------------------------------------------------------" );
-//            LOG.info( "Proxy configuration." );
-//            LOG.info( "--------------------------------------------------------------------------------" );
-//            ProxyConfiguration proxyConfig = serviceConfig.getProxyConfiguration();
-//            try {
-//                if ( proxyConfig != null ) {
-//                    ProxyUtils.setupProxyParameters( proxyConfig );
-//                }
-//                ProxyUtils.logProxyConfiguration( LOG );
-//            } catch ( Exception e ) {
-//                e.printStackTrace();
-//            }
-//            LOG.info( "" );
-//            LOG.info( "--------------------------------------------------------------------------------" );
-//            LOG.info( "Setting up temporary file storage." );
-//            LOG.info( "--------------------------------------------------------------------------------" );
-//            TempFileManager.init( config.getServletContext().getContextPath() );
-//            LOG.info( "" );
+            // LOG.info( "--------------------------------------------------------------------------------" );
+            // LOG.info( "Setting up temporary file storage." );
+            // LOG.info( "--------------------------------------------------------------------------------" );
+            // TempFileManager.init( config.getServletContext().getContextPath() );
+            // LOG.info( "" );
 
-            File jdbcDir = null;
-            try {
-                jdbcDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/jdbc", getServletContext() ).toURI() );
-            } catch ( MalformedURLException e ) {
-                LOG.error( e.getMessage(), e );
-            } catch ( URISyntaxException e ) {
-                LOG.error( e.getMessage(), e );
-            }
-            if (jdbcDir.exists()) {
-                LOG.info( "--------------------------------------------------------------------------------" );
-                LOG.info( "Setting up JDBC connection pools." );
-                LOG.info( "--------------------------------------------------------------------------------" );                
-                ConnectionManager.init (jdbcDir);
-                LOG.info( "" );                
-            } else {
-                LOG.info( "No 'jdbc' directory -- skipping initialization of feature stores.");
-                LOG.info( "" );                
-            }
+            initProxyConfig();
+            initJDBCConnections();
+            initFeatureStores();
+            initWebServices( resolvedConfigURL );
 
-            File fsDir = null;
-            try {
-                fsDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/featurestores", getServletContext() ).toURI() );
-            } catch ( MalformedURLException e ) {
-                LOG.error( e.getMessage(), e );
-            } catch ( URISyntaxException e ) {
-                LOG.error( e.getMessage(), e );
-            }
-            if (fsDir.exists()) {
-                LOG.info( "--------------------------------------------------------------------------------" );
-                LOG.info( "Setting up feature stores." );
-                LOG.info( "--------------------------------------------------------------------------------" );                
-                FeatureStoreManager.init (fsDir);
-                LOG.info( "" );                
-            } else {
-                LOG.info( "No 'featurestores' directory -- skipping initialization of feature stores.");
-                LOG.info( "" );                
-            }
-
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Starting webservices." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "" );
-
-            ConfiguredServicesType servicesConfigured = serviceConfig.getConfiguredServices();
-            List<ServiceType> services = null;
-            if ( servicesConfigured != null ) {
-                services = servicesConfigured.getService();
-                if ( services != null && services.size() > 0 ) {
-                    LOG.info( "The file: " + resolvedConfigURL );
-                    LOG.info( "Provided following services:" );
-                    for ( ServiceType s : services ) {
-                        URL configLocation = null;
-                        try {
-                            configLocation = new URL( resolvedConfigURL, s.getConfigurationLocation() );
-                        } catch ( MalformedURLException e ) {
-                            LOG.error( e.getMessage(), e );
-                            return;
-                        }
-                        s.setConfigurationLocation( configLocation.toExternalForm() );
-
-                        LOG.info( " - " + s.getServiceName() );
-                    }
-                    LOG.info( "ATTENTION - Skipping the loading of all services in conf/ which are not listed above." );
-                }
-            }
-            if ( services == null || services.size() == 0 ) {
-                LOG.info( "No service elements were supplied in the file: '" + resolvedConfigURL
-                          + "' -- trying to use the default loading mechanism." );
-                try {
-                    services = loadServicesFromDefaultLocation();
-                } catch ( MalformedURLException e ) {
-                    throw new ServletException( "Error loading service configurations: " + e.getMessage() );
-                }
-            }
-            if ( services.size() == 0 ) {
-                throw new ServletException(
-                                            "No deegree web services could be loaded (manually or automatically) please take a look at your configuration file: "
-                                                                    + resolvedConfigURL
-                                                                    + " and or your WEB-INF/conf directory." );
-            }
-
-            for ( ServiceType configuredService : services ) {
-                AbstractOGCServiceController serviceController = instantiateServiceController( configuredService );
-                if ( serviceController != null ) {
-                    registerSubController( configuredService, serviceController );
-                }
-            }
-            LOG.info( "" );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Webservices started." );
-            LOG.info( "--------------------------------------------------------------------------------" );
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
             LOG.error( "You probably forgot to add a required .jar to the WEB-INF/lib directory." );
@@ -1056,6 +959,146 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( "Initialization failed!" );
             LOG.error( "An unexpected error was caught:", e );
         }
+    }
+
+    private void initProxyConfig() {
+
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Proxy configuration." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
+        File proxyConfigFile = null;
+        try {
+            proxyConfigFile = new File(
+                                        resolveFileLocation( DEFAULT_CONFIG_PATH + "/proxy.xml", getServletContext() ).toURI() );
+        } catch ( MalformedURLException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+
+        if ( proxyConfigFile.exists() ) {
+            try {
+                String contextName = "org.deegree.commons.configuration";
+                JAXBContext jc = JAXBContext.newInstance( contextName );
+                Unmarshaller unmarshaller = jc.createUnmarshaller();
+                ProxyConfiguration proxyConfig = (ProxyConfiguration) unmarshaller.unmarshal( proxyConfigFile );
+                try {
+                    if ( proxyConfig != null ) {
+                        ProxyUtils.setupProxyParameters( proxyConfig );
+                    }
+                    ProxyUtils.logProxyConfiguration( LOG );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+            } catch ( JAXBException e ) {
+                String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
+                LOG.error( msg, e );
+            }
+        } else {
+            LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
+        }
+        LOG.info( "" );
+    }
+
+    private void initWebServices( URL resolvedConfigURL )
+                            throws ServletException {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Starting webservices." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "" );
+
+        ConfiguredServicesType servicesConfigured = serviceConfig.getConfiguredServices();
+        List<ServiceType> services = null;
+        if ( servicesConfigured != null ) {
+            services = servicesConfigured.getService();
+            if ( services != null && services.size() > 0 ) {
+                LOG.info( "The file: " + resolvedConfigURL );
+                LOG.info( "Provided following services:" );
+                for ( ServiceType s : services ) {
+                    URL configLocation = null;
+                    try {
+                        configLocation = new URL( resolvedConfigURL, s.getConfigurationLocation() );
+                    } catch ( MalformedURLException e ) {
+                        LOG.error( e.getMessage(), e );
+                        return;
+                    }
+                    s.setConfigurationLocation( configLocation.toExternalForm() );
+
+                    LOG.info( " - " + s.getServiceName() );
+                }
+                LOG.info( "ATTENTION - Skipping the loading of all services in conf/ which are not listed above." );
+            }
+        }
+        if ( services == null || services.size() == 0 ) {
+            LOG.info( "No service elements were supplied in the file: '" + resolvedConfigURL
+                      + "' -- trying to use the default loading mechanism." );
+            try {
+                services = loadServicesFromDefaultLocation();
+            } catch ( MalformedURLException e ) {
+                throw new ServletException( "Error loading service configurations: " + e.getMessage() );
+            }
+        }
+        if ( services.size() == 0 ) {
+            throw new ServletException(
+                                        "No deegree web services could be loaded (manually or automatically) please take a look at your configuration file: "
+                                                                + resolvedConfigURL
+                                                                + " and or your WEB-INF/conf directory." );
+        }
+
+        for ( ServiceType configuredService : services ) {
+            AbstractOGCServiceController serviceController = instantiateServiceController( configuredService );
+            if ( serviceController != null ) {
+                registerSubController( configuredService, serviceController );
+            }
+        }
+        LOG.info( "" );
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Webservices started." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+    }
+
+    private void initFeatureStores() {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up feature stores." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
+        File fsDir = null;
+        try {
+            fsDir = new File(
+                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/featurestores", getServletContext() ).toURI() );
+        } catch ( MalformedURLException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        if ( fsDir.exists() ) {
+            FeatureStoreManager.init( fsDir );
+        } else {
+            LOG.info( "No 'featurestores' directory -- skipping initialization of feature stores." );
+        }
+        LOG.info( "" );
+    }
+
+    private void initJDBCConnections() {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up JDBC connection pools." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
+        File jdbcDir = null;
+        try {
+            jdbcDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/jdbc", getServletContext() ).toURI() );
+        } catch ( MalformedURLException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        if ( jdbcDir.exists() ) {
+            ConnectionManager.init( jdbcDir );
+        } else {
+            LOG.info( "No 'jdbc' directory -- skipping initialization of feature stores." );
+        }
+        LOG.info( "" );
     }
 
     @Override

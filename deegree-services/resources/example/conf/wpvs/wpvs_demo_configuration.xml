@@ -2,7 +2,7 @@
 <wpvs:deegreeWPVS xmlns:cm="http://www.deegree.org/commons" xmlns:ds="http://www.deegree.org/datasource"
   xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="0.5.0"
-  xsi:schemaLocation="http://www.deegree.org/services/wpvs ../../../schema/wpvs/0.5.0/wpvs_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/wpvs http://schemas.deegree.org/wpvs/0.5.0/wpvs_configuration.xsd">
   <wpvs:ServiceConfiguration>
     <wpvs:MaxViewWidth>1200</wpvs:MaxViewWidth>
     <wpvs:MaxViewHeight>1000</wpvs:MaxViewHeight>
@@ -27,17 +27,13 @@
         <cm:Keyword lang="en_US">Describing the dataset defintion</cm:Keyword>
         <cm:Type codeSpace="http://www.deegree.org">Description</cm:Type>
       </cm:Keywords>
-      <cm:BoundingBox dimensions="2" crs="epsg:26192">
-        <cm:LowerCorner>420000.0 4507998.0 1280.5</cm:LowerCorner>
-        <cm:UpperCorner>432001.0 4519999.0 2919.4</cm:UpperCorner>
-      </cm:BoundingBox>
+      <wpvs:BaseCRS>epsg:26192</wpvs:BaseCRS>
       <wpvs:TranslationToLocalCRS x="-415430" y="-4497410.0" />
-      <cm:ScaleDenominators min="0" max="1000000" />
       <!-- Geometry quality after projection -->
       <wpvs:MaxPixelError>5</wpvs:MaxPixelError>
       <wpvs:ElevationDataset>
-        <wpvs:Name>dem</wpvs:Name>
         <wpvs:Title>Elevation model</wpvs:Title>
+        <wpvs:Name>dem</wpvs:Name>
         <wpvs:Abstract>The elevation model of the city</wpvs:Abstract>
         <ds:ElevationModelDataSource>
           <ds:DataSourceName>deegree dem created with the WPVS</ds:DataSourceName>
@@ -46,8 +42,8 @@
         </ds:ElevationModelDataSource>
       </wpvs:ElevationDataset>
       <wpvs:DEMTextureDataset>
+        <wpvs:Title>Aerial photographs of saltlake city</wpvs:Title>      
         <wpvs:Name>saltlakesatellite</wpvs:Name>
-        <wpvs:Title>Aerial photographs of saltlake city</wpvs:Title>
         <wpvs:Abstract>Aerial photographs of the city, stored in a specialized raw format on the file system.</wpvs:Abstract>
         <!-- Garantiert größe an pixel die ein texel einnimmt -->
         <wpvs:MaxProjectedTexelSize>1</wpvs:MaxProjectedTexelSize>
@@ -151,11 +147,11 @@
     <md:ServiceIdentification>
       <md:Title>The deegree Web Perspective View Service</md:Title>
       <md:Abstract>A web service used for the rendering of 3d geospatial data</md:Abstract>
-      <cm:Keywords>
-        <cm:Keyword>Cool</cm:Keyword>
-        <cm:Keyword>JOGL</cm:Keyword>
-        <cm:Keyword>Fast</cm:Keyword>
-      </cm:Keywords>
+      <md:Keywords>
+        <md:Keyword>Cool</md:Keyword>
+        <md:Keyword>JOGL</md:Keyword>
+        <md:Keyword>Fast</md:Keyword>
+      </md:Keywords>
       <md:Fees>None, it's free</md:Fees>
       <md:AccessConstraints>Open to all</md:AccessConstraints>
     </md:ServiceIdentification>
