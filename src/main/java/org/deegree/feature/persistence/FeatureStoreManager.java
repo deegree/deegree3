@@ -37,8 +37,11 @@ package org.deegree.feature.persistence;
 
 import static org.deegree.commons.utils.CollectionUtils.map;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -106,14 +109,50 @@ public class FeatureStoreManager {
     };
 
     /**
-     * Returns the global {@link FeatureStore} instance with the specified identifier.
+     * Initializes the {@link FeatureStoreManager} by loading all feature store configurations from the given directory.
+     * 
+     * @param fsDir
+     */
+    public static void init( File fsDir ) {
+        File[] fsConfigFiles = fsDir.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File dir, String name ) {
+                // TODO Auto-generated method stub
+                return name.toLowerCase().endsWith( ".xml" );
+            }
+        } );
+        for ( File fsConfigFile : fsConfigFiles ) {
+            String fileName = fsConfigFile.getName();
+            // 4 is the length of ".xml"
+            String fsId = fileName.substring( 0, fileName.length() - 4 );
+            LOG.info( "Setting up feature store '" + fsId + "' from file '" + fileName + "'..." + "" );
+            try {
+                FeatureStore fs = create( fsConfigFile.toURI().toURL() );
+                idToFs.put( fsId, fs );
+            } catch ( Exception e ) {
+                LOG.error( "Error initializing feature store: " + e.getMessage(), e );
+            }
+        }
+    }
+
+    /**
+     * Returns the {@link FeatureStore} instance with the specified identifier.
      * 
      * @param id
-     *            identifier of the store
+     *            identifier of the feature store instance
      * @return the corresponding {@link FeatureStore} instance or null if no such instance has been created
      */
     public static FeatureStore get( String id ) {
         return idToFs.get( id );
+    }
+
+    /**
+     * Returns all active {@link FeatureStore}s.
+     * 
+     * @return the {@link FeatureStore}s instance, may be empty but never <code>null</code>
+     */
+    public static Collection<FeatureStore> getAll() {
+        return idToFs.values();
     }
 
     /**
