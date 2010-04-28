@@ -10,6 +10,7 @@ package org.deegree.services.wms.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -17,8 +18,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+
 import org.deegree.commons.configuration.BoundingBoxType;
-import org.deegree.commons.configuration.KeywordsType;
 import org.deegree.commons.configuration.ScaleDenominatorsType;
 import org.deegree.commons.datasource.configuration.AbstractDataSourceType;
 import org.deegree.commons.datasource.configuration.AbstractGeospatialDataSourceType;
@@ -40,6 +41,7 @@ import org.deegree.commons.datasource.configuration.RasterDataSource;
 import org.deegree.commons.datasource.configuration.RecordStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
 import org.deegree.commons.datasource.configuration.WMSDataSourceType;
+import org.deegree.services.jaxb.metadata.KeywordsType;
 
 
 /**

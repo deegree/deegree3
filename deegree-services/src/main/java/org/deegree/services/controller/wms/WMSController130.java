@@ -51,12 +51,12 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOGCServiceController;
-import org.deegree.services.controller.configuration.ServiceIdentificationType;
-import org.deegree.services.controller.configuration.ServiceProviderType;
 import org.deegree.services.controller.ows.OGCExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.wms.capabilities.Capabilities130XMLAdapter;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.wms.MapService;
 
 /**

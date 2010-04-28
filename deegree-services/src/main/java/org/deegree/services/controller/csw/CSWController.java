@@ -82,9 +82,6 @@ import org.deegree.services.authentication.soapauthentication.FailedAuthenticati
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.configuration.DeegreeServicesMetadata;
-import org.deegree.services.controller.configuration.ServiceIdentificationType;
-import org.deegree.services.controller.configuration.ServiceProviderType;
 import org.deegree.services.controller.csw.capabilities.GetCapabilities202KVPAdapter;
 import org.deegree.services.controller.csw.capabilities.GetCapabilitiesVersionXMLAdapter;
 import org.deegree.services.controller.csw.configuration.PublishedInformation;
@@ -115,6 +112,9 @@ import org.deegree.services.controller.ows.OWSException120XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWService;
 import org.deegree.services.csw.configuration.ServiceConfiguration;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

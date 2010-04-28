@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:dgws="http://www.deegree.org/webservices" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:cm="http://www.deegree.org/commons" targetNamespace="http://www.deegree.org/webservices" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
-  <xs:import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.5.0/commons.xsd" />
+  targetNamespace="http://www.deegree.org/webservices" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
   <xs:annotation>
     <xs:appinfo>
       <jaxb:schemaBindings>
-        <jaxb:package name="org.deegree.services.controller.configuration" />
+        <jaxb:package name="org.deegree.services.jaxb.metadata" />
       </jaxb:schemaBindings>
     </xs:appinfo>
   </xs:annotation>
@@ -30,12 +29,10 @@
         <xs:element ref="dgws:ServiceIdentification" minOccurs="0" />
         <xs:element ref="dgws:ServiceProvider" />
         <xs:element name="DCP" type="dgws:DCPType" />
-        <xs:element ref="cm:JDBCConnections" minOccurs="0" />
-        <xs:element name="AuthenticationMethod" type="dgws:AuthenticationMethodType" minOccurs="0"/>
-        <xs:element ref="cm:ProxyConfiguration" minOccurs="0" />
+        <xs:element name="AuthenticationMethod" type="dgws:AuthenticationMethodType" minOccurs="0" />
         <xs:element name="ConfiguredServices" type="dgws:ConfiguredServicesType" minOccurs="0" />
       </xs:sequence>
-      <xs:attribute name="configVersion" type="cm:currentVersionType" use="required" />
+      <xs:attribute name="configVersion" fixed="0.5.0" use="required" />
     </xs:complexType>
   </xs:element>
   <xs:element name="ServiceIdentification" type="dgws:ServiceIdentificationType" />
@@ -45,7 +42,7 @@
     <xs:sequence>
       <xs:element name="Title" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="Abstract" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element ref="cm:Keywords" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element ref="dgws:Keywords" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="Fees" type="xs:string" minOccurs="0" />
       <xs:element name="AccessConstraints" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
@@ -85,6 +82,83 @@
       <xs:element name="HTTPGet" type="xs:anyURI" minOccurs="0" />
       <xs:element name="HTTPPost" type="xs:anyURI" minOccurs="0" />
       <xs:element name="SOAP" type="xs:anyURI" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <!-- ========================================================== -->
+  <xs:element name="Keywords" type="dgws:KeywordsType" />
+  <!-- ========================================================== -->
+  <xs:complexType name="LanguageStringType">
+    <xs:annotation>
+      <xs:documentation>
+        Text string with the language of the string identified
+        as recommended in the XML 1.0 W3C
+        Recommendation, section 2.12.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="lang" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="CodeType">
+    <xs:annotation>
+      <xs:documentation>
+        Name or code with an (optional) authority. If the
+        codeSpace attribute is present, its value shall
+        reference a dictionary,
+        thesaurus, or
+        authority for the name or code, such as the organisation
+        who assigned the
+        value, or the dictionary from which it is taken.
+      </xs:documentation>
+      <xs:documentation>
+        Type copied from basicTypes.xsd of GML 3 with
+        documentation edited, for possible use outside the
+        ServiceIdentification
+        section of a service
+        metadata document.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="codeSpace" type="xs:anyURI" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="KeywordsType">
+    <xs:annotation>
+      <xs:documentation>
+        Unordered list of one or more commonly used or
+        formalised word(s) or phrase(s) used to describe
+        the subject. When
+        needed, the optional "type"
+        can name the type of the associated list of
+        keywords that shall all
+        have the same type. Also when needed, the
+        codeSpace attribute of that
+        "type" can reference the type name authority
+        and/or thesaurus. If the xml:lang attribute is not included in a Keyword
+        element, then no
+        language is specified
+        for that element unless specified
+        by another means. All Keyword elements in the same Keywords element that
+        share
+        the
+        same xml:lang attribute value represent different keywords in
+        that language.
+      </xs:documentation>
+      <xs:documentation>
+        For OWS use, the optional thesaurusName element was
+        omitted as being complex information that
+        could be referenced by the
+        codeSpace attribute
+        of the Type element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Keyword" type="dgws:LanguageStringType" maxOccurs="unbounded" />
+      <xs:element name="Type" type="dgws:CodeType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ConfiguredServicesType">
@@ -129,10 +203,10 @@
       <xs:element name="DeegreeAuthentication" type="xs:string" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
-  
+
 
   <xs:simpleType name="AuthenticationMethods">
-  <xs:annotation>
+    <xs:annotation>
       <xs:documentation>A simple type defining the possible authenticationMethods</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">

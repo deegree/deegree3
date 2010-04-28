@@ -43,9 +43,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.configuration.DCPType;
-import org.deegree.services.controller.configuration.DeegreeServicesMetadata;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.services.jaxb.metadata.DCPType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
 import org.deegree.services.wps.processdefinition.ProcessDefinition;
 import org.deegree.services.wps.processdefinition.ProcessDefinition.Metadata;
 

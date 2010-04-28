@@ -48,18 +48,18 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.configuration.KeywordsType;
-import org.deegree.commons.configuration.LanguageStringType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.xml.FilterCapabilitiesExporter;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
 import org.deegree.protocol.csw.CSWConstants.Sections;
-import org.deegree.services.controller.configuration.DCPType;
-import org.deegree.services.controller.configuration.DeegreeServicesMetadata;
-import org.deegree.services.controller.configuration.ServiceIdentificationType;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.services.jaxb.metadata.DCPType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.metadata.KeywordsType;
+import org.deegree.services.jaxb.metadata.LanguageStringType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 
 /**
  * Does the exportHandling for the Capabilities. This is a very static handling for explanation.

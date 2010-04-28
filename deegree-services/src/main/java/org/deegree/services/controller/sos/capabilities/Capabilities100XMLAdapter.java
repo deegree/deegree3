@@ -44,14 +44,14 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.configuration.CodeType;
-import org.deegree.commons.configuration.KeywordsType;
-import org.deegree.commons.configuration.LanguageStringType;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.configuration.DCPType;
-import org.deegree.services.controller.configuration.DeegreeServicesMetadata;
-import org.deegree.services.controller.configuration.ServiceIdentificationType;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.services.jaxb.metadata.CodeType;
+import org.deegree.services.jaxb.metadata.DCPType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.metadata.KeywordsType;
+import org.deegree.services.jaxb.metadata.LanguageStringType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.sos.offering.ObservationOffering;
 
 /**

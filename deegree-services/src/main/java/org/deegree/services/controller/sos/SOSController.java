@@ -110,9 +110,6 @@ import org.deegree.protocol.sos.getobservation.EventTime100XMLAdapter.EventTimeX
 import org.deegree.protocol.sos.getobservation.GetObservation100XMLAdapter.ResultFilterException;
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.services.controller.configuration.DeegreeServicesMetadata;
-import org.deegree.services.controller.configuration.ServiceIdentificationType;
-import org.deegree.services.controller.configuration.ServiceProviderType;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -123,6 +120,9 @@ import org.deegree.services.controller.sos.capabilities.Capabilities100XMLAdapte
 import org.deegree.services.controller.sos.configuration.PublishedInformation;
 import org.deegree.services.controller.sos.getobservation.Observation100XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.sos.SOSBuilder;
 import org.deegree.services.sos.SOSConfigurationException;
 import org.deegree.services.sos.SOService;

@@ -49,12 +49,12 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.cs.CRS;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.services.controller.AbstractOGCServiceController;
-import org.deegree.services.controller.configuration.ServiceIdentificationType;
-import org.deegree.services.controller.configuration.ServiceProviderType;
 import org.deegree.services.controller.ows.NamespacelessOWSExceptionXMLAdapter;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.wms.capabilities.Capabilities111XMLAdapter;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.wms.MapService;
 
 /**

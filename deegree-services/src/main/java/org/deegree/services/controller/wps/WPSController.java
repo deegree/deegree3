@@ -92,7 +92,6 @@ import org.deegree.protocol.wps.describeprocess.DescribeProcessRequestXMLAdapter
 import org.deegree.services.controller.AbstractOGCServiceController;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.configuration.DeegreeServicesMetadata;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -110,6 +109,7 @@ import org.deegree.services.controller.wps.storage.OutputStorage;
 import org.deegree.services.controller.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.controller.wps.storage.StorageManager;
 import org.deegree.services.exception.ServiceInitException;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPService;
 import org.deegree.services.wps.annotations.ProcessDescription;

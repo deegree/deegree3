@@ -58,7 +58,6 @@ import java.util.Map;
 import java_cup.runtime.Symbol;
 
 import org.deegree.commons.configuration.BoundingBoxType;
-import org.deegree.commons.configuration.LanguageStringType;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
@@ -82,6 +81,7 @@ import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
+import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
 import org.deegree.services.wms.configuration.AbstractLayerType;

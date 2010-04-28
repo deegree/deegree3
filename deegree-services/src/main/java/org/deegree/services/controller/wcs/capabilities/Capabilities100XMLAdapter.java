@@ -47,19 +47,19 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.configuration.CodeType;
-import org.deegree.commons.configuration.KeywordsType;
-import org.deegree.commons.configuration.LanguageStringType;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
-import org.deegree.services.controller.configuration.AddressType;
-import org.deegree.services.controller.configuration.DCPType;
-import org.deegree.services.controller.configuration.DeegreeServicesMetadata;
-import org.deegree.services.controller.configuration.ServiceContactType;
-import org.deegree.services.controller.configuration.ServiceIdentificationType;
-import org.deegree.services.controller.configuration.ServiceProviderType;
 import org.deegree.services.controller.wcs.describecoverage.CoverageDescription100XMLAdapter;
+import org.deegree.services.jaxb.metadata.AddressType;
+import org.deegree.services.jaxb.metadata.CodeType;
+import org.deegree.services.jaxb.metadata.DCPType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.metadata.KeywordsType;
+import org.deegree.services.jaxb.metadata.LanguageStringType;
+import org.deegree.services.jaxb.metadata.ServiceContactType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.wcs.configuration.ServiceConfiguration.Coverage;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeWCS configVersion="0.5.0" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.deegree.org/services/wcs" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:md="http://www.deegree.org/webservices" xmlns:cm="http://www.deegree.org/commons"
-  xsi:schemaLocation="http://www.deegree.org/services/wcs ../../../schema/wcs/0.5.0/wcs_configuration.xsd">
+<deegreeWCS configVersion="0.5.0" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.deegree.org/services/wcs"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:md="http://www.deegree.org/webservices"
+  xsi:schemaLocation="http://www.deegree.org/services/wcs http://schemas.deegree.org/wcs/0.5.0/wcs_configuration.xsd">
   <ServiceConfiguration>
     <SupportOptions>
       <OutputFormat>tiff</OutputFormat>
@@ -17,12 +17,14 @@
       <ds:MultiResolutionDataSource crs="EPSG:26912">
         <ds:Resolution res="16.0">
           <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../data/utah/raster/dop/16.0</ds:RasterDirectory>
+            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../data/utah/raster/dop/16.0
+            </ds:RasterDirectory>
           </ds:RasterDataSource>
         </ds:Resolution>
         <ds:Resolution res="32.0">
           <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../data/utah/raster/dop/32.0</ds:RasterDirectory>
+            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../data/utah/raster/dop/32.0
+            </ds:RasterDirectory>
           </ds:RasterDataSource>
         </ds:Resolution>
       </ds:MultiResolutionDataSource>
@@ -55,11 +57,11 @@
     <md:ServiceIdentification>
       <md:Title>The deegree Web Coverage Service</md:Title>
       <md:Abstract>A web service used for delivering Coverage information</md:Abstract>
-      <cm:Keywords>
-        <cm:Keyword>No validating schemas</cm:Keyword>
-        <cm:Keyword>Using deegree3 Coverage API</cm:Keyword>
-        <cm:Keyword>Fast</cm:Keyword>
-      </cm:Keywords>
+      <md:Keywords>
+        <md:Keyword>No validating schemas</md:Keyword>
+        <md:Keyword>Using deegree3 Coverage API</md:Keyword>
+        <md:Keyword>Fast</md:Keyword>
+      </md:Keywords>
       <md:Fees>None, it's free</md:Fees>
       <md:AccessConstraints>Open to all</md:AccessConstraints>
     </md:ServiceIdentification>

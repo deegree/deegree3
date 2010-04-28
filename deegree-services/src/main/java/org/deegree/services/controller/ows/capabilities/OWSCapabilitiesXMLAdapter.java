@@ -40,16 +40,16 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.configuration.CodeType;
-import org.deegree.commons.configuration.KeywordsType;
-import org.deegree.commons.configuration.LanguageStringType;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
-import org.deegree.services.controller.configuration.AddressType;
-import org.deegree.services.controller.configuration.DCPType;
-import org.deegree.services.controller.configuration.ServiceContactType;
-import org.deegree.services.controller.configuration.ServiceIdentificationType;
-import org.deegree.services.controller.configuration.ServiceProviderType;
+import org.deegree.services.jaxb.metadata.AddressType;
+import org.deegree.services.jaxb.metadata.CodeType;
+import org.deegree.services.jaxb.metadata.DCPType;
+import org.deegree.services.jaxb.metadata.KeywordsType;
+import org.deegree.services.jaxb.metadata.LanguageStringType;
+import org.deegree.services.jaxb.metadata.ServiceContactType;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

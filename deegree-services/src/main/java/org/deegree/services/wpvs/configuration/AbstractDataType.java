@@ -10,12 +10,14 @@ package org.deegree.services.wpvs.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-import org.deegree.commons.configuration.KeywordsType;
+
+import org.deegree.services.jaxb.metadata.KeywordsType;
 
 
 /**

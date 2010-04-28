@@ -89,15 +89,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
-import org.deegree.commons.configuration.JDBCConnections;
-import org.deegree.commons.configuration.ProxyConfiguration;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
 import org.deegree.commons.utils.LogUtils;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.utils.TempFileManager;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.commons.xml.XMLAdapter;
@@ -106,17 +102,17 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.services.authentication.SecurityException;
-import org.deegree.services.controller.configuration.AllowedServices;
-import org.deegree.services.controller.configuration.AuthenticationMethodType;
-import org.deegree.services.controller.configuration.ConfiguredServicesType;
-import org.deegree.services.controller.configuration.DeegreeServicesMetadata;
-import org.deegree.services.controller.configuration.ServiceType;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
+import org.deegree.services.jaxb.metadata.AllowedServices;
+import org.deegree.services.jaxb.metadata.AuthenticationMethodType;
+import org.deegree.services.jaxb.metadata.ConfiguredServicesType;
+import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.metadata.ServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -941,41 +937,41 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "- temp directory    : " + defaultTMPDir );
             LOG.info( "" );
 
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Proxy configuration." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            ProxyConfiguration proxyConfig = serviceConfig.getProxyConfiguration();
-            try {
-                if ( proxyConfig != null ) {
-                    ProxyUtils.setupProxyParameters( proxyConfig );
-                }
-                ProxyUtils.logProxyConfiguration( LOG );
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-            LOG.info( "" );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up temporary file storage." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            TempFileManager.init( config.getServletContext().getContextPath() );
-            LOG.info( "" );
-
-            LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up JDBC connection pools." );
-            LOG.info( "--------------------------------------------------------------------------------" );
-            JDBCConnections jdbcConfig = serviceConfig.getJDBCConnections();
-            if ( jdbcConfig != null ) {
-                try {
-                    ConnectionManager.addConnections( jdbcConfig );
-                } catch ( Exception e ) {
-                    String msg = "Setting up JDBC connection pools failed: " + e.getLocalizedMessage();
-                    LOG.error( msg, e );
-                    throw new ServletException( msg, e );
-                }
-            } else {
-                LOG.info( "No JDBC connections defined." );
-            }
-            LOG.info( "" );
+//            LOG.info( "--------------------------------------------------------------------------------" );
+//            LOG.info( "Proxy configuration." );
+//            LOG.info( "--------------------------------------------------------------------------------" );
+//            ProxyConfiguration proxyConfig = serviceConfig.getProxyConfiguration();
+//            try {
+//                if ( proxyConfig != null ) {
+//                    ProxyUtils.setupProxyParameters( proxyConfig );
+//                }
+//                ProxyUtils.logProxyConfiguration( LOG );
+//            } catch ( Exception e ) {
+//                e.printStackTrace();
+//            }
+//            LOG.info( "" );
+//            LOG.info( "--------------------------------------------------------------------------------" );
+//            LOG.info( "Setting up temporary file storage." );
+//            LOG.info( "--------------------------------------------------------------------------------" );
+//            TempFileManager.init( config.getServletContext().getContextPath() );
+//            LOG.info( "" );
+//
+//            LOG.info( "--------------------------------------------------------------------------------" );
+//            LOG.info( "Setting up JDBC connection pools." );
+//            LOG.info( "--------------------------------------------------------------------------------" );
+//            JDBCConnections jdbcConfig = serviceConfig.getJDBCConnections();
+//            if ( jdbcConfig != null ) {
+//                try {
+//                    ConnectionManager.addConnections( jdbcConfig );
+//                } catch ( Exception e ) {
+//                    String msg = "Setting up JDBC connection pools failed: " + e.getLocalizedMessage();
+//                    LOG.error( msg, e );
+//                    throw new ServletException( msg, e );
+//                }
+//            } else {
+//                LOG.info( "No JDBC connections defined." );
+//            }
+//            LOG.info( "" );
             
 
             File configurationDir = null;
@@ -1303,7 +1299,7 @@ public class OGCFrontController extends HttpServlet {
                             throws ServletException {
         if ( serviceConfig == null ) {
             try {
-                String contextName = OGCFrontController.class.getPackage().getName() + ".configuration";
+                String contextName = "org.deegree.services.jaxb.metadata";
                 JAXBContext jc = JAXBContext.newInstance( contextName );
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
                 serviceConfig = (DeegreeServicesMetadata) unmarshaller.unmarshal( resolvedConfigURL );
