@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Mit XMLSpy v2008 rel. 2 sp1 (http://www.altova.com) von Oliver Tonnhofer (lat/lon GmbH) bearbeitet -->
-<xs:schema xmlns="http://www.deegree.org/services/sos" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://www.deegree.org/services/sos" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
-  <xs:annotation>
-    <xs:appinfo>
-      <jaxb:schemaBindings>
-        <jaxb:package name="org.deegree.services.sos.configuration" />
-      </jaxb:schemaBindings>
-    </xs:appinfo>
-  </xs:annotation> 
+<xs:schema xmlns="http://www.deegree.org/services/sos" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://www.deegree.org/services/sos"
+  elementFormDefault="qualified">
   <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../xlink/xlinks.xsd" xmlns:cm="http://www.deegree.org/commons" />
-  <xs:import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.5.0/commons.xsd" />
   <xs:element name="ServiceConfiguration">
-    <xs:annotation>
-      <xs:documentation>Comment describing your root element</xs:documentation>
-    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Offering" maxOccurs="unbounded">

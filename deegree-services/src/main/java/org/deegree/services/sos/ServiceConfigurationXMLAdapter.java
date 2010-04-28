@@ -41,7 +41,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.services.sos.configuration.ServiceConfiguration;
+import org.deegree.services.jaxb.sos.ServiceConfiguration;
 
 /**
  * This is an xml adapter for the deegree SOS ServiceConfiguration.
@@ -61,7 +61,7 @@ public class ServiceConfigurationXMLAdapter extends XMLAdapter {
                             throws XMLProcessingException {
         ServiceConfiguration sosConf = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.sos.configuration" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.sos" );
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             sosConf = (ServiceConfiguration) unmarshaller.unmarshal( rootElement.getXMLStreamReaderWithoutCaching() );
         } catch ( JAXBException e ) {

@@ -52,12 +52,12 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.services.sos.configuration.Column;
-import org.deegree.services.sos.configuration.Option;
-import org.deegree.services.sos.configuration.ServiceConfiguration;
-import org.deegree.services.sos.configuration.ServiceConfiguration.Offering;
-import org.deegree.services.sos.configuration.ServiceConfiguration.Offering.Datastore;
-import org.deegree.services.sos.configuration.ServiceConfiguration.Offering.Datastore.Connection;
+import org.deegree.services.jaxb.sos.Column;
+import org.deegree.services.jaxb.sos.Option;
+import org.deegree.services.jaxb.sos.ServiceConfiguration;
+import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering;
+import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering.Datastore;
+import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering.Datastore.Connection;
 import org.deegree.services.sos.model.Procedure;
 import org.deegree.services.sos.model.Property;
 import org.deegree.services.sos.offering.ObservationOffering;
@@ -158,7 +158,7 @@ public class SOSBuilder {
 
     private Map<Procedure, String> getProcedures( Offering conf ) {
         Map<Procedure, String> procedures = new HashMap<Procedure, String>();
-        for ( org.deegree.services.sos.configuration.ServiceConfiguration.Offering.Procedure p : conf.getProcedure() ) {
+        for ( org.deegree.services.jaxb.sos.ServiceConfiguration.Offering.Procedure p : conf.getProcedure() ) {
             try {
                 Point pos = getPosition( getOptionValue( p.getOption(), "long_lat_position" ) );
                 URL resolvedURL = adapter.resolve( p.getSensor().getHref() );
@@ -262,7 +262,7 @@ public class SOSBuilder {
 
     private Map<Property, String> getProperties( Offering conf ) {
         Map<Property, String> result = new HashMap<Property, String>();
-        for ( org.deegree.services.sos.configuration.ServiceConfiguration.Offering.Property prop : conf.getProperty() ) {
+        for ( org.deegree.services.jaxb.sos.ServiceConfiguration.Offering.Property prop : conf.getProperty() ) {
             String name = prop.getHref();
             Column propColumn = prop.getColumn().get( 0 );
             Option propOption = prop.getOption().get( 0 );

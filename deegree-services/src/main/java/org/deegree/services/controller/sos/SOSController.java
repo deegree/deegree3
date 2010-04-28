@@ -117,12 +117,12 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.sos.capabilities.Capabilities100XMLAdapter;
 import org.deegree.services.controller.sos.capabilities.Capabilities100XMLAdapter.Sections;
-import org.deegree.services.controller.sos.configuration.PublishedInformation;
 import org.deegree.services.controller.sos.getobservation.Observation100XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.sos.PublishedInformation;
 import org.deegree.services.sos.SOSBuilder;
 import org.deegree.services.sos.SOSConfigurationException;
 import org.deegree.services.sos.SOService;
@@ -198,9 +198,7 @@ public class SOSController extends AbstractOGCServiceController {
 
         PublishedInformation pubInfo = null;
         try {
-            // for the datasources and the commons bindings
-            // :org.deegree.commons.datasource.configuration:org.deegree.commons.configuration
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.controller.sos.configuration:org.deegree.commons.datasource.configuration:org.deegree.commons.configuration" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.sos" );
             Unmarshaller u = jc.createUnmarshaller();
             OMElement infElem = controllerConf.getRequiredElement( controllerConf.getRootElement(),
                                                                    new XPath( "sos:PublishedInformation", nsContext ) );
