@@ -37,21 +37,13 @@ package org.deegree.tools.crs.georeferencing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.media.opengl.GLCanvas;
@@ -64,9 +56,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
 
 /**
@@ -77,7 +67,7 @@ import org.deegree.rendering.r3d.opengl.display.OpenGLEventHandler;
  * 
  * @version $Revision$, $Date$
  */
-public class GRViewer extends JFrame implements ActionListener, MouseListener, MouseWheelListener, MouseMotionListener {
+public class GRViewer extends JFrame implements ActionListener {
 
     /**
      * 
@@ -88,21 +78,13 @@ public class GRViewer extends JFrame implements ActionListener, MouseListener, M
 
     private static GeometryFactory fac = new GeometryFactory();
 
-    private JPanel mP;
+    private final JPanel panelRightAbove;
 
-    private final JPanel mP2;
+    private Scene2DPanel scenePanel2D;
 
-    private Point pre2DScene;
+    private XYCoordinates xyCoordinates;
 
-    // private Point preAffected;
-    //
-    // private Point affectedPostition;
-
-    private Generate2DSceneThread gen;
-
-    private final XYCoordinates aff;
-
-    private final Dimension dim;
+    private final Dimension subcomponentDim;
 
     private final Dimension frameDim;
 
@@ -111,10 +93,6 @@ public class GRViewer extends JFrame implements ActionListener, MouseListener, M
     private String ows7url;
 
     private final int margin = 200;
-
-    private double rememberMouseX, mouseChangingX;
-
-    private double rememberMouseY, mouseChangingY;
 
     /**
      * Creates a new instance of <Code>GRViewer</Code>.
@@ -128,38 +106,30 @@ public class GRViewer extends JFrame implements ActionListener, MouseListener, M
         GridBagConstraints gbc = new GridBagConstraints();
         gbl.setConstraints( this, gbc );
         frameDim = new Dimension( 600, 600 );
-        rememberMouseX = 0.0;
-        rememberMouseY = 0.0;
 
         setLayout( gbl );
         setMinimumSize( new Dimension( 600, 600 ) );
 
         setPreferredSize( new Dimension( 600, 600 ) );
-        // this should be a smaller value than the size of the frame...why?
-        // but if this value is not set, the canvas gets a very high value while resizing the window
-        dim = new Dimension( 1, 1 );
+        subcomponentDim = new Dimension( 1, 1 );
 
-        // other panel
-        mP2 = new JPanel( new BorderLayout() );
-        mP2.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        // panel right above
+        panelRightAbove = new JPanel( new BorderLayout() );
+        panelRightAbove.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        xyCoordinates = new XYCoordinates();
+        panelRightAbove.setBackground( Color.white );
+        panelRightAbove.add( xyCoordinates );
+        panelRightAbove.setPreferredSize( subcomponentDim );
 
-        mP2.setBackground( Color.white );
-        aff = new XYCoordinates();
-        aff.setOpaque( true );
-        mP2.add( aff );
-        mP2.setPreferredSize( dim );
-
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, mP2, 1, 0, 1, 1, aff.getInsets(),
-                                          GridBagConstraints.LINE_END, 1, 1 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, panelRightAbove, 1, 0, 1, 1,
+                                          xyCoordinates.getInsets(), GridBagConstraints.LINE_END, 1, 1 );
 
         setupMenubar();
         setup2DScene( gbl );
-        // setupOpenGL( gbl, true );
-
-        getContentPane().repaint();
+        setupOpenGL( gbl, true );
 
         setVisible( true );
-
+        pack();
     }
 
     private void setupMenubar() {
@@ -177,17 +147,17 @@ public class GRViewer extends JFrame implements ActionListener, MouseListener, M
     }
 
     private void setup2DScene( GridBagLayout gbl ) {
-        mP = new JPanel( new BorderLayout() );
-        mP.setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
+        // panel2DScene = new JPanel( new BorderLayout() );
+        // panel2DScene.setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
 
-        gen = new Generate2DSceneThread( null );
-        mP.add( gen );
-        mP.addMouseListener( this );
-        mP.addMouseWheelListener( this );
-        mP.addMouseMotionListener( this );
-        mP.setPreferredSize( dim );
+        scenePanel2D = new Scene2DPanel();
+        scenePanel2D.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
+        scenePanel2D.addMouseListener( scenePanel2D );
+        scenePanel2D.addMouseWheelListener( scenePanel2D );
+        scenePanel2D.addMouseMotionListener( scenePanel2D );
+        scenePanel2D.setPreferredSize( subcomponentDim );
 
-        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, mP, 0, 0, 1, 2, 1.0, 1.0 );
+        GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, scenePanel2D, 0, 0, 1, 2, 1.0, 1.0 );
 
     }
 
@@ -204,11 +174,10 @@ public class GRViewer extends JFrame implements ActionListener, MouseListener, M
         canvas.addMouseListener( openGLEventListener.getTrackBall() );
         canvas.addMouseWheelListener( openGLEventListener.getTrackBall() );
         canvas.addMouseMotionListener( openGLEventListener.getTrackBall() );
-        canvas.setPreferredSize( dim );
+        canvas.setPreferredSize( subcomponentDim );
 
         GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, canvas, 1, 1, 1, 1, new Insets( 10, 10, 0, 0 ),
                                           GridBagConstraints.LINE_END, 1, 1 );
-
     }
 
     /*
@@ -224,176 +193,25 @@ public class GRViewer extends JFrame implements ActionListener, MouseListener, M
             if ( menuItem == openurl ) {
                 ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
 
-                gen.initImage( ows7url, mP.getBounds(), margin );
-                this.getContentPane().repaint();
+                scenePanel2D.initImage( ows7url, scenePanel2D.getBounds(), margin );
+
+                this.repaint();
             }
 
         }
 
-    }
-
-    @Override
-    public void mouseClicked( MouseEvent arg0 ) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mouseEntered( MouseEvent m ) {
-
-    }
-
-    @Override
-    public void mouseExited( MouseEvent arg0 ) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void mousePressed( MouseEvent m ) {
-        pre2DScene = new GeometryFactory().createPoint( "MousePressedPoint", m.getX(), m.getY(), null );
-        // preAffected = new GeometryFactory().createPoint( "MousePressedForAffected", m.getX() + xAffectedPostition,
-        // m.getY() + yAffectedPosition, null );
-
-    }
-
-    @Override
-    public void mouseReleased( MouseEvent m ) {
-
-        gen.setDrawingStartPos( new GeometryFactory().createPoint(
-                                                                   "NewDrawingStartPosition",
-                                                                   gen.getDrawingStartPos().get0()
-                                                                                           - ( (int) pre2DScene.get0() - m.getX() ),
-                                                                   gen.getDrawingStartPos().get1()
-                                                                                           - ( (int) pre2DScene.get1() - m.getY() ),
-                                                                   null ) );
-        gen.setAbsoluteImageMaxPos( new GeometryFactory().createPoint(
-                                                                       "NewAbsoluteImagePos",
-                                                                       gen.getAbsoluteImageMaxPos().get0()
-                                                                                               - ( (int) pre2DScene.get0() - m.getX() ),
-                                                                       gen.getAbsoluteImageMaxPos().get1()
-                                                                                               - ( (int) pre2DScene.get1() - m.getY() ),
-                                                                       null ) );
-
-        rememberMouseX += ( pre2DScene.get0() - m.getX() );
-        rememberMouseY += ( pre2DScene.get1() - m.getY() );
-
-        mouseChangingX = ( pre2DScene.get0() - m.getX() );
-        mouseChangingY = ( pre2DScene.get1() - m.getY() );
-
-        // Generate2DSceneThread t = new Generate2DSceneThread(
-        // gen.reTransformSomePointsToEnvelope(
-        // new GeometryFactory().createPoint(
-        // "MouseShiftingPoint",
-        // mouseChangingX,
-        // mouseChangingY,
-        // null ),
-        // gen.getOnePixel() ),
-        // ows7url, mP.getBounds() );
-
-        gen.reTransformSomePointsToEnvelope( new GeometryFactory().createPoint( "MouseShiftingPoint", mouseChangingX,
-                                                                                mouseChangingY, null ),
-                                             gen.getOnePixel() );
-        gen.run();
-        System.out.println( "cachedEnv: " + gen.getCachedEnvelope() );
-
-        System.out.println( "GRViewer---: My mouse moving: " + rememberMouseX + " - " + rememberMouseY );
-        if ( gen.getAbsoluteImageMaxPos().get0() <= mP.getWidth()
-             || ( gen.getDrawingStartPos().get0() - margin / 2 ) >= mP.getX()
-             || gen.getAbsoluteImageMaxPos().get1() <= mP.getHeight()
-             || ( gen.getDrawingStartPos().get1() - margin / 2 ) >= mP.getY() ) {
-            double posChangeX = 0;
-            double posChangeY = 0;
-
-            if ( gen.getAbsoluteImageMaxPos().get0() <= mP.getWidth() ) {
-                posChangeX = gen.getAbsolutePosition().get0() - gen.getAbsoluteImageMaxPos().get0();
-                posChangeY = -rememberMouseY;
-                System.out.println( "go EAST: " + posChangeX + "|" + posChangeY );
-            }
-            if ( ( gen.getDrawingStartPos().get0() - margin / 2 ) >= mP.getX() ) {
-                posChangeX = -gen.getDrawingStartPos().get0();
-                posChangeY = -rememberMouseY;
-                System.out.println( "go WEST: " + posChangeX + "|" + posChangeY );
-
-            }
-            if ( gen.getAbsoluteImageMaxPos().get1() <= mP.getHeight() ) {
-                posChangeY = -gen.getAbsolutePosition().get1() + gen.getAbsoluteImageMaxPos().get1();
-                posChangeX = rememberMouseX;
-                System.out.println( "go SOUTH: " + posChangeX + "|" + posChangeY );
-            }
-            if ( ( gen.getDrawingStartPos().get1() - margin / 2 ) >= mP.getY() ) {
-                posChangeY = gen.getDrawingStartPos().get1();
-                posChangeX = rememberMouseX;
-                System.out.println( "go NORTH: " + posChangeX + "|" + posChangeY );
-            }
-            rememberMouseY = 0.0;
-            rememberMouseX = 0.0;
-            Rectangle bounds = new Rectangle( (int) posChangeX, (int) posChangeY );
-            System.out.println( "GRViewer---: PoschangeX: " + posChangeX + ", PostchangeY: " + posChangeY
-                                + ", OnePixel: " + gen.getOnePixel() );
-            getImageForViewer( gen.reTransformToEnvelope( bounds, gen.getOnePixel() ), true );
-        }
-        gen.repaint();
-
-        // aff.setXValue( aff.getXValue() - ( (int) preAffected.get0() - ( m.getX() + xAffectedPostition ) ) );
-        // aff.setYValue( aff.getYValue() - ( (int) preAffected.get1() - ( m.getY() + yAffectedPosition ) ) );
-        // aff.repaint();
-        BufferedImage cachedImage = gen.getCachedImage();
-        System.out.println( "mein affe: " + cachedImage );
-        aff.setImage( cachedImage );
-        aff.repaint();
-
-    }
-
-    @Override
-    public void mouseDragged( MouseEvent m ) {
-
-    }
-
-    @Override
-    public void mouseMoved( MouseEvent m ) {
-
-    }
-
-    @Override
-    public void mouseWheelMoved( MouseWheelEvent m ) {
-
-        if ( m.getWheelRotation() < 0 ) {
-
-            gen.scaleImage( ( (double) 150 / (double) 100 ) );
-            this.repaint();
-        } else {
-
-            gen.scaleImage( ( (double) 100 / (double) 150 ) );
-            this.repaint();
-        }
     }
 
     @Override
     public void paint( Graphics g ) {
-
         if ( this.getWidth() != frameDim.getWidth() || this.getHeight() != frameDim.getHeight() ) {
             if ( ows7url != null ) {
-                this.gen.initImage( ows7url, mP.getBounds(), margin );
+                this.scenePanel2D.initImage( ows7url, scenePanel2D.getBounds(), margin );
             }
 
         }
-        this.getContentPane().repaint();
-    }
+        super.paint( g );
 
-    private Point getCenterPoint( Component comp ) {
-        double x = (double) comp.getWidth() / 2;
-        double y = (double) comp.getHeight() / 2;
-        return new GeometryFactory().createPoint( "CenterPoint", x, y, null );
-    }
-
-    private void getImageForViewer( Envelope env, boolean isMarginOver ) {
-        frameDim.setSize( new Dimension( this.getWidth(), this.getHeight() ) );
-        if ( ows7url != null ) {
-
-            gen.paintScreen( env, isMarginOver );
-
-        }
     }
 
     /**
