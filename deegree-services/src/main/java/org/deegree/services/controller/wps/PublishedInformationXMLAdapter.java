@@ -41,7 +41,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.services.controller.wps.configuration.PublishedInformation;
+import org.deegree.services.jaxb.wps.PublishedInformation;
 
 /**
  * TODO add documentation here
@@ -56,7 +56,7 @@ public class PublishedInformationXMLAdapter extends XMLAdapter  {
     public PublishedInformation parse() {
         PublishedInformation pi = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.controller.wps.configuration" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             pi = (PublishedInformation) unmarshaller.unmarshal( rootElement.getXMLStreamReaderWithoutCaching() );
         } catch ( JAXBException e ) {

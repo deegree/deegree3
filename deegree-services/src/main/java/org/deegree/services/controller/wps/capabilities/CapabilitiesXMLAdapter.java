@@ -46,8 +46,8 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.jaxb.metadata.DCPType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.wps.processdefinition.ProcessDefinition;
-import org.deegree.services.wps.processdefinition.ProcessDefinition.Metadata;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
 
 /**
  * Responsible for the generation of WPS GetCapabilities response documents.

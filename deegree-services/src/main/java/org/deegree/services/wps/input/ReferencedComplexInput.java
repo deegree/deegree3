@@ -47,8 +47,8 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.services.wps.processdefinition.ComplexFormatType;
-import org.deegree.services.wps.processdefinition.ComplexInputDefinition;
+import org.deegree.services.jaxb.wps.ComplexFormatType;
+import org.deegree.services.jaxb.wps.ComplexInputDefinition;
 
 /**
  * A {@link ComplexInputImpl} with a value that is given as a reference to a web-accessible resource.

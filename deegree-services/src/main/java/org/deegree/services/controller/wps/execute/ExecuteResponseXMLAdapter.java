@@ -67,9 +67,9 @@ import org.deegree.services.wps.output.ComplexOutputImpl;
 import org.deegree.services.wps.output.LiteralOutputImpl;
 import org.deegree.services.wps.output.ProcessletOutput;
 import org.deegree.services.wps.output.ProcessletOutputImpl;
-import org.deegree.services.wps.processdefinition.ProcessDefinition;
-import org.deegree.services.wps.processdefinition.ProcessletOutputDefinition;
-import org.deegree.services.wps.processdefinition.ProcessDefinition.Metadata;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
+import org.deegree.services.jaxb.wps.ProcessDefinition.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

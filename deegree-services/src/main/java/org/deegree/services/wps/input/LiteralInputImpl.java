@@ -39,8 +39,8 @@ package org.deegree.services.wps.input;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
-import org.deegree.services.wps.processdefinition.LiteralInputDefinition;
-import org.deegree.services.wps.processdefinition.LiteralInputDefinition.DataType;
+import org.deegree.services.jaxb.wps.LiteralInputDefinition;
+import org.deegree.services.jaxb.wps.LiteralInputDefinition.DataType;
 
 /**
  * A literal data {@link ProcessletInput} parameter of a simple quantity (e.g., one number) with optional UOM

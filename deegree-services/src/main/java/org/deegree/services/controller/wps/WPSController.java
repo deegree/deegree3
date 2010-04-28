@@ -99,7 +99,6 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.wps.capabilities.CapabilitiesXMLAdapter;
-import org.deegree.services.controller.wps.configuration.PublishedInformation;
 import org.deegree.services.controller.wps.describeprocess.DescribeProcessResponseXMLAdapter;
 import org.deegree.services.controller.wps.execute.ExecuteRequest;
 import org.deegree.services.controller.wps.execute.ExecuteRequestKVPAdapter;
@@ -110,12 +109,13 @@ import org.deegree.services.controller.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.controller.wps.storage.StorageManager;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.jaxb.wps.PublishedInformation;
+import org.deegree.services.jaxb.wps.ServiceConfiguration;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.WPService;
 import org.deegree.services.wps.annotations.ProcessDescription;
 import org.deegree.services.wps.ap.wcts.TransformCoordinates;
-import org.deegree.services.wps.configuration.ServiceConfiguration;
-import org.deegree.services.wps.processdefinition.ProcessDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,7 +180,7 @@ public class WPSController extends AbstractOGCServiceController {
 
         // Get ServiceConfiguration from configFile
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.configuration" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps" );
             Unmarshaller u = jc.createUnmarshaller();
             OMElement serviceConfigurationElement = controllerConf.getRequiredElement(
                                                                                        controllerConf.getRootElement(),
@@ -247,7 +247,7 @@ public class WPSController extends AbstractOGCServiceController {
             try {
                 // for the datasources an the commons package
                 // :org.deegree.commons.datasource.configuration:org.deegree.commons.configuration
-                JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.processdefinition:org.deegree.commons.datasource.configuration:org.deegree.commons.configuration" );
+                JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.jaxb.wps:org.deegree.commons.datasource.configuration:org.deegree.commons.configuration" );
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
                 ProcessDefinition processDef = (ProcessDefinition) unmarshaller.unmarshal( new File( processesDir,
                                                                                                      definitionFile ) );

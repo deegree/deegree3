@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.services.controller.wps.storage.OutputStorage;
-import org.deegree.services.wps.processdefinition.ComplexOutputDefinition;
+import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

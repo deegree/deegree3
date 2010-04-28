@@ -44,11 +44,11 @@ import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.wps.processdefinition.ProcessDefinition;
-import org.deegree.services.wps.processdefinition.ProcessletInputDefinition;
-import org.deegree.services.wps.processdefinition.ProcessletOutputDefinition;
-import org.deegree.services.wps.processdefinition.ProcessDefinition.InputParameters;
-import org.deegree.services.wps.processdefinition.ProcessDefinition.OutputParameters;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
+import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
+import org.deegree.services.jaxb.wps.ProcessDefinition.InputParameters;
+import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

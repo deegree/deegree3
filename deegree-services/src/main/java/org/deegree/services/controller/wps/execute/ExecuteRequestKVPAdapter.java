@@ -59,6 +59,17 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.services.controller.ows.OWSException;
+import org.deegree.services.jaxb.wps.BoundingBoxInputDefinition;
+import org.deegree.services.jaxb.wps.ComplexFormatType;
+import org.deegree.services.jaxb.wps.ComplexInputDefinition;
+import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
+import org.deegree.services.jaxb.wps.LiteralInputDefinition;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.jaxb.wps.ProcessletInputDefinition;
+import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
+import org.deegree.services.jaxb.wps.LiteralInputDefinition.OtherUOM;
+import org.deegree.services.jaxb.wps.ProcessDefinition.InputParameters;
+import org.deegree.services.jaxb.wps.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.example.DefaultExceptionCustomizer;
@@ -70,17 +81,6 @@ import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.LiteralInputImpl;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.input.ReferencedComplexInput;
-import org.deegree.services.wps.processdefinition.BoundingBoxInputDefinition;
-import org.deegree.services.wps.processdefinition.ComplexFormatType;
-import org.deegree.services.wps.processdefinition.ComplexInputDefinition;
-import org.deegree.services.wps.processdefinition.ComplexOutputDefinition;
-import org.deegree.services.wps.processdefinition.LiteralInputDefinition;
-import org.deegree.services.wps.processdefinition.ProcessDefinition;
-import org.deegree.services.wps.processdefinition.ProcessletInputDefinition;
-import org.deegree.services.wps.processdefinition.ProcessletOutputDefinition;
-import org.deegree.services.wps.processdefinition.LiteralInputDefinition.OtherUOM;
-import org.deegree.services.wps.processdefinition.ProcessDefinition.InputParameters;
-import org.deegree.services.wps.processdefinition.ProcessDefinition.OutputParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -674,7 +674,7 @@ public class ExecuteRequestKVPAdapter {
         InputParameters inputParams = processDef.getInputParameters();
         for ( JAXBElement<? extends ProcessletInputDefinition> el : inputParams.getProcessInput() ) {
             LOG.trace( "Defined input type: " + el.getValue().getIdentifier().getValue() );
-            org.deegree.services.wps.processdefinition.CodeType inputId = el.getValue().getIdentifier();
+            org.deegree.services.jaxb.wps.CodeType inputId = el.getValue().getIdentifier();
             if ( equals( identifier, inputId ) ) {
                 inputType = el.getValue();
             }
@@ -693,7 +693,7 @@ public class ExecuteRequestKVPAdapter {
         ProcessletOutputDefinition outputType = null;
         OutputParameters outputParams = processDef.getOutputParameters();
         for ( JAXBElement<? extends ProcessletOutputDefinition> el : outputParams.getProcessOutput() ) {
-            org.deegree.services.wps.processdefinition.CodeType outputId = el.getValue().getIdentifier();
+            org.deegree.services.jaxb.wps.CodeType outputId = el.getValue().getIdentifier();
             if ( equals( identifier, outputId ) ) {
                 outputType = el.getValue();
             }
@@ -704,7 +704,7 @@ public class ExecuteRequestKVPAdapter {
         return outputType;
     }
 
-    private static boolean equals( CodeType codeType, org.deegree.services.wps.processdefinition.CodeType codeType2 ) {
+    private static boolean equals( CodeType codeType, org.deegree.services.jaxb.wps.CodeType codeType2 ) {
         if ( codeType2.getValue().equals( codeType.getCode() ) ) {
             if ( codeType2.getCodeSpace() == null ) {
                 return codeType.getCodeSpace() == null;

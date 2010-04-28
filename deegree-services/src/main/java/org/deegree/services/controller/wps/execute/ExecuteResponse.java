@@ -43,7 +43,7 @@ import org.deegree.services.controller.wps.ProcessletExecution;
 import org.deegree.services.controller.wps.storage.StorageLocation;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.processdefinition.ProcessDefinition;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
 
 /**
  *

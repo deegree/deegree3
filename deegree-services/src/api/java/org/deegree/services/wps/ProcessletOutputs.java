@@ -45,15 +45,15 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.services.jaxb.wps.BoundingBoxOutputDefinition;
+import org.deegree.services.jaxb.wps.ComplexOutputDefinition;
+import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
+import org.deegree.services.jaxb.wps.ProcessletOutputDefinition;
 import org.deegree.services.wps.output.BoundingBoxOutputImpl;
 import org.deegree.services.wps.output.ComplexOutputImpl;
 import org.deegree.services.wps.output.LiteralOutputImpl;
 import org.deegree.services.wps.output.ProcessletOutput;
-import org.deegree.services.wps.processdefinition.BoundingBoxOutputDefinition;
-import org.deegree.services.wps.processdefinition.ComplexOutputDefinition;
-import org.deegree.services.wps.processdefinition.LiteralOutputDefinition;
-import org.deegree.services.wps.processdefinition.ProcessDefinition;
-import org.deegree.services.wps.processdefinition.ProcessletOutputDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

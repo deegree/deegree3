@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:wps="http://www.deegree.org/services/wps" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
-  xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://www.deegree.org/services/wps" elementFormDefault="qualified"
-  attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
-  <annotation>
-    <appinfo>
-      <jaxb:schemaBindings>
-        <jaxb:package name="org.deegree.services.wps.processdefinition" />
-      </jaxb:schemaBindings>
-    </appinfo>
-  </annotation>
-
+  xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://www.deegree.org/services/wps"
+  elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
   <import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd" />
-  <import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.5.0/commons.xsd" />
-
   <!--
     === PROCESS DEFINITION ===
   -->
   <element name="ProcessDefinition">
     <complexType>
-      <sequence> 
+      <sequence>
         <element name="Identifier" type="wps:CodeType" />
         <element name="JavaClass" type="string" />
         <element name="Title" type="wps:LanguageStringType" />
@@ -49,9 +40,12 @@
         <element name="InputParameters" minOccurs="0">
           <annotation>
             <documentation>
-              List of the inputs to this process. In almost all cases, at least one process input is required. However, no process inputs may be
-              identified when all the inputs are predetermined fixed resources. In this case, those resources shall be identified in the Abstract
-              element that describes the process.
+              List of the inputs to this process. In almost all cases, at least one process input is
+              required. However, no process inputs may be
+              identified when all the inputs are predetermined fixed
+              resources. In this case, those resources shall be identified in the Abstract
+              element that describes the
+              process.
             </documentation>
           </annotation>
           <complexType>
@@ -75,19 +69,28 @@
       <attribute name="processVersion" type="string" use="required">
         <annotation>
           <documentation>
-            Release version of this Process, included when a process version needs to be included for clarification about the process to be used. It
-            is possible that a WPS supports a process with different versions due to reasons such as modifications of process algorithms. Notice that
-            this is the version identifier for the process, not the version of the WPS interface. The processVersion is informative only. Version
-            negotiation for processVersion is not available. Requests to Execute a process do not include a processVersion identifier.
+            Release version of this Process, included when a process version needs to be included for
+            clarification about the process to be used. It
+            is possible that a WPS supports a process with different
+            versions due to reasons such as modifications of process algorithms. Notice that
+            this is the version
+            identifier for the process, not the version of the WPS interface. The processVersion is informative only.
+            Version
+            negotiation for processVersion is not available. Requests to Execute a process do not include a
+            processVersion identifier.
           </documentation>
         </annotation>
       </attribute>
       <attribute name="storeSupported" type="boolean" use="optional" default="false">
         <annotation>
           <documentation>
-            Indicates if ComplexData outputs from this process can be stored by the WPS server as web-accessible resources. If "storeSupported" is
-            "true", the Execute operation request may include "asReference" equals "true" for any complex output, directing that the output of the
-            process be stored so that the client can retrieve it as required. By default for this process, storage is not supported and all outputs
+            Indicates if ComplexData outputs from this process can be stored by the WPS server as
+            web-accessible resources. If "storeSupported" is
+            "true", the Execute operation request may include
+            "asReference" equals "true" for any complex output, directing that the output of the
+            process be stored so
+            that the client can retrieve it as required. By default for this process, storage is not supported and all
+            outputs
             are returned encoded in the Execute response.
           </documentation>
         </annotation>
@@ -95,9 +98,12 @@
       <attribute name="statusSupported" type="boolean" use="optional" default="false">
         <annotation>
           <documentation>
-            Indicates if ongoing status information can be provided for this process. If "true", the Status element of the stored Execute response
-            document shall be kept up to date. If "false" then the Status element shall not be updated until processing is complete. By default,
-            status information is not provided for this process.
+            Indicates if ongoing status information can be provided for this process. If "true", the Status
+            element of the stored Execute response
+            document shall be kept up to date. If "false" then the Status element
+            shall not be updated until processing is complete. By default,
+            status information is not provided for this
+            process.
           </documentation>
         </annotation>
       </attribute>
@@ -136,7 +142,8 @@
     <attribute name="minOccurs" type="nonNegativeInteger" use="optional">
       <annotation>
         <documentation>
-          The minimum number of times that values for this parameter are required in an Execute request. If "0", this data input is optional. If
+          The minimum number of times that values for this parameter are required in an Execute request. If
+          "0", this data input is optional. If
           greater than "0" then this process input is required.
         </documentation>
       </annotation>
@@ -144,8 +151,10 @@
     <attribute name="maxOccurs" type="positiveInteger" use="optional">
       <annotation>
         <documentation>
-          The maximum number of times that values for this parameter are permitted in an Execute request. If "1" then this parameter may appear only
-          once in an Execute request. If greater than "1", then this input parameter may appear that many times in an Execute request.
+          The maximum number of times that values for this parameter are permitted in an Execute request.
+          If "1" then this parameter may appear only
+          once in an Execute request. If greater than "1", then this input
+          parameter may appear that many times in an Execute request.
         </documentation>
       </annotation>
     </attribute>
@@ -217,7 +226,8 @@
       <attribute name="rangeClosure" default="closed">
         <annotation>
           <documentation>
-            Specifies which of the minimum and maximum values are included in the range. Note that plus and minus infinity are considered closed
+            Specifies which of the minimum and maximum values are included in the range. Note that plus and
+            minus infinity are considered closed
             bounds.
           </documentation>
         </annotation>
@@ -236,14 +246,16 @@
             <enumeration value="open-closed">
               <annotation>
                 <documentation>
-                  The specified minimum value is NOT included in this range, and the specified maximum value IS included in this range.
+                  The specified minimum value is NOT included in this range, and the specified maximum
+                  value IS included in this range.
                 </documentation>
               </annotation>
             </enumeration>
             <enumeration value="closed-open">
               <annotation>
                 <documentation>
-                  The specified minimum value IS included in this range, and the specified maximum value is NOT included in this range.
+                  The specified minimum value IS included in this range, and the specified maximum value is
+                  NOT included in this range.
                 </documentation>
               </annotation>
             </enumeration>
@@ -299,7 +311,8 @@
           <attribute name="maximumMegabytes" type="integer" use="optional">
             <annotation>
               <documentation>
-                The maximum file size, in megabytes, of this input. If the input exceeds this size, the server will return an error instead of
+                The maximum file size, in megabytes, of this input. If the input exceeds this size, the
+                server will return an error instead of
                 processing the inputs.
               </documentation>
             </annotation>
@@ -437,11 +450,14 @@
   <complexType name="CodeType">
     <annotation>
       <documentation>
-        Name or code with an (optional) authority. If the codeSpace attribute is present, its value shall reference a dictionary, thesaurus, or
-        authority for the name or code, such as the organisation who assigned the value, or the dictionary from which it is taken.
+        Name or code with an (optional) authority. If the codeSpace attribute is present, its value shall
+        reference a dictionary, thesaurus, or
+        authority for the name or code, such as the organisation who assigned the
+        value, or the dictionary from which it is taken.
       </documentation>
       <documentation>
-        Type copied from basicTypes.xsd of GML 3 with documentation edited, for possible use outside the ServiceIdentification section of a service
+        Type copied from basicTypes.xsd of GML 3 with documentation edited, for possible use outside the
+        ServiceIdentification section of a service
         metadata document.
       </documentation>
     </annotation>
@@ -454,7 +470,8 @@
   <complexType name="LanguageStringType">
     <annotation>
       <documentation>
-        Text string with the language of the string identified as recommended in the XML 1.0 W3C Recommendation, section 2.12.
+        Text string with the language of the string identified as recommended in the XML 1.0 W3C
+        Recommendation, section 2.12.
       </documentation>
     </annotation>
     <simpleContent>

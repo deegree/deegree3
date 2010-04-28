@@ -39,7 +39,7 @@ package org.deegree.services.wps.output;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.services.wps.processdefinition.BoundingBoxOutputDefinition;
+import org.deegree.services.jaxb.wps.BoundingBoxOutputDefinition;
 
 /**
  * Identifies this {@link ProcessletOutput} to be a bounding box and provides a method for setting it.

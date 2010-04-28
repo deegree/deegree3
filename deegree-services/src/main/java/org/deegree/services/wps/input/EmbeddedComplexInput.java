@@ -45,8 +45,8 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.services.wps.processdefinition.ComplexFormatType;
-import org.deegree.services.wps.processdefinition.ComplexInputDefinition;
+import org.deegree.services.jaxb.wps.ComplexFormatType;
+import org.deegree.services.jaxb.wps.ComplexInputDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

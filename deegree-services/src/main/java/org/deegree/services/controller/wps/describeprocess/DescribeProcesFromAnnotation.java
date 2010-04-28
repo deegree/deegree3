@@ -45,6 +45,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.jaxb.wps.ProcessDefinition;
 import org.deegree.services.wps.annotations.ProcessDescription;
 import org.deegree.services.wps.annotations.commons.BBox;
 import org.deegree.services.wps.annotations.commons.ComplexFormat;
@@ -59,7 +60,6 @@ import org.deegree.services.wps.annotations.input.ValueType;
 import org.deegree.services.wps.annotations.output.CmplxOutput;
 import org.deegree.services.wps.annotations.output.LitOutput;
 import org.deegree.services.wps.annotations.output.OutputParameter;
-import org.deegree.services.wps.processdefinition.ProcessDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

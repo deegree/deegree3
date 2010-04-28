@@ -39,8 +39,8 @@ package org.deegree.services.wps.output;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.services.wps.processdefinition.LiteralOutputDefinition;
-import org.deegree.services.wps.processdefinition.LiteralOutputDefinition.OtherUOM;
+import org.deegree.services.jaxb.wps.LiteralOutputDefinition;
+import org.deegree.services.jaxb.wps.LiteralOutputDefinition.OtherUOM;
 
 /**
  * Implementation of {@link LiteralOutput}.
