@@ -372,12 +372,12 @@ public class CacheRasterReader extends GridFileReader {
         boolean result = true;
         synchronized ( LOCK ) {
             super.dispose();
-            File f = super.file();
+            File f = file();
             if ( f != null ) {
-                if ( f.exists() && f.isDirectory() ) {
+                if ( f.exists() && f.isFile() ) {
                     result = f.delete();
-                    File metaInfo = GridMetaInfoFile.fileNameFromOptions( file().getParent(),
-                                                                          FileUtils.getFilename( file() ), null );
+                    File metaInfo = GridMetaInfoFile.fileNameFromOptions( f.getParent(), FileUtils.getFilename( f ),
+                                                                          null );
                     if ( metaInfo.exists() ) {
                         boolean mR = metaInfo.delete();
                         if ( !mR ) {
@@ -478,6 +478,13 @@ public class CacheRasterReader extends GridFileReader {
      */
     public void flush() {
         writeCache( false );
+    }
+
+    /**
+     * @return true if this reader can create a cachefile for it's in memory buffers.
+     */
+    public boolean canCreateCacheFile() {
+        return gridWriter != null;
     }
 
     private String createId( int width, int height, RasterDataInfo rdi, RasterGeoReference geoRef ) {
@@ -621,8 +628,11 @@ public class CacheRasterReader extends GridFileReader {
                                 if ( !entry.isOnFile() ) {
                                     if ( entry.isInMemory() ) {
                                         try {
-                                            gridWriter.writeTile( column, row, entry.getBuffer() );
-                                            rewriteInfo = true;
+                                            boolean onFile = gridWriter.writeTile( column, row, entry.getBuffer() );
+                                            entry.setTileOnFile( onFile );
+                                            if ( !rewriteInfo ) {
+                                                rewriteInfo = onFile;
+                                            }
                                         } catch ( IOException e ) {
                                             if ( LOG.isDebugEnabled() ) {
                                                 LOG.debug(
@@ -665,8 +675,8 @@ public class CacheRasterReader extends GridFileReader {
             File metaInfo = GridMetaInfoFile.fileNameFromOptions( file().getParent(), FileUtils.getFilename( file() ),
                                                                   null );
             boolean[][] tilesOnFiles = new boolean[getTileRows()][getTileColumns()];
-            for ( int row = 0; row <= getTileRows(); ++row ) {
-                for ( int col = 0; col <= getTileColumns(); ++col ) {
+            for ( int row = 0; row < getTileRows(); ++row ) {
+                for ( int col = 0; col < getTileColumns(); ++col ) {
                     TileEntry entry = getEntry( col, row );
                     tilesOnFiles[row][col] = ( entry != null && entry.isOnFile() );
                 }

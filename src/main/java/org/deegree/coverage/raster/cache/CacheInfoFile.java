@@ -137,7 +137,7 @@ public class CacheInfoFile extends GridMetaInfoFile {
             for ( int row = 0; row < info.tilesOnFile.length; ++row ) {
                 StringBuilder sb = new StringBuilder();
                 for ( int col = 0; col < info.tilesOnFile[row].length; ++col ) {
-                    sb.append( ( info.tilesOnFile[row][col] ) ? 0 : 1 );
+                    sb.append( ( info.tilesOnFile[row][col] ) ? 1 : 0 );
                 }
                 writer.println( sb.toString() );
             }

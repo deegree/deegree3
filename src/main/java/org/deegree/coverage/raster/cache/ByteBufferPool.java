@@ -56,12 +56,6 @@ import org.slf4j.Logger;
 public class ByteBufferPool {
     private static final Logger LOG = getLogger( ByteBufferPool.class );
 
-    static long requestedMemory = 0;
-
-    // private static double CACHE_REFRESH_SIZE = RasterCache.getMaximumCacheMemory() * 0.5;
-    //
-    // private static final String lock = "lock";
-
     /**
      * Frees up raster memory and than allocates the ByteBuffer.
      * 
@@ -72,24 +66,9 @@ public class ByteBufferPool {
      */
     public static ByteBuffer allocate( int size, boolean direct, boolean forCache ) {
         if ( forCache ) {
-            // synchronized ( lock ) {
-            // requestedMemory += size;
-            // if ( requestedMemory > CACHE_REFRESH_SIZE ) {
-            // new Thread( new Runnable() {
-            //
-            // @Override
-            // public void run() {
-            // requestedMemory = 0;
-            // RasterCache.updateCurrentlyUsedMemory();
-            // }
-            // } ).start();
-            // }
-            //
-            // }
             LOG.debug( "Requested{}memory: {} MB", ( forCache ? " cache " : " " ), ( size / ( 1024 * 1024d ) ) );
             RasterCache.freeMemory( size );
         }
-        // LOG.info( "currently used cache memory: {} MB", ( freeMem / ( 1024d * 1024 ) ) );
         if ( direct ) {
             return ByteBuffer.allocateDirect( size );
         }
@@ -106,5 +85,4 @@ public class ByteBufferPool {
     public static ByteBuffer allocate( int size, boolean directAllocation ) {
         return allocate( size, directAllocation, false );
     }
-
 }
