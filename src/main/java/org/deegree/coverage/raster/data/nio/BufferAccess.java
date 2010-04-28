@@ -313,8 +313,8 @@ public class BufferAccess {
                     createMaxView( dataRect );
                 }
                 if ( newData.capacity() < requiredBufferSize() ) {
-                    System.out.println( "required: " + requiredBufferSize() );
-                    System.out.println( "size: " + newData.capacity() );
+                    // System.out.println( "required: " + requiredBufferSize() );
+                    // System.out.println( "size: " + newData.capacity() );
                     LOG.error( "The given byteBuffer does not contain enough space for the current view." );
                     return;
                 }
