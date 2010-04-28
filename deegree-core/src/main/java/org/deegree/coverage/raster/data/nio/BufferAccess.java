@@ -133,10 +133,10 @@ public class BufferAccess {
         // if ( maxViewData == null ) {
         // maxViewData = new RasterRect( 0, 0, 0, 0 );
         // }
-        maxViewData = viewOnData;
+        maxViewData = RasterRect.intersection( viewOnData, maxViewData );
         // this.dataInfo = viewOnData.dataInfo;
-        this.maxDataHeight = viewOnData.height;
-        this.maxDataWidth = viewOnData.width;
+        this.maxDataHeight = maxViewData.height;
+        this.maxDataWidth = maxViewData.width;
         // the data was freshly set, the line stride must be recalculated.
         this.lineStride = maxDataWidth * pixelStride;
 
@@ -313,6 +313,8 @@ public class BufferAccess {
                     createMaxView( dataRect );
                 }
                 if ( newData.capacity() < requiredBufferSize() ) {
+                    System.out.println( "required: " + requiredBufferSize() );
+                    System.out.println( "size: " + newData.capacity() );
                     LOG.error( "The given byteBuffer does not contain enough space for the current view." );
                     return;
                 }
