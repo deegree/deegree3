@@ -230,17 +230,18 @@ public class FeatureLayer extends Layer {
         }
 
         QName featureType = style == null ? null : style.getFeatureType();
+        Integer maxFeats = gm.getMaxFeatures().get( this );
+        final int maxFeatures = maxFeats == null ? -1 : maxFeats;
         if ( featureType == null ) {
             queries.addAll( map( datastore.getSchema().getFeatureTypes( null, false, false ),
                                  new Mapper<Query, FeatureType>() {
                                      public Query apply( FeatureType u ) {
                                          return new Query( u.getName(), bbox, filter, true, round( gm.getScale() ),
-                                                           gm.getMaxFeatures().get( this ) );
+                                                           maxFeatures );
                                      }
                                  } ) );
         } else {
-            Query query = new Query( featureType, bbox, filter, true, round( gm.getScale() ),
-                                     gm.getMaxFeatures().get( this ) );
+            Query query = new Query( featureType, bbox, filter, true, round( gm.getScale() ), maxFeatures );
             queries.add( query );
         }
         return dimFilter == null ? new LinkedList<String>() : dimFilter.second;

@@ -162,10 +162,12 @@ public class DynamicSQLLayer extends Layer {
             defStyles.add( styles.getStyle( code ) );
         }
 
+        Integer maxFeats = gm.getMaxFeatures().get( this );
+        int maxFeatures = maxFeats == null ? -1 : maxFeats;
         FeatureResultSet rs = null;
         try {
             rs = datastore.query( new Query( datastore.getFeatureType().getName(), gm.getBoundingBox(), null, true,
-                                             round( gm.getScale() ), gm.getMaxFeatures().get( this ) ) );
+                                             round( gm.getScale() ), maxFeatures ) );
 
             for ( Feature f : rs ) {
                 if ( style != null ) {
