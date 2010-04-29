@@ -1,0 +1,36 @@
+ul#horizontalList {
+	margin: 0;
+	padding: 0.8em;
+	text-align: center;
+}
+
+ul#horizontalList li {
+	list-style: none;
+	display: inline;
+	margin: 0.4em;
+	padding: 0;
+}
+
+ul#horizontalList a,ul#horizontalList span {
+	padding: 0.2em 1em;
+	text-decoration: none;
+	font-weight: bold;
+	border: 1px solid black;
+	border-left-color: white;
+	border-top-color: white;
+	color: maroon;
+	background-color: #ccc;
+}
+
+* html ul#horizontalList a,* html ul#horizontalList span {
+	width: 1em; /* nur fuer IE 5.0x erforderlich */
+	w /idth: auto; /* sicherheitshalber fuer IE 6 zurueckgesetzt */
+}
+
+ul#horizontalList a:hover,ul#horizontalList span {
+	border-color: white;
+	border-left-color: black;
+	border-top-color: black;
+	color: white;
+	background-color: gray;
+}

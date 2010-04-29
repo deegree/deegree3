@@ -1,0 +1,148 @@
+body {
+	padding: 0px;
+	margin: 0px;
+	background-color: white;
+}
+
+#container {
+	margin: 0em auto;
+	width: 1000px;
+}
+
+#header {
+	height: 100px;
+	margin: 10px;
+	background-color: #ff0;
+}
+
+#center {
+	position: relative;
+	width: 100%;
+	min-height: 300px;
+}
+
+#leftBox {
+	position: absolute;
+	top: 0px;
+	left: 10px;
+	width: 160px;
+	height: 300px;
+	background-color: #fc0;
+}
+
+#content {
+	margin: 0px 180px;
+	background-color: #ffffc6;
+}
+
+#navHead {
+	margin: 0em auto;
+	margin-bottom: 10px;
+}
+
+#main {
+	margin: 0em auto;
+}
+
+#rightBox {
+	position: absolute;
+	top: 0px;
+	right: 10px;
+	width: 160px;
+	height: 300px;
+	background-color: #fc0;
+}
+
+#footer {
+	height: 50px;
+	margin: 10px;
+	background-color: #ff0;
+}
+/*
+.error td {
+	border: 3px solid black;
+	background-color: red;
+	color: white;
+	padding: 5px;
+}
+
+body,html {
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	font: 85% arial, hevetica, sans-serif;
+	text-align: center;
+	color: #333;
+}
+
+#container {
+	margin: 0em auto;
+	width: 1002px;
+	text-align: center;
+	background-color: white;
+	border: 1px solid #CCCCCC;
+}
+
+#header {
+	width: 1002px;
+	background-repeat: no-repeat;
+	border: 0px solid yellow;
+	position: relative;
+	background-color: white;
+	margin: 0px;
+}
+
+#navHead {
+	height: 20px;
+	background-color: white;
+	position: static;
+	border-top: 1px solid #932724;
+	margin: 0px;
+	padding-left: 1px;
+	color: black;
+}
+
+#navCon {
+	float: left;
+	width: 165px;
+	border-right: 1px solid #C5C877;
+	padding-right: 10px;
+	padding-left: 5px
+}
+
+#content {
+	background-image: url(css-images/hg.jpg);
+	background-repeat: no-repeat;
+	background-position: right bottom;
+	width: 992px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	padding-top: 10px;
+	padding-bottom: 50px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border-top: 1px solid #CCCCCC;
+	border-bottom: 1px solid #cccccc;
+	clear: both;
+}
+
+#content p {
+	line-height: 165%;
+}
+
+#footer {
+	clear: both;
+	color: black;
+	text-align: center;
+	font-size: 90%;
+	background-color: #FFFFFF;
+	padding: 0px;
+	font-size: 90%;
+	border-top: 0px solid #CCCCCC;
+	width: 990px;
+	border-bottom: 0px solid maroon;
+	border-left: 0px solid maroon;
+	border-right: 0px solid maroon;
+}*/
