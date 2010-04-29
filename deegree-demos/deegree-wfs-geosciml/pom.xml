@@ -5,7 +5,7 @@
   <artifactId>deegree-wfs-geosciml</artifactId>
   <packaging>war</packaging>
   <version>3.0-SNAPSHOT</version>
-  <name>deegree-wfs-cite110 Webapp</name>
+  <name>deegree WFS GeoSciML demo</name>
   <url>http://www.deegree.org</url>
   <parent>
     <groupId>org.deegree</groupId>
