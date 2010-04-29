@@ -80,11 +80,11 @@ public class FeatureStoreManager {
             nsToProvider = new HashMap<String, FeatureStoreProvider>();
             try {
                 for ( FeatureStoreProvider provider : fsProviderLoader ) {
-                    LOG.info ("Feature store provider: " + provider + ", namespace: " + provider.getConfigNamespace());
+                    LOG.debug( "Feature store provider: " + provider + ", namespace: " + provider.getConfigNamespace() );
                     if ( nsToProvider.containsKey( provider.getConfigNamespace() ) ) {
                         LOG.error( "Multiple feature store providers for config namespace: '"
-                                   + provider.getConfigNamespace() + "' on classpath -- omitting provider '" + provider
-                                   + "'." );
+                                   + provider.getConfigNamespace() + "' on classpath -- omitting provider '"
+                                   + provider.getClass().getName() + "'." );
                         continue;
                     }
                     nsToProvider.put( provider.getConfigNamespace(), provider );
@@ -107,7 +107,6 @@ public class FeatureStoreManager {
         File[] fsConfigFiles = fsDir.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
-                // TODO Auto-generated method stub
                 return name.toLowerCase().endsWith( ".xml" );
             }
         } );
@@ -170,7 +169,7 @@ public class FeatureStoreManager {
             LOG.error( msg );
             throw new FeatureStoreException( msg );
         }
-        LOG.info( "Config namespace: " + namespace );
+        LOG.debug( "Config namespace: '" + namespace  + "'");
         FeatureStoreProvider provider = getProviders().get( namespace );
         if ( provider == null ) {
             String msg = "No feature store provider for namespace '" + namespace + "' (file: '" + configURL
@@ -190,7 +189,7 @@ public class FeatureStoreManager {
                 String msg = Messages.getMessage( "STORE_MANAGER_DUPLICATE_ID", id );
                 throw new FeatureStoreException( msg );
             }
-            LOG.info( "Registering global feature store (" + fs + ") with id '" + id + "'." );
+            LOG.info( "Registering global feature store with id '" + id + "', type: '" + fs.getClass().getName() + "'");
             idToFs.put( id, fs );
         }
     }

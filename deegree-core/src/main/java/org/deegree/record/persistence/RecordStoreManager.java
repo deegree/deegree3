@@ -182,7 +182,5 @@ public class RecordStoreManager {
                 LOG.error( "Error initializing feature store: " + e.getMessage(), e );
             }
         }
-
     }
-
 }

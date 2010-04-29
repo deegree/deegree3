@@ -1006,6 +1006,7 @@ public class OGCFrontController extends HttpServlet {
             initJDBCConnections();
             initFeatureStores();
             initCoverageStores();
+            initRecordStores();
             initWebServices( resolvedConfigURL );
 
         } catch ( NoClassDefFoundError e ) {
@@ -1196,7 +1197,7 @@ public class OGCFrontController extends HttpServlet {
         if ( jdbcDir != null && jdbcDir.exists() ) {
             ConnectionManager.init( jdbcDir );
         } else {
-            LOG.info( "No 'jdbc' directory -- skipping initialization of feature stores." );
+            LOG.info( "No 'jdbc' directory -- skipping initialization of JDBC connection pools." );
         }
         LOG.info( "" );
     }
