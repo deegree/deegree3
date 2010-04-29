@@ -53,7 +53,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.FeatureResultSet;
 import org.deegree.feature.persistence.query.Query;
-import org.deegree.feature.persistence.simplesql.SimpleSQLDatastore;
+import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.feature.property.Property;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
@@ -91,7 +91,7 @@ public class DynamicSQLLayer extends Layer {
 
     private PostgreSQLReader styles;
 
-    private SimpleSQLDatastore datastore;
+    private SimpleSQLFeatureStore datastore;
 
     /**
      * @param name
@@ -102,7 +102,7 @@ public class DynamicSQLLayer extends Layer {
      * @param symbolCodes
      * @param symbolField
      */
-    public DynamicSQLLayer( String name, String title, Layer parent, SimpleSQLDatastore datastore,
+    public DynamicSQLLayer( String name, String title, Layer parent, SimpleSQLFeatureStore datastore,
                             PostgreSQLReader styles, Collection<Integer> symbolCodes, String symbolField ) {
         super( name, title, parent );
         this.datastore = datastore;

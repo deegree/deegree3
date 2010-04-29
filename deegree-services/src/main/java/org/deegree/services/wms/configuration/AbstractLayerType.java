@@ -27,19 +27,13 @@ import org.deegree.commons.datasource.configuration.AbstractWebBasedDataSourceTy
 import org.deegree.commons.datasource.configuration.ConstrainedDatabaseDataSourceType;
 import org.deegree.commons.datasource.configuration.DCRecordStoreType;
 import org.deegree.commons.datasource.configuration.DatabaseDataSourceType;
-import org.deegree.commons.datasource.configuration.DirectSQLDataSourceType;
 import org.deegree.commons.datasource.configuration.ElevationModelDataSource;
-import org.deegree.commons.datasource.configuration.FeatureStoreReferenceType;
-import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.FileSystemDataSourceType;
 import org.deegree.commons.datasource.configuration.GeospatialFileSystemDataSourceType;
 import org.deegree.commons.datasource.configuration.ISORecordStoreType;
-import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.MultiResolutionDataSource;
-import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
 import org.deegree.commons.datasource.configuration.RasterDataSource;
 import org.deegree.commons.datasource.configuration.RecordStoreType;
-import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
 import org.deegree.commons.datasource.configuration.WMSDataSourceType;
 import org.deegree.services.jaxb.metadata.KeywordsType;
 

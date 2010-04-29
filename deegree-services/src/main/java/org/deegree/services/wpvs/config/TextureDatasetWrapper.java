@@ -48,7 +48,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLInputFactory;
 
 import org.deegree.commons.datasource.configuration.AbstractGeospatialDataSourceType;
-import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MultiResolutionDataSource;
 import org.deegree.commons.datasource.configuration.RasterDataSource;
 import org.deegree.commons.datasource.configuration.RasterFileSetType;
@@ -235,13 +234,16 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
             }
         } else {
             StyledGeometryProvider ctDS = textureDataset.getStyledGeometryProvider();
-            JAXBElement<? extends FeatureStoreType> featureStore = ctDS.getFeatureStore();
-            FeatureStore store;
-            try {
-                store = FeatureStoreManager.create( featureStore.getValue(), adapter.getSystemId() );
-            } catch ( FeatureStoreException e ) {
-                throw new IOException( "Could not create a feature store because: " + e.getLocalizedMessage(), e );
-            }
+
+            // TODO configure / lookup feature store from FeatureStoreManager by id!!
+
+//            JAXBElement<? extends FeatureStoreType> featureStore = ctDS.getFeatureStore();
+            FeatureStore store = null;
+//            try {
+//                store = FeatureStoreManager.create( featureStore.getValue(), adapter.getSystemId() );
+//            } catch ( FeatureStoreException e ) {
+//                throw new IOException( "Could not create a feature store because: " + e.getLocalizedMessage(), e );
+//            }
 
             String unresolved = ctDS.getSEStyleFile();
             if ( unresolved == null ) {

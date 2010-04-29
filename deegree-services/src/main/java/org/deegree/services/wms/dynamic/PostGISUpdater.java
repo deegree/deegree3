@@ -55,7 +55,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.simplesql.SimpleSQLDatastore;
+import org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStore;
 import org.deegree.rendering.r2d.se.parser.PostgreSQLReader;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.model.layers.DynamicSQLLayer;
@@ -83,7 +83,7 @@ public class PostGISUpdater extends LayerUpdater {
 
     private final HashMap<StringPair, DynamicSQLLayer> layers = new HashMap<StringPair, DynamicSQLLayer>();
 
-    private final HashMap<String, SimpleSQLDatastore> stores = new HashMap<String, SimpleSQLDatastore>();
+    private final HashMap<String, SimpleSQLFeatureStore> stores = new HashMap<String, SimpleSQLFeatureStore>();
 
     private PostgreSQLReader styles;
 
@@ -216,11 +216,11 @@ public class PostGISUpdater extends LayerUpdater {
                     bbox = queries.second;
                 }
 
-                SimpleSQLDatastore ds = stores.get( sourcequery + crs + namespace );
+                SimpleSQLFeatureStore ds = stores.get( sourcequery + crs + namespace );
                 if ( ds == null ) {
                     changed = true;
                     layers.remove( new StringPair( name, title ) );
-                    ds = new SimpleSQLDatastore( connectionid, crs, sourcequery, name == null ? title : name,
+                    ds = new SimpleSQLFeatureStore( connectionid, crs, sourcequery, name == null ? title : name,
                                                  namespace, bbox, Collections.<Pair<Integer, String>> emptyList() );
                     try {
                         ds.init();

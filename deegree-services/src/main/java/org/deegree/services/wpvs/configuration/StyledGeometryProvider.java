@@ -17,11 +17,6 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
-import org.deegree.commons.datasource.configuration.DirectSQLDataSourceType;
-import org.deegree.commons.datasource.configuration.FeatureStoreType;
-import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
-import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
-import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
 
 
 /**
@@ -67,8 +62,8 @@ public class StyledGeometryProvider {
     protected StyledGeometryProvider.TextureCacheDir textureCacheDir;
     @XmlElement(name = "SE-StyleFile", required = true)
     protected String seStyleFile;
-    @XmlElementRef(name = "FeatureStore", namespace = "http://www.deegree.org/datasource", type = JAXBElement.class)
-    protected JAXBElement<? extends FeatureStoreType> featureStore;
+//    @XmlElementRef(name = "FeatureStore", namespace = "http://www.deegree.org/datasource", type = JAXBElement.class)
+//    protected JAXBElement<? extends FeatureStoreType> featureStore;
     @XmlAttribute(name = "MinimumUnitsPerPixel")
     protected Double minimumUnitsPerPixel;
 
@@ -132,9 +127,9 @@ public class StyledGeometryProvider {
      *     {@link JAXBElement }{@code <}{@link MemoryFeatureStoreType }{@code >}
      *     
      */
-    public JAXBElement<? extends FeatureStoreType> getFeatureStore() {
-        return featureStore;
-    }
+//    public JAXBElement<? extends FeatureStoreType> getFeatureStore() {
+//        return featureStore;
+//    }
 
     /**
      * Sets the value of the featureStore property.
@@ -148,9 +143,9 @@ public class StyledGeometryProvider {
      *     {@link JAXBElement }{@code <}{@link MemoryFeatureStoreType }{@code >}
      *     
      */
-    public void setFeatureStore(JAXBElement<? extends FeatureStoreType> value) {
-        this.featureStore = ((JAXBElement<? extends FeatureStoreType> ) value);
-    }
+//    public void setFeatureStore(JAXBElement<? extends FeatureStoreType> value) {
+//        this.featureStore = ((JAXBElement<? extends FeatureStoreType> ) value);
+//    }
 
     /**
      * Gets the value of the minimumUnitsPerPixel property.

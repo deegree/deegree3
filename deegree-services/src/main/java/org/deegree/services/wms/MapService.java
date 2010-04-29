@@ -102,7 +102,6 @@ import javax.media.jai.operator.ColorQuantizerDescriptor;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MultiResolutionDataSource;
 import org.deegree.commons.datasource.configuration.RasterDataSource;
 import org.deegree.commons.datasource.configuration.WMSDataSourceType;
@@ -344,22 +343,22 @@ public class MapService {
             } else if ( aLayer.getAbstractDataSource().getValue() instanceof WMSDataSourceType ) {
                 res = new RemoteWMSLayer( aLayer, parent,
                                           (WMSDataSourceType) aLayer.getAbstractDataSource().getValue(), adapter );
-            } else if ( aLayer.getAbstractDataSource().getValue() instanceof FeatureStoreType ) {
-                try {
-                    res = new FeatureLayer( aLayer, parent, adapter );
-                } catch ( FileNotFoundException e ) {
-                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
-                                                                                              : aLayer.getName(),
-                              e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace", e );
-                    return null;
-                } catch ( IOException e ) {
-                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
-                                                                                              : aLayer.getName(),
-                              e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace", e );
-                    return null;
-                }
+//            } else if ( aLayer.getAbstractDataSource().getValue() instanceof FeatureStoreType ) {
+//                try {
+//                    res = new FeatureLayer( aLayer, parent, adapter );
+//                } catch ( FileNotFoundException e ) {
+//                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
+//                                                                                              : aLayer.getName(),
+//                              e.getLocalizedMessage() );
+//                    LOG.trace( "Stack trace", e );
+//                    return null;
+//                } catch ( IOException e ) {
+//                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
+//                                                                                              : aLayer.getName(),
+//                              e.getLocalizedMessage() );
+//                    LOG.trace( "Stack trace", e );
+//                    return null;
+//                }
             } else if ( aLayer.getAbstractDataSource().getValue() instanceof MultiResolutionDataSource ) {
                 MultiResolutionDataSource ds = (MultiResolutionDataSource) aLayer.getAbstractDataSource().getValue();
                 res = new RasterLayer( aLayer, parent, fromDatasource( ds, adapter ) );

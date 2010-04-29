@@ -105,9 +105,9 @@ import com.vividsolutions.jts.io.ParseException;
  * @version $Revision$, $Date$
  */
 @LoggingNotes(info = "logs problems when connecting to the DB/getting data from the DB", debug = "logs the SQL statements sent to the SQL server", trace = "logs stack traces")
-public class SimpleSQLDatastore implements FeatureStore {
+public class SimpleSQLFeatureStore implements FeatureStore {
 
-    static final Logger LOG = getLogger( SimpleSQLDatastore.class );
+    static final Logger LOG = getLogger( SimpleSQLFeatureStore.class );
 
     boolean available = false;
 
@@ -142,7 +142,7 @@ public class SimpleSQLDatastore implements FeatureStore {
      * @param bbox
      * @param lods
      */
-    public SimpleSQLDatastore( String connId, String crs, String sql, String featureName, String namespace,
+    public SimpleSQLFeatureStore( String connId, String crs, String sql, String featureName, String namespace,
                                String bbox, List<Pair<Integer, String>> lods ) {
         this.connId = connId;
         this.crs = new CRS( crs );

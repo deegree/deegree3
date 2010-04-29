@@ -55,7 +55,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
@@ -125,12 +124,12 @@ public class FeatureLayer extends Layer {
     public FeatureLayer( AbstractLayerType layer, Layer parent, XMLAdapter adapter ) throws FileNotFoundException,
                             MalformedURLException, IOException {
         super( layer, parent );
-        FeatureStoreType conf = (FeatureStoreType) layer.getAbstractDataSource().getValue();
-        try {
-            datastore = FeatureStoreManager.create( conf, adapter.getSystemId() );
-        } catch ( FeatureStoreException e ) {
-            e.printStackTrace();
-        }
+//        FeatureStoreType conf = (FeatureStoreType) layer.getAbstractDataSource().getValue();
+//        try {
+//            datastore = FeatureStoreManager.create( conf, adapter.getSystemId() );
+//        } catch ( FeatureStoreException e ) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
