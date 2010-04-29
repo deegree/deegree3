@@ -5,7 +5,8 @@
 http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
   <!--
     Nonsense example - it's only for shamelessly boasting deegree's XPath evaluation capabilities.
-    Your invited to try arbitrary XPath (1.0) expressions as PropertyNames, please report if a valid expression does
+
+    You're invited to try arbitrary XPath (1.0) expressions as PropertyNames, please report if a valid expression does
     not work as it should. 
   -->
   <wfs:Query typeName="gsml:ShearDisplacementStructure">
