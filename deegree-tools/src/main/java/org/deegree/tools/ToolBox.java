@@ -96,7 +96,8 @@ public class ToolBox {
                                       new ToolInfo( org.deegree.tools.coverage.rtb.RasterTreeBuilder.class ),
                                       new ToolInfo( org.deegree.tools.crs.PolynomialParameterCreator.class ),
                                       new ToolInfo( org.deegree.tools.feature.gml.GMLSchemaComparator.class ),
-                                      new ToolInfo( org.deegree.tools.rendering.viewer.GLViewer.class ) };
+                                      new ToolInfo( org.deegree.tools.rendering.viewer.GLViewer.class ),
+                                      new ToolInfo( org.deegree.tools.record.importhandling.WPSImporter.class ) };
 
     private synchronized static ToolBox getInstance() {
         if ( instance == null ) {

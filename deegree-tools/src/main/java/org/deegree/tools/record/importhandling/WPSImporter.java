@@ -41,9 +41,12 @@ import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,6 +68,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.record.persistence.neededdatastructures.BoundingBox;
 import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.tools.annotations.Tool;
 
 /**
  * TODO add class documentation here
@@ -74,6 +78,7 @@ import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapte
  * 
  * @version $Revision$, $Date$
  */
+@Tool("At the moment the input is a folder where the transformable datas are stored, the output is in ~/wpsimport/output. ")
 public class WPSImporter extends AbstractDCImporter {
 
     static Map<QName, String> mapping = new HashMap<QName, String>();
@@ -214,11 +219,12 @@ public class WPSImporter extends AbstractDCImporter {
     public static void main( String[] args ) {
         WPSImporter wps;
 
+        File tmpFile = new File( "tmpFile" );
+        tmpFile.mkdir();
+
         FileOutputStream fout;
         try {
-            fout = new FileOutputStream( "/home/steffen/workspace/wpsImport/output/test.xml" );
-
-            // XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
+            fout = new FileOutputStream( tmpFile.getName() + File.separator + "output.xml" );
             XMLStreamWriter writer = new XMLStreamWriterWrapper(
                                                                  XMLOutputFactory.newInstance().createXMLStreamWriter(
                                                                                                                        fout ),
@@ -233,16 +239,21 @@ public class WPSImporter extends AbstractDCImporter {
             writer.writeAttribute( "version", new Version( 2, 0, 2 ).toString() );
             writer.writeStartElement( CSW_202_NS, "Insert" );
 
-            for ( String folder : args ) {
-                System.out.println( folder );
-                File[] files = new File( folder ).listFiles();
-                if ( files != null ) {
-                    for ( File file : files ) {
-                        System.out.print( "File " + file + " will be exported..." );
-                        wps = new WPSImporter( file );
-                        wps.genOutput( writer );
-                        System.out.println( "DONE" );
-                    }
+            String folder = args[0];
+
+            File output = new File( folder + "output" );
+            if ( output.exists() ) {
+                deleteDir( output );
+            }
+            File fileFolder = new File( folder );
+            File[] files = fileFolder.listFiles();
+
+            if ( files != null ) {
+                for ( File file : files ) {
+                    System.out.print( "File " + file + " will be exported..." );
+                    wps = new WPSImporter( file );
+                    wps.genOutput( writer );
+                    System.out.println( "DONE" );
                 }
             }
 
@@ -251,8 +262,16 @@ public class WPSImporter extends AbstractDCImporter {
             writer.writeEndDocument();
             System.out.println( "New file generated." );
 
-            // XMLAdapter.writeElement( xmlWriter, xmlReader );
+            output.mkdir();
+
+            FileOutputStream newOutput = new FileOutputStream( output.getAbsolutePath() + File.separator + "output.xml" );
+            FileInputStream in = new FileInputStream( tmpFile.getName() + File.separator + "output.xml" );
+            System.out.println( "Outputfolder: " + output.getAbsolutePath() + File.separator + "output.xml" );
+            copy( in, newOutput );
+            in.close();
+            newOutput.close();
             fout.close();
+            deleteDir( tmpFile );
 
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
@@ -268,6 +287,42 @@ public class WPSImporter extends AbstractDCImporter {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Copies an InputStream into an OutputStream
+     * 
+     * @param in
+     * @param out
+     * @throws IOException
+     */
+    static void copy( InputStream in, OutputStream out )
+                            throws IOException {
+        byte[] buffer = new byte[0xFFFF];
+        for ( int len; ( len = in.read( buffer ) ) != -1; )
+            out.write( buffer, 0, len );
+    }
+
+    /**
+     * Deletes all files and subdirectories under dir. Returns true if all deletions were successful. If a deletion
+     * fails, the method stops attempting to delete and returns false.
+     * 
+     * @param dir
+     *            directory that should be deleted
+     * @return
+     */
+    public static boolean deleteDir( File dir ) {
+        if ( dir.isDirectory() ) {
+            String[] children = dir.list();
+            for ( int i = 0; i < children.length; i++ ) {
+                boolean success = deleteDir( new File( dir, children[i] ) );
+                if ( !success ) {
+                    return false;
+                }
+            }
+        }
+        // The directory is now empty so delete it
+        return dir.delete();
     }
 
 }
