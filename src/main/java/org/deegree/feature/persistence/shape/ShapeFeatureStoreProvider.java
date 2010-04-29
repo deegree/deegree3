@@ -1,0 +1,111 @@
+//$HeadURL$
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+package org.deegree.feature.persistence.shape;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.cs.CRS;
+import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * {@link FeatureStoreProvider} for the {@link ShapeFeatureStore}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public class ShapeFeatureStoreProvider implements FeatureStoreProvider {
+
+    private static final Logger LOG = LoggerFactory.getLogger( ShapeFeatureStoreProvider.class );
+
+    @Override
+    public String getConfigNamespace() {
+        return "http://www.deegree.org/datasource/feature/shape";
+    }
+
+    @Override
+    public FeatureStore getFeatureStore( URL configURL )
+                            throws FeatureStoreException {
+
+        ShapeFeatureStore fs = null;
+        try {
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.shape.jaxb" );
+            Unmarshaller u = jc.createUnmarshaller();
+            ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) u.unmarshal( configURL );
+            XMLAdapter resolver = new XMLAdapter();
+            resolver.setSystemId( configURL.toString() );            
+
+            String srs = config.getStorageSRS();
+            CRS crs = null;
+            if ( srs != null ) {
+                // rb: if it is null, the shape feature store will try to read the prj files.
+                // srs = "EPSG:4326";
+                // } else {
+                srs = srs.trim();
+                crs = new CRS( srs );
+            }
+
+            String shapeFileName = null;
+            try {
+                shapeFileName = resolver.resolve( config.getFile().trim() ).getFile();
+            } catch ( MalformedURLException e ) {
+                String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+                LOG.error( msg, e );
+                throw new FeatureStoreException( msg, e );
+            }
+            fs = new ShapeFeatureStore( shapeFileName, crs, null, config.getNamespace() );            
+            
+        } catch ( JAXBException e ) {
+            String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
+            LOG.error( msg );
+            throw new FeatureStoreException( msg, e );
+        }
+        return fs;
+    }
+}

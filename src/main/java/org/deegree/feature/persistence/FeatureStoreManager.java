@@ -35,61 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import static org.deegree.commons.utils.CollectionUtils.map;
-
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.configuration.GMLVersionType;
-import org.deegree.commons.datasource.configuration.DirectSQLDataSourceType;
-import org.deegree.commons.datasource.configuration.FeatureStoreReferenceType;
-import org.deegree.commons.datasource.configuration.FeatureStoreType;
-import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
-import org.deegree.commons.datasource.configuration.PostGISFeatureStoreType;
-import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
-import org.deegree.commons.datasource.configuration.DirectSQLDataSourceType.LODStatement;
-import org.deegree.commons.datasource.configuration.FeatureStoreType.NamespaceHint;
-import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType.GMLFeatureCollectionFileURL;
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.CollectionUtils.Mapper;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.cs.CRS;
-import org.deegree.feature.FeatureCollection;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
-import org.deegree.feature.persistence.memory.MemoryFeatureStore;
-import org.deegree.feature.persistence.postgis.FeatureTypeMapping;
-import org.deegree.feature.persistence.postgis.JAXBApplicationSchemaAdapter;
-import org.deegree.feature.persistence.postgis.PostGISApplicationSchema;
-import org.deegree.feature.persistence.postgis.PostGISFeatureStore;
-import org.deegree.feature.persistence.postgis.jaxbconfig.ApplicationSchemaDecl;
-import org.deegree.feature.persistence.shape.ShapeFeatureStore;
-import org.deegree.feature.persistence.simplesql.SimpleSQLDatastore;
-import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.feature.schema.ApplicationSchemaXSDDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for creating {@link FeatureStore} instances from XML configuration documents or XML elements (JAXB
- * objects) and for retrieving global {@link FeatureStore} instances by id.
+ * Entry point for creating and retrieving {@link FeatureStore} providers and instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -100,13 +64,38 @@ public class FeatureStoreManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
 
+    private static ServiceLoader<FeatureStoreProvider> fsProviderLoader = ServiceLoader.load( FeatureStoreProvider.class );
+
+    private static Map<String, FeatureStoreProvider> nsToProvider = null;
+
     private static Map<String, FeatureStore> idToFs = Collections.synchronizedMap( new HashMap<String, FeatureStore>() );
 
-    private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
-        public Pair<Integer, String> apply( LODStatement u ) {
-            return new Pair<Integer, String>( u.getAboveScale(), u.getValue() );
+    /**
+     * Returns all available {@link FeatureStore} providers.
+     * 
+     * @return all available providers, keys: config namespace, value: provider instance
+     */
+    public static synchronized Map<String, FeatureStoreProvider> getProviders() {
+        if ( nsToProvider == null ) {
+            nsToProvider = new HashMap<String, FeatureStoreProvider>();
+            try {
+                for ( FeatureStoreProvider provider : fsProviderLoader ) {
+                    LOG.info ("Feature store provider: " + provider + ", namespace: " + provider.getConfigNamespace());
+                    if ( nsToProvider.containsKey( provider.getConfigNamespace() ) ) {
+                        LOG.error( "Multiple feature store providers for config namespace: '"
+                                   + provider.getConfigNamespace() + "' on classpath -- omitting provider '" + provider
+                                   + "'." );
+                        continue;
+                    }
+                    nsToProvider.put( provider.getConfigNamespace(), provider );
+                }
+            } catch ( Exception e ) {
+                LOG.error( e.getMessage(), e );
+            }
+
         }
-    };
+        return nsToProvider;
+    }
 
     /**
      * Initializes the {@link FeatureStoreManager} by loading all feature store configurations from the given directory.
@@ -114,6 +103,7 @@ public class FeatureStoreManager {
      * @param fsDir
      */
     public static void init( File fsDir ) {
+
         File[] fsConfigFiles = fsDir.listFiles( new FilenameFilter() {
             @Override
             public boolean accept( File dir, String name ) {
@@ -128,9 +118,9 @@ public class FeatureStoreManager {
             LOG.info( "Setting up feature store '" + fsId + "' from file '" + fileName + "'..." + "" );
             try {
                 FeatureStore fs = create( fsConfigFile.toURI().toURL() );
-                idToFs.put( fsId, fs );
+                registerAndInit( fs, fsId );
             } catch ( Exception e ) {
-                LOG.error( "Error initializing feature store: " + e.getMessage(), e );
+                LOG.error( "Error creating feature store: " + e.getMessage(), e );
             }
         }
     }
@@ -156,7 +146,7 @@ public class FeatureStoreManager {
     }
 
     /**
-     * Returns an initialized {@link FeatureStore} instance from the FeatureStore configuration document.
+     * Returns an uninitialized {@link FeatureStore} instance from the FeatureStore configuration document.
      * <p>
      * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
      * </p>
@@ -167,286 +157,29 @@ public class FeatureStoreManager {
      * @throws FeatureStoreException
      *             if the creation fails, e.g. due to a configuration error
      */
-    @SuppressWarnings("unchecked")
-    public static synchronized FeatureStore create( URL configURL )
+    private static synchronized FeatureStore create( URL configURL )
                             throws FeatureStoreException {
 
-        FeatureStoreType config = null;
+        String namespace = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.datasource.configuration" );
-            Unmarshaller u = jc.createUnmarshaller();
-            config = ( (JAXBElement<FeatureStoreType>) u.unmarshal( configURL ) ).getValue();
-        } catch ( JAXBException e ) {
-            e.printStackTrace();
-        }
-        return create( config, configURL.toString() );
-    }
-
-    /**
-     * Returns an initialized {@link FeatureStore} instance from the given JAXB {@link FeatureStoreType} configuration
-     * object.
-     * <p>
-     * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
-     * </p>
-     * 
-     * @param jaxbConfig
-     *            configuration object, must not be <code>null</code>
-     * @param baseURL
-     *            base url (used to resolve relative paths in the configuration)
-     * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
-     * @throws FeatureStoreException
-     *             if the creation fails, e.g. due to a configuration error
-     */
-    public static synchronized FeatureStore create( FeatureStoreType jaxbConfig, String baseURL )
-                            throws FeatureStoreException {
-
-        FeatureStore fs = null;
-        if ( jaxbConfig instanceof FeatureStoreReferenceType ) {
-            fs = create( (FeatureStoreReferenceType) jaxbConfig );
-        } else if ( jaxbConfig instanceof ShapefileDataSourceType ) {
-            fs = create( (ShapefileDataSourceType) jaxbConfig, baseURL );
-        } else if ( jaxbConfig instanceof MemoryFeatureStoreType ) {
-            fs = create( (MemoryFeatureStoreType) jaxbConfig, baseURL );
-        } else if ( jaxbConfig instanceof PostGISFeatureStoreType ) {
-            fs = create( (PostGISFeatureStoreType) jaxbConfig, baseURL );
-        } else if ( jaxbConfig instanceof DirectSQLDataSourceType ) {
-            fs = create( (DirectSQLDataSourceType) jaxbConfig );
-        } else {
-            String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", jaxbConfig.getClass() );
+            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            StAXParsingHelper.nextElement( xmlReader );
+            namespace = xmlReader.getNamespaceURI();
+        } catch ( Exception e ) {
+            String msg = "Error determining configuration namespace for file '" + configURL + "'";
+            LOG.error( msg );
             throw new FeatureStoreException( msg );
         }
-        return fs;
-    }
-
-    /**
-     * @param jaxbConfig
-     * @return a corresponding feature store, initialized
-     * @throws FeatureStoreException
-     */
-    public static synchronized FeatureStore create( DirectSQLDataSourceType jaxbConfig )
-                            throws FeatureStoreException {
-        String connId = jaxbConfig.getConnectionPoolId();
-        String srs = jaxbConfig.getStorageSRS();
-        String stmt = jaxbConfig.getSQLStatement();
-        String name = jaxbConfig.getFeatureTypeName();
-        String ns = jaxbConfig.getNamespace();
-        String id = jaxbConfig.getDataSourceName();
-        String bbox = jaxbConfig.getBBoxStatement();
-        LinkedList<Pair<Integer, String>> lods = map( jaxbConfig.getLODStatement(), lodMapper );
-
-        SimpleSQLDatastore fs = new SimpleSQLDatastore( connId, srs, stmt, name, ns, bbox, lods );
-        registerAndInit( fs, id );
-        return fs;
-    }
-
-    /**
-     * Returns an initialized {@link FeatureStore} instance from the given JAXB {@link FeatureStoreReferenceType}
-     * configuration object.
-     * 
-     * @param jaxbConfig
-     *            configuration object, must not be <code>null</code>
-     * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
-     * @throws FeatureStoreException
-     *             if the creation fails, e.g. due to a configuration error
-     */
-    public static synchronized FeatureStore create( FeatureStoreReferenceType jaxbConfig )
-                            throws FeatureStoreException {
-        String storeId = jaxbConfig.getRefId();
-        FeatureStore fs = idToFs.get( storeId );
-        if ( fs == null ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_NO_SUCH_ID", storeId );
+        LOG.info( "Config namespace: " + namespace );
+        FeatureStoreProvider provider = getProviders().get( namespace );
+        if ( provider == null ) {
+            String msg = "No feature store provider for namespace '" + namespace + "' (file: '" + configURL
+                         + "') registered. Skipping it.";
+            LOG.error( msg );
             throw new FeatureStoreException( msg );
         }
+        FeatureStore fs = provider.getFeatureStore( configURL );
         return fs;
-    }
-
-    /**
-     * Returns an initialized {@link ShapeFeatureStore} instance from the given JAXB {@link ShapefileDataSourceType}
-     * configuration object.
-     * <p>
-     * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
-     * </p>
-     * 
-     * @param jaxbConfig
-     *            configuration object, must not be <code>null</code>
-     * @param baseURL
-     *            base url (used to resolve relative paths in the configuration)
-     * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
-     * @throws FeatureStoreException
-     *             if the creation fails, e.g. due to a configuration error
-     */
-    public static synchronized ShapeFeatureStore create( ShapefileDataSourceType jaxbConfig, String baseURL )
-                            throws FeatureStoreException {
-
-        String id = jaxbConfig.getDataSourceName();
-        XMLAdapter resolver = new XMLAdapter();
-        resolver.setSystemId( baseURL );
-        String srs = jaxbConfig.getStorageSRS();
-        CRS crs = null;
-        if ( srs != null ) {
-            // rb: if it is null, the shape feature store will try to read the prj files.
-            // srs = "EPSG:4326";
-            // } else {
-            srs = srs.trim();
-            crs = new CRS( srs );
-        }
-
-        String shapeFileName = null;
-        try {
-            shapeFileName = resolver.resolve( jaxbConfig.getFile().trim() ).getFile();
-        } catch ( MalformedURLException e ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            LOG.error( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
-        ShapeFeatureStore fs = new ShapeFeatureStore( shapeFileName, crs, null, jaxbConfig.getNamespace() );
-
-        registerAndInit( fs, id );
-        return fs;
-    }
-
-    /**
-     * Returns an initialized {@link MemoryFeatureStore} instance from the given JAXB {@link ShapefileDataSourceType}
-     * configuration object.
-     * <p>
-     * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
-     * </p>
-     * 
-     * @param jaxbConfig
-     *            configuration object, must not be <code>null</code>
-     * @param baseURL
-     *            base url (used to resolve relative paths in the configuration)
-     * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
-     * @throws FeatureStoreException
-     *             if the creation fails, e.g. due to a configuration error
-     */
-    public static synchronized MemoryFeatureStore create( MemoryFeatureStoreType jaxbConfig, String baseURL )
-                            throws FeatureStoreException {
-
-        String id = jaxbConfig.getDataSourceName();
-        XMLAdapter resolver = new XMLAdapter();
-        resolver.setSystemId( baseURL );
-
-        ApplicationSchema schema = null;
-        try {
-            String[] schemaURLs = new String[jaxbConfig.getGMLSchemaFileURL().size()];
-            int i = 0;
-            GMLVersionType gmlVersionType = null;
-            for ( MemoryFeatureStoreType.GMLSchemaFileURL jaxbSchemaURL : jaxbConfig.getGMLSchemaFileURL() ) {
-                schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
-                // TODO what about different versions at the same time?
-                gmlVersionType = jaxbSchemaURL.getGmlVersion();
-            }
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
-                                                                                   GMLVersion.valueOf( gmlVersionType.name() ),
-                                                                                   getHintMap( jaxbConfig.getNamespaceHint() ),
-                                                                                   schemaURLs );
-            schema = decoder.extractFeatureTypeSchema();
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            LOG.error( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
-
-        MemoryFeatureStore fs = new MemoryFeatureStore( schema );
-
-        for ( GMLFeatureCollectionFileURL datasetFile : jaxbConfig.getGMLFeatureCollectionFileURL() ) {
-            if ( datasetFile != null ) {
-                try {
-                    GMLVersion version = GMLVersion.valueOf( datasetFile.getGmlVersion().name() );
-                    URL docURL = resolver.resolve( datasetFile.getValue().trim() );
-                    GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( version, docURL );
-                    gmlStream.setApplicationSchema( schema );
-                    LOG.info( "Populating feature store with features from file '" + docURL + "'..." );
-                    FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
-                    gmlStream.getIdContext().resolveLocalRefs();
-
-                    FeatureStoreTransaction ta = fs.acquireTransaction();
-                    List<String> fids = ta.performInsert( fc, IDGenMode.USE_EXISTING );
-                    LOG.info( "Inserted " + fids.size() + " features." );
-                    ta.commit();
-                } catch ( Exception e ) {
-                    String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                    LOG.error( msg, e );
-                    throw new FeatureStoreException( msg, e );
-                }
-            }
-        }
-
-        registerAndInit( fs, id );
-        return fs;
-    }
-
-    /**
-     * Returns an initialized {@link PostGISFeatureStore} instance from the given JAXB {@link PostGISFeatureStoreType}
-     * configuration object.
-     * <p>
-     * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
-     * </p>
-     * 
-     * @param jaxbConfig
-     *            configuration object, must not be <code>null</code>
-     * @param baseURL
-     *            base url (used to resolve relative paths in the configuration)
-     * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
-     * @throws FeatureStoreException
-     *             if the creation fails, e.g. due to a configuration error
-     */
-    public static synchronized PostGISFeatureStore create( PostGISFeatureStoreType jaxbConfig, String baseURL )
-                            throws FeatureStoreException {
-
-        String id = jaxbConfig.getDataSourceName();
-        XMLAdapter resolver = new XMLAdapter();
-        resolver.setSystemId( baseURL );
-
-        ApplicationSchema schema = null;
-        Map<QName, FeatureTypeMapping> relMapping = null;
-
-        try {
-            String[] schemaURLs = new String[jaxbConfig.getGMLSchemaFileURL().size()];
-            int i = 0;
-            GMLVersionType gmlVersionType = null;
-            for ( PostGISFeatureStoreType.GMLSchemaFileURL jaxbSchemaURL : jaxbConfig.getGMLSchemaFileURL() ) {
-                schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
-                // TODO what about different versions at the same time?
-                gmlVersionType = jaxbSchemaURL.getGmlVersion();
-            }
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
-                                                                                   GMLVersion.valueOf( gmlVersionType.name() ),
-                                                                                   getHintMap( jaxbConfig.getNamespaceHint() ),
-                                                                                   schemaURLs );
-            schema = decoder.extractFeatureTypeSchema();
-
-            // additionally evaluate relational mapping (TODO: multiple files)
-            if ( jaxbConfig.getRelationalMapping() != null && !jaxbConfig.getRelationalMapping().isEmpty() ) {
-                String relationalMappingFile = jaxbConfig.getRelationalMapping().get( 0 ).trim();
-                URL resolved = resolver.resolve( relationalMappingFile );
-                LOG.info( "Using relational mapping information from '" + resolved + "'." );
-                JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.persistence.postgis.jaxbconfig" );
-                Unmarshaller u = jc.createUnmarshaller();
-                ApplicationSchemaDecl relAppSchema = (ApplicationSchemaDecl) u.unmarshal( resolved );
-                PostGISApplicationSchema pgAppSchema = JAXBApplicationSchemaAdapter.toInternal( relAppSchema );
-                relMapping = pgAppSchema.getFtMapping();
-            }
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            LOG.error( msg, e );
-            throw new FeatureStoreException( msg, e );
-        }
-
-        CRS storageSRS = new CRS( jaxbConfig.getStorageSRS() );
-        PostGISFeatureStore fs = new PostGISFeatureStore( schema, jaxbConfig.getJDBCConnId(),
-                                                          jaxbConfig.getDBSchemaQualifier(), storageSRS, relMapping );
-        registerAndInit( fs, id );
-        return fs;
-    }
-
-    private static Map<String, String> getHintMap( List<NamespaceHint> hints ) {
-        Map<String, String> prefixToNs = new HashMap<String, String>();
-        for ( NamespaceHint namespaceHint : hints ) {
-            prefixToNs.put( namespaceHint.getPrefix(), namespaceHint.getNamespaceURI() );
-        }
-        return prefixToNs;
     }
 
     private static void registerAndInit( FeatureStore fs, String id )
