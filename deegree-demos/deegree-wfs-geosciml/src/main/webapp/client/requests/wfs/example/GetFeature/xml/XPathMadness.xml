@@ -3,7 +3,10 @@
   xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/wfs
 http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
-  <!-- Nonesense example - it's only for shamelessly boasting deegree's XPath evaluation capabilities -->
+  <!--
+    Nonsense example - it's only for shamelessly boasting deegree's XPath evaluation capabilities.
+    Your invited to try arbitrary XPath (1.0) expressions as PropertyNames.  
+  -->
   <wfs:Query typeName="gsml:ShearDisplacementStructure">
     <ogc:Filter>
       <ogc:And>
