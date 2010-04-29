@@ -481,7 +481,7 @@ public class GenerateRecord {
             }
         }
         // dc:format
-        if ( qp.getFormat() != null || qp.getFormat().size() != 0 ) {
+        if ( qp.getFormat() != null ) {
             for ( Format format : qp.getFormat() ) {
                 OMElement omFormat = factory.createOMElement( "format", namespaceDC );
                 omFormat.setText( format.getName() );
@@ -493,7 +493,7 @@ public class GenerateRecord {
         }
 
         // dct:relation
-        if ( rp.getRelation() != null || rp.getRelation().size() != 0 ) {
+        if ( rp.getRelation() != null ) {
             for ( String relation : rp.getRelation() ) {
                 OMElement omFormat = factory.createOMElement( "relation", namespaceDC );
                 omFormat.setText( relation );

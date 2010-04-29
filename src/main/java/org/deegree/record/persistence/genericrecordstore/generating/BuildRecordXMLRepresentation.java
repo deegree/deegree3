@@ -85,15 +85,13 @@ public class BuildRecordXMLRepresentation {
                                                                                                                                                                                                                  formatColumn ).append(
                                                                                                                                                                                                                                         " = ?;" );
 
-    private static final StringBuilder sqlStatementInsert = new StringBuilder().append( "INSERT INTO ? ( " ).append(
-                                                                                                                     idColumn ).append(
-                                                                                                                                        ", " ).append(
-                                                                                                                                                       fk_datasetsColumn ).append(
-                                                                                                                                                                                   ", " ).append(
-                                                                                                                                                                                                  formatColumn ).append(
-                                                                                                                                                                                                                         ", " ).append(
-                                                                                                                                                                                                                                        dataColumn ).append(
-                                                                                                                                                                                                                                                             " ) VALUES (?, ?, ?, ?);" );
+    private StringBuilder sqlStatementInsert = new StringBuilder().append( " ( " ).append( idColumn ).append( ", " ).append(
+                                                                                                                             fk_datasetsColumn ).append(
+                                                                                                                                                         ", " ).append(
+                                                                                                                                                                        formatColumn ).append(
+                                                                                                                                                                                               ", " ).append(
+                                                                                                                                                                                                              dataColumn ).append(
+                                                                                                                                                                                                                                   " ) VALUES (?, ?, ?, ?);" );
 
     /**
      * Updating the XML representation of a record in DC and ISO.
@@ -184,12 +182,15 @@ public class BuildRecordXMLRepresentation {
                             throws IOException {
 
         int idDatabaseTable;
-        for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+        for ( String databaseTableISO : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+            String insertDatabaseTable = "INSERT INTO " + databaseTableISO;
+            int insertDatadaseTableLength = insertDatabaseTable.length();
+            sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableISO );
             PreparedStatement stm = null;
             OMElement isoElement;
-            if ( databaseTable.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
+            if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
                 isoElement = parsedElement.getGenerateRecord().getIsoBriefElement();
-            } else if ( databaseTable.equals( PostGISMappingsISODC.RECORDSUMMARY ) ) {
+            } else if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDSUMMARY ) ) {
                 isoElement = parsedElement.getGenerateRecord().getIsoSummaryElement();
             } else {
                 isoElement = parsedElement.getGenerateRecord().getIsoFullElement();
@@ -197,7 +198,7 @@ public class BuildRecordXMLRepresentation {
 
             try {
 
-                idDatabaseTable = getLastDatasetId( connection, databaseTable );
+                idDatabaseTable = getLastDatasetId( connection, databaseTableISO );
                 idDatabaseTable++;
 
                 stm = connection.prepareStatement( sqlStatementInsert.toString() );
@@ -207,6 +208,7 @@ public class BuildRecordXMLRepresentation {
                 stm.setObject( 4, isoElement );
                 stm.executeUpdate();
                 stm.close();
+                sqlStatementInsert.delete( 0, insertDatadaseTableLength );
 
             } catch ( SQLException e ) {
 
@@ -240,17 +242,19 @@ public class BuildRecordXMLRepresentation {
         OMNamespace namespaceCSW = factory.createOMNamespace( CSW_202_NS, CSW_PREFIX );
 
         int idDatabaseTable;
-        for ( String databaseTable : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+        for ( String databaseTableDC : PostGISMappingsISODC.getTableRecordType().keySet() ) {
             PreparedStatement stm = null;
-
+            String insertDatabaseTable = "INSERT INTO " + databaseTableDC;
+            int insertDatadaseTableLength = insertDatabaseTable.length();
+            sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableDC );
             try {
 
-                idDatabaseTable = getLastDatasetId( connection, databaseTable );
+                idDatabaseTable = getLastDatasetId( connection, databaseTableDC );
                 idDatabaseTable++;
 
                 OMElement omElement = factory.createOMElement(
                                                                PostGISMappingsISODC.getTableRecordType().get(
-                                                                                                              databaseTable ),
+                                                                                                              databaseTableDC ),
                                                                namespaceCSW );
 
                 if ( omElement.getLocalName().equals( PostGISMappingsISODC.BRIEFRECORD ) ) {
@@ -262,15 +266,19 @@ public class BuildRecordXMLRepresentation {
                     parsedElement.getGenerateRecord().buildElementAsDcFullElement( omElement, factory );
                 }
 
-                setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
+                if ( parsedElement.getQueryableProperties().getBoundingBox() != null ) {
+                    setBoundingBoxElement( omElement, parsedElement.getQueryableProperties() );
+                }
 
                 stm = connection.prepareStatement( sqlStatementInsert.toString() );
+
                 stm.setObject( 1, idDatabaseTable );
                 stm.setObject( 2, operatesOnId );
                 stm.setObject( 3, 1 );
-                stm.setObject( 4, omElement );
+                stm.setBytes( 4, omElement.toString().getBytes() );
                 stm.executeUpdate();
                 stm.close();
+                sqlStatementInsert.delete( 0, insertDatadaseTableLength );
 
             } catch ( SQLException e ) {
 
@@ -279,6 +287,7 @@ public class BuildRecordXMLRepresentation {
 
                 LOG.debug( "error: " + e.getMessage(), e );
             }
+
         }
 
         return recordsAffectedID;
