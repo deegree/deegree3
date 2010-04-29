@@ -33,17 +33,24 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.utils;
+package org.deegree.coverage.raster.io;
 
 import static org.deegree.coverage.raster.utils.RasterBuilder.buildTiledRaster;
 import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.HashMap;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.deegree.commons.datasource.configuration.AbstractGeospatialDataSourceType;
 import org.deegree.commons.datasource.configuration.MultiResolutionDataSource;
@@ -52,9 +59,9 @@ import org.deegree.commons.datasource.configuration.RasterFileSetType;
 import org.deegree.commons.datasource.configuration.RasterFileType;
 import org.deegree.commons.datasource.configuration.MultiResolutionDataSource.Resolution;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
-import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.CRS;
 import org.slf4j.Logger;
 
@@ -66,9 +73,81 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class DataSourceHandler {
+public class CoverageStoreManager {
 
-    private static final Logger LOG = getLogger( DataSourceHandler.class );
+    private static final Logger LOG = getLogger( CoverageStoreManager.class );
+
+    private static HashMap<String, AbstractCoverage> idToCs = new HashMap<String, AbstractCoverage>();
+
+    /**
+     * @param csDir
+     */
+    public static void init( File csDir ) {
+        File[] csConfigFiles = csDir.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File dir, String name ) {
+                return name.toLowerCase().endsWith( ".xml" );
+            }
+        } );
+        for ( File csConfigFile : csConfigFiles ) {
+            String fileName = csConfigFile.getName();
+            // 4 is the length of ".xml"
+            String csId = fileName.substring( 0, fileName.length() - 4 );
+            LOG.info( "Setting up coverage store '" + csId + "' from file '" + fileName + "'..." + "" );
+
+            try {
+                AbstractCoverage cs = create( csConfigFile.toURI().toURL() );
+                if ( cs != null ) {
+                    idToCs.put( csId, cs );
+                }
+            } catch ( Exception e ) {
+                LOG.error( "Error initializing feature store: " + e.getMessage(), e );
+            }
+        }
+    }
+
+    /**
+     * @param url
+     * @return null, if an error occurred
+     */
+    public static AbstractCoverage create( URL url ) {
+        try {
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.datasource.configuration" );
+            Unmarshaller u = jc.createUnmarshaller();
+            Object config = u.unmarshal( url );
+
+            XMLAdapter resolver = new XMLAdapter();
+            resolver.setSystemId( url.toString() );
+
+            if ( config instanceof MultiResolutionDataSource ) {
+                return fromDatasource( (MultiResolutionDataSource) config, resolver );
+            }
+            if ( config instanceof RasterDataSource ) {
+                return fromDatasource( (RasterDataSource) config, resolver );
+            }
+            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
+        } catch ( JAXBException e ) {
+            LOG.warn( "Coverage datastore configuration from '{}' could not be read: '{}'.", url,
+                      e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+        return null;
+    }
+
+    /**
+     * @param id
+     * @return null, if not found
+     */
+    public static AbstractCoverage get( String id ) {
+        return idToCs.get( id );
+    }
+
+    /**
+     * @return all coverages
+     */
+    public static Collection<AbstractCoverage> getAll() {
+        return idToCs.values();
+    }
 
     /**
      * @param datasource
