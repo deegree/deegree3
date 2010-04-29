@@ -70,6 +70,7 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
+import org.deegree.coverage.raster.io.CoverageStoreManager;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -93,12 +94,12 @@ import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
+import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wcs.WCServiceException;
 import org.deegree.services.wcs.coverages.CoverageTransform;
 import org.deegree.services.wcs.model.Grid;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
-import org.deegree.services.wms.configuration.AbstractLayerType;
 import org.deegree.services.wms.model.Dimension;
 import org.slf4j.Logger;
 
@@ -126,12 +127,12 @@ public class RasterLayer extends Layer {
     /**
      * @param lay
      * @param parent
-     * @param raster
      */
-    public RasterLayer( AbstractLayerType lay, Layer parent, AbstractCoverage raster ) {
+    public RasterLayer( AbstractLayerType lay, Layer parent ) {
         super( lay, parent );
-        this.raster = (AbstractRaster) ( raster instanceof AbstractRaster ? raster : null );
-        this.multiraster = (MultiResolutionRaster) ( raster instanceof MultiResolutionRaster ? raster : null );
+        AbstractCoverage cov = CoverageStoreManager.get( lay.getCoverageStoreId() );
+        this.raster = (AbstractRaster) ( cov instanceof AbstractRaster ? cov : null );
+        this.multiraster = (MultiResolutionRaster) ( cov instanceof MultiResolutionRaster ? cov : null );
 
         CRS crs = raster == null ? multiraster.getCoordinateSystem() : raster.getCoordinateSystem();
         try {
@@ -172,7 +173,7 @@ public class RasterLayer extends Layer {
             case SHORT:
             case USHORT:
                 props.add( new GenericProperty(
-                                                (PropertyType) featureType.getPropertyDeclarations().get( 0 ),
+                                                featureType.getPropertyDeclarations().get( 0 ),
                                                 new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( 0, 0,
                                                                                                                   0 ) ) ) ) );
                 break;
@@ -180,7 +181,7 @@ public class RasterLayer extends Layer {
                 byte[] bs = data.getPixel( 0, 0, null );
                 float val = Float.intBitsToFloat( ( ( 0xff & bs[3] ) << 24 ) + ( ( 0xff & bs[0] ) << 16 )
                                                   + ( ( 0xff & bs[1] ) << 8 ) + ( 0xff & bs[2] ) );
-                props.add( new GenericProperty( (PropertyType) featureType.getPropertyDeclarations().get( 0 ),
+                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ),
                                                 new PrimitiveValue( new BigDecimal( val ) ) ) );
                 break;
             case DOUBLE:
@@ -188,7 +189,7 @@ public class RasterLayer extends Layer {
             case UNDEFINED:
                 LOG.warn( "The raster is of type '{}', this is handled as float currently.", dataType );
             case FLOAT:
-                props.add( new GenericProperty( (PropertyType) featureType.getPropertyDeclarations().get( 0 ),
+                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ),
                                                 new PrimitiveValue( new BigDecimal( data.getFloatSample( 0, 0, 0 ) ) ) ) );
                 break;
             }

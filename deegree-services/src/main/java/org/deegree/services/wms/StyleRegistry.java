@@ -62,8 +62,8 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.Filter;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
-import org.deegree.services.wms.configuration.DirectStyleType;
-import org.deegree.services.wms.configuration.SLDStyleType;
+import org.deegree.services.jaxb.wms.DirectStyleType;
+import org.deegree.services.jaxb.wms.SLDStyleType;
 import org.slf4j.Logger;
 
 /**

@@ -65,7 +65,6 @@ import static org.deegree.commons.utils.CollectionUtils.AND;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
-import static org.deegree.coverage.raster.io.CoverageStoreManager.fromDatasource;
 import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
 import static org.deegree.services.controller.wms.ops.GetMap.Antialias.BOTH;
 import static org.deegree.services.controller.wms.ops.GetMap.Interpolation.NEARESTNEIGHBOR;
@@ -102,9 +101,6 @@ import javax.media.jai.operator.ColorQuantizerDescriptor;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.datasource.configuration.MultiResolutionDataSource;
-import org.deegree.commons.datasource.configuration.RasterDataSource;
-import org.deegree.commons.datasource.configuration.WMSDataSourceType;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -141,13 +137,13 @@ import org.deegree.services.controller.wms.ops.GetMap;
 import org.deegree.services.controller.wms.ops.GetMap.Antialias;
 import org.deegree.services.controller.wms.ops.GetMap.Interpolation;
 import org.deegree.services.controller.wms.ops.GetMap.Quality;
+import org.deegree.services.jaxb.wms.AbstractLayerType;
+import org.deegree.services.jaxb.wms.BaseAbstractLayerType;
+import org.deegree.services.jaxb.wms.DynamicLayer;
+import org.deegree.services.jaxb.wms.ServiceConfiguration;
+import org.deegree.services.jaxb.wms.SupportedFeaturesType;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
-import org.deegree.services.wms.configuration.AbstractLayerType;
-import org.deegree.services.wms.configuration.BaseAbstractLayerType;
-import org.deegree.services.wms.configuration.DynamicLayer;
-import org.deegree.services.wms.configuration.ServiceConfiguration;
-import org.deegree.services.wms.configuration.SupportedFeaturesType;
 import org.deegree.services.wms.dynamic.LayerUpdater;
 import org.deegree.services.wms.dynamic.PostGISUpdater;
 import org.deegree.services.wms.dynamic.ShapeUpdater;
@@ -155,7 +151,6 @@ import org.deegree.services.wms.model.layers.EmptyLayer;
 import org.deegree.services.wms.model.layers.FeatureLayer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.model.layers.RasterLayer;
-import org.deegree.services.wms.model.layers.RemoteWMSLayer;
 import org.slf4j.Logger;
 
 /**
@@ -338,35 +333,26 @@ public class MapService {
         if ( layer instanceof AbstractLayerType ) {
             AbstractLayerType aLayer = (AbstractLayerType) layer;
 
-            if ( aLayer.getAbstractDataSource() == null ) {
-                res = new EmptyLayer( aLayer, parent );
-            } else if ( aLayer.getAbstractDataSource().getValue() instanceof WMSDataSourceType ) {
-                res = new RemoteWMSLayer( aLayer, parent,
-                                          (WMSDataSourceType) aLayer.getAbstractDataSource().getValue(), adapter );
-//            } else if ( aLayer.getAbstractDataSource().getValue() instanceof FeatureStoreType ) {
-//                try {
-//                    res = new FeatureLayer( aLayer, parent, adapter );
-//                } catch ( FileNotFoundException e ) {
-//                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
-//                                                                                              : aLayer.getName(),
-//                              e.getLocalizedMessage() );
-//                    LOG.trace( "Stack trace", e );
-//                    return null;
-//                } catch ( IOException e ) {
-//                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
-//                                                                                              : aLayer.getName(),
-//                              e.getLocalizedMessage() );
-//                    LOG.trace( "Stack trace", e );
-//                    return null;
-//                }
-            } else if ( aLayer.getAbstractDataSource().getValue() instanceof MultiResolutionDataSource ) {
-                MultiResolutionDataSource ds = (MultiResolutionDataSource) aLayer.getAbstractDataSource().getValue();
-                res = new RasterLayer( aLayer, parent, fromDatasource( ds, adapter ) );
-            } else if ( aLayer.getAbstractDataSource().getValue() instanceof RasterDataSource ) {
-                RasterDataSource ds = (RasterDataSource) aLayer.getAbstractDataSource().getValue();
-                res = new RasterLayer( aLayer, parent, fromDatasource( ds, adapter ) );
+            if ( aLayer.getFeatureStoreId() != null ) {
+                try {
+                    res = new FeatureLayer( aLayer, parent, adapter );
+                } catch ( FileNotFoundException e ) {
+                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
+                                                                                              : aLayer.getName(),
+                              e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace", e );
+                    return null;
+                } catch ( IOException e ) {
+                    LOG.warn( "Layer '{}' could not be loaded: '{}'", aLayer.getName() == null ? aLayer.getTitle()
+                                                                                              : aLayer.getName(),
+                              e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace", e );
+                    return null;
+                }
+            } else if ( aLayer.getCoverageStoreId() != null ) {
+                res = new RasterLayer( aLayer, parent );
+                // }else if(aLayer.getWMSStoreId() != null){
             } else {
-                LOG.warn( "Unknown/unimplemented data source specified for layer '{}'.", aLayer.getName() );
                 res = new EmptyLayer( aLayer, parent );
             }
 

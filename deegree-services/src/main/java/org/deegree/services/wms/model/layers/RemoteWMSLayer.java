@@ -74,7 +74,7 @@ import org.deegree.protocol.wms.client.WMSClient111;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
-import org.deegree.services.wms.configuration.AbstractLayerType;
+import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.slf4j.Logger;
 
 /**

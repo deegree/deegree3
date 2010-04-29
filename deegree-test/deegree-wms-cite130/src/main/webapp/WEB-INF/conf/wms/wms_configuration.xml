@@ -10,6 +10,7 @@
       <RequestableLayer>
         <Name>cite:BasicPolygons</Name>
         <Title>cite:BasicPolygons</Title>
+        <FeatureStoreId>basicpolygons</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/BasicPolygons.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -21,6 +22,7 @@
       <RequestableLayer>
         <Name>cite:Forests</Name>
         <Title>cite:Forests</Title>
+        <FeatureStoreId>forests</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/Forests.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -38,6 +40,7 @@
           <NearestValue>true</NearestValue>
           <Extent>500,490,480</Extent>
         </Dimension>
+        <FeatureStoreId>lakes</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/Lakes.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -49,6 +52,7 @@
       <RequestableLayer>
         <Name>cite:Ponds</Name>
         <Title>cite:Ponds</Title>
+        <FeatureStoreId>ponds</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/Ponds.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -60,6 +64,7 @@
       <RequestableLayer>
         <Name>cite:NamedPlaces</Name>
         <Title>cite:NamedPlaces</Title>
+        <FeatureStoreId>namedplaces</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/NamedPlaces.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -71,6 +76,7 @@
       <RequestableLayer>
         <Name>cite:Buildings</Name>
         <Title>cite:Buildings</Title>
+        <FeatureStoreId>buildings</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/Buildings.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -82,6 +88,7 @@
       <RequestableLayer>
         <Name>cite:BuildingCenters</Name>
         <Title>cite:BuildingCenters</Title>
+        <FeatureStoreId>buildingcenters</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/BuildingCenters.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -93,6 +100,7 @@
       <RequestableLayer>
         <Name>cite:DividedRoutes</Name>
         <Title>cite:DividedRoutes</Title>
+        <FeatureStoreId>dividedroutes</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/DividedRoutes.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -104,6 +112,7 @@
       <RequestableLayer>
         <Name>cite:RoadSegments</Name>
         <Title>cite:RoadSegments</Title>
+        <FeatureStoreId>roadsegments</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/RoadSegments.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -115,6 +124,7 @@
       <RequestableLayer>
         <Name>cite:MapNeatline</Name>
         <Title>cite:MapNeatline</Title>
+        <FeatureStoreId>mapneatline</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/MapNeatline.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -126,6 +136,7 @@
       <RequestableLayer>
         <Name>cite:Streams</Name>
         <Title>cite:Streams</Title>
+        <FeatureStoreId>streams</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/Streams.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -137,6 +148,7 @@
       <RequestableLayer>
         <Name>cite:Bridges</Name>
         <Title>cite:Bridges</Title>
+        <FeatureStoreId>bridges</FeatureStoreId>
         <ds:ShapefileDataSource>
           <ds:File>../../data/cite/Bridges.shp</ds:File>
         </ds:ShapefileDataSource>
@@ -156,9 +168,7 @@
           <Current>true</Current>
           <Extent>2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S</Extent>
         </Dimension>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/Autos.shp</ds:File>
-        </ds:ShapefileDataSource>
+        <FeatureStoreId>autos</FeatureStoreId>
         <DirectStyle>
           <File>styles/Autos.xml</File>
         </DirectStyle>
@@ -174,9 +184,7 @@
           <NearestValue>false</NearestValue>
           <Extent>0/425/1</Extent>
         </Dimension>
-        <ds:RasterDataSource crs="EPSG:4326" originLocation="outer">
-          <ds:RasterFile fileType="tif">../../data/cite/terrain.tif</ds:RasterFile>
-        </ds:RasterDataSource>
+        <CoverageStoreId>terrain</CoverageStoreId>
         <DirectStyle>
           <File>styles/terrain2.xml</File>
         </DirectStyle>

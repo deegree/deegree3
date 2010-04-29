@@ -108,10 +108,6 @@ import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.wms.configuration.PublishedInformation;
-import org.deegree.services.controller.wms.configuration.PublishedInformation.GetFeatureInfoFormat;
-import org.deegree.services.controller.wms.configuration.PublishedInformation.ImageFormat;
-import org.deegree.services.controller.wms.configuration.PublishedInformation.SupportedVersions;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetFeatureInfoSchema;
 import org.deegree.services.controller.wms.ops.GetLegendGraphic;
@@ -123,10 +119,14 @@ import org.deegree.services.controller.wms.security.WMSSecurityManager;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wms.PublishedInformation;
+import org.deegree.services.jaxb.wms.ServiceConfiguration;
+import org.deegree.services.jaxb.wms.PublishedInformation.GetFeatureInfoFormat;
+import org.deegree.services.jaxb.wms.PublishedInformation.ImageFormat;
+import org.deegree.services.jaxb.wms.PublishedInformation.SupportedVersions;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
-import org.deegree.services.wms.configuration.ServiceConfiguration;
 import org.slf4j.Logger;
 
 /**
@@ -217,7 +217,7 @@ public class WMSController extends AbstractOGCServiceController {
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
 
         try {
-            String additionalClasspath = "org.deegree.services.controller.wms.configuration:org.deegree.services.wms.configuration";
+            String additionalClasspath = "org.deegree.services.jaxb.wms";
             Unmarshaller u = getUnmarshaller( additionalClasspath, CONFIG_SCHEMA_FILE );
 
             XPath xp = new XPath( "wms:PublishedInformation", nsContext );
@@ -258,8 +258,10 @@ public class WMSController extends AbstractOGCServiceController {
                     }
                 }
 
-                identification = pi.getServiceIdentification() == null ? identification : pi.getServiceIdentification();
-                provider = pi.getServiceProvider() == null ? provider : pi.getServiceProvider();
+                // TODO assign overwritten metadata here
+                // identification = pi.getServiceIdentification() == null ? identification :
+                // pi.getServiceIdentification();
+                // provider = pi.getServiceProvider() == null ? provider : pi.getServiceProvider();
                 final SupportedVersions versions = pi.getSupportedVersions();
                 if ( versions == null ) {
                     ArrayList<String> vs = new ArrayList<String>();

@@ -92,9 +92,9 @@ import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
 import org.deegree.services.controller.wms.ops.GetFeatureInfo;
 import org.deegree.services.controller.wms.ops.GetMap;
+import org.deegree.services.jaxb.wms.AbstractLayerType;
 import org.deegree.services.wms.WMSException.InvalidDimensionValue;
 import org.deegree.services.wms.WMSException.MissingDimensionValue;
-import org.deegree.services.wms.configuration.AbstractLayerType;
 import org.deegree.services.wms.model.Dimension;
 import org.slf4j.Logger;
 
@@ -124,12 +124,7 @@ public class FeatureLayer extends Layer {
     public FeatureLayer( AbstractLayerType layer, Layer parent, XMLAdapter adapter ) throws FileNotFoundException,
                             MalformedURLException, IOException {
         super( layer, parent );
-//        FeatureStoreType conf = (FeatureStoreType) layer.getAbstractDataSource().getValue();
-//        try {
-//            datastore = FeatureStoreManager.create( conf, adapter.getSystemId() );
-//        } catch ( FeatureStoreException e ) {
-//            e.printStackTrace();
-//        }
+        datastore = FeatureStoreManager.get( layer.getFeatureStoreId() );
     }
 
     /**
