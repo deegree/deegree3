@@ -37,6 +37,8 @@ package org.deegree.record.persistence.genericrecordstore.parsing;
 
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
 import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
+import static org.deegree.protocol.csw.CSWConstants.DCT_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -88,7 +90,7 @@ public final class ISOQPParsing extends XMLAdapter {
 
     private static final Logger LOG = getLogger( ISOQPParsing.class );
 
-    private NamespaceContext nsContextISOParsing = new NamespaceContext( XMLAdapter.nsContext );
+    private static NamespaceContext nsContextISOParsing = new NamespaceContext( XMLAdapter.nsContext );
 
     private QueryableProperties qp;
 
@@ -105,6 +107,13 @@ public final class ISOQPParsing extends XMLAdapter {
      * checks if a List of OMElements is null
      */
     private List<OMElement> omElementNullCheckList;
+
+    static {
+        nsContextISOParsing.addNamespace( CSW_PREFIX, CSW_202_NS );
+        nsContextISOParsing.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
+        nsContextISOParsing.addNamespace( "ows", "http://www.opengis.net/ows" );
+        nsContextISOParsing.addNamespace( DCT_PREFIX, DCT_NS );
+    }
 
     /**
      * Before any transaction operation is possible there should be an evaluation of the record. The response of the
@@ -158,9 +167,6 @@ public final class ISOQPParsing extends XMLAdapter {
             nsContextISOParsing.addNamespace( rootElement.getDefaultNamespace().getPrefix(),
                                               rootElement.getDefaultNamespace().getNamespaceURI() );
         }
-        nsContextISOParsing.addNamespace( CSW_PREFIX, CSW_202_NS );
-        nsContextISOParsing.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
-        nsContextISOParsing.addNamespace( "ows", "http://www.opengis.net/ows" );
 
         gr = new GenerateRecord();
         qp = new QueryableProperties();
@@ -756,6 +762,11 @@ public final class ISOQPParsing extends XMLAdapter {
     public ParsedProfileElement parseAPDC( OMElement element )
                             throws IOException {
 
+        gr = new GenerateRecord();
+        qp = new QueryableProperties();
+
+        rp = new ReturnableProperties();
+
         setRootElement( element );
         if ( element.getDefaultNamespace() != null ) {
             nsContextISOParsing.addNamespace( rootElement.getDefaultNamespace().getPrefix(),
@@ -772,8 +783,10 @@ public final class ISOQPParsing extends XMLAdapter {
         // TODO anyText
         // StringWriter anyText = new StringWriter();
 
-        qp.setIdentifier( Arrays.asList( getNodesAsStrings( rootElement, new XPath( "./dc:identifier",
-                                                                                    nsContextISOParsing ) ) ) );
+        String i = getNodeAsString( rootElement, new XPath( "./dc:identifier", nsContextISOParsing ), "" );
+
+        String[] b = getNodesAsStrings( rootElement, new XPath( "./dc:identifier", nsContextISOParsing ) );
+        qp.setIdentifier( Arrays.asList( b ) );
 
         rp.setCreator( getNodeAsString( rootElement, new XPath( "./dc:creator", nsContextISOParsing ), null ) );
 
@@ -826,20 +839,21 @@ public final class ISOQPParsing extends XMLAdapter {
                                                               "./ows:BoundingBox/ows:UpperCorner | ./ows:WGS84BoundingBox/ows:UpperCorner",
                                                               nsContextISOParsing ), null );
 
-        String[] lowerCornerSplitting = bbox_lowerCorner.split( " " );
-        String[] upperCornerSplitting = bbox_upperCorner.split( " " );
+        if ( bbox_lowerCorner != null && bbox_upperCorner != null ) {
+            String[] lowerCornerSplitting = bbox_lowerCorner.split( " " );
+            String[] upperCornerSplitting = bbox_upperCorner.split( " " );
 
-        double boundingBoxWestLongitude = Double.parseDouble( lowerCornerSplitting[0] );
+            double boundingBoxWestLongitude = Double.parseDouble( lowerCornerSplitting[0] );
 
-        double boundingBoxEastLongitude = Double.parseDouble( lowerCornerSplitting[1] );
+            double boundingBoxEastLongitude = Double.parseDouble( lowerCornerSplitting[1] );
 
-        double boundingBoxSouthLatitude = Double.parseDouble( upperCornerSplitting[0] );
+            double boundingBoxSouthLatitude = Double.parseDouble( upperCornerSplitting[0] );
 
-        double boundingBoxNorthLatitude = Double.parseDouble( upperCornerSplitting[1] );
+            double boundingBoxNorthLatitude = Double.parseDouble( upperCornerSplitting[1] );
 
-        qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
-                                            boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
-
+            qp.setBoundingBox( new BoundingBox( boundingBoxWestLongitude, boundingBoxSouthLatitude,
+                                                boundingBoxEastLongitude, boundingBoxNorthLatitude ) );
+        }
         rp.setPublisher( getNodeAsString( rootElement, new XPath( "./dc:publisher", nsContextISOParsing ), null ) );
 
         rp.setContributor( getNodeAsString( rootElement, new XPath( "./dc:contributor", nsContextISOParsing ), null ) );

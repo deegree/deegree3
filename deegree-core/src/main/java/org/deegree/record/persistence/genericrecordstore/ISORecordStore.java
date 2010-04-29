@@ -1371,6 +1371,7 @@ public class ISORecordStore implements RecordStore {
 
         StringBuilder s = new StringBuilder().append( " SELECT " );
         s.append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );
+        s.append( '.' );
         s.append( PostGISMappingsISODC.CommonColumnNames.data.name() );
         s.append( " FROM " ).append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
         s.append( ',' ).append( formatTypeInISORecordStore.get( SetOfReturnableElements.brief ) );

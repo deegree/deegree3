@@ -43,9 +43,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 
 import org.deegree.commons.tom.datetime.Date;
+import org.deegree.commons.utils.time.DateUtils;
 import org.deegree.cs.CRS;
 import org.deegree.record.persistence.genericrecordstore.PostGISMappingsISODC;
 import org.deegree.record.persistence.genericrecordstore.parsing.ParsedProfileElement;
@@ -89,6 +91,7 @@ public class GenerateQueryableProperties {
         boolean isCaseSensitive = true;
         PreparedStatement stm = null;
         int operatesOnId = 0;
+        // Timestamp tmsp = new Timestamp(0000-00-00);
         try {
 
             operatesOnId = getLastDatasetId( connection, databaseTable );
@@ -107,9 +110,12 @@ public class GenerateQueryableProperties {
             stm.setObject( 4, generateISOQP_AnyTextStatement( isCaseSensitive, parsedElement.getQueryableProperties(),
                                                               parsedElement.getReturnableProperties() ) );
             if ( !parsedElement.getQueryableProperties().getModified().equals( new Date( "0000-00-00" ) ) ) {
-                stm.setObject( 5, "'" + parsedElement.getQueryableProperties().getModified() + "'" );
+                String time = parsedElement.getQueryableProperties().getModified().toString();
+                stm.setTimestamp(
+                                  5,
+                                  Timestamp.valueOf( DateUtils.formatJDBCTimeStamp( DateUtils.parseISO8601Date( time ) ) ) );
             } else {
-                stm.setObject( 5, "null" );
+                stm.setTimestamp( 5, null );
             }
 
             stm.setObject( 6, parsedElement.getQueryableProperties().isHasSecurityConstraints() );
@@ -216,20 +222,13 @@ public class GenerateQueryableProperties {
             generateISOQP_ResourceLanguageStatement( isUpdate, connection, operatesOnId,
                                                      parsedElement.getQueryableProperties() );
         }
-        try {
-            if ( ( parsedElement.getQueryableProperties().getTemporalExtentBegin().equals( new Date( "0000-00-00" ) ) && parsedElement.getQueryableProperties().getTemporalExtentEnd().equals(
-                                                                                                                                                                                               new Date(
-                                                                                                                                                                                                         "0000-00-00" ) ) )
-                 || ( parsedElement.getQueryableProperties().getTemporalExtentBegin() != null && parsedElement.getQueryableProperties().getTemporalExtentEnd() != null ) ) {
-                generateISOQP_TemporalExtentStatement( isUpdate, connection, operatesOnId,
-                                                       parsedElement.getQueryableProperties() );
-            }
-        } catch ( ParseException e ) {
 
-            LOG.debug( "error: " + e.getMessage(), e );
+        if ( ( ( parsedElement.getQueryableProperties().getTemporalExtentBegin() != null && parsedElement.getQueryableProperties().getTemporalExtentEnd() != null ) ) ) {
+            generateISOQP_TemporalExtentStatement( isUpdate, connection, operatesOnId,
+                                                   parsedElement.getQueryableProperties() );
         }
-        if ( parsedElement.getQueryableProperties().getOperatesOnData() != null
-             || parsedElement.getQueryableProperties().getOperatesOnData().size() != 0 ) {
+
+        if ( parsedElement.getQueryableProperties().getOperatesOnData() != null ) {
             generateISOQP_OperatesOnStatement( isUpdate, connection, operatesOnId,
                                                parsedElement.getQueryableProperties() );
         }
