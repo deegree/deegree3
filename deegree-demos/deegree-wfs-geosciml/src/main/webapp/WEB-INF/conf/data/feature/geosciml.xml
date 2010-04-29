@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<MemoryFeatureStore xmlns="http://www.deegree.org/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource http://schemas.deegree.org/datasource/0.5.0/featurestores.xsd">
+<MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/0.5.0/featurestores.xsd">
   <NamespaceHint prefix="cgu" namespaceURI="urn:cgi:xmlns:CGI:Utilities:1.0" />
   <NamespaceHint prefix="gsml" namespaceURI="urn:cgi:xmlns:CGI:GeoSciML:2.0" />
   <NamespaceHint prefix="om" namespaceURI="http://www.opengis.net/om/1.0" />
