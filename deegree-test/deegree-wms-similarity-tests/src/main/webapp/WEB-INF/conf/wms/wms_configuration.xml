@@ -11,33 +11,25 @@
       <RequestableLayer>
         <Name>SGID024_Springs</Name>
         <Title>SGID024_Springs</Title>
-        <ds:ShapefileDataSource>
-          <ds:File>../../utah/SGID024_Springs.shp</ds:File>
-        </ds:ShapefileDataSource>
+        <FeatureStoreId>springs</FeatureStoreId>
       </RequestableLayer>
 
       <RequestableLayer>
         <Name>SGID500_Contours500Ft</Name>
         <Title>SGID500_Contours500Ft</Title>
-        <ds:ShapefileDataSource>
-          <ds:File>../../utah/SGID500_Contours500Ft.shp</ds:File>
-        </ds:ShapefileDataSource>
+        <FeatureStoreId>contours</FeatureStoreId>
       </RequestableLayer>
 
       <RequestableLayer>
         <Name>SGID500_DominantVegetation</Name>
         <Title>SGID500_DominantVegetation</Title>
-        <ds:ShapefileDataSource>
-          <ds:File>../../utah/SGID500_DominantVegetation.shp</ds:File>
-        </ds:ShapefileDataSource>
+        <FeatureStoreId>dominant</FeatureStoreId>
       </RequestableLayer>
 
       <RequestableLayer>
         <Name>ttfsymbol</Name>
         <Title>ttfsymbol</Title>
-        <ds:ShapefileDataSource>
-          <ds:File>../../utah/ttfsymbol.shp</ds:File>
-        </ds:ShapefileDataSource>
+        <FeatureStoreId>ttf</FeatureStoreId>
         <DirectStyle>
           <File>../../utah/ttfsymbol.sld</File>
         </DirectStyle>
