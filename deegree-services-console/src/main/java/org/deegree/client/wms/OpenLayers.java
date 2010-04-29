@@ -52,6 +52,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import lombok.Getter;
+
 import org.slf4j.Logger;
 
 /**
@@ -70,13 +72,25 @@ public class OpenLayers implements Serializable {
 
     private static final Logger LOG = getLogger( OpenLayers.class );
 
+    @Getter
     private String url;
 
     private LinkedList<Layer> layers = new LinkedList<Layer>();
 
+    @Getter
     private String coordinateSystem;
 
-    private double minx, miny, maxx, maxy;
+    @Getter
+    private double minx;
+
+    @Getter
+    private double miny;
+
+    @Getter
+    private double maxx;
+
+    @Getter
+    private double maxy;
 
     /**
      * 
@@ -176,54 +190,12 @@ public class OpenLayers implements Serializable {
     }
 
     /**
-     * @return the base url of a possible WMS service
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
      * @return the layers of the WMS service
      */
     public LinkedList<Layer> getLayers() {
         layers.clear();
         loadCapabilities();
         return layers;
-    }
-
-    /**
-     * @return minx
-     */
-    public double getMinx() {
-        return minx;
-    }
-
-    /**
-     * @return miny
-     */
-    public double getMiny() {
-        return miny;
-    }
-
-    /**
-     * @return maxx
-     */
-    public double getMaxx() {
-        return maxx;
-    }
-
-    /**
-     * @return maxy
-     */
-    public double getMaxy() {
-        return maxy;
-    }
-
-    /**
-     * @return the srs
-     */
-    public String getCoordinateSystem() {
-        return coordinateSystem;
     }
 
     /**
@@ -237,32 +209,14 @@ public class OpenLayers implements Serializable {
     public static class Layer implements Serializable {
         private static final long serialVersionUID = -1563797064644908196L;
 
+        @Getter
         String name;
 
+        @Getter
         String title;
 
+        @Getter
         String jsName;
-
-        /**
-         * @return the title
-         */
-        public String getTitle() {
-            return title;
-        }
-
-        /**
-         * @return the name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * @return the js name
-         */
-        public String getJsName() {
-            return jsName;
-        }
     }
 
 }

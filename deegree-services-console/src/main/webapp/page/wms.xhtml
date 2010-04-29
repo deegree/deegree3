@@ -26,7 +26,7 @@
             options="{projection: '#{openLayers.coordinateSystem}', allOverlays: true, maxResolution: 'auto', minResolution: 'auto', minExtent: new OpenLayers.Bounds(-0.00000001, -0.0000001, 0.0000001, 0.00000001), maxExtent: new OpenLayers.Bounds(#{openLayers.minx}, #{openLayers.miny}, #{openLayers.maxx}, #{openLayers.maxy})}">
 
             <m:layerSwitcherControl />
-            
+
             <ui:repeat value="#{openLayers.layers}" var="layer">
                 <m:wmsLayer name="#{layer.title}" url="#{openLayers.url}"
                     params="{layers: '#{layer.name}', transparent: true, format: 'image/png'}"
@@ -34,47 +34,67 @@
             </ui:repeat>
 
             <m:script>
-                <ui:repeat value="#{openLayers.layers}" var="layer">#{layer.jsName}.setVisibility(false);</ui:repeat>var zb = new OpenLayers.Control.ZoomBox(); zb.zoomBox = function (position) {        if (position instanceof OpenLayers.Bounds) {            if (!this.out) {                var minXY = this.map.getLonLatFromPixel(                            new OpenLayers.Pixel(position.left, position.bottom));                var maxXY = this.map.getLonLatFromPixel(                            new OpenLayers.Pixel(position.right, position.top));                var bounds = new OpenLayers.Bounds(minXY.lon, minXY.lat,                                               maxXY.lon, maxXY.lat);            } else {                var pixWidth = Math.abs(position.right-position.left);                var pixHeight = Math.abs(position.top-position.bottom);                var zoomFactor = Math.min((this.map.size.h / pixHeight),                    (this.map.size.w / pixWidth));                var extent = this.map.getExtent();                var center = this.map.getLonLatFromPixel(                    position.getCenterPixel());                var xmin = center.lon - (extent.getWidth()/2)*zoomFactor;                var xmax = center.lon + (extent.getWidth()/2)*zoomFactor;                var ymin = center.lat - (extent.getHeight()/2)*zoomFactor;                var ymax = center.lat + (extent.getHeight()/2)*zoomFactor;                var bounds = new OpenLayers.Bounds(xmin, ymin, xmax, ymax);            }               var lastZoom = this.map.getZoom();            this.map.zoomToExtent(bounds);        } else {            if (!this.out) {                this.map.setCenter(this.map.getLonLatFromPixel(position),                               this.map.getZoom() + 1);            } else {                this.map.setCenter(this.map.getLonLatFromPixel(position),                               this.map.getZoom() - 1);};};};          map.addControl(zb);  </m:script>
+                <ui:repeat value="#{openLayers.layers}" var="layer">#{layer.jsName}.setVisibility(false);</ui:repeat>
+            </m:script>
 
         </m:map>
 
         <h:panelGroup styleClass="management">
             <h:form id="management">
 
-                <h:commandLink actionListener="#{layerDatabase.switchOpen}" value="Add layer from database"
-                    rendered="#{layerDatabase.hasWmsConnection}">
-                    <f:ajax render="addlayer" />
-                </h:commandLink>
-                <br />
-                <h:panelGroup id="addlayer">
-                    <h:selectOneMenu value="#{layerDatabase.selectedWmsConnection}"
-                        rendered="#{layerDatabase.hasMultipleWmsConnections}">
-                        <f:selectItems value="#{layerDatabase.wmsConnections}" var="wmsConnection"
-                            itemLabel="#{wmsConnection}" itemValue="#{wmsConnection}" />
-                    </h:selectOneMenu>
-                    <h:selectOneMenu value="#{layerDatabase.selectedConnection}" rendered="#{layerDatabase.open}">
-                        <f:selectItems value="#{layerDatabase.connections}" var="connection" itemLabel="#{connection}"
-                            itemValue="#{connection}" />
-                        <f:ajax listener="#{layerDatabase.fetchSchemas}" render="schemas tables addlayer" />
-                    </h:selectOneMenu>
-                    <h:selectOneMenu id="schemas" value="#{layerDatabase.selectedSchema}"
-                        rendered="#{layerDatabase.manySchemas}">
-                        <f:selectItems value="#{layerDatabase.schemas}" var="schema" itemLabel="#{schema}"
-                            itemValue="#{schema}" />
-                        <f:ajax listener="#{layerDatabase.fetchTables}" render="tables" />
-                    </h:selectOneMenu>
-                    <h:selectOneMenu id="tables" value="#{layerDatabase.selectedTable}" rendered="#{layerDatabase.open}">
-                        <f:selectItems value="#{layerDatabase.tables}" var="table" itemLabel="#{table}"
-                            itemValue="#{table}" />
-                        <f:ajax render="crs" />
-                    </h:selectOneMenu>
-                    <h:inputText id="crs" value="#{layerDatabase.crs}" rendered="#{layerDatabase.open}">
-                        <f:ajax />
-                    </h:inputText>
-                    <h:commandButton action="#{layerDatabase.addLayer}" value="Add layer to WMS"
-                        rendered="#{layerDatabase.open}">
-                    </h:commandButton>
-                </h:panelGroup>
+                <h:panelGrid>
+                    <h:column>
+                        <h:commandLink actionListener="#{layerDatabase.switchAddOpen}" value="Add layer from database"
+                            rendered="#{layerDatabase.doesHaveWmsConnection}">
+                            <f:ajax render="addlayer" />
+                        </h:commandLink>
+                    </h:column>
+                    <h:panelGroup id="addlayer">
+                        <h:panelGroup rendered="#{layerDatabase.addOpen}">
+                            <h:panelGrid>
+                                <h:column>
+                                    <h:selectOneMenu value="#{layerDatabase.selectedWmsConnection}"
+                                        rendered="#{layerDatabase.doesHaveMultipleWmsConnections}">
+                                        <f:selectItems value="#{layerDatabase.wmsConnections}" var="wmsConnection"
+                                            itemLabel="#{wmsConnection}" itemValue="#{wmsConnection}" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{layerDatabase.selectedConnection}">
+                                        <f:selectItems value="#{layerDatabase.connections}" var="connection"
+                                            itemLabel="#{connection}" itemValue="#{connection}" />
+                                        <f:ajax listener="#{layerDatabase.fetchSchemas}"
+                                            render="schemas tables addlayer" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu id="schemas" value="#{layerDatabase.selectedSchema}"
+                                        rendered="#{layerDatabase.manySchemas}">
+                                        <f:selectItems value="#{layerDatabase.schemas}" var="schema"
+                                            itemLabel="#{schema}" itemValue="#{schema}" />
+                                        <f:ajax listener="#{layerDatabase.fetchTables}" render="tables" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu id="tables" value="#{layerDatabase.selectedTable}">
+                                        <f:selectItems value="#{layerDatabase.tables}" var="table" itemLabel="#{table}"
+                                            itemValue="#{table}" />
+                                        <f:ajax render="crs" action="tableChanged" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="crs" value="#{layerDatabase.crs}">
+                                        <f:ajax />
+                                    </h:inputText>
+                                </h:column>
+                                <h:column>
+                                    <h:commandButton action="#{layerDatabase.addLayer}" value="Add layer to WMS">
+                                    </h:commandButton>
+                                </h:column>
+                            </h:panelGrid>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGrid>
 
             </h:form>
         </h:panelGroup>

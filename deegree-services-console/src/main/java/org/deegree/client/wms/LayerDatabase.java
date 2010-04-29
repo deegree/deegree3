@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.wms;
 
+import static java.lang.Boolean.FALSE;
 import static java.util.Collections.sort;
 import static org.deegree.commons.jdbc.Util.findSrid;
 
@@ -46,6 +47,9 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.jdbc.LayerDatabaseHelper;
 import org.deegree.commons.jdbc.Util;
@@ -56,7 +60,7 @@ import org.deegree.services.wms.dynamic.PostGISUpdater;
 import org.ol4jsf.component.map.Map;
 
 /**
- * <code>WMSDatabase</code>
+ * <code>LayerDatabase</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -69,39 +73,59 @@ public class LayerDatabase implements Serializable {
 
     private static final long serialVersionUID = 4427068290103023263L;
 
-    private boolean open;
+    @Getter
+    private boolean addOpen;
 
+    @Getter
     private LinkedList<String> connections;
 
+    @Getter
+    @Setter
     private String selectedConnection;
 
+    @Getter
     private LinkedList<String> tables;
 
+    @Getter
+    @Setter
     private String selectedTable;
 
+    @Getter
+    @Setter
     private String selectedSchema;
 
+    @Getter
     private LinkedList<String> schemas;
 
-    private boolean manySchemas;
+    @Getter
+    private Boolean manySchemas;
 
+    @Getter
     private LinkedList<String> wmsConnections;
 
-    private boolean hasWmsConnection;
+    @Getter
+    private Boolean doesHaveWmsConnection;
 
-    private boolean hasMultipleWmsConnections;
+    @Getter
+    private Boolean doesHaveMultipleWmsConnections;
 
+    @Setter
+    @Getter
     private String selectedWmsConnection;
 
+    @Getter
+    @Setter
     private String crs;
 
+    @Getter
+    @Setter
     private Map openlayersMap;
 
     /**
      * 
      */
     public LayerDatabase() {
-        open = false;
+        addOpen = FALSE;
         connections = new LinkedList<String>( ConnectionManager.getConnectionIds() );
         connections.remove( "LOCK_DB" );
         sort( connections );
@@ -110,102 +134,47 @@ public class LayerDatabase implements Serializable {
             fetchTables( null );
         }
         WMSController controller = (WMSController) OGCFrontController.getServiceController( WMSController.class );
-        hasWmsConnection = false;
-        hasMultipleWmsConnections = false;
+        doesHaveWmsConnection = FALSE;
+        doesHaveMultipleWmsConnections = FALSE;
         if ( controller != null ) {
             wmsConnections = new LinkedList<String>();
             for ( LayerUpdater updater : controller.getMapService().getDynamics() ) {
                 if ( updater instanceof PostGISUpdater ) {
                     wmsConnections.add( ( (PostGISUpdater) updater ).getConnectionID() );
-                    hasWmsConnection = true;
+                    doesHaveWmsConnection = true;
                 }
             }
         }
-        if ( hasWmsConnection ) {
+        if ( doesHaveWmsConnection ) {
             selectedWmsConnection = wmsConnections.getFirst();
-            hasMultipleWmsConnections = wmsConnections.size() > 1;
+            doesHaveMultipleWmsConnections = wmsConnections.size() > 1;
         }
-    }
-
-    /**
-     * @param map
-     */
-    public void setOpenlayersMap( Map map ) {
-        System.out.println( map );
-        openlayersMap = map;
-    }
-
-    /**
-     * @return the map
-     */
-    public Map getOpenlayersMap() {
-        return openlayersMap;
-    }
-
-    /**
-     * @return true, if more than one wms connection
-     */
-    public boolean getHasMultipleWmsConnections() {
-        return hasMultipleWmsConnections;
-    }
-
-    /**
-     * @return the connection ids
-     */
-    public LinkedList<String> getConnections() {
-        return connections;
-    }
-
-    /**
-     * @return whether the panel is open
-     */
-    public boolean getOpen() {
-        return open;
-    }
-
-    /**
-     * @return true, if a dynamic PostGIS layer is in the WMS
-     */
-    public boolean getHasWmsConnection() {
-        return hasWmsConnection;
-    }
-
-    /**
-     * @return the selected wms connection
-     */
-    public String getSelectedWmsConnection() {
-        return selectedWmsConnection;
-    }
-
-    /**
-     * @return the wms connections
-     */
-    public LinkedList<String> getWmsConnections() {
-        return wmsConnections;
     }
 
     /**
      * @return true, if num schemas &gt; 1
      */
     public boolean getManySchemas() {
-        return open && manySchemas;
+        return addOpen && manySchemas;
+    }
+
+    /**
+     * @return null
+     */
+    public String tableChanged() {
+        int srid = findSrid( selectedConnection, selectedTable, selectedSchema );
+        crs = srid > 0 ? "EPSG:" + srid : "EPSG:4326";
+        return null;
     }
 
     /**
      * @param evt
      */
-    public void switchOpen( ActionEvent evt ) {
-        open = !open;
-        if ( open ) {
+    public void switchAddOpen( ActionEvent evt ) {
+        addOpen = !addOpen;
+        if ( addOpen ) {
             fetchSchemas( null );
         }
-    }
-
-    /**
-     * @param conn
-     */
-    public void setSelectedWmsConnection( String conn ) {
-        selectedWmsConnection = conn;
     }
 
     /**
@@ -220,6 +189,10 @@ public class LayerDatabase implements Serializable {
 
         openlayersMap.setValid( false );
 
+        return null;
+    }
+
+    public String removeLayer() {
         return null;
     }
 
@@ -238,49 +211,6 @@ public class LayerDatabase implements Serializable {
     }
 
     /**
-     * @return the crs
-     */
-    public String getCrs() {
-        int srid = findSrid( selectedConnection, selectedTable, selectedSchema );
-        return crs = srid > 0 ? "EPSG:" + srid : "EPSG:4326";
-    }
-
-    /**
-     * @param c
-     */
-    public void setCrs( String c ) {
-        crs = c;
-    }
-
-    /**
-     * @return all schemas
-     */
-    public LinkedList<String> getSchemas() {
-        return schemas;
-    }
-
-    /**
-     * @return the selected schema
-     */
-    public String getSelectedSchema() {
-        return selectedSchema;
-    }
-
-    /**
-     * @param table
-     */
-    public void setSelectedTable( String table ) {
-        selectedTable = table;
-    }
-
-    /**
-     * @param schema
-     */
-    public void setSelectedSchema( String schema ) {
-        selectedSchema = schema;
-    }
-
-    /**
      * @param evt
      */
     public void fetchTables( AjaxBehaviorEvent evt ) {
@@ -289,34 +219,7 @@ public class LayerDatabase implements Serializable {
         if ( !tables.isEmpty() ) {
             selectedTable = tables.getFirst();
         }
-    }
-
-    /**
-     * @return the selected connection
-     */
-    public String getSelectedConnection() {
-        return selectedConnection;
-    }
-
-    /**
-     * @param c
-     */
-    public void setSelectedConnection( String c ) {
-        selectedConnection = c;
-    }
-
-    /**
-     * @return the available tables
-     */
-    public LinkedList<String> getTables() {
-        return tables;
-    }
-
-    /**
-     * @return the selected table
-     */
-    public String getSelectedTable() {
-        return selectedTable;
+        tableChanged();
     }
 
 }
