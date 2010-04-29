@@ -35,13 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.record.persistence;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.deegree.commons.datasource.configuration.ISORecordStoreType;
 import org.deegree.commons.datasource.configuration.RecordStoreType;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.record.persistence.genericrecordstore.ISORecordStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +84,34 @@ public class RecordStoreManager {
     }
 
     /**
+     * Returns an initialized {@link FeatureStore} instance from the FeatureStore configuration document.
+     * <p>
+     * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
+     * </p>
+     * 
+     * @param configURL
+     *            URL of the configuration document, must not be <code>null</code>
+     * @return corresponding {@link FeatureStore} instance, initialized and ready to be used
+     * @throws RecordStoreException
+     *             if the creation fails, e.g. due to a configuration error
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public static synchronized RecordStore create( URL configURL )
+                            throws RecordStoreException {
+
+        RecordStoreType config = null;
+        try {
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.datasource.configuration" );
+            Unmarshaller u = jc.createUnmarshaller();
+            config = ( (JAXBElement<RecordStoreType>) u.unmarshal( configURL ) ).getValue();
+        } catch ( JAXBException e ) {
+            e.printStackTrace();
+        }
+        return create( config, configURL.toString() );
+    }
+
+    /**
      * Creates a {@link RecordStore} instance from the given configuration object.
      * <p>
      * If the configuration specifies an identifier, the instance is also registered as global {@link RecordStore}.
@@ -86,23 +124,19 @@ public class RecordStoreManager {
      * @throws RecordStoreException
      *             if the creation fails, e.g. due to a configuration error
      */
-    public static synchronized RecordStore create( RecordStoreType config )
+    public static synchronized RecordStore create( RecordStoreType jaxbConfig, String baseURL )
                             throws RecordStoreException {
         RecordStore rs = null;
+        XMLAdapter resolver = new XMLAdapter();
+        resolver.setSystemId( baseURL );
 
-        String id = config.getDataSourceName();
+        String id = jaxbConfig.getDataSourceName();
 
-        if ( config instanceof ISORecordStoreType ) {
-
-            ISORecordStoreType isoConfig = (ISORecordStoreType) config;
-
-            // XMLAdapter resolver = new XMLAdapter();
-            // resolver.setSystemId( baseURL );
-
-            rs = new ISORecordStore( isoConfig.getConnId() );
+        if ( jaxbConfig instanceof ISORecordStoreType ) {
+            rs = new ISORecordStore( ( (ISORecordStoreType) jaxbConfig ).getConnId() );
 
         } else {
-            String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", config.getClass() );
+            String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", jaxbConfig.getClass() );
             throw new RecordStoreException( msg );
         }
 
@@ -123,6 +157,32 @@ public class RecordStoreManager {
             idToRs.put( id, rs );
 
         }
+    }
+
+    /**
+     * @param rsDir
+     */
+    public static void init( File rsDir ) {
+        File[] rsConfigFiles = rsDir.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File dir, String name ) {
+                // TODO Auto-generated method stub
+                return name.toLowerCase().endsWith( ".xml" );
+            }
+        } );
+        for ( File rsConfigFile : rsConfigFiles ) {
+            String fileName = rsConfigFile.getName();
+            // 4 is the length of ".xml"
+            String rsId = fileName.substring( 0, fileName.length() - 4 );
+            LOG.info( "Setting up record store '" + rsId + "' from file '" + fileName + "'..." + "" );
+            try {
+                RecordStore rs = create( rsConfigFile.toURI().toURL() );
+                idToRs.put( rsId, rs );
+            } catch ( Exception e ) {
+                LOG.error( "Error initializing feature store: " + e.getMessage(), e );
+            }
+        }
+
     }
 
 }
