@@ -15,7 +15,7 @@
   <modules>
     <module>deegree-wcts</module>
     <module>deegree-wfs-geosciml</module>
-    <module>deegree-wms-demo</module>
+    <!--module>deegree-wms-demo</module-->
     <module>deegree-wps-demo</module>
   </modules>
   <properties>
