@@ -65,7 +65,7 @@ import static org.deegree.commons.utils.CollectionUtils.AND;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
-import static org.deegree.coverage.raster.utils.DataSourceHandler.fromDatasource;
+import static org.deegree.coverage.raster.io.CoverageStoreManager.fromDatasource;
 import static org.deegree.rendering.r2d.styling.components.UOM.Metre;
 import static org.deegree.services.controller.wms.ops.GetMap.Antialias.BOTH;
 import static org.deegree.services.controller.wms.ops.GetMap.Interpolation.NEARESTNEIGHBOR;

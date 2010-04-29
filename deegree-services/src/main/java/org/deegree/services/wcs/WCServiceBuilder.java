@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
+import static org.deegree.coverage.raster.io.CoverageStoreManager.fromDatasource;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -62,7 +64,6 @@ import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.coverage.raster.utils.DataSourceHandler;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -249,7 +250,7 @@ public class WCServiceBuilder {
     private WCSCoverage buildCoverage( org.deegree.services.wcs.configuration.ServiceConfiguration.Coverage coverage,
                                        MultiResolutionDataSource datasource ) {
         CoverageOptions options = buildOptions( coverage.getNativeFormat(), coverage.getSupportOptions() );
-        MultiResolutionRaster mrr = DataSourceHandler.fromDatasource( datasource, adapter );
+        MultiResolutionRaster mrr = fromDatasource( datasource, adapter );
         RangeSet rs = RangeSetBuilder.createBandRangeSetFromRaster(
                                                                     "generated",
                                                                     "Automatically generated dataset, created from the native raster types.",
@@ -262,7 +263,7 @@ public class WCServiceBuilder {
                                           org.deegree.services.wcs.configuration.ServiceConfiguration.Coverage coverage,
                                           RasterDataSource datasource ) {
         CoverageOptions options = buildOptions( coverage.getNativeFormat(), coverage.getSupportOptions() );
-        AbstractRaster raster = DataSourceHandler.fromDatasource( datasource, adapter );
+        AbstractRaster raster = fromDatasource( datasource, adapter );
         RangeSet rs = RangeSetBuilder.createBandRangeSetFromRaster(
                                                                     "generated",
                                                                     "Automatically generated dataset, created from the native raster types.",
