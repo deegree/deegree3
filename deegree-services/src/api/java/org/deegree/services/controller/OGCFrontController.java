@@ -101,6 +101,7 @@ import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.coverage.raster.io.CoverageStoreManager;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.services.authentication.SecurityException;
@@ -948,6 +949,7 @@ public class OGCFrontController extends HttpServlet {
             initProxyConfig();
             initJDBCConnections();
             initFeatureStores();
+            initCoverageStores();
             initWebServices( resolvedConfigURL );
 
         } catch ( NoClassDefFoundError e ) {
@@ -1072,10 +1074,31 @@ public class OGCFrontController extends HttpServlet {
         } catch ( URISyntaxException e ) {
             LOG.error( e.getMessage(), e );
         }
-        if ( fsDir.exists() ) {
+        if ( fsDir != null && fsDir.exists() ) {
             FeatureStoreManager.init( fsDir );
         } else {
             LOG.info( "No 'featurestores' directory -- skipping initialization of feature stores." );
+        }
+        LOG.info( "" );
+    }
+
+    private void initCoverageStores() {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up coverage stores." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
+        File csDir = null;
+        try {
+            csDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/coverages", getServletContext() ).toURI() );
+        } catch ( MalformedURLException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        if ( csDir != null && csDir.exists() ) {
+            CoverageStoreManager.init( csDir );
+        } else {
+            LOG.info( "No 'coverages' directory -- skipping initialization of coverage stores." );
         }
         LOG.info( "" );
     }
