@@ -97,7 +97,10 @@ import org.slf4j.Logger;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * <code>SimpleSQLDatastore</code>
+ * {@link FeatureStore} implementation that is backed by an SQL database and configured by providing an SQL statement /
+ * an SQL connection.
+ * 
+ * @see FeatureStore
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -109,27 +112,27 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     static final Logger LOG = getLogger( SimpleSQLFeatureStore.class );
 
-    boolean available = false;
+    private boolean available = false;
 
-    String connId;
+    private String connId;
 
-    CRS crs;
+    private CRS crs;
 
     private ApplicationSchema schema;
 
-    GeometryFactory fac = new GeometryFactory();
+    private GeometryFactory fac = new GeometryFactory();
 
     private String featureName;
 
     private String namespace;
 
-    GenericFeatureType featureType;
+    private GenericFeatureType featureType;
 
     private String bbox;
 
-    GeometryTransformer transformer;
+    private GeometryTransformer transformer;
 
-    TreeMap<Integer, String> lods;
+    private TreeMap<Integer, String> lods;
 
     private Pair<Long, Envelope> cachedEnvelope = new Pair<Long, Envelope>();
 
@@ -142,8 +145,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      * @param bbox
      * @param lods
      */
-    public SimpleSQLFeatureStore( String connId, String crs, String sql, String featureName, String namespace,
-                               String bbox, List<Pair<Integer, String>> lods ) {
+    public SimpleSQLFeatureStore( String connId, String crs, String sql, String featureName, String namespace, String bbox,
+                           List<Pair<Integer, String>> lods ) {
         this.connId = connId;
         this.crs = new CRS( crs );
         sql = sql.trim();

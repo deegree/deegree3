@@ -117,7 +117,7 @@ public class MemoryFeatureStore implements FeatureStore {
      *            application schema, must not be <code>null</code>
      * @throws FeatureStoreException
      */
-    public MemoryFeatureStore( ApplicationSchema schema ) throws FeatureStoreException {
+    MemoryFeatureStore( ApplicationSchema schema ) throws FeatureStoreException {
         this.schema = schema;
         CRS nativeCRS = new CRS( "EPSG:4326" );
         for ( FeatureType ft : schema.getFeatureTypes() ) {

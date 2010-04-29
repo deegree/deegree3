@@ -145,7 +145,7 @@ public class PostGISFeatureStore implements FeatureStore {
      *            key: feature type name, value: relational mapping information for feature type, may be
      *            <code>null</code>
      */
-    public PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema, CRS storageSRS,
+    PostGISFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchema, CRS storageSRS,
                                 Map<QName, FeatureTypeMapping> relMapping ) {
         this.schema = schema;
         this.jdbcConnId = jdbcConnId;
