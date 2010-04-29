@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head></h:head>
+<h:body>
+				<ui:composition template="/page/templates/formLayout.xhtml">
+								<ui:define name="content">
+												<h:form>
+																<h:panelGrid columns="4">
+																				<f:facet name="header">
+																								<h:outputText value="Teste das Problem" />
+																				</f:facet>
+																				<h:inputHidden id="mdFieldId" value="FormGroup3_text5" />
+
+																				<h:outputLabel for="text5mdValue" value="Problem:" rendered="#{formGroup3Bean.text5Visibility}" />
+
+																				<h:inputText id="text5mdValue" rendered="#{formGroup3Bean.text5Visibility}"
+																								required="#{formGroup3Bean.text5Required}"
+																								value="#{formElementBean.elements['FormGroup3_text5'].value}">
+																								<f:ajax execute="@this mdFieldId" render="@none" listener="#{formElementBean.saveValue}" />
+																				</h:inputText>
+
+																				<h:commandLink value="h" rendered="#{formGroup3Bean.text5Help}">
+																								<f:param name="text" value="Die Hilfe für das Element text5 zum testen des Problems" />
+																								<f:ajax render=":helpOutput" listener="#{helpBean.updateHelp}" />
+																				</h:commandLink>
+																				<h:outputText value="Test" rendered="#{!formGroup3Bean.text5Help}" />
+																				<h:message for="text5mdValue" rendered="#{formGroup3Bean.text5Visibility}" />
+																</h:panelGrid>
+												</h:form>
+								</ui:define>
+				</ui:composition>
+</h:body>
+</html>
