@@ -203,7 +203,7 @@ public class CSWController extends AbstractOGCServiceController {
             pi = (PublishedInformation) u.unmarshal( piElement.getXMLStreamReaderWithoutCaching() );
             syncWithMainController( pi );
 
-            service = new CSWService( sc );
+            service = new CSWService( sc, controllerConf.getSystemId() );
 
             if ( sc.getSecurityManager() == null ) {
                 // then do nothing and step over

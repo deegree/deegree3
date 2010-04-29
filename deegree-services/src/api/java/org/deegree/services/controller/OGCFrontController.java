@@ -71,14 +71,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
-import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.axiom.soap.impl.llom.soap11.SOAP11Factory;
 import org.apache.axiom.soap.impl.llom.soap12.SOAP12Factory;
@@ -104,6 +102,7 @@ import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.coverage.raster.io.CoverageStoreManager;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.record.persistence.RecordStoreManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -564,12 +563,26 @@ public class OGCFrontController extends HttpServlet {
         try {
             // TODO handle multiple authentication methods
             AuthenticationMethodType authType = serviceConfig.getAuthenticationMethod();
+
             Credentials cred = null;
             if ( authType != null ) {
                 LOG.debug( "Configured authtype: " + authType );
-                credProv = CredentialsProviderManager.create( authType );
-                LOG.debug( "credProv: " + credProv );
-                cred = credProv.doKVP( normalizedKVPParams, requestWrapper, response );
+                if ( authType.getSOAPAuthentication() != null ) {
+                    authType.setSOAPAuthentication( null );
+                    credProv = CredentialsProviderManager.create( authType );
+                    LOG.debug( "credProv1: " + credProv );
+                    if ( credProv != null ) {
+                        cred = credProv.doKVP( normalizedKVPParams, requestWrapper, response );
+                    }
+                    authType.setSOAPAuthentication( "" );
+
+                } else {
+                    credProv = CredentialsProviderManager.create( authType );
+                    LOG.debug( "credProv2: " + credProv );
+                    if ( credProv != null ) {
+                        cred = credProv.doKVP( normalizedKVPParams, requestWrapper, response );
+                    }
+                }
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -667,12 +680,21 @@ public class OGCFrontController extends HttpServlet {
         try {
             // TODO handle multiple authentication methods
             AuthenticationMethodType authType = serviceConfig.getAuthenticationMethod();
+
             Credentials cred = null;
             if ( authType != null ) {
                 LOG.debug( "Configured authtype: " + authType );
-                credProv = CredentialsProviderManager.create( authType );
-                LOG.debug( "credProv: " + credProv );
-                cred = credProv.doXML( xmlStream, requestWrapper, response );
+
+                if ( authType.getSOAPAuthentication() != null ) {
+                    authType.setSOAPAuthentication( null );
+                    credProv = CredentialsProviderManager.create( authType );
+                    LOG.debug( "credProv: " + credProv );
+                    if ( credProv != null ) {
+                        cred = credProv.doXML( xmlStream, requestWrapper, response );
+                    }
+                    authType.setSOAPAuthentication( "" );
+                }
+
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -752,50 +774,84 @@ public class OGCFrontController extends HttpServlet {
 
         SOAPEnvelope envelope = soap.getSOAPEnvelope();
 
-        // extract (deegree specific) security information and bind to current thread
-        String user = null;
-        String password = null;
-        String sessionId = null;
-        SOAPHeader header = envelope.getHeader();
-        if ( header != null ) {
-            OMElement userElement = header.getFirstChildWithName( new QName( "http://www.deegree.org/security", "user" ) );
-            if ( userElement != null ) {
-                user = userElement.getText();
-            }
-            OMElement passwordElement = header.getFirstChildWithName( new QName( "http://www.deegree.org/security",
-                                                                                 "password" ) );
-            if ( passwordElement != null ) {
-                password = passwordElement.getText();
-            }
-            OMElement sessionIdElement = header.getFirstChildWithName( new QName( "http://www.deegree.org/security",
-                                                                                  "sessionId" ) );
-            if ( sessionIdElement != null ) {
-                sessionId = sessionIdElement.getText();
-            }
-        }
-        Credentials cred = null;
-        if ( user != null || password != null || sessionId != null ) {
-            cred = new Credentials( user, password, sessionId );
-        }
+        CredentialsProvider credProv = null;
 
-        AbstractOGCServiceController subcontroller = determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
-        if ( subcontroller != null ) {
-            LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
-            HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
-            long dispatchTime = FrontControllerStats.requestDispatched();
-            try {
-                subcontroller.doSOAP( envelope, requestWrapper, responseWrapper, multiParts, factory );
-            } finally {
-                FrontControllerStats.requestFinished( dispatchTime );
+        try {
+            // TODO handle multiple authentication methods
+            AuthenticationMethodType authType = serviceConfig.getAuthenticationMethod();
+            Credentials cred = null;
+            if ( authType != null ) {
+                LOG.debug( "Configured authtype: " + authType );
+
+                if ( authType.getHttpBasicAuthentication() != null ) {
+                    // workaround...like a wrapper
+                    authType.setHttpBasicAuthentication( null );
+                    authType.setDeegreeAuthentication( null );
+                    authType.setHttpDigestAuthentication( null );
+
+                    credProv = CredentialsProviderManager.create( authType );
+                    LOG.debug( "credProv: " + credProv );
+                    cred = credProv.doSOAP( envelope, requestWrapper );
+
+                    authType.setHttpBasicAuthentication( "" );
+                }
+
             }
-            if ( LOG.isDebugEnabled() ) {
-                validateResponse( responseWrapper );
+            LOG.debug( "credentials: " + cred );
+            bindContextToThread( requestWrapper, cred );
+
+            // extract (deegree specific) security information and bind to current thread
+            // String user = null;
+            // String password = null;
+            // String sessionId = null;
+            // SOAPHeader header = envelope.getHeader();
+            // if ( header != null ) {
+            // OMElement userElement = header.getFirstChildWithName( new QName( "http://www.deegree.org/security",
+            // "user" ) );
+            // if ( userElement != null ) {
+            // user = userElement.getText();
+            // }
+            // OMElement passwordElement = header.getFirstChildWithName( new QName( "http://www.deegree.org/security",
+            // "password" ) );
+            // if ( passwordElement != null ) {
+            // password = passwordElement.getText();
+            // }
+            // OMElement sessionIdElement = header.getFirstChildWithName( new QName( "http://www.deegree.org/security",
+            // "sessionId" ) );
+            // if ( sessionIdElement != null ) {
+            // sessionId = sessionIdElement.getText();
+            // }
+            // }
+
+            AbstractOGCServiceController subcontroller = determineResponsibleControllerByNS( envelope.getSOAPBodyFirstElementNS().getNamespaceURI() );
+            if ( subcontroller != null ) {
+                LOG.debug( "Dispatching request to subcontroller class: " + subcontroller.getClass().getName() );
+                HttpResponseBuffer responseWrapper = new HttpResponseBuffer( response );
+                long dispatchTime = FrontControllerStats.requestDispatched();
+                try {
+                    subcontroller.doSOAP( envelope, requestWrapper, responseWrapper, multiParts, factory );
+                } finally {
+                    FrontControllerStats.requestFinished( dispatchTime );
+                }
+                if ( LOG.isDebugEnabled() ) {
+                    validateResponse( responseWrapper );
+                }
+                responseWrapper.flushBuffer();
+            } else {
+                String msg = "No subcontroller for request namespace '"
+                             + envelope.getSOAPBodyFirstElementNS().getNamespaceURI() + "' available.";
+                throw new ServletException( msg );
             }
-            responseWrapper.flushBuffer();
-        } else {
-            String msg = "No subcontroller for request namespace '"
-                         + envelope.getSOAPBodyFirstElementNS().getNamespaceURI() + "' available.";
-            throw new ServletException( msg );
+        } catch ( SecurityException e ) {
+            if ( credProv != null ) {
+                LOG.debug( "A security exception was thrown, let the credential provider handle the job." );
+                credProv.handleException( response, e );
+            } else {
+                LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
+                           + " but no credentials provider was configured, sending generic ogc exception." );
+                sendException( new OWSException( e.getLocalizedMessage(), ControllerException.NO_APPLICABLE_CODE ),
+                               response, null );
+            }
         }
     }
 
@@ -1099,6 +1155,27 @@ public class OGCFrontController extends HttpServlet {
             CoverageStoreManager.init( csDir );
         } else {
             LOG.info( "No 'data/coverage' directory -- skipping initialization of coverage stores." );
+        }
+        LOG.info( "" );
+    }
+
+    private void initRecordStores() {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "Setting up record stores." );
+        LOG.info( "--------------------------------------------------------------------------------" );
+
+        File rsDir = null;
+        try {
+            rsDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/record", getServletContext() ).toURI() );
+        } catch ( MalformedURLException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        if ( rsDir != null && rsDir.exists() ) {
+            RecordStoreManager.init( rsDir );
+        } else {
+            LOG.info( "No 'data/record' directory -- skipping initialization of record stores." );
         }
         LOG.info( "" );
     }

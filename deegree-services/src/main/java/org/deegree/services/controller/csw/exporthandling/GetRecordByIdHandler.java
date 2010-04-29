@@ -163,7 +163,7 @@ public class GetRecordByIdHandler {
                                        getRecBI.getElementSetName() );
                 }
             } catch ( InvalidParameterValueException e ) {
-                throw new InvalidParameterValueException( "The requested identifier is no available in the dataset." );
+                throw new InvalidParameterValueException( "The requested identifier is no available in dataset." );
             }
         }
 

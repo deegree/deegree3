@@ -78,7 +78,7 @@ public class CSWService {
      *            the serviceConfiguration that is specified in the configuration.xml document
      * @throws RecordStoreException
      */
-    public CSWService( ServiceConfiguration sc ) throws RecordStoreException {
+    public CSWService( ServiceConfiguration sc, String baseURL ) throws RecordStoreException {
 
         LOG.info( "Initializing/looking up configured record stores." );
 
@@ -86,7 +86,7 @@ public class CSWService {
 
             RecordStoreType storeType = obje.getValue();
 
-            RecordStore recStore = RecordStoreManager.create( storeType );
+            RecordStore recStore = RecordStoreManager.create( storeType, baseURL );
 
             addToStore( recStore );
 
