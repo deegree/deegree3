@@ -101,7 +101,7 @@ public class CoverageStoreManager {
                     idToCs.put( csId, cs );
                 }
             } catch ( Exception e ) {
-                LOG.error( "Error initializing feature store: " + e.getMessage(), e );
+                LOG.error( "Error initializing coverage store: " + e.getMessage(), e );
             }
         }
     }
@@ -114,7 +114,7 @@ public class CoverageStoreManager {
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.datasource.configuration" );
             Unmarshaller u = jc.createUnmarshaller();
-            Object config = u.unmarshal( url );
+            Object config = ( (JAXBElement<?>) u.unmarshal( url ) ).getValue();
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( url.toString() );
