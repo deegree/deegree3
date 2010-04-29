@@ -218,61 +218,62 @@ public class Capabilities130XMLAdapter extends XMLAdapter {
                 writeElement( writer, WMSNS, "southBoundLatitude", min.get1() + "" );
                 writeElement( writer, WMSNS, "northBoundLatitude", max.get1() + "" );
                 writer.writeEndElement();
-            }
 
-            for ( CRS crs : layer.getSrs() ) {
-                if ( crs.getName().startsWith( "AUTO" ) ) {
-                    continue;
-                }
-                Envelope envelope;
-                CoordinateSystem srs = crs.getWrappedCRS();
-                try {
-                    Envelope src = layerEnv;
-                    GeometryTransformer transformer = new GeometryTransformer( srs );
-                    if ( src.getCoordinateSystem() == null ) {
-                        envelope = (Envelope) transformer.transform( layerEnv, latlon );
-                    } else {
-                        envelope = (Envelope) transformer.transform( layerEnv );
+                for ( CRS crs : layer.getSrs() ) {
+                    if ( crs.getName().startsWith( "AUTO" ) ) {
+                        continue;
                     }
-                } catch ( IllegalArgumentException e ) {
-                    LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                    continue;
-                } catch ( TransformationException e ) {
-                    LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                    continue;
-                }
+                    Envelope envelope;
+                    CoordinateSystem srs = crs.getWrappedCRS();
+                    try {
+                        Envelope src = layerEnv;
+                        GeometryTransformer transformer = new GeometryTransformer( srs );
+                        if ( src.getCoordinateSystem() == null ) {
+                            envelope = (Envelope) transformer.transform( layerEnv, latlon );
+                        } else {
+                            envelope = (Envelope) transformer.transform( layerEnv );
+                        }
+                    } catch ( IllegalArgumentException e ) {
+                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                        continue;
+                    } catch ( TransformationException e ) {
+                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                        continue;
+                    }
 
-                writer.writeStartElement( WMSNS, "BoundingBox" );
-                writer.writeAttribute( "CRS", crs.getName() );
+                    writer.writeStartElement( WMSNS, "BoundingBox" );
+                    writer.writeAttribute( "CRS", crs.getName() );
 
-                Point min = envelope.getMin();
-                Point max = envelope.getMax();
-                if ( min.equals( max ) ) {
-                    // TODO uncomment this once it's implemented
-                    min = new DefaultPoint( min.getId(), min.getCoordinateSystem(), min.getPrecision(),
-                                            new double[] { min.get0() - 0.0001, min.get1() - 0.0001 } );
-                    // bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to just use the same value for all
-                    // crs
-                }
+                    min = envelope.getMin();
+                    max = envelope.getMax();
+                    if ( min.equals( max ) ) {
+                        // TODO uncomment this once it's implemented
+                        min = new DefaultPoint( min.getId(), min.getCoordinateSystem(), min.getPrecision(),
+                                                new double[] { min.get0() - 0.0001, min.get1() - 0.0001 } );
+                        // bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to just use the same value for
+                        // all
+                        // crs
+                    }
 
-                // check for srs with northing as first axis
-                srs = WMSController130.getCRS( crs.getName() ).getWrappedCRS();
-                switch ( srs.getAxis()[0].getOrientation() ) {
-                case Axis.AO_NORTH:
-                    writer.writeAttribute( "miny", Double.toString( min.get0() ) );
-                    writer.writeAttribute( "minx", Double.toString( min.get1() ) );
-                    writer.writeAttribute( "maxy", Double.toString( max.get0() ) );
-                    writer.writeAttribute( "maxx", Double.toString( max.get1() ) );
-                    break;
-                default:
-                    writer.writeAttribute( "minx", Double.toString( min.get0() ) );
-                    writer.writeAttribute( "miny", Double.toString( min.get1() ) );
-                    writer.writeAttribute( "maxx", Double.toString( max.get0() ) );
-                    writer.writeAttribute( "maxy", Double.toString( max.get1() ) );
+                    // check for srs with northing as first axis
+                    srs = WMSController130.getCRS( crs.getName() ).getWrappedCRS();
+                    switch ( srs.getAxis()[0].getOrientation() ) {
+                    case Axis.AO_NORTH:
+                        writer.writeAttribute( "miny", Double.toString( min.get0() ) );
+                        writer.writeAttribute( "minx", Double.toString( min.get1() ) );
+                        writer.writeAttribute( "maxy", Double.toString( max.get0() ) );
+                        writer.writeAttribute( "maxx", Double.toString( max.get1() ) );
+                        break;
+                    default:
+                        writer.writeAttribute( "minx", Double.toString( min.get0() ) );
+                        writer.writeAttribute( "miny", Double.toString( min.get1() ) );
+                        writer.writeAttribute( "maxx", Double.toString( max.get0() ) );
+                        writer.writeAttribute( "maxy", Double.toString( max.get1() ) );
+                    }
+                    writer.writeEndElement();
                 }
-                writer.writeEndElement();
             }
         } catch ( UnknownCRSException e ) {
             LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );

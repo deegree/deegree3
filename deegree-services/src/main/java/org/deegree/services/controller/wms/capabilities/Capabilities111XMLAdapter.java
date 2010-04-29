@@ -194,38 +194,37 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                 writer.writeAttribute( "maxx", Double.toString( bbox.getMax().get0() ) );
                 writer.writeAttribute( "maxy", Double.toString( bbox.getMax().get1() ) );
                 writer.writeEndElement();
-            }
 
-            for ( CRS crs : layer.getSrs() ) {
-                if ( crs.getName().startsWith( "AUTO" ) ) {
-                    continue;
-                }
-                Envelope envelope;
-                try {
-                    Envelope src = layerEnv;
-                    if ( src.getCoordinateSystem() == null ) {
-                        envelope = (Envelope) new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv,
-                                                                                                        latlon );
-                    } else {
-                        envelope = (Envelope) new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv );
+                for ( CRS crs : layer.getSrs() ) {
+                    if ( crs.getName().startsWith( "AUTO" ) ) {
+                        continue;
                     }
-                } catch ( IllegalArgumentException e ) {
-                    LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                    continue;
-                } catch ( TransformationException e ) {
-                    LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                    continue;
-                }
+                    Envelope envelope;
+                    try {
+                        if ( layerEnv.getCoordinateSystem() == null ) {
+                            envelope = (Envelope) new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv,
+                                                                                                            latlon );
+                        } else {
+                            envelope = (Envelope) new GeometryTransformer( crs.getWrappedCRS() ).transform( layerEnv );
+                        }
+                    } catch ( IllegalArgumentException e ) {
+                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                        continue;
+                    } catch ( TransformationException e ) {
+                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                        continue;
+                    }
 
-                writer.writeStartElement( "BoundingBox" );
-                writer.writeAttribute( "SRS", crs.getName() );
-                writer.writeAttribute( "minx", Double.toString( envelope.getMin().get0() ) );
-                writer.writeAttribute( "miny", Double.toString( envelope.getMin().get1() ) );
-                writer.writeAttribute( "maxx", Double.toString( envelope.getMax().get0() ) );
-                writer.writeAttribute( "maxy", Double.toString( envelope.getMax().get1() ) );
-                writer.writeEndElement();
+                    writer.writeStartElement( "BoundingBox" );
+                    writer.writeAttribute( "SRS", crs.getName() );
+                    writer.writeAttribute( "minx", Double.toString( envelope.getMin().get0() ) );
+                    writer.writeAttribute( "miny", Double.toString( envelope.getMin().get1() ) );
+                    writer.writeAttribute( "maxx", Double.toString( envelope.getMax().get0() ) );
+                    writer.writeAttribute( "maxy", Double.toString( envelope.getMax().get1() ) );
+                    writer.writeEndElement();
+                }
             }
         } catch ( UnknownCRSException e ) {
             LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
