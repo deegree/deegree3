@@ -1067,8 +1067,7 @@ public class OGCFrontController extends HttpServlet {
 
         File fsDir = null;
         try {
-            fsDir = new File(
-                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/feature", getServletContext() ).toURI() );
+            fsDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/feature", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -1089,7 +1088,8 @@ public class OGCFrontController extends HttpServlet {
 
         File csDir = null;
         try {
-            csDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/coverage", getServletContext() ).toURI() );
+            csDir = new File(
+                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/coverage", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -1116,7 +1116,7 @@ public class OGCFrontController extends HttpServlet {
         } catch ( URISyntaxException e ) {
             LOG.error( e.getMessage(), e );
         }
-        if ( jdbcDir.exists() ) {
+        if ( jdbcDir != null && jdbcDir.exists() ) {
             ConnectionManager.init( jdbcDir );
         } else {
             LOG.info( "No 'jdbc' directory -- skipping initialization of feature stores." );
