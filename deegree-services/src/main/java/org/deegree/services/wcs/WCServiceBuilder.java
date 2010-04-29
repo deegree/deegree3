@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
-import static org.deegree.coverage.raster.io.CoverageStoreManager.fromDatasource;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -49,10 +47,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.datasource.configuration.AbstractGeospatialDataSourceType;
-import org.deegree.commons.datasource.configuration.MultiResolutionDataSource;
-import org.deegree.commons.datasource.configuration.RasterDataSource;
 import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -64,20 +60,22 @@ import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
+import org.deegree.coverage.raster.io.CoverageStoreManager;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.wcs.configuration.AxisValue;
-import org.deegree.services.wcs.configuration.Interpolation;
-import org.deegree.services.wcs.configuration.IntervalType;
-import org.deegree.services.wcs.configuration.RangeSetType;
-import org.deegree.services.wcs.configuration.ServiceConfiguration;
-import org.deegree.services.wcs.configuration.SupportOptions;
-import org.deegree.services.wcs.configuration.TypedType;
-import org.deegree.services.wcs.configuration.RangeSetType.AxisDescription;
+import org.deegree.services.jaxb.wcs.AxisValue;
+import org.deegree.services.jaxb.wcs.Interpolation;
+import org.deegree.services.jaxb.wcs.IntervalType;
+import org.deegree.services.jaxb.wcs.RangeSetType;
+import org.deegree.services.jaxb.wcs.ServiceConfiguration;
+import org.deegree.services.jaxb.wcs.SupportOptions;
+import org.deegree.services.jaxb.wcs.TypedType;
+import org.deegree.services.jaxb.wcs.RangeSetType.AxisDescription;
+import org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage;
 import org.deegree.services.wcs.coverages.MultiResolutionCoverage;
 import org.deegree.services.wcs.coverages.SimpleCoverage;
 import org.deegree.services.wcs.coverages.WCSCoverage;
@@ -144,7 +142,7 @@ public class WCServiceBuilder {
             Collections.sort( defaultFormats );
         }
 
-        for ( org.deegree.services.wcs.configuration.ServiceConfiguration.Coverage coverage : wcsConf.getCoverage() ) {
+        for ( Coverage coverage : wcsConf.getCoverage() ) {
             try {
                 wcsService.addCoverage( extractCoverage( coverage ) );
             } catch ( ServiceInitException ex ) {
@@ -154,19 +152,19 @@ public class WCServiceBuilder {
         return wcsService;
     }
 
-    private WCSCoverage extractCoverage( org.deegree.services.wcs.configuration.ServiceConfiguration.Coverage coverage )
+    private WCSCoverage extractCoverage( Coverage coverage )
                             throws ServiceInitException {
-        AbstractGeospatialDataSourceType ds = coverage.getRasterDataSource();
-        // Class<?> dsClass = ds.getDeclaredType();
-        if ( ds == null ) {
-            ds = coverage.getMultiResolutionDataSource();
+        String id = coverage.getCoverageStoreId();
+        AbstractCoverage cov = CoverageStoreManager.get( id );
+        if ( cov == null ) {
+            throw new ServiceInitException( "No coverage store with id '" + id + "' is known." );
         }
         WCSCoverage result = null;
         try {
-            if ( ds instanceof RasterDataSource ) {
-                result = buildCoverage( coverage, (RasterDataSource) ds );
-            } else if ( ds instanceof MultiResolutionDataSource ) {
-                result = buildCoverage( coverage, (MultiResolutionDataSource) ds );
+            if ( cov instanceof AbstractRaster ) {
+                result = buildCoverage( coverage, (AbstractRaster) cov );
+            } else if ( cov instanceof MultiResolutionRaster ) {
+                result = buildCoverage( coverage, (MultiResolutionRaster) cov );
             }
 
             if ( result != null ) {
@@ -197,10 +195,6 @@ public class WCServiceBuilder {
         return result;
     }
 
-    /**
-     * @param rangeSet
-     * @return
-     */
     private RangeSet getRangeSet( RangeSetType rangeSetType ) {
         RangeSet result = null;
         if ( rangeSetType != null ) {
@@ -247,10 +241,8 @@ public class WCServiceBuilder {
         return SingleValue.createFromString( tt.getType(), tt.getValue() );
     }
 
-    private WCSCoverage buildCoverage( org.deegree.services.wcs.configuration.ServiceConfiguration.Coverage coverage,
-                                       MultiResolutionDataSource datasource ) {
+    private WCSCoverage buildCoverage( Coverage coverage, MultiResolutionRaster mrr ) {
         CoverageOptions options = buildOptions( coverage.getNativeFormat(), coverage.getSupportOptions() );
-        MultiResolutionRaster mrr = fromDatasource( datasource, adapter );
         RangeSet rs = RangeSetBuilder.createBandRangeSetFromRaster(
                                                                     "generated",
                                                                     "Automatically generated dataset, created from the native raster types.",
@@ -259,11 +251,8 @@ public class WCServiceBuilder {
         return new MultiResolutionCoverage( coverage.getName(), coverage.getLabel(), mrr, options, rs );
     }
 
-    private SimpleCoverage buildCoverage(
-                                          org.deegree.services.wcs.configuration.ServiceConfiguration.Coverage coverage,
-                                          RasterDataSource datasource ) {
+    private SimpleCoverage buildCoverage( Coverage coverage, AbstractRaster raster ) {
         CoverageOptions options = buildOptions( coverage.getNativeFormat(), coverage.getSupportOptions() );
-        AbstractRaster raster = fromDatasource( datasource, adapter );
         RangeSet rs = RangeSetBuilder.createBandRangeSetFromRaster(
                                                                     "generated",
                                                                     "Automatically generated dataset, created from the native raster types.",

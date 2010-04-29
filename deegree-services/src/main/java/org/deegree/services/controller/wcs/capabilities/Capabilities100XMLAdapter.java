@@ -60,7 +60,7 @@ import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.deegree.services.jaxb.metadata.ServiceContactType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
-import org.deegree.services.wcs.configuration.ServiceConfiguration.Coverage;
+import org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 
 /**
@@ -279,7 +279,6 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
     /**
      * @param writer
      * @param serviceContactType
-     * @param provider
      * @throws XMLStreamException
      */
     private static void exportResponsibleParty( XMLStreamWriter writer, ServiceContactType serviceContactType,

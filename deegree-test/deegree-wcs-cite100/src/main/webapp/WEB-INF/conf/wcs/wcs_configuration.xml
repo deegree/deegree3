@@ -14,20 +14,7 @@
     <Coverage>
       <Name>saltlakecity</Name>
       <Label>deegree demo dataset</Label>
-      <ds:MultiResolutionDataSource crs="EPSG:26912">
-        <ds:Resolution res="16.0">
-          <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../data/utah/raster/dop/16.0
-            </ds:RasterDirectory>
-          </ds:RasterDataSource>
-        </ds:Resolution>
-        <ds:Resolution res="32.0">
-          <ds:RasterDataSource>
-            <ds:RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../data/utah/raster/dop/32.0
-            </ds:RasterDirectory>
-          </ds:RasterDataSource>
-        </ds:Resolution>
-      </ds:MultiResolutionDataSource>
+      <CoverageStoreId>utah_dop</CoverageStoreId>
       <RangeSet>
         <Name>utah_ranges</Name>
         <AxisDescription name="bands">
@@ -45,9 +32,7 @@
     <Coverage>
       <Name>cite</Name>
       <Label>cite test data taken from wms 1.3.0</Label>
-      <ds:RasterDataSource crs="EPSG:4326">
-        <ds:RasterFile fileType="tif">../../data/cite/terrain.tif</ds:RasterFile>
-      </ds:RasterDataSource>
+      <CoverageStoreId>terrain</CoverageStoreId>
       <SupportOptions extend="true">
         <SupportedCRS>EPSG:4314</SupportedCRS>
       </SupportOptions>

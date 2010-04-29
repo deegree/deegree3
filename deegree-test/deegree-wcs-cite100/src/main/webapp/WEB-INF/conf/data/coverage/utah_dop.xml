@@ -1,0 +1,14 @@
+<MultiResolutionDataSource xmlns="http://www.deegree.org/datasource" crs="EPSG:26912">
+  <Resolution res="16.0">
+    <RasterDataSource>
+      <RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../../data/utah/raster/dop/16.0
+      </RasterDirectory>
+    </RasterDataSource>
+  </Resolution>
+  <Resolution res="32.0">
+    <RasterDataSource>
+      <RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../../data/utah/raster/dop/32.0
+      </RasterDirectory>
+    </RasterDataSource>
+  </Resolution>
+</MultiResolutionDataSource>

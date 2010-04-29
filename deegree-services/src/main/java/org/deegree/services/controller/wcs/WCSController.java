@@ -88,8 +88,6 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.wcs.capabilities.Capabilities100XMLAdapter;
 import org.deegree.services.controller.wcs.capabilities.GetCapabilities100XMLAdapter;
 import org.deegree.services.controller.wcs.capabilities.Capabilities100XMLAdapter.Sections;
-import org.deegree.services.controller.wcs.configuration.PublishedInformation;
-import org.deegree.services.controller.wcs.configuration.PublishedInformation.AllowedOperations;
 import org.deegree.services.controller.wcs.describecoverage.CoverageDescription100XMLAdapter;
 import org.deegree.services.controller.wcs.describecoverage.DescribeCoverage;
 import org.deegree.services.controller.wcs.describecoverage.DescribeCoverage100KVPAdapter;
@@ -100,6 +98,8 @@ import org.deegree.services.controller.wcs.getcoverage.GetCoverage100XMLAdapter;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wcs.PublishedInformation;
+import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.ServiceConfigurationXMLAdapter;
 import org.deegree.services.wcs.WCService;
 import org.deegree.services.wcs.WCServiceBuilder;
@@ -137,8 +137,6 @@ public class WCSController extends AbstractOGCServiceController {
     private static final String CONFIG_PRE = "dwcs";
 
     private static final String CONFIG_NS = "http://www.deegree.org/services/wcs";
-
-    private final static String CONFIG_SCHEMA_FILE = "/META-INF/schemas/wcs/0.5.0/wcs_service_configuration.xsd";
 
     private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wcs/0.5.0/wcs_published_information.xsd";
 
@@ -218,8 +216,7 @@ public class WCSController extends AbstractOGCServiceController {
 
         PublishedInformation pubInf = null;
         try {
-            Unmarshaller u = getUnmarshaller( "org.deegree.services.controller.wcs.configuration",
-                                              PUBLISHED_SCHEMA_FILE );
+            Unmarshaller u = getUnmarshaller( "org.deegree.services.jaxb.wcs", PUBLISHED_SCHEMA_FILE );
             XPath xp = new XPath( CONFIG_PRE + ":PublishedInformation", nsContext );
             OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
             if ( elem != null ) {

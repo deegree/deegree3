@@ -1,0 +1,3 @@
+<RasterDataSource xmlns="http://www.deegree.org/datasource" crs="EPSG:4326">
+  <RasterFile fileType="tif">../../../data/cite/terrain.tif</RasterFile>
+</RasterDataSource>
