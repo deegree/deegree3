@@ -7,6 +7,11 @@
   <version>3.0-SNAPSHOT</version>
   <name>deegree-wfs-cite110 Webapp</name>
   <url>http://www.deegree.org</url>
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-demos</artifactId>
+    <version>3.0-SNAPSHOT</version>
+  </parent>    
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>

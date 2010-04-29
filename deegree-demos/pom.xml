@@ -8,6 +8,11 @@
   <version>3.0-SNAPSHOT</version>
   <name>deegree-demos</name>
   <url>http://www.deegree.org</url>
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-demos</artifactId>
+    <version>3.0-SNAPSHOT</version>
+  </parent>  
   <scm>
     <developerConnection>scm:svn:http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/demos</developerConnection>
     <url>http://svn.wald.intevation.org/svn/deegree/deegree3/trunk/demos</url>
