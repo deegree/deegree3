@@ -1068,7 +1068,7 @@ public class OGCFrontController extends HttpServlet {
         File fsDir = null;
         try {
             fsDir = new File(
-                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/featurestores", getServletContext() ).toURI() );
+                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/feature", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -1077,7 +1077,7 @@ public class OGCFrontController extends HttpServlet {
         if ( fsDir != null && fsDir.exists() ) {
             FeatureStoreManager.init( fsDir );
         } else {
-            LOG.info( "No 'featurestores' directory -- skipping initialization of feature stores." );
+            LOG.info( "No 'data/feature' directory -- skipping initialization of feature stores." );
         }
         LOG.info( "" );
     }
@@ -1089,7 +1089,7 @@ public class OGCFrontController extends HttpServlet {
 
         File csDir = null;
         try {
-            csDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/coverages", getServletContext() ).toURI() );
+            csDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/coverage", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -1098,7 +1098,7 @@ public class OGCFrontController extends HttpServlet {
         if ( csDir != null && csDir.exists() ) {
             CoverageStoreManager.init( csDir );
         } else {
-            LOG.info( "No 'coverages' directory -- skipping initialization of coverage stores." );
+            LOG.info( "No 'data/coverage' directory -- skipping initialization of coverage stores." );
         }
         LOG.info( "" );
     }
