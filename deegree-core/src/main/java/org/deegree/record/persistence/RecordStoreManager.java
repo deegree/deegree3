@@ -92,10 +92,7 @@ public class RecordStoreManager {
     }
     
     /**
-     * Returns an initialized {@link FeatureStore} instance from the FeatureStore configuration document.
-     * <p>
-     * If the configuration specifies an identifier, the instance is also registered as global {@link FeatureStore}.
-     * </p>
+     * Returns an initialized {@link RecordStore} instance from the RecordStore configuration document.
      * 
      * @param configURL
      *            URL of the configuration document, must not be <code>null</code>
