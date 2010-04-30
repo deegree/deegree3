@@ -41,7 +41,7 @@
           </execution>
         </executions>
         <configuration>
-          <schemaFiles>webservices/0.5.0/services_metadata.xsd,sos/0.5.0/sos_configuration.xsd,wfs/0.5.0/wfs_configuration.xsd,wps/0.5.0/wps_configuration.xsd,wms/0.5.0/wms_configuration.xsd,wcs/0.5.0/wcs_configuration.xsd</schemaFiles>
+          <schemaFiles>webservices/0.5.0/services_metadata.xsd,csw/0.5.0/csw_configuration.xsd,sos/0.5.0/sos_configuration.xsd,wfs/0.5.0/wfs_configuration.xsd,wps/0.5.0/wps_configuration.xsd,wms/0.5.0/wms_configuration.xsd,wcs/0.5.0/wcs_configuration.xsd</schemaFiles>
         </configuration>
       </plugin>
       <plugin>
