@@ -80,9 +80,17 @@ public class RecordStoreManager {
      */
     public static RecordStore get( String id ) {
         return idToRs.get( id );
-
     }
 
+    /**
+     * Returns all {@link RecordStore} instances.
+     * 
+     * @return the corresponding {@link RecordStore} instances, may be empty, but never <code>null</code>
+     */
+    public static Map<String, RecordStore> getAll() {
+        return idToRs;
+    }
+    
     /**
      * Returns an initialized {@link FeatureStore} instance from the FeatureStore configuration document.
      * <p>

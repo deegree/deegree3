@@ -40,14 +40,12 @@ import static org.deegree.services.i18n.Messages.get;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.datasource.configuration.RecordStoreType;
 import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 import org.deegree.record.persistence.RecordStoreManager;
-import org.deegree.services.csw.configuration.ServiceConfiguration;
+import org.deegree.services.jaxb.csw.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,14 +80,8 @@ public class CSWService {
 
         LOG.info( "Initializing/looking up configured record stores." );
 
-        for ( JAXBElement<? extends RecordStoreType> obje : sc.getRecordStore() ) {
-
-            RecordStoreType storeType = obje.getValue();
-
-            RecordStore recStore = RecordStoreManager.create( storeType, baseURL );
-
-            addToStore( recStore );
-
+        for (RecordStore rs : RecordStoreManager.getAll().values()) {
+            addToStore( rs );
         }
 
         /*
