@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeCSW configVersion="0.5.0" xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.deegree.org/services/csw"
+<deegreeCSW configVersion="0.5.0"  xmlns="http://www.deegree.org/services/csw"
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:md="http://www.deegree.org/webservices"
   xmlns:cm="http://www.deegree.org/commons" xsi:schemaLocation="http://www.deegree.org/services/csw http://schemas.deegree.org/csw/0.5.0/csw_configuration.xsd"
   xmlns:ogc="http://www.opengis.net/ogc">
@@ -7,8 +7,6 @@
     <!--<SecurityManager>
       <DummySecurityManager /> 
     </SecurityManager>-->
-    <ds:ISORecordStore connId="conn1" />
-
   </ServiceConfiguration>
   <PublishedInformation>
     <md:ServiceIdentification>
