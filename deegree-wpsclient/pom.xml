@@ -28,25 +28,6 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/api/java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -74,59 +55,17 @@
   </build>
   <repositories>
     <repository>
-      <id>central</id>
-      <name>havola.lat-lon.de-remote</name>
-      <url>http://havola.lat-lon.de/artifactory/remote-repos</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>ext-releases</id>
-      <name>havola.lat-lon.de-releases</name>
-      <url>http://havola.lat-lon.de/artifactory/ext-releases-local</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>ext-snapshots</id>
-      <name>havola.lat-lon.de-snapshots</name>
-      <url>http://havola.lat-lon.de/artifactory/ext-snapshots-local</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>deegree-snapshots</id>
-      <name>deegree-snapshots</name>
-      <url>http://havola.lat-lon.de/artifactory/libs-snapshots-local</url>
+      <id>deegree-repo</id>
+      <url>http://artefacts.deegree.org/repo</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>central</id>
-      <url>http://havola.lat-lon.de/artifactory/plugins-releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>snapshots</id>
-      <url>http://havola.lat-lon.de/artifactory/plugins-snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
   <distributionManagement>
     <snapshotRepository>
       <id>deegree-repository</id>
-      <name>havola.lat-lon.de-snapshots</name>
-      <url>http://havola.lat-lon.de/artifactory/libs-snapshots-local</url>
+      <url>http://artefacts.deegree.org/libs-snapshots-local</url>
     </snapshotRepository>
   </distributionManagement>
   <dependencies>
@@ -134,12 +73,6 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services</artifactId>
       <version>3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
