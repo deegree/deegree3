@@ -188,7 +188,7 @@ public class CSWController extends AbstractOGCServiceController {
         try {
             XPath xpath = new XPath( "csw:ServiceConfiguration", nsContext );
 
-            final String additionalClasspath = "org.deegree.services.controller.csw.configuration:org.deegree.services.csw.configuration";
+            final String additionalClasspath = "org.deegree.services.jaxb.csw";
             Unmarshaller u = getUnmarshaller( additionalClasspath, null );
 
             OMElement scElement = controllerConf.getRequiredElement( controllerConf.getRootElement(), xpath );
@@ -196,7 +196,7 @@ public class CSWController extends AbstractOGCServiceController {
             // turn the application schema location into an absolute URL
             sc = (ServiceConfiguration) u.unmarshal( scElement.getXMLStreamReaderWithoutCaching() );
 
-            u = JAXBContext.newInstance( "org.deegree.services.controller.csw.configuration" ).createUnmarshaller();
+            u = JAXBContext.newInstance( "org.deegree.services.jaxb.csw" ).createUnmarshaller();
 
             xpath = new XPath( "csw:PublishedInformation", nsContext );
             OMElement piElement = controllerConf.getRequiredElement( controllerConf.getRootElement(), xpath );
