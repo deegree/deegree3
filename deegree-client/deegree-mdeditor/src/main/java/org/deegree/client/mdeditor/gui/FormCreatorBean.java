@@ -50,14 +50,16 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIForm;
+import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
 import javax.faces.component.UIParameter;
+import javax.faces.component.UISelectItem;
 import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.component.html.HtmlPanelGroup;
-import javax.faces.component.html.HtmlSelectManyMenu;
+import javax.faces.component.html.HtmlSelectManyListbox;
 import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
@@ -66,10 +68,12 @@ import javax.faces.event.ComponentSystemEvent;
 import org.deegree.client.mdeditor.config.FormConfigurationParser;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
+import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.SELECT_TYPE;
 import org.deegree.client.mdeditor.model.SelectFormField;
 import org.slf4j.Logger;
 
@@ -161,33 +165,39 @@ public class FormCreatorBean {
             HtmlInputText newInput = new HtmlInputText();
             newInput.setId( fe.getCompleteId() );
 
-            AjaxBehavior ajaxInput = new AjaxBehavior();
-            List<String> executes = new ArrayList<String>();
-            executes.add( "@this" );
-            // executes.add( hiddenId );
-            ajaxInput.setExecute( executes );
-            List<String> render = new ArrayList<String>();
-            render.add( "@none" );
-            ajaxInput.setRender( render );
-            ajaxInput.addAjaxBehaviorListener( new FormFieldValueChangedListener() );
-            newInput.addClientBehavior( newInput.getDefaultEventName(), ajaxInput );
-
+            setValue( fe, newInput, ef, elContext );
+            setValueChangedAjaxBehavior( newInput );
             setVisibility( fe, newInput, ef, elContext );
 
             parentGrid.getChildren().add( newInput );
         } else if ( fe instanceof SelectFormField ) {
-            if ( "many".equals( ( (SelectFormField) fe ).getSelectType() ) ) {
-                HtmlSelectManyMenu selectManyMenu = new HtmlSelectManyMenu();
-                selectManyMenu.setId( fe.getCompleteId() + "mdValue" );
+            SelectFormField se = (SelectFormField) fe;
+            if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
+                HtmlSelectManyListbox selectManyMenu = new HtmlSelectManyListbox();
+                selectManyMenu.setId( fe.getCompleteId() );
 
-                setVisibility( fe, selectManyMenu, ef, elContext );
+                setValue( fe, selectManyMenu, ef, elContext );
+                setValueChangedAjaxBehavior( selectManyMenu );
+                setVisibility( se, selectManyMenu, ef, elContext );
+
+                if ( se.getReferenceToCodeList() != null ) {
+                    addCodeListItems( selectManyMenu, se.getReferenceToCodeList() );
+                }
 
                 parentGrid.getChildren().add( selectManyMenu );
             } else {
                 HtmlSelectOneMenu selectOneMenu = new HtmlSelectOneMenu();
-                selectOneMenu.setId( fe.getCompleteId() + "mdValue" );
+                selectOneMenu.setId( se.getCompleteId() );
 
-                setVisibility( fe, selectOneMenu, ef, elContext );
+                setValue( fe, selectOneMenu, ef, elContext );
+                setValueChangedAjaxBehavior( selectOneMenu );
+                setVisibility( se, selectOneMenu, ef, elContext );
+
+                if ( se.getReferenceToCodeList() != null ) {
+                    addCodeListItems( selectOneMenu, se.getReferenceToCodeList() );
+                }
+
+                setVisibility( se, selectOneMenu, ef, elContext );
 
                 parentGrid.getChildren().add( selectOneMenu );
             }
@@ -213,10 +223,40 @@ public class FormCreatorBean {
         parentGrid.getChildren().add( helpLink );
     }
 
+    private void addCodeListItems( UIInput select, String codeListRef ) {
+        CodeList codeList = FormConfigurationParser.getCodeList( codeListRef );
+        if ( codeList != null ) {
+            for ( String value : codeList.getCodes().keySet() ) {
+                UISelectItem si = new UISelectItem();
+                si.setItemValue( value );
+                si.setItemLabel( codeList.getCodes().get( value ) );
+                select.getChildren().add( si );
+            }
+        }
+    }
+
+    private void setValueChangedAjaxBehavior( UIInput component ) {
+        AjaxBehavior ajaxInput = new AjaxBehavior();
+        List<String> executes = new ArrayList<String>();
+        executes.add( "@this" );
+        ajaxInput.setExecute( executes );
+        List<String> render = new ArrayList<String>();
+        render.add( "@none" );
+        ajaxInput.setRender( render );
+        ajaxInput.addAjaxBehaviorListener( new FormFieldValueChangedListener() );
+        component.addClientBehavior( component.getDefaultEventName(), ajaxInput );
+    }
+
     private void setVisibility( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
         String el = "#{formFieldBean.elements['" + fe.getCompleteId() + "'].visibility}";
         ValueExpression ve = ef.createValueExpression( elContext, el, Boolean.class );
         component.setValueExpression( "rendered", ve );
+    }
+
+    private void setValue( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
+        String el = "#{formFieldBean.elements['" + fe.getCompleteId() + "'].value}";
+        ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
+        component.setValueExpression( "value", ve );
     }
 
     public void setForm( UIForm form ) {

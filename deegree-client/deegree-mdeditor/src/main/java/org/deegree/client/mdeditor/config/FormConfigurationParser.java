@@ -55,11 +55,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.INPUT_TYPE;
 import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.SELECT_TYPE;
 import org.deegree.client.mdeditor.model.SelectFormField;
 import org.deegree.client.mdeditor.model.Validation;
 import org.deegree.commons.xml.XMLParsingException;
@@ -89,9 +91,27 @@ public class FormConfigurationParser {
 
     private static QName CODELIST_ELEMENT = new QName( NS, "CodeList" );
 
+    private static List<CodeList> codeLists = new ArrayList<CodeList>();
+
     private static List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
     private static String layoutType;
+
+    public static List<CodeList> getCodeLists() {
+        return codeLists;
+    }
+
+    public static CodeList getCodeList( String id ) {
+        if ( id == null ) {
+            throw new NullPointerException();
+        }
+        for ( CodeList cl : codeLists ) {
+            if ( id.equals( cl.getId() ) ) {
+                return cl;
+            }
+        }
+        return null;
+    }
 
     /**
      * @return a list of all top level formGroups
@@ -234,13 +254,22 @@ public class FormConfigurationParser {
         LOG.debug( "Found SelectFormElement with id " + id + "; label " + label + "; help " + help );
 
         xmlStream.require( START_ELEMENT, null, "selectType" );
-        String selectType = getElementText( xmlStream, "selectType", null );
+        SELECT_TYPE selectType = getSelectType( xmlStream );
 
         String referenceToGroup = getElementText( xmlStream, "referenceToGroup", null );
         String referenceToCodeList = getElementText( xmlStream, "referenceToCodeList", null );
-        int selectedValue = getElementInteger( xmlStream, "selectedValue", Integer.MIN_VALUE );
+        String selectedValueAsString = getElementText( xmlStream, "selectedValue", null );
+        Object selectedValue = selectedValueAsString;
+        if ( SELECT_TYPE.MANY.equals( selectType ) ) {
+            List<String> selValues = new ArrayList<String>();
+            String[] split = selectedValueAsString.split( "," );
+            for ( int i = 0; i < split.length; i++ ) {
+                selValues.add( split[i].trim() );
+            }
+            selectedValue = selValues;
+        }
 
-        SelectFormField ff = new SelectFormField( grpId, id, label, visible, help, selectType, selectedValue,
+        SelectFormField ff = new SelectFormField( grpId, id, label, visible, help, selectedValue, selectType,
                                                   referenceToCodeList, referenceToGroup );
 
         return ff;
@@ -280,14 +309,27 @@ public class FormConfigurationParser {
 
     private static void parseCodeList( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        LOG.debug( "parse CodeList" );
+        String clId = getId( xmlStream );
+        CodeList cl = new CodeList( clId );
+
+        QName code_element = new QName( NS, "Code" );
+        LOG.debug( "Found CodeList with id " + clId );
         if ( xmlStream.isStartElement() && xmlStream.getName().equals( CODELIST_ELEMENT ) ) {
-            xmlStream.next();
+            xmlStream.nextTag();
         }
         while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( CODELIST_ELEMENT ) ) ) {
+            if ( xmlStream.isStartElement() && code_element.equals( xmlStream.getName() ) ) {
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, null, "value" );
+                String value = getElementText( xmlStream, "value", null );
+                xmlStream.require( START_ELEMENT, null, "label" );
+                String label = getElementText( xmlStream, "label", null );
+                cl.addCode( value, label );
+            }
             xmlStream.next();
         }
         xmlStream.require( END_ELEMENT, NS, CODELIST_ELEMENT.getLocalPart() );
+        codeLists.add( cl );
     }
 
     private static INPUT_TYPE getInputType( XMLStreamReader xmlStream )
@@ -305,6 +347,17 @@ public class FormConfigurationParser {
             return INPUT_TYPE.DOUBLE;
         }
         throw new XMLParsingException( xmlStream, "inputType " + elementText + "is not valid" );
+    }
+
+    private static SELECT_TYPE getSelectType( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        String elementText = getElementText( xmlStream, "selectType", null );
+        if ( "many".equals( elementText ) ) {
+            return SELECT_TYPE.MANY;
+        } else if ( "one".equals( elementText ) ) {
+            return SELECT_TYPE.ONE;
+        }
+        throw new XMLParsingException( xmlStream, "selectType " + elementText + "is not valid" );
     }
 
     private static String getId( XMLStreamReader xmlStream ) {
@@ -369,188 +422,4 @@ public class FormConfigurationParser {
         return d;
     }
 
-    // public static List<FormGroup> parseFormGroups() {
-    // List<FormGroup> formGroups = new ArrayList<FormGroup>();
-    // try {
-    // XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
-    // new FileReader(
-    // Configuration.getFormConfURL() ) );
-    //
-    // if ( xmlStream.getEventType() == START_DOCUMENT ) {
-    // xmlStream.nextTag();
-    // }
-    // xmlStream.require( START_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
-    // xmlStream.nextTag();
-    // if ( xmlStream.getEventType() != START_ELEMENT ) {
-    // throw new XMLParsingException( xmlStream, "Empty FormConfiguration" );
-    // }
-    // xmlStream.require( START_ELEMENT, NS, "layoutType" );
-    // String layoutType = xmlStream.getElementText();
-    // xmlStream.nextTag();
-    //
-    // while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( FORM_CONF_ELEMENT ) ) ) {
-    // QName elementName = xmlStream.getName();
-    // if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
-    // parseFormGroup( xmlStream, formGroups );
-    // } else {
-    // xmlStream.next();
-    // }
-    // xmlStream.nextTag();
-    // }
-    //
-    // xmlStream.require( END_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
-    // } catch ( FileNotFoundException e ) {
-    //
-    // } catch ( XMLStreamException e ) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // } catch ( FactoryConfigurationError e ) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // } catch ( IOException e ) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // return formGroups;
-    // }
-    //
-    // public static Map<String, FormField> parseFormElements() {
-    // Map<String, FormField> formElements = new HashMap<String, FormField>();
-    //
-    // List<FormGroup> formGroups = parseFormGroups();
-    // for ( FormGroup fg : formGroups ) {
-    // // formElements.putAll( fg.getFormElements() );
-    // }
-    // //
-    // // try {
-    // // XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
-    // // new FileReader(
-    // // Configuration.getFormConfURL() ) );
-    // //
-    // // if ( xmlStream.getEventType() == START_DOCUMENT ) {
-    // // xmlStream.nextTag();
-    // // }
-    // // xmlStream.require( START_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
-    // // xmlStream.nextTag();
-    // // if ( xmlStream.getEventType() != START_ELEMENT ) {
-    // // throw new XMLParsingException( xmlStream, "Empty FormConfiguration" );
-    // // }
-    // // while ( !( xmlStream.isEndElement() && FORM_CONF_ELEMENT.equals( xmlStream.getName() ) ) ) {
-    // // QName elementName = xmlStream.getName();
-    // // if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
-    // // parseFormGroup( xmlStream, formElements );
-    // // } else {
-    // // xmlStream.next();
-    // // }
-    // // xmlStream.nextTag();
-    // // }
-    // // xmlStream.require( END_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
-    // // } catch ( FileNotFoundException e ) {
-    // // // TODO Auto-generated catch block
-    // // e.printStackTrace();
-    // // } catch ( XMLStreamException e ) {
-    // // // TODO Auto-generated catch block
-    // // e.printStackTrace();
-    // // } catch ( FactoryConfigurationError e ) {
-    // // // TODO Auto-generated catch block
-    // // e.printStackTrace();
-    // // } catch ( IOException e ) {
-    // // // TODO Auto-generated catch block
-    // // e.printStackTrace();
-    // // }
-    //
-    // return formElements;
-    // }
-    //
-    // //
-    // // private static void parseFormGroup( XMLStreamReader xmlStream, Map<String, FormElement> formElements )
-    // // throws XMLStreamException, IOException {
-    // // String formGroupId = getId( xmlStream );
-    // // xmlStream.nextTag();
-    // // while ( !( xmlStream.isEndElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) ) {
-    // // if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
-    // // parseFormGroup( xmlStream, formElements );
-    // // } else if ( xmlStream.isStartElement()
-    // // && ( INPUT_FORM_ELEMENT.equals( xmlStream.getName() ) || SELECT_FORM_ELEMENT.equals( xmlStream.getName() ) ) )
-    // {
-    // // parseFormElement( xmlStream, formGroupId, formElements );
-    // // } else {
-    // // xmlStream.next();
-    // // }
-    // // xmlStream.nextTag();
-    // // }
-    // //
-    // // xmlStream.require( END_ELEMENT, NS, FORM_GROUP_ELEMENT.getLocalPart() );
-    // // }
-    // //
-    // // private static void parseFormElement( XMLStreamReader xmlStream, String grpId, Map<String, FormElement>
-    // // formElements )
-    // // throws XMLStreamException, IOException {
-    // // String id = getId( xmlStream );
-    // // boolean visible = getBooleanAttribute( xmlStream, "visible", true );
-    // //
-    // // FormElement newFE = new FormElement( grpId, id );
-    // // newFE.setVisibility( visible );
-    // // newFE.setValue( "test" );
-    // // formElements.put( newFE.getCompleteId(), newFE );
-    // // }
-    //
-    // private static void parseFormGroup( XMLStreamReader xmlStream, List<FormGroup> formGroups )
-    // throws XMLStreamException, IOException {
-    // Map<String, FormElement> formElements = new HashMap<String, FormElement>();
-    // String formGroupId = getId( xmlStream );
-    // if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
-    // xmlStream.nextTag();
-    // }
-    // String label = getElementText( xmlStream, "label", formGroupId );
-    // String title = getElementText( xmlStream, "title", formGroupId );
-    // LOG.debug( "Found group with id " + formGroupId + ", title " + title + ", label " + label
-    // + ". Start to parse form elements and groups." );
-    //
-    // while ( !( xmlStream.isEndElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) ) {
-    // if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
-    // parseFormGroup( xmlStream, formGroups );
-    // } else if ( xmlStream.isStartElement()
-    // && ( INPUT_FORM_ELEMENT.equals( xmlStream.getName() ) || SELECT_FORM_ELEMENT.equals( xmlStream.getName() ) ) ) {
-    // parseFormElement( xmlStream, formGroupId, formElements );
-    // } else {
-    // xmlStream.next();
-    // }
-    // xmlStream.nextTag();
-    // }
-    //
-    // xmlStream.require( END_ELEMENT, NS, FORM_GROUP_ELEMENT.getLocalPart() );
-    //
-    // FormGroup fg = new FormGroup( formGroupId, null, null, formElements );
-    // formGroups.add( fg );
-    // }
-    //
-    // private static void parseFormElement( XMLStreamReader xmlStream, String grpId, Map<String, FormElement>
-    // formElements )
-    // throws XMLStreamException, IOException {
-    // String id = getId( xmlStream );
-    // boolean visible = getBooleanAttribute( xmlStream, "visible", true );
-    //
-    // // FormElement newFE = new FormElement( grpId, id );
-    // // newFE.setVisibility( visible );
-    // // newFE.setValue( "test" );
-    // // formElements.put( newFE.getCompleteId(), newFE );
-    // }
-    //
-    // /**
-    // * @param grpId
-    // * @return
-    // */
-    // public static FormGroup getFormGroup( String grpId ) {
-    // if ( grpId == null || grpId.length() == 0 ) {
-    // LOG.error( "Group Id cann not be null!" );
-    // }
-    // List<FormGroup> formGroups = parseFormGroups();
-    // for ( FormGroup formGroup : formGroups ) {
-    // if ( grpId.equals( formGroup.getId() ) ) {
-    // return formGroup;
-    // }
-    // }
-    // return null;
-    // }
 }

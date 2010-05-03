@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * TODO add class documentation here
  * 
@@ -43,44 +46,34 @@ package org.deegree.client.mdeditor.model;
  * 
  * @version $Revision: $, $Date: $
  */
-public class SelectFormField extends FormField {
+public class CodeList {
 
-    private SELECT_TYPE selectType;
+    private String id;
 
-    private String referenceToCodeList;
+    private Map<String, String> codes = new HashMap<String, String>();
 
-    private String referenceToGroup;
-
-    public SelectFormField( String grpId, String id, String label, boolean visible, String help, Object selectedValue,
-                            SELECT_TYPE selectType, String referenceToCodeList, String referenceToGroup ) {
-        super( grpId, id, label, visible, help, selectedValue );
-        this.selectType = selectType;
-        this.referenceToCodeList = referenceToCodeList;
-        this.referenceToGroup = referenceToGroup;
+    public CodeList( String id ) {
+        this.id = id;
     }
 
-    public void setSelectType( SELECT_TYPE selectType ) {
-        this.selectType = selectType;
+    public void addCode( String value, String label ) {
+        this.codes.put( value, label );
     }
 
-    public SELECT_TYPE getSelectType() {
-        return selectType;
+    public void setCodes( Map<String, String> codes ) {
+        this.codes = codes;
     }
 
-    public void setReferenceToCodeList( String referenceToCodeList ) {
-        this.referenceToCodeList = referenceToCodeList;
+    public Map<String, String> getCodes() {
+        return codes;
     }
 
-    public String getReferenceToCodeList() {
-        return referenceToCodeList;
+    public void setId( String id ) {
+        this.id = id;
     }
 
-    public void setReferenceToGroup( String referenceToGroup ) {
-        this.referenceToGroup = referenceToGroup;
-    }
-
-    public String getReferenceToGroup() {
-        return referenceToGroup;
+    public String getId() {
+        return id;
     }
 
 }

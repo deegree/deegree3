@@ -43,44 +43,6 @@ package org.deegree.client.mdeditor.model;
  * 
  * @version $Revision: $, $Date: $
  */
-public class SelectFormField extends FormField {
-
-    private SELECT_TYPE selectType;
-
-    private String referenceToCodeList;
-
-    private String referenceToGroup;
-
-    public SelectFormField( String grpId, String id, String label, boolean visible, String help, Object selectedValue,
-                            SELECT_TYPE selectType, String referenceToCodeList, String referenceToGroup ) {
-        super( grpId, id, label, visible, help, selectedValue );
-        this.selectType = selectType;
-        this.referenceToCodeList = referenceToCodeList;
-        this.referenceToGroup = referenceToGroup;
-    }
-
-    public void setSelectType( SELECT_TYPE selectType ) {
-        this.selectType = selectType;
-    }
-
-    public SELECT_TYPE getSelectType() {
-        return selectType;
-    }
-
-    public void setReferenceToCodeList( String referenceToCodeList ) {
-        this.referenceToCodeList = referenceToCodeList;
-    }
-
-    public String getReferenceToCodeList() {
-        return referenceToCodeList;
-    }
-
-    public void setReferenceToGroup( String referenceToGroup ) {
-        this.referenceToGroup = referenceToGroup;
-    }
-
-    public String getReferenceToGroup() {
-        return referenceToGroup;
-    }
-
+public enum SELECT_TYPE {
+    ONE, MANY
 }

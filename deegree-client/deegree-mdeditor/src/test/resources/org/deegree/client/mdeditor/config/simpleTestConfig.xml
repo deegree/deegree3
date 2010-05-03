@@ -50,4 +50,30 @@
             </SelectFormElement>
         </FormGroup>
     </FormGroup>
+
+    <CodeList id="testCodeList1">
+        <Code id="1">
+            <value>dataset</value>
+            <label>Dataset</label>
+        </Code>
+        <Code id="2">
+            <value>service</value>
+            <label>Service</label>
+        </Code>
+    </CodeList>
+    <CodeList id="testCodeList2">
+        <Code id="1">
+            <value>nummer1</value>
+            <label>Nummer 1</label>
+        </Code>
+        <Code id="2">
+            <value>nummer2</value>
+            <label>Nummer 2</label>
+        </Code>
+        <Code id="3">
+            <value>nummer3</value>
+            <label>Nummer 3</label>
+        </Code>
+    </CodeList>
+
 </FormConfiguration>

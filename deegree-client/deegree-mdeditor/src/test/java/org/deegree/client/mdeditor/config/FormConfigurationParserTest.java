@@ -39,6 +39,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.junit.Test;
@@ -70,6 +71,37 @@ public class FormConfigurationParserTest extends TestCase {
         FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
         assertTrue( formElement instanceof FormGroup );
         assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+
+    }
+
+    @Test
+    public void testParseCodeLists() {
+        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
+        List<CodeList> codeLists = FormConfigurationParser.getCodeLists();
+
+        assertNotNull( codeLists );
+        assertTrue( codeLists.size() == 2 );
+
+        assertEquals( "testCodeList1", codeLists.get( 0 ).getId() );
+        assertEquals( "testCodeList2", codeLists.get( 1 ).getId() );
+
+        assertEquals( 2, codeLists.get( 0 ).getCodes().size() );
+        assertEquals( 3, codeLists.get( 1 ).getCodes().size() );
+    }
+
+    @Test
+    public void testParseCode() {
+        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
+        CodeList codeList = FormConfigurationParser.getCodeList( "testCodeList2" );
+
+        assertNotNull( codeList );
+
+        assertEquals( "testCodeList2", codeList.getId() );
+        assertEquals( 3, codeList.getCodes().size() );
+
+        String value = "nummer1";
+        assertNotNull( codeList.getCodes().get( value ) );
+        assertEquals( "Nummer 1", codeList.getCodes().get( value ) );
 
     }
 
