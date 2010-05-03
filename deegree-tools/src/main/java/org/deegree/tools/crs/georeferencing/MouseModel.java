@@ -35,26 +35,46 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.crs.georeferencing;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.net.URL;
-
 import javax.vecmath.Point2d;
 
 /**
  * TODO add class documentation here
  * 
- * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+ * @author <a href="mailto:thomas@deegree.org">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public interface Scene2D {
+public class MouseModel {
 
-    public BufferedImage generateImage( Rectangle sceneBounds );
+    private Point2d pointMousePressed;
 
-    public void setImageUrl( URL imageUrl );
+    private Point2d mouseChanging;
 
-    public void setImageBoundingbox( Point2d change );
+    private Point2d cumulatedMouseChanging = new Point2d( 0.0, 0.0 );
+
+    public Point2d getPointMousePressed() {
+        return pointMousePressed;
+    }
+
+    public void setPointMousePressed( Point2d pointMousePressed ) {
+        this.pointMousePressed = pointMousePressed;
+    }
+
+    public Point2d getMouseChanging() {
+        return mouseChanging;
+    }
+
+    public void setMouseChanging( Point2d mouseChanging ) {
+        this.mouseChanging = mouseChanging;
+    }
+
+    public Point2d getCumulatedMouseChanging() {
+        return cumulatedMouseChanging;
+    }
+
+    public void setCumulatedMouseChanging( Point2d cumulatedMouseChanging ) {
+        this.cumulatedMouseChanging = cumulatedMouseChanging;
+    }
 
 }

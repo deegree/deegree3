@@ -331,4 +331,16 @@ class Scene2DImplWMS implements Scene2D {
         return null;
     }
 
+    @Override
+    public void setImageUrl( URL imageUrl ) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setImageBoundingbox( Point2d change ) {
+        // TODO Auto-generated method stub
+
+    }
+
 }
