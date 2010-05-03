@@ -54,6 +54,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.xs.StringList;
+import org.apache.xerces.xs.XSFacet;
+import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.xml.XMLAdapter;
@@ -437,32 +439,7 @@ public class ApplicationSchemaXSDEncoder {
         if ( xsdType == null ) {
             // export without XML schema information
             PrimitiveType type = pt.getPrimitiveType();
-            switch ( type ) {
-            case BOOLEAN:
-                writer.writeAttribute( "type", "xs:boolean" );
-                break;
-            case DATE:
-                writer.writeAttribute( "type", "xs:date" );
-                break;
-            case DATE_TIME:
-                writer.writeAttribute( "type", "xs:dateTime" );
-                break;
-            case DECIMAL:
-                writer.writeAttribute( "type", "xs:decimal" );
-                break;
-            case DOUBLE:
-                writer.writeAttribute( "type", "xs:double" );
-                break;
-            case INTEGER:
-                writer.writeAttribute( "type", "xs:integer" );
-                break;
-            case STRING:
-                writer.writeAttribute( "type", "xs:string" );
-                break;
-            case TIME:
-                writer.writeAttribute( "type", "xs:string" );
-                break;
-            }
+            writer.writeAttribute( "type", "xs:" + getSimpleType( type ) );
         } else {
             // reconstruct XML schema type definition
             String name = xsdType.getName();
@@ -483,8 +460,100 @@ public class ApplicationSchemaXSDEncoder {
                         xsdType = (XSSimpleTypeDefinition) xsdType.getBaseType();
                     }
                 }
+            } else {
+                // unnamed simple property
+                writer.writeStartElement( "xs", "simpleType", XSNS );
+                writer.writeStartElement( "xs", "restriction", XSNS );
+                writer.writeAttribute( "base", "xs:" + getSimpleType( pt.getPrimitiveType() ) );
+
+                XSObjectList facets = pt.getXSDType().getFacets();
+                for ( int i = 0; i < facets.getLength(); i++ ) {
+                    XSFacet facet = (XSFacet) facets.item( i );
+                    writer.writeEmptyElement( "xs", getFacetName( facet.getFacetKind() ), XSNS );
+                    writer.writeAttribute( "value", facet.getLexicalFacetValue() );
+                }
+
+                writer.writeEndElement();
+                writer.writeEndElement();
             }
         }
+    }
+
+    private String getFacetName( short facetKind ) {
+        String facetName = null;
+        switch ( facetKind ) {
+        case 2048:
+            facetName = "enumeration";
+            break;
+        case 1024:
+            facetName = "fractionDigits";
+            break;
+        case 1:
+            facetName = "length";
+            break;
+        case 64:
+            facetName = "maxExclusive";
+            break;
+        case 32:
+            facetName = "maxInclusive";
+            break;
+        case 4:
+            facetName = "maxLength";
+            break;
+        case 128:
+            facetName = "minExclusive";
+            break;
+        case 256:
+            facetName = "minInclusive";
+            break;
+        case 2:
+            facetName = "minLength";
+            break;
+        case 0:
+            facetName = "none";
+            break;
+        case 8:
+            facetName = "pattern";
+            break;
+        case 512:
+            facetName = "totalDigits";
+            break;
+        case 16:
+            facetName = "whiteSpace";
+            break;
+        }
+        return facetName;
+    }
+
+    private String getSimpleType( PrimitiveType type ) {
+        String typeFound = null;
+        switch ( type ) {
+        case BOOLEAN:
+            typeFound = "boolean";
+            break;
+        case DATE:
+            typeFound = "date";
+            break;
+        case DATE_TIME:
+            typeFound = "dateTime";
+            break;
+        case DECIMAL:
+            typeFound = "decimal";
+            break;
+        case DOUBLE:
+            typeFound = "double";
+            break;
+        case INTEGER:
+            typeFound = "integer";
+            break;
+        case STRING:
+            typeFound = "string";
+            break;
+        case TIME:
+            typeFound = "time";
+            break;
+        }
+        return typeFound;
     }
 
     private void export( XMLStreamWriter writer, XSSimpleTypeDefinition xsSimpleType )
