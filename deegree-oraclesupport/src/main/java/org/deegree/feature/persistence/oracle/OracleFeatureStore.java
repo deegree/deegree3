@@ -35,8 +35,11 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.oracle;
 
+import java.sql.SQLException;
+
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.cs.CRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -64,9 +67,18 @@ import org.slf4j.LoggerFactory;
 public class OracleFeatureStore implements FeatureStore{
 
     private static final Logger LOG = LoggerFactory.getLogger( OracleFeatureStore.class );
+
+    private ApplicationSchema schema;
     
     OracleFeatureStore( ApplicationSchema schema, String jdbcConnId, String dbSchemaQualifier, CRS storageSRS ) {
-        // TODO Auto-generated constructor stub
+        this.schema = schema;
+        System.out.println ("JDDB Connection id: " + jdbcConnId);
+        try {
+            System.out.println ("Connection: " + ConnectionManager.getConnection( jdbcConnId ));
+        } catch ( SQLException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -104,8 +116,7 @@ public class OracleFeatureStore implements FeatureStore{
 
     @Override
     public ApplicationSchema getSchema() {
-        // TODO Auto-generated method stub
-        return null;
+        return schema;
     }
 
     @Override
@@ -122,8 +133,7 @@ public class OracleFeatureStore implements FeatureStore{
 
     @Override
     public boolean isAvailable() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override

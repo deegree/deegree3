@@ -99,7 +99,7 @@ public class OracleFeatureStoreProvider implements FeatureStoreProvider {
                 for ( GMLSchemaFileURL jaxbSchemaURL : config.getGMLSchemaFileURL() ) {
                     schemaURLs[i++] = resolver.resolve( jaxbSchemaURL.getValue().trim() ).toString();
                     // TODO what about different versions at the same time?
-                    gmlVersionType = GMLVersionType.GML_31;
+                    gmlVersionType = GMLVersionType.GML_32;
                 }
                 ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder(
                                                                                        GMLVersion.valueOf( gmlVersionType.name() ),
