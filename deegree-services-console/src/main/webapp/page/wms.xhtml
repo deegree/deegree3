@@ -34,7 +34,9 @@
             </ui:repeat>
 
             <m:script>
-                <ui:repeat value="#{openLayers.layers}" var="layer">#{layer.jsName}.setVisibility(false);</ui:repeat>
+                <ui:repeat value="#{openLayers.layers}" var="layer">
+                    <h:outputText value="#{layer.jsName}.setVisibility(false);" />
+                </ui:repeat>
             </m:script>
 
         </m:map>
