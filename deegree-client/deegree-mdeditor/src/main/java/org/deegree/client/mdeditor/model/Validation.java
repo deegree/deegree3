@@ -33,15 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
-
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.deegree.client.mdeditor.model.FormElement;
-import org.deegree.client.mdeditor.model.FormGroup;
-import org.junit.Test;
+package org.deegree.client.mdeditor.model;
 
 /**
  * TODO add class documentation here
@@ -51,26 +43,56 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormConfigurationParserTest extends TestCase {
+public class Validation {
+    private int length;
 
-    @Test
-    public void testParseFormGroups() {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        List<FormGroup> formGroups = FormConfigurationParser.getFormGroups();
+    private String timestampPattern;
 
-        assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 2 );
+    private double minValue;
 
-        assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
-        assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
+    private double maxValue;
 
-        assertEquals( 1, formGroups.get( 0 ).getFormElements().size() );
-        assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
+    public int getLength() {
+        return length;
+    }
 
-        FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
-        assertTrue( formElement instanceof FormGroup );
-        assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+    public void setLength( int length ) {
+        this.length = length;
+    }
 
+    public String getTimestampPattern() {
+        return timestampPattern;
+    }
+
+    public void setTimestampPattern( String timestampPattern ) {
+        this.timestampPattern = timestampPattern;
+    }
+
+    public double getMinValue() {
+        return minValue;
+    }
+
+    public void setMinValue( double minValue ) {
+        this.minValue = minValue;
+    }
+
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+    public void setMaxValue( double maxValue ) {
+        this.maxValue = maxValue;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Length: " + length + "; TimestampPattern: " + timestampPattern + "; MinValue: " + minValue
+               + "; MaxValue: " + maxValue;
     }
 
 }

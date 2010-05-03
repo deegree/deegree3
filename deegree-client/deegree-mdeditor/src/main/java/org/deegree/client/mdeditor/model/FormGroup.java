@@ -33,7 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.configuration;
+package org.deegree.client.mdeditor.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TODO add class documentation here
@@ -43,56 +46,63 @@ package org.deegree.client.mdeditor.configuration;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Validation {
-    private int length;
+public class FormGroup implements FormElement {
 
-    private String timestampPattern;
+    private String id;
 
-    private double minValue;
+    private String label;
 
-    private double maxValue;
+    private String title;
 
-    public int getLength() {
-        return length;
+    private List<FormElement> formElements = new ArrayList<FormElement>();
+
+    public FormGroup( String id, String label, String title ) {
+        this.id = id;
+        this.label = label;
+        this.title = title;
     }
 
-    public void setLength( int length ) {
-        this.length = length;
+    public void setFormElements( List<FormElement> formElements ) {
+        this.formElements = formElements;
     }
 
-    public String getTimestampPattern() {
-        return timestampPattern;
+    public List<FormElement> getFormElements() {
+        return formElements;
     }
 
-    public void setTimestampPattern( String timestampPattern ) {
-        this.timestampPattern = timestampPattern;
+    public void setId( String id ) {
+        this.id = id;
     }
 
-    public double getMinValue() {
-        return minValue;
+    public String getId() {
+        return id;
     }
 
-    public void setMinValue( double minValue ) {
-        this.minValue = minValue;
+    public void setTitle( String title ) {
+        this.title = title;
     }
 
-    public double getMaxValue() {
-        return maxValue;
+    public String getTitle() {
+        return title;
     }
 
-    public void setMaxValue( double maxValue ) {
-        this.maxValue = maxValue;
+    public void setLabel( String label ) {
+        this.label = label;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
+    public String getLabel() {
+        return label;
+    }
+
+    public void addFormElement( FormElement parseFormGroup ) {
+        if ( formElements == null ) {
+            formElements = new ArrayList<FormElement>();
+        }
+        formElements.add( parseFormGroup );
+    }
+
     @Override
-    public String toString() {
-        return "Length: " + length + "; TimestampPattern: " + timestampPattern + "; MinValue: " + minValue
-               + "; MaxValue: " + maxValue;
+    public String getCompleteId() {
+        return id;
     }
-
 }

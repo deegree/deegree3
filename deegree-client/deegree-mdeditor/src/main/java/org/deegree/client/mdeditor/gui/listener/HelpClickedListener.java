@@ -33,7 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.configuration;
+package org.deegree.client.mdeditor.gui.listener;
+
+import javax.faces.context.FacesContext;
+
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.AjaxBehaviorListener;
+
+import org.deegree.client.mdeditor.gui.HelpBean;
 
 /**
  * TODO add class documentation here
@@ -43,6 +51,17 @@ package org.deegree.client.mdeditor.configuration;
  * 
  * @version $Revision: $, $Date: $
  */
-public enum INPUT_TYPE {
-    TEXT, INT, STRING, TIMESTAMP, DOUBLE
+public class HelpClickedListener implements AjaxBehaviorListener {
+
+    @Override
+    public void processAjaxBehavior( AjaxBehaviorEvent arg0 )
+                            throws AbortProcessingException {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        fc.getELContext();
+        HelpBean helpBean = (HelpBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+                                                                                                   null,
+                                                                                                   "helpBean" );
+        helpBean.updateHelp( arg0 );
+    }
+
 }

@@ -1,215 +1,208 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://www.deegree.org/igeoportal" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/igeoportal" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:import/>
-	<xs:element name="FormConfiguration">
-		<xs:annotation>
-			<xs:documentation>root element describing the configuration of the gui</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="layoutType"/>
-				<xs:element ref="FormGroup" maxOccurs="unbounded"/>
-				<xs:element ref="CodeList" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="FormGroup">
-		<xs:annotation>
-			<xs:documentation>groups a list of FormElements, the sequence of the elements in the gui is equal to the order of occurence in the configuration</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-        <xs:element name="label" type="xs:string" minOccurs="0">
-            <xs:annotation>
-                <xs:documentation>the label is displayed as menu, tab entry or tooltip, dependent on the layout type</xs:documentation>
-            </xs:annotation>
-        </xs:element>
-				<xs:element name="title" type="xs:string" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>the title is displayed as title in the form group block</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:choice maxOccurs="unbounded">
-					<xs:element ref="FormElement" maxOccurs="unbounded"/>
-					<xs:element ref="FormGroup" maxOccurs="unbounded"/>
-				</xs:choice>
-			</xs:sequence>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="FormElement" type="FormElement_Type" abstract="true"/>
-	<xs:complexType name="FormElement_Type" abstract="true">
-		<xs:annotation>
-			<xs:documentation>describes a single form element like a text input field or a select list</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="label" type="xs:string" minOccurs="0"/>
-			<xs:element name="help" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>help text of the form element</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:simpleContent>
-						<xs:extension base="xs:string">
-							<xs:attribute name="showAsLink" type="xs:boolean" default="true">
-								<xs:annotation>
-									<xs:documentation>indicates if the help text should be presented as link or directly in the page</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
-						</xs:extension>
-					</xs:simpleContent>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-		<xs:attribute name="id" use="required"/>
-		<xs:attribute name="visible" type="xs:boolean" default="true"/>
-		<xs:attribute name="required" type="xs:boolean" default="false"/>
-	</xs:complexType>
-	<xs:element name="InputFormElement" type="InputFormElement" substitutionGroup="FormElement"/>
-	<xs:complexType name="InputFormElement">
-		<xs:annotation>
-			<xs:documentation>describes a single input element, like a text field</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="FormElement_Type">
-				<xs:sequence>
-					<xs:element ref="inputType"/>
-					<xs:element name="defaultValue" type="xs:string" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation>the default value for this input field. The entered value must match to the inputType and the validation, if noted.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-					<xs:element ref="Validation" minOccurs="0"/>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="SelectFormElement" type="SelectFormElement" substitutionGroup="FormElement"/>
-	<xs:complexType name="SelectFormElement">
-		<xs:annotation>
-			<xs:documentation>describes a form element where selections can be made</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="FormElement_Type">
-				<xs:sequence>
-					<xs:element ref="selectType"/>
-					<xs:choice>
-						<xs:element name="referenceToGroup" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>the id of the configured group element, which values should be selectable by this list</xs:documentation>
-							</xs:annotation>
-							<xs:complexType>
-								<xs:simpleContent>
-									<xs:extension base="xs:string">
-										<xs:attribute name="showAsLink" type="xs:boolean" default="true">
-											<xs:annotation>
-												<xs:documentation>indicates if the form group should be accessible  by a link</xs:documentation>
-											</xs:annotation>
-										</xs:attribute>
-									</xs:extension>
-								</xs:simpleContent>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="referenceToCodeList" type="xs:string" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>the id of the configured code list, which values should be selectable by this list</xs:documentation>
-							</xs:annotation>
-						</xs:element>
-					</xs:choice>
-					<xs:element name="selectedValue" type="xs:integer" minOccurs="0">
-						<xs:annotation>
-							<xs:documentation>if a referenceToCodeList is set, the id of the code to select can be entered.</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="Validation">
-		<xs:annotation>
-			<xs:documentation>specifies the given input type</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:all>
-				<xs:element name="length" type="xs:integer" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>the length of the string for inputType 'string'</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="timestampPattern" type="xs:string" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>the pattern of the timestamp for inputType 'date'</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="minValue" type="xs:double" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>the min value for inputType 'int' or 'double'</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="maxValue" type="xs:double" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>the max value for inputType 'date' or 'double'</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:all>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="CodeList">
-		<xs:annotation>
-			<xs:documentation>a list of static values, which can be referenced by a SelectFormElement</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="Code" maxOccurs="unbounded"/>
-			</xs:sequence>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="Code">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="value" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>the value of the code</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="label" type="xs:string" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>the label of the code displayed in the selection list</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:sequence>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
-	<!-- enumerations -->
-	<xs:element name="inputType">
-		<xs:simpleType>
-			<xs:restriction base="xs:string">
-				<xs:enumeration value="text"/>
-				<xs:enumeration value="string"/>
-				<xs:enumeration value="timestamp"/>
-				<xs:enumeration value="int"/>
-				<xs:enumeration value="double"/>
-			</xs:restriction>
-		</xs:simpleType>
-	</xs:element>
-	<xs:element name="selectType">
-		<xs:simpleType>
-			<xs:restriction base="xs:string">
-				<xs:enumeration value="one"/>
-				<xs:enumeration value="many"/>
-			</xs:restriction>
-		</xs:simpleType>
-	</xs:element>
-	<xs:element name="layoutType">
-		<xs:simpleType>
-			<xs:restriction base="xs:string">
-				<xs:enumeration value="wizard"/>
-				<xs:enumeration value="tab"/>
-				<xs:enumeration value="menu"/>
-				<xs:enumeration value="accordion"/>
-			</xs:restriction>
-		</xs:simpleType>
-	</xs:element>
+<xs:schema xmlns="http://www.deegree.org/igeoportal" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.deegree.org/igeoportal" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:import />
+    <xs:element name="FormConfiguration">
+        <xs:annotation>
+            <xs:documentation>root element describing the configuration of the gui</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="layoutType" />
+                <xs:element ref="FormGroup" maxOccurs="unbounded" />
+                <xs:element ref="CodeList" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="FormGroup">
+        <xs:annotation>
+            <xs:documentation>groups a list of FormElements, the sequence of the elements in the gui is equal to the
+                order of occurence in the configuration</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="label" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the label is displayed as menu, tab entry or tooltip, dependent on the layout
+                            type</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="title" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the title is displayed as title in the form group block</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="FormElement" maxOccurs="unbounded" />
+                    <xs:element ref="FormGroup" maxOccurs="unbounded" />
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="FormElement" type="FormElement_Type" abstract="true" />
+    <xs:complexType name="FormElement_Type" abstract="true">
+        <xs:annotation>
+            <xs:documentation>describes a single form element like a text input field or a select list
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="label" type="xs:string" minOccurs="0" />
+            <xs:element name="help" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" use="required" />
+        <xs:attribute name="visible" type="xs:boolean" default="true" />
+    </xs:complexType>
+    <xs:element name="InputFormElement" type="InputFormElement" substitutionGroup="FormElement" />
+    <xs:complexType name="InputFormElement">
+        <xs:annotation>
+            <xs:documentation>describes a single input element, like a text field</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="FormElement_Type">
+                <xs:sequence>
+                    <xs:element ref="inputType" />
+                    <xs:element name="defaultValue" type="xs:string" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>the default value for this input field. The entered value must match to
+                                the inputType and the validation, if noted.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="Validation" minOccurs="0" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="SelectFormElement" type="SelectFormElement" substitutionGroup="FormElement" />
+    <xs:complexType name="SelectFormElement">
+        <xs:annotation>
+            <xs:documentation>describes a form element where selections can be made</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="FormElement_Type">
+                <xs:sequence>
+                    <xs:element ref="selectType" />
+                    <xs:choice>
+                        <xs:element name="referenceToGroup" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>the id of the configured group element, which values should be
+                                    selectable by this list</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:string">
+                                        <xs:attribute name="showAsLink" type="xs:boolean" default="true">
+                                            <xs:annotation>
+                                                <xs:documentation>indicates if the form group should be accessible by a
+                                                    link</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:attribute>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="referenceToCodeList" type="xs:string" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>the id of the configured code list, which values should be selectable
+                                    by this list</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:choice>
+                    <xs:element name="selectedValue" type="xs:integer" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>if a referenceToCodeList is set, the id of the code to select can be
+                                entered.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="Validation">
+        <xs:annotation>
+            <xs:documentation>specifies the given input type</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="length" type="xs:integer" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the length of the string for inputType 'string'</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="timestampPattern" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the pattern of the timestamp for inputType 'date'</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="minValue" type="xs:double" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the min value for inputType 'int' or 'double'</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="maxValue" type="xs:double" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the max value for inputType 'date' or 'double'</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="CodeList">
+        <xs:annotation>
+            <xs:documentation>a list of static values, which can be referenced by a SelectFormElement</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Code" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Code">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="value" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>the value of the code</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="label" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>the label of the code displayed in the selection list</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string" use="required" />
+        </xs:complexType>
+    </xs:element>
+    <!-- enumerations -->
+    <xs:element name="inputType">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="text" />
+                <xs:enumeration value="string" />
+                <xs:enumeration value="timestamp" />
+                <xs:enumeration value="int" />
+                <xs:enumeration value="double" />
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="selectType">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="one" />
+                <xs:enumeration value="many" />
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="layoutType">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="wizard" />
+                <xs:enumeration value="tab" />
+                <xs:enumeration value="menu" />
+                <xs:enumeration value="accordion" />
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
 </xs:schema>

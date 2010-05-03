@@ -43,6 +43,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
+import org.deegree.client.mdeditor.model.FormField;
 import org.slf4j.Logger;
 
 /**
@@ -59,21 +60,18 @@ public class NavigationBean {
 
     private static final Logger LOG = getLogger( NavigationBean.class );
 
-//    private FormElementBean formElementBean;
-    
     public Object saveDataset() {
-//        FacesContext fc = FacesContext.getCurrentInstance();
-//        fc.getELContext();
-//        FormElementBean formElements = (FormElementBean) fc.getApplication().getELResolver().getValue(
-//                                                                                                       fc.getELContext(),
-//                                                                                                       null,
-//                                                                                                       "formElementBean" );
+        FacesContext fc = FacesContext.getCurrentInstance();
+        fc.getELContext();
+        FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+                                                                                                 null,
+                                                                                                 "formElementBean" );
 
-//        writeElements( formElements.getElements() );
+        writeElements( formfields.getElements() );
         return null;
     }
 
-    private void writeElements( Map<String, FormElement> map ) {
+    private void writeElements( Map<String, FormField> map ) {
         LOG.debug( "Start writing the " + map.size() + " values." );
     }
 }

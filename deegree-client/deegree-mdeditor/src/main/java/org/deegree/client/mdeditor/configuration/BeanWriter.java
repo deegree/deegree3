@@ -43,6 +43,8 @@ import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.client.mdeditor.model.INPUT_TYPE;
+
 /**
  * TODO add class documentation here
  * 

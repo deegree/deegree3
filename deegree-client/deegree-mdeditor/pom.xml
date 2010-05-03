@@ -80,18 +80,19 @@
             <scope>provided</scope>
         </dependency>
         -->
-<dependency>
-    <groupId>org.apache.tomcat</groupId>
-    <artifactId>el-api</artifactId>
-    <version>6.0.26</version>
-<scope>provided</scope>
-</dependency>
-
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>el-api</artifactId>
+            <version>6.0.26</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
+            <scope>provided</scope>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>

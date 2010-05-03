@@ -42,11 +42,12 @@ import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
+import javax.faces.component.UIInput;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 
 import org.deegree.client.mdeditor.FormElementManager;
+import org.deegree.client.mdeditor.model.FormField;
 import org.slf4j.Logger;
 
 /**
@@ -59,77 +60,35 @@ import org.slf4j.Logger;
  */
 @ManagedBean
 @SessionScoped
-public class FormElementBean {
+public class FormFieldBean {
 
-    private static final Logger LOG = getLogger( FormElementBean.class );
+    private static final Logger LOG = getLogger( FormFieldBean.class );
 
-    private Map<String, FormElement> elements = new HashMap<String, FormElement>();
+    private Map<String, FormField> elements = new HashMap<String, FormField>();
 
-    public FormElementBean() {
-        elements = FormElementManager.getFormElements();
+    public FormFieldBean() {
+        elements = FormElementManager.getFormFields();
     }
 
     public void saveValue( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
-        
-        System.out.println("ww");
 
-        String id = null;
-        String value = null;
-        FacesContext fc = FacesContext.getCurrentInstance();
-        Map<String, String> map = fc.getExternalContext().getRequestParameterMap();
-        for ( String key : map.keySet() ) {
-            if ( key.endsWith( "mdFieldId" ) ) {
-                id = map.get( key );
-            }
-            if ( key.endsWith( "mdValue" ) ) {
-                value = map.get( key );
-            }
-        }
+        String id = ( (UIInput) event.getSource() ).getId();
+
         if ( id != null ) {
-            if ( elements.containsKey( id ) ) {
-                LOG.debug( "Update of elment with id " + id + ". New Value is " + value );
-                elements.get( id ).setValue( value );
+            if ( elements.containsKey( id ) && elements.get( id ) instanceof FormField ) {
+                Object value = ( (UIInput) event.getSource() ).getValue();
+                LOG.debug( "Update element with id " + id + ". New Value is " + value + "." );
+                ( (FormField) elements.get( id ) ).setValue( value );
             } else {
                 LOG.error( "An field with id " + id + " does not exist!" );
             }
         }
+
     }
 
-    public void setElements( Map<String, FormElement> elements ) {
-        this.elements = elements;
-    }
-
-    public Map<String, FormElement> getElements() {
+    public Map<String, FormField> getElements() {
         return elements;
-    }
-
-    /**
-     * @param newValue
-     */
-    public void saveValue( Object newValue ) {
-        String id = null;
-        String value = null;
-        FacesContext fc = FacesContext.getCurrentInstance();
-        Map<String, String> map = fc.getExternalContext().getRequestParameterMap();
-        for ( String key : map.keySet() ) {
-            if ( key.endsWith( "mdFieldId" ) ) {
-                id = map.get( key );
-            }
-            if ( key.endsWith( "mdValue" ) ) {
-                value = map.get( key );
-            }
-        }
-        System.out.println( " w " + newValue );
-        if ( id != null ) {
-            if ( elements.containsKey( id ) ) {
-                LOG.debug( "Update of elment with id " + id + ". New Value is " + value );
-                elements.get( id ).setValue( value );
-            } else {
-                LOG.error( "An field with id " + id + " does not exist!" );
-            }
-        }
-
     }
 
 }

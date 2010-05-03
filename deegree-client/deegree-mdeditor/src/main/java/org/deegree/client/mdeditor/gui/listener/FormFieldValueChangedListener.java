@@ -33,15 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.gui.listener;
 
-import java.util.List;
+import javax.faces.context.FacesContext;
 
-import junit.framework.TestCase;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.AjaxBehaviorListener;
 
-import org.deegree.client.mdeditor.model.FormElement;
-import org.deegree.client.mdeditor.model.FormGroup;
-import org.junit.Test;
+import org.deegree.client.mdeditor.gui.FormFieldBean;
 
 /**
  * TODO add class documentation here
@@ -51,25 +51,18 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormConfigurationParserTest extends TestCase {
+public class FormFieldValueChangedListener implements AjaxBehaviorListener {
 
-    @Test
-    public void testParseFormGroups() {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        List<FormGroup> formGroups = FormConfigurationParser.getFormGroups();
+    @Override
+    public void processAjaxBehavior( AjaxBehaviorEvent arg0 )
+                            throws AbortProcessingException {
 
-        assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 2 );
-
-        assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
-        assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
-
-        assertEquals( 1, formGroups.get( 0 ).getFormElements().size() );
-        assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
-
-        FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
-        assertTrue( formElement instanceof FormGroup );
-        assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+        FacesContext fc = FacesContext.getCurrentInstance();
+        fc.getELContext();
+        FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+                                                                                                    null,
+                                                                                                    "formFieldBean" );
+        formFieldBean.saveValue( arg0 );
 
     }
 

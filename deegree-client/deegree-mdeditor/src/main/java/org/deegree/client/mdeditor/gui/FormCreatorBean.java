@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,27 +48,30 @@ import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIForm;
-import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
-import javax.faces.component.UISelectItem;
+import javax.faces.component.UIParameter;
 import javax.faces.component.behavior.AjaxBehavior;
-import javax.faces.component.behavior.Behavior;
-import javax.faces.component.behavior.ClientBehavior;
+import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlPanelGrid;
+import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.component.html.HtmlSelectManyMenu;
 import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.AjaxBehaviorListener;
 import javax.faces.event.ComponentSystemEvent;
-import javax.faces.event.MethodExpressionActionListener;
-import javax.faces.event.MethodExpressionValueChangeListener;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.event.ValueChangeListener;
 
-import com.sun.faces.facelets.el.TagValueExpression;
+import org.deegree.client.mdeditor.config.FormConfigurationParser;
+import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
+import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
+import org.deegree.client.mdeditor.model.FormElement;
+import org.deegree.client.mdeditor.model.FormField;
+import org.deegree.client.mdeditor.model.FormGroup;
+import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.SelectFormField;
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -80,6 +85,8 @@ import com.sun.faces.facelets.el.TagValueExpression;
 @SessionScoped
 public class FormCreatorBean {
 
+    private static final Logger LOG = getLogger( FormCreatorBean.class );
+
     private String grpId;
 
     private UIForm form;
@@ -88,98 +95,129 @@ public class FormCreatorBean {
 
     public void load( ComponentSystemEvent event )
                             throws AbortProcessingException {
-        Application app = FacesContext.getCurrentInstance().getApplication();
-        ExpressionFactory ef = app.getExpressionFactory();
 
-        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-        System.out.println( "load " + grpId );
-        System.out.println( "form " + form );
+        LOG.debug( "Load form for goup with id  " + grpId );
 
         if ( form != null ) {
             form.getChildren().clear();
             if ( forms.containsKey( grpId ) ) {
                 form.getChildren().add( forms.get( grpId ) );
-            } else {
-                HtmlPanelGrid grid = new HtmlPanelGrid();
-
-                UIOutput newOutput = new UIOutput();
-                newOutput.setValue( "Problem:" );
-
-                HtmlInputText newInput = new HtmlInputText();
-                newInput.setId( "text5mdValue" );
-                // ValueExpression
-                newInput.setValueExpression(
-                                             "value",
-                                             ef.createValueExpression(
-                                                                       elContext,
-                                                                       "#{formElementBean.elements['FormGroup3_text5'].value}",
-                                                                       Object.class ) );
-
-                AjaxBehavior ajax = new AjaxBehavior();
-                List<String> executes = new ArrayList<String>();
-                executes.add( "@this" );
-                executes.add( "text5mdValue" );
-                ajax.setExecute( executes );
-                List<String> render = new ArrayList<String>();
-                render.add( "@none" );
-                ajax.setRender( render );
-                System.out.println( "w " + newInput.getDefaultEventName() );
-
-                ajax.addAjaxBehaviorListener( new AjaxBehaviorListener() {
-
-                    @Override
-                    public void processAjaxBehavior( AjaxBehaviorEvent event )
-                                            throws AbortProcessingException {
-
-                        System.out.println( "tu was" );
-
-                    }
-                } );
-
-                newInput.addClientBehavior( "valueChange", ajax );
-
-                grid.getChildren().add( newOutput );
-                grid.getChildren().add( newInput );
-
-                HtmlSelectOneMenu select = new HtmlSelectOneMenu();
-                UISelectItem s1 = new UISelectItem();
-                s1.setItemLabel( "test1" );
-                select.getChildren().add( s1 );
-                UISelectItem s2 = new UISelectItem();
-                s2.setItemLabel( "test2" );
-                select.getChildren().add( s2 );
-
-                AjaxBehavior ajax2 = new AjaxBehavior();
-
-                List<String> render2 = new ArrayList<String>();
-                render2.add( ":helpOutput" );
-                ajax.setRender( render2 );
-//                ajax2.addAjaxBehaviorListener( new AjaxBehaviorListener() {
-//
-//                    @Override
-//                    public void processAjaxBehavior( AjaxBehaviorEvent event )
-//                                            throws AbortProcessingException {
-//
-//                        System.out.println( "tu was" );
-//
-//                    }
-//                } );
-                select.addClientBehavior( "valueChange", ajax2 );
-System.out.println("w 2 "+ select.getClientBehaviors() + " " + select.toString());
-                grid.getChildren().add( select );
-
-                forms.put( grpId, grid );
-                form.getChildren().add( grid );
+            } else if ( grpId != null ) {
+                FormGroup fg = FormConfigurationParser.getFormGroup( grpId );
+                if ( fg != null ) {
+                    HtmlPanelGrid grid = new HtmlPanelGrid();
+                    addFormGroup( grid, fg );
+                    forms.put( grpId, grid );
+                    form.getChildren().add( grid );
+                }
             }
         }
+
     }
 
-    // <h:inputHidden id="mdFieldId" value="FormGroup3_text5" />
-    // <h:outputLabel for="text5mdValue" value="Problem:" rendered="#{formGroup3Bean.text5Visibility}" />
-    // <h:inputText id="text5mdValue" rendered="#{formGroup3Bean.text5Visibility}"
-    // required="#{formGroup3Bean.text5Required}" value="#{formElementBean.elements['FormGroup3_text5'].value}">
-    // <f:ajax execute="@this mdFieldId" render="@none" listener="#{formElementBean.saveValue}"/>
-    // </h:inputText>
+    private void addFormGroup( HtmlPanelGrid parentGrid, FormGroup fg ) {
+
+        LOG.debug( "Add FormGroup " + fg.getId() );
+
+        HtmlPanelGrid grid = new HtmlPanelGrid();
+        grid.setColumns( 3 );
+        grid.setHeaderClass( "mdFormHeader" );
+
+        // label
+        UIOutput title = new UIOutput();
+        title.setValue( fg.getTitle() );
+        grid.getFacets().put( "header", title );
+
+        // createInputPanelGroup();
+        for ( FormElement fe : fg.getFormElements() ) {
+            if ( fe instanceof FormGroup ) {
+                grid.getChildren().add( new HtmlPanelGroup() );
+                addFormGroup( grid, (FormGroup) fe );
+                grid.getChildren().add( new HtmlPanelGroup() );
+            } else {
+                addFormField( grid, (FormField) fe );
+            }
+        }
+        parentGrid.getChildren().add( grid );
+    }
+
+    private void addFormField( HtmlPanelGrid parentGrid, FormField fe ) {
+
+        LOG.debug( "Add FormField " + fe.getCompleteId() );
+
+        Application app = FacesContext.getCurrentInstance().getApplication();
+        ExpressionFactory ef = app.getExpressionFactory();
+        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+
+        // label
+        UIOutput newOutput = new UIOutput();
+        newOutput.setValue( fe.getLabel() );
+        setVisibility( fe, newOutput, ef, elContext );
+
+        parentGrid.getChildren().add( newOutput );
+
+        // inputText
+        if ( fe instanceof InputFormField ) {
+            HtmlInputText newInput = new HtmlInputText();
+            newInput.setId( fe.getCompleteId() );
+
+            AjaxBehavior ajaxInput = new AjaxBehavior();
+            List<String> executes = new ArrayList<String>();
+            executes.add( "@this" );
+            // executes.add( hiddenId );
+            ajaxInput.setExecute( executes );
+            List<String> render = new ArrayList<String>();
+            render.add( "@none" );
+            ajaxInput.setRender( render );
+            ajaxInput.addAjaxBehaviorListener( new FormFieldValueChangedListener() );
+            newInput.addClientBehavior( newInput.getDefaultEventName(), ajaxInput );
+
+            setVisibility( fe, newInput, ef, elContext );
+
+            parentGrid.getChildren().add( newInput );
+        } else if ( fe instanceof SelectFormField ) {
+            if ( "many".equals( ( (SelectFormField) fe ).getSelectType() ) ) {
+                HtmlSelectManyMenu selectManyMenu = new HtmlSelectManyMenu();
+                selectManyMenu.setId( fe.getCompleteId() + "mdValue" );
+
+                setVisibility( fe, selectManyMenu, ef, elContext );
+
+                parentGrid.getChildren().add( selectManyMenu );
+            } else {
+                HtmlSelectOneMenu selectOneMenu = new HtmlSelectOneMenu();
+                selectOneMenu.setId( fe.getCompleteId() + "mdValue" );
+
+                setVisibility( fe, selectOneMenu, ef, elContext );
+
+                parentGrid.getChildren().add( selectOneMenu );
+            }
+        }
+        // help
+        HtmlCommandLink helpLink = new HtmlCommandLink();
+        helpLink.setValue( "o" );
+        UIParameter param = new UIParameter();
+        param.setName( "mdHelp" );
+        param.setValue( fe.getHelp() );
+        helpLink.getChildren().add( param );
+        helpLink.getChildren().add( helpLink );
+
+        AjaxBehavior ajaxHelp = new AjaxBehavior();
+        List<String> renderHelp = new ArrayList<String>();
+        renderHelp.add( ":helpOutput" );
+        ajaxHelp.setRender( renderHelp );
+        ajaxHelp.addAjaxBehaviorListener( new HelpClickedListener() );
+        helpLink.addClientBehavior( helpLink.getDefaultEventName(), ajaxHelp );
+
+        setVisibility( fe, helpLink, ef, elContext );
+
+        parentGrid.getChildren().add( helpLink );
+    }
+
+    private void setVisibility( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
+        String el = "#{formFieldBean.elements['" + fe.getCompleteId() + "'].visibility}";
+        ValueExpression ve = ef.createValueExpression( elContext, el, Boolean.class );
+        component.setValueExpression( "rendered", ve );
+    }
 
     public void setForm( UIForm form ) {
         this.form = form;
@@ -196,29 +234,5 @@ System.out.println("w 2 "+ select.getClientBehaviors() + " " + select.toString()
     public String getGrpId() {
         return grpId;
     }
-
-    // MethodExpressionActionListener l = new MethodExpressionActionListener(
-    // ef.createMethodExpression(
-    // elContext,
-    // "#{formElementBean.saveValue}",
-    // null,
-    // new Class[0] ) );
-
-    // newInput.addValueChangeListener( new ValueChangeListener() {
-    // @Override
-    // public void processValueChange( ValueChangeEvent event )
-    // throws AbortProcessingException {
-    //
-    // System.out.println( "vcl" );
-    //
-    // FacesContext fc = FacesContext.getCurrentInstance();
-    // FormElementBean feBean = (FormElementBean) fc.getApplication().getELResolver().getValue(
-    // fc.getELContext(),
-    // null,
-    // "formElementBean" );
-    // feBean.saveValue( event.getNewValue() );
-    //
-    // }
-    // } );
 
 }

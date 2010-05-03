@@ -34,3 +34,7 @@ ul#horizontalList a:hover,ul#horizontalList span {
 	color: white;
 	background-color: gray;
 }
+
+.mdFormHeader {
+	text-align: left;
+}

@@ -33,15 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.config;
+package org.deegree.client.mdeditor.model;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.deegree.client.mdeditor.model.FormElement;
-import org.deegree.client.mdeditor.model.FormGroup;
-import org.junit.Test;
 
 /**
  * TODO add class documentation here
@@ -51,26 +44,11 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormConfigurationParserTest extends TestCase {
+public class InputFormField extends FormField {
 
-    @Test
-    public void testParseFormGroups() {
-        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        List<FormGroup> formGroups = FormConfigurationParser.getFormGroups();
-
-        assertNotNull( formGroups );
-        assertTrue( formGroups.size() == 2 );
-
-        assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
-        assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
-
-        assertEquals( 1, formGroups.get( 0 ).getFormElements().size() );
-        assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
-
-        FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
-        assertTrue( formElement instanceof FormGroup );
-        assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
-
+    public InputFormField( String grpId, String id, String label, boolean visible, String help, INPUT_TYPE inputType,
+                           String defaultValue, Validation validation ) {
+        super( grpId, id, label, visible, help, defaultValue );
     }
 
 }

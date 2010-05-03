@@ -6,40 +6,8 @@
         <application> <locale-config> <default-locale>en</default-locale> <supported-locale>de</supported-locale>
         </locale-config> <message-bundle>gui.messages</message-bundle> </application>
     -->
-<!-- 
 
-    <managed-bean>
-        <managed-bean-name>formGroupBean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.form.gui.FormGroupBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>formGroup3Bean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.form.gui.FormGroup3Bean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-
-    <managed-bean>
-        <managed-bean-name>formGroup11Bean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.form.gui.FormGroup11Bean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-
-    <managed-bean>
-        <managed-bean-name>formGroup21Bean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.form.gui.FormGroup21Bean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-
-    <managed-bean>
-        <managed-bean-name>formGroup2Bean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.form.gui.FormGroup2Bean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+ 
 
     <managed-bean>
         <managed-bean-name>helpBean</managed-bean-name>
@@ -55,8 +23,8 @@
 
 
     <managed-bean>
-        <managed-bean-name>formElementBean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.gui.FormElementBean</managed-bean-class>
+        <managed-bean-name>formFieldBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.FormFieldBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
@@ -65,7 +33,7 @@
         <managed-bean-class>org.deegree.client.mdeditor.gui.FormCreatorBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
- -->
+
     <!-- PhaseListener -->
     <lifecycle>
         <phase-listener>org.deegree.client.debug.DebugPhaseListener</phase-listener>

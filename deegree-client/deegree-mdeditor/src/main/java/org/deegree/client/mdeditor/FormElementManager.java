@@ -36,10 +36,12 @@
 package org.deegree.client.mdeditor;
 
 import java.util.HashMap;
+
 import java.util.Map;
 
 import org.deegree.client.mdeditor.config.FormConfigurationParser;
-import org.deegree.client.mdeditor.gui.FormElement;
+import org.deegree.client.mdeditor.model.FormElement;
+import org.deegree.client.mdeditor.model.FormField;
 
 /**
  * TODO add class documentation here
@@ -51,18 +53,18 @@ import org.deegree.client.mdeditor.gui.FormElement;
  */
 public class FormElementManager {
 
-    private static Map<String, FormElement> formElements = new HashMap<String, FormElement>();
+    private static Map<String, FormField> formFields = new HashMap<String, FormField>();
 
     static {
-        formElements = FormConfigurationParser.parseFormElements();
+        formFields = FormConfigurationParser.getFormElements();
     }
 
-    public static Map<String, FormElement> getFormElements() {
-        return formElements;
+    public static Map<String, FormField> getFormFields() {
+        return formFields;
     }
 
-    public static FormElement getFormElement( String completeId ) {
-        return formElements.get( completeId );
+    public static FormElement getFormField( String completeId ) {
+        return formFields.get( completeId );
     }
 
 }

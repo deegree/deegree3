@@ -50,6 +50,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.client.mdeditor.model.INPUT_TYPE;
+import org.deegree.client.mdeditor.model.Validation;
 import org.deegree.commons.xml.XMLParsingException;
 import org.slf4j.Logger;
 
@@ -257,7 +259,7 @@ public class FormConfigurationParser {
         return defaultValue;
     }
 
-    private static String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
+    public static String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
                             throws XMLStreamException {
         String s = defaultValue;
         if ( name != null && name.equals( xmlStream.getLocalName() ) ) {

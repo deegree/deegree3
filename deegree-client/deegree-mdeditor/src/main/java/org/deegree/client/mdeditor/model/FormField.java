@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.gui;
+package org.deegree.client.mdeditor.model;
 
 /**
  * TODO add class documentation here
@@ -43,7 +43,7 @@ package org.deegree.client.mdeditor.gui;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormElement {
+public abstract class FormField implements FormElement {
 
     private String grpId;
 
@@ -53,14 +53,17 @@ public class FormElement {
 
     private boolean visibility;
 
-    /**
-     * @param grpId
-     * @param id
-     */
-    public FormElement( String grpId, String id ) {
-        super();
+    private String label;
+
+    private String help;
+
+    public FormField( String grpId, String id, String label, boolean visible, String help, Object defaultValue ) {
         this.grpId = grpId;
         this.id = id;
+        this.label = label;
+        this.visibility = visible;
+        this.help = help;
+        this.value = defaultValue;
     }
 
     public String getGrpId() {
@@ -97,6 +100,22 @@ public class FormElement {
 
     public String getCompleteId() {
         return grpId + "_" + id;
+    }
+
+    public void setLabel( String label ) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label != null && label.length() > 0 ? label : id;
+    }
+
+    public void setHelp( String help ) {
+        this.help = help;
+    }
+
+    public String getHelp() {
+        return help;
     }
 
     @Override

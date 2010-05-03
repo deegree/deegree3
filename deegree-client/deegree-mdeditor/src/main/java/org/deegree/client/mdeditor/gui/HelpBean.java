@@ -62,7 +62,7 @@ public class HelpBean {
         FacesContext fc = FacesContext.getCurrentInstance();
         Map<String, String> map = fc.getExternalContext().getRequestParameterMap();
         for ( String key : map.keySet() ) {
-            if ( "text".equals( key ) ) {
+            if ( key.endsWith( "mdHelp" ) ) {
                 helpText = map.get( key );
             }
         }
@@ -73,7 +73,7 @@ public class HelpBean {
     }
 
     public String getHelpText() {
-        return helpText + System.currentTimeMillis();
+        return helpText;
     }
 
 }
