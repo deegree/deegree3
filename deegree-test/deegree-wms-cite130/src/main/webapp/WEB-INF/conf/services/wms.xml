@@ -15,7 +15,7 @@
           <ds:File>../../data/cite/BasicPolygons.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/BasicPolygons.xml</File>
+          <File>../styles/BasicPolygons.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -27,7 +27,7 @@
           <ds:File>../../data/cite/Forests.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/Forests.xml</File>
+          <File>../styles/Forests.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -45,7 +45,7 @@
           <ds:File>../../data/cite/Lakes.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/Lakes.xml</File>
+          <File>../styles/Lakes.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -57,7 +57,7 @@
           <ds:File>../../data/cite/Ponds.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/Ponds.xml</File>
+          <File>../styles/Ponds.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -69,7 +69,7 @@
           <ds:File>../../data/cite/NamedPlaces.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/NamedPlaces.xml</File>
+          <File>../styles/NamedPlaces.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -81,7 +81,7 @@
           <ds:File>../../data/cite/Buildings.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/Buildings.xml</File>
+          <File>../styles/Buildings.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -93,7 +93,7 @@
           <ds:File>../../data/cite/BuildingCenters.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/BuildingCenters.xml</File>
+          <File>../styles/BuildingCenters.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -105,7 +105,7 @@
           <ds:File>../../data/cite/DividedRoutes.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/DividedRoutes.xml</File>
+          <File>../styles/DividedRoutes.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -117,7 +117,7 @@
           <ds:File>../../data/cite/RoadSegments.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/RoadSegments.xml</File>
+          <File>../styles/RoadSegments.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -129,7 +129,7 @@
           <ds:File>../../data/cite/MapNeatline.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/MapNeatline.xml</File>
+          <File>../styles/MapNeatline.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -141,7 +141,7 @@
           <ds:File>../../data/cite/Streams.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/Streams.xml</File>
+          <File>../styles/Streams.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -153,7 +153,7 @@
           <ds:File>../../data/cite/Bridges.shp</ds:File>
         </ds:ShapefileDataSource>
         <DirectStyle>
-          <File>styles/Bridges.xml</File>
+          <File>../styles/Bridges.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -170,7 +170,7 @@
         </Dimension>
         <FeatureStoreId>autos</FeatureStoreId>
         <DirectStyle>
-          <File>styles/Autos.xml</File>
+          <File>../styles/Autos.xml</File>
         </DirectStyle>
       </RequestableLayer>
 
@@ -186,10 +186,10 @@
         </Dimension>
         <CoverageStoreId>terrain</CoverageStoreId>
         <DirectStyle>
-          <File>styles/terrain2.xml</File>
+          <File>../styles/terrain2.xml</File>
         </DirectStyle>
         <DirectStyle>
-          <File>styles/terrain1.xml</File>
+          <File>../styles/terrain1.xml</File>
         </DirectStyle>
       </RequestableLayer>
 

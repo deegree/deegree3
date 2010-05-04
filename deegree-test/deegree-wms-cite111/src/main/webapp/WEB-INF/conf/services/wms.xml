@@ -16,7 +16,7 @@
         <wms:Title>cite:BasicPolygons</wms:Title>
         <wms:FeatureStoreId>basicpolygons</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/BasicPolygons.xml</wms:File>
+          <wms:File>../styles/BasicPolygons.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -25,7 +25,7 @@
         <wms:Title>cite:Forests</wms:Title>
         <wms:FeatureStoreId>forests</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/Forests.xml</wms:File>
+          <wms:File>../styles/Forests.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -40,7 +40,7 @@
         </wms:Dimension>
         <wms:FeatureStoreId>lakes</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/Lakes.xml</wms:File>
+          <wms:File>../styles/Lakes.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -49,7 +49,7 @@
         <wms:Title>cite:Ponds</wms:Title>
         <wms:FeatureStoreId>ponds</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/Ponds.xml</wms:File>
+          <wms:File>../styles/Ponds.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -58,7 +58,7 @@
         <wms:Title>cite:NamedPlaces</wms:Title>
         <wms:FeatureStoreId>namedplaces</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/NamedPlaces.xml</wms:File>
+          <wms:File>../styles/NamedPlaces.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -67,7 +67,7 @@
         <wms:Title>cite:Buildings</wms:Title>
         <wms:FeatureStoreId>buildings</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/Buildings.xml</wms:File>
+          <wms:File>../styles/Buildings.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -76,7 +76,7 @@
         <wms:Title>cite:BuildingCenters</wms:Title>
         <wms:FeatureStoreId>buildingcenters</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/BuildingCenters.xml</wms:File>
+          <wms:File>../styles/BuildingCenters.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -85,7 +85,7 @@
         <wms:Title>cite:DividedRoutes</wms:Title>
         <wms:FeatureStoreId>dividedroutes</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/DividedRoutes.xml</wms:File>
+          <wms:File>../styles/DividedRoutes.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -94,7 +94,7 @@
         <wms:Title>cite:RoadSegments</wms:Title>
         <wms:FeatureStoreId>roadsegments</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/RoadSegments.xml</wms:File>
+          <wms:File>../styles/RoadSegments.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -103,7 +103,7 @@
         <wms:Title>cite:MapNeatline</wms:Title>
         <wms:FeatureStoreId>mapneatline</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/MapNeatline.xml</wms:File>
+          <wms:File>../styles/MapNeatline.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -112,7 +112,7 @@
         <wms:Title>cite:Streams</wms:Title>
         <wms:FeatureStoreId>streams</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/Streams.xml</wms:File>
+          <wms:File>../styles/Streams.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -121,7 +121,7 @@
         <wms:Title>cite:Bridges</wms:Title>
         <wms:FeatureStoreId>bridges</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/Bridges.xml</wms:File>
+          <wms:File>../styles/Bridges.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
@@ -137,7 +137,7 @@
         </wms:Dimension>
         <wms:FeatureStoreId>autos</wms:FeatureStoreId>
         <wms:DirectStyle>
-          <wms:File>styles/Autos.xml</wms:File>
+          <wms:File>../styles/Autos.xml</wms:File>
         </wms:DirectStyle>
       </wms:RequestableLayer>
 
