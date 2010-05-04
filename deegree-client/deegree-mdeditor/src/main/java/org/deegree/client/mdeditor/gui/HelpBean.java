@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
@@ -53,7 +54,9 @@ import javax.faces.event.AjaxBehaviorEvent;
  */
 @ManagedBean
 @RequestScoped
-public class HelpBean {
+public class HelpBean implements Serializable {
+
+    private static final long serialVersionUID = -548845707830739276L;
 
     private String helpText = "Und hier die Hilfe für:\n";
 

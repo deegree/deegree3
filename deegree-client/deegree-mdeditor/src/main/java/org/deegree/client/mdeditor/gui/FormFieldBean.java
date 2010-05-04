@@ -37,6 +37,7 @@ package org.deegree.client.mdeditor.gui;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +61,9 @@ import org.slf4j.Logger;
  */
 @ManagedBean
 @SessionScoped
-public class FormFieldBean {
+public class FormFieldBean implements Serializable {
+
+    private static final long serialVersionUID = 6057122120736649423L;
 
     private static final Logger LOG = getLogger( FormFieldBean.class );
 

@@ -9,14 +9,13 @@
 
 								<ui:define name="metadata">
 												<f:metadata>
-																<f:viewParam name="grpId" value="#{formCreatorBean.grpId}" />
+																<f:viewParam id="grpVP" name="grpId" value="#{formCreatorBean.grpId}" />
 																<f:event type="preRenderView" listener="#{formCreatorBean.load}" />
 												</f:metadata>
 								</ui:define>
 
 								<ui:define name="content">
-												<h:form id="emptyForm" binding="#{formCreatorBean.form}">
-												</h:form>
+												<h:form id="emptyForm" binding="#{formCreatorBean.form}" />
 
 												<!-- invisible ajax field, it seems JSF does not load the JS-Script if ajax is set on the server -->
 												<h:form id="w2" rendered="false">

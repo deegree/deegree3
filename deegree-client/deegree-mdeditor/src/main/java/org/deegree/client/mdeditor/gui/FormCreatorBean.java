@@ -37,6 +37,7 @@ package org.deegree.client.mdeditor.gui;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +88,9 @@ import org.slf4j.Logger;
  */
 @ManagedBean
 @SessionScoped
-public class FormCreatorBean {
+public class FormCreatorBean implements Serializable {
+
+    private static final long serialVersionUID = -1348293091143699536L;
 
     private static final Logger LOG = getLogger( FormCreatorBean.class );
 
@@ -110,6 +113,7 @@ public class FormCreatorBean {
                 FormGroup fg = FormConfigurationParser.getFormGroup( grpId );
                 if ( fg != null ) {
                     HtmlPanelGrid grid = new HtmlPanelGrid();
+                    grid.setId( Utils.getUniqueId() );
                     addFormGroup( grid, fg );
                     forms.put( grpId, grid );
                     form.getChildren().add( grid );
@@ -124,6 +128,7 @@ public class FormCreatorBean {
         LOG.debug( "Add FormGroup " + fg.getId() );
 
         HtmlPanelGrid grid = new HtmlPanelGrid();
+        grid.setId( Utils.getUniqueId() );
         grid.setColumns( 3 );
         grid.setHeaderClass( "mdFormHeader" );
 
@@ -157,6 +162,7 @@ public class FormCreatorBean {
         UIOutput newOutput = new UIOutput();
         newOutput.setValue( fe.getLabel() );
         setVisibility( fe, newOutput, ef, elContext );
+        newOutput.setId( Utils.getUniqueId() );
 
         parentGrid.getChildren().add( newOutput );
 
@@ -205,7 +211,9 @@ public class FormCreatorBean {
         // help
         HtmlCommandLink helpLink = new HtmlCommandLink();
         helpLink.setValue( "o" );
+        helpLink.setId( Utils.getUniqueId() );
         UIParameter param = new UIParameter();
+        param.setId( Utils.getUniqueId() );
         param.setName( "mdHelp" );
         param.setValue( fe.getHelp() );
         helpLink.getChildren().add( param );
@@ -228,6 +236,7 @@ public class FormCreatorBean {
         if ( codeList != null ) {
             for ( String value : codeList.getCodes().keySet() ) {
                 UISelectItem si = new UISelectItem();
+                si.setId( Utils.getUniqueId() );
                 si.setItemValue( value );
                 si.setItemLabel( codeList.getCodes().get( value ) );
                 select.getChildren().add( si );

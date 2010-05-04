@@ -48,12 +48,22 @@ public class Configuration {
     // TODO!!!
     private static String formConfURL = "/home/lyn/workspace/deegree-mdeditor/resources/exampleConfiguration.xml";
 
+    private static String filesDirURL = "/home/lyn/workspace/deegree-mdeditor/tmp/";
+
     public static void setFormConfURL( String formConfURL ) {
         Configuration.formConfURL = formConfURL;
     }
 
     public static String getFormConfURL() {
         return formConfURL;
+    }
+
+    public static void setFilesDirURL( String filesDirURL ) {
+        Configuration.filesDirURL = filesDirURL;
+    }
+
+    public static String getFilesDirURL() {
+        return filesDirURL;
     }
 
 }

@@ -38,3 +38,13 @@ ul#horizontalList a:hover,ul#horizontalList span {
 .mdFormHeader {
 	text-align: left;
 }
+
+#horizontalMenu {
+	margin: 0em auto;
+	margin-bottom: 10px;
+}
+
+#verticalMenu {
+	position: absolute;
+	float: left;
+}

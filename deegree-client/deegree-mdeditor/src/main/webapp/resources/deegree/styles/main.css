@@ -30,18 +30,12 @@ body {
 	background-color: #fc0;
 }
 
-#content {
+#main {
 	margin: 0px 180px;
 	background-color: #ffffc6;
 }
 
-#navHead {
-	margin: 0em auto;
-	margin-bottom: 10px;
-}
-
-#main {
-	margin: 0em auto;
+#content {
 }
 
 #rightBox {

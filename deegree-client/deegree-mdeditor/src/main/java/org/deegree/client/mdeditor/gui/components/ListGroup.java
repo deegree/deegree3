@@ -33,15 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.gui;
+package org.deegree.client.mdeditor.gui.components;
 
-import java.io.Serializable;
-
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
-
-import org.deegree.client.mdeditor.controller.DatasetWriter;
+import javax.faces.component.FacesComponent;
+import javax.faces.component.html.HtmlPanelGroup;
 
 /**
  * TODO add class documentation here
@@ -51,19 +46,11 @@ import org.deegree.client.mdeditor.controller.DatasetWriter;
  * 
  * @version $Revision: $, $Date: $
  */
-@ManagedBean
-@RequestScoped
-public class NavigationBean implements Serializable {
 
-    private static final long serialVersionUID = 9025028665690108601L;
+@FacesComponent("org.deegree.ListGroup")
+public class ListGroup extends HtmlPanelGroup {
 
-    public Object saveDataset() {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        fc.getELContext();
-        FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                 null, "formFieldBean" );
-        DatasetWriter.writeElements( formfields.getElements() );
-        return null;
+    public ListGroup() {
+        setRendererType( "org.deegree.ListGroupRenderer" );
     }
-
 }

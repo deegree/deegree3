@@ -61,6 +61,7 @@ import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.INPUT_TYPE;
 import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.LAYOUT_TYPE;
 import org.deegree.client.mdeditor.model.SELECT_TYPE;
 import org.deegree.client.mdeditor.model.SelectFormField;
 import org.deegree.client.mdeditor.model.Validation;
@@ -95,7 +96,7 @@ public class FormConfigurationParser {
 
     private static List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
-    private static String layoutType;
+    private static LAYOUT_TYPE layoutType;
 
     public static List<CodeList> getCodeLists() {
         return codeLists;
@@ -159,7 +160,7 @@ public class FormConfigurationParser {
         return null;
     }
 
-    public String getLayoutType() {
+    public static LAYOUT_TYPE getLayoutType() {
         return layoutType;
     }
 
@@ -182,7 +183,7 @@ public class FormConfigurationParser {
                 throw new XMLParsingException( xmlStream, "Empty FormConfiguration" );
             }
             xmlStream.require( START_ELEMENT, NS, "layoutType" );
-            layoutType = xmlStream.getElementText();
+            layoutType = getLayoutType( xmlStream );
             xmlStream.nextTag();
 
             while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( FORM_CONF_ELEMENT ) ) ) {
@@ -358,6 +359,21 @@ public class FormConfigurationParser {
             return SELECT_TYPE.ONE;
         }
         throw new XMLParsingException( xmlStream, "selectType " + elementText + "is not valid" );
+    }
+
+    private static LAYOUT_TYPE getLayoutType( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        String elementText = xmlStream.getElementText();
+        if ( "menu".equals( elementText ) ) {
+            return LAYOUT_TYPE.MENU;
+        } else if ( "tab".equals( elementText ) ) {
+            return LAYOUT_TYPE.TAB;
+        } else if ( "accordion".equals( elementText ) ) {
+            return LAYOUT_TYPE.ACCORDION;
+        } else if ( "wizard".equals( elementText ) ) {
+            return LAYOUT_TYPE.WIZARD;
+        }
+        throw new XMLParsingException( xmlStream, "layoutType " + elementText + "is not valid" );
     }
 
     private static String getId( XMLStreamReader xmlStream ) {
