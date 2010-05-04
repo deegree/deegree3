@@ -1,0 +1,14 @@
+<!--
+    Proxy configuration that is used when services fetch resources over the network. NOTE: Effectively, the proxy
+    configuration of the VM applies (system properties such as httpProxyHost), these parameters just allow to change it.
+  -->
+<ProxyConfiguration xmlns="http://www.deegree.org/commons" overrideSystemSettings="true">
+  <ProxyHost>10.19.3.1</ProxyHost>
+  <ProxyPort>3128</ProxyPort>
+  <NonProxyHosts>127.0.0.1|localhost</NonProxyHosts>
+</ProxyConfiguration>
+<!--
+    <ProxyConfiguration xmlns="http://www.deegree.org/commons" overrideSystemSettings="true">
+    <ProxyHost>10.19.3.1</ProxyHost> <ProxyPort>3129</ProxyPort> <ProxyUser>username</ProxyUser>
+    <ProxyPassword>password</ProxyPassword> <NonProxyHosts>127.0.0.1|localhost</NonProxyHosts> </ProxyConfiguration>
+-->
