@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource http://schemas.deegree.org/datasource/0.5.0/feature/memory.xsd">
+  <NamespaceHint prefix="cgf" namespaceURI="http://www.opengis.net/cite/geometry"></NamespaceHint>
+  <NamespaceHint prefix="ccf" namespaceURI="http://www.opengis.net/cite/complex"></NamespaceHint>
+  <NamespaceHint prefix="cdf" namespaceURI="http://www.opengis.net/cite/data"></NamespaceHint>
+  <GMLSchemaFileURL gmlVersion="GML_2">gml/schemas/all.xsd</GMLSchemaFileURL>
+  <GMLFeatureCollectionFileURL gmlVersion="GML_2">gml/dataset.gml</GMLFeatureCollectionFileURL>
+</MemoryFeatureStore>
