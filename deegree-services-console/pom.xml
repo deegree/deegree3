@@ -9,11 +9,11 @@
   <url>http://maven.apache.org</url>
   <repositories>
     <repository>
-      <id>repo</id>
+      <id>deegree-central</id>
       <name>havola.lat-lon.de-releases</name>
       <url>http://artefacts.deegree.org/repo</url>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
