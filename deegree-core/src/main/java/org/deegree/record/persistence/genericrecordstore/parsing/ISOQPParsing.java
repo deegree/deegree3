@@ -783,8 +783,6 @@ public final class ISOQPParsing extends XMLAdapter {
         // TODO anyText
         // StringWriter anyText = new StringWriter();
 
-        String i = getNodeAsString( rootElement, new XPath( "./dc:identifier", nsContextISOParsing ), "" );
-
         String[] b = getNodesAsStrings( rootElement, new XPath( "./dc:identifier", nsContextISOParsing ) );
         qp.setIdentifier( Arrays.asList( b ) );
 
