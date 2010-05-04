@@ -168,7 +168,7 @@ public class OGCFrontController extends HttpServlet {
 
     private static final String DEFAULT_CONFIG_PATH = "WEB-INF/conf";
 
-    private static final String DEFAULT_CONFIG_URL = DEFAULT_CONFIG_PATH + "/services_metadata.xml";
+    private static final String DEFAULT_SERVICE_METADATA_PATH = DEFAULT_CONFIG_PATH + "/services/metadata.xml";
 
     // maps service names (e.g. 'WMS', 'WFS', ...) to responsible subcontrollers
     private static final Map<AllowedServices, AbstractOGCServiceController> serviceNameToController = new HashMap<AllowedServices, AbstractOGCServiceController>();
@@ -940,41 +940,10 @@ public class OGCFrontController extends HttpServlet {
                             throws ServletException {
         try {
             super.init( config );
-            String configURL = getInitParameter( "ServicesConfiguration" );
-            if ( configURL == null ) {
-                configURL = DEFAULT_CONFIG_URL;
-            }
 
             LOG.info( "--------------------------------------------------------------------------------" );
             DeegreeAALogoUtils.logInfo( LOG );
             LOG.info( "--------------------------------------------------------------------------------" );
-
-            URL resolvedConfigURL = null;
-            try {
-                resolvedConfigURL = resolveFileLocation( configURL, config.getServletContext() );
-            } catch ( MalformedURLException e ) {
-                throw new ServletException( "Resolving of parameter 'ServicesConfiguration' failed: "
-                                            + e.getLocalizedMessage(), e );
-            }
-            if ( resolvedConfigURL == null ) {
-                throw new ServletException( "Resolving service configuration url failed!" );
-            }
-
-            unmarshallConfiguration( resolvedConfigURL );
-
-            Version configVersion = Version.parseVersion( serviceConfig.getConfigVersion() );
-            if ( !configVersion.equals( SUPPORTED_CONFIG_VERSION ) ) {
-                String msg = "The main service configuration file '" + resolvedConfigURL
-                             + " uses configuration format version " + serviceConfig.getConfigVersion()
-                             + ", but this deegree version only supports version " + SUPPORTED_CONFIG_VERSION
-                             + ". Information on resolving this issue can be found at "
-                             + "'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. ";
-                LOG.debug( "********************************************************************************" );
-                LOG.error( msg );
-                LOG.debug( "********************************************************************************" );
-                throw new ServletException( msg );
-            }
-
             LOG.info( "deegree modules" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
@@ -986,8 +955,6 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "System info" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
-            // LOG.info( "- context : " + getServletContext().getServletContextName() );
-            // LOG.info( "- real path : " + getServletContext().getRealPath( "/" ) );
             LOG.info( "- java version      : " + System.getProperty( "java.version" ) + " ("
                       + System.getProperty( "java.vendor" ) + ")" );
             LOG.info( "- operating system  : " + System.getProperty( "os.name" ) + " ("
@@ -1007,7 +974,7 @@ public class OGCFrontController extends HttpServlet {
             initFeatureStores();
             initCoverageStores();
             initRecordStores();
-            initWebServices( resolvedConfigURL );
+            initWebServices();
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -1060,24 +1027,49 @@ public class OGCFrontController extends HttpServlet {
         LOG.info( "" );
     }
 
-    private void initWebServices( URL resolvedConfigURL )
+    private void initWebServices()
                             throws ServletException {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Starting webservices." );
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "" );
 
+        URL resolvedMetadataURL = null;
+        try {
+            resolvedMetadataURL = resolveFileLocation( DEFAULT_SERVICE_METADATA_PATH, getServletContext() );
+        } catch ( MalformedURLException e ) {
+            throw new ServletException( "Resolving of parameter 'ServicesConfiguration' failed: "
+                                        + e.getLocalizedMessage(), e );
+        }
+        if ( resolvedMetadataURL == null ) {
+            throw new ServletException( "Resolving service configuration url failed!" );
+        }
+
+        unmarshallConfiguration( resolvedMetadataURL );
+
+        Version configVersion = Version.parseVersion( serviceConfig.getConfigVersion() );
+        if ( !configVersion.equals( SUPPORTED_CONFIG_VERSION ) ) {
+            String msg = "The service metadata file '" + resolvedMetadataURL + " uses configuration format version "
+                         + serviceConfig.getConfigVersion() + ", but this deegree version only supports version "
+                         + SUPPORTED_CONFIG_VERSION + ". Information on resolving this issue can be found at "
+                         + "'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. ";
+            LOG.debug( "********************************************************************************" );
+            LOG.error( msg );
+            LOG.debug( "********************************************************************************" );
+            throw new ServletException( msg );
+        }
+
         ConfiguredServicesType servicesConfigured = serviceConfig.getConfiguredServices();
         List<ServiceType> services = null;
         if ( servicesConfigured != null ) {
             services = servicesConfigured.getService();
             if ( services != null && services.size() > 0 ) {
-                LOG.info( "The file: " + resolvedConfigURL );
+                LOG.info( "The file: " + resolvedMetadataURL );
                 LOG.info( "Provided following services:" );
                 for ( ServiceType s : services ) {
                     URL configLocation = null;
                     try {
-                        configLocation = new URL( resolvedConfigURL, s.getConfigurationLocation() );
+                        configLocation = new URL( resolvedMetadataURL, s.getConfigurationLocation() );
                     } catch ( MalformedURLException e ) {
                         LOG.error( e.getMessage(), e );
                         return;
@@ -1090,7 +1082,7 @@ public class OGCFrontController extends HttpServlet {
             }
         }
         if ( services == null || services.size() == 0 ) {
-            LOG.info( "No service elements were supplied in the file: '" + resolvedConfigURL
+            LOG.info( "No service elements were supplied in the file: '" + resolvedMetadataURL
                       + "' -- trying to use the default loading mechanism." );
             try {
                 services = loadServicesFromDefaultLocation();
@@ -1101,7 +1093,7 @@ public class OGCFrontController extends HttpServlet {
         if ( services.size() == 0 ) {
             throw new ServletException(
                                         "No deegree web services could be loaded (manually or automatically) please take a look at your configuration file: "
-                                                                + resolvedConfigURL
+                                                                + resolvedMetadataURL
                                                                 + " and or your WEB-INF/conf directory." );
         }
 
@@ -1124,7 +1116,8 @@ public class OGCFrontController extends HttpServlet {
 
         File fsDir = null;
         try {
-            fsDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/feature", getServletContext() ).toURI() );
+            fsDir = new File(
+                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/feature", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -1146,7 +1139,7 @@ public class OGCFrontController extends HttpServlet {
         File csDir = null;
         try {
             csDir = new File(
-                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/coverage", getServletContext() ).toURI() );
+                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/coverage", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -1167,7 +1160,8 @@ public class OGCFrontController extends HttpServlet {
 
         File rsDir = null;
         try {
-            rsDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/data/record", getServletContext() ).toURI() );
+            rsDir = new File(
+                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/record", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
@@ -1366,65 +1360,54 @@ public class OGCFrontController extends HttpServlet {
      */
     private List<ServiceType> loadServicesFromDefaultLocation()
                             throws MalformedURLException {
-        File configurationDir = null;
+        File serviceConfigDir = null;
         try {
-            configurationDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH, getServletContext() ).toURI() );
+            serviceConfigDir = new File(
+                                         resolveFileLocation( DEFAULT_CONFIG_PATH + "/services", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
             LOG.error( e.getMessage(), e );
         }
         List<ServiceType> loadedServices = new ArrayList<ServiceType>();
-        if ( configurationDir == null || !configurationDir.isDirectory() ) {
-            LOG.error( "Could not read from the default configuration directory (" + DEFAULT_CONFIG_PATH
+        if ( serviceConfigDir == null || !serviceConfigDir.isDirectory() ) {
+            LOG.error( "Could not read from the default service configuration directory (" + DEFAULT_CONFIG_PATH
                        + ") because it is not a directory." );
             return loadedServices;
 
         }
-        LOG.info( "Using default directory: " + configurationDir.getAbsolutePath()
+        LOG.info( "Using default directory: " + serviceConfigDir.getAbsolutePath()
                   + " to scan for webservice configurations." );
-        File[] files = configurationDir.listFiles();
+        File[] files = serviceConfigDir.listFiles();
         if ( files == null || files.length == 0 ) {
             LOG.error( "No files found in default configuration directory, hence no services to load." );
             return loadedServices;
         }
         for ( File f : files ) {
-            if ( f.isDirectory() ) {
-                String tmp = f.getName();
-                if ( tmp != null && !"".equals( tmp.trim() ) ) {
-                    tmp = tmp.trim().toUpperCase();
-
+            if ( !f.isDirectory() ) {
+                String fileName = f.getName();
+                if ( fileName != null && !"".equals( fileName.trim() ) ) {
+                    String serviceName = fileName.trim().toUpperCase();
                     // to avoid the ugly warning we can afford this extra c(hack)
-                    if ( tmp.equals( ".SVN" ) ) {
+                    if ( serviceName.equals( ".SVN" ) || !serviceName.endsWith( ".XML" ) ) {
                         continue;
                     }
+                    serviceName = serviceName.substring( 0, fileName.length() - 4 );
 
                     AllowedServices as;
                     try {
-                        as = AllowedServices.fromValue( tmp );
+                        as = AllowedServices.fromValue( serviceName );
                     } catch ( IllegalArgumentException ex ) {
-                        LOG.warn( "The directory '"
-                                  + tmp
-                                  + "' found in the configuration directory is not a valid deegree webservice, so skipping it." );
+                        LOG.warn( "File '" + fileName + "' in the configuration directory "
+                                  + "is not a valid deegree webservice, so skipping it." );
                         continue;
                     }
-                    LOG.debug( "Trying to create a frontcontroller for service: " + tmp
+                    LOG.debug( "Trying to create a frontcontroller for service: " + fileName
                                + " found in the configuration directory." );
-                    final String allowedName = tmp + "_configuration.xml";
-                    File[] configFiles = f.listFiles( new FilenameFilter() {
-                        public boolean accept( File dir, String name ) {
-                            return allowedName.equalsIgnoreCase( name );
-                        }
-                    } );
-                    if ( configFiles == null || configFiles.length == 0 ) {
-                        LOG.warn( "The directory: " + f.getAbsolutePath() + ", does not contain a file : " + tmp
-                                  + "_configuration.xml, hence no service will be loaded from this location." );
-                    } else {
-                        ServiceType configuredService = new ServiceType();
-                        configuredService.setConfigurationLocation( configFiles[0].toURI().toURL().toString() );
-                        configuredService.setServiceName( as );
-                        loadedServices.add( configuredService );
-                    }
+                    ServiceType configuredService = new ServiceType();
+                    configuredService.setConfigurationLocation( f.toURI().toURL().toString() );
+                    configuredService.setServiceName( as );
+                    loadedServices.add( configuredService );
                 }
             }
 
