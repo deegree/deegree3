@@ -187,7 +187,7 @@ public class WCSController extends AbstractOGCServiceController {
         }
         if ( provider == null ) {
             if ( publishedInformation == null || publishedInformation.getServiceProvider() == null ) {
-                LOG.info( "Using gloval serviceProvider because no WCS specific service provider was defined." );
+                LOG.info( "Using global serviceProvider because no WCS specific service provider was defined." );
                 provider = mainControllerConf.getServiceProvider();
             } else {
                 provider = synchronizeServiceProviderWithMainControllerConf( publishedInformation.getServiceProvider() );
