@@ -32,7 +32,7 @@
       <Procedure xlink:href="urn:ogc:object:Sensor:latlon:salt_lake_city">
         <FeatureOfInterest
           xlink:href="http://testing.deegree.org/deegree-wfs/services?request=GetFeature&amp;service=WFS&amp;version=1.1.0&amp;featureid=ZI_263" />
-        <Sensor xlink:href="../../data/sos/utah-sensorml.xml" />
+        <Sensor xlink:href="../datasources/observation/utah-sensorml.xml" />
         <Option name="value" value="427598" />
         <Option name="long_lat_position" value="-111.969000000000193 40.778099999999959" />
       </Procedure>
