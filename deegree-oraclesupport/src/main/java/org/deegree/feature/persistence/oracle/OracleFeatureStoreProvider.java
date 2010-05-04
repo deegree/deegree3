@@ -44,13 +44,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.commons.configuration.GMLVersionType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.oracle.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.GMLSchemaFileURL;
 import org.deegree.feature.persistence.oracle.jaxb.OracleFeatureStoreConfig.NamespaceHint;
