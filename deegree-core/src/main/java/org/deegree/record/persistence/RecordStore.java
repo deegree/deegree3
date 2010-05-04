@@ -140,14 +140,11 @@ public interface RecordStore {
      *            writer to export to, must not be <code>null</code>
      * @param operations
      *            that are hold by this container
-     * @param opations
-     *            {@link TransactionOptions}
      * @return the number of successful transactions
      * @throws SQLException
      * @throws XMLStreamException
      */
-    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations,
-                                      TransactionOptions opations )
+    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations  )
                             throws SQLException, XMLStreamException;
 
     /**

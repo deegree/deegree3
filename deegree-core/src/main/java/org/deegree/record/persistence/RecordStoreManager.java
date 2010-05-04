@@ -110,25 +110,7 @@ public class RecordStoreManager {
         } catch ( JAXBException e ) {
             e.printStackTrace();
         }
-        return create( config, configURL.toString() );
-    }
-
-    /**
-     * Creates a {@link RecordStore} instance from the given configuration object.
-     * <p>
-     * If the configuration specifies an identifier, the instance is also registered as global {@link RecordStore}.
-     * </p>
-     * 
-     * @param config
-     *            configuration object
-     * 
-     * @return corresponding {@link RecordStore} instance
-     * @throws RecordStoreException
-     *             if the creation fails, e.g. due to a configuration error
-     */
-    public static synchronized RecordStore create( ISORecordStoreConfig jaxbConfig, String baseURL )
-                            throws RecordStoreException {
-        return new ISORecordStore( jaxbConfig.getConnId() );
+        return new ISORecordStore(config );
     }
 
     private static void registerAndInit( RecordStore rs, String id )

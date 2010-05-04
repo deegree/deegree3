@@ -99,11 +99,11 @@ import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.persistence.RecordStoreException;
 import org.deegree.record.persistence.RecordStoreOptions;
 import org.deegree.record.persistence.genericrecordstore.parsing.ISOQPParsing;
+import org.deegree.record.persistence.iso19115.jaxb.ISORecordStoreConfig;
 import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.RecordProperty;
 import org.deegree.record.publication.TransactionOperation;
-import org.deegree.record.publication.TransactionOptions;
 import org.deegree.record.publication.UpdateTransaction;
 import org.slf4j.Logger;
 
@@ -135,6 +135,10 @@ public class ISORecordStore implements RecordStore {
      */
     private String encoding;
 
+    private final boolean inspire;
+
+    private final boolean generateFileIds;
+
     /**
      * maps the specific returnable element format to a concrete table in the backend<br>
      * brief, summary, full
@@ -158,12 +162,14 @@ public class ISORecordStore implements RecordStore {
     }
 
     /**
-     * Creates a new {@link ISORecordStore} instance with a registered connectionId.
+     * Creates a new {@link ISORecordStore} instance from the given JAXB configuration object.
      * 
-     * @param _connectionId
+     * @param config
      */
-    public ISORecordStore( String _connectionId ) {
-        this.connectionId = _connectionId;
+    public ISORecordStore( ISORecordStoreConfig config ) {
+        this.connectionId = config.getConnId();
+        inspire = config.isRequireInspireCompliance() == null ? false : config.isRequireInspireCompliance();
+        generateFileIds = config.isGenerateFileIdentifiers() == null ? false : config.isGenerateFileIdentifiers();
     }
 
     /*
@@ -843,8 +849,7 @@ public class ISORecordStore implements RecordStore {
      */
 
     @Override
-    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations,
-                                      TransactionOptions options )
+    public List<Integer> transaction( XMLStreamWriter writer, TransactionOperation operations )
                             throws SQLException, XMLStreamException {
 
         List<Integer> affectedIds = new ArrayList<Integer>();
@@ -870,10 +875,11 @@ public class ISORecordStore implements RecordStore {
 
                     } else {
 
-                        executeStatements.executeInsertStatement( false, conn, affectedIds,
-                                                                  new ISOQPParsing().parseAPISO( element,
-                                                                                                 options.isInspire(),
-                                                                                                 conn ) );
+                        executeStatements.executeInsertStatement(
+                                                                  false,
+                                                                  conn,
+                                                                  affectedIds,
+                                                                  new ISOQPParsing().parseAPISO( element, inspire, conn ) );
 
                     }
 
@@ -912,8 +918,7 @@ public class ISORecordStore implements RecordStore {
                     } else {
                         executeStatements.executeUpdateStatement( conn, affectedIds,
                                                                   new ISOQPParsing().parseAPISO( upd.getElement(),
-                                                                                                 options.isInspire(),
-                                                                                                 conn ) );
+                                                                                                 inspire, conn ) );
 
                     }
 
@@ -1036,7 +1041,7 @@ public class ISORecordStore implements RecordStore {
                                                                                       affectedIds,
                                                                                       new ISOQPParsing().parseAPISO(
                                                                                                                      omElement,
-                                                                                                                     options.isInspire(),
+                                                                                                                     inspire,
                                                                                                                      conn ) );
 
                                         }
