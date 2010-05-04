@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,17 +32,21 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
 import org.apache.axiom.om.util.Base64;
-import org.deegree.commons.configuration.ProxyConfiguration;
+import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.slf4j.Logger;
 
 /**
@@ -53,10 +57,10 @@ import org.slf4j.Logger;
  * etc.) that determines the behaviour of network-related classes (e.g. in <code>java.net</code>). This makes sense, as
  * the proxy configuration is usually defined by the network environment of the physical machine.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public final class ProxyUtils {
@@ -95,7 +99,27 @@ public final class ProxyUtils {
 
     /**
      * Sets/augments the VM's proxy configuration.
-     *
+     * 
+     * @param proxyConfigFile
+     */
+    public synchronized static void setupProxyParameters( File proxyConfigFile ) throws IllegalArgumentException {
+        try {
+            String contextName = "org.deegree.commons.proxy.jaxb";
+            JAXBContext jc = JAXBContext.newInstance( contextName );
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            ProxyConfiguration proxyConfig = (ProxyConfiguration) unmarshaller.unmarshal( proxyConfigFile );
+            if ( proxyConfig != null ) {
+                setupProxyParameters( proxyConfig );
+            }
+        } catch ( Exception e ) {
+            String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
+            throw new IllegalArgumentException (msg, e);
+        }
+    }
+
+    /**
+     * Sets/augments the VM's proxy configuration.
+     * 
      * @param config
      */
     public synchronized static void setupProxyParameters( ProxyConfiguration config ) {
@@ -124,7 +148,7 @@ public final class ProxyUtils {
 
     /**
      * Sets/augments the VM's proxy configuration.
-     *
+     * 
      * @param proxyHost
      * @param httpProxyHost
      * @param ftpProxyHost
@@ -227,7 +251,7 @@ public final class ProxyUtils {
     /**
      * This method should be used everywhere instead of <code>URL.openConnection()</code>, as it copes with proxies that
      * require user authentication.
-     *
+     * 
      * @param url
      * @param user
      * @param pass

@@ -44,7 +44,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.commons.configuration.GMLVersionType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
@@ -53,6 +52,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.FeatureStoreTransaction.IDGenMode;
+import org.deegree.feature.persistence.memory.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLFeatureCollectionFileURL;
 import org.deegree.feature.persistence.memory.jaxb.MemoryFeatureStoreConfig.GMLSchemaFileURL;

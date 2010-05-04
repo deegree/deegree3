@@ -63,7 +63,6 @@ import java.util.TreeSet;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -122,7 +121,7 @@ public class CRSExporter extends CRSExporterBase {
                 String pass = properties.getProperty( "DB_PASSWORD" );
                 String con = properties.getProperty( "DB_CONNECTION" );
                 db_id = "epsg_db_id";
-                ConnectionManager.addConnection( db_id, DatabaseType.POSTGIS, con, user, pass, 1, 10 );
+                ConnectionManager.addConnection( db_id, con, user, pass, 1, 10 );
             } else {
                 db_id = null;
             }

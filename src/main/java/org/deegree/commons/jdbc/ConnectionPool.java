@@ -48,7 +48,6 @@ import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.slf4j.Logger;
 
@@ -67,8 +66,6 @@ class ConnectionPool {
 
     private final String id;
 
-    private final DatabaseType type;
-
     private final DataSource ds;
 
     private final GenericObjectPool pool;
@@ -77,18 +74,15 @@ class ConnectionPool {
      * Creates a new {@link ConnectionPool} instance.
      * 
      * @param id
-     * @param type
      * @param connectURI
      * @param user
      * @param password
      * @param minIdle
      * @param maxActive
      */
-    ConnectionPool( String id, DatabaseType type, String connectURI, String user, String password, int minIdle,
-                    int maxActive ) {
+    ConnectionPool( String id, String connectURI, String user, String password, int minIdle, int maxActive ) {
 
         this.id = id;
-        this.type = type;
         pool = new GenericObjectPool( null );
         pool.setMinIdle( minIdle );
         pool.setMaxActive( maxActive );
@@ -96,7 +90,8 @@ class ConnectionPool {
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory( connectURI, user, password );
         new PoolableConnectionFactory( connectionFactory, pool, null, null, false, true );
         ds = new PoolingDataSource( pool );
-        // needed, so users can retrieve the underlying connection from pooled connections, e.g. to access the
+        // needed, so users can retrieve the underlying connection from pooled
+        // connections, e.g. to access the
         // LargeObjectManager from a PGConnection
         ( (PoolingDataSource) ds ).setAccessToUnderlyingConnectionAllowed( true );
     }
@@ -112,14 +107,5 @@ class ConnectionPool {
         LOG.debug( "For connection id '{}': active connections: {}, idle connections: {}",
                    new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
         return ds.getConnection();
-    }
-
-    /**
-     * Returns the type of database.
-     * 
-     * @return the type of database
-     */
-    DatabaseType getType() {
-        return type;
     }
 }

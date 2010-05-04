@@ -3,8 +3,8 @@
   This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
 -->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://www.deegree.org/commons" xmlns="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/datasource/feature/shape" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  targetNamespace="http://www.deegree.org/datasource/feature/shape" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
   <annotation>
     <appinfo>
       <jaxb:schemaBindings>
