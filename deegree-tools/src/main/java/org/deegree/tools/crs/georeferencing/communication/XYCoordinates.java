@@ -33,48 +33,80 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing;
+package org.deegree.tools.crs.georeferencing.communication;
 
-import javax.vecmath.Point2d;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JPanel;
 
 /**
+ * 
  * TODO add class documentation here
  * 
- * @author <a href="mailto:thomas@deegree.org">Steffen Thomas</a>
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class MouseModel {
+class XYCoordinates extends JPanel {
 
-    private Point2d pointMousePressed;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-    private Point2d mouseChanging;
+    private int xValue = 0;
 
-    private Point2d cumulatedMouseChanging = new Point2d( 0.0, 0.0 );
+    private int yValue = 0;
 
-    public Point2d getPointMousePressed() {
-        return pointMousePressed;
+    private final Insets insets = new Insets( 10, 10, 0, 0 );
+
+    private BufferedImage image;
+
+    /**
+     * 
+     */
+    public XYCoordinates() {
+        // TODO Auto-generated constructor stub
     }
 
-    public void setPointMousePressed( Point2d pointMousePressed ) {
-        this.pointMousePressed = pointMousePressed;
+    @Override
+    protected void paintComponent( Graphics g ) {
+
+        super.paintComponent( g );
+        g.drawOval( xValue, yValue, 30, 60 );
+
     }
 
-    public Point2d getMouseChanging() {
-        return mouseChanging;
+    public int getXValue() {
+        return xValue;
     }
 
-    public void setMouseChanging( Point2d mouseChanging ) {
-        this.mouseChanging = mouseChanging;
+    public int getYValue() {
+        return yValue;
     }
 
-    public Point2d getCumulatedMouseChanging() {
-        return cumulatedMouseChanging;
+    public void setXValue( int x ) {
+        xValue = x;
     }
 
-    public void setCumulatedMouseChanging( Point2d cumulatedMouseChanging ) {
-        this.cumulatedMouseChanging = cumulatedMouseChanging;
+    public void setYValue( int y ) {
+        yValue = y;
+    }
+
+    @Override
+    public Insets getInsets() {
+        return insets;
+    }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public void setImage( BufferedImage image ) {
+        this.image = image;
     }
 
 }

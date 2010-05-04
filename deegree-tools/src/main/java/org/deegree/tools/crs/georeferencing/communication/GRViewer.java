@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL$$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,80 +33,40 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing;
 
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.image.BufferedImage;
+package org.deegree.tools.crs.georeferencing.communication;
 
-import javax.swing.JPanel;
+import java.io.IOException;
+
+import org.deegree.tools.crs.georeferencing.application.Controller;
+import org.deegree.tools.crs.georeferencing.model.Scene2D;
+import org.deegree.tools.crs.georeferencing.model.Scene2DImplWMS;
 
 /**
  * 
- * TODO add class documentation here
+ * Main class that calls all the relevant objects to build the georeferencing viewer.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-class XYCoordinates extends JPanel {
+public class GRViewer {
 
     /**
-     * 
+     * @param args
+     * @throws IOException
      */
-    private static final long serialVersionUID = 1L;
+    public static void main( String[] args )
+                            throws IOException {
+        GRViewerGUI gui = new GRViewerGUI();
 
-    private int xValue = 0;
+        Scene2D scene2d = new Scene2DImplWMS();
 
-    private int yValue = 0;
+        new Controller( gui, scene2d );
 
-    private final Insets insets = new Insets( 10, 10, 0, 0 );
+        gui.setVisible( true );
 
-    private BufferedImage image;
-
-    /**
-     * 
-     */
-    public XYCoordinates() {
-        // TODO Auto-generated constructor stub
-    }
-
-    @Override
-    protected void paintComponent( Graphics g ) {
-
-        super.paintComponent( g );
-        g.drawOval( xValue, yValue, 30, 60 );
-
-    }
-
-    public int getXValue() {
-        return xValue;
-    }
-
-    public int getYValue() {
-        return yValue;
-    }
-
-    public void setXValue( int x ) {
-        xValue = x;
-    }
-
-    public void setYValue( int y ) {
-        yValue = y;
-    }
-
-    @Override
-    public Insets getInsets() {
-        return insets;
-    }
-
-    public BufferedImage getImage() {
-        return image;
-    }
-
-    public void setImage( BufferedImage image ) {
-        this.image = image;
     }
 
 }

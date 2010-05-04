@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing;
+package org.deegree.tools.crs.georeferencing.application;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,27 +44,32 @@ import java.net.URL;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.tools.crs.georeferencing.communication.GRViewerGUI;
+import org.deegree.tools.crs.georeferencing.communication.Scene2DPanel;
+import org.deegree.tools.crs.georeferencing.model.MouseModel;
+import org.deegree.tools.crs.georeferencing.model.Scene2D;
+
 /**
- * TODO add class documentation here
+ * The <Code>Controller</Code> is responsible to bind the view with the model.
  * 
- * @author <a href="mailto:thomas@deegree.org">Steffen Thomas</a>
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
 public class Controller {
 
-    private GUItest view;
+    private GRViewerGUI view;
 
     private Scene2D model;
 
-    private Scene2DPaneltest panel;
+    private Scene2DPanel panel;
 
     private MouseModel mouse;
 
     private URL scene2DUrl;
 
-    public Controller( GUItest view, Scene2D model ) {
+    public Controller( GRViewerGUI view, Scene2D model ) {
         this.view = view;
         this.model = model;
         panel = view.getScenePanel2D();
@@ -128,9 +133,9 @@ public class Controller {
 
         @Override
         public void mouseReleased( MouseEvent m ) {
-            Point2d mousePressed = new Point2d( mouse.getPointMousePressed().getX(),
-                                                mouse.getPointMousePressed().getY() );
-            mouse.setMouseChanging( new Point2d( ( mousePressed.getX() - m.getX() ), ( mousePressed.getY() - m.getY() ) ) );
+
+            mouse.setMouseChanging( new Point2d( ( mouse.getPointMousePressed().getX() - m.getX() ),
+                                                 ( mouse.getPointMousePressed().getY() - m.getY() ) ) );
             System.out.println( "MouseChanging: " + mouse.getMouseChanging() );
 
             mouse.setCumulatedMouseChanging( new Point2d( mouse.getCumulatedMouseChanging().getX()
@@ -176,6 +181,7 @@ public class Controller {
                     System.out.println( "went NORTH" );
 
                 }
+                mouse.reset();
                 System.out.println( "my new Point2D after: " + updateDrawImageAtPosition );
                 model.setImageBoundingbox( updateDrawImageAtPosition );
                 panel.setImageToDraw( model.generateImage( panel.getBounds() ) );

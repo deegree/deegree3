@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing;
+package org.deegree.tools.crs.georeferencing.communication;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -44,14 +44,14 @@ import javax.swing.JPanel;
 import javax.vecmath.Point2d;
 
 /**
- * TODO add class documentation here
+ * The JPanel that should display a BufferedImage.
  * 
- * @author <a href="mailto:thomas@deegree.org">Steffen Thomas</a>
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Scene2DPaneltest extends JPanel {
+public class Scene2DPanel extends JPanel {
 
     BufferedImage imageToDraw;
 

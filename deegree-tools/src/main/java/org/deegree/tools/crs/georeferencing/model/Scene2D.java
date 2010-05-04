@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing;
+package org.deegree.tools.crs.georeferencing.model;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;

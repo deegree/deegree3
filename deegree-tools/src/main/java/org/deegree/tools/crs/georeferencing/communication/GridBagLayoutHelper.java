@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing;
+package org.deegree.tools.crs.georeferencing.communication;
 
 import java.awt.Component;
 import java.awt.Container;

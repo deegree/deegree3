@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.tools.crs.georeferencing;
+package org.deegree.tools.crs.georeferencing.model;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -50,14 +50,15 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.client.WMSClient111;
 
 /**
- * TODO add class documentation here
  * 
- * @author <a href="mailto:thomas@deegree.org">Steffen Thomas</a>
+ * Generates a 2D BufferedImage from a WMS request.
+ * 
+ * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class Scene2DImplWMStest implements Scene2D {
+public class Scene2DImplWMS implements Scene2D {
 
     private WMSClient111 wmsClient;
 
@@ -69,10 +70,6 @@ public class Scene2DImplWMStest implements Scene2D {
 
     private Envelope imageBoundingbox;
 
-    private Point2d imageWithMargin;
-
-    private Rectangle sceneBounds;
-
     private Point2d onePixel;
 
     private GeometryFactory geometryFactory;
@@ -80,10 +77,6 @@ public class Scene2DImplWMStest implements Scene2D {
     private BufferedImage requestedImage;
 
     private URL imageRequestUrl;
-
-    public Scene2DImplWMStest() {
-        // generateImage( imageRequestUrl, sceneBounds );
-    }
 
     /**
      * The GetMap()-request to a WMSClient.
@@ -100,19 +93,12 @@ public class Scene2DImplWMStest implements Scene2D {
                                        double maxY ) {
         BufferedImage image = null;
 
-        // System.out.println( panelWidth + " = (" + minX + ", " + maxX + ") -> " + ( maxX - minX ) );
-        // System.out.println( panelHeight + " = (" + minY + ", " + maxY + ") -> " + ( maxY - minY ) );
-
         try {
             image = wmsClient.getMap( lays, (int) panelWidth, (int) panelHeight, imageBoundingbox, srs,
                                       formatList.get( 0 ), true, false, 20, false, null ).first;
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        // this.imageWithMargin = new Point2d( ( panelWidth + ( panelWidth * 0.1 / 2 ) ),
-        // ( panelHeight + ( panelHeight * 0.1 / 2 ) ) );
 
         return image;
     }
@@ -146,7 +132,6 @@ public class Scene2DImplWMStest implements Scene2D {
 
     @Override
     public BufferedImage generateImage( Rectangle sceneBounds ) {
-        this.sceneBounds = sceneBounds;
 
         int proportion = determineProportion( sceneBounds );
         geometryFactory = new GeometryFactory();
@@ -180,7 +165,7 @@ public class Scene2DImplWMStest implements Scene2D {
             imageBoundingbox = geometryFactory.createEnvelope( minX, minY, minX, ( minX + newHeight ), srs );
 
         }
-        onePixel = transformToOnePixel( sceneBounds, imageBoundingbox );
+        onePixel = normalizeImageBoundingbox( sceneBounds, imageBoundingbox );
         formatList = Collections.singletonList( "image/jpeg" );
 
         requestedImage = generateMap( panelWidth, panelHeight, minX, maxX, minY, maxY );
@@ -198,7 +183,7 @@ public class Scene2DImplWMStest implements Scene2D {
      *            the boundingbox, not <Code>null</Code>
      * @return a point, not <Code>null</Code>
      */
-    private Point2d transformToOnePixel( Rectangle panelBounds, Envelope bbox ) {
+    private Point2d normalizeImageBoundingbox( Rectangle panelBounds, Envelope bbox ) {
 
         double w = panelBounds.getWidth();
         double h = panelBounds.getHeight();
@@ -210,20 +195,9 @@ public class Scene2DImplWMStest implements Scene2D {
         return new Point2d( oneX, oneY );
     }
 
-    public Point2d getOnePixel() {
-        return onePixel;
-    }
-
-    public URL getImageRequestUrl() {
-        return imageRequestUrl;
-    }
-
+    @Override
     public void setImageUrl( URL imageRequestUrl ) {
         this.imageRequestUrl = imageRequestUrl;
-    }
-
-    public Envelope getImageBoundingbox() {
-        return imageBoundingbox;
     }
 
     @Override
@@ -239,8 +213,7 @@ public class Scene2DImplWMStest implements Scene2D {
         System.out.println( "  start: " + envStartPosX + ", " + envStartPosY + " end: " + envEndPosX + ", "
                             + envEndPosY );
 
-        imageBoundingbox = new GeometryFactory().createEnvelope( envStartPosX, envStartPosY, envEndPosX, envEndPosY,
-                                                                 srs );
+        imageBoundingbox = geometryFactory.createEnvelope( envStartPosX, envStartPosY, envEndPosX, envEndPosY, srs );
 
     }
 
