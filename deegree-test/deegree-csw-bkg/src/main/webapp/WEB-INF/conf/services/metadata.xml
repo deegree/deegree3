@@ -6,20 +6,22 @@
     responses.
   -->
   <ServiceIdentification>
-    <Title>deegree 3 demo services</Title>
-    <Title>You may supply more than one title (as in OWS 1.1.0)</Title>
-    <Abstract>This is the default deegree 3 service configuration. Change it as you like!</Abstract>
-    <Abstract>More abstracts are possible (as in OWS 1.1.0)</Abstract>
+    <Title>The deegree CSW</Title>
+    <Abstract>A web service used for delivering Catalogue information</Abstract>
+    <Keywords>
+      <Keyword>No validating schemas</Keyword>
+      <Keyword>Using deegree3 Catalogue API</Keyword>
+      <Keyword>Fast</Keyword>
+    </Keywords>
     <Fees>None, it's free</Fees>
-    <AccessConstraints>None.</AccessConstraints>
-    <AccessConstraints>24x7</AccessConstraints>
+    <AccessConstraints>Open to all</AccessConstraints>
   </ServiceIdentification>
   <ServiceProvider>
     <ProviderName>lat-lon GmbH</ProviderName>
     <ProviderSite>http://www.lat-lon.de</ProviderSite>
     <ServiceContact>
-      <IndividualName>Markus Schneider</IndividualName>
-      <PositionName>Technical Director</PositionName>
+      <IndividualName>Steffen Thomas</IndividualName>
+      <PositionName>deegree core developer</PositionName>
       <Phone>0228/18496-0</Phone>
       <Facsimile>0228/18496-29</Facsimile>
       <ElectronicMailAddress>info@lat-lon.de
@@ -48,10 +50,4 @@
       <HTTPPost>http://localhost:8080/deegree/services</HTTPPost> <SOAP>http://localhost:8080/deegree/services</SOAP>
     -->
   </DCP>
-   <AuthenticationMethod>
-    <!--<HttpBasicAuthentication/> 
-     <DeegreeAuthentication/>--> 
-    <SOAPAuthentication/>
-  </AuthenticationMethod>
-
 </deegreeServicesMetadata>
