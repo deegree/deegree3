@@ -13,6 +13,11 @@
     </appinfo>
   </annotation>
   <element name="ISORecordStore">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="ISORecordStoreConfig" />
+      </appinfo>
+    </annotation>
     <complexType>
       <attribute name="connId" type="string" use="required" />
     </complexType>

@@ -43,16 +43,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.commons.datasource.configuration.ISORecordStoreType;
-import org.deegree.commons.datasource.configuration.RecordStoreType;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.record.persistence.genericrecordstore.ISORecordStore;
+import org.deegree.record.persistence.iso19115.jaxb.ISORecordStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +87,7 @@ public class RecordStoreManager {
     public static Map<String, RecordStore> getAll() {
         return idToRs;
     }
-    
+
     /**
      * Returns an initialized {@link RecordStore} instance from the RecordStore configuration document.
      * 
@@ -105,11 +102,11 @@ public class RecordStoreManager {
     public static synchronized RecordStore create( URL configURL )
                             throws RecordStoreException {
 
-        RecordStoreType config = null;
+        ISORecordStoreConfig config = null;
         try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.datasource.configuration" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.record.persistence.iso19115.jaxb" );
             Unmarshaller u = jc.createUnmarshaller();
-            config = ( (JAXBElement<RecordStoreType>) u.unmarshal( configURL ) ).getValue();
+            config = (ISORecordStoreConfig) u.unmarshal( configURL );
         } catch ( JAXBException e ) {
             e.printStackTrace();
         }
@@ -129,24 +126,9 @@ public class RecordStoreManager {
      * @throws RecordStoreException
      *             if the creation fails, e.g. due to a configuration error
      */
-    public static synchronized RecordStore create( RecordStoreType jaxbConfig, String baseURL )
+    public static synchronized RecordStore create( ISORecordStoreConfig jaxbConfig, String baseURL )
                             throws RecordStoreException {
-        RecordStore rs = null;
-        XMLAdapter resolver = new XMLAdapter();
-        resolver.setSystemId( baseURL );
-
-        String id = jaxbConfig.getDataSourceName();
-
-        if ( jaxbConfig instanceof ISORecordStoreType ) {
-            rs = new ISORecordStore( ( (ISORecordStoreType) jaxbConfig ).getConnId() );
-
-        } else {
-            String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", jaxbConfig.getClass() );
-            throw new RecordStoreException( msg );
-        }
-
-        registerAndInit( rs, id );
-        return rs;
+        return new ISORecordStore( jaxbConfig.getConnId() );
     }
 
     private static void registerAndInit( RecordStore rs, String id )
@@ -182,7 +164,7 @@ public class RecordStoreManager {
             LOG.info( "Setting up record store '" + rsId + "' from file '" + fileName + "'..." + "" );
             try {
                 RecordStore rs = create( rsConfigFile.toURI().toURL() );
-                idToRs.put( rsId, rs );
+                registerAndInit( rs, rsId );
             } catch ( Exception e ) {
                 LOG.error( "Error initializing feature store: " + e.getMessage(), e );
             }

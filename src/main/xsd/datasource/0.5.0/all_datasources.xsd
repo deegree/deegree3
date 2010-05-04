@@ -15,6 +15,5 @@
   <include schemaLocation="db_datasource.xsd" />
   <include schemaLocation="wms_datasource.xsd" />
   <include schemaLocation="dgm_datasource.xsd" />
-  <include schemaLocation="raster_datasource.xsd" />
-  <include schemaLocation="record_datastores.xsd" /> 
+  <include schemaLocation="raster_datasource.xsd" /> 
 </schema>
