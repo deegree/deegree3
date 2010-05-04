@@ -63,10 +63,6 @@ public class CSWService {
 
     private final Set<RecordStore> recordStore = new HashSet<RecordStore>();
 
-    private boolean inspire;
-
-    private boolean fileIdentifierAvailable;
-
     private static final Logger LOG = LoggerFactory.getLogger( CSWService.class );
 
     /**
@@ -82,26 +78,6 @@ public class CSWService {
 
         for (RecordStore rs : RecordStoreManager.getAll().values()) {
             addToStore( rs );
-        }
-
-        /*
-         * If the flag Inspire is set up
-         */
-        if ( sc.isInspire() == null ) {
-            sc.setInspire( false );
-            this.inspire = sc.isInspire();
-        } else {
-            this.inspire = sc.isInspire();
-        }
-
-        /*
-         * If there is no need for a fileIdentifier. ISO defines [0..1]; DC defines [1..*]
-         */
-        if ( sc.isFileIdentifierAvailable() == null ) {
-            sc.setFileIdentifierAvailable( false );
-            this.fileIdentifierAvailable = sc.isFileIdentifierAvailable();
-        } else {
-            this.fileIdentifierAvailable = sc.isFileIdentifierAvailable();
         }
     }
 
@@ -166,7 +142,6 @@ public class CSWService {
                 }
             }
         }
-
         return null;
     }
 
@@ -177,27 +152,4 @@ public class CSWService {
     public Set<RecordStore> getRecordStore() {
         return recordStore;
     }
-
-    /**
-     * 
-     * If the record should correspond to the INSPIRE Technical Guideline (MD_IR_and_ISO_20090218) which is mandatory in
-     * Europe, this parameter is set to "true". <br>
-     * Otherwise it is set to "false" which should be configured in the configuration-file explicitly.
-     * 
-     * @return the inspire
-     */
-    public boolean isInspire() {
-        return inspire;
-    }
-
-    /**
-     * If this is TRUE then a "fileIdentifier" should be set in the catalog record. <br>
-     * else the CSW is responsible to generate one.
-     * 
-     * @return true or false
-     */
-    public boolean isFileIdentifierAvailable() {
-        return fileIdentifierAvailable;
-    }
-
 }

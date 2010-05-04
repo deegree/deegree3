@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:csw="http://www.deegree.org/services/csw" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/csw" elementFormDefault="qualified"
+<schema xmlns:csw="http://www.deegree.org/services/csw"
+  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/csw" elementFormDefault="qualified"
   attributeFormDefault="unqualified" xmlns:md="http://www.deegree.org/webservices">
-  <xs:import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.5.0/services_metadata.xsd" />
-  <xs:element name="PublishedInformation">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="md:ServiceIdentification" minOccurs="0" />
-        <xs:element ref="md:ServiceProvider" minOccurs="0" />
-        <xs:element name="AcceptVersions" minOccurs="0">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="Version" type="xs:string" maxOccurs="unbounded" />
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="AcceptFormats" minOccurs="0">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="OutputFormat" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-</xs:schema>
+  <element name="PublishedInformation">
+    <complexType>
+      <sequence>
+        <element name="AcceptVersions" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="Version" type="string" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>

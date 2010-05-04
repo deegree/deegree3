@@ -59,7 +59,6 @@ import org.deegree.record.persistence.RecordStore;
 import org.deegree.record.publication.DeleteTransaction;
 import org.deegree.record.publication.InsertTransaction;
 import org.deegree.record.publication.TransactionOperation;
-import org.deegree.record.publication.TransactionOptions;
 import org.deegree.record.publication.UpdateTransaction;
 import org.deegree.services.controller.csw.transaction.Transaction;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -160,8 +159,6 @@ public class TransactionHandler {
     private void export202( XMLStreamWriter writer, Transaction transaction, boolean isSoap )
                             throws XMLStreamException, SQLException {
         Version version = new Version( 2, 0, 2 );
-        TransactionOptions transOptions = new TransactionOptions( service.isInspire(),
-                                                                  service.isFileIdentifierAvailable() );
 
         requestedTypeNames = new HashMap<QName, RecordStore>();
         InsertTransaction insert = null;
@@ -208,7 +205,7 @@ public class TransactionHandler {
 
                 for ( RecordStore rec : requestedTypeNames.values() ) {
 
-                    transactionIds.addAll( rec.transaction( writer, insert, transOptions ) );
+                    transactionIds.addAll( rec.transaction( writer, insert ) );
                 }
 
                 it = transactionIds.listIterator();
@@ -236,7 +233,7 @@ public class TransactionHandler {
                                                                                update.getElement().getNamespace().getPrefix() ) ) );
 
                     for ( RecordStore rec : requestedTypeNames.values() ) {
-                        transactionIds.addAll( rec.transaction( writer, update, transOptions ) );
+                        transactionIds.addAll( rec.transaction( writer, update ) );
 
                     }
                 } else {
@@ -246,7 +243,7 @@ public class TransactionHandler {
                      */
                     for ( RecordStore rec : service.getRecordStore() ) {
 
-                        transactionIds.addAll( rec.transaction( writer, update, transOptions ) );
+                        transactionIds.addAll( rec.transaction( writer, update ) );
 
                     }
 
@@ -266,7 +263,7 @@ public class TransactionHandler {
                  * here all the registered recordStores are queried
                  */
                 for ( RecordStore rec : service.getRecordStore() ) {
-                    transactionIds.addAll( rec.transaction( writer, delete, transOptions ) );
+                    transactionIds.addAll( rec.transaction( writer, delete ) );
 
                 }
                 it = transactionIds.listIterator();

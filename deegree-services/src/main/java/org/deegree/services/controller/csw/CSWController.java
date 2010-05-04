@@ -113,8 +113,6 @@ import org.deegree.services.csw.CSWService;
 import org.deegree.services.jaxb.csw.PublishedInformation;
 import org.deegree.services.jaxb.csw.ServiceConfiguration;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,10 +140,6 @@ import org.slf4j.LoggerFactory;
 public class CSWController extends AbstractOGCServiceController {
 
     private static final Logger LOG = LoggerFactory.getLogger( CSWController.class );
-
-    private ServiceIdentificationType identification;
-
-    private ServiceProviderType provider;
 
     private CSWService service;
 
@@ -201,7 +195,6 @@ public class CSWController extends AbstractOGCServiceController {
             xpath = new XPath( "csw:PublishedInformation", nsContext );
             OMElement piElement = controllerConf.getRequiredElement( controllerConf.getRootElement(), xpath );
             pi = (PublishedInformation) u.unmarshal( piElement.getXMLStreamReaderWithoutCaching() );
-            syncWithMainController( pi );
 
             service = new CSWService( sc, controllerConf.getSystemId() );
 
@@ -591,8 +584,8 @@ public class CSWController extends AbstractOGCServiceController {
         response.setContentType( "text/xml; charset=UTF-8" );
 
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, null );
-        GetCapabilitiesHandler.export( xmlWriter, mainControllerConf, sections, identification, negotiatedVersion,
-                                       isSoap );
+        GetCapabilitiesHandler.export( xmlWriter, mainControllerConf, sections,
+                                       mainControllerConf.getServiceIdentification(), negotiatedVersion, isSoap );
         xmlWriter.flush();
 
     }
@@ -648,32 +641,6 @@ public class CSWController extends AbstractOGCServiceController {
             }
         }
         return result;
-    }
-
-    /**
-     * sets the identification to the main controller or it will be synchronized with the maincontroller.
-     * 
-     * @param publishedInformation
-     */
-    private void syncWithMainController( PublishedInformation publishedInformation ) {
-        if ( identification == null ) {
-            if ( publishedInformation == null || publishedInformation.getServiceIdentification() == null ) {
-                LOG.info( "Using global service identification because no CSW specific service identification was defined." );
-                identification = mainControllerConf.getServiceIdentification();
-            } else {
-                identification = synchronizeServiceIdentificationWithMainController( publishedInformation.getServiceIdentification() );
-            }
-        }
-        if ( provider == null ) {
-            if ( publishedInformation == null || publishedInformation.getServiceProvider() == null ) {
-                LOG.info( "Using gloval serviceProvider because no CSW specific service provider was defined." );
-                provider = mainControllerConf.getServiceProvider();
-            } else {
-                provider = synchronizeServiceProviderWithMainControllerConf( publishedInformation.getServiceProvider() );
-            }
-
-        }
-
     }
 
     /**
