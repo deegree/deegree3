@@ -19,6 +19,10 @@
       </appinfo>
     </annotation>
     <complexType>
+      <sequence>
+        <element name="RequireInspireCompliance" minOccurs="0" type="boolean"/>
+        <element name="GenerateFileIdentifiers" minOccurs="0" type="boolean"/>
+      </sequence>
       <attribute name="connId" type="string" use="required" />
     </complexType>
   </element>
