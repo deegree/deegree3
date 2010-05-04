@@ -35,14 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.controller;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.util.Map;
-
-import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.model.FormField;
-import org.slf4j.Logger;
+import java.util.UUID;
 
 /**
  * TODO add class documentation here
@@ -52,16 +45,10 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DatasetWriter extends FormElementWriter {
+public class Utils {
 
-    private static final Logger LOG = getLogger( DatasetWriter.class );
-
-    public static void writeElements( Map<String, FormField> elements ) {
-        LOG.debug( "Start writing the " + elements.size() + " values." );
-
-        // TODO
-        String title = "title";
-        File file = new File( Configuration.getFilesDirURL(), title + ".xml" );
-        writeElements( elements.values(), file );
+    static String getInstanceId() {
+        return UUID.randomUUID().toString();
     }
+
 }

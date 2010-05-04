@@ -33,15 +33,15 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.controller;
+package org.deegree.client.mdeditor.gui.listener;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.File;
-import java.util.Map;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.AjaxBehaviorListener;
 
-import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.model.FormField;
+import org.deegree.client.mdeditor.controller.FormGroupWriter;
 import org.slf4j.Logger;
 
 /**
@@ -52,16 +52,15 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DatasetWriter extends FormElementWriter {
+public class FormGroupSubmitListener implements AjaxBehaviorListener {
 
-    private static final Logger LOG = getLogger( DatasetWriter.class );
+    private static final Logger LOG = getLogger( FormGroupSubmitListener.class );
 
-    public static void writeElements( Map<String, FormField> elements ) {
-        LOG.debug( "Start writing the " + elements.size() + " values." );
-
-        // TODO
-        String title = "title";
-        File file = new File( Configuration.getFilesDirURL(), title + ".xml" );
-        writeElements( elements.values(), file );
+    @Override
+    public void processAjaxBehavior( AjaxBehaviorEvent arg0 )
+                            throws AbortProcessingException {
+        LOG.debug( "Save FormGroup" );
+        FormGroupWriter.writeFormGroup( arg0 );
     }
+
 }

@@ -56,6 +56,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.component.UIParameter;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.behavior.AjaxBehavior;
+import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlPanelGrid;
@@ -66,8 +67,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 
-import org.deegree.client.mdeditor.config.FormConfigurationParser;
+import org.deegree.client.mdeditor.CodeListManager;
+import org.deegree.client.mdeditor.FormElementManager;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
+import org.deegree.client.mdeditor.gui.listener.FormGroupSubmitListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
 import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormElement;
@@ -110,7 +113,7 @@ public class FormCreatorBean implements Serializable {
             if ( forms.containsKey( grpId ) ) {
                 form.getChildren().add( forms.get( grpId ) );
             } else if ( grpId != null ) {
-                FormGroup fg = FormConfigurationParser.getFormGroup( grpId );
+                FormGroup fg = FormElementManager.getFormGroup( grpId );
                 if ( fg != null ) {
                     HtmlPanelGrid grid = new HtmlPanelGrid();
                     grid.setId( Utils.getUniqueId() );
@@ -146,6 +149,21 @@ public class FormCreatorBean implements Serializable {
             } else {
                 addFormField( grid, (FormField) fe );
             }
+        }
+        if ( fg.isReferenced() ) {
+            HtmlCommandButton button = new HtmlCommandButton();
+            button.setId( fg.getId() );
+            button.setValue( "Speichern" );
+            AjaxBehavior ajaxBt = new AjaxBehavior();
+            List<String> renderBt = new ArrayList<String>();
+            renderBt.add( "@none" );
+            ajaxBt.setRender( renderBt );
+            ajaxBt.addAjaxBehaviorListener( new FormGroupSubmitListener() );
+            button.addClientBehavior( button.getDefaultEventName(), ajaxBt );
+            grid.getChildren().add( new HtmlPanelGroup() );
+            grid.getChildren().add( button );
+            grid.getChildren().add( new HtmlPanelGroup() );
+
         }
         parentGrid.getChildren().add( grid );
     }
@@ -190,6 +208,7 @@ public class FormCreatorBean implements Serializable {
                     addCodeListItems( selectManyMenu, se.getReferenceToCodeList() );
                 }
 
+
                 parentGrid.getChildren().add( selectManyMenu );
             } else {
                 HtmlSelectOneMenu selectOneMenu = new HtmlSelectOneMenu();
@@ -202,7 +221,7 @@ public class FormCreatorBean implements Serializable {
                 if ( se.getReferenceToCodeList() != null ) {
                     addCodeListItems( selectOneMenu, se.getReferenceToCodeList() );
                 }
-
+                
                 setVisibility( se, selectOneMenu, ef, elContext );
 
                 parentGrid.getChildren().add( selectOneMenu );
@@ -232,7 +251,7 @@ public class FormCreatorBean implements Serializable {
     }
 
     private void addCodeListItems( UIInput select, String codeListRef ) {
-        CodeList codeList = FormConfigurationParser.getCodeList( codeListRef );
+        CodeList codeList = CodeListManager.getCodeList( codeListRef );
         if ( codeList != null ) {
             for ( String value : codeList.getCodes().keySet() ) {
                 UISelectItem si = new UISelectItem();

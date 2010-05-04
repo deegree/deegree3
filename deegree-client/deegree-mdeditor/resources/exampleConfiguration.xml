@@ -16,7 +16,12 @@
             <label>Hierarchieebene:</label>
             <selectType>many</selectType>
             <referenceToCodeList>countries</referenceToCodeList>
-                <selectedValue>spain, greek</selectedValue>
+            <selectedValue>spain, greek</selectedValue>
+        </SelectFormElement>
+        <SelectFormElement id="selectOneK" visible="true">
+            <label>Kontakt:</label>
+            <selectType>one</selectType>
+            <referenceToGroup>KontaktFormGroup</referenceToGroup>
         </SelectFormElement>
     </FormGroup>
 
@@ -59,6 +64,55 @@
         </FormGroup>
     </FormGroup>
 
+    <FormGroup id="KontaktFormGroup">
+        <label>Kontaktdaten</label>
+        <title>Kontaktdaten</title>
+        <InputFormElement id="KtextName">
+            <label>Name (Person):</label>
+            <inputType>text</inputType>
+        </InputFormElement>
+        <InputFormElement id="KtextOrga">
+            <label>Organisation:</label>
+            <inputType>text</inputType>
+        </InputFormElement>
+        <SelectFormElement id="KselectRole">
+            <label>Rolle/Funktion:</label>
+            <selectType>one</selectType>
+            <referenceToCodeList>roleCode</referenceToCodeList>
+        </SelectFormElement>
+        <FormGroup id="KSubFormGRoup">
+            <title> Adresse:</title>
+            <InputFormElement id="KStextStreet">
+                <label>Strasse/Hausnummer:</label>
+                <inputType>text</inputType>
+            </InputFormElement>
+            <InputFormElement id="KStextCity">
+                <label>Stadt:</label>
+                <inputType>text</inputType>
+            </InputFormElement>
+            <InputFormElement id="KStextPLZ">
+                <label>Postleitzahl:</label>
+                <inputType>int</inputType>
+            </InputFormElement>
+            <InputFormElement id="KStextCountry">
+                <label>Land:</label>
+                <inputType>int</inputType>
+            </InputFormElement>
+        </FormGroup>
+        <InputFormElement id="KtextPhone">
+            <label>Telefonnummer:</label>
+            <inputType>text</inputType>
+        </InputFormElement>
+        <InputFormElement id="KtextFax">
+            <label>Fax-Nummer:</label>
+            <inputType>text</inputType>
+        </InputFormElement>
+        <InputFormElement id="KtextEmail">
+            <label>EMail-Adresse:</label>
+            <inputType>text</inputType>
+        </InputFormElement>
+    </FormGroup>
+
     <CodeList id="hierarchylevel">
         <Code>
             <value>dataset</value>
@@ -81,6 +135,52 @@
         <Code>
             <value>greek</value>
             <label>Griechenland</label>
+        </Code>
+    </CodeList>
+    <CodeList id="roleCode">
+        <Code>
+            <value>resourceProvider</value>
+            <label>Anbieter</label>
+        </Code>
+        <Code>
+            <value>custodian</value>
+            <label>Verwalter</label>
+        </Code>
+        <Code>
+            <value>owner</value>
+            <label>Eigentümer</label>
+        </Code>
+        <Code>
+            <value>user</value>
+            <label>Nutzer</label>
+        </Code>
+        <Code>
+            <value>distributor</value>
+            <label>Vertrieb</label>
+        </Code>
+        <Code>
+            <value>originator</value>
+            <label>Urheber</label>
+        </Code>
+        <Code>
+            <value>pointOfContact</value>
+            <label>Ansprechpartner</label>
+        </Code>
+        <Code>
+            <value>principalInvestigator</value>
+            <label>Projektleitung</label>
+        </Code>
+        <Code>
+            <value>processor</value>
+            <label>Bearbeiter</label>
+        </Code>
+        <Code>
+            <value>publisher</value>
+            <label>Herausgeber</label>
+        </Code>
+        <Code>
+            <value>author</value>
+            <label>Autor</label>
         </Code>
     </CodeList>
 </FormConfiguration>

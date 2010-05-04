@@ -38,7 +38,9 @@ package org.deegree.client.mdeditor.gui;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
@@ -87,11 +89,21 @@ public class FormFieldBean implements Serializable {
                 LOG.error( "An field with id " + id + " does not exist!" );
             }
         }
-
     }
 
     public Map<String, FormField> getElements() {
         return elements;
     }
 
+    public List<FormField> getElements( List<String> formGroupIds ) {
+        List<FormField> formFields = new ArrayList<FormField>();
+        for ( String fgId : formGroupIds ) {
+            for ( String id : elements.keySet() ) {
+                if ( fgId.equals( elements.get( id ).getGrpId() ) ) {
+                    formFields.add( elements.get( id ) );
+                }
+            }
+        }
+        return formFields;
+    }
 }

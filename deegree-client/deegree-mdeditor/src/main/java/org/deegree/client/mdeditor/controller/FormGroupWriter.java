@@ -38,9 +38,15 @@ package org.deegree.client.mdeditor.controller;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.util.Map;
+import java.util.List;
 
+import javax.faces.component.html.HtmlCommandButton;
+import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
+
+import org.deegree.client.mdeditor.FormElementManager;
 import org.deegree.client.mdeditor.config.Configuration;
+import org.deegree.client.mdeditor.gui.FormFieldBean;
 import org.deegree.client.mdeditor.model.FormField;
 import org.slf4j.Logger;
 
@@ -52,16 +58,33 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DatasetWriter extends FormElementWriter {
+public class FormGroupWriter extends FormElementWriter {
 
-    private static final Logger LOG = getLogger( DatasetWriter.class );
+    private static final Logger LOG = getLogger( FormGroupWriter.class );
 
-    public static void writeElements( Map<String, FormField> elements ) {
-        LOG.debug( "Start writing the " + elements.size() + " values." );
+    public static void writeFormGroup( AjaxBehaviorEvent arg0 ) {
+        HtmlCommandButton comp = (HtmlCommandButton) arg0.getComponent();
+        LOG.debug( "Write FormGroup with id " + comp.getId() );
 
-        // TODO
-        String title = "title";
-        File file = new File( Configuration.getFilesDirURL(), title + ".xml" );
-        writeElements( elements.values(), file );
+        FacesContext fc = FacesContext.getCurrentInstance();
+        fc.getELContext();
+        FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+                                                                                                    null,
+                                                                                                    "formFieldBean" );
+        String fgId = comp.getId();
+        List<String> subFgIds = FormElementManager.getSubFormGroupIds( fgId );
+        subFgIds.add( fgId );
+        List<FormField> ff = formFieldBean.getElements( subFgIds );
+
+        String dirUrl = Configuration.getFilesDirURL();
+        File dir = new File( dirUrl, fgId );
+        if ( !dir.exists() ) {
+            dir.mkdir();
+        }
+        String instance = Utils.getInstanceId();
+        File file = new File( dir, instance + ".xml" );
+
+        writeElements( ff, file );
+
     }
 }

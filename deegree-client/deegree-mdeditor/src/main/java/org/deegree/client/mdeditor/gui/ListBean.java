@@ -33,16 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.controller;
+package org.deegree.client.mdeditor.gui;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import java.util.List;
 
-import java.io.File;
-import java.util.Map;
-
-import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.model.FormField;
-import org.slf4j.Logger;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.faces.model.SelectItem;
 
 /**
  * TODO add class documentation here
@@ -52,16 +49,28 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DatasetWriter extends FormElementWriter {
+@ManagedBean
+@RequestScoped
+public class ListBean {
 
-    private static final Logger LOG = getLogger( DatasetWriter.class );
+    private String listId;
 
-    public static void writeElements( Map<String, FormField> elements ) {
-        LOG.debug( "Start writing the " + elements.size() + " values." );
+    private List<SelectItem> list;
 
-        // TODO
-        String title = "title";
-        File file = new File( Configuration.getFilesDirURL(), title + ".xml" );
-        writeElements( elements.values(), file );
+    public void setListId( String listId ) {
+        this.listId = listId;
     }
+
+    public String getListId() {
+        return listId;
+    }
+
+    public void setList( List<SelectItem> list ) {
+        this.list = list;
+    }
+
+    public List<SelectItem> getList() {
+        return list;
+    }
+
 }

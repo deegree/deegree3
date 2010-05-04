@@ -54,6 +54,8 @@ public class FormGroup implements FormElement {
 
     private String title;
 
+    private boolean referenced = false;
+
     private List<FormElement> formElements = new ArrayList<FormElement>();
 
     public FormGroup( String id, String label, String title ) {
@@ -104,5 +106,13 @@ public class FormGroup implements FormElement {
     @Override
     public String getCompleteId() {
         return id;
+    }
+
+    public void setReferenced( boolean referenced ) {
+        this.referenced = referenced;
+    }
+
+    public boolean isReferenced() {
+        return referenced;
     }
 }

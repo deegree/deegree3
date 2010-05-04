@@ -32,17 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.controller;
+----------------------------------------------------------------------------*/
+package org.deegree.client.mdeditor;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import java.util.List;
 
-import java.io.File;
-import java.util.Map;
-
-import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.model.FormField;
-import org.slf4j.Logger;
+import org.deegree.client.mdeditor.config.FormConfigurationParser;
+import org.deegree.client.mdeditor.model.CodeList;
 
 /**
  * TODO add class documentation here
@@ -52,16 +48,30 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DatasetWriter extends FormElementWriter {
+public class CodeListManager {
 
-    private static final Logger LOG = getLogger( DatasetWriter.class );
+    private static List<CodeList> codeLists;
 
-    public static void writeElements( Map<String, FormField> elements ) {
-        LOG.debug( "Start writing the " + elements.size() + " values." );
-
-        // TODO
-        String title = "title";
-        File file = new File( Configuration.getFilesDirURL(), title + ".xml" );
-        writeElements( elements.values(), file );
+    static {
+        codeLists = FormConfigurationParser.getCodeLists();
     }
+    
+
+    public static List<CodeList> getCodeLists() {
+        return codeLists;
+    }
+
+    public static CodeList getCodeList( String id ) {
+        if ( id == null ) {
+            throw new NullPointerException();
+        }
+        for ( CodeList cl : codeLists ) {
+            if ( id.equals( cl.getId() ) ) {
+                return cl;
+            }
+        }
+        return null;
+    }
+    
+    
 }

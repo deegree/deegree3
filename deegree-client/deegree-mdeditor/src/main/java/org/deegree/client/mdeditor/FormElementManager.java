@@ -35,13 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import java.util.Map;
 
 import org.deegree.client.mdeditor.config.FormConfigurationParser;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
+import org.deegree.client.mdeditor.model.FormGroup;
 
 /**
  * TODO add class documentation here
@@ -55,16 +58,80 @@ public class FormElementManager {
 
     private static Map<String, FormField> formFields = new HashMap<String, FormField>();
 
+    private static List<FormGroup> formGroups;
+
     static {
-        formFields = FormConfigurationParser.getFormElements();
+        formGroups = FormConfigurationParser.getFormGroups();
+        for ( FormGroup fg : formGroups ) {
+            addFormField( fg );
+        }
     }
 
-    public static Map<String, FormField> getFormFields() {
-        return formFields;
+    /**
+     * @return a list of all top level formGroups
+     */
+    public static List<FormGroup> getFormGroups() {
+        return formGroups;
     }
 
     public static FormElement getFormField( String completeId ) {
         return formFields.get( completeId );
+    }
+
+    /**
+     * @return a list of all form fields
+     */
+    public static Map<String, FormField> getFormFields() {
+        return formFields;
+    }
+
+    private static void addFormField( FormGroup fg ) {
+        for ( FormElement fe : fg.getFormElements() ) {
+            if ( fe instanceof FormGroup ) {
+                addFormField( (FormGroup) fe );
+            } else if ( fe instanceof FormField ) {
+                formFields.put( fe.getCompleteId(), (FormField) fe );
+            }
+        }
+    }
+
+    /**
+     * @param grpId
+     *            the id of the group to return
+     * @return the form group with the given id, returns null if a grouup with the given id does not exist
+     * @throws NullPointerException
+     *             if grpId is null
+     */
+    public static FormGroup getFormGroup( String grpId ) {
+        if ( grpId == null ) {
+            throw new NullPointerException();
+        }
+        for ( FormGroup fg : formGroups ) {
+            if ( grpId.equals( fg.getId() ) )
+                return fg;
+        }
+        return null;
+    }
+
+    /**
+     * @param fgId
+     *            the id of the form group
+     */
+    public static List<String> getSubFormGroupIds( String fgId ) {
+        return getSubFormGroupIds( getFormGroup( fgId ) );
+    }
+
+    private static List<String> getSubFormGroupIds( FormGroup fg ) {
+        List<String> fgIds = new ArrayList<String>();
+        for ( FormElement fe : fg.getFormElements() ) {
+            System.out.println( "w" );
+            if ( fe instanceof FormGroup ) {
+                System.out.println( "w1" );
+                fgIds.add( ( (FormGroup) fe ).getId() );
+                fgIds.addAll( getSubFormGroupIds( (FormGroup) fe ) );
+            }
+        }
+        return fgIds;
     }
 
 }

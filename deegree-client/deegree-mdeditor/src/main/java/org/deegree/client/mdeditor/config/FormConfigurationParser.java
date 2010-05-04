@@ -36,7 +36,6 @@
 package org.deegree.client.mdeditor.config;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -45,9 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -56,8 +53,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.mdeditor.model.CodeList;
-import org.deegree.client.mdeditor.model.FormElement;
-import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.INPUT_TYPE;
 import org.deegree.client.mdeditor.model.InputFormField;
@@ -96,22 +91,15 @@ public class FormConfigurationParser {
 
     private static List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
+    private static List<String> referencedGroups = new ArrayList<String>();
+
     private static LAYOUT_TYPE layoutType;
 
+    /**
+     * @return a list of all codelists
+     */
     public static List<CodeList> getCodeLists() {
         return codeLists;
-    }
-
-    public static CodeList getCodeList( String id ) {
-        if ( id == null ) {
-            throw new NullPointerException();
-        }
-        for ( CodeList cl : codeLists ) {
-            if ( id.equals( cl.getId() ) ) {
-                return cl;
-            }
-        }
-        return null;
     }
 
     /**
@@ -122,44 +110,8 @@ public class FormConfigurationParser {
     }
 
     /**
-     * @return a list of all form fields
+     * @return the layout type
      */
-    public static Map<String, FormField> getFormElements() {
-        Map<String, FormField> formElements = new HashMap<String, FormField>();
-        for ( FormGroup fg : formGroups ) {
-            addFormField( formElements, fg );
-        }
-        return formElements;
-    }
-
-    private static void addFormField( Map<String, FormField> formElements, FormGroup fg ) {
-        for ( FormElement fe : fg.getFormElements() ) {
-            if ( fe instanceof FormGroup ) {
-                addFormField( formElements, (FormGroup) fe );
-            } else if ( fe instanceof FormField ) {
-                formElements.put( fe.getCompleteId(), (FormField) fe );
-            }
-        }
-    }
-
-    /**
-     * @param grpId
-     *            the id of the group to return
-     * @return the form group with the given id, returns null if a grouup with the given id does not exist
-     * @throws NullPointerException
-     *             if grpId is null
-     */
-    public static FormGroup getFormGroup( String grpId ) {
-        if ( grpId == null ) {
-            throw new NullPointerException();
-        }
-        for ( FormGroup fg : formGroups ) {
-            if ( grpId.equals( fg.getId() ) )
-                return fg;
-        }
-        return null;
-    }
-
     public static LAYOUT_TYPE getLayoutType() {
         return layoutType;
     }
@@ -198,6 +150,7 @@ public class FormConfigurationParser {
 
             xmlStream.require( END_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
 
+            updateFormGroups();
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -258,6 +211,9 @@ public class FormConfigurationParser {
         SELECT_TYPE selectType = getSelectType( xmlStream );
 
         String referenceToGroup = getElementText( xmlStream, "referenceToGroup", null );
+        if ( referenceToGroup != null ) {
+            referencedGroups.add( referenceToGroup );
+        }
         String referenceToCodeList = getElementText( xmlStream, "referenceToCodeList", null );
         String selectedValueAsString = getElementText( xmlStream, "selectedValue", null );
         Object selectedValue = selectedValueAsString;
@@ -436,6 +392,22 @@ public class FormConfigurationParser {
             xmlStream.nextTag();
         }
         return d;
+    }
+
+    private static void updateFormGroups() {
+        for ( String reference : referencedGroups ) {
+            boolean referenced = false;
+            for ( FormGroup fg : formGroups ) {
+                if ( reference.equals( fg.getId() ) ) {
+                    fg.setReferenced( true );
+                    referenced = true;
+                    break;
+                }
+            }
+            if ( !referenced ) {
+                throw new ConfigurationException( "Referenced group " + reference + " does not exist!" );
+            }
+        }
     }
 
 }

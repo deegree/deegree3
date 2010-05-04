@@ -33,16 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.controller;
-
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.util.Map;
-
-import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.model.FormField;
-import org.slf4j.Logger;
+package org.deegree.client.mdeditor.config;
 
 /**
  * TODO add class documentation here
@@ -52,16 +43,12 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DatasetWriter extends FormElementWriter {
+public class ConfigurationException extends RuntimeException {
 
-    private static final Logger LOG = getLogger( DatasetWriter.class );
+    private static final long serialVersionUID = -5005648880467646463L;
 
-    public static void writeElements( Map<String, FormField> elements ) {
-        LOG.debug( "Start writing the " + elements.size() + " values." );
-
-        // TODO
-        String title = "title";
-        File file = new File( Configuration.getFilesDirURL(), title + ".xml" );
-        writeElements( elements.values(), file );
+    ConfigurationException( String message ) {
+        super( message );
     }
+
 }
