@@ -46,7 +46,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.rendering.r2d.se.parser.PostgreSQLWriter;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
@@ -119,7 +118,7 @@ public class PostgreSQLImporter {
 
             XMLInputFactory fac = XMLInputFactory.newInstance();
             Style style = new SymbologyParser( true ).parse( fac.createXMLStreamReader( new FileInputStream( inputFile ) ) );
-            ConnectionManager.addConnection( "style", DatabaseType.POSTGIS, url, user, pass, 5, 20 );
+            ConnectionManager.addConnection( "style", url, user, pass, 5, 20 );
             if ( style.isSimple() ) {
                 new PostgreSQLWriter( "style" ).write( style, null );
             } else {

@@ -60,7 +60,6 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Triple;
@@ -719,8 +718,7 @@ public class PostgreSQLWriter {
         Style style = new SymbologyParser( true ).parse( XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                                               new FileInputStream(
                                                                                                                                    args[0] ) ) );
-        ConnectionManager.addConnection( "configtool", DatabaseType.POSTGIS, "jdbc:postgresql://localhost/configtool",
-                                         "postgres", "", 5, 20 );
+        ConnectionManager.addConnection( "configtool", "jdbc:postgresql://localhost/configtool", "postgres", "", 5, 20 );
         if ( style.isSimple() ) {
             new PostgreSQLWriter( "configtool" ).write( style, null );
         } else {

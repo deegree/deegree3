@@ -39,7 +39,6 @@ package org.deegree.tools.rendering.manager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.MissingFormatArgumentException;
 
@@ -49,7 +48,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.services.wpvs.exception.DatasourceException;
@@ -311,16 +309,8 @@ public class DataManager {
                 throw new IllegalArgumentException( "The filebackend must be supplied with a directory." );
             }
         } else {
-
-            DatabaseType connectionType = null;
-            try {
-                connectionType = ConnectionManager.getConnectionType( hostURL );
-            } catch ( SQLException e1 ) {
-                // a pool with id 1 not present so installing one.
-            }
-            if ( connectionType == null ) {
-                ConnectionManager.addConnection( hostURL, DatabaseType.POSTGIS, testFileBackend,
-                                                 line.getOptionValue( OPT_DB_USER ),
+            if ( !ConnectionManager.getConnectionIds().contains( hostURL ) ) {
+                ConnectionManager.addConnection( hostURL, testFileBackend, line.getOptionValue( OPT_DB_USER ),
                                                  line.getOptionValue( OPT_DB_PASS ), 1, 5 );
             }
         }

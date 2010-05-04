@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.cs.CRS;
@@ -296,19 +295,13 @@ public abstract class ModelBackend<G> {
             }
 
         }
-        DatabaseType type = null;
         try {
-            type = ConnectionManager.getConnectionType( d );
+            ConnectionManager.getConnection( d );
         } catch ( SQLException e ) {
             throw new DatasourceException( "Given id: " + d + " was not known to the database configuration, "
                                            + e.getLocalizedMessage(), e );
         }
-        if ( type == DatabaseType.POSTGIS ) {
-            return new PostgisBackend( d );
-        }
-        throw new UnsupportedOperationException(
-                                                 "The driver you supplied could not be mapped to an implementing Database backend, please ask the list at deegree-users@lists.sourceforge.net list for help." );
-
+        return new PostgisBackend( d );
     }
 
     /**

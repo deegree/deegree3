@@ -52,7 +52,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.rendering.r2d.se.parser.PostgreSQLReader;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
@@ -232,7 +231,7 @@ public class StyleChecker {
                 pass = "";
             }
 
-            ConnectionManager.addConnection( "style", DatabaseType.POSTGIS, url, user, pass, 5, 20 );
+            ConnectionManager.addConnection( "style", url, user, pass, 5, 20 );
 
             check();
             if ( line.hasOption( "clean" ) ) {

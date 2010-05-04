@@ -45,13 +45,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.configuration.GMLVersionType;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.postgis.jaxb.GMLVersionType;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.GMLSchemaFileURL;
 import org.deegree.feature.persistence.postgis.jaxb.PostGISFeatureStoreConfig.NamespaceHint;

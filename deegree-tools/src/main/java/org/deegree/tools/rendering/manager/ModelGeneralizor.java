@@ -38,7 +38,6 @@ package org.deegree.tools.rendering.manager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +47,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
@@ -199,16 +197,9 @@ public class ModelGeneralizor {
     private static ModelBackend<?> getModelBackend( CommandLine line )
                             throws UnsupportedOperationException, DatasourceException {
         String id = "1";
-        DatabaseType connectionType = null;
-        try {
-            connectionType = ConnectionManager.getConnectionType( id );
-        } catch ( SQLException e1 ) {
-            // a pool with id 1 not present so installing one.
-        }
-        if ( connectionType == null ) {
-            ConnectionManager.addConnection( id, DatabaseType.POSTGIS, line.getOptionValue( DB_HOST ),
-                                             line.getOptionValue( OPT_DB_USER ), line.getOptionValue( OPT_DB_PASS ), 1,
-                                             5 );
+        if ( !ConnectionManager.getConnectionIds().contains( id ) ) {
+            ConnectionManager.addConnection( id, line.getOptionValue( DB_HOST ), line.getOptionValue( OPT_DB_USER ),
+                                             line.getOptionValue( OPT_DB_PASS ), 1, 5 );
         }
 
         return ModelBackend.getInstance( id, null );

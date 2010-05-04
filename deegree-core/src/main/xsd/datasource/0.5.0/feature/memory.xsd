@@ -2,9 +2,9 @@
   <!--
     This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
   -->
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://www.deegree.org/commons" xmlns="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/datasource/feature/memory" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:memoryfs="http://www.deegree.org/datasource/feature/memory"
+  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/feature/memory"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
   <annotation>
     <appinfo>
       <jaxb:schemaBindings>
@@ -12,7 +12,6 @@
       </jaxb:schemaBindings>
     </appinfo>
   </annotation>
-  <import namespace="http://www.deegree.org/commons" schemaLocation="../../../commons/0.5.0/commons.xsd" />
   <element name="MemoryFeatureStore">
     <annotation>
       <documentation>FeatureStore that keeps all features in memory.</documentation>
@@ -32,7 +31,7 @@
           <complexType>
             <simpleContent>
               <extension base="string">
-                <attribute name="gmlVersion" type="cm:GMLVersionType" use="required" />
+                <attribute name="gmlVersion" type="memoryfs:GMLVersionType" use="required" />
               </extension>
             </simpleContent>
           </complexType>
@@ -41,7 +40,7 @@
           <complexType>
             <simpleContent>
               <extension base="string">
-                <attribute name="gmlVersion" type="cm:GMLVersionType" use="required" />
+                <attribute name="gmlVersion" type="memoryfs:GMLVersionType" use="required" />
               </extension>
             </simpleContent>
           </complexType>
@@ -50,4 +49,12 @@
       <attribute name="configVersion" use="required" fixed="0.5.0" />
     </complexType>
   </element>
+  <simpleType name="GMLVersionType">
+    <restriction base="string">
+      <enumeration value="GML_2" />
+      <enumeration value="GML_30" />
+      <enumeration value="GML_31" />
+      <enumeration value="GML_32" />
+    </restriction>
+  </simpleType>
 </schema>

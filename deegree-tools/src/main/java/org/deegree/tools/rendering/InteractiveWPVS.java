@@ -73,7 +73,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.commons.utils.Pair;
@@ -863,7 +862,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
                 String user = options.getOption( OPT_WPVS_DB_USER ).getValue();
                 String pass = options.getOption( OPT_WPVS_DB_PASS ).getValue();
                 String id = options.getOption( OPT_WPVS_DB_ID ).getValue();
-                ConnectionManager.addConnection( id, DatabaseType.POSTGIS, dbURL, user, pass, 5, 10 );
+                ConnectionManager.addConnection( id, dbURL, user, pass, 5, 10 );
             }
 
             LOG.info( "Checking for JOGL." );

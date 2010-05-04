@@ -40,7 +40,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -87,7 +86,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
-import org.deegree.commons.configuration.ProxyConfiguration;
 import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
@@ -1005,21 +1003,9 @@ public class OGCFrontController extends HttpServlet {
 
         if ( proxyConfigFile.exists() ) {
             try {
-                String contextName = "org.deegree.commons.configuration";
-                JAXBContext jc = JAXBContext.newInstance( contextName );
-                Unmarshaller unmarshaller = jc.createUnmarshaller();
-                ProxyConfiguration proxyConfig = (ProxyConfiguration) unmarshaller.unmarshal( proxyConfigFile );
-                try {
-                    if ( proxyConfig != null ) {
-                        ProxyUtils.setupProxyParameters( proxyConfig );
-                    }
-                    ProxyUtils.logProxyConfiguration( LOG );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-            } catch ( JAXBException e ) {
-                String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
-                LOG.error( msg, e );
+                ProxyUtils.setupProxyParameters( proxyConfigFile );
+            } catch ( IllegalArgumentException e ) {
+                LOG.warn ("Unable to apply proxy configuration from file: " + proxyConfigFile + ": " + e.getMessage());
             }
         } else {
             LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );

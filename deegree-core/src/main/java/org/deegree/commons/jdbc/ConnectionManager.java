@@ -50,9 +50,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.deegree.commons.configuration.DatabaseType;
-import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.i18n.Messages;
+import org.deegree.commons.jdbc.jaxb.PooledConnection;
 import org.deegree.commons.utils.TempFileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +75,7 @@ public class ConnectionManager {
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
     static {
-        String lockDb = new File (TempFileManager.getBaseDir(), "lockdb").getAbsolutePath();
+        String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
         LOG.info( "Using '" + lockDb + "' for derby lock database." );
 
         try {
@@ -84,9 +83,7 @@ public class ConnectionManager {
         } catch ( Exception e ) {
             LOG.error( "Error loading derby JDBC driver: " + e.getMessage(), e );
         }
-
-        addConnection( "LOCK_DB", DatabaseType.UNDEFINED, "jdbc:derby:" + lockDb + ";create=true", null, null,
-                       0, 10 );
+        addConnection( "LOCK_DB", "jdbc:derby:" + lockDb + ";create=true", null, null, 0, 10 );
     }
 
     /**
@@ -114,7 +111,7 @@ public class ConnectionManager {
             }
         }
     }
-    
+
     /**
      * 
      */
@@ -145,24 +142,6 @@ public class ConnectionManager {
     }
 
     /**
-     * Returns the database type for the connection pool with the given id.
-     * 
-     * @param id
-     *            id of the connection pool
-     * @return corresponding database type
-     * @throws SQLException
-     *             if the connection pool is unknown or a SQLException occurs creating the connection
-     */
-    public static DatabaseType getConnectionType( String id )
-                            throws SQLException {
-        ConnectionPool pool = idToPools.get( id );
-        if ( pool == null ) {
-            throw new SQLException( Messages.getMessage( "JDBC_UNKNOWN_CONNECTION", id ) );
-        }
-        return pool.getType();
-    }
-
-    /**
      * Adds the connection pool defined in the given file.
      * 
      * @param jdbcConfigUrl
@@ -185,32 +164,19 @@ public class ConnectionManager {
     public static void addConnection( PooledConnection jaxbConn, String connId ) {
         synchronized ( ConnectionManager.class ) {
             String url = jaxbConn.getUrl();
-            DatabaseType type = jaxbConn.getDatabaseType();
-
-            if ( type != null ) {
-                switch ( type ) {
-                case POSTGIS: {
-                    try {
-                        Class.forName( "org.postgresql.Driver" ).newInstance();
-                    } catch ( Exception e ) {
-                        LOG.error( "Error loading PostGIS JDBC driver: " + e.getMessage(), e );
-                    }
-                }
-                }
-            }
 
             String user = jaxbConn.getUser();
             String password = jaxbConn.getPassword();
             int poolMinSize = jaxbConn.getPoolMinSize().intValue();
             int poolMaxSize = jaxbConn.getPoolMaxSize().intValue();
 
-            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, type, url, user, poolMinSize,
+            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
                                             poolMaxSize ) );
             if ( idToPools.containsKey( connId ) ) {
                 throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
             }
 
-            ConnectionPool pool = new ConnectionPool( connId, type, url, user, password, poolMinSize, poolMaxSize );
+            ConnectionPool pool = new ConnectionPool( connId, url, user, password, poolMinSize, poolMaxSize );
             idToPools.put( connId, pool );
         }
     }
@@ -226,38 +192,24 @@ public class ConnectionManager {
      * @param poolMinSize
      * @param poolMaxSize
      */
-    public static void addConnection( String connId, DatabaseType type, String url, String user, String password,
-                                      int poolMinSize, int poolMaxSize ) {
-        synchronized ( ConnectionManager.class ) {
+    public static void addConnection( String connId, String url, String user, String password, int poolMinSize,
+                                      int poolMaxSize ) {
 
-            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, type, url, user, poolMinSize,
+        synchronized ( ConnectionManager.class ) {
+            LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
                                             poolMaxSize ) );
             if ( idToPools.containsKey( connId ) ) {
                 throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
             }
-
-            if ( type != null ) {
-                switch ( type ) {
-                case POSTGIS: {
-                    try {
-                        Class.forName( "org.postgresql.Driver" ).newInstance();
-                    } catch ( Exception e ) {
-                        LOG.error( "Error loading PostGIS JDBC driver: " + e.getMessage(), e );
-                    }
-                }
-                }
-            }
-
-            ConnectionPool pool = new ConnectionPool( connId, type, url, user, password, poolMinSize, poolMaxSize );
+            ConnectionPool pool = new ConnectionPool( connId, url, user, password, poolMinSize, poolMaxSize );
             idToPools.put( connId, pool );
         }
     }
-    
+
     /**
      * @return all currently available connection ids
      */
-    public static Set<String> getConnectionIds(){
+    public static Set<String> getConnectionIds() {
         return idToPools.keySet();
     }
-    
 }
