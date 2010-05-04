@@ -125,18 +125,13 @@ public class BufferAccess {
     }
 
     /**
-     * @param view2
+     * @param viewOnData
      */
     private void createMaxView( RasterRect viewOnData ) {
-        // RasterRect origData = new RasterRect( 0, 0, maxDataWidth, maxDataHeight );
-        // maxViewData = RasterRect.intersection( origData, viewOnData );
-        // if ( maxViewData == null ) {
-        // maxViewData = new RasterRect( 0, 0, 0, 0 );
-        // }
-        maxViewData = RasterRect.intersection( viewOnData, maxViewData );
-        // this.dataInfo = viewOnData.dataInfo;
-        this.maxDataHeight = maxViewData.height;
-        this.maxDataWidth = maxViewData.width;
+        // rb: the view on the data is expected to be correct, it may or may not be mappable to the underlying data.
+        maxViewData = viewOnData;
+        this.maxDataHeight = viewOnData.height;
+        this.maxDataWidth = viewOnData.width;
         // the data was freshly set, the line stride must be recalculated.
         this.lineStride = maxDataWidth * pixelStride;
 
