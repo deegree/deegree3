@@ -1119,7 +1119,7 @@ public class ISORecordStore implements RecordStore {
                 str = getRequestedIDStatement( formatTypeInISORecordStore.get( SetOfReturnableElements.full ), gdds,
                                                formatNumber, builder, conn );
                 rsDeletableDatasets = str.executeQuery();
-                str.close();
+
             } catch ( IOException e ) {
 
                 LOG.debug( "error: " + e.getMessage(), e );
@@ -1147,7 +1147,9 @@ public class ISORecordStore implements RecordStore {
 
                 }
             }
-
+            if ( str != null ) {
+                str.close();
+            }
             if ( stmt != null ) {
                 stmt.close();
             }
@@ -1216,6 +1218,7 @@ public class ISORecordStore implements RecordStore {
 
         Connection conn = ConnectionManager.getConnection( connectionId );
         int profileFormatNumberOutputSchema = 0;
+        String elementSetNameString = null;
 
         for ( QName qName : typeNames.keySet() ) {
             if ( qName.getNamespaceURI().equals( outputSchema.toString() ) ) {
@@ -1223,50 +1226,52 @@ public class ISORecordStore implements RecordStore {
             }
         }
 
-        StringBuilder select = new StringBuilder().append( "SELECT ?." );
-        select.append( PostGISMappingsISODC.CommonColumnNames.data.name() ).append( " FROM ? AS recordAlias, " );
-        select.append( PostGISMappingsISODC.DatabaseTables.datasets.name() ).append( " AS ds, " );
-        select.append( PostGISMappingsISODC.DatabaseTables.qp_identifier.name() ).append( " AS i WHERE recordAlias." );
-        select.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( " = ds." );
-        select.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " AND i." );
-        select.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( " = ds." );
-        select.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " AND i." );
-        select.append( PostGISMappingsISODC.DatabaseTables.qp_identifier.name() ).append( " = ? AND recordAlias." );
-        select.append( PostGISMappingsISODC.CommonColumnNames.format.name() ).append( " = ?;" );
-
         ResultSet rs = null;
 
         for ( String identifier : idList ) {
             PreparedStatement stmt = null;
-            String elementSetNameString;
+
             switch ( elementSetName ) {
 
             case brief:
 
                 elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.brief );
-                stmt = conn.prepareStatement( select.toString() );
                 break;
             case summary:
 
                 elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.summary );
-                stmt = conn.prepareStatement( select.toString() );
                 break;
             case full:
 
                 elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.full );
-                stmt = conn.prepareStatement( select.toString() );
                 break;
             default:
 
                 elementSetNameString = formatTypeInISORecordStore.get( SetOfReturnableElements.brief );
-                stmt = conn.prepareStatement( select.toString() );
+
                 break;
             }
+
+            StringBuilder select = new StringBuilder().append( "SELECT recordAlias." );
+            select.append( PostGISMappingsISODC.CommonColumnNames.data.name() ).append( " FROM " );
+            select.append( elementSetNameString ).append( " AS recordAlias, " );
+            select.append( PostGISMappingsISODC.DatabaseTables.datasets.name() ).append( " AS ds, " );
+            select.append( PostGISMappingsISODC.DatabaseTables.qp_identifier.name() ).append(
+                                                                                              " AS i WHERE recordAlias." );
+            select.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( " = ds." );
+            select.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " AND i." );
+            select.append( PostGISMappingsISODC.CommonColumnNames.fk_datasets.name() ).append( " = ds." );
+            select.append( PostGISMappingsISODC.CommonColumnNames.id.name() ).append( " AND i." );
+            select.append( PostGISMappingsISODC.CommonColumnNames.identifier.name() ).append( " = ? AND recordAlias." );
+            select.append( PostGISMappingsISODC.CommonColumnNames.format.name() ).append( " = ?;" );
+
+            stmt = conn.prepareStatement( select.toString() );
+
             if ( stmt != null ) {
 
-                stmt.setObject( 1, elementSetNameString );
-                stmt.setObject( 2, identifier );
-                stmt.setObject( 3, profileFormatNumberOutputSchema );
+                // stmt.setObject( 1, elementSetNameString );
+                stmt.setObject( 1, identifier );
+                stmt.setInt( 2, profileFormatNumberOutputSchema );
 
                 rs = stmt.executeQuery();
                 writeResultSet( rs, writer );
