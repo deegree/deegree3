@@ -77,6 +77,7 @@ public class BuildRecordXMLRepresentation {
 
     private static final StringBuilder formatColumn = new StringBuilder().append( PostGISMappingsISODC.CommonColumnNames.format.name() );
 
+    // TODO UPDATE like INSERT remove the databasetable out of preparedStatements
     private static final StringBuilder sqlStatementUpdate = new StringBuilder().append( "UPDATE ? SET " ).append(
                                                                                                                   dataColumn ).append(
                                                                                                                                        " = ? WHERE " ).append(
@@ -85,13 +86,14 @@ public class BuildRecordXMLRepresentation {
                                                                                                                                                                                                                  formatColumn ).append(
                                                                                                                                                                                                                                         " = ?;" );
 
-    private StringBuilder sqlStatementInsert = new StringBuilder().append( " ( " ).append( idColumn ).append( ", " ).append(
-                                                                                                                             fk_datasetsColumn ).append(
-                                                                                                                                                         ", " ).append(
-                                                                                                                                                                        formatColumn ).append(
-                                                                                                                                                                                               ", " ).append(
-                                                                                                                                                                                                              dataColumn ).append(
-                                                                                                                                                                                                                                   " ) VALUES (?, ?, ?, ?);" );
+    private static final StringBuilder sqlStatementInsert = new StringBuilder().append( " ( " ).append( idColumn ).append(
+                                                                                                                           ", " ).append(
+                                                                                                                                          fk_datasetsColumn ).append(
+                                                                                                                                                                      ", " ).append(
+                                                                                                                                                                                     formatColumn ).append(
+                                                                                                                                                                                                            ", " ).append(
+                                                                                                                                                                                                                           dataColumn ).append(
+                                                                                                                                                                                                                                                " ) VALUES (?, ?, ?, ?);" );
 
     /**
      * Updating the XML representation of a record in DC and ISO.
@@ -183,9 +185,16 @@ public class BuildRecordXMLRepresentation {
 
         int idDatabaseTable;
         for ( String databaseTableISO : PostGISMappingsISODC.getTableRecordType().keySet() ) {
+
+            // ------------------------
+            // there is a restriction regarding to the databasetables.
+            // in some cases there is no preparedStatement allowed for databasetables
+            // so: put the insert-preample before the final statement
+            // and delete it later...
             String insertDatabaseTable = "INSERT INTO " + databaseTableISO;
             int insertDatadaseTableLength = insertDatabaseTable.length();
             sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableISO );
+            // ------------------------
             PreparedStatement stm = null;
             OMElement isoElement;
             if ( databaseTableISO.equals( PostGISMappingsISODC.RECORDBRIEF ) ) {
@@ -205,9 +214,11 @@ public class BuildRecordXMLRepresentation {
                 stm.setObject( 1, idDatabaseTable );
                 stm.setObject( 2, operatesOnId );
                 stm.setObject( 3, 2 );
-                stm.setObject( 4, isoElement );
+                stm.setBytes( 4, isoElement.toString().getBytes() );
                 stm.executeUpdate();
                 stm.close();
+
+                // here is the deletion of the insert-preample
                 sqlStatementInsert.delete( 0, insertDatadaseTableLength );
 
             } catch ( SQLException e ) {
@@ -244,9 +255,16 @@ public class BuildRecordXMLRepresentation {
         int idDatabaseTable;
         for ( String databaseTableDC : PostGISMappingsISODC.getTableRecordType().keySet() ) {
             PreparedStatement stm = null;
+
+            // ------------------------
+            // there is a restriction regarding to the databasetables.
+            // in some cases there is no preparedStatement allowed for databasetables
+            // so: put the insert-preample before the final statement
+            // and delete it later...
             String insertDatabaseTable = "INSERT INTO " + databaseTableDC;
             int insertDatadaseTableLength = insertDatabaseTable.length();
             sqlStatementInsert.insert( 0, "INSERT INTO " ).insert( 12, databaseTableDC );
+            // ------------------------
             try {
 
                 idDatabaseTable = getLastDatasetId( connection, databaseTableDC );
@@ -278,6 +296,7 @@ public class BuildRecordXMLRepresentation {
                 stm.setBytes( 4, omElement.toString().getBytes() );
                 stm.executeUpdate();
                 stm.close();
+                // here is the deletion of the insert-preample
                 sqlStatementInsert.delete( 0, insertDatadaseTableLength );
 
             } catch ( SQLException e ) {
