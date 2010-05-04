@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.deegree.org/datasource" xmlns:cm="http://www.deegree.org/commons" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified" jaxb:version="2.1">
-  <xs:import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.5.0/commons.xsd"/>
-  <xs:import namespace="http://www.deegree.org/datasource" schemaLocation="../../datasource/0.5.0/all_datasources.xsd"/>
-  <xs:annotation>
-    <xs:appinfo>
-      <jaxb:schemaBindings>
-        <jaxb:package name="org.deegree.services.wpvs.configuration"/>
-      </jaxb:schemaBindings>
-    </xs:appinfo>
-  </xs:annotation>
+<xs:schema xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified">
   <xs:element name="ServiceConfiguration">
     <xs:annotation>
       <xs:documentation>
-        Top root element of the service configuration, it defines rendering parameters, get view request restrictions as well as
-        datasets and
-        elevation models.
+        Top root element of the service configuration, it defines rendering parameters, get view request
+        restrictions as well as datasets and elevation models.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -27,15 +17,11 @@
         <!-- The maximum direct memory (in MegaBytes) to be allocated for texture coordinates -->
         <xs:element name="DirectTextureMemory" type="xs:int" default="400" minOccurs="0"/>
         <!--
-          The number of dem fragments stored in memory, this value depends on following variables: 
-          <ul> 
-          <li>width/height of the elevationmodel</li>
-          <li>the number of levels in a macrotriangle</li> 
-          <li>the number of rows in a macrotriangle</li> 
-          </ul> 
-          <p>for a dem with 32768*32768 meters, 18 levels and 64 rows per macro triangle 1000 is good value.</p>
-          <p>a dem with 32768*32768 meters, with 16 levels and 128 rows per macro  300 is sufficient. </p>
-          <p>In general, the higher the value, the more memory is needed, the less IO is needed.</p>
+          The number of dem fragments stored in memory, this value depends on following variables: <ul> <li>width/height
+          of the elevationmodel</li> <li>the number of levels in a macrotriangle</li> <li>the number of rows in a
+          macrotriangle</li> </ul> <p>for a dem with 32768*32768 meters, 18 levels and 64 rows per macro triangle 1000
+          is good value.</p> <p>a dem with 32768*32768 meters, with 16 levels and 128 rows per macro 300 is sufficient.
+          </p> <p>In general, the higher the value, the more memory is needed, the less IO is needed.</p>
         -->
         <xs:element name="NumberOfDEMFragmentsCached" type="xs:int" default="1000" minOccurs="0"/>
         <!-- The maximum direct memory (in MegaBytes) to be allocated for reading mesh fragments from the disk -->
@@ -49,13 +35,11 @@
         <!-- maximum view height that can be requested. default = 1000 -->
         <xs:element name="MaxViewHeight" type="xs:int" default="1000" minOccurs="0"/>
         <!--
-          maximum value of the farclipping plane which might be requested.
-          default = 15000 (units)
+          maximum value of the farclipping plane which might be requested. default = 15000 (units)
         -->
         <xs:element name="MaxRequestFarClippingPlane" type="xs:double" default="100000" minOccurs="0"/>
         <!--
-          The value of the near clipping plane independent of the request,
-          default = 0.1 (units)
+          The value of the near clipping plane independent of the request, default = 0.1 (units)
         -->
         <xs:element name="NearClippingPlane" type="xs:double" default="0.1" minOccurs="0"/>
         <xs:element ref="wpvs:Copyright" minOccurs="0"/>
@@ -68,7 +52,8 @@
   </xs:element>
   <xs:element name="SkyImages">
     <xs:annotation>
-      <xs:documentation>Defines a list of images which can be rendered in the background of the scene, e.g. the sky</xs:documentation>
+      <xs:documentation>Defines a list of images which can be rendered in the background of the scene, e.g. the sky
+      </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -83,7 +68,8 @@
   </xs:element>
   <xs:element name="Copyright">
     <xs:annotation>
-      <xs:documentation>Defines a string or an image which should be rendered into the resulting GetView response image</xs:documentation>
+      <xs:documentation>Defines a string or an image which should be rendered into the resulting GetView response image
+      </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -100,9 +86,11 @@
   <xs:complexType name="AbstractDataType" abstract="true">
     <xs:annotation>
       <xs:documentation>
-        A data type defines some properties like name, title and descriptions. A data type can have a bounding box, defining it's
+        A data type defines some properties like name, title and descriptions. A data type can have a
+        bounding box, defining it's
         validity. The scale
-        denominators are used to define the scales for which a data instance is valid.
+        denominators are used to define the scales for which a data
+        instance is valid.
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
@@ -114,24 +102,25 @@
       <xs:element name="Name" type="xs:string" minOccurs="0"/>
       <xs:element name="MetadataURL" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="Abstract" type="xs:string" minOccurs="0"/>
-      <xs:element ref="cm:Keywords" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="wpvs:Keywords" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
   <xs:element name="DatasetDefinitions">
     <xs:annotation>
-      <xs:documentation>A dataset not visible through the capabilities and can not be requested by a client.</xs:documentation>
+      <xs:documentation>A dataset not visible through the capabilities and can not be requested by a client.
+      </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Title" type="xs:string"/>
         <xs:element name="MetadataURL" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="Abstract" type="xs:string" minOccurs="0"/>
-        <xs:element ref="cm:Keywords" minOccurs="0"/>
+        <xs:element ref="wpvs:Keywords" minOccurs="0"/>
         <xs:element name="BaseCRS" type="xs:string"/>
         <xs:element ref="wpvs:TranslationToLocalCRS"/>
         <!--
-          Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This parameter determines when geometry LODs
-          or objects are to be rendered are switched.
+          Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This parameter
+          determines when geometry LODs or objects are to be rendered are switched.
         -->
         <xs:element name="MaxPixelError" type="xs:double" default="5.0" minOccurs="0"/>
         <xs:element ref="wpvs:ElevationDataset"/>
@@ -153,82 +142,86 @@
   <xs:element name="ElevationDataset">
     <xs:annotation>
       <xs:documentation>
-        An elevation model is visible through the capabilities and can be requested by a client. Normally it will define a DEM
+        An elevation model is visible through the capabilities and can be requested by a client.
+        Normally it will define a DEM
         (Digital Elevation
-        Model) but it might as well have a more semantic character (using for example rent prices of houses).
+        Model) but it might as well have a more semantic character (using
+        for example rent prices of houses).
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:complexContent>
         <xs:extension base="wpvs:AbstractDataType">
           <xs:sequence>
-                <!--
-        Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This parameter determines when geometry LODs
-        or objects are to be rendered are switched.
-      -->
+            <!--
+              Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This
+              parameter determines when geometry LODs or objects are to be rendered are switched.
+            -->
             <xs:element name="MaxPixelError" type="xs:double" default="5.0" minOccurs="0"/>
-            <xs:element ref="ds:ElevationModelDataSource"/>
+            <xs:element name="ElevationModelDataSource" type="xs:string"/>
           </xs:sequence>
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
-
-<xs:element name="ColormapDataset">
+  <xs:element name="ColormapDataset">
     <xs:annotation>
       <xs:documentation>
-        An colormap which can be applied to an elevation model and can be requested by a client. The colors will be lineary interpreted between the min and max color.
+        An colormap which can be applied to an elevation model and can be requested by a client. The
+        colors will be lineary interpreted between the min and max color.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:complexContent>
         <xs:extension base="wpvs:AbstractDataType">
           <xs:sequence>
-          <!-- a hex decimal rgb string starting with a '#' if failing red will be used-->
+            <!-- a hex decimal rgb string starting with a '#' if failing red will be used-->
             <xs:element name="MinColor" type="xs:string" minOccurs="0"/>
-          <!-- a hex decimal rgb string starting with a '#', if failing green will be used-->
-            <xs:element name="MaxColor" type="xs:string" minOccurs="0"/>  
-          <!-- a hex decimal rgb string starting with a '#', if failing a brownish color will be used-->
-            <xs:element name="HeightISOColor" type="xs:string" minOccurs="0"/>              
+            <!-- a hex decimal rgb string starting with a '#', if failing green will be used-->
+            <xs:element name="MaxColor" type="xs:string" minOccurs="0"/>
+            <!-- a hex decimal rgb string starting with a '#', if failing a brownish color will be used-->
+            <xs:element name="HeightISOColor" type="xs:string" minOccurs="0"/>
             <!--the minimum value to which colors will be mapped, if failing the dem min bbox will be used-->
             <xs:element name="MinZValue" type="xs:double" minOccurs="0"/>
-            <!--the maximum value to which colors will be mapped, if failing the dem min bbox will be used-->            
+            <!--the maximum value to which colors will be mapped, if failing the dem min bbox will be used-->
             <xs:element name="MaxZValue" type="xs:double" minOccurs="0"/>
           </xs:sequence>
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
-  </xs:element> 
-  
+  </xs:element>
   <xs:group name="TextureProviders">
     <xs:annotation>
-      <xs:documentation>A group of texture providers, which can be requested to receive textures from.</xs:documentation>
+      <xs:documentation>A group of texture providers, which can be requested to receive textures from.
+      </xs:documentation>
     </xs:annotation>
     <xs:choice>
-      <xs:element ref="ds:AbstractRasterDataSource"/>
+      <xs:element name="CoverageDatasourceId" type="xs:string"/>
       <xs:element ref="wpvs:StyledGeometryProvider"/>
     </xs:choice>
   </xs:group>
   <xs:element name="DEMTextureDataset">
     <xs:annotation>
       <xs:documentation>
-        A data type defines some properties like name, title and descriptions. A data type can have a bounding box, defining it's
+        A data type defines some properties like name, title and descriptions. A data type can have a
+        bounding box, defining it's
         validity. The scale
-        denominators are used to define the scales for which a data instance is valid.
+        denominators are used to define the scales for which a data
+        instance is valid.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:complexContent>
         <xs:extension base="wpvs:AbstractDataType">
           <xs:sequence>
-      <!--
-        Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This parameter determines when geometry LODs
-        or objects are to be rendered are switched.
-      -->
-      <xs:element name="MaxPixelError" type="xs:double" default="5.0" minOccurs="0"/>          
             <!--
-              Maximum acceptable size (in pixels) that a texel of a lower-quality texture may cover in the rendered image. This parameter determines
-              when texture LODs are switched.
+              Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This
+              parameter determines when geometry LODs or objects are to be rendered are switched.
+            -->
+            <xs:element name="MaxPixelError" type="xs:double" default="5.0" minOccurs="0"/>
+            <!--
+              Maximum acceptable size (in pixels) that a texel of a lower-quality texture may cover in the rendered
+              image. This parameter determines when texture LODs are switched.
             -->
             <xs:element name="MaxProjectedTexelSize" type="xs:double" default="5.0" minOccurs="0"/>
             <xs:group ref="wpvs:TextureProviders"/>
@@ -242,7 +235,8 @@
   <xs:element name="StyledGeometryProvider">
     <xs:annotation>
       <xs:documentation>
-        Defines a texture for very closed up views of the terrrain, for this purpose an SE-Style file will be evaluated, containing
+        Defines a texture for very closed up views of the terrrain, for this purpose an SE-Style file
+        will be evaluated, containing
         information about a data source having geometries and style information.
       </xs:documentation>
     </xs:annotation>
@@ -259,18 +253,19 @@
           </xs:complexType>
         </xs:element>
         <xs:element name="SE-StyleFile" type="xs:string"/>
-        <xs:element ref="ds:FeatureStore"/>
+        <xs:element name="FeatureStoreId" type="xs:string"/>
       </xs:sequence>
       <xs:attribute name="MinimumUnitsPerPixel" type="xs:double" use="optional" default="0.1"/>
       <!--
-        The number of units one texture pixel (texel) must have before this texture dataset becomes active. Normally this should be rather small
-        number, smaller then the fines multiresolution level of 'normal' textures.
+        The number of units one texture pixel (texel) must have before this texture dataset becomes active. Normally
+        this should be rather small number, smaller then the fines multiresolution level of 'normal' textures.
       -->
     </xs:complexType>
   </xs:element>
   <xs:group name="FeatureDataSources">
     <xs:annotation>
-      <xs:documentation>A group of datasources which can be requested to receive features (buildings, trees etc.) from.</xs:documentation>
+      <xs:documentation>A group of datasources which can be requested to receive features (buildings, trees etc.) from.
+      </xs:documentation>
     </xs:annotation>
     <xs:choice>
       <xs:element ref="ds:ConstrainedDatabaseDataSource"/>
@@ -281,15 +276,14 @@
     <xs:complexContent>
       <xs:extension base="wpvs:AbstractDataType">
         <xs:sequence>
-      <!--
-        Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This parameter determines when geometry LODs
-        or objects are to be rendered are switched.
-      -->
-      <xs:element name="MaxPixelError" type="xs:double" default="5.0" minOccurs="0"/>        
+          <!--
+            Maximum acceptable pixel error (geometric deviation of projected points in the rendered image). This
+            parameter determines when geometry LODs or objects are to be rendered are switched.
+          -->
+          <xs:element name="MaxPixelError" type="xs:double" default="5.0" minOccurs="0"/>
           <xs:element name="TextureDirectory" type="xs:anyURI" minOccurs="0" maxOccurs="unbounded"/>
           <!--
-            Each dataset can have 'child' datasets, which can be bound to other
-            datasources.
+            Each dataset can have 'child' datasets, which can be bound to other datasources.
           -->
           <xs:group ref="wpvs:FeatureDataSources" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
@@ -314,7 +308,8 @@
   <xs:element name="SwitchLevels">
     <xs:annotation>
       <xs:documentation>
-        Defines the number of pixels one meter of a building must have, before switching to the next level of detail. Each level
+        Defines the number of pixels one meter of a building must have, before switching to the next
+        level of detail. Each level
         defines a
         quality level (starting with 0) where 0 is the most coarse level.
       </xs:documentation>
@@ -344,4 +339,72 @@
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
+  <!-- ========================================================== -->
+  <xs:element name="Keywords" type="wpvs:KeywordsType"/>
+  <!-- ========================================================== -->
+  <xs:complexType name="LanguageStringType">
+    <xs:annotation>
+      <xs:documentation>
+        Text string with the language of the string identified
+        as recommended in the XML 1.0 W3C Recommendation, section 2.12.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="lang" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="CodeType">
+    <xs:annotation>
+      <xs:documentation>
+        Name or code with an (optional) authority. If the
+        codeSpace attribute is present, its value shall reference a dictionary,
+        thesaurus, or
+        authority for the name or code, such as the organisation
+        who assigned the value, or the dictionary from which it is taken.
+      </xs:documentation>
+      <xs:documentation>
+        Type copied from basicTypes.xsd of GML 3 with
+        documentation edited, for possible use outside the ServiceIdentification
+        section of a service
+        metadata document.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="codeSpace" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="KeywordsType">
+    <xs:annotation>
+      <xs:documentation>
+        Unordered list of one or more commonly used or
+        formalised word(s) or phrase(s) used to describe the subject. When
+        needed, the optional "type"
+        can name the type of the associated list of
+        keywords that shall all have the same type. Also when needed, the
+        codeSpace attribute of that
+        "type" can reference the type name authority
+        and/or thesaurus. If the xml:lang attribute is not included in a Keyword
+        element, then no
+        language is specified for that element unless specified
+        by another means. All Keyword elements in the same Keywords element that
+        share the
+        same xml:lang attribute value represent different keywords in
+        that language.
+      </xs:documentation>
+      <xs:documentation>
+        For OWS use, the optional thesaurusName element was
+        omitted as being complex information that could be referenced by the
+        codeSpace attribute
+        of the Type element.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Keyword" type="wpvs:LanguageStringType" maxOccurs="unbounded"/>
+      <xs:element name="Type" type="wpvs:CodeType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>
