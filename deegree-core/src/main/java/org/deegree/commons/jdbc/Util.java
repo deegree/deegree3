@@ -101,9 +101,10 @@ public class Util {
         PreparedStatement stmt = null;
         try {
             conn = getConnection( connId );
-            stmt = conn.prepareStatement( sql + " limit 0" );
+            boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
+            stmt = conn.prepareStatement( sql + ( isOracle ? "" : " limit 0" ) );
             stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
-            LOG.debug( "Detemining feature type using query '{}'.", stmt );
+            LOG.debug( "Detemining feature type using query '{}'.", isOracle ? sql : stmt );
             stmt.execute();
             set = stmt.getResultSet();
             ResultSetMetaData md = set.getMetaData();
