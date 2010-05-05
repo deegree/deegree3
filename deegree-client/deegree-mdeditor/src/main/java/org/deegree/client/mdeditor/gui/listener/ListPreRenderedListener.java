@@ -35,12 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui.listener;
 
-import javax.faces.context.FacesContext;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.AjaxBehaviorListener;
+import java.util.List;
 
-import org.deegree.client.mdeditor.gui.FormFieldBean;
+import javax.faces.component.UISelectItem;
+import javax.faces.component.html.HtmlSelectOneMenu;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ComponentSystemEvent;
+import javax.faces.event.ComponentSystemEventListener;
+
+import org.deegree.client.mdeditor.controller.FormGroupInstanceReader;
 
 /**
  * TODO add class documentation here
@@ -50,18 +53,16 @@ import org.deegree.client.mdeditor.gui.FormFieldBean;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormFieldValueChangedListener implements AjaxBehaviorListener {
+public class ListPreRenderedListener implements ComponentSystemEventListener {
 
     @Override
-    public void processAjaxBehavior( AjaxBehaviorEvent arg0 )
+    public void processEvent( ComponentSystemEvent arg0 )
                             throws AbortProcessingException {
-
-        FacesContext fc = FacesContext.getCurrentInstance();
-        fc.getELContext();
-        FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                    null,
-                                                                                                    "formFieldBean" );
-        formFieldBean.saveValue( arg0 );
+        HtmlSelectOneMenu select = (HtmlSelectOneMenu) arg0.getComponent();
+        String grpReference = (String) select.getAttributes().get( "grpReference" );
+        List<UISelectItem> selectItems = FormGroupInstanceReader.getSelectItems( grpReference );
+        select.getChildren().clear();
+        select.getChildren().addAll( selectItems );
 
     }
 

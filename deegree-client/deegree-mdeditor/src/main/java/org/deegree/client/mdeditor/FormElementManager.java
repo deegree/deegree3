@@ -124,9 +124,7 @@ public class FormElementManager {
     private static List<String> getSubFormGroupIds( FormGroup fg ) {
         List<String> fgIds = new ArrayList<String>();
         for ( FormElement fe : fg.getFormElements() ) {
-            System.out.println( "w" );
             if ( fe instanceof FormGroup ) {
-                System.out.println( "w1" );
                 fgIds.add( ( (FormGroup) fe ).getId() );
                 fgIds.addAll( getSubFormGroupIds( (FormGroup) fe ) );
             }

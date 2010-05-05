@@ -66,12 +66,14 @@ import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
+import javax.faces.event.PreRenderComponentEvent;
 
 import org.deegree.client.mdeditor.CodeListManager;
 import org.deegree.client.mdeditor.FormElementManager;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.FormGroupSubmitListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
+import org.deegree.client.mdeditor.gui.listener.ListPreRenderedListener;
 import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
@@ -206,8 +208,10 @@ public class FormCreatorBean implements Serializable {
 
                 if ( se.getReferenceToCodeList() != null ) {
                     addCodeListItems( selectManyMenu, se.getReferenceToCodeList() );
+                } else if ( se.getReferenceToGroup() != null ) {
+                    selectManyMenu.getAttributes().put( "grpReference", se.getReferenceToGroup() );
+                    selectManyMenu.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
-
 
                 parentGrid.getChildren().add( selectManyMenu );
             } else {
@@ -220,8 +224,11 @@ public class FormCreatorBean implements Serializable {
 
                 if ( se.getReferenceToCodeList() != null ) {
                     addCodeListItems( selectOneMenu, se.getReferenceToCodeList() );
+                } else if ( se.getReferenceToGroup() != null ) {
+                    selectOneMenu.getAttributes().put( "grpReference", se.getReferenceToGroup() );
+                    selectOneMenu.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
-                
+
                 setVisibility( se, selectOneMenu, ef, elContext );
 
                 parentGrid.getChildren().add( selectOneMenu );
