@@ -47,8 +47,6 @@ import org.deegree.client.mdeditor.gui.FormFieldPath;
  */
 public abstract class FormField implements FormElement {
 
-    private String grpId;
-
     private String id;
 
     private Object value;
@@ -68,14 +66,6 @@ public abstract class FormField implements FormElement {
         this.visibility = visible;
         this.help = help;
         this.value = defaultValue;
-    }
-
-    public String getGrpId() {
-        return grpId;
-    }
-
-    public void setGrpId( String grpId ) {
-        this.grpId = grpId;
     }
 
     public String getId() {
@@ -102,10 +92,6 @@ public abstract class FormField implements FormElement {
         this.visibility = visibility;
     }
 
-    public String getCompleteId() {
-        return grpId + "_" + id;
-    }
-
     public void setLabel( String label ) {
         this.label = label;
     }
@@ -124,11 +110,10 @@ public abstract class FormField implements FormElement {
 
     @Override
     public String toString() {
-        return getCompleteId() + ": " + getValue();
+        return getPath().toString() + ": " + getValue();
     }
 
     public FormFieldPath getPath() {
-        path.addStep( id );
         return path;
     }
 

@@ -62,7 +62,7 @@ public class NavigationBean implements Serializable {
         fc.getELContext();
         FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                  null, "formFieldBean" );
-        DatasetWriter.writeElements( formfields.getElements() );
+        DatasetWriter.writeElements( formfields.getFormGroups() );
         return null;
     }
 

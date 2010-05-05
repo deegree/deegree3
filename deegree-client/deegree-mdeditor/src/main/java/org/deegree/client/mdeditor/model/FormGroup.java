@@ -103,11 +103,6 @@ public class FormGroup implements FormElement {
         formElements.add( parseFormGroup );
     }
 
-    @Override
-    public String getCompleteId() {
-        return id;
-    }
-
     public void setReferenced( boolean referenced ) {
         this.referenced = referenced;
     }

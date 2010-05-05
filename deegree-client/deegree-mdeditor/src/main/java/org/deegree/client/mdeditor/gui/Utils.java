@@ -49,8 +49,6 @@ public class Utils {
 
     public static final String FIELDPATH_ATT_KEY = "fieldPath";
 
-    public static final String FIELDID_ATT_KEY = "fieldId";
-
     public static final String GROUPID_ATT_KEY = "groupId";
 
     public static String getUniqueId() {

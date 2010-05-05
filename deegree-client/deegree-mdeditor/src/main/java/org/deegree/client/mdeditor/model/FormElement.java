@@ -45,8 +45,6 @@ package org.deegree.client.mdeditor.model;
  */
 public interface FormElement {
 
-    String getCompleteId();
-
     String getId();
 
 }

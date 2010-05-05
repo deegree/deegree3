@@ -41,9 +41,12 @@ import junit.framework.TestCase;
 
 import org.deegree.client.mdeditor.CodeListManager;
 import org.deegree.client.mdeditor.FormElementManager;
+import org.deegree.client.mdeditor.gui.FormFieldPath;
 import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormGroup;
+import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.SelectFormField;
 import org.junit.Test;
 
 /**
@@ -73,7 +76,32 @@ public class FormConfigurationParserTest extends TestCase {
         FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
         assertTrue( formElement instanceof FormGroup );
         assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+    }
 
+    @Test
+    public void testParseFormGroup() {
+        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
+        List<FormGroup> formGroups = FormElementManager.getFormGroups();
+
+        assertNotNull( formGroups );
+        assertTrue( formGroups.size() == 2 );
+
+        assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
+        assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
+
+        FormElement input = formGroups.get( 1 ).getFormElements().get( 1 );
+        assertTrue( input instanceof InputFormField );
+        FormFieldPath inputPath = new FormFieldPath( "FormGroup", "text1" );
+        assertEquals( inputPath, ( (InputFormField) input ).getPath() );
+
+        FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
+        assertTrue( formElement instanceof FormGroup );
+        assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+
+        FormElement select = ( (FormGroup) formElement ).getFormElements().get( 3 );
+        assertTrue( select instanceof SelectFormField );
+        FormFieldPath selectPath = new FormFieldPath( "FormGroup", "FormGroup11", "selectOne2" );
+        assertEquals( selectPath, ( (SelectFormField) select ).getPath() );
     }
 
     @Test

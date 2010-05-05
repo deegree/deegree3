@@ -38,16 +38,15 @@ package org.deegree.client.mdeditor.controller;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.util.List;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
-import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.client.mdeditor.FormElementManager;
 import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.gui.FormFieldBean;
-import org.deegree.client.mdeditor.model.FormField;
+import org.deegree.client.mdeditor.model.FormGroup;
 import org.slf4j.Logger;
 
 /**
@@ -58,33 +57,41 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormGroupWriter extends FormElementWriter {
+public class FormGroupWriter extends FormWriter {
 
     private static final Logger LOG = getLogger( FormGroupWriter.class );
 
-    public static void writeFormGroup( AjaxBehaviorEvent arg0 ) {
-        HtmlCommandButton comp = (HtmlCommandButton) arg0.getComponent();
-        LOG.debug( "Write FormGroup with id " + comp.getId() );
-
-        FacesContext fc = FacesContext.getCurrentInstance();
-        fc.getELContext();
-        FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                    null,
-                                                                                                    "formFieldBean" );
-        String fgId = comp.getId();
-        List<String> subFgIds = FormElementManager.getSubFormGroupIds( fgId );
-        subFgIds.add( fgId );
-        List<FormField> ff = formFieldBean.getElements( subFgIds );
-
+    public static void writeFormGroup( FormGroup fg ) {
         String dirUrl = Configuration.getFilesDirURL();
-        File dir = new File( dirUrl, fgId );
+        File dir = new File( dirUrl, fg.getId() );
         if ( !dir.exists() ) {
             dir.mkdir();
         }
         String instance = Utils.getInstanceId();
         File file = new File( dir, instance + ".xml" );
 
-        writeElements( ff, file );
+        try {
+            LOG.debug( "Write values of form group with id " + fg.getId() + " in file " + file.toString() );
+            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+            FileOutputStream fos = new FileOutputStream( file );
+            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( fos );
+
+            writer.writeStartDocument();
+            writer.writeStartElement( DS_ELEM );
+            writer.writeAttribute( "id", fg.getId() );
+
+            appendFormGroup( writer, fg );
+
+            writer.writeEndElement();
+            writer.writeEndDocument();
+            writer.close();
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 }

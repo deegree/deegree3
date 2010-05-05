@@ -35,14 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.controller;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.File;
-import java.util.Map;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.List;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.model.FormField;
-import org.slf4j.Logger;
+import org.deegree.client.mdeditor.model.FormGroup;
 
 /**
  * TODO add class documentation here
@@ -52,16 +55,35 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class DatasetWriter extends FormElementWriter {
+public class DatasetWriter extends FormWriter {
 
-    private static final Logger LOG = getLogger( DatasetWriter.class );
-
-    public static void writeElements( Map<String, FormField> elements ) {
-        LOG.debug( "Start writing the " + elements.size() + " values." );
-
+    public static void writeElements( List<FormGroup> formGroups ) {
         // TODO
         String title = "title";
         File file = new File( Configuration.getFilesDirURL(), title + ".xml" );
-        writeElements( elements.values(), file );
+
+        try {
+            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+            FileOutputStream fos = new FileOutputStream( file );
+            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( fos );
+
+            writer.writeStartDocument();
+            writer.writeStartElement( DS_ELEM );
+            writer.writeAttribute( "id", title );
+
+            for ( FormGroup fg : formGroups ) {
+                appendFormGroup( writer, fg );
+            }
+
+            writer.writeEndElement();
+            writer.writeEndDocument();
+            writer.close();
+        } catch ( FileNotFoundException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

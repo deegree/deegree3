@@ -156,6 +156,8 @@ public class FormCreatorBean implements Serializable {
             HtmlCommandButton button = new HtmlCommandButton();
             button.setId( fg.getId() );
             button.setValue( "Speichern" );
+            button.getAttributes().put( Utils.GROUPID_ATT_KEY, fg.getId() );
+
             AjaxBehavior ajaxBt = new AjaxBehavior();
             List<String> renderBt = new ArrayList<String>();
             renderBt.add( "@none" );
@@ -172,7 +174,7 @@ public class FormCreatorBean implements Serializable {
 
     private void addFormField( HtmlPanelGrid parentGrid, FormField fe ) {
 
-        LOG.debug( "Add FormField " + fe.getCompleteId() );
+        LOG.debug( "Add FormField " + fe.getPath() );
 
         Application app = FacesContext.getCurrentInstance().getApplication();
         ExpressionFactory ef = app.getExpressionFactory();
@@ -237,7 +239,7 @@ public class FormCreatorBean implements Serializable {
             }
         }
         if ( input != null ) {
-            input.setId( fe.getCompleteId() );
+            input.setId( fe.getId() );
             input.getAttributes().put( Utils.FIELDPATH_ATT_KEY, fe.getPath() );
             setValue( fe, input, ef, elContext );
             setValueChangedAjaxBehavior( input );
@@ -272,13 +274,13 @@ public class FormCreatorBean implements Serializable {
     }
 
     private void setVisibility( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
-        String el = "#{formFieldBean.elements['" + fe.getCompleteId() + "'].visibility}";
+        String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].visibility}";
         ValueExpression ve = ef.createValueExpression( elContext, el, Boolean.class );
         component.setValueExpression( "rendered", ve );
     }
 
     private void setValue( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
-        String el = "#{formFieldBean.elements['" + fe.getCompleteId() + "'].value}";
+        String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].value}";
         ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
         component.setValueExpression( "value", ve );
     }

@@ -37,11 +37,15 @@ package org.deegree.client.mdeditor.gui.listener;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import javax.faces.component.html.HtmlCommandButton;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 
 import org.deegree.client.mdeditor.controller.FormGroupWriter;
+import org.deegree.client.mdeditor.gui.FormFieldBean;
+import org.deegree.client.mdeditor.model.FormGroup;
 import org.slf4j.Logger;
 
 /**
@@ -60,7 +64,18 @@ public class FormGroupSubmitListener implements AjaxBehaviorListener {
     public void processAjaxBehavior( AjaxBehaviorEvent arg0 )
                             throws AbortProcessingException {
         LOG.debug( "Save FormGroup" );
-        FormGroupWriter.writeFormGroup( arg0 );
+
+        HtmlCommandButton comp = (HtmlCommandButton) arg0.getComponent();
+        String id = (String) comp.getAttributes().get( org.deegree.client.mdeditor.gui.Utils.GROUPID_ATT_KEY );
+        LOG.debug( "Write FormGroup with id " + id );
+
+        FacesContext fc = FacesContext.getCurrentInstance();
+        fc.getELContext();
+        FormFieldBean formFieldBean = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
+                                                                                                    null,
+                                                                                                    "formFieldBean" );
+        FormGroup fg = formFieldBean.getFormGroup( id );
+        FormGroupWriter.writeFormGroup( fg );
     }
 
 }

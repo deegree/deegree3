@@ -71,13 +71,13 @@ public class FormFieldBean implements Serializable {
 
     private static final Logger LOG = getLogger( FormFieldBean.class );
 
-    private List<FormGroup> mainFormGroups = new ArrayList<FormGroup>();
+    private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
-    private Map<String, FormField> elements = new HashMap<String, FormField>();
+    private Map<String, FormField> formFields = new HashMap<String, FormField>();
 
     public FormFieldBean() {
-        elements = FormElementManager.getFormFields();
-        mainFormGroups = FormElementManager.getFormGroups();
+        formGroups = FormElementManager.getFormGroups();
+        formFields = FormElementManager.getFormFields();
     }
 
     public void saveValue( AjaxBehaviorEvent event )
@@ -94,9 +94,9 @@ public class FormFieldBean implements Serializable {
 
         String fgId = path.next();
         FormField ffToUpdate = null;
-        for ( FormGroup fg : mainFormGroups ) {
+        for ( FormGroup fg : formGroups ) {
             if ( fgId.equals( fg.getId() ) ) {
-                ffToUpdate = doIt( fg.getFormElements(), path );
+                ffToUpdate = getFormField( fg.getFormElements(), path );
             }
         }
         if ( ffToUpdate != null ) {
@@ -104,35 +104,16 @@ public class FormFieldBean implements Serializable {
             LOG.debug( "Update element with id " + path + ". New Value is " + value + "." );
             ffToUpdate.setValue( value );
         }
-        // String id = input.getId();
-        //
-        // if ( id != null ) {
-        // if ( elements.containsKey( id ) && elements.get( id ) instanceof FormField ) {
-        // Object value = ( (UIInput) event.getSource() ).getValue();
-        // LOG.debug( "Update element with id " + id + ". New Value is " + value + "." );
-        // ( (FormField) elements.get( id ) ).setValue( value );
-        // } else {
-        // LOG.error( "An field with id " + id + " does not exist!" );
-        // }
-        // }
-
     }
 
-    public FormField doIt( List<FormElement> fes, FormFieldPath path ) {
-        System.out.println( "1" );
+    private FormField getFormField( List<FormElement> fes, FormFieldPath path ) {
         if ( path.hasNext() ) {
-            System.out.println( "2" );
+            String next = path.next();
             for ( FormElement fe : fes ) {
-                System.out.println( "3" );
-                if ( path.next().equals( fe.getId() ) ) {
-                    System.out.println( "4" );
+                if ( next.equals( fe.getId() ) ) {
                     if ( fe instanceof FormGroup ) {
-                        System.out.println( "5" );
-                        // iteriere weiter
-                        doIt( fes, path );
+                        return getFormField( ( (FormGroup) fe ).getFormElements(), path );
                     } else {
-                        System.out.println( "6" );
-                        // field gefunden: setze value
                         return (FormField) fe;
                     }
                 }
@@ -141,19 +122,25 @@ public class FormFieldBean implements Serializable {
         return null;
     }
 
-    public Map<String, FormField> getElements() {
-        return elements;
+    public List<FormGroup> getFormGroups() {
+        return formGroups;
     }
 
-    public List<FormField> getElements( List<String> formGroupIds ) {
-        List<FormField> formFields = new ArrayList<FormField>();
-        for ( String fgId : formGroupIds ) {
-            for ( String id : elements.keySet() ) {
-                if ( fgId.equals( elements.get( id ).getGrpId() ) ) {
-                    formFields.add( elements.get( id ) );
-                }
+    public FormGroup getFormGroup( String id ) {
+        for ( FormGroup fg : formGroups ) {
+            if ( id.equals( fg.getId() ) ) {
+                return fg;
             }
         }
+        return null;
+    }
+
+    public Map<String, FormField> getFormFields() {
         return formFields;
     }
+
+    public void setFormFields( Map<String, FormField> formFields ) {
+        this.formFields = formFields;
+    }
+
 }

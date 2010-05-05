@@ -35,20 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.controller;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.Collection;
 import java.util.List;
 
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
-import org.slf4j.Logger;
+import org.deegree.client.mdeditor.model.FormGroup;
 
 /**
  * TODO add class documentation here
@@ -58,26 +52,24 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-abstract class FormElementWriter {
+abstract class FormWriter {
 
-    private static final Logger LOG = getLogger( FormElementWriter.class );
+    static final String FG_ELEM = "FormGroup";
 
-    static void writeElements( Collection<FormField> elements, File file ) {
-        try {
-            LOG.debug( "Write " + elements.size() + " form elements in file " + file.toString() );
-            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            FileOutputStream fos = new FileOutputStream( file );
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( fos );
+    static final String DS_ELEM = "Dataset";
 
-            writer.writeStartDocument();
-            writer.writeStartElement( "Dataset" );
+    static void appendFormGroup( XMLStreamWriter writer, FormGroup fg )
+                            throws XMLStreamException {
+        writer.writeStartElement( FG_ELEM );
+        writer.writeAttribute( "id", fg.getId() );
 
-            for ( FormField ff : elements ) {
-                Object value = ff.getValue();
+        for ( FormElement fe : fg.getFormElements() ) {
+            if ( fe instanceof FormField ) {
+                Object value = ( (FormField) fe ).getValue();
                 if ( value != null ) {
                     writer.writeStartElement( "Element" );
                     writer.writeStartElement( "id" );
-                    writer.writeCharacters( ff.getCompleteId() );
+                    writer.writeCharacters( fe.getId() );
                     writer.writeEndElement();
                     if ( value instanceof List<?> ) {
                         for ( Object o : (List<?>) value ) {
@@ -93,19 +85,11 @@ abstract class FormElementWriter {
                     }
                     writer.writeEndElement();
                 }
+            } else if ( fe instanceof FormGroup ) {
+                appendFormGroup( writer, (FormGroup) fe );
             }
-
-            writer.writeEndElement();
-            writer.writeEndDocument();
-
-            writer.close();
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
+        writer.writeEndElement();
     }
 
     private static void writeValue( XMLStreamWriter writer, String value )

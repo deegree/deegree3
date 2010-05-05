@@ -45,6 +45,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -98,6 +99,8 @@ public class FormConfigurationParser {
 
     private static LAYOUT_TYPE layoutType;
 
+    private static Stack<String> path = new Stack<String>();
+
     /**
      * @return a list of all codelists
      */
@@ -144,8 +147,7 @@ public class FormConfigurationParser {
             while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( FORM_CONF_ELEMENT ) ) ) {
                 QName elementName = xmlStream.getName();
                 if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
-                    FormFieldPath currentPath = new FormFieldPath();
-                    formGroups.add( parseFormGroup( xmlStream, currentPath ) );
+                    formGroups.add( parseFormGroup( xmlStream ) );
                 } else if ( CODELIST_ELEMENT.equals( elementName ) ) {
                     parseCodeList( xmlStream );
                 }
@@ -173,11 +175,11 @@ public class FormConfigurationParser {
         }
     }
 
-    private static FormGroup parseFormGroup( XMLStreamReader xmlStream, FormFieldPath currentPath )
+    private static FormGroup parseFormGroup( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
 
         String formGroupId = getId( xmlStream );
-        currentPath.addStep( formGroupId );
+        path.push( formGroupId );
         if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
             xmlStream.nextTag();
         }
@@ -190,22 +192,21 @@ public class FormConfigurationParser {
 
         while ( !( xmlStream.isEndElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) ) {
             if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
-                fg.addFormElement( parseFormGroup( xmlStream, currentPath ) );
-                currentPath.removeLastStep();
+                fg.addFormElement( parseFormGroup( xmlStream ) );
             } else if ( xmlStream.isStartElement() && INPUT_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
-                fg.addFormElement( parseInputFormElement( xmlStream, currentPath ) );
+                fg.addFormElement( parseInputFormElement( xmlStream ) );
             } else if ( xmlStream.isStartElement() && SELECT_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
-                fg.addFormElement( parseSelectFormElement( xmlStream, currentPath ) );
+                fg.addFormElement( parseSelectFormElement( xmlStream ) );
             }
             xmlStream.next();
         }
-
+        path.pop();
         xmlStream.require( END_ELEMENT, NS, FORM_GROUP_ELEMENT.getLocalPart() );
         return fg;
 
     }
 
-    private static SelectFormField parseSelectFormElement( XMLStreamReader xmlStream, FormFieldPath currentPath )
+    private static SelectFormField parseSelectFormElement( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
@@ -235,14 +236,23 @@ public class FormConfigurationParser {
             selectedValue = selValues;
         }
 
-        SelectFormField ff = new SelectFormField( currentPath, id, label, visible, help, selectedValue, selectType,
+        SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, help, selectedValue, selectType,
                                                   referenceToCodeList, referenceToGroup );
-
+        System.out.println( "s " + ff.getPath() );
         return ff;
 
     }
 
-    private static InputFormField parseInputFormElement( XMLStreamReader xmlStream, FormFieldPath currentPath )
+    private static FormFieldPath getPath( String fieldId ) {
+        FormFieldPath ffPath = new FormFieldPath();
+        for ( String id : path ) {
+            ffPath.addStep( id );
+        }
+        ffPath.addStep( fieldId );
+        return ffPath;
+    }
+
+    private static InputFormField parseInputFormElement( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
@@ -267,8 +277,10 @@ public class FormConfigurationParser {
             validation.setMinValue( getElementDouble( xmlStream, "minValue", Double.MIN_VALUE ) );
             validation.setMaxValue( getElementDouble( xmlStream, "maxValue", Double.MIN_VALUE ) );
         }
-        InputFormField ff = new InputFormField( currentPath, id, label, visible, help, inputType, defaultValue,
+
+        InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, inputType, defaultValue,
                                                 validation );
+        System.out.println( "i " + ff.getPath() );
         return ff;
     }
 

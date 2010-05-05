@@ -90,7 +90,8 @@ public class FormElementManager {
             if ( fe instanceof FormGroup ) {
                 addFormField( (FormGroup) fe );
             } else if ( fe instanceof FormField ) {
-                formFields.put( fe.getCompleteId(), (FormField) fe );
+                FormField ff = (FormField) fe;
+                formFields.put( ff.getPath().toString(), ff );
             }
         }
     }
