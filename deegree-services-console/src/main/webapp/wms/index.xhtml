@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:m="http://www.ol4jsf.org" xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+</h:head>
+
+<h:body>
+
+    <style type="text/css">
+.management {
+	position: fixed;
+	margin-right: auto;
+	right: 5%;
+	top: 20%;
+	width: 20%;
+}
+</style>
+
+    <h1 align="center">deegree WMS</h1>
+    <p>This OpenLayers map is configured with your WMS layers.</p>
+
+    <f:view>
+        <m:map width="70%" height="90%" id="map" jsVariable="map" binding="#{layerDatabase.openlayersMap}"
+            options="{projection: '#{openLayers.coordinateSystem}', allOverlays: true, maxResolution: 'auto', minResolution: 'auto', minExtent: new OpenLayers.Bounds(-0.00000001, -0.0000001, 0.0000001, 0.00000001), maxExtent: new OpenLayers.Bounds(#{openLayers.minx}, #{openLayers.miny}, #{openLayers.maxx}, #{openLayers.maxy})}">
+
+            <m:layerSwitcherControl />
+
+            <ui:repeat value="#{openLayers.layers}" var="layer">
+                <m:wmsLayer name="#{layer.title}" url="#{openLayers.url}"
+                    params="{layers: '#{layer.name}', transparent: true, format: 'image/png'}"
+                    jsVariable="#{layer.jsName}" />
+            </ui:repeat>
+
+            <m:script>
+                <ui:repeat value="#{openLayers.layers}" var="layer">
+                    <h:outputText value="#{layer.jsName}.setVisibility(false);" />
+                </ui:repeat>
+            </m:script>
+
+        </m:map>
+
+        <h:panelGroup styleClass="management">
+            <h:form id="management">
+
+                <h:panelGrid>
+                    <h:column>
+                        <h:commandLink actionListener="#{layerDatabase.switchAddOpen}" value="Add layer from database"
+                            rendered="#{layerDatabase.doesHaveWmsConnection}">
+                            <f:ajax render="addlayer" />
+                        </h:commandLink>
+                    </h:column>
+                    <h:panelGroup id="addlayer">
+                        <h:panelGroup rendered="#{layerDatabase.addOpen}">
+                            <h:panelGrid>
+                                <h:column>
+                                    <h:selectOneMenu value="#{layerDatabase.selectedWmsConnection}"
+                                        rendered="#{layerDatabase.doesHaveMultipleWmsConnections}">
+                                        <f:selectItems value="#{layerDatabase.wmsConnections}" var="wmsConnection"
+                                            itemLabel="#{wmsConnection}" itemValue="#{wmsConnection}" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{layerDatabase.selectedConnection}">
+                                        <f:selectItems value="#{layerDatabase.connections}" var="connection"
+                                            itemLabel="#{connection}" itemValue="#{connection}" />
+                                        <f:ajax listener="#{layerDatabase.fetchSchemas}"
+                                            render="schemas tables addlayer" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu id="schemas" value="#{layerDatabase.selectedSchema}"
+                                        rendered="#{layerDatabase.manySchemas}">
+                                        <f:selectItems value="#{layerDatabase.schemas}" var="schema"
+                                            itemLabel="#{schema}" itemValue="#{schema}" />
+                                        <f:ajax listener="#{layerDatabase.fetchTables}" render="tables" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu id="tables" value="#{layerDatabase.selectedTable}">
+                                        <f:selectItems value="#{layerDatabase.tables}" var="table" itemLabel="#{table}"
+                                            itemValue="#{table}" />
+                                        <f:ajax render="crs" action="tableChanged" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="crs" value="#{layerDatabase.crs}">
+                                        <f:ajax />
+                                    </h:inputText>
+                                </h:column>
+                                <h:column>
+                                    <h:commandButton action="#{layerDatabase.addLayer}" value="Add layer to WMS">
+                                    </h:commandButton>
+                                </h:column>
+                            </h:panelGrid>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGrid>
+
+            </h:form>
+        </h:panelGroup>
+
+    </f:view>
+
+</h:body>
+</html>

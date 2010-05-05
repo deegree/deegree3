@@ -28,9 +28,8 @@
 				<ui:repeat value="#{applicationBean.nameToController}" var="ntc">
  	 					- <h:outputText value="#{ntc}" />
 								<h:outputText value="&#160;" />
-								<c:if test="#{ntc == WPS}">
-												<h:outputLink value="#{fn:toLowerCase(ntc)}/index.jsp">details</h:outputLink>
-								</c:if>
+								<h:outputLink rendered="#{ntc == 'WPS'}" value="#{fn:toLowerCase(ntc)}/index.jsp">details</h:outputLink>
+                                <h:outputLink rendered="#{ntc == 'WMS'}" value="#{fn:toLowerCase(ntc)}/index.jsf">details</h:outputLink>
 								<br />
 				</ui:repeat>
 
