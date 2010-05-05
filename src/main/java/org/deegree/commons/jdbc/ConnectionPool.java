@@ -77,10 +77,12 @@ class ConnectionPool {
      * @param connectURI
      * @param user
      * @param password
+     * @param readOnly
      * @param minIdle
      * @param maxActive
      */
-    ConnectionPool( String id, String connectURI, String user, String password, int minIdle, int maxActive ) {
+    ConnectionPool( String id, String connectURI, String user, String password, boolean readOnly, int minIdle,
+                    int maxActive ) {
 
         this.id = id;
         pool = new GenericObjectPool( null );
@@ -88,7 +90,8 @@ class ConnectionPool {
         pool.setMaxActive( maxActive );
 
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory( connectURI, user, password );
-        new PoolableConnectionFactory( connectionFactory, pool, null, null, false, true );
+        // TODO make this configurable
+        new PoolableConnectionFactory( connectionFactory, pool, null, null, readOnly, true );
         ds = new PoolingDataSource( pool );
         // needed, so users can retrieve the underlying connection from pooled
         // connections, e.g. to access the
