@@ -145,12 +145,13 @@ public class ConnectionManager {
      * Adds the connection pool defined in the given file.
      * 
      * @param jdbcConfigUrl
+     * @param connId
      * @throws JAXBException
      */
     public static void addConnection( URL jdbcConfigUrl, String connId )
                             throws JAXBException {
         synchronized ( ConnectionManager.class ) {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.configuration" );
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.jdbc.jaxb" );
             Unmarshaller u = jc.createUnmarshaller();
             addConnection( (PooledConnection) u.unmarshal( jdbcConfigUrl ), connId );
         }
@@ -160,6 +161,7 @@ public class ConnectionManager {
      * Adds a connection pool from the given pool definition.
      * 
      * @param jaxbConn
+     * @param connId
      */
     public static void addConnection( PooledConnection jaxbConn, String connId ) {
         synchronized ( ConnectionManager.class ) {
@@ -185,7 +187,6 @@ public class ConnectionManager {
      * Adds a connection pool as specified in the parameters.
      * 
      * @param connId
-     * @param type
      * @param url
      * @param user
      * @param password
