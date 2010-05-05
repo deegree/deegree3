@@ -192,6 +192,8 @@ public class MapService {
 
     private HashMap<Layer, Integer> defaultMaxFeatures = new HashMap<Layer, Integer>();
 
+    private int globalDefaultMaxFeatures = 10000;
+
     private int defaultFeatureInfoRadius = 1;
 
     private static int stylesCounter = 0;
@@ -216,6 +218,13 @@ public class MapService {
             Quality quali = handleDefaultValue( sf == null ? null : sf.getRenderingQuality(), Quality.class, NORMAL );
             Interpolation interpol = handleDefaultValue( sf == null ? null : sf.getInterpolation(),
                                                          Interpolation.class, NEARESTNEIGHBOR );
+            if ( sf != null && sf.getMaxFeatures() != null ) {
+                globalDefaultMaxFeatures = sf.getMaxFeatures();
+                LOG.debug( "Using global max features setting of {}.", globalDefaultMaxFeatures );
+            } else {
+                LOG.debug( "Using default global max features setting of {}, set it to -1 if you don't want a limit.",
+                           globalDefaultMaxFeatures );
+            }
             root = parseLayer( conf.getAbstractLayer().getValue(), null, adapter, alias, interpol, quali );
             defaultFeatureInfoRadius = conf.getFeatureInfoRadius() == null ? 1 : parseInt( conf.getFeatureInfoRadius() );
             fillInheritedInformation( root, new LinkedList<CRS>( root.getSrs() ) );
@@ -382,6 +391,9 @@ public class MapService {
                 alias = handleDefaultValue( sf.getAntiAliasing(), Antialias.class, alias );
                 quality = handleDefaultValue( sf.getRenderingQuality(), Quality.class, quality );
                 interpol = handleDefaultValue( sf.getInterpolation(), Interpolation.class, interpol );
+                if ( sf.getMaxFeatures() != null ) {
+                    defaultMaxFeatures.put( res, sf.getMaxFeatures() );
+                }
             }
             defaultAntialiases.put( res, alias );
             defaultQualities.put( res, quality );
