@@ -13,10 +13,12 @@
     <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
+
   <servlet-mapping>
     <servlet-name>Faces Servlet</servlet-name>
     <url-pattern>*.jsf</url-pattern>
   </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>Faces Servlet</servlet-name>
     <url-pattern>*.xhtml</url-pattern>
@@ -26,18 +28,40 @@
     <servlet-name>services</servlet-name>
     <servlet-class>org.deegree.services.controller.OGCFrontController</servlet-class>
     <!--
-        parameter 'ConfigurationFile' is optional (only needed when a
-        non-default location is used for the 'services_metadata.xml' file)
+      parameter 'ConfigurationFile' is optional (only needed when a non-default location is used for the
+      'services_metadata.xml' file)
     -->
     <!--
-        init-param> <param-name>ConfigurationFile</param-name>
-        <param-value>conf/services_metadata.xml</param-value> </init-param
+      init-param> <param-name>ConfigurationFile</param-name> <param-value>conf/services_metadata.xml</param-value>
+      </init-param
     -->
     <load-on-startup>1</load-on-startup>
   </servlet>
+
   <servlet-mapping>
     <servlet-name>services</servlet-name>
     <url-pattern>/services</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>OL4JSF Resources</servlet-name>
+    <servlet-class>org.ol4jsf.resource.ResourceServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>OL4JSF Resources</servlet-name>
+    <url-pattern>/ol4jsf_resource/*</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
+    <servlet-name>OL4JSFProxy</servlet-name>
+    <servlet-class>org.ol4jsf.proxy.servlet.OL4JSFProxy</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>OL4JSFProxy</servlet-name>
+    <url-pattern>/OL4JSFProxy/*</url-pattern>
   </servlet-mapping>
 
 
