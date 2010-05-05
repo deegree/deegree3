@@ -151,6 +151,14 @@ public class Symbolizer<T extends Copyable<T>> {
                               new Object[] { file, line, col } );
                 } else if ( os[0] instanceof Geometry ) {
                     geom = (Geometry) os[0];
+                } else if ( os[0] instanceof Property ) {
+                    if ( ( (Property) os[0] ).getValue() instanceof Geometry ) {
+                        geom = (Geometry) ( (Property) os[0] ).getValue();
+                    } else {
+                        LOG.warn(
+                                  "The geometry expression in file '{}', line {}, column {} evaluated to something other than a geometry.",
+                                  new Object[] { file, line, col } );
+                    }
                 } else {
                     LOG.warn(
                               "The geometry expression in file '{}', line {}, column {} evaluated to something other than a geometry.",
