@@ -50,7 +50,9 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 
 import org.deegree.client.mdeditor.FormElementManager;
+import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
+import org.deegree.client.mdeditor.model.FormGroup;
 import org.slf4j.Logger;
 
 /**
@@ -69,26 +71,74 @@ public class FormFieldBean implements Serializable {
 
     private static final Logger LOG = getLogger( FormFieldBean.class );
 
+    private List<FormGroup> mainFormGroups = new ArrayList<FormGroup>();
+
     private Map<String, FormField> elements = new HashMap<String, FormField>();
 
     public FormFieldBean() {
         elements = FormElementManager.getFormFields();
+        mainFormGroups = FormElementManager.getFormGroups();
     }
 
     public void saveValue( AjaxBehaviorEvent event )
                             throws AbortProcessingException {
+        UIInput input = (UIInput) event.getSource();
 
-        String id = ( (UIInput) event.getSource() ).getId();
+        FormFieldPath path = (FormFieldPath) input.getAttributes().get( Utils.FIELDPATH_ATT_KEY );
 
-        if ( id != null ) {
-            if ( elements.containsKey( id ) && elements.get( id ) instanceof FormField ) {
-                Object value = ( (UIInput) event.getSource() ).getValue();
-                LOG.debug( "Update element with id " + id + ". New Value is " + value + "." );
-                ( (FormField) elements.get( id ) ).setValue( value );
-            } else {
-                LOG.error( "An field with id " + id + " does not exist!" );
+        if ( path == null ) {
+            LOG.error( "Can not save value for field " + path + ": groupId or fieldId are null" );
+        }
+
+        path.resetIterator();
+
+        String fgId = path.next();
+        FormField ffToUpdate = null;
+        for ( FormGroup fg : mainFormGroups ) {
+            if ( fgId.equals( fg.getId() ) ) {
+                ffToUpdate = doIt( fg.getFormElements(), path );
             }
         }
+        if ( ffToUpdate != null ) {
+            Object value = input.getValue();
+            LOG.debug( "Update element with id " + path + ". New Value is " + value + "." );
+            ffToUpdate.setValue( value );
+        }
+        // String id = input.getId();
+        //
+        // if ( id != null ) {
+        // if ( elements.containsKey( id ) && elements.get( id ) instanceof FormField ) {
+        // Object value = ( (UIInput) event.getSource() ).getValue();
+        // LOG.debug( "Update element with id " + id + ". New Value is " + value + "." );
+        // ( (FormField) elements.get( id ) ).setValue( value );
+        // } else {
+        // LOG.error( "An field with id " + id + " does not exist!" );
+        // }
+        // }
+
+    }
+
+    public FormField doIt( List<FormElement> fes, FormFieldPath path ) {
+        System.out.println( "1" );
+        if ( path.hasNext() ) {
+            System.out.println( "2" );
+            for ( FormElement fe : fes ) {
+                System.out.println( "3" );
+                if ( path.next().equals( fe.getId() ) ) {
+                    System.out.println( "4" );
+                    if ( fe instanceof FormGroup ) {
+                        System.out.println( "5" );
+                        // iteriere weiter
+                        doIt( fes, path );
+                    } else {
+                        System.out.println( "6" );
+                        // field gefunden: setze value
+                        return (FormField) fe;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public Map<String, FormField> getElements() {

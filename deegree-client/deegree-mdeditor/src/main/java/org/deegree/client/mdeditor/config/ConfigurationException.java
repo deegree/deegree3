@@ -43,7 +43,7 @@ package org.deegree.client.mdeditor.config;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConfigurationException extends RuntimeException {
+public class ConfigurationException extends Exception {
 
     private static final long serialVersionUID = -5005648880467646463L;
 

@@ -186,54 +186,8 @@ public class FormCreatorBean implements Serializable {
 
         parentGrid.getChildren().add( newOutput );
 
-        // inputText
-        if ( fe instanceof InputFormField ) {
-            HtmlInputText newInput = new HtmlInputText();
-            newInput.setId( fe.getCompleteId() );
+        addValueField( fe, parentGrid, ef, elContext );
 
-            setValue( fe, newInput, ef, elContext );
-            setValueChangedAjaxBehavior( newInput );
-            setVisibility( fe, newInput, ef, elContext );
-
-            parentGrid.getChildren().add( newInput );
-        } else if ( fe instanceof SelectFormField ) {
-            SelectFormField se = (SelectFormField) fe;
-            if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
-                HtmlSelectManyListbox selectManyMenu = new HtmlSelectManyListbox();
-                selectManyMenu.setId( fe.getCompleteId() );
-
-                setValue( fe, selectManyMenu, ef, elContext );
-                setValueChangedAjaxBehavior( selectManyMenu );
-                setVisibility( se, selectManyMenu, ef, elContext );
-
-                if ( se.getReferenceToCodeList() != null ) {
-                    addCodeListItems( selectManyMenu, se.getReferenceToCodeList() );
-                } else if ( se.getReferenceToGroup() != null ) {
-                    selectManyMenu.getAttributes().put( "grpReference", se.getReferenceToGroup() );
-                    selectManyMenu.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
-                }
-
-                parentGrid.getChildren().add( selectManyMenu );
-            } else {
-                HtmlSelectOneMenu selectOneMenu = new HtmlSelectOneMenu();
-                selectOneMenu.setId( se.getCompleteId() );
-
-                setValue( fe, selectOneMenu, ef, elContext );
-                setValueChangedAjaxBehavior( selectOneMenu );
-                setVisibility( se, selectOneMenu, ef, elContext );
-
-                if ( se.getReferenceToCodeList() != null ) {
-                    addCodeListItems( selectOneMenu, se.getReferenceToCodeList() );
-                } else if ( se.getReferenceToGroup() != null ) {
-                    selectOneMenu.getAttributes().put( "grpReference", se.getReferenceToGroup() );
-                    selectOneMenu.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
-                }
-
-                setVisibility( se, selectOneMenu, ef, elContext );
-
-                parentGrid.getChildren().add( selectOneMenu );
-            }
-        }
         // help
         HtmlCommandLink helpLink = new HtmlCommandLink();
         helpLink.setValue( "o" );
@@ -255,6 +209,41 @@ public class FormCreatorBean implements Serializable {
         setVisibility( fe, helpLink, ef, elContext );
 
         parentGrid.getChildren().add( helpLink );
+    }
+
+    private void addValueField( FormField fe, HtmlPanelGrid parentGrid, ExpressionFactory ef, ELContext elContext ) {
+        UIInput input = null;
+        if ( fe instanceof InputFormField ) {
+            input = new HtmlInputText();
+        }
+        if ( fe instanceof SelectFormField ) {
+            SelectFormField se = (SelectFormField) fe;
+            if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
+                input = new HtmlSelectManyListbox();
+                if ( se.getReferenceToCodeList() != null ) {
+                    addCodeListItems( input, se.getReferenceToCodeList() );
+                } else if ( se.getReferenceToGroup() != null ) {
+                    input.getAttributes().put( "grpReference", se.getReferenceToGroup() );
+                    input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
+                }
+            } else {
+                input = new HtmlSelectOneMenu();
+                if ( se.getReferenceToCodeList() != null ) {
+                    addCodeListItems( input, se.getReferenceToCodeList() );
+                } else if ( se.getReferenceToGroup() != null ) {
+                    input.getAttributes().put( "grpReference", se.getReferenceToGroup() );
+                    input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
+                }
+            }
+        }
+        if ( input != null ) {
+            input.setId( fe.getCompleteId() );
+            input.getAttributes().put( Utils.FIELDPATH_ATT_KEY, fe.getPath() );
+            setValue( fe, input, ef, elContext );
+            setValueChangedAjaxBehavior( input );
+            setVisibility( fe, input, ef, elContext );
+            parentGrid.getChildren().add( input );
+        }
     }
 
     private void addCodeListItems( UIInput select, String codeListRef ) {

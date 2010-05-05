@@ -52,6 +52,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.client.mdeditor.gui.FormFieldPath;
 import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.INPUT_TYPE;
@@ -92,6 +93,8 @@ public class FormConfigurationParser {
     private static List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
     private static List<String> referencedGroups = new ArrayList<String>();
+
+    private static List<String> idList = new ArrayList<String>();
 
     private static LAYOUT_TYPE layoutType;
 
@@ -141,7 +144,8 @@ public class FormConfigurationParser {
             while ( !( xmlStream.isEndElement() && xmlStream.getName().equals( FORM_CONF_ELEMENT ) ) ) {
                 QName elementName = xmlStream.getName();
                 if ( FORM_GROUP_ELEMENT.equals( elementName ) ) {
-                    formGroups.add( parseFormGroup( xmlStream, true ) );
+                    FormFieldPath currentPath = new FormFieldPath();
+                    formGroups.add( parseFormGroup( xmlStream, currentPath ) );
                 } else if ( CODELIST_ELEMENT.equals( elementName ) ) {
                     parseCodeList( xmlStream );
                 }
@@ -163,13 +167,17 @@ public class FormConfigurationParser {
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
-    private static FormGroup parseFormGroup( XMLStreamReader xmlStream, boolean isEntry )
-                            throws XMLStreamException, IOException {
+    private static FormGroup parseFormGroup( XMLStreamReader xmlStream, FormFieldPath currentPath )
+                            throws XMLStreamException, IOException, ConfigurationException {
 
         String formGroupId = getId( xmlStream );
+        currentPath.addStep( formGroupId );
         if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
             xmlStream.nextTag();
         }
@@ -182,11 +190,12 @@ public class FormConfigurationParser {
 
         while ( !( xmlStream.isEndElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) ) {
             if ( xmlStream.isStartElement() && FORM_GROUP_ELEMENT.equals( xmlStream.getName() ) ) {
-                fg.addFormElement( parseFormGroup( xmlStream, false ) );
+                fg.addFormElement( parseFormGroup( xmlStream, currentPath ) );
+                currentPath.removeLastStep();
             } else if ( xmlStream.isStartElement() && INPUT_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
-                fg.addFormElement( parseInputFormElement( xmlStream, formGroupId ) );
+                fg.addFormElement( parseInputFormElement( xmlStream, currentPath ) );
             } else if ( xmlStream.isStartElement() && SELECT_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
-                fg.addFormElement( parseSelectFormElement( xmlStream, formGroupId ) );
+                fg.addFormElement( parseSelectFormElement( xmlStream, currentPath ) );
             }
             xmlStream.next();
         }
@@ -196,8 +205,8 @@ public class FormConfigurationParser {
 
     }
 
-    private static SelectFormField parseSelectFormElement( XMLStreamReader xmlStream, String grpId )
-                            throws XMLStreamException, IOException {
+    private static SelectFormField parseSelectFormElement( XMLStreamReader xmlStream, FormFieldPath currentPath )
+                            throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
         xmlStream.nextTag();
@@ -226,15 +235,15 @@ public class FormConfigurationParser {
             selectedValue = selValues;
         }
 
-        SelectFormField ff = new SelectFormField( grpId, id, label, visible, help, selectedValue, selectType,
+        SelectFormField ff = new SelectFormField( currentPath, id, label, visible, help, selectedValue, selectType,
                                                   referenceToCodeList, referenceToGroup );
 
         return ff;
 
     }
 
-    private static InputFormField parseInputFormElement( XMLStreamReader xmlStream, String grpId )
-                            throws XMLStreamException, IOException {
+    private static InputFormField parseInputFormElement( XMLStreamReader xmlStream, FormFieldPath currentPath )
+                            throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
         xmlStream.nextTag();
@@ -258,14 +267,13 @@ public class FormConfigurationParser {
             validation.setMinValue( getElementDouble( xmlStream, "minValue", Double.MIN_VALUE ) );
             validation.setMaxValue( getElementDouble( xmlStream, "maxValue", Double.MIN_VALUE ) );
         }
-
-        InputFormField ff = new InputFormField( grpId, id, label, visible, help, inputType, defaultValue, validation );
-
+        InputFormField ff = new InputFormField( currentPath, id, label, visible, help, inputType, defaultValue,
+                                                validation );
         return ff;
     }
 
     private static void parseCodeList( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+                            throws XMLStreamException, ConfigurationException {
         String clId = getId( xmlStream );
         CodeList cl = new CodeList( clId );
 
@@ -332,10 +340,17 @@ public class FormConfigurationParser {
         throw new XMLParsingException( xmlStream, "layoutType " + elementText + "is not valid" );
     }
 
-    private static String getId( XMLStreamReader xmlStream ) {
+    private static String getId( XMLStreamReader xmlStream )
+                            throws ConfigurationException {
         String id = xmlStream.getAttributeValue( null, "id" );
-        if ( id == null ) {
-            throw new XMLParsingException( xmlStream, "id must not be null" );
+        if ( id == null || id.length() == 0 ) {
+            throw new ConfigurationException( "missing id" );
+        }
+        if ( idList.contains( id ) ) {
+            throw new ConfigurationException( "An element with id " + id
+                                              + " exists! Ids must be unique in the complete configuration." );
+        } else {
+            idList.add( id );
         }
         return id;
     }
@@ -394,7 +409,8 @@ public class FormConfigurationParser {
         return d;
     }
 
-    private static void updateFormGroups() {
+    private static void updateFormGroups()
+                            throws ConfigurationException {
         for ( String reference : referencedGroups ) {
             boolean referenced = false;
             for ( FormGroup fg : formGroups ) {

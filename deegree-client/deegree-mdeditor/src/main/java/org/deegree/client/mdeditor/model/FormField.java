@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
+import org.deegree.client.mdeditor.gui.FormFieldPath;
+
 /**
  * TODO add class documentation here
  * 
@@ -57,8 +59,10 @@ public abstract class FormField implements FormElement {
 
     private String help;
 
-    public FormField( String grpId, String id, String label, boolean visible, String help, Object defaultValue ) {
-        this.grpId = grpId;
+    private FormFieldPath path;
+
+    public FormField( FormFieldPath path, String id, String label, boolean visible, String help, Object defaultValue ) {
+        this.path = path;
         this.id = id;
         this.label = label;
         this.visibility = visible;
@@ -121,6 +125,11 @@ public abstract class FormField implements FormElement {
     @Override
     public String toString() {
         return getCompleteId() + ": " + getValue();
+    }
+
+    public FormFieldPath getPath() {
+        path.addStep( id );
+        return path;
     }
 
 }

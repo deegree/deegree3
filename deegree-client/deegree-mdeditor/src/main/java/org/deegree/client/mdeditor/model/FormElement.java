@@ -47,4 +47,6 @@ public interface FormElement {
 
     String getCompleteId();
 
+    String getId();
+
 }
