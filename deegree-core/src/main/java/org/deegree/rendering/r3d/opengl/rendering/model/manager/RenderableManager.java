@@ -51,6 +51,7 @@ import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 
 /**
  * The <code>RenderableManager</code> is a collection based on a quadtree which can hold {@link PositionableModel}
@@ -63,7 +64,7 @@ import org.deegree.rendering.r3d.ViewParams;
  *            type of this manager
  * 
  */
-public class RenderableManager<T extends PositionableModel> implements Collection<T> {
+public abstract class RenderableManager<T extends PositionableModel> implements Collection<T>, JOGLRenderable {
 
     private QTModelScene<T> root;
 

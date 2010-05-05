@@ -47,8 +47,8 @@ import java.util.List;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
-import org.deegree.services.wpvs.configuration.ColormapDataset;
-import org.deegree.services.wpvs.configuration.DatasetDefinitions;
+import org.deegree.services.jaxb.wpvs.ColormapDataset;
+import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.slf4j.Logger;
 
 /**

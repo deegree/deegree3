@@ -57,8 +57,6 @@ import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r2d.se.parser.SymbologyParser;
 import org.deegree.rendering.r2d.se.unevaluated.Style;
@@ -68,10 +66,10 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.RasterAPITexture
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.StyledGeometryTTProvider;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileProvider;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.WMSTextureTileProvider;
-import org.deegree.services.wpvs.configuration.DEMTextureDataset;
-import org.deegree.services.wpvs.configuration.DatasetDefinitions;
-import org.deegree.services.wpvs.configuration.StyledGeometryProvider;
-import org.deegree.services.wpvs.configuration.StyledGeometryProvider.TextureCacheDir;
+import org.deegree.services.jaxb.wpvs.DEMTextureDataset;
+import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.deegree.services.jaxb.wpvs.StyledGeometryProvider;
+import org.deegree.services.jaxb.wpvs.StyledGeometryProvider.TextureCacheDir;
 
 /**
  * The <code>TextureDatasetWrapper</code> extracts data from jaxb configuration elements and creates texture managers,
@@ -165,7 +163,8 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
                             throws IOException {
 
         List<TextureTileProvider> tileProviders = new ArrayList<TextureTileProvider>();
-        JAXBElement<? extends AbstractGeospatialDataSourceType> abstractRasterDataSource = textureDataset.getAbstractRasterDataSource();
+        JAXBElement<? extends AbstractGeospatialDataSourceType> abstractRasterDataSource = null;//textureDataset.getAbstractRasterDataSource();
+        //todo init the raster datasource over the coverage manager
         Envelope datasetEnvelope = null;
         LOG.debug( "Adding texture dataset: " + textureDataset.getTitle() );
         if ( abstractRasterDataSource != null ) {
@@ -245,7 +244,8 @@ public class TextureDatasetWrapper extends DatasetWrapper<TextureManager> {
 //                throw new IOException( "Could not create a feature store because: " + e.getLocalizedMessage(), e );
 //            }
 
-            String unresolved = ctDS.getSEStyleFile();
+            String unresolved = ctDS.getStyleId();
+            //todo get it from the style manager?
             if ( unresolved == null ) {
                 LOG.warn( "The se-style file was not defined, could not create a closeup layer." );
                 return sceneEnvelope;

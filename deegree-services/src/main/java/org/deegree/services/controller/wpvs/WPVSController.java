@@ -81,8 +81,6 @@ import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.ows.OWSException110XMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.wpvs.capabilities.CapabilitiesXMLAdapter;
-import org.deegree.services.controller.wpvs.configuration.PublishedInformation;
-import org.deegree.services.controller.wpvs.configuration.PublishedInformation.AllowedOperations;
 import org.deegree.services.controller.wpvs.getview.GetView;
 import org.deegree.services.controller.wpvs.getview.GetViewKVPAdapter;
 import org.deegree.services.controller.wpvs.getview.GetViewResponseParameters;
@@ -91,8 +89,10 @@ import org.deegree.services.jaxb.metadata.DCPType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadata;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wpvs.PublishedInformation;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
+import org.deegree.services.jaxb.wpvs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wpvs.PerspectiveViewService;
-import org.deegree.services.wpvs.configuration.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,14 +141,13 @@ public class WPVSController extends AbstractOGCServiceController {
         JOGLChecker.check();
         LOG.info( "JOGL status check successful." );
 
+        identification = serviceMetadata.getServiceIdentification();
+        provider = serviceMetadata.getServiceProvider();
+        
         NamespaceContext nsContext = new NamespaceContext();
         nsContext.addNamespace( "wpvs", "http://www.deegree.org/services/wpvs" );
         try {
             publishedInformation = parsePublishedInformation( nsContext, controllerConf );
-            if ( publishedInformation != null ) {
-                syncServiceIdentification();
-                syncServiceProvider();
-            }
             ServiceConfiguration sc = parseServerConfiguration( nsContext, controllerConf );
             service = new PerspectiveViewService( controllerConf, sc );
         } catch ( JAXBException e ) {
@@ -395,33 +394,4 @@ public class WPVSController extends AbstractOGCServiceController {
         sendServiceException( new OWSException( "Currently only Http Get requests with key value pairs are supported.",
                                                 OWSException.OPERATION_NOT_SUPPORTED ), response );
     }
-
-    /**
-     * sets the identification to the main controller or it will be synchronized with the maincontroller.
-     */
-    private void syncServiceIdentification() {
-        if ( identification == null ) {
-            if ( publishedInformation == null || publishedInformation.getServiceIdentification() == null ) {
-                LOG.info( "Using global service identification because no WPVS specific service identification was defined." );
-                identification = mainControllerConf.getServiceIdentification();
-            } else {
-                identification = synchronizeServiceIdentificationWithMainController( publishedInformation.getServiceIdentification() );
-            }
-        }
-    }
-
-    /**
-     * sets the provider to the provider of the configured main controller or it will be synchronized with it's values.
-     */
-    private void syncServiceProvider() {
-        if ( provider == null ) {
-            if ( publishedInformation == null || publishedInformation.getServiceProvider() == null ) {
-                LOG.info( "Using gloval serviceProvider because no WPVS specific service provider was defined." );
-                provider = mainControllerConf.getServiceProvider();
-            } else {
-                provider = synchronizeServiceProviderWithMainControllerConf( publishedInformation.getServiceProvider() );
-            }
-        }
-    }
-
 }

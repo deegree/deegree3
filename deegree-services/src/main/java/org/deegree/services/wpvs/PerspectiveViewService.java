@@ -62,26 +62,23 @@ import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
-import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
-import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.ows.OWSException;
 import org.deegree.services.controller.wpvs.getview.GetView;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.wpvs.config.BuildingsDatasetWrapper;
+import org.deegree.services.jaxb.wpvs.Copyright;
+import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
+import org.deegree.services.jaxb.wpvs.SkyImages;
+import org.deegree.services.jaxb.wpvs.TranslationToLocalCRS;
+import org.deegree.services.jaxb.wpvs.Copyright.Image;
+import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
 import org.deegree.services.wpvs.config.ColormapDatasetWrapper;
 import org.deegree.services.wpvs.config.DemDatasetWrapper;
 import org.deegree.services.wpvs.config.ModelDatasetWrapper;
 import org.deegree.services.wpvs.config.TextureDatasetWrapper;
-import org.deegree.services.wpvs.config.TreesDatasetWrapper;
-import org.deegree.services.wpvs.configuration.Copyright;
-import org.deegree.services.wpvs.configuration.DatasetDefinitions;
-import org.deegree.services.wpvs.configuration.ServiceConfiguration;
-import org.deegree.services.wpvs.configuration.SkyImages;
-import org.deegree.services.wpvs.configuration.TranslationToLocalCRS;
-import org.deegree.services.wpvs.configuration.Copyright.Image;
-import org.deegree.services.wpvs.configuration.SkyImages.SkyImage;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
 import org.deegree.services.wpvs.rendering.jogl.GLPBufferPool;
 import org.deegree.services.wpvs.rendering.jogl.GetViewRenderer;
@@ -108,10 +105,9 @@ public class PerspectiveViewService {
 
     private DirectByteBufferPool textureByteBufferPool;
 
-    private BuildingsDatasetWrapper buildingDatasets;
+    private ModelDatasetWrapper renderableDatasets;
 
-    private TreesDatasetWrapper treesDatasets;
-
+    
     private TextureDatasetWrapper textureDatasets;
 
     private ColormapDatasetWrapper colormapDatasets;
@@ -305,24 +301,17 @@ public class PerspectiveViewService {
                                                                                                    + ModelDatasetWrapper.DEFAULT_SPAN,
                                                                            ModelDatasetWrapper.DEFAULT_SPAN },
                                                              defaultCRS );
-        buildingDatasets = new BuildingsDatasetWrapper();
-        sceneEnvelope = buildingDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
+        renderableDatasets = new ModelDatasetWrapper();
+        sceneEnvelope = renderableDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                      configAdapter, dsd );
 
-        LOG.debug( "The scene envelope after loading the buildings: {} ", sceneEnvelope );
+        LOG.debug( "The scene envelope after loading the renderables: {} ", sceneEnvelope );
 
-        treesDatasets = new TreesDatasetWrapper();
-        sceneEnvelope = treesDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
-                                                                  configAdapter, dsd );
 
         LOG.debug( "The scene envelope after loading the trees: {} ", sceneEnvelope );
 
         int noDFC = sc.getNumberOfDEMFragmentsCached() == null ? 1000 : sc.getNumberOfDEMFragmentsCached();
         int dIOM = sc.getDirectIOMemory() == null ? 500 : sc.getDirectIOMemory();
-        demDatasets = new DemDatasetWrapper( noDFC, dIOM, ConfiguredOpenGLInitValues.getTerrainAmbient(),
-                                             ConfiguredOpenGLInitValues.getTerrainDiffuse(),
-                                             ConfiguredOpenGLInitValues.getTerrainSpecular(),
-                                             ConfiguredOpenGLInitValues.getTerrainShininess() );
         sceneEnvelope = demDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                 configAdapter, dsd );
 
@@ -411,15 +400,6 @@ public class PerspectiveViewService {
     }
 
     /**
-     * @param datasetNames
-     * @param viewParams
-     * @return all modelRenderers which intersect with the given parameters and have the given names.
-     */
-    public List<TreeRenderer> getTreeRenderers( Collection<String> datasetNames, ViewParams viewParams ) {
-        return treesDatasets.getMatchingDatasourceObjects( datasetNames, viewParams );
-    }
-
-    /**
      * @param datasets
      * @param viewParams
      * @return the first matching colormap.
@@ -434,25 +414,10 @@ public class PerspectiveViewService {
     }
 
     /**
-     * @param viewParams
-     * @return all modelRenderers (independent of dataset name) which intersect with the given parameters.
-     */
-    public List<TreeRenderer> getTreeRenderers( ViewParams viewParams ) {
-        return getTreeRenderers( treesDatasets.datasetTitles(), viewParams );
-    }
-
-    /**
-     * @return all treeRenderers (independent of dataset name).
-     */
-    public List<TreeRenderer> getAllTreeRenderers() {
-        return treesDatasets.getAllDatasourceObjects();
-    }
-
-    /**
      * @return all building Renderers (independent of dataset name).
      */
-    public List<BuildingRenderer> getAllBuildingRenderers() {
-        return buildingDatasets.getAllDatasourceObjects();
+    public List<RenderableManager<?>> getAllBuildingRenderers() {
+        return renderableDatasets.getAllDatasourceObjects();
     }
 
     /**
@@ -460,16 +425,16 @@ public class PerspectiveViewService {
      * @param viewParams
      * @return all modelRenderers which intersect with the given parameters and have the given names.
      */
-    public List<BuildingRenderer> getBuildingRenderers( Collection<String> datasetNames, ViewParams viewParams ) {
-        return buildingDatasets.getMatchingDatasourceObjects( datasetNames, viewParams );
+    public List<RenderableManager<?>> getBuildingRenderers( Collection<String> datasetNames, ViewParams viewParams ) {
+        return renderableDatasets.getMatchingDatasourceObjects( datasetNames, viewParams );
     }
 
     /**
      * @param viewParams
      * @return all modelRenderers (independent of dataset name) which intersect with the given parameters.
      */
-    public List<BuildingRenderer> getBuildingRenderers( ViewParams viewParams ) {
-        return getBuildingRenderers( buildingDatasets.datasetTitles(), viewParams );
+    public List<RenderableManager<?>> getBuildingRenderers( ViewParams viewParams ) {
+        return getBuildingRenderers( renderableDatasets.datasetTitles(), viewParams );
     }
 
     /**
@@ -529,10 +494,8 @@ public class PerspectiveViewService {
         TerrainRenderingManager demRenderer = defaultDEMRenderer;
         List<TextureManager> textureManagers = getTextureManagers( request.getDatasets(), viewParams );
         LOG.debug( "Texturemanagers: " + textureManagers );
-        List<BuildingRenderer> buildingRenders = getBuildingRenderers( request.getDatasets(), viewParams );
+        List<RenderableManager<?>> buildingRenders = getBuildingRenderers( request.getDatasets(), viewParams );
         LOG.debug( "Buildings : " + buildingRenders );
-        List<TreeRenderer> treeRenderers = getTreeRenderers( request.getDatasets(), viewParams );
-        LOG.debug( "Trees: " + treeRenderers );
         Colormap colormap = getColormap( request.getDatasets(), viewParams );
         LOG.debug( "Colormap: " + colormap );
         PooledByteBuffer imageBuffer = this.resultImagePool.allocate( resultImageSize );
@@ -540,7 +503,7 @@ public class PerspectiveViewService {
                                                    this.maxTextureSize,
                                                    configuredOpenGLInitValues.getCompositingTextureShaderPrograms() );
         GetViewRenderer renderer = new GetViewRenderer( request, context, imageBuffer, demRenderer, colormap,
-                                                        textureManagers, buildingRenders, treeRenderers,
+                                                        textureManagers, buildingRenders, 
                                                         this.copyrightKey, this.copyrighScale, this.latitudeOfScene );
 
         synchronized ( offscreenBuffer ) {

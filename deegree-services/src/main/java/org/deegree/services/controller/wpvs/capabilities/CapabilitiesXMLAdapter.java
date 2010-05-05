@@ -55,14 +55,13 @@ import org.deegree.services.controller.ows.capabilities.OWSCapabilitiesXMLAdapte
 import org.deegree.services.jaxb.metadata.DCPType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
-import org.deegree.services.wpvs.configuration.AbstractDataType;
-import org.deegree.services.wpvs.configuration.Buildings;
-import org.deegree.services.wpvs.configuration.ColormapDataset;
-import org.deegree.services.wpvs.configuration.DEMTextureDataset;
-import org.deegree.services.wpvs.configuration.DatasetDefinitions;
-import org.deegree.services.wpvs.configuration.ElevationDataset;
-import org.deegree.services.wpvs.configuration.ServiceConfiguration;
-import org.deegree.services.wpvs.configuration.Trees;
+import org.deegree.services.jaxb.wpvs.AbstractDataType;
+import org.deegree.services.jaxb.wpvs.ColormapDataset;
+import org.deegree.services.jaxb.wpvs.DEMTextureDataset;
+import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.deegree.services.jaxb.wpvs.ElevationDataset;
+import org.deegree.services.jaxb.wpvs.RenderableDataset;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,8 +143,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
         if ( datasetDefinitions != null ) {
             exportTextureDataset( writer, datasetDefinitions.getDEMTextureDataset() );
             exportColormapDataset( writer, datasetDefinitions.getColormapDataset() );
-            exportBuildingsDataset( writer, datasetDefinitions.getBuildings() );
-            exportTreesDataset( writer, datasetDefinitions.getTrees() );
+            exportRenderableDatasets( writer, datasetDefinitions.getRenderableDataset() );
             exportElevationModel( writer, datasetDefinitions.getElevationDataset() );
         }
 
@@ -155,18 +153,18 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
 
     /**
      * @param writer
-     * @param buildings
+     * @param renderables
      * @throws XMLStreamException
      */
-    private static void exportBuildingsDataset( XMLStreamWriter writer, List<Buildings> buildings )
+    private static void exportRenderableDatasets( XMLStreamWriter writer, List<RenderableDataset> renderables )
                             throws XMLStreamException {
-        if ( buildings != null && !buildings.isEmpty() ) {
+        if ( renderables != null ) {
             // TODO Rutger: Is this supposed to be like this?
-            for ( Buildings fd : buildings ) {
-                if ( fd != null ) {
+            for ( RenderableDataset renderable : renderables ) {
+                if ( renderable != null ) {
                     writer.writeStartElement( WPVS_NS, "Dataset" );
                     writer.writeAttribute( "queryable", "true" );
-                    exportAbstractDataType( writer, fd );
+                    exportAbstractDataType( writer, renderable );
                     writer.writeEndElement();
                 }
             }
@@ -187,26 +185,6 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
             writer.writeEndElement();// WPVS_NS, "ElevationModel"
         }
 
-    }
-
-    /**
-     * @param writer
-     * @param featureDataset
-     * @throws XMLStreamException
-     */
-    private static void exportTreesDataset( XMLStreamWriter writer, List<Trees> modelDatasets )
-                            throws XMLStreamException {
-        if ( modelDatasets != null && !modelDatasets.isEmpty() ) {
-            // TODO Rutger: Is this supposed to be like this?
-            for ( Trees fd : modelDatasets ) {
-                if ( fd != null ) {
-                    writer.writeStartElement( WPVS_NS, "Dataset" );
-                    writer.writeAttribute( "queryable", "true" );
-                    exportAbstractDataType( writer, fd );
-                    writer.writeEndElement();
-                }
-            }
-        }
     }
 
     /**

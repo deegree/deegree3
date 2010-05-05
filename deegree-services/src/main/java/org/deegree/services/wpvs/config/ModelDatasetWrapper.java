@@ -40,6 +40,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
@@ -53,14 +54,26 @@ import org.deegree.commons.datasource.configuration.FileSetType;
 import org.deegree.commons.datasource.configuration.FileType;
 import org.deegree.commons.datasource.configuration.GeospatialFileSystemDataSourceType;
 import org.deegree.commons.datasource.configuration.ScaleConstraint;
+import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.LODSwitcher;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
+import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypePool;
+import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
-import org.deegree.services.wpvs.configuration.AbstractFeatureDatasetType;
+import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.deegree.services.jaxb.wpvs.RenderableDataset;
+import org.deegree.services.jaxb.wpvs.SwitchLevels;
+import org.deegree.services.jaxb.wpvs.SwitchLevels.Level;
 import org.deegree.services.wpvs.exception.DatasourceException;
 import org.deegree.services.wpvs.io.ModelBackend;
+import org.deegree.services.wpvs.io.ModelBackendInfo;
 
 /**
  * The <code>ModelDatasetWrapper</code> class TODO add class documentation here.
@@ -68,11 +81,9 @@ import org.deegree.services.wpvs.io.ModelBackend;
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * @param <R>
- *            type to use as a result
  * 
  */
-public abstract class ModelDatasetWrapper<R> extends DatasetWrapper<R> {
+public class ModelDatasetWrapper extends DatasetWrapper<RenderableManager<?>> {
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( ModelDatasetWrapper.class );
 
     /** span of the default envelope */
@@ -93,8 +104,7 @@ public abstract class ModelDatasetWrapper<R> extends DatasetWrapper<R> {
      * 
      * @param afds
      */
-    protected void loadTextureDirs( AbstractFeatureDatasetType afds ) {
-        List<String> textureDirs = afds.getTextureDirectory();
+    protected void loadTextureDirs( List<String> textureDirs ) {
         if ( !textureDirs.isEmpty() ) {
             for ( String td : textureDirs ) {
                 if ( td != null ) {
@@ -105,6 +115,229 @@ public abstract class ModelDatasetWrapper<R> extends DatasetWrapper<R> {
                         LOG.info( "Ignoring texture directory: " + td + " because it does not exist." );
                     }
                 }
+            }
+        }
+    }
+    
+  /**
+  * Analyzes the ModelDataset from the {@link DatasetDefinitions}, fills the renderers with data from the defined
+  * modelbackends and builds up a the constraint vectors for retrieval of the appropriate renderers.
+  * 
+  * @param sceneEnvelope
+  * @param toLocalCRS
+  * @param configAdapter
+  * 
+  * @param dsd
+  */
+ @Override
+ public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
+                                             DatasetDefinitions dsd ) {
+     List<RenderableDataset> datsets = dsd.getRenderableDataset();
+     if ( !datsets.isEmpty() ) {
+         sceneEnvelope = analyseAndExtractConstraints( datsets, sceneEnvelope, toLocalCRS,
+                                                       dsd.getMaxPixelError(), configAdapter );
+     } else {
+         LOG.info( "No tree model dataset has been configured, no trees will be available." );
+     }
+     return sceneEnvelope;
+ }
+    
+    private Envelope analyseAndExtractConstraints( List<RenderableDataset> datasets, Envelope sceneEnvelope,
+                                                   double[] toLocalCRS, Double parentMaxPixelError, XMLAdapter adapter ) {
+        if ( datasets != null  ) {
+            for ( RenderableDataset bds : datasets ) {
+                if ( bds != null ) {
+                    // ModelDataset t = configuredModelDatasets.put( tds.getTitle(), tds );
+                    if ( isUnAmbiguous( bds.getTitle() ) ) {
+                        LOG.info( "The feature dataset with name: " + bds.getName() + " and title: " + bds.getTitle()
+                                  + " had multiple definitions in your service configuration." );
+                    } else {
+                        clarifyInheritance( bds, parentMaxPixelError );
+                        List<Pair<AbstractGeospatialDataSourceType, ModelBackend<?>>> backends = initializeDatasources(
+                                                                                                                        bds,
+                                                                                                                        toLocalCRS,
+                                                                                                                        sceneEnvelope.getCoordinateSystem(),
+                                                                                                                        adapter );
+                        if( bds.isIsBillboard() ){
+                            sceneEnvelope = initTrees( sceneEnvelope, toLocalCRS, bds, backends );
+                        } else {
+                        sceneEnvelope = initBuildings( sceneEnvelope, toLocalCRS, bds, backends );
+                        }
+                    }
+                }
+            }
+        }
+        return sceneEnvelope;
+    }
+    
+    /**
+     * Add the prototypes and building ordinates to the given backendinfo
+     * 
+     * @param result
+     *            to add the information to
+     * @param backends
+     *            to get the information from.
+     */
+    private void updateBackendInfo( ModelBackendInfo result,
+                                    List<Pair<AbstractGeospatialDataSourceType, ModelBackend<?>>> backends,
+                                    ModelBackend.Type infoType ) {
+        for ( Pair<AbstractGeospatialDataSourceType, ModelBackend<?>> pair : backends ) {
+            if ( pair != null && pair.second != null ) {
+                ModelBackend<?> mb = pair.second;
+                ModelBackendInfo backendInfo = mb.getBackendInfo( infoType );
+                result.add( backendInfo );
+            }
+        }
+    }
+    
+    /**
+     * Read and add the trees from the modelbackend and fill the renderer with them.
+     * 
+     * @param toLocalCRS
+     * @param sceneEnvelope
+     * 
+     * @param configuredTreeDatasets
+     * @param backends
+     */
+    private Envelope initTrees( Envelope sceneEnvelope, double[] toLocalCRS, RenderableDataset configuredTreeDatasets,
+                                List<Pair<AbstractGeospatialDataSourceType, ModelBackend<?>>> backends ) {
+        ModelBackendInfo info = new ModelBackendInfo();
+        updateBackendInfo( info, backends, ModelBackend.Type.TREE );
+        Envelope dsEnvelope = info.getDatasetEnvelope();
+        if ( dsEnvelope == null ) {
+            dsEnvelope = createDefaultEnvelope( toLocalCRS, sceneEnvelope.getCoordinateSystem() );
+        }
+
+        // RB: Todo configure this value.
+        int numberOfObjectsInLeaf = 250;
+        if ( configuredTreeDatasets != null ) {
+            // Envelope buildingDomain = createEnvelope( configuredTreeDatasets.getBoundingBox(), getDefaultCRS(), null
+            // );
+            TreeRenderer configuredRender = new TreeRenderer( dsEnvelope, numberOfObjectsInLeaf,
+                                                              configuredTreeDatasets.getMaxPixelError() );
+            // Iterate over all configured datasources and add the trees from the datasources which match the scale
+            // and envelope of the configured tree dataset.
+            for ( Pair<AbstractGeospatialDataSourceType, ModelBackend<?>> pair : backends ) {
+                if ( pair != null && pair.first != null ) {
+                    // AbstractGeospatialDataSourceType ds = pair.first;
+                    // Envelope dsEnv = createEnvelope( ds.getBBoxConstraint().getBoundingBox(), getDefaultCRS(), null
+                    // );
+                    // if ( buildingDomain.intersects( dsEnv )
+                    // && scalesFit( configuredTreeDatasets.getScaleDenominators(),
+                    // ds.getScaleConstraint().getScaleDenominators() ) ) {
+                    ModelBackend<?> modelBackend = pair.second;
+                    if ( modelBackend != null ) {
+                        modelBackend.loadTrees( configuredRender, sceneEnvelope.getCoordinateSystem() );
+                    }
+
+                }
+            }
+            dsEnvelope = configuredRender.getValidDomain();
+            sceneEnvelope = mergeGlobalWithScene( toLocalCRS, dsEnvelope, sceneEnvelope );
+
+            addConstraint( configuredTreeDatasets.getTitle(), configuredRender, dsEnvelope );
+        }
+        return sceneEnvelope;
+    }
+    
+    /**
+     * @param toLocalCRS
+     * @param parentBBox
+     * @param mb
+     * @return
+     */
+    private Envelope initBuildings( Envelope sceneEnvelope, double[] toLocalCRS, RenderableDataset configuredBuildingsDS,
+                                    List<Pair<AbstractGeospatialDataSourceType, ModelBackend<?>>> backends ) {
+        ModelBackendInfo info = new ModelBackendInfo();
+        updateBuildingAndPrototypeBackendInfo( info, backends );
+        Envelope dsEnvelope = info.getDatasetEnvelope();
+        if ( dsEnvelope == null ) {
+            dsEnvelope = createDefaultEnvelope( toLocalCRS, sceneEnvelope.getCoordinateSystem() );
+        }
+
+        /**
+         * assuming each building has 10 geometries (in average), each geometry has 6 vertices (2 triangles ) and each
+         * vertex has 3 ordinates 10*6*3 = 180
+         */
+        int numberOfObjectsInLeaf = (int) Math.max( ( info.getOrdinateCount() / 180 ) * 0.01, 25 );
+        DirectGeometryBuffer geometryBuffer = new DirectGeometryBuffer( info.getOrdinateCount(),
+                                                                        info.getTextureOrdinateCount() );
+
+        // Envelope domain = createEnvelope( parentBBox, getDefaultCRS(), null );
+        BuildingRenderer allBuildings = new BuildingRenderer( dsEnvelope, numberOfObjectsInLeaf, geometryBuffer,
+                                                              configuredBuildingsDS.getMaxPixelError(),
+                                                              createLevels( configuredBuildingsDS.getSwitchLevels() ) );
+
+        List<RenderablePrototype> prototypes = new LinkedList<RenderablePrototype>();
+
+        for ( Pair<AbstractGeospatialDataSourceType, ModelBackend<?>> pair : backends ) {
+            if ( pair != null && pair.second != null ) {
+                ModelBackend<?> mb = pair.second;
+                mb.loadBuildings( allBuildings, sceneEnvelope.getCoordinateSystem() );
+                List<RenderablePrototype> mbPrototypes = mb.loadProtoTypes( geometryBuffer,
+                                                                            sceneEnvelope.getCoordinateSystem() );
+                if ( mbPrototypes != null && !mbPrototypes.isEmpty() ) {
+                    prototypes.addAll( mbPrototypes );
+                }
+            }
+        }
+
+        // Add the prototypes to the pool.
+        for ( RenderablePrototype rp : prototypes ) {
+            if ( rp != null ) {
+                PrototypePool.addPrototype( rp.getId(), rp );
+            }
+        }
+
+        // BuildingRenderer configuredBuildings = initConfiguredBuildings( numberOfObjectsInLeaf, geometryBuffer,
+        // allBuildings, configuredBuildingsDS, backends );
+
+        dsEnvelope = allBuildings.getValidDomain();
+        sceneEnvelope = mergeGlobalWithScene( toLocalCRS, dsEnvelope, sceneEnvelope );
+        addConstraint( configuredBuildingsDS.getTitle(), allBuildings, dsEnvelope );
+        return sceneEnvelope;
+        // }
+    }
+    
+    /**
+     * Create the Lod switch level class from the configured values.
+     * 
+     * @param configuredLevels
+     * @return
+     */
+    private LODSwitcher createLevels( SwitchLevels configuredLevels ) {
+        LODSwitcher result = null;
+        if ( configuredLevels != null ) {
+            List<Level> levels = configuredLevels.getLevel();
+            List<Pair<Double, Double>> sl = new ArrayList<Pair<Double, Double>>( levels.size() );
+            for ( Level l : levels ) {
+                if ( l != null ) {
+                    sl.add( new Pair<Double, Double>( l.getMin(), l.getMax() ) );
+                }
+            }
+            result = new LODSwitcher( sl );
+        }
+        return result;
+    }
+
+    /**
+     * Add the prototypes and building ordinates to the given backendinfo
+     * 
+     * @param result
+     *            to add the information to
+     * @param backends
+     *            to get the information from.
+     */
+    private void updateBuildingAndPrototypeBackendInfo(
+                                                        ModelBackendInfo result,
+                                                        List<Pair<AbstractGeospatialDataSourceType, ModelBackend<?>>> backends ) {
+        for ( Pair<AbstractGeospatialDataSourceType, ModelBackend<?>> pair : backends ) {
+            if ( pair != null && pair.second != null ) {
+                ModelBackend<?> mb = pair.second;
+                ModelBackendInfo buildingInfo = mb.getBackendInfo( ModelBackend.Type.BUILDING );
+                ModelBackendInfo protoInfo = mb.getBackendInfo( ModelBackend.Type.PROTOTYPE );
+                result.add( buildingInfo );
+                result.add( protoInfo );
             }
         }
     }
@@ -122,11 +355,12 @@ public abstract class ModelDatasetWrapper<R> extends DatasetWrapper<R> {
      * @return the initialized model datasources
      */
     protected List<Pair<AbstractGeospatialDataSourceType, ModelBackend<?>>> initializeDatasources(
-                                                                                                   AbstractFeatureDatasetType mds,
+                                                                                                   RenderableDataset mds,
                                                                                                    double[] translationToLocalCRS,
                                                                                                    CRS defaultCRS,
                                                                                                    XMLAdapter adapter ) {
-        List<AbstractGeospatialDataSourceType> datasources = mds.getFeatureDataSources();
+        List<AbstractGeospatialDataSourceType> datasources = null;//mds.getRenderableStoreId();
+        //todo get from the manager
         List<Pair<AbstractGeospatialDataSourceType, ModelBackend<?>>> backends = new ArrayList<Pair<AbstractGeospatialDataSourceType, ModelBackend<?>>>(
                                                                                                                                                          datasources.size() );
         if ( !datasources.isEmpty() ) {
@@ -161,7 +395,7 @@ public abstract class ModelDatasetWrapper<R> extends DatasetWrapper<R> {
      * @param datatype
      * @param parentMaxPixelError
      */
-    protected void clarifyInheritance( AbstractFeatureDatasetType datatype, Double parentMaxPixelError ) {
+    protected void clarifyInheritance( RenderableDataset datatype, Double parentMaxPixelError ) {
         datatype.setMaxPixelError( clarifyMaxPixelError( parentMaxPixelError, datatype.getMaxPixelError() ) );
     }
 
@@ -284,4 +518,5 @@ public abstract class ModelDatasetWrapper<R> extends DatasetWrapper<R> {
         }
         return sceneEnvelope;
     }
+
 }

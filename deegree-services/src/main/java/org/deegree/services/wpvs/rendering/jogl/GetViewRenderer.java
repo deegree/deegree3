@@ -40,6 +40,8 @@ import static org.deegree.commons.utils.JOGLUtils.getFrameBufferRGB;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.media.opengl.DebugGL;
@@ -60,6 +62,7 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.controller.wpvs.getview.GetView;
@@ -89,9 +92,7 @@ public class GetViewRenderer implements GLEventListener {
 
     private final List<TextureManager> textureManagers;
 
-    private final List<TreeRenderer> treeRenderers;
-
-    private final List<BuildingRenderer> buildingRenderers;
+    private final List<RenderableManager<?>> renderableRenderers;
 
     private ViewParams viewParams;
 
@@ -136,14 +137,12 @@ public class GetViewRenderer implements GLEventListener {
      */
     public GetViewRenderer( GetView request, RenderContext glRenderContext, PooledByteBuffer imageBuffer,
                             TerrainRenderingManager demRenderer, Colormap colormap,
-                            List<TextureManager> textureManagers, List<BuildingRenderer> buildingRenderers,
-                            List<TreeRenderer> treeRenderers, String copyrightID, double copyrightScale,
+                            List<TextureManager> textureManagers, List<RenderableManager<?>> renderableRenderers, String copyrightID, double copyrightScale,
                             double sceneLatitude ) {
         this.imageBuffer = imageBuffer;
         this.demRenderer = demRenderer;
         this.textureManagers = textureManagers;
-        this.buildingRenderers = buildingRenderers;
-        this.treeRenderers = treeRenderers;
+        this.renderableRenderers = renderableRenderers;
         this.copyrightID = copyrightID;
         this.copyrightScale = copyrightScale;
         this.sceneLatitude = sceneLatitude;
@@ -185,17 +184,18 @@ public class GetViewRenderer implements GLEventListener {
             tManager = textureManagers.toArray( new TextureManager[textureManagers.size()] );
         }
         demRenderer.render( context, renderDEM, colormap, tManager );
-        if ( buildingRenderers != null && !buildingRenderers.isEmpty() ) {
-            for ( BuildingRenderer br : buildingRenderers ) {
+        if ( renderableRenderers != null ) {
+            Collections.sort( renderableRenderers, new Comparator<RenderableManager<?>>() {
+                @Override
+                public int compare( RenderableManager<?> o1, RenderableManager<?> o2 ) {
+                    return (o1 instanceof TreeRenderer)? 1:-1;
+                }
+            });
+            for ( RenderableManager<?> br : renderableRenderers ) {
                 br.render( context );
             }
         }
 
-        if ( treeRenderers != null && !treeRenderers.isEmpty() ) {
-            for ( TreeRenderer tr : treeRenderers ) {
-                tr.render( context );
-            }
-        }
         renderCopyright( context );
         gl.glFinish();
         LOG.trace( "Rendering scene took: " + ( System.currentTimeMillis() - begin ) + " ms." );

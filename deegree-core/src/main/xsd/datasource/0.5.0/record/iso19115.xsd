@@ -24,6 +24,7 @@
         <element name="GenerateFileIdentifiers" minOccurs="0" type="boolean"/>
       </sequence>
       <attribute name="connId" type="string" use="required" />
+      <attribute name="configVersion" use="required" fixed="0.5.0" />      
     </complexType>
   </element>
 </schema>

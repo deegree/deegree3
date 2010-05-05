@@ -36,6 +36,8 @@
 
 package org.deegree.services.wpvs.config;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -50,7 +52,8 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.ViewParams;
-import org.deegree.services.wpvs.configuration.DatasetDefinitions;
+import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.slf4j.Logger;
 
 /**
  * The <code>DatasetWrapper</code> class defines methods for the retrieval the objects which match requested datasets
@@ -64,7 +67,8 @@ import org.deegree.services.wpvs.configuration.DatasetDefinitions;
  * 
  */
 public abstract class DatasetWrapper<CO> {
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( DatasetWrapper.class );
+
+    private final static Logger LOG = getLogger( DatasetWrapper.class );
 
     /** The geometry factory to be used */
     protected final static GeometryFactory geomFac = new GeometryFactory();

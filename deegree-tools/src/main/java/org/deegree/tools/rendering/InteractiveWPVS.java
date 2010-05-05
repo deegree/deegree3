@@ -91,6 +91,7 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.RenderFragmentMana
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.controller.ows.OWSException;
@@ -98,13 +99,13 @@ import org.deegree.services.controller.wpvs.WPVSController;
 import org.deegree.services.controller.wpvs.getview.GetView;
 import org.deegree.services.controller.wpvs.getview.GetViewKVPAdapter;
 import org.deegree.services.exception.ServiceInitException;
+import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
+import org.deegree.services.jaxb.wpvs.SkyImages;
+import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.config.ColormapDatasetWrapper;
 import org.deegree.services.wpvs.config.DemDatasetWrapper;
 import org.deegree.services.wpvs.config.TextureDatasetWrapper;
-import org.deegree.services.wpvs.configuration.ServiceConfiguration;
-import org.deegree.services.wpvs.configuration.SkyImages;
-import org.deegree.services.wpvs.configuration.SkyImages.SkyImage;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
 import org.deegree.tools.CommandUtils;
 import org.deegree.tools.annotations.Tool;
@@ -302,16 +303,12 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
      * 
      */
     private void initModels() {
-        if ( this.perspectiveViewService.getAllTreeRenderers() != null
-             && !this.perspectiveViewService.getAllTreeRenderers().isEmpty() ) {
-            availableDatasets.add( "trees" );
-            LOG.info( "- Key 't' toggles tree dataset" );
-        }
         if ( this.perspectiveViewService.getAllBuildingRenderers() != null
              && !this.perspectiveViewService.getAllBuildingRenderers().isEmpty() ) {
             availableDatasets.add( "buildings" );
             this.currentDatasets.add( "buildings" );
             this.renderBuildings = true;
+            LOG.info( "- Key 't' toggles tree dataset" );
             LOG.info( "- Key 'b' toggles building dataset" );
         }
     }
@@ -349,18 +346,18 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         // outputMV( gl );
 
         if ( renderBuildings ) {
-            List<BuildingRenderer> buildingRenders = this.perspectiveViewService.getBuildingRenderers( this.params );
-            for ( BuildingRenderer br : buildingRenders ) {
-                if ( br != null ) {
+            List<RenderableManager<?>> buildingRenders = perspectiveViewService.getBuildingRenderers( this.params );
+            for ( RenderableManager<?> br : buildingRenders ) {
+                if ( br != null && br instanceof BuildingRenderer ) {
                     br.render( glRenderContext );
                 }
             }
         }
 
         if ( renderTrees ) {
-            List<TreeRenderer> treeRenders = this.perspectiveViewService.getTreeRenderers( this.params );
-            for ( TreeRenderer tr : treeRenders ) {
-                if ( tr != null ) {
+            List<RenderableManager<?>> treeRenders = this.perspectiveViewService.getBuildingRenderers( this.params );
+            for ( RenderableManager<?> tr : treeRenders ) {
+                if ( tr != null && tr instanceof TreeRenderer ) {
                     tr.render( glRenderContext );
                 }
             }
