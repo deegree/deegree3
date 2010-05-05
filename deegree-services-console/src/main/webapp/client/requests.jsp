@@ -2,11 +2,11 @@
 <%-- $Id: requests.jsp 23501 2010-04-09 11:28:08Z aionita $ --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8" isErrorPage="false" errorPage="error.jsp"
-	import="java.io.*,java.util.*,java.awt.event.*"%>
+	import="java.io.*,java.awt.event.*"%>
 <%
 final File dir = new File( getServletContext().getRealPath( "/client/requests" ) );
 
-final JspWriter o = out;
+final PrintWriter o = new PrintWriter(out);
 
 ActionListener listener = new ActionListener() {
     

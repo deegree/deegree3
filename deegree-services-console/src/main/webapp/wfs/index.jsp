@@ -35,8 +35,6 @@
  e-mail: info@deegree.org
 --%>
 <%@ page import="java.util.*"%>
-<%@ page import="org.deegree.commons.utils.DeegreeAALogoUtils"%>
-<%@ page import="org.deegree.commons.version.DeegreeModuleInfo"%>
 <%@ page import="org.deegree.services.controller.*"%>
 <%@ page import="org.deegree.services.controller.wfs.WFSController"%>
 <%@ page import="org.deegree.services.wfs.*"%>
@@ -47,11 +45,11 @@
 <%@page import="org.deegree.feature.persistence.query.Query"%>
 <%@page import="org.deegree.feature.types.FeatureType"%>
 <%!
-    private void printFt (FeatureType ft, FeatureStore store, JspWriter out, String indent) throws IOException {
+    private void printFt (FeatureType ft, FeatureStore store, PrintWriter out, String indent) throws IOException {
         if (ft.isAbstract()) {
             out.println (indent + "- <i>" + ft.getName().getLocalPart() + " (abstract)</i><br/>");        
         } else {
-            Query query = new Query( ft.getName(), null, null, false, 0);
+            Query query = new Query( ft.getName(), null, null, false, 0, -1);
             int numInstances = -1;
             try {
                 numInstances = store.queryHits(query);
@@ -108,7 +106,7 @@ Protocol information<br/><br/>
       });
       
       for (FeatureType ft : fts) {
-          printFt(ft, store, out, "");
+          printFt(ft, store, new PrintWriter(out), "");
           out.println ("<br/>");
       }
   }
