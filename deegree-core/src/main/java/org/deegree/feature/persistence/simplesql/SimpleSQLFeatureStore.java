@@ -116,7 +116,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private String connId;
 
-    private CRS crs;
+    CRS crs;
 
     private ApplicationSchema schema;
 
@@ -126,7 +126,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private String namespace;
 
-    private GenericFeatureType featureType;
+    GenericFeatureType featureType;
 
     private String bbox;
 
@@ -145,8 +145,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      * @param bbox
      * @param lods
      */
-    public SimpleSQLFeatureStore( String connId, String crs, String sql, String featureName, String namespace, String bbox,
-                           List<Pair<Integer, String>> lods ) {
+    public SimpleSQLFeatureStore( String connId, String crs, String sql, String featureName, String namespace,
+                                  String bbox, List<Pair<Integer, String>> lods ) {
         this.connId = connId;
         this.crs = new CRS( crs );
         sql = sql.trim();
@@ -315,11 +315,13 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     }
                 }
 
-                if ( q.getMaxFeatures() > 0 ) {
+                conn = getConnection( connId );
+                boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
+
+                if ( q.getMaxFeatures() > 0 && !isOracle ) {
                     sql += " limit " + q.getMaxFeatures();
                 }
 
-                conn = getConnection( connId );
                 stmt = conn.prepareStatement( sql );
                 try {
                     bbox = (Envelope) transformer.transform( bbox );
@@ -334,11 +336,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                 if ( parameterCount == 0 ) {
                     LOG.info( "No parameter for the bbox was found, requesting without bbox!" );
                 } else if ( parameterCount > 1 ) {
-                    LOG.warn( "Too many parameters specified ({}), cannot go further!" );
+                    LOG.warn( "Too many parameters specified ({}), cannot go further!", parameterCount );
                     return null;
                 }
                 stmt.setString( 1, WKTWriter.write( bbox ) );
-                LOG.debug( "Statement to fetch features was '{}'.", stmt );
+                LOG.debug( "Statement to fetch features was '{}'.", isOracle ? sql : stmt );
                 stmt.execute();
 
                 set = new IteratorResultSet( new ResultSetIterator<Feature>( stmt.getResultSet(), conn, stmt ) {
