@@ -61,7 +61,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
  * @version $Revision$, $Date$
  * 
  */
-public class BuildingRenderer extends RenderableManager<WorldRenderableObject> implements JOGLRenderable {
+public class BuildingRenderer extends RenderableManager<WorldRenderableObject>  {
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( BuildingRenderer.class );
 

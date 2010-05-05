@@ -66,7 +66,7 @@ import com.sun.opengl.util.texture.Texture;
  * @version $Revision$, $Date$
  * 
  */
-public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRenderable {
+public class TreeRenderer extends RenderableManager<BillBoard>{
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( TreeRenderer.class );
 
