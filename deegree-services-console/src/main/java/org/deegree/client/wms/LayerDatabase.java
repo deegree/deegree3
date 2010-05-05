@@ -38,9 +38,13 @@ package org.deegree.client.wms;
 import static java.lang.Boolean.FALSE;
 import static java.util.Collections.sort;
 import static org.deegree.commons.jdbc.Util.findSrid;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -58,6 +62,7 @@ import org.deegree.services.controller.wms.WMSController;
 import org.deegree.services.wms.dynamic.LayerUpdater;
 import org.deegree.services.wms.dynamic.PostGISUpdater;
 import org.ol4jsf.component.map.Map;
+import org.slf4j.Logger;
 
 /**
  * <code>LayerDatabase</code>
@@ -72,6 +77,8 @@ import org.ol4jsf.component.map.Map;
 public class LayerDatabase implements Serializable {
 
     private static final long serialVersionUID = 4427068290103023263L;
+
+    private static final Logger LOG = getLogger( LayerDatabase.class );
 
     @Getter
     private boolean addOpen;
@@ -129,6 +136,28 @@ public class LayerDatabase implements Serializable {
         connections = new LinkedList<String>( ConnectionManager.getConnectionIds() );
         connections.remove( "LOCK_DB" );
         sort( connections );
+        ListIterator<String> iter = connections.listIterator();
+        while ( iter.hasNext() ) {
+            String cur = iter.next();
+            Connection conn = null;
+            try {
+                conn = ConnectionManager.getConnection( cur );
+                if ( conn.getMetaData().getDriverName().contains( "Oracle" ) ) {
+                    iter.remove();
+                }
+            } catch ( SQLException e ) {
+                iter.remove();
+                LOG.trace( "Stack trace: ", e );
+            } finally {
+                if ( conn != null ) {
+                    try {
+                        conn.close();
+                    } catch ( SQLException e ) {
+                        LOG.trace( "Stack trace: ", e );
+                    }
+                }
+            }
+        }
         if ( !connections.isEmpty() ) {
             selectedConnection = connections.getFirst();
             fetchTables( null );
