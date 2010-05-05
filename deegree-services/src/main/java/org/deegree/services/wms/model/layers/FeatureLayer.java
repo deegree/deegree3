@@ -259,8 +259,15 @@ public class FeatureLayer extends Layer {
         FeatureResultSet rs = null;
         try {
             rs = datastore.query( queries.toArray( new Query[queries.size()] ) );
+            Integer maxFeats = gm.getMaxFeatures().get( this );
+            int max = maxFeats == null ? -1 : maxFeats;
+            int cnt = 0;
             for ( Feature f : rs ) {
                 render( f, style, renderer, textRenderer, gm.getScale() );
+                if ( max > 0 && ++cnt == max ) {
+                    LOG.debug( "Reached max features of {} for layer '{}', stopping.", max, this );
+                    break;
+                }
             }
         } catch ( FilterEvaluationException e ) {
             LOG.warn( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
