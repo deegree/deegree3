@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<PooledConnection xmlns="http://www.deegree.org/commons">
-  <DatabaseType>POSTGIS</DatabaseType>
+<PooledConnection configVersion="0.5.0" xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/0.5.0/jdbc.xsd">
   <Url>jdbc:postgresql://hurricane:5432/deegree3_csw</Url>
   <User>postgres</User>
   <Password>postgres</Password>
   <PoolMinSize>5</PoolMinSize>
   <PoolMaxSize>20</PoolMaxSize>
 </PooledConnection>
-
-<!--<PooledConnection xmlns="http://www.deegree.org/commons">
-      <DatabaseType>POSTGIS</DatabaseType>
-      <Url>jdbc:postgresql://localhost:5432/ows7-csw</Url>
-      <User>ows7</User>
-      <Password>EeKayeu9</Password>
-      <PoolMinSize>5</PoolMinSize>
-      <PoolMaxSize>20</PoolMaxSize>
-    </PooledConnection>-->
