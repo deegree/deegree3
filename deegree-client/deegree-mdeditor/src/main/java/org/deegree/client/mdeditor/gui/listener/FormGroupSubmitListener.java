@@ -66,7 +66,7 @@ public class FormGroupSubmitListener implements AjaxBehaviorListener {
         LOG.debug( "Save FormGroup" );
 
         HtmlCommandButton comp = (HtmlCommandButton) arg0.getComponent();
-        String id = (String) comp.getAttributes().get( org.deegree.client.mdeditor.gui.Utils.GROUPID_ATT_KEY );
+        String id = (String) comp.getAttributes().get( org.deegree.client.mdeditor.gui.GuiUtils.GROUPID_ATT_KEY );
         LOG.debug( "Write FormGroup with id " + id );
 
         FacesContext fc = FacesContext.getCurrentInstance();

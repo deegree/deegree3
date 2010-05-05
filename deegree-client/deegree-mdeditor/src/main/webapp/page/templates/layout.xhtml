@@ -1,52 +1,39 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets">
 <h:head>
-		<h:outputStylesheet library="deegree" name="styles/main.css" />
-		<h:outputStylesheet library="deegree" name="styles/formStyle.css" />
+				<h:outputStylesheet library="deegree" name="styles/main.css" />
+				<h:outputStylesheet library="deegree" name="styles/formStyle.css" />
 </h:head>
 <h:body>
 
-	 <ui:insert name="metadata"/>
-	
-	<div id="container">
+				<ui:insert name="metadata" />
 
-		<div id="header" align="center">
-			<ui:insert name="header">
+				<div id="container">
+
+				<div id="header" align="center"><ui:insert name="header">
 				HEADER - ${title} 
-			</ui:insert>
-		</div>
+			</ui:insert></div>
 
-		<div id="center">
-		
-			<div id="leftBox">
-				<ui:insert name="leftBox">
-				</ui:insert>
-			</div>
-	
-			<div id="main">
-				<ui:insert name="menu" /> 
-				<div id="content">
-					<ui:insert name="content">
+				<div id="center">
+
+				<div id="leftBox"><ui:insert name="leftBox">
+				</ui:insert></div>
+
+				<div id="main"><ui:insert name="menu" />
+				<div id="content"><ui:insert name="content">
 								Content
-					</ui:insert>
+					</ui:insert></div>
 				</div>
-			</div>
-			
-			<div id="rightBox">
-				<ui:insert name="rightBox">
-				</ui:insert>
-			</div>
-		</div>
-	
-		<div id="footer" align="center">
-			<ui:insert name="footer">
+
+				<div id="rightBox"><ui:insert name="rightBox">
+				</ui:insert></div>
+				</div>
+
+				<div id="footer" align="center"><ui:insert name="footer">
 				FOOTER
-			</ui:insert>
-		</div>
-		
-	</div>
-			
+			</ui:insert></div>
+
+				</div>
+
 </h:body>
 </html>

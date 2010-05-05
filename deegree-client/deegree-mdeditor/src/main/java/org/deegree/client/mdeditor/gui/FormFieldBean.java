@@ -85,7 +85,7 @@ public class FormFieldBean implements Serializable {
                             throws AbortProcessingException {
         UIInput input = (UIInput) event.getSource();
 
-        FormFieldPath path = (FormFieldPath) input.getAttributes().get( Utils.FIELDPATH_ATT_KEY );
+        FormFieldPath path = (FormFieldPath) input.getAttributes().get( GuiUtils.FIELDPATH_ATT_KEY );
 
         if ( path == null ) {
             LOG.error( "Can not save value for field " + path + ": groupId or fieldId are null" );

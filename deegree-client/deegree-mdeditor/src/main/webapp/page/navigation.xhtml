@@ -4,7 +4,8 @@
 <h:head></h:head>
 <h:body>
 				<h:form id="navForm">
-								<h:commandButton id="naveSaveBt" value="Datensatz speichern" action="#{navigationBean.saveDataset}"/>
+								<h:commandButton id="navSaveBt" value="#{mdLabels['saveDataset']}" action="#{navigationBean.saveDataset}" />
+								<h:commandButton id="navLoadBt" value="#{mdLabels['loadDataset']}" action="#{navigationBean.loadDataset}" />
 				</h:form>
 </h:body>
 </html>

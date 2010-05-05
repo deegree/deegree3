@@ -44,7 +44,7 @@ import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.ComponentSystemEventListener;
 
 import org.deegree.client.mdeditor.controller.FormGroupInstanceReader;
-import org.deegree.client.mdeditor.gui.Utils;
+import org.deegree.client.mdeditor.gui.GuiUtils;
 
 /**
  * TODO add class documentation here
@@ -66,7 +66,7 @@ public class ListPreRenderedListener implements ComponentSystemEventListener {
         select.getChildren().clear();
 
         UISelectItem noSelection = new UISelectItem();
-        noSelection.setId( Utils.getUniqueId() );
+        noSelection.setId( GuiUtils.getUniqueId() );
         noSelection.setItemLabel( "Kein Eintrag" );
         noSelection.setItemValue( null );
 

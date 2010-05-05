@@ -118,7 +118,7 @@ public class FormCreatorBean implements Serializable {
                 FormGroup fg = FormElementManager.getFormGroup( grpId );
                 if ( fg != null ) {
                     HtmlPanelGrid grid = new HtmlPanelGrid();
-                    grid.setId( Utils.getUniqueId() );
+                    grid.setId( GuiUtils.getUniqueId() );
                     addFormGroup( grid, fg );
                     forms.put( grpId, grid );
                     form.getChildren().add( grid );
@@ -133,7 +133,7 @@ public class FormCreatorBean implements Serializable {
         LOG.debug( "Add FormGroup " + fg.getId() );
 
         HtmlPanelGrid grid = new HtmlPanelGrid();
-        grid.setId( Utils.getUniqueId() );
+        grid.setId( GuiUtils.getUniqueId() );
         grid.setColumns( 3 );
         grid.setHeaderClass( "mdFormHeader" );
 
@@ -155,8 +155,8 @@ public class FormCreatorBean implements Serializable {
         if ( fg.isReferenced() ) {
             HtmlCommandButton button = new HtmlCommandButton();
             button.setId( fg.getId() );
-            button.setValue( "Speichern" );
-            button.getAttributes().put( Utils.GROUPID_ATT_KEY, fg.getId() );
+            button.setValue( GuiUtils.getResourceText( FacesContext.getCurrentInstance(), "mdLabels", "saveFormGroup" ) );
+            button.getAttributes().put( GuiUtils.GROUPID_ATT_KEY, fg.getId() );
 
             AjaxBehavior ajaxBt = new AjaxBehavior();
             List<String> renderBt = new ArrayList<String>();
@@ -184,7 +184,7 @@ public class FormCreatorBean implements Serializable {
         UIOutput newOutput = new UIOutput();
         newOutput.setValue( fe.getLabel() );
         setVisibility( fe, newOutput, ef, elContext );
-        newOutput.setId( Utils.getUniqueId() );
+        newOutput.setId( GuiUtils.getUniqueId() );
 
         parentGrid.getChildren().add( newOutput );
 
@@ -193,9 +193,9 @@ public class FormCreatorBean implements Serializable {
         // help
         HtmlCommandLink helpLink = new HtmlCommandLink();
         helpLink.setValue( "o" );
-        helpLink.setId( Utils.getUniqueId() );
+        helpLink.setId( GuiUtils.getUniqueId() );
         UIParameter param = new UIParameter();
-        param.setId( Utils.getUniqueId() );
+        param.setId( GuiUtils.getUniqueId() );
         param.setName( "mdHelp" );
         param.setValue( fe.getHelp() );
         helpLink.getChildren().add( param );
@@ -240,7 +240,7 @@ public class FormCreatorBean implements Serializable {
         }
         if ( input != null ) {
             input.setId( fe.getId() );
-            input.getAttributes().put( Utils.FIELDPATH_ATT_KEY, fe.getPath() );
+            input.getAttributes().put( GuiUtils.FIELDPATH_ATT_KEY, fe.getPath() );
             setValue( fe, input, ef, elContext );
             setValueChangedAjaxBehavior( input );
             setVisibility( fe, input, ef, elContext );
@@ -253,7 +253,7 @@ public class FormCreatorBean implements Serializable {
         if ( codeList != null ) {
             for ( String value : codeList.getCodes().keySet() ) {
                 UISelectItem si = new UISelectItem();
-                si.setId( Utils.getUniqueId() );
+                si.setId( GuiUtils.getUniqueId() );
                 si.setItemValue( value );
                 si.setItemLabel( codeList.getCodes().get( value ) );
                 select.getChildren().add( si );

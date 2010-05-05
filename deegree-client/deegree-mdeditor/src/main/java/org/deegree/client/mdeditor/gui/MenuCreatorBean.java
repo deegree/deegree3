@@ -93,11 +93,11 @@ public class MenuCreatorBean implements Serializable {
             listGroup.getAttributes().put( "menuId", menuId );
             for ( FormGroup formGroup : FormConfigurationParser.getFormGroups() ) {
                 HtmlOutcomeTargetLink link = new HtmlOutcomeTargetLink();
-                link.setId( Utils.getUniqueId() );
+                link.setId( GuiUtils.getUniqueId() );
                 link.setValue( formGroup.getLabel() );
                 link.setOutcome( "emptyForm" );
                 UIParameter param = new UIParameter();
-                param.setId( Utils.getUniqueId() );
+                param.setId( GuiUtils.getUniqueId() );
                 param.setName( "grpId" );
                 param.setValue( formGroup.getId() );
                 link.getChildren().add( param );

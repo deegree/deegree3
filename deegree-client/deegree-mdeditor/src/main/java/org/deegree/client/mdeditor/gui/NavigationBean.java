@@ -66,4 +66,7 @@ public class NavigationBean implements Serializable {
         return null;
     }
 
+    public Object loadDataset() {
+        return null;
+    }
 }

@@ -35,7 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.gui;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.UUID;
+
+import javax.faces.application.Application;
+import javax.faces.context.FacesContext;
+
+import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
@@ -45,8 +55,10 @@ import java.util.UUID;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Utils {
+public class GuiUtils {
 
+    private static final Logger LOG = getLogger( GuiUtils.class );
+    
     public static final String FIELDPATH_ATT_KEY = "fieldPath";
 
     public static final String GROUPID_ATT_KEY = "groupId";
@@ -54,4 +66,21 @@ public class Utils {
     public static String getUniqueId() {
         return "id_" + UUID.randomUUID();
     }
+
+    public static String getResourceText( FacesContext context, String bundleName, String key, Object... args ) {
+        String text;
+        try {
+            Application app = context.getApplication();
+            ResourceBundle bundle = app.getResourceBundle( context, bundleName );
+            text = bundle.getString( key );
+        } catch ( MissingResourceException e ) {
+            LOG.error( "could not find resource '" + bundleName + "'", e );
+            return "?" + key + "?";
+        }
+        if ( args != null ) {
+            text = MessageFormat.format( text, args );
+        }
+        return text;
+    }
+
 }

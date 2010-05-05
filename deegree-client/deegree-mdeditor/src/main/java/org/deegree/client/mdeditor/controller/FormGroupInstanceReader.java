@@ -42,7 +42,7 @@ import java.util.List;
 import javax.faces.component.UISelectItem;
 
 import org.deegree.client.mdeditor.config.Configuration;
-import org.deegree.client.mdeditor.gui.Utils;
+import org.deegree.client.mdeditor.gui.GuiUtils;
 
 /**
  * TODO add class documentation here
@@ -62,7 +62,7 @@ public class FormGroupInstanceReader {
             File[] listFiles = f.listFiles();
             for ( int i = 0; i < listFiles.length; i++ ) {
                 UISelectItem item = new UISelectItem();
-                item.setId( Utils.getUniqueId() );
+                item.setId( GuiUtils.getUniqueId() );
                 item.setItemLabel( listFiles[i].getName() );
                 item.setItemValue( listFiles[i].getName() );
                 items.add( item );
