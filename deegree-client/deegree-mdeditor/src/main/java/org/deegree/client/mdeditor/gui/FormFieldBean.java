@@ -52,6 +52,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import org.deegree.client.mdeditor.FormElementManager;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
+import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.slf4j.Logger;
 

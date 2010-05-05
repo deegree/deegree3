@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
-import org.deegree.client.mdeditor.gui.FormFieldPath;
 
 /**
  * TODO add class documentation here

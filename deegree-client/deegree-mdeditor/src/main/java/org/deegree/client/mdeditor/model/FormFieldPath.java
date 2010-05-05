@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor.gui;
+package org.deegree.client.mdeditor.model;
 
 import java.util.Iterator;
 import java.util.List;

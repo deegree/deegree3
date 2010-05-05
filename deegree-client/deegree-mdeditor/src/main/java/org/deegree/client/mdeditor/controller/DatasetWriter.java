@@ -72,7 +72,9 @@ public class DatasetWriter extends FormWriter {
             writer.writeAttribute( "id", title );
 
             for ( FormGroup fg : formGroups ) {
-                appendFormGroup( writer, fg );
+                if ( !fg.isReferenced() ) {
+                    appendFormGroup( writer, fg );
+                }
             }
 
             writer.writeEndElement();

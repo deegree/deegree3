@@ -41,9 +41,9 @@ import junit.framework.TestCase;
 
 import org.deegree.client.mdeditor.CodeListManager;
 import org.deegree.client.mdeditor.FormElementManager;
-import org.deegree.client.mdeditor.gui.FormFieldPath;
 import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormElement;
+import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.InputFormField;
 import org.deegree.client.mdeditor.model.SelectFormField;
