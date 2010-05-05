@@ -88,7 +88,7 @@ public class SLDParser {
      */
     public static Pair<LinkedList<Layer>, LinkedList<Style>> parse( XMLStreamReader in, MapService service, GetMap gm )
                             throws XMLStreamException, OWSException, ParseException {
-        while ( in.getLocalName() == null
+        while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
             in.nextTag();
         }
@@ -234,7 +234,7 @@ public class SLDParser {
     public static Pair<LinkedList<Filter>, LinkedList<Style>> getStyles( XMLStreamReader in, String layerName,
                                                                          Map<String, String> styleNames )
                             throws XMLStreamException {
-        while ( in.getLocalName() == null
+        while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
             in.nextTag();
         }
