@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.services.sos.storage;
 
 import java.util.HashMap;
@@ -44,24 +44,19 @@ import org.deegree.services.sos.model.Procedure;
 import org.deegree.services.sos.model.Property;
 
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class DatastoreConfiguration {
-    private final String jdbcDriver;
 
-    private final String jdbcConnection;
+    private final String jdbcConnId;
 
     private final String tableName;
-
-    private final String username;
-
-    private final String password;
 
     private final Map<Property, String> propertyColumnMap = new HashMap<Property, String>();
 
@@ -76,24 +71,17 @@ public class DatastoreConfiguration {
     private final Map<String, String> proceduresName = new HashMap<String, String>();
 
     /**
-     * @param jdbcDriver
-     * @param jdbcConnection
-     * @param username
-     * @param password
+     * @param jdbcConnId
      * @param tableName
      */
-    public DatastoreConfiguration( String jdbcDriver, String jdbcConnection, String username, String password,
-                                   String tableName ) {
-        this.jdbcDriver = jdbcDriver;
-        this.jdbcConnection = jdbcConnection;
-        this.username = username;
-        this.password = password;
+    public DatastoreConfiguration( String jdbcConnId, String tableName ) {
+        this.jdbcConnId = jdbcConnId;
         this.tableName = tableName;
     }
 
     /**
      * Add a mapping between properties and column names.
-     *
+     * 
      * @param property
      * @param columnName
      */
@@ -104,7 +92,7 @@ public class DatastoreConfiguration {
 
     /**
      * Add a ObservationDatastore specific mapping. (eg. id, time, geom,...)
-     *
+     * 
      * @param name
      * @param columnName
      */
@@ -156,15 +144,8 @@ public class DatastoreConfiguration {
     /**
      * @return the jdbcConnection
      */
-    public String getJdbcConnection() {
-        return jdbcConnection;
-    }
-
-    /**
-     * @return the jdbcDriver
-     */
-    public String getJdbcDriver() {
-        return jdbcDriver;
+    public String getJdbcConnId() {
+        return jdbcConnId;
     }
 
     /**
@@ -177,7 +158,7 @@ public class DatastoreConfiguration {
     /**
      * Returns the procedure for the given ID. If the ID is null or empty, it will return the first procedure. That way
      * you can use datastores with one procedure without additional configuration.
-     *
+     * 
      * @param id
      * @return the procedure with id or <code>null</code>
      */
@@ -210,23 +191,9 @@ public class DatastoreConfiguration {
         return tableName;
     }
 
-    /**
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
     @Override
     public String toString() {
-        return jdbcDriver + ": " + tableName + "@" + jdbcConnection;
+        return tableName + "@" + jdbcConnId;
     }
 
     /**

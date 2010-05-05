@@ -171,6 +171,7 @@ public class ConnectionManager {
             String password = jaxbConn.getPassword();
             int poolMinSize = jaxbConn.getPoolMinSize().intValue();
             int poolMaxSize = jaxbConn.getPoolMaxSize().intValue();
+            boolean readOnly = jaxbConn.isReadOnly() == null ? false : jaxbConn.isReadOnly();
 
             LOG.debug( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", connId, url, user, poolMinSize,
                                             poolMaxSize ) );
@@ -178,7 +179,7 @@ public class ConnectionManager {
                 throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
             }
 
-            ConnectionPool pool = new ConnectionPool( connId, url, user, password, poolMinSize, poolMaxSize );
+            ConnectionPool pool = new ConnectionPool( connId, url, user, password, readOnly, poolMinSize, poolMaxSize );
             idToPools.put( connId, pool );
         }
     }
@@ -202,7 +203,8 @@ public class ConnectionManager {
             if ( idToPools.containsKey( connId ) ) {
                 throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", connId ) );
             }
-            ConnectionPool pool = new ConnectionPool( connId, url, user, password, poolMinSize, poolMaxSize );
+            // TODO check callers for read only flag
+            ConnectionPool pool = new ConnectionPool( connId, url, user, password, false, poolMinSize, poolMaxSize );
             idToPools.put( connId, pool );
         }
     }

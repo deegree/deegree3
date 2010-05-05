@@ -23,6 +23,7 @@
         <element name="Password" type="string" />
         <element name="PoolMinSize" type="positiveInteger" minOccurs="0" />
         <element name="PoolMaxSize" type="positiveInteger" minOccurs="0" />
+        <element name="ReadOnly" type="boolean" minOccurs="0" />
       </sequence>
       <attribute name="configVersion" use="required" fixed="0.5.0"/>
     </complexType>

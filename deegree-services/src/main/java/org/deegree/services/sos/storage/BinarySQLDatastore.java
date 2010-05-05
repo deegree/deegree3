@@ -114,7 +114,7 @@ public class BinarySQLDatastore extends SimpleObservationDatastore {
         if ( msPerRecord != T_SECOND && msPerRecord != T_MINUTE && msPerRecord != T_HOUR && msPerRecord != T_DAY ) {
             LOG.warn(
                       "BinarySQLDatastore ({}:{}) is not aligned to seconds, minutes, hours, or days (ms_sampling_period * number_of_measurements = {}ms). Time filter may not work properly.",
-                      new Object[] { dsConfig.getJdbcConnection(), dsConfig.getTableName(), msPerRecord } );
+                      new Object[] { dsConfig.getJdbcConnId(), dsConfig.getTableName(), msPerRecord } );
         }
     }
 

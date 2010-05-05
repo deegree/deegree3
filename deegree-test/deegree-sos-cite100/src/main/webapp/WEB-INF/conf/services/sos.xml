@@ -17,12 +17,7 @@
       <name>utah_climate</name>
       <srsName>EPSG:26912</srsName>
       <Datastore>
-        <Connection>
-          <Driver>org.apache.derby.jdbc.EmbeddedDriver</Driver>
-          <Url>jdbc:derby:classpath:utah_climate_2004</Url>
-          <User />
-          <Password />
-        </Connection>
+        <JDBCConnId>utah-climate-db</JDBCConnId> 
         <Class>org.deegree.services.sos.storage.SimpleObservationDatastore</Class>
         <Table>utah_climate_2004</Table>
         <Column type="timestamp" name="obs_time" />

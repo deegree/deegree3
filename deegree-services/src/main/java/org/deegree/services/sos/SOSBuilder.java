@@ -57,7 +57,6 @@ import org.deegree.services.jaxb.sos.Option;
 import org.deegree.services.jaxb.sos.ServiceConfiguration;
 import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering;
 import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering.Datastore;
-import org.deegree.services.jaxb.sos.ServiceConfiguration.Offering.Datastore.Connection;
 import org.deegree.services.sos.model.Procedure;
 import org.deegree.services.sos.model.Property;
 import org.deegree.services.sos.offering.ObservationOffering;
@@ -215,10 +214,8 @@ public class SOSBuilder {
                                                              Map<Procedure, String> procedures )
                             throws SOSConfigurationException {
         Datastore odsConf = conf.getDatastore();
-        Connection jdbcConf = odsConf.getConnection();
-        DatastoreConfiguration dsConf = new DatastoreConfiguration( jdbcConf.getDriver(), jdbcConf.getUrl(),
-                                                                    jdbcConf.getUser(), jdbcConf.getPassword(),
-                                                                    odsConf.getTable() );
+        String jdbcId = odsConf.getJDBCConnId();
+        DatastoreConfiguration dsConf = new DatastoreConfiguration( jdbcId, odsConf.getTable() );
         for ( Column column : odsConf.getColumn() ) {
             dsConf.addDSColumnMapping( column.getType(), column.getName() );
         }

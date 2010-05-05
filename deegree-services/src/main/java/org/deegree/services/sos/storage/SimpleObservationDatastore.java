@@ -112,14 +112,6 @@ public class SimpleObservationDatastore extends SQLObservationDatastore {
 
         this.timeColumn = getDSConfig().getDSColumnName( "timestamp" );
         this.procColumn = getDSConfig().getDSColumnName( "procedure" );
-
-        String driver = conf.getJdbcDriver();
-        try {
-            Class.forName( driver );
-        } catch ( java.lang.ClassNotFoundException e ) {
-            // TODO
-            e.printStackTrace();
-        }
     }
 
     private TimeZone initTimezone() {

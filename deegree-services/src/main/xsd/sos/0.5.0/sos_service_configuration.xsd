@@ -14,16 +14,7 @@
               <xs:element name="Datastore">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="Connection">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="Driver" type="xs:string" />
-                          <xs:element name="Url" type="xs:string" />
-                          <xs:element name="User" type="xs:string" />
-                          <xs:element name="Password" type="xs:string" />
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
+                    <xs:element name="JDBCConnId" type="xs:string"/>
                     <xs:element name="Class" type="xs:string" />
                     <xs:element name="Table" type="xs:string" />
                     <xs:element ref="Column" minOccurs="0" maxOccurs="unbounded" />
