@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
-
 /**
  * TODO add class documentation here
  * 
@@ -58,13 +57,17 @@ public abstract class FormField implements FormElement {
 
     private FormFieldPath path;
 
-    public FormField( FormFieldPath path, String id, String label, boolean visible, String help, Object defaultValue ) {
+    private boolean isIdentifier;
+
+    public FormField( FormFieldPath path, String id, String label, boolean visible, String help, Object defaultValue,
+                      boolean isIdentifier ) {
         this.path = path;
         this.id = id;
         this.label = label;
         this.visibility = visible;
         this.help = help;
         this.value = defaultValue;
+        this.setIdentifier( isIdentifier );
     }
 
     public String getId() {
@@ -114,6 +117,14 @@ public abstract class FormField implements FormElement {
 
     public FormFieldPath getPath() {
         return path;
+    }
+
+    public void setIdentifier( boolean isIdentifier ) {
+        this.isIdentifier = isIdentifier;
+    }
+
+    public boolean isIdentifier() {
+        return isIdentifier;
     }
 
 }

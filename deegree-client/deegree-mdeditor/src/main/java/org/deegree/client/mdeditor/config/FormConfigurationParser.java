@@ -55,6 +55,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.mdeditor.model.CodeList;
 import org.deegree.client.mdeditor.model.FormElement;
+import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.INPUT_TYPE;
@@ -105,6 +106,8 @@ public class FormConfigurationParser {
 
     private static Stack<String> path = new Stack<String>();
 
+    private static FormFieldPath pathToIdentifier;
+
     /**
      * @return a list of all codelists
      */
@@ -124,6 +127,13 @@ public class FormConfigurationParser {
      */
     public static LAYOUT_TYPE getLayoutType() {
         return layoutType;
+    }
+
+    /**
+     * @return the identifer
+     */
+    public static FormFieldPath getPathToIdentifier() {
+        return pathToIdentifier;
     }
 
     static {
@@ -222,6 +232,7 @@ public class FormConfigurationParser {
                             throws ConfigurationException, XMLStreamException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
+        boolean isIdentifier = getBooleanAttribute( xmlStream, "isIdentifier", false );
         xmlStream.nextTag();
 
         String label = getElementText( xmlStream, "label", id );
@@ -233,15 +244,28 @@ public class FormConfigurationParser {
         String beanName = getElementText( xmlStream, "bean-name", null );
 
         String defaultValue = getElementText( xmlStream, "selectedValue", null );
-
-        ReferencedElement re = new ReferencedElement( getPath( id ), id, label, visible, help, defaultValue, beanName );
+        ReferencedElement re = new ReferencedElement( getPath( id ), id, label, visible, help, defaultValue,
+                                                      isIdentifier, beanName );
+        setPathToIdentifier( re );
         return re;
+    }
+
+    private static void setPathToIdentifier( FormField ff )
+                            throws ConfigurationException {
+        if ( ff.isIdentifier() ) {
+            if ( pathToIdentifier == null ) {
+                pathToIdentifier = ff.getPath();
+            } else {
+                throw new ConfigurationException( "attribute isIdentifer can not be true for more than one element" );
+            }
+        }
     }
 
     private static SelectFormField parseSelectFormElement( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
+        boolean isIdentifier = getBooleanAttribute( xmlStream, "isIdentifier", false );
         xmlStream.nextTag();
 
         String label = getElementText( xmlStream, "label", id );
@@ -268,8 +292,9 @@ public class FormConfigurationParser {
             selectedValue = selValues;
         }
 
-        SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, help, selectedValue, selectType,
-                                                  referenceToCodeList, referenceToGroup );
+        SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, help, isIdentifier, selectedValue,
+                                                  selectType, referenceToCodeList, referenceToGroup );
+        setPathToIdentifier( ff );
         return ff;
 
     }
@@ -287,6 +312,7 @@ public class FormConfigurationParser {
                             throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
+        boolean isIdentifier = getBooleanAttribute( xmlStream, "isIdentifier", false );
         xmlStream.nextTag();
 
         String label = getElementText( xmlStream, "label", id );
@@ -309,8 +335,9 @@ public class FormConfigurationParser {
             validation.setMaxValue( getElementDouble( xmlStream, "maxValue", Double.MIN_VALUE ) );
         }
 
-        InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, inputType, defaultValue,
-                                                validation );
+        InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, isIdentifier, inputType,
+                                                defaultValue, validation );
+        setPathToIdentifier( ff );
         return ff;
     }
 

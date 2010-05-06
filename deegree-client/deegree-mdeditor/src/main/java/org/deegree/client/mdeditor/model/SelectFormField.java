@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
-
 /**
  * TODO add class documentation here
  * 
@@ -53,9 +52,9 @@ public class SelectFormField extends FormField {
     private String referenceToGroup;
 
     public SelectFormField( FormFieldPath path, String id, String label, boolean visible, String help,
-                            Object selectedValue, SELECT_TYPE selectType, String referenceToCodeList,
-                            String referenceToGroup ) {
-        super( path, id, label, visible, help, selectedValue );
+                            boolean isIdentifier, Object selectedValue, SELECT_TYPE selectType,
+                            String referenceToCodeList, String referenceToGroup ) {
+        super( path, id, label, visible, help, selectedValue, isIdentifier );
         this.selectType = selectType;
         this.referenceToCodeList = referenceToCodeList;
         this.referenceToGroup = referenceToGroup;

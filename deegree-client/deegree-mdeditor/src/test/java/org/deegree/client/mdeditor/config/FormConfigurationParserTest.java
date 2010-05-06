@@ -77,15 +77,31 @@ public class FormConfigurationParserTest extends TestCase {
         FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
         assertTrue( formElement instanceof FormGroup );
         assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+    }
+
+    @Test
+    public void testParseReferencedFormElementAndIdentifier() {
+        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
+        List<FormGroup> formGroups = FormElementManager.getFormGroups();
+
+        assertNotNull( formGroups );
+        assertTrue( formGroups.size() == 2 );
+
+        assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
+        assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
+
+        assertEquals( 2, formGroups.get( 0 ).getFormElements().size() );
+        assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
 
         FormElement refFormElement = formGroups.get( 0 ).getFormElements().get( 1 );
         assertTrue( refFormElement instanceof ReferencedElement );
         assertEquals( "generateIdBean", ( (ReferencedElement) refFormElement ).getBeanName() );
+        assertEquals( true, ( (ReferencedElement) refFormElement ).isIdentifier() );
 
     }
 
     @Test
-    public void testParseFormGroup() {
+    public void testParseFormElements() {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
         List<FormGroup> formGroups = FormElementManager.getFormGroups();
 

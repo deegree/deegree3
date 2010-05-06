@@ -7,7 +7,7 @@
     <FormGroup id="TestFormGroup">
         <label>Test</label>
         <title>Teste das Problem</title>
-        <ReferencedFormElement id="ref">
+        <ReferencedFormElement id="ref" isIdentifier="true">
             <label>Id:</label>
             <help>Hiermit können sie eine eindeutige Id für den Datensatz generieren</help>
             <bean-name>generateIdBean</bean-name>

@@ -36,12 +36,15 @@
 package org.deegree.client.mdeditor.gui;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
+import org.deegree.client.mdeditor.config.FormConfigurationParser;
 import org.deegree.client.mdeditor.controller.DatasetWriter;
+import org.deegree.client.mdeditor.model.FormFieldPath;
 
 /**
  * TODO add class documentation here
@@ -62,7 +65,13 @@ public class NavigationBean implements Serializable {
         fc.getELContext();
         FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                  null, "formFieldBean" );
-        DatasetWriter.writeElements( formfields.getFormGroups() );
+        FormFieldPath pathToIdentifier = FormConfigurationParser.getPathToIdentifier();
+        Object value = formfields.getFormFields().get( pathToIdentifier ).getValue();
+        String id = String.valueOf( value );
+        if ( id == null && id.length() == 0 ) {
+            id = UUID.randomUUID().toString();
+        }
+        DatasetWriter.writeElements( id, formfields.getFormGroups() );
         return null;
     }
 

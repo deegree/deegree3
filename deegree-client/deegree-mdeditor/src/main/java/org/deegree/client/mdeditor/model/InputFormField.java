@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
-
-
 /**
  * TODO add class documentation here
  * 
@@ -47,9 +45,9 @@ package org.deegree.client.mdeditor.model;
  */
 public class InputFormField extends FormField {
 
-    public InputFormField( FormFieldPath path, String id, String label, boolean visible, String help, INPUT_TYPE inputType,
-                           String defaultValue, Validation validation ) {
-        super( path, id, label, visible, help, defaultValue );
+    public InputFormField( FormFieldPath path, String id, String label, boolean visible, String help, boolean isIdentifier,
+                           INPUT_TYPE inputType, String defaultValue, Validation validation ) {
+        super( path, id, label, visible, help, defaultValue, isIdentifier );
     }
 
 }

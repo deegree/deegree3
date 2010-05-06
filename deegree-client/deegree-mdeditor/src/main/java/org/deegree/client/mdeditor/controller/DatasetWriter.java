@@ -57,11 +57,8 @@ import org.deegree.client.mdeditor.model.FormGroup;
  */
 public class DatasetWriter extends FormWriter {
 
-    public static void writeElements( List<FormGroup> formGroups ) {
-        // TODO
-        String title = "title";
-        File file = new File( Configuration.getFilesDirURL(), title + ".xml" );
-
+    public static void writeElements( String id, List<FormGroup> formGroups ) {
+        File file = new File( Configuration.getFilesDirURL(), id + ".xml" );
         try {
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             FileOutputStream fos = new FileOutputStream( file );
@@ -69,7 +66,6 @@ public class DatasetWriter extends FormWriter {
 
             writer.writeStartDocument();
             writer.writeStartElement( DS_ELEM );
-            writer.writeAttribute( "id", title );
 
             for ( FormGroup fg : formGroups ) {
                 if ( !fg.isReferenced() ) {

@@ -52,6 +52,7 @@
         </xs:sequence>
         <xs:attribute name="id" use="required" />
         <xs:attribute name="visible" type="xs:boolean" default="true" />
+        <xs:attribute name="isIdentifier" type="xs:boolean" default="false" />
     </xs:complexType>
     <xs:element name="InputFormElement" type="InputFormElement" substitutionGroup="FormElement" />
     <xs:complexType name="InputFormElement">
