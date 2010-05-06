@@ -54,11 +54,13 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.mdeditor.model.CodeList;
+import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.INPUT_TYPE;
 import org.deegree.client.mdeditor.model.InputFormField;
 import org.deegree.client.mdeditor.model.LAYOUT_TYPE;
+import org.deegree.client.mdeditor.model.ReferencedElement;
 import org.deegree.client.mdeditor.model.SELECT_TYPE;
 import org.deegree.client.mdeditor.model.SelectFormField;
 import org.deegree.client.mdeditor.model.Validation;
@@ -86,6 +88,8 @@ public class FormConfigurationParser {
     private static QName INPUT_FORM_ELEMENT = new QName( NS, "InputFormElement" );
 
     private static QName SELECT_FORM_ELEMENT = new QName( NS, "SelectFormElement" );
+
+    private static QName REF_FORM_ELEMENT = new QName( NS, "ReferencedFormElement" );
 
     private static QName CODELIST_ELEMENT = new QName( NS, "CodeList" );
 
@@ -197,6 +201,8 @@ public class FormConfigurationParser {
                 fg.addFormElement( parseInputFormElement( xmlStream ) );
             } else if ( xmlStream.isStartElement() && SELECT_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
                 fg.addFormElement( parseSelectFormElement( xmlStream ) );
+            } else if ( xmlStream.isStartElement() && REF_FORM_ELEMENT.equals( xmlStream.getName() ) ) {
+                fg.addFormElement( parseRefFormElement( xmlStream ) );
             }
             xmlStream.next();
         }
@@ -204,6 +210,32 @@ public class FormConfigurationParser {
         xmlStream.require( END_ELEMENT, NS, FORM_GROUP_ELEMENT.getLocalPart() );
         return fg;
 
+    }
+
+    /**
+     * @param xmlStream
+     * @return
+     * @throws ConfigurationException
+     * @throws XMLStreamException
+     */
+    private static FormElement parseRefFormElement( XMLStreamReader xmlStream )
+                            throws ConfigurationException, XMLStreamException {
+        String id = getId( xmlStream );
+        boolean visible = getBooleanAttribute( xmlStream, "visible", true );
+        xmlStream.nextTag();
+
+        String label = getElementText( xmlStream, "label", id );
+        String help = getElementText( xmlStream, "help", "Keine Hilfe verfügbar" );
+
+        LOG.debug( "Found SelectFormElement with id " + id + "; label " + label + "; help " + help );
+
+        xmlStream.require( START_ELEMENT, null, "bean-name" );
+        String beanName = getElementText( xmlStream, "bean-name", null );
+
+        String defaultValue = getElementText( xmlStream, "selectedValue", null );
+
+        ReferencedElement re = new ReferencedElement( getPath( id ), id, label, visible, help, defaultValue, beanName );
+        return re;
     }
 
     private static SelectFormField parseSelectFormElement( XMLStreamReader xmlStream )
@@ -238,7 +270,6 @@ public class FormConfigurationParser {
 
         SelectFormField ff = new SelectFormField( getPath( id ), id, label, visible, help, selectedValue, selectType,
                                                   referenceToCodeList, referenceToGroup );
-        System.out.println( "s " + ff.getPath() );
         return ff;
 
     }
@@ -280,7 +311,6 @@ public class FormConfigurationParser {
 
         InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, inputType, defaultValue,
                                                 validation );
-        System.out.println( "i " + ff.getPath() );
         return ff;
     }
 

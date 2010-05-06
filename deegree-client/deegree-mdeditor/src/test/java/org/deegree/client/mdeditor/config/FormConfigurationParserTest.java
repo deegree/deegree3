@@ -46,6 +46,7 @@ import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.ReferencedElement;
 import org.deegree.client.mdeditor.model.SelectFormField;
 import org.junit.Test;
 
@@ -70,12 +71,17 @@ public class FormConfigurationParserTest extends TestCase {
         assertEquals( "FormGroup3", formGroups.get( 0 ).getId() );
         assertEquals( "FormGroup", formGroups.get( 1 ).getId() );
 
-        assertEquals( 1, formGroups.get( 0 ).getFormElements().size() );
+        assertEquals( 2, formGroups.get( 0 ).getFormElements().size() );
         assertEquals( 3, formGroups.get( 1 ).getFormElements().size() );
 
         FormElement formElement = formGroups.get( 1 ).getFormElements().get( 2 );
         assertTrue( formElement instanceof FormGroup );
         assertEquals( 4, ( (FormGroup) formElement ).getFormElements().size() );
+
+        FormElement refFormElement = formGroups.get( 0 ).getFormElements().get( 1 );
+        assertTrue( refFormElement instanceof ReferencedElement );
+        assertEquals( "generateIdBean", ( (ReferencedElement) refFormElement ).getBeanName() );
+
     }
 
     @Test

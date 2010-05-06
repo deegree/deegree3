@@ -12,6 +12,11 @@
             <help>Die Hilfe für das Element text5 zum testen des Problems</help>
             <inputType>text</inputType>
         </InputFormElement>
+        <ReferencedFormElement id="ref">
+            <label>Id:</label>
+            <help>Hiermit können sie eine eindeutige Id für den Datensatz generieren</help>
+            <bean-name>generateIdBean</bean-name>
+        </ReferencedFormElement>
     </FormGroup>
 
     <FormGroup id="FormGroup">

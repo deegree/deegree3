@@ -79,6 +79,7 @@ import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
 import org.deegree.client.mdeditor.model.InputFormField;
+import org.deegree.client.mdeditor.model.ReferencedElement;
 import org.deegree.client.mdeditor.model.SELECT_TYPE;
 import org.deegree.client.mdeditor.model.SelectFormField;
 import org.slf4j.Logger;
@@ -217,8 +218,7 @@ public class FormCreatorBean implements Serializable {
         UIInput input = null;
         if ( fe instanceof InputFormField ) {
             input = new HtmlInputText();
-        }
-        if ( fe instanceof SelectFormField ) {
+        } else if ( fe instanceof SelectFormField ) {
             SelectFormField se = (SelectFormField) fe;
             if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
                 input = new HtmlSelectManyListbox();
@@ -236,6 +236,17 @@ public class FormCreatorBean implements Serializable {
                     input.getAttributes().put( "grpReference", se.getReferenceToGroup() );
                     input.subscribeToEvent( PreRenderComponentEvent.class, new ListPreRenderedListener() );
                 }
+            }
+        } else if ( fe instanceof ReferencedElement ) {
+            ReferencedElement re = (ReferencedElement) fe;
+            FacesContext fc = FacesContext.getCurrentInstance();
+            fc.getELContext();
+            ReferencedElementBean refElemBean = (ReferencedElementBean) fc.getApplication().getELResolver().getValue(
+                                                                                                                      fc.getELContext(),
+                                                                                                                      null,
+                                                                                                                      re.getBeanName() );
+            if ( refElemBean.getComponent( re ) != null ) {
+                parentGrid.getChildren().add( refElemBean.getComponent( re ) );
             }
         }
         if ( input != null ) {

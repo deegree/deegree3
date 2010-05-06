@@ -118,6 +118,25 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    <xs:element name="ReferencedFormElement" type="ReferencedFormElement" substitutionGroup="FormElement" />
+    <xs:complexType name="ReferencedFormElement">
+        <xs:annotation>
+            <xs:documentation>describes a single element, described by a JSF bean</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="FormElement_Type">
+                <xs:sequence>
+                    <xs:element name="bean-name" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>name of the bean (e.g. generateIdBean) which must be a subclass of
+                                ReferencedElementBean. This bean must have a methode returning the view of this
+                                component</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
     <xs:element name="Validation">
         <xs:annotation>
             <xs:documentation>specifies the given input type</xs:documentation>
