@@ -66,7 +66,7 @@ public class NavigationBean implements Serializable {
         FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                  null, "formFieldBean" );
         FormFieldPath pathToIdentifier = FormConfigurationParser.getPathToIdentifier();
-        Object value = formfields.getFormFields().get( pathToIdentifier ).getValue();
+        Object value = formfields.getFormFields().get( pathToIdentifier.toString() ).getValue();
         String id = String.valueOf( value );
         if ( id == null && id.length() == 0 ) {
             id = UUID.randomUUID().toString();

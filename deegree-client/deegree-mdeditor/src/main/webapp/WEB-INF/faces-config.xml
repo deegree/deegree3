@@ -48,7 +48,7 @@
 
     <managed-bean>
         <managed-bean-name>generateIdBean</managed-bean-name>
-        <managed-bean-class>org.deegree.client.mdeditor.gui.snippet.GenerateIdBean</managed-bean-class>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.elements.GenerateIdBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
