@@ -67,14 +67,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.PreRenderComponentEvent;
+import javax.servlet.http.HttpSession;
 
-import org.deegree.client.mdeditor.CodeListManager;
-import org.deegree.client.mdeditor.FormElementManager;
+import org.deegree.client.mdeditor.config.ConfigurationException;
+import org.deegree.client.mdeditor.config.FormConfigurationFactory;
 import org.deegree.client.mdeditor.gui.listener.FormFieldValueChangedListener;
 import org.deegree.client.mdeditor.gui.listener.FormGroupSubmitListener;
 import org.deegree.client.mdeditor.gui.listener.HelpClickedListener;
 import org.deegree.client.mdeditor.gui.listener.ListPreRenderedListener;
 import org.deegree.client.mdeditor.model.CodeList;
+import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
@@ -106,6 +108,8 @@ public class FormCreatorBean implements Serializable {
 
     private Map<String, HtmlPanelGrid> forms = new HashMap<String, HtmlPanelGrid>();
 
+    private FormConfiguration configuration;
+
     public void load( ComponentSystemEvent event )
                             throws AbortProcessingException {
 
@@ -116,13 +120,21 @@ public class FormCreatorBean implements Serializable {
             if ( forms.containsKey( grpId ) ) {
                 form.getChildren().add( forms.get( grpId ) );
             } else if ( grpId != null ) {
-                FormGroup fg = FormElementManager.getFormGroup( grpId );
-                if ( fg != null ) {
-                    HtmlPanelGrid grid = new HtmlPanelGrid();
-                    grid.setId( GuiUtils.getUniqueId() );
-                    addFormGroup( grid, fg );
-                    forms.put( grpId, grid );
-                    form.getChildren().add( grid );
+                FacesContext fc = FacesContext.getCurrentInstance();
+                HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
+                try {
+                    configuration = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+                    FormGroup fg = configuration.getFormGroup( grpId );
+                    if ( fg != null ) {
+                        HtmlPanelGrid grid = new HtmlPanelGrid();
+                        grid.setId( GuiUtils.getUniqueId() );
+                        addFormGroup( grid, fg );
+                        forms.put( grpId, grid );
+                        form.getChildren().add( grid );
+                    }
+                } catch ( ConfigurationException e ) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
         }
@@ -260,7 +272,7 @@ public class FormCreatorBean implements Serializable {
     }
 
     private void addCodeListItems( UIInput select, String codeListRef ) {
-        CodeList codeList = CodeListManager.getCodeList( codeListRef );
+        CodeList codeList = configuration.getCodeList( codeListRef );
         if ( codeList != null ) {
             for ( String value : codeList.getCodes().keySet() ) {
                 UISelectItem si = new UISelectItem();
@@ -310,6 +322,10 @@ public class FormCreatorBean implements Serializable {
 
     public String getGrpId() {
         return grpId;
+    }
+
+    public void forceReloaded() {
+        forms.clear();
     }
 
 }

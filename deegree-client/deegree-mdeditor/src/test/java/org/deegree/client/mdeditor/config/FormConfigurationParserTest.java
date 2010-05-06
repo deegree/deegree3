@@ -39,9 +39,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.deegree.client.mdeditor.CodeListManager;
-import org.deegree.client.mdeditor.FormElementManager;
 import org.deegree.client.mdeditor.model.CodeList;
+import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 import org.deegree.client.mdeditor.model.FormGroup;
@@ -61,9 +60,11 @@ import org.junit.Test;
 public class FormConfigurationParserTest extends TestCase {
 
     @Test
-    public void testParseFormGroups() {
+    public void testParseFormGroups()
+                            throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        List<FormGroup> formGroups = FormElementManager.getFormGroups();
+        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
         assertTrue( formGroups.size() == 2 );
@@ -80,9 +81,10 @@ public class FormConfigurationParserTest extends TestCase {
     }
 
     @Test
-    public void testParseReferencedFormElementAndIdentifier() {
+    public void testParseReferencedFormElementAndIdentifier() throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        List<FormGroup> formGroups = FormElementManager.getFormGroups();
+        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
         assertTrue( formGroups.size() == 2 );
@@ -101,9 +103,10 @@ public class FormConfigurationParserTest extends TestCase {
     }
 
     @Test
-    public void testParseFormElements() {
+    public void testParseFormElements() throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        List<FormGroup> formGroups = FormElementManager.getFormGroups();
+        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        List<FormGroup> formGroups = configuration.getFormGroups();
 
         assertNotNull( formGroups );
         assertTrue( formGroups.size() == 2 );
@@ -127,9 +130,10 @@ public class FormConfigurationParserTest extends TestCase {
     }
 
     @Test
-    public void testParseCodeLists() {
+    public void testParseCodeLists() throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        List<CodeList> codeLists = CodeListManager.getCodeLists();
+        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        List<CodeList> codeLists = configuration.getCodeLists();
 
         assertNotNull( codeLists );
         assertTrue( codeLists.size() == 2 );
@@ -142,9 +146,11 @@ public class FormConfigurationParserTest extends TestCase {
     }
 
     @Test
-    public void testParseCode() {
+    public void testParseCode()
+                            throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
-        CodeList codeList = CodeListManager.getCodeList( "testCodeList2" );
+        FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        CodeList codeList = configuration.getCodeList( "testCodeList2" );
 
         assertNotNull( codeList );
 

@@ -54,6 +54,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.client.mdeditor.model.CodeList;
+import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
@@ -94,57 +95,26 @@ public class FormConfigurationParser {
 
     private static QName CODELIST_ELEMENT = new QName( NS, "CodeList" );
 
-    private static List<CodeList> codeLists = new ArrayList<CodeList>();
+    private List<CodeList> codeLists = new ArrayList<CodeList>();
 
-    private static List<FormGroup> formGroups = new ArrayList<FormGroup>();
+    private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
-    private static List<String> referencedGroups = new ArrayList<String>();
+    private List<String> referencedGroups = new ArrayList<String>();
 
-    private static List<String> idList = new ArrayList<String>();
+    private List<String> idList = new ArrayList<String>();
 
-    private static LAYOUT_TYPE layoutType;
+    private LAYOUT_TYPE layoutType;
 
-    private static Stack<String> path = new Stack<String>();
+    private Stack<String> path = new Stack<String>();
 
-    private static FormFieldPath pathToIdentifier;
+    private FormFieldPath pathToIdentifier;
 
-    /**
-     * @return a list of all codelists
-     */
-    public static List<CodeList> getCodeLists() {
-        return codeLists;
-    }
-
-    /**
-     * @return a list of all top level formGroups
-     */
-    public static List<FormGroup> getFormGroups() {
-        return formGroups;
-    }
-
-    /**
-     * @return the layout type
-     */
-    public static LAYOUT_TYPE getLayoutType() {
-        return layoutType;
-    }
-
-    /**
-     * @return the identifer
-     */
-    public static FormFieldPath getPathToIdentifier() {
-        return pathToIdentifier;
-    }
-
-    static {
-        parse();
-    }
-
-    private static void parse() {
+    FormConfiguration parseConfiguration( String formConfiguration )
+                            throws ConfigurationException {
         try {
             XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(
                                                                                              new FileReader(
-                                                                                                             Configuration.getFormConfURL() ) );
+                                                                                                             formConfiguration ) );
 
             if ( xmlStream.getEventType() == START_DOCUMENT ) {
                 xmlStream.nextTag();
@@ -171,6 +141,7 @@ public class FormConfigurationParser {
             xmlStream.require( END_ELEMENT, NS, FORM_CONF_ELEMENT.getLocalPart() );
 
             updateFormGroups();
+            return new FormConfiguration( codeLists, formGroups, layoutType, pathToIdentifier );
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -183,13 +154,11 @@ public class FormConfigurationParser {
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
+        return null;
     }
 
-    private static FormGroup parseFormGroup( XMLStreamReader xmlStream )
+    private FormGroup parseFormGroup( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
 
         String formGroupId = getId( xmlStream );
@@ -228,7 +197,7 @@ public class FormConfigurationParser {
      * @throws ConfigurationException
      * @throws XMLStreamException
      */
-    private static FormElement parseRefFormElement( XMLStreamReader xmlStream )
+    private FormElement parseRefFormElement( XMLStreamReader xmlStream )
                             throws ConfigurationException, XMLStreamException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
@@ -250,7 +219,7 @@ public class FormConfigurationParser {
         return re;
     }
 
-    private static void setPathToIdentifier( FormField ff )
+    private void setPathToIdentifier( FormField ff )
                             throws ConfigurationException {
         if ( ff.isIdentifier() ) {
             if ( pathToIdentifier == null ) {
@@ -261,7 +230,7 @@ public class FormConfigurationParser {
         }
     }
 
-    private static SelectFormField parseSelectFormElement( XMLStreamReader xmlStream )
+    private SelectFormField parseSelectFormElement( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
@@ -299,7 +268,7 @@ public class FormConfigurationParser {
 
     }
 
-    private static FormFieldPath getPath( String fieldId ) {
+    private FormFieldPath getPath( String fieldId ) {
         FormFieldPath ffPath = new FormFieldPath();
         for ( String id : path ) {
             ffPath.addStep( id );
@@ -308,7 +277,7 @@ public class FormConfigurationParser {
         return ffPath;
     }
 
-    private static InputFormField parseInputFormElement( XMLStreamReader xmlStream )
+    private InputFormField parseInputFormElement( XMLStreamReader xmlStream )
                             throws XMLStreamException, IOException, ConfigurationException {
         String id = getId( xmlStream );
         boolean visible = getBooleanAttribute( xmlStream, "visible", true );
@@ -341,7 +310,7 @@ public class FormConfigurationParser {
         return ff;
     }
 
-    private static void parseCodeList( XMLStreamReader xmlStream )
+    private void parseCodeList( XMLStreamReader xmlStream )
                             throws XMLStreamException, ConfigurationException {
         String clId = getId( xmlStream );
         CodeList cl = new CodeList( clId );
@@ -366,7 +335,7 @@ public class FormConfigurationParser {
         codeLists.add( cl );
     }
 
-    private static INPUT_TYPE getInputType( XMLStreamReader xmlStream )
+    private INPUT_TYPE getInputType( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         String elementText = getElementText( xmlStream, "inputType", null );
         if ( "text".equals( elementText ) ) {
@@ -383,7 +352,7 @@ public class FormConfigurationParser {
         throw new XMLParsingException( xmlStream, "inputType " + elementText + "is not valid" );
     }
 
-    private static SELECT_TYPE getSelectType( XMLStreamReader xmlStream )
+    private SELECT_TYPE getSelectType( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         String elementText = getElementText( xmlStream, "selectType", null );
         if ( "many".equals( elementText ) ) {
@@ -394,7 +363,7 @@ public class FormConfigurationParser {
         throw new XMLParsingException( xmlStream, "selectType " + elementText + "is not valid" );
     }
 
-    private static LAYOUT_TYPE getLayoutType( XMLStreamReader xmlStream )
+    private LAYOUT_TYPE getLayoutType( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         String elementText = xmlStream.getElementText();
         if ( "menu".equals( elementText ) ) {
@@ -409,7 +378,7 @@ public class FormConfigurationParser {
         throw new XMLParsingException( xmlStream, "layoutType " + elementText + "is not valid" );
     }
 
-    private static String getId( XMLStreamReader xmlStream )
+    private String getId( XMLStreamReader xmlStream )
                             throws ConfigurationException {
         String id = xmlStream.getAttributeValue( null, "id" );
         if ( id == null || id.length() == 0 ) {
@@ -424,7 +393,7 @@ public class FormConfigurationParser {
         return id;
     }
 
-    private static boolean getBooleanAttribute( XMLStreamReader xmlStream, String name, boolean defaultValue ) {
+    private boolean getBooleanAttribute( XMLStreamReader xmlStream, String name, boolean defaultValue ) {
         try {
             String attributeValue = xmlStream.getAttributeValue( null, name );
             if ( attributeValue != null ) {
@@ -436,7 +405,7 @@ public class FormConfigurationParser {
         return defaultValue;
     }
 
-    private static String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
+    private String getElementText( XMLStreamReader xmlStream, String name, String defaultValue )
                             throws XMLStreamException {
         String s = defaultValue;
         if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
@@ -446,7 +415,7 @@ public class FormConfigurationParser {
         return s;
     }
 
-    private static int getElementInteger( XMLStreamReader xmlStream, String name, int defaultValue )
+    private int getElementInteger( XMLStreamReader xmlStream, String name, int defaultValue )
                             throws XMLStreamException {
         int i = defaultValue;
         if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
@@ -462,7 +431,7 @@ public class FormConfigurationParser {
         return i;
     }
 
-    private static double getElementDouble( XMLStreamReader xmlStream, String name, double defaultValue )
+    private double getElementDouble( XMLStreamReader xmlStream, String name, double defaultValue )
                             throws XMLStreamException {
         double d = defaultValue;
         if ( name != null && name.equals( xmlStream.getLocalName() ) ) {
@@ -478,7 +447,7 @@ public class FormConfigurationParser {
         return d;
     }
 
-    private static void updateFormGroups()
+    private void updateFormGroups()
                             throws ConfigurationException {
         for ( String reference : referencedGroups ) {
             boolean referenced = false;

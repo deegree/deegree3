@@ -46,10 +46,14 @@ import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIInput;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.servlet.http.HttpSession;
 
-import org.deegree.client.mdeditor.FormElementManager;
+import org.deegree.client.mdeditor.config.ConfigurationException;
+import org.deegree.client.mdeditor.config.FormConfigurationFactory;
+import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormFieldPath;
@@ -77,8 +81,18 @@ public class FormFieldBean implements Serializable {
     private Map<String, FormField> formFields = new HashMap<String, FormField>();
 
     public FormFieldBean() {
-        formGroups = FormElementManager.getFormGroups();
-        formFields = FormElementManager.getFormFields();
+
+        FacesContext fc = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
+        try {
+            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            formGroups = manager.getFormGroups();
+            formFields = manager.getFormFields();
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     public void saveValue( AjaxBehaviorEvent event )

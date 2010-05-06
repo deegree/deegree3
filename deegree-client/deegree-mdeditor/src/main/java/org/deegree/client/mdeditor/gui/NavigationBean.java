@@ -41,9 +41,12 @@ import java.util.UUID;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
-import org.deegree.client.mdeditor.config.FormConfigurationParser;
+import org.deegree.client.mdeditor.config.ConfigurationException;
+import org.deegree.client.mdeditor.config.FormConfigurationFactory;
 import org.deegree.client.mdeditor.controller.DatasetWriter;
+import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormFieldPath;
 
 /**
@@ -61,21 +64,57 @@ public class NavigationBean implements Serializable {
     private static final long serialVersionUID = 9025028665690108601L;
 
     public Object saveDataset() {
+        String id = UUID.randomUUID().toString();
         FacesContext fc = FacesContext.getCurrentInstance();
         fc.getELContext();
         FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                  null, "formFieldBean" );
-        FormFieldPath pathToIdentifier = FormConfigurationParser.getPathToIdentifier();
-        Object value = formfields.getFormFields().get( pathToIdentifier.toString() ).getValue();
-        String id = String.valueOf( value );
-        if ( id == null && id.length() == 0 ) {
-            id = UUID.randomUUID().toString();
+
+        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
+        try {
+            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+
+            FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
+            Object value = formfields.getFormFields().get( pathToIdentifier.toString() ).getValue();
+            id = String.valueOf( value );
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+
         DatasetWriter.writeElements( id, formfields.getFormGroups() );
         return null;
+    }
+
+    public Object reloadForm() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
+        try {
+            System.out.println( "reload" );
+            FormConfigurationFactory.reloadFormConfiguration( session.getId() );
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        fc.getELContext();
+        FormCreatorBean formCreator = (FormCreatorBean) fc.getApplication().getELResolver().getValue(
+                                                                                                      fc.getELContext(),
+                                                                                                      null,
+                                                                                                      "formCreatorBean" );
+        formCreator.forceReloaded();
+
+        MenuCreatorBean menuCreator = (MenuCreatorBean) fc.getApplication().getELResolver().getValue(
+                                                                                                      fc.getELContext(),
+                                                                                                      null,
+                                                                                                      "menuCreatorBean" );
+        menuCreator.forceReloaded();
+
+        return "/page/form/reloadForm.xhtml";
     }
 
     public Object loadDataset() {
         return null;
     }
+
 }

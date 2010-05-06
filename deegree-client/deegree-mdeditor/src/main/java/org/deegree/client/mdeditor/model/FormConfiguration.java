@@ -33,18 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.client.mdeditor;
+package org.deegree.client.mdeditor.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import java.util.Map;
-
-import org.deegree.client.mdeditor.config.FormConfigurationParser;
-import org.deegree.client.mdeditor.model.FormElement;
-import org.deegree.client.mdeditor.model.FormField;
-import org.deegree.client.mdeditor.model.FormGroup;
 
 /**
  * TODO add class documentation here
@@ -54,41 +48,68 @@ import org.deegree.client.mdeditor.model.FormGroup;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FormElementManager {
+public class FormConfiguration {
 
-    private static Map<String, FormField> formFields = new HashMap<String, FormField>();
+    private List<CodeList> codeLists = new ArrayList<CodeList>();
 
-    private static List<FormGroup> formGroups;
+    private List<FormGroup> formGroups = new ArrayList<FormGroup>();
 
-    static {
-        formGroups = FormConfigurationParser.getFormGroups();
-        for ( FormGroup fg : formGroups ) {
-            addFormField( fg );
-        }
+    private LAYOUT_TYPE layoutType;
+
+    private FormFieldPath pathToIdentifier;
+
+    public FormConfiguration( List<CodeList> codeLists, List<FormGroup> formGroups, LAYOUT_TYPE layoutType,
+                              FormFieldPath pathToIdentifier ) {
+        super();
+        this.codeLists = codeLists;
+        this.formGroups = formGroups;
+        this.layoutType = layoutType;
+        this.pathToIdentifier = pathToIdentifier;
+    }
+
+    /**
+     * @return a list of all codelists
+     */
+    public List<CodeList> getCodeLists() {
+        return codeLists;
     }
 
     /**
      * @return a list of all top level formGroups
      */
-    public static List<FormGroup> getFormGroups() {
+    public List<FormGroup> getFormGroups() {
         return formGroups;
     }
 
-    public static FormElement getFormField( String completeId ) {
-        return formFields.get( completeId );
+    /**
+     * @return the layout type
+     */
+    public LAYOUT_TYPE getLayoutType() {
+        return layoutType;
+    }
+
+    /**
+     * @return the identifer
+     */
+    public FormFieldPath getPathToIdentifier() {
+        return pathToIdentifier;
     }
 
     /**
      * @return a list of all form fields
      */
-    public static Map<String, FormField> getFormFields() {
+    public Map<String, FormField> getFormFields() {
+        Map<String, FormField> formFields = new HashMap<String, FormField>();
+        for ( FormGroup fg : formGroups ) {
+            addFormField( formFields, fg );
+        }
         return formFields;
     }
 
-    private static void addFormField( FormGroup fg ) {
+    private void addFormField( Map<String, FormField> formFields, FormGroup fg ) {
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormGroup ) {
-                addFormField( (FormGroup) fe );
+                addFormField( formFields, (FormGroup) fe );
             } else if ( fe instanceof FormField ) {
                 FormField ff = (FormField) fe;
                 formFields.put( ff.getPath().toString(), ff );
@@ -97,40 +118,34 @@ public class FormElementManager {
     }
 
     /**
-     * @param grpId
-     *            the id of the group to return
-     * @return the form group with the given id, returns null if a grouup with the given id does not exist
-     * @throws NullPointerException
-     *             if grpId is null
+     * @param id
+     *            the id of the codelist
+     * @return the codelist with the given id
      */
-    public static FormGroup getFormGroup( String grpId ) {
-        if ( grpId == null ) {
+    public CodeList getCodeList( String id ) {
+        if ( id == null ) {
             throw new NullPointerException();
         }
-        for ( FormGroup fg : formGroups ) {
-            if ( grpId.equals( fg.getId() ) )
-                return fg;
+        for ( CodeList cl : codeLists ) {
+            if ( id.equals( cl.getId() ) ) {
+                return cl;
+            }
         }
         return null;
     }
 
     /**
-     * @param fgId
-     *            the id of the form group
+     * @param id
+     *            the id identifiying the top level form group
+     * @return the form group assigned to the given id, null, if no form group for thi id exist
      */
-    public static List<String> getSubFormGroupIds( String fgId ) {
-        return getSubFormGroupIds( getFormGroup( fgId ) );
-    }
-
-    private static List<String> getSubFormGroupIds( FormGroup fg ) {
-        List<String> fgIds = new ArrayList<String>();
-        for ( FormElement fe : fg.getFormElements() ) {
-            if ( fe instanceof FormGroup ) {
-                fgIds.add( ( (FormGroup) fe ).getId() );
-                fgIds.addAll( getSubFormGroupIds( (FormGroup) fe ) );
+    public FormGroup getFormGroup( String id ) {
+        for ( FormGroup fg : formGroups ) {
+            if ( id.equals( fg.getId() ) ) {
+                return fg;
             }
         }
-        return fgIds;
+        return null;
     }
 
 }
