@@ -38,6 +38,7 @@ package org.deegree.client.mdeditor.gui;
 import java.io.Serializable;
 import java.util.UUID;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
@@ -77,24 +78,31 @@ public class NavigationBean implements Serializable {
             FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
             Object value = formfields.getFormFields().get( pathToIdentifier.toString() ).getValue();
             id = String.valueOf( value );
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            DatasetWriter.writeElements( id, formfields.getFormGroups() );
+
+        } catch ( Exception e ) {
+            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.SAVE_DATASET",
+                                                         e.getMessage() );
+            fc.addMessage( "SAVE_FAILED", msg );
         }
 
-        DatasetWriter.writeElements( id, formfields.getFormGroups() );
-        return null;
+        FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.SAVE_DATASET", id );
+        fc.addMessage( "SAVE_SUCCESS", msg );
+
+        return "/page/form/successPage.xhtml";
     }
 
     public Object reloadForm() {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
         try {
-            System.out.println( "reload" );
             FormConfigurationFactory.reloadFormConfiguration( session.getId() );
         } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.CONF.RELOAD",
+                                                         e.getMessage() );
+            fc.addMessage( "RELOAD_FAILED", msg );
+            return "/page/form/errorPage.xhtml";
         }
 
         fc.getELContext();
@@ -110,7 +118,13 @@ public class NavigationBean implements Serializable {
                                                                                                       "menuCreatorBean" );
         menuCreator.forceReloaded();
 
-        return "/page/form/reloadForm.xhtml";
+        FormFieldBean ff = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null,
+                                                                                         "formFieldBean" );
+        ff.forceReloaded();
+
+        FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.RELOAD" );
+        fc.addMessage( "RELOAD_SUCCESS", msg );
+        return "/page/form/successPage.xhtml";
     }
 
     public Object loadDataset() {

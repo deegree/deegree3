@@ -81,18 +81,7 @@ public class FormFieldBean implements Serializable {
     private Map<String, FormField> formFields = new HashMap<String, FormField>();
 
     public FormFieldBean() {
-
-        FacesContext fc = FacesContext.getCurrentInstance();
-        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
-        try {
-            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
-            formGroups = manager.getFormGroups();
-            formFields = manager.getFormFields();
-        } catch ( ConfigurationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        forceReloaded();
     }
 
     public void saveValue( AjaxBehaviorEvent event )
@@ -156,6 +145,19 @@ public class FormFieldBean implements Serializable {
 
     public void setFormFields( Map<String, FormField> formFields ) {
         this.formFields = formFields;
+    }
+
+    public void forceReloaded() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) fc.getExternalContext().getSession( false );
+        try {
+            FormConfiguration manager = FormConfigurationFactory.getOrCreateFormConfiguration( session.getId() );
+            formGroups = manager.getFormGroups();
+            formFields = manager.getFormFields();
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

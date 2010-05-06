@@ -81,7 +81,8 @@ public class FormConfigurationParserTest extends TestCase {
     }
 
     @Test
-    public void testParseReferencedFormElementAndIdentifier() throws ConfigurationException {
+    public void testParseReferencedFormElementAndIdentifier()
+                            throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
         FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
         List<FormGroup> formGroups = configuration.getFormGroups();
@@ -103,7 +104,8 @@ public class FormConfigurationParserTest extends TestCase {
     }
 
     @Test
-    public void testParseFormElements() throws ConfigurationException {
+    public void testParseFormElements()
+                            throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
         FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
         List<FormGroup> formGroups = configuration.getFormGroups();
@@ -130,7 +132,8 @@ public class FormConfigurationParserTest extends TestCase {
     }
 
     @Test
-    public void testParseCodeLists() throws ConfigurationException {
+    public void testParseCodeLists()
+                            throws ConfigurationException {
         Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/simpleTestConfig.xml" );
         FormConfiguration configuration = FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
         List<CodeList> codeLists = configuration.getCodeLists();
@@ -161,6 +164,17 @@ public class FormConfigurationParserTest extends TestCase {
         assertNotNull( codeList.getCodes().get( value ) );
         assertEquals( "Nummer 1", codeList.getCodes().get( value ) );
 
+    }
+
+    @Test(expected = org.deegree.client.mdeditor.config.ConfigurationException.class)
+    public void testdoubleIDException() {
+        Configuration.setFormConfURL( "/home/lyn/workspace/deegree-mdeditor/src/test/resources/org/deegree/client/mdeditor/config/doubleIDTestConfig.xml" );
+        try {
+            FormConfigurationFactory.getOrCreateFormConfiguration( "test" );
+        } catch ( ConfigurationException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

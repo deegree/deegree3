@@ -38,11 +38,13 @@ package org.deegree.client.mdeditor.gui;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
 import javax.faces.application.Application;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
 import org.slf4j.Logger;
@@ -58,7 +60,7 @@ import org.slf4j.Logger;
 public class GuiUtils {
 
     private static final Logger LOG = getLogger( GuiUtils.class );
-    
+
     public static final String FIELDPATH_ATT_KEY = "fieldPath";
 
     public static final String GROUPID_ATT_KEY = "groupId";
@@ -81,6 +83,19 @@ public class GuiUtils {
             text = MessageFormat.format( text, args );
         }
         return text;
+    }
+
+    public static FacesMessage getFacesMessage( FacesContext context, FacesMessage.Severity severity, String key,
+                                                Object... args ) {
+        Locale loc = context.getViewRoot().getLocale();
+        ResourceBundle bundle = ResourceBundle.getBundle( context.getApplication().getMessageBundle(), loc );
+        String msgDetail = bundle.getString( key + "_Detail" );
+        String msgSummary = bundle.getString( key );
+        if ( args != null ) {
+            msgDetail = MessageFormat.format( msgDetail, args );
+            msgSummary = MessageFormat.format( msgSummary, args );
+        }
+        return new FacesMessage( severity, msgSummary, msgDetail );
     }
 
 }

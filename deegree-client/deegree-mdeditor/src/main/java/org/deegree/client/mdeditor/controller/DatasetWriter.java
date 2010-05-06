@@ -57,31 +57,25 @@ import org.deegree.client.mdeditor.model.FormGroup;
  */
 public class DatasetWriter extends FormWriter {
 
-    public static void writeElements( String id, List<FormGroup> formGroups ) {
+    public static void writeElements( String id, List<FormGroup> formGroups )
+                            throws FileNotFoundException, XMLStreamException {
         File file = new File( Configuration.getFilesDirURL(), id + ".xml" );
-        try {
-            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            FileOutputStream fos = new FileOutputStream( file );
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter( fos );
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        FileOutputStream fos = new FileOutputStream( file );
+        XMLStreamWriter writer = outputFactory.createXMLStreamWriter( fos );
 
-            writer.writeStartDocument();
-            writer.writeStartElement( DS_ELEM );
+        writer.writeStartDocument();
+        writer.writeStartElement( DS_ELEM );
 
-            for ( FormGroup fg : formGroups ) {
-                if ( !fg.isReferenced() ) {
-                    appendFormGroup( writer, fg );
-                }
+        for ( FormGroup fg : formGroups ) {
+            if ( !fg.isReferenced() ) {
+                appendFormGroup( writer, fg );
             }
-
-            writer.writeEndElement();
-            writer.writeEndDocument();
-            writer.close();
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
+
+        writer.writeEndElement();
+        writer.writeEndDocument();
+        writer.close();
+
     }
 }
