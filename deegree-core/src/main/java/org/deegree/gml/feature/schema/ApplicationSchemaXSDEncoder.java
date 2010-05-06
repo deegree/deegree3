@@ -35,6 +35,34 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature.schema;
 
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_EXTENSION;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_LIST;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_NONE;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_RESTRICTION;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_SUBSTITUTION;
+import static org.apache.xerces.xs.XSConstants.DERIVATION_UNION;
+import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_ALL;
+import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_CHOICE;
+import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_SEQUENCE;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_ENUMERATION;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_FRACTIONDIGITS;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_LENGTH;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_MAXEXCLUSIVE;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_MAXINCLUSIVE;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_MAXLENGTH;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_MINEXCLUSIVE;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_MININCLUSIVE;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_MINLENGTH;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_NONE;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_PATTERN;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_TOTALDIGITS;
+import static org.apache.xerces.xs.XSSimpleTypeDefinition.FACET_WHITESPACE;
+import static org.apache.xerces.xs.XSTypeDefinition.COMPLEX_TYPE;
+import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
@@ -54,11 +82,18 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.xs.StringList;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSFacet;
+import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -218,9 +253,10 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         // TODO better prefix handling
-        final String ns = fts.get( 0 ).getName().getNamespaceURI();
-        if ( ns != null && !ns.isEmpty() ) {
-            writer.setPrefix( "app", ns );
+        final String targetNs = fts.get( 0 ).getName().getNamespaceURI();
+        final String targetPrefix = fts.get( 0 ).getName().getNamespaceURI();
+        if ( targetNs != null && !targetNs.isEmpty() ) {
+            writer.setPrefix( "app", targetNs );
         }
 
         writer.setPrefix( XS_PREFIX, XSNS );
@@ -229,8 +265,8 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeStartElement( XSNS, "schema" );
         writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
-        if ( ns != null && !ns.isEmpty() ) {
-            writer.writeAttribute( "targetNamespace", ns );
+        if ( targetNs != null && !targetNs.isEmpty() ) {
+            writer.writeAttribute( "targetNamespace", targetNs );
             writer.writeAttribute( "elementFormDefault", "qualified" );
             writer.writeAttribute( "attributeFormDefault", "unqualified" );
         } else {
@@ -244,7 +280,7 @@ public class ApplicationSchemaXSDEncoder {
             writer.writeAttribute( "schemaLocation", importURLs.get( importNamespace ) );
         }
 
-        if ( ns == null || ns.isEmpty() ) {
+        if ( targetNs == null || targetNs.isEmpty() ) {
             writer.writeStartElement( XSNS, "element" );
             writer.writeAttribute( "name", "FeatureCollection" );
             writer.writeAttribute( "substitutionGroup", "gml:_FeatureCollection" );
@@ -274,6 +310,203 @@ public class ApplicationSchemaXSDEncoder {
 
         // end 'xs:schema'
         writer.writeEndElement();
+    }
+
+    /**
+     * @param writer
+     * @param type
+     * @param targetPrefix
+     * @param targetNs
+     * @throws XMLStreamException
+     */
+    private void exportComplexType( XMLStreamWriter writer, XSComplexTypeDefinition complex, String targetPrefix,
+                                    String targetNs )
+                            throws XMLStreamException {
+        if ( complex.getNamespace().equals( targetNs ) ) {
+            writer.writeStartElement( XSNS, "complexType" );
+
+            boolean contentTypeBegin = false;
+            short contentType = complex.getContentType();
+            switch ( contentType ) {
+            case CONTENTTYPE_SIMPLE:
+                writer.writeStartElement( "xs", "simpleContent", XSNS );
+                contentTypeBegin = true;
+                break;
+            case CONTENTTYPE_MIXED:
+                writer.writeStartElement( "xs", "complexContent", XSNS );
+                contentTypeBegin = true;
+                break;
+            case CONTENTTYPE_EMPTY:
+                // TODO?
+                break;
+            case CONTENTTYPE_ELEMENT:
+                // TODO?
+                break;
+            }
+
+            boolean derivationBegin = false;
+            short derivation = complex.getDerivationMethod();
+            XSTypeDefinition base = complex.getBaseType();
+            String prefix = determinePrefix( base.getNamespace(), targetNs, targetPrefix );
+            switch ( derivation ) {
+            case DERIVATION_EXTENSION:
+                writer.writeStartElement( "xs", "extension", XSNS );
+                writer.writeAttribute( "base", prefix + base.getName() );
+                derivationBegin = true;
+                break;
+            case DERIVATION_LIST:
+                // TODO?
+                break;
+            case DERIVATION_NONE:
+                // TODO?
+                break;
+            case DERIVATION_RESTRICTION:
+                // TODO?
+                break;
+            case DERIVATION_SUBSTITUTION:
+                // TODO?
+                break;
+            case DERIVATION_UNION:
+                // TODO?
+                break;
+            }
+
+            XSParticle particle = complex.getParticle();
+            if ( particle != null ) {
+                exportTerm( writer, particle.getTerm(), particle.getMinOccurs(), particle.getMaxOccurs(),
+                            particle.getMaxOccursUnbounded(), targetPrefix, targetNs );
+            }
+
+            XSObjectList attributes = complex.getAttributeUses();
+            for ( int i = 0; i < attributes.getLength(); i++ ) {
+                XSAttributeUse attribute = ( (XSAttributeUse) attributes.item( i ) );
+                writer.writeEmptyElement( "xs", "attribute", XSNS );
+                writer.writeAttribute( "name", attribute.getAttrDeclaration().getName() );
+                XSTypeDefinition type = attribute.getAttrDeclaration().getTypeDefinition();
+                writer.writeAttribute( "type", "xs:" + type.getName() );
+                writer.writeAttribute( "use", attribute.getRequired() ? "required" : "optional" );
+            }
+
+            if ( derivationBegin ) {
+                writer.writeEndElement(); // extension, etc.
+            }
+            if ( contentTypeBegin ) {
+                writer.writeEndElement(); // simpleContent or complexContent
+            }
+            writer.writeEndElement(); // complexType
+        }
+    }
+
+    /**
+     * @throws XMLStreamException
+     * 
+     */
+    private void exportSimpleType( XMLStreamWriter writer, XSSimpleTypeDefinition simple, String targetPrefix,
+                                   String targetNs )
+                            throws XMLStreamException {
+        if ( simple.getNamespace().equals( targetNs ) ) {
+
+            writer.writeStartElement( XSNS, "simpleType" );
+
+            // TODO how can one find the derivation type? getFinal() is wrong!
+            writer.writeStartElement( "xs", "restriction", XSNS );
+
+            String simpleNs = simple.getBaseType().getNamespace();
+            String prefix = determinePrefix( simpleNs, targetNs, targetPrefix );
+
+            writer.writeAttribute( "base", prefix + simple.getBaseType().getName() );
+            StringList members = simple.getLexicalEnumeration();
+            if ( members != null && members.getLength() > 0 ) {
+                for ( int i = 0; i < members.getLength(); i++ ) {
+                    writer.writeEmptyElement( "xs", "enumeration", XSNS );
+                    writer.writeAttribute( "value", members.item( i ) );
+                }
+            }
+
+            writer.writeEndElement(); // derivation (restriction, extension, etc.)
+            writer.writeEndElement(); // simpleType
+        }
+    }
+
+    private String determinePrefix( String ns, String targetNs, String targetPrefix ) {
+        String prefix = ns == targetNs ? targetPrefix + ":" : "";
+        prefix = ns == GMLNS ? GML_PREFIX + ":" : prefix;
+        prefix = ns == XSNS ? XS_PREFIX + ":" : prefix;
+        return prefix;
+    }
+
+    private void exportTerm( XMLStreamWriter writer, XSTerm term, int minOccurs, int maxOccurs, boolean maxUnbounded,
+                             String targetPrefix, String targetNs )
+                            throws XMLStreamException {
+        if ( term instanceof XSModelGroup ) {
+            XSModelGroup modelGroup = (XSModelGroup) term;
+            if ( modelGroup.getCompositor() == COMPOSITOR_SEQUENCE ) {
+                writer.writeStartElement( "xs", "sequence", XSNS );
+            }
+            if ( modelGroup.getCompositor() == COMPOSITOR_CHOICE ) {
+                writer.writeStartElement( "xs", "choice", XSNS );
+            }
+            if ( modelGroup.getCompositor() == COMPOSITOR_ALL ) {
+                writer.writeStartElement( "xs", "all", XSNS );
+            }
+
+            XSObjectList particles = modelGroup.getParticles();
+            for ( int i = 0; i < particles.getLength(); i++ ) {
+                XSParticle particle = (XSParticle) particles.item( i );
+                exportTerm( writer, particle.getTerm(), particle.getMinOccurs(), particle.getMaxOccurs(),
+                            particle.getMaxOccursUnbounded(), targetPrefix, targetNs );
+            }
+            writer.writeEndElement();
+
+        } else if ( term instanceof XSElementDeclaration ) {
+            exportElement( writer, (XSElementDeclaration) term, minOccurs, maxOccurs, maxUnbounded, targetPrefix,
+                           targetNs );
+        } else if ( term instanceof XSWildcard ) {
+            XSWildcard wildcard = (XSWildcard) term;
+            // TODO
+        }
+
+    }
+
+    private void exportElement( XMLStreamWriter writer, XSElementDeclaration element, int minOccurs, int maxOccurs,
+                                boolean maxUnbounded, String targetPrefix, String targetNs )
+                            throws XMLStreamException {
+        writer.writeStartElement( "xs", "element", XSNS );
+        writer.writeAttribute( "name", element.getName() );
+        if ( minOccurs != 1 ) {
+            writer.writeAttribute( "minOccurs", String.valueOf( minOccurs ) );
+        }
+        if ( maxUnbounded ) {
+            writer.writeAttribute( "maxOccurs", "unbounded" );
+        } else if ( maxOccurs != 1 ) {
+            writer.writeAttribute( "maxOccurs", String.valueOf( maxOccurs ) );
+        }
+
+        XSTypeDefinition type = element.getTypeDefinition();
+        if ( type.getNamespace().equals( targetNs ) ) {
+            exportType( writer, type, targetPrefix, targetNs );
+        } else {
+            String prefix = determinePrefix( type.getNamespace(), targetNs, targetPrefix );
+            writer.writeAttribute( "type", prefix + type.getName() );
+        }
+
+        writer.writeEndElement(); // xs:element
+    }
+
+    /**
+     * @param typeDefinition
+     * @throws XMLStreamException
+     */
+    private void exportType( XMLStreamWriter writer, XSTypeDefinition type, String targetPrefix, String targetNs )
+                            throws XMLStreamException {
+        short typeCat = type.getTypeCategory();
+        if ( typeCat == SIMPLE_TYPE ) {
+            exportSimpleType( writer, (XSSimpleTypeDefinition) type, targetPrefix, targetNs );
+
+        } else if ( typeCat == COMPLEX_TYPE ) {
+            exportComplexType( writer, (XSComplexTypeDefinition) type, targetPrefix, targetNs );
+        }
+
     }
 
     private void export( XMLStreamWriter writer, FeatureType ft )
@@ -414,22 +647,12 @@ public class ApplicationSchemaXSDEncoder {
                 writer.writeAttribute( "type", "gml:MeasureType" );
             }
         } else if ( pt instanceof CustomPropertyType ) {
-            writer.writeComment( "TODO: export custom property type information" );
-            writer.writeStartElement( XSNS, "complexType" );
-            writer.writeAttribute( "mixed", "true" );
-            writer.writeStartElement( XSNS, "sequence" );
-            writer.writeStartElement( XSNS, "any" );
-            writer.writeAttribute( "minOccurs", "0" );
-            writer.writeAttribute( "maxOccurs", "unbounded" );
-            writer.writeAttribute( "processContents", "lax" );
-            writer.writeEndElement();
-            writer.writeEndElement();
-            XMLAdapter.writeElement( writer, XSNS, "anyAttribute", null, "processContents", "lax" );
-            writer.writeEndElement();
+            XSTypeDefinition xsTypeDef = ( (CustomPropertyType) pt ).getXSDValueType();
+
+            exportType( writer, xsTypeDef, pt.getName().getPrefix(), pt.getName().getNamespaceURI() );
         }
 
-        // end 'xs:element'
-        writer.writeEndElement();
+        writer.writeEndElement(); // end 'xs:element'
     }
 
     private void export( XMLStreamWriter writer, SimplePropertyType pt, GMLVersion version )
@@ -482,43 +705,43 @@ public class ApplicationSchemaXSDEncoder {
     private String getFacetName( short facetKind ) {
         String facetName = null;
         switch ( facetKind ) {
-        case 2048:
+        case FACET_ENUMERATION:
             facetName = "enumeration";
             break;
-        case 1024:
+        case FACET_FRACTIONDIGITS:
             facetName = "fractionDigits";
             break;
-        case 1:
+        case FACET_LENGTH:
             facetName = "length";
             break;
-        case 64:
+        case FACET_MAXEXCLUSIVE:
             facetName = "maxExclusive";
             break;
-        case 32:
+        case FACET_MAXINCLUSIVE:
             facetName = "maxInclusive";
             break;
-        case 4:
+        case FACET_MAXLENGTH:
             facetName = "maxLength";
             break;
-        case 128:
+        case FACET_MINEXCLUSIVE:
             facetName = "minExclusive";
             break;
-        case 256:
+        case FACET_MININCLUSIVE:
             facetName = "minInclusive";
             break;
-        case 2:
+        case FACET_MINLENGTH:
             facetName = "minLength";
             break;
-        case 0:
+        case FACET_NONE:
             facetName = "none";
             break;
-        case 8:
+        case FACET_PATTERN:
             facetName = "pattern";
             break;
-        case 512:
+        case FACET_TOTALDIGITS:
             facetName = "totalDigits";
             break;
-        case 16:
+        case FACET_WHITESPACE:
             facetName = "whiteSpace";
             break;
         }
