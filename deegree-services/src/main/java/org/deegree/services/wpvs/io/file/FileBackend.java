@@ -44,12 +44,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.index.PositionableModel;
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.BillBoard;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
 import org.deegree.services.wpvs.config.ModelDatasetWrapper;
@@ -79,28 +81,41 @@ public class FileBackend extends ModelBackend<Envelope> {
     private ModelFile<RenderablePrototype> prototypeFile;
 
     /**
-     * @param directoryName
+     * @param billboardFile
      * @throws IOException
      */
-    public FileBackend( String directoryName ) throws IOException {
-        File fileDir = new File( directoryName );
-        if ( fileDir.exists() ) {
-            treeFile = getTreeFile( directoryName );
-            buildingFile = getBuildingFile( directoryName );
-            prototypeFile = getPrototypeFile( directoryName );
+    public FileBackend( File billboardFile ) throws IOException {
+        if ( billboardFile.exists() ) {
+            treeFile = getTreeFile( billboardFile );
         } else {
-            throw new IOException( "The given directory: " + directoryName + " does not exist." );
+            throw new IOException( "The given billboard file: " + billboardFile + " does not exist." );
         }
     }
 
     /**
-     * @param directoryName
-     * @return
+     * 
+     * @param entityFile
+     * @param prototypeFile
      * @throws IOException
      */
-    private ModelFile<WorldRenderableObject> getBuildingFile( String directoryName )
+    public FileBackend( File entityFile, File prototypeFile ) throws IOException {
+        if ( entityFile.exists() ) {
+            buildingFile = getBuildingFile( entityFile );
+            if ( prototypeFile != null && prototypeFile.exists() ) {
+                this.prototypeFile = getPrototypeFile( prototypeFile );
+            }
+        } else {
+            throw new IOException( "The given entity file: " + entityFile + " does not exist." );
+        }
+    }
+
+    /**
+     * @param entityFile
+     * @throws IOException
+     */
+    private ModelFile<WorldRenderableObject> getBuildingFile( File entityFile )
                             throws IOException {
-        File[] files = mapFileType( directoryName, Type.BUILDING );
+        File[] files = mapFileType( entityFile );
         return new ModelFile<WorldRenderableObject>( new IndexFile( files[0] ),
                                                      new DataFile<WorldRenderableObject>( files[1],
                                                                                           getBuildingSerializer() ),
@@ -108,13 +123,12 @@ public class FileBackend extends ModelBackend<Envelope> {
     }
 
     /**
-     * @param directoryName
-     * @return
+     * @param entityFile
      * @throws IOException
      */
-    private ModelFile<RenderablePrototype> getPrototypeFile( String directoryName )
+    private ModelFile<RenderablePrototype> getPrototypeFile( File entityFile )
                             throws IOException {
-        File[] files = mapFileType( directoryName, Type.PROTOTYPE );
+        File[] files = mapFileType( entityFile );
         return new ModelFile<RenderablePrototype>( new IndexFile( files[0] ),
                                                    new DataFile<RenderablePrototype>( files[1],
                                                                                       getPrototypeSerializer() ),
@@ -123,23 +137,21 @@ public class FileBackend extends ModelBackend<Envelope> {
 
     /**
      * 
-     * @param directoryName
-     * @return
      * @throws IOException
      */
-    private ModelFile<BillBoard> getTreeFile( String directoryName )
+    private ModelFile<BillBoard> getTreeFile( File bilboardFile )
                             throws IOException {
-        File[] files = mapFileType( directoryName, Type.TREE );
+        File[] files = mapFileType( bilboardFile );
         return new ModelFile<BillBoard>( new IndexFile( files[0] ), new DataFile<BillBoard>( files[1],
                                                                                              getTreeSerializer() ),
                                          files[2] );
     }
 
-    private File[] mapFileType( String dir, Type objectType ) {
-        String fileName = objectType.toString();
-        File data = new File( dir, fileName + ".bin" );
-        File idx = new File( dir, fileName + ".idx" );
-        File info = new File( dir, fileName + ".info" );
+    private File[] mapFileType( File entityFile ) {
+        String filepath = FileUtils.getBasename( entityFile );
+        File data = new File( filepath + ".bin" );
+        File idx = new File( filepath + ".idx" );
+        File info = new File( filepath + ".info" );
         return new File[] { idx, data, info };
     }
 
@@ -327,5 +339,19 @@ public class FileBackend extends ModelBackend<Envelope> {
     @Override
     public List<Object> getDeSerializedObjectsForSQL( Type objectType, String sqlWhere ) {
         throw new UnsupportedOperationException( "Updating is currently not supported in the file backend." );
+    }
+
+    @Override
+    public void loadEntities( RenderableManager<?> renderer, CRS baseCRS ) {
+        if ( this.treeFile != null ) {
+            loadTrees( (TreeRenderer) renderer, baseCRS );
+        } else {
+            loadBuildings( (BuildingRenderer) renderer, baseCRS );
+        }
+    }
+
+    @Override
+    public boolean isBillboard() {
+        return this.treeFile != null;
     }
 }

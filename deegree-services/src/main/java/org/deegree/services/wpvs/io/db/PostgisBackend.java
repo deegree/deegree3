@@ -43,6 +43,7 @@ import java.sql.SQLException;
 
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
+import org.deegree.services.wpvs.io.ModelBackend.Type;
 import org.postgis.Geometry;
 import org.postgis.LinearRing;
 import org.postgis.PGbox3d;
@@ -63,9 +64,10 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
     /**
      * @param connectionID
      *            pointing to the configured database connection.
+     * @param type 
      */
-    public PostgisBackend( String connectionID ) {
-        super( connectionID );
+    public PostgisBackend( String connectionID, Type type ) {
+        super( connectionID, type );
     }
 
     @Override

@@ -26,6 +26,7 @@
         <element name="TextureDirectory" type="string" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="isBillboard" type="boolean" use="optional" default="false" />
     </complexType>
   </element>
 </schema>

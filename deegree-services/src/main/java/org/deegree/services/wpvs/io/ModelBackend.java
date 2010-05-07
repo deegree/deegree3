@@ -47,8 +47,11 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
+import org.deegree.rendering.r3d.persistence.RenderableStore;
+import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.wpvs.exception.DatasourceException;
 import org.deegree.services.wpvs.io.db.PostgisBackend;
 import org.deegree.services.wpvs.io.file.FileBackend;
@@ -67,7 +70,7 @@ import org.deegree.services.wpvs.io.serializer.WROSerializer;
  *            the Geometry type used to create the envelope from.
  * 
  */
-public abstract class ModelBackend<G> {
+public abstract class ModelBackend<G> implements RenderableStore {
 
     double[] wpvsTranslationVector;
 
@@ -281,27 +284,36 @@ public abstract class ModelBackend<G> {
      */
     public static ModelBackend<?> getInstance( String id, String fileURL )
                             throws DatasourceException, UnsupportedOperationException {
-
-        String d = id;
-        if ( id == null || "".equals( id ) ) {
-            d = "FileBackend";
+        RenderableStore renderableStore = RenderableStoreManager.get( id );
+        if( renderableStore == null ){
+            throw new DatasourceException( "could not instantiate a model backend from given id." );
         }
-
-        if ( d.toLowerCase().contains( "filebackend" ) ) {
-            try {
-                return new FileBackend( fileURL );
-            } catch ( IOException e ) {
-                throw new DatasourceException( "Filebackend could not be loaded because: " + e.getLocalizedMessage(), e );
-            }
-
+        if( !( renderableStore instanceof ModelBackend<?> ) ){
+            throw new DatasourceException( "The given id ( " + id + ") instantiates a: " + renderableStore.getClass().getCanonicalName() + " this cannot be cast to Modelbackend." );            
         }
-        try {
-            ConnectionManager.getConnection( d );
-        } catch ( SQLException e ) {
-            throw new DatasourceException( "Given id: " + d + " was not known to the database configuration, "
-                                           + e.getLocalizedMessage(), e );
-        }
-        return new PostgisBackend( d );
+        return (ModelBackend<?>) renderableStore;
+                                
+//        renderableStore.
+//        String d = id;
+//        if ( id == null || "".equals( id ) ) {
+//            d = "FileBackend";
+//        }
+//
+//        if ( d.toLowerCase().contains( "filebackend" ) ) {
+//            try {
+//                return new FileBackend( fileURL );
+//            } catch ( IOException e ) {
+//                throw new DatasourceException( "Filebackend could not be loaded because: " + e.getLocalizedMessage(), e );
+//            }
+//
+//        }
+//        try {
+//            ConnectionManager.getConnection( d );
+//        } catch ( SQLException e ) {
+//            throw new DatasourceException( "Given id: " + d + " was not known to the database configuration, "
+//                                           + e.getLocalizedMessage(), e );
+//        }
+//        return new PostgisBackend( d );
     }
 
     /**

@@ -59,6 +59,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryB
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.BuildingRenderer;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
 import org.deegree.services.wpvs.io.BackendResult;
@@ -239,7 +240,6 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
                                               + RelevantColumns.envelope.getColumnName() + " FROM " + __TABLE__
                                               + " WHERE " + RelevantColumns.uuid.getColumnName() + "=?";
 
-    private static final String SQL_ENVS = "SELECT " + RelevantColumns.envelope.getColumnName() + " FROM " + __TABLE__;
 
     private static final String INFO = "SELECT * FROM " + Tables.MODEL_INFO.getTableName() + " WHERE "
                                        + RelevantColumns.type.getColumnName() + "=?";
@@ -262,13 +262,16 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 
     private final String connectionID;
 
+    private Type dataType;
+
     /**
      * @param connectionID
      *            to be used to get a connection from the {@link ConnectionManager}
-     * @param password2
+     * @param type 
      */
-    DBBackend( String connectionID ) {
+    DBBackend( String connectionID, Type type ) {
         this.connectionID = connectionID;
+        this.dataType = type;
     }
 
     @Override
@@ -1040,6 +1043,20 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     @Override
     public void flush() {
         // nothing
+    }
+    
+    @Override
+    public void loadEntities( RenderableManager<?> renderer, CRS baseCRS ) {
+        if ( dataType == Type.TREE ) {
+            loadTrees( (TreeRenderer) renderer, baseCRS );
+        } else {
+            loadBuildings( (BuildingRenderer) renderer, baseCRS );
+        }
+    }
+
+    @Override
+    public boolean isBillboard() {
+        return dataType == Type.TREE;
     }
 
     /**

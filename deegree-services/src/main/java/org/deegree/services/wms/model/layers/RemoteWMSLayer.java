@@ -54,7 +54,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.TreeSet;
 
-import org.deegree.commons.datasource.configuration.WMSDataSourceType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.commons.xml.XMLAdapter;
@@ -65,6 +64,7 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.datasource.coverage.wms.WMSDataSource;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
@@ -105,7 +105,7 @@ public class RemoteWMSLayer extends Layer {
      * @param adapter
      * @throws MalformedURLException
      */
-    public RemoteWMSLayer( AbstractLayerType layer, Layer parent, WMSDataSourceType datasource, XMLAdapter adapter )
+    public RemoteWMSLayer( AbstractLayerType layer, Layer parent, WMSDataSource datasource, XMLAdapter adapter )
                             throws MalformedURLException {
         super( layer, parent );
         client = new WMSClient111( adapter.resolve( datasource.getCapabilitiesDocumentLocation().getLocation() ) );
