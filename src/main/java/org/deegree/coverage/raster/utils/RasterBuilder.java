@@ -38,14 +38,31 @@
 
 package org.deegree.coverage.raster.utils;
 
+import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import org.deegree.commons.datasource.configuration.AbstractGeospatialDataSourceType;
+import org.deegree.commons.datasource.configuration.MultiResolutionDataSource;
+import org.deegree.commons.datasource.configuration.RasterDataSource;
+import org.deegree.commons.datasource.configuration.RasterFileSetType;
+import org.deegree.commons.datasource.configuration.RasterFileType;
+import org.deegree.commons.datasource.configuration.MultiResolutionDataSource.Resolution;
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.persistence.CoverageBuilder;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -67,7 +84,10 @@ import org.deegree.geometry.Envelope;
  * @version $Revision$, $Date$
  * 
  */
-public class RasterBuilder {
+public class RasterBuilder implements CoverageBuilder {
+
+//    private final static String NS = "http://www.deegree.org/datasource/coverage/raster";
+    private final static String NS = "http://www.deegree.org/datasource";
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterBuilder.class );
 
@@ -84,8 +104,8 @@ public class RasterBuilder {
      * @return a {@link MultiResolutionRaster} filled with {@link TiledRaster}s or <code>null</code> if the
      *         resolutionDirectory is not a directory.
      */
-    public static MultiResolutionRaster buildMultiResolutionRaster( File resolutionDirectory, boolean recursive,
-                                                                    RasterIOOptions options ) {
+    public MultiResolutionRaster buildMultiResolutionRaster( File resolutionDirectory, boolean recursive,
+                                                             RasterIOOptions options ) {
         if ( !resolutionDirectory.isDirectory() ) {
             return null;
         }
@@ -124,18 +144,156 @@ public class RasterBuilder {
      *            containing values for the loading of the raster data.
      * @return a {@link MultiResolutionRaster} filled with {@link TiledRaster}s
      */
-    public static MultiResolutionRaster buildMultiResolutionRaster( List<File> resolutionDirectories,
-                                                                    boolean recursive, RasterIOOptions options ) {
+    private MultiResolutionRaster buildMultiResolutionRaster( List<File> resolutionDirectories, boolean recursive,
+                                                              RasterIOOptions options ) {
         MultiResolutionRaster mrr = new MultiResolutionRaster();
         for ( File resDir : resolutionDirectories ) {
             if ( resDir != null && resDir.isDirectory() ) {
-                AbstractRaster rasterLevel = RasterBuilder.buildTiledRaster( resDir, recursive, options );
+                AbstractRaster rasterLevel = buildTiledRaster( resDir, recursive, options );
                 if ( rasterLevel != null ) {
                     mrr.addRaster( rasterLevel );
                 }
             }
         }
         return mrr;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.coverage.raster.utils.CoverageBuilder#getConfigNamespace()
+     */
+    public String getConfigNamespace() {
+        return NS;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.coverage.raster.utils.CoverageBuilder#buildCoverage(java.net.URL)
+     */
+    public AbstractCoverage buildCoverage( URL configURL )
+                            throws IOException {
+        try {
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.datasource.configuration" );
+            Unmarshaller u = jc.createUnmarshaller();
+            Object config = ( (JAXBElement<?>) u.unmarshal( configURL ) ).getValue();
+
+            XMLAdapter resolver = new XMLAdapter();
+            resolver.setSystemId( configURL.toString() );
+
+            if ( config instanceof MultiResolutionDataSource ) {
+                return fromDatasource( (MultiResolutionDataSource) config, resolver );
+            }
+            if ( config instanceof RasterDataSource ) {
+                return fromDatasource( (RasterDataSource) config, resolver );
+            }
+            LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
+        } catch ( JAXBException e ) {
+            LOG.warn( "Coverage datastore configuration from '{}' could not be read: '{}'.", configURL,
+                      e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+        return null;
+    }
+    
+    /**
+     * @param datasource
+     * @param adapter
+     * @return a corresponding raster
+     */
+    private MultiResolutionRaster fromDatasource( MultiResolutionDataSource datasource, XMLAdapter adapter ) {
+        if ( datasource != null ) {
+            String defCRS = datasource.getCrs();
+            CRS crs = null;
+            if ( defCRS != null ) {
+                crs = new CRS( defCRS );
+            }
+            MultiResolutionRaster mrr = new MultiResolutionRaster();
+            mrr.setCoordinateSystem( crs );
+            for ( Resolution resolution : datasource.getResolution() ) {
+                JAXBElement<? extends AbstractGeospatialDataSourceType> dsElement = resolution.getAbstractGeospatialDataSource();
+                RasterDataSource ds = (RasterDataSource) dsElement.getValue();
+                RasterFileSetType directory = ds.getRasterDirectory();
+                File resolutionDir;
+                try {
+                    resolutionDir = new File( adapter.resolve( directory.getValue() ).getFile() );
+                    RasterIOOptions options = new RasterIOOptions();
+                    String fp = directory.getFilePattern();
+                    if ( fp == null ) {
+                        fp = "*";
+                    }
+                    if ( datasource.getOriginLocation() != null ) {
+                        options.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
+                                     datasource.getOriginLocation().toString().toUpperCase() );
+                    }
+                    options.add( RasterIOOptions.OPT_FORMAT, fp );
+                    if ( crs != null ) {
+                        options.add( RasterIOOptions.CRS, crs.getName() );
+                    }
+                    AbstractRaster rasterLevel = buildTiledRaster( resolutionDir, directory.isRecursive(), options );
+                    // double res = RasterBuilder.getPixelResolution( resolution.getRes(), resolutionDir );
+                    mrr.addRaster( rasterLevel );
+                } catch ( MalformedURLException e ) {
+                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.",
+                              directory.getValue() );
+                }
+            }
+            return mrr;
+        }
+        throw new NullPointerException( "The configured multi resolution datasource may not be null." );
+
+    }
+
+    /**
+     * @param datasource
+     * @param adapter
+     * @return a corresponding raster, null if files could not be fund
+     */
+    private AbstractRaster fromDatasource( RasterDataSource datasource, XMLAdapter adapter ) {
+        if ( datasource != null ) {
+            String defCRS = datasource.getCrs();
+            CRS crs = null;
+            if ( defCRS != null ) {
+                crs = new CRS( defCRS );
+            }
+            RasterFileSetType directory = datasource.getRasterDirectory();
+            RasterFileType file = datasource.getRasterFile();
+            try {
+                RasterIOOptions options = new RasterIOOptions();
+                if ( datasource.getOriginLocation() != null ) {
+                    options.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
+                                 datasource.getOriginLocation().toString().toUpperCase() );
+                }
+                if ( directory != null ) {
+                    File rasterFiles = new File( adapter.resolve( directory.getValue() ).getFile() );
+                    boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
+                    String fp = directory.getFilePattern();
+                    if ( fp == null ) {
+                        fp = "*";
+                    }
+                    options.add( RasterIOOptions.OPT_FORMAT, fp );
+                    if ( crs != null ) {
+                        options.add( RasterIOOptions.CRS, crs.getName() );
+                    }
+                    return buildTiledRaster( rasterFiles, recursive, options );
+                }
+                if ( file != null ) {
+                    final File loc = new File( adapter.resolve( file.getValue() ).getFile() );
+                    options.add( RasterIOOptions.OPT_FORMAT, file.getFileType() );
+                    AbstractRaster raster = loadRasterFromFile( loc, options );
+                    raster.setCoordinateSystem( crs );
+                    return raster;
+                }
+            } catch ( MalformedURLException e ) {
+                if ( directory != null ) {
+                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.",
+                              directory.getValue() );
+                } else {
+                    LOG.warn( "Could not resolve the file {}, corresponding data will not be available.",
+                              file.getValue() );
+                }
+            } catch ( IOException e ) {
+                LOG.warn( "Could not load the file {}, corresponding data will not be available.", file.getValue() );
+            }
+        }
+        throw new NullPointerException( "The configured raster datasource may not be null." );
     }
 
     /**
@@ -159,7 +317,7 @@ public class RasterBuilder {
      * @throws IOException
      *             if the raster location could not be read.
      */
-    public static AbstractCoverage buildCoverage( File rasterLocation, boolean recursive, RasterIOOptions options )
+    public AbstractCoverage buildCoverage( File rasterLocation, boolean recursive, RasterIOOptions options )
                             throws IOException {
         if ( rasterLocation == null ) {
             throw new IOException( "Raster location may not be null." );
@@ -187,7 +345,7 @@ public class RasterBuilder {
      * 
      * @return the resolution from the configuration if missing from the directory name, if not parse-able return NaN
      */
-    public static double getPixelResolution( Double resolution, File resolutionDir ) {
+    private static double getPixelResolution( Double resolution, File resolutionDir ) {
         Double result = resolution;
         if ( result == null || result.isNaN() ) {
             File rasterDirectory = resolutionDir;
@@ -219,7 +377,7 @@ public class RasterBuilder {
      * @return a new {@link TiledRaster} or <code>null</code> if no raster files were found at the given location, with
      *         the given extension.
      */
-    public static AbstractRaster buildTiledRaster( File directory, boolean recursive, RasterIOOptions options ) {
+    private AbstractRaster buildTiledRaster( File directory, boolean recursive, RasterIOOptions options ) {
         LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
         String extension = options.get( RasterIOOptions.OPT_FORMAT );
         List<File> coverageFiles = FileUtils.findFilesForExtensions( directory, recursive, extension );
