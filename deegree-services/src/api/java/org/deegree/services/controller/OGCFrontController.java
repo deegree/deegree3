@@ -101,6 +101,7 @@ import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.record.persistence.RecordStoreManager;
+import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
@@ -973,7 +974,8 @@ public class OGCFrontController extends HttpServlet {
             initFeatureStores();
             initCoverages();
             initRecordStores();
-            initRenderables();
+            initRenderableStores();
+            initBatchedMTStores();
             initWebServices();
 
         } catch ( NoClassDefFoundError e ) {
@@ -1012,6 +1014,7 @@ public class OGCFrontController extends HttpServlet {
         } else {
             LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
         }
+        ProxyUtils.logProxyConfiguration( LOG );
         LOG.info( "" );
     }
 
@@ -1140,7 +1143,7 @@ public class OGCFrontController extends HttpServlet {
         LOG.info( "" );
     }
 
-    private void initRenderables() {
+    private void initRenderableStores() {
         File renderableDir = null;
         try {
             renderableDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/renderable",
@@ -1152,11 +1155,32 @@ public class OGCFrontController extends HttpServlet {
         }
         if ( renderableDir != null && renderableDir.exists() ) {
             LOG.info( "--------------------------------------------------------------------------------" );
-            LOG.info( "Setting up renderables." );
+            LOG.info( "Setting up renderable stores." );
             LOG.info( "--------------------------------------------------------------------------------" );
             RenderableStoreManager.init( renderableDir );
         } else {
-            LOG.debug( "No 'datasources/renderable' directory -- skipping initialization of renderables." );
+            LOG.debug( "No 'datasources/renderable' directory -- skipping initialization of renderable stores." );
+        }
+        LOG.info( "" );
+    }
+
+    private void initBatchedMTStores() {
+        File batchedMTDir = null;
+        try {
+            batchedMTDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/batchedmt",
+                                                          getServletContext() ).toURI() );
+        } catch ( MalformedURLException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        if ( batchedMTDir != null && batchedMTDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up BatchedMT stores." );
+            LOG.info( "--------------------------------------------------------------------------------" );
+            BatchedMTStoreManager.init( batchedMTDir );
+        } else {
+            LOG.debug( "No 'datasources/batchedmt' directory -- skipping initialization of BatchedMT stores." );
         }
         LOG.info( "" );
     }
