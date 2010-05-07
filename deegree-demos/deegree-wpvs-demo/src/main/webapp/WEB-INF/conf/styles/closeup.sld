@@ -25,7 +25,6 @@
       </Fill>
     </PolygonSymbolizer>
   </Rule>
-
   <Rule>
     <ogc:Filter>
       <ogc:Not>
