@@ -101,6 +101,7 @@ import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.record.persistence.RecordStoreManager;
+import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.ControllerException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -970,8 +971,9 @@ public class OGCFrontController extends HttpServlet {
             initProxyConfig();
             initJDBCConnections();
             initFeatureStores();
-            initCoverageStores();
+            initCoverages();
             initRecordStores();
+            initRenderables();
             initWebServices();
 
         } catch ( NoClassDefFoundError e ) {
@@ -1001,11 +1003,11 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( e.getMessage(), e );
         }
 
-        if ( proxyConfigFile.exists() ) {
+        if ( proxyConfigFile != null && proxyConfigFile.exists() ) {
             try {
                 ProxyUtils.setupProxyParameters( proxyConfigFile );
             } catch ( IllegalArgumentException e ) {
-                LOG.warn ("Unable to apply proxy configuration from file: " + proxyConfigFile + ": " + e.getMessage());
+                LOG.warn( "Unable to apply proxy configuration from file: " + proxyConfigFile + ": " + e.getMessage() );
             }
         } else {
             LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
@@ -1096,9 +1098,6 @@ public class OGCFrontController extends HttpServlet {
     }
 
     private void initFeatureStores() {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up feature stores." );
-        LOG.info( "--------------------------------------------------------------------------------" );
 
         File fsDir = null;
         try {
@@ -1110,40 +1109,59 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( e.getMessage(), e );
         }
         if ( fsDir != null && fsDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up feature stores." );
+            LOG.info( "--------------------------------------------------------------------------------" );
             FeatureStoreManager.init( fsDir );
         } else {
-            LOG.info( "No 'data/feature' directory -- skipping initialization of feature stores." );
+            LOG.debug( "No 'datasources/feature' directory -- skipping initialization of feature stores." );
         }
         LOG.info( "" );
     }
 
-    private void initCoverageStores() {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up coverages." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-
+    private void initCoverages() {
         File coverageDir = null;
         try {
-            coverageDir = new File(
-                              resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/coverage", getServletContext() ).toURI() );
+            coverageDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/coverage",
+                                                         getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
             LOG.error( e.getMessage(), e );
         }
         if ( coverageDir != null && coverageDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up coverages." );
+            LOG.info( "--------------------------------------------------------------------------------" );
             CoverageBuilderManager.init( coverageDir );
         } else {
-            LOG.info( "No 'data/coverage' directory -- skipping initialization of coverages." );
+            LOG.debug( "No 'datasources/coverage' directory -- skipping initialization of coverages." );
+        }
+        LOG.info( "" );
+    }
+
+    private void initRenderables() {
+        File renderableDir = null;
+        try {
+            renderableDir = new File( resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/renderable",
+                                                           getServletContext() ).toURI() );
+        } catch ( MalformedURLException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( URISyntaxException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        if ( renderableDir != null && renderableDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up renderables." );
+            LOG.info( "--------------------------------------------------------------------------------" );
+            RenderableStoreManager.init( renderableDir );
+        } else {
+            LOG.debug( "No 'datasources/renderable' directory -- skipping initialization of renderables." );
         }
         LOG.info( "" );
     }
 
     private void initRecordStores() {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up record stores." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-
         File rsDir = null;
         try {
             rsDir = new File(
@@ -1154,9 +1172,12 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( e.getMessage(), e );
         }
         if ( rsDir != null && rsDir.exists() ) {
+            LOG.info( "--------------------------------------------------------------------------------" );
+            LOG.info( "Setting up record stores." );
+            LOG.info( "--------------------------------------------------------------------------------" );
             RecordStoreManager.init( rsDir );
         } else {
-            LOG.info( "No 'data/record' directory -- skipping initialization of record stores." );
+            LOG.debug( "No 'datasources/record' directory -- skipping initialization of record stores." );
         }
         LOG.info( "" );
     }
