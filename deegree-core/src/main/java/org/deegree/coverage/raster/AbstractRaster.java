@@ -39,6 +39,7 @@ import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -142,22 +143,36 @@ public abstract class AbstractRaster extends AbstractCoverage {
     /**
      * Returns a subset of the raster, note this is a view on the given raster.
      * 
-     * @param env
-     *            envelope of the subset
+     * @param subsetEnv
+     *            envelope of the sub raster, may not be <code>null</code>
      * @return subset of the raster
      */
-    public abstract AbstractRaster getSubRaster( Envelope env );
+    public abstract AbstractRaster getSubRaster( Envelope subsetEnv );
 
     /**
      * Returns a subset of the raster, note this is a view on the given raster.
      * 
-     * @param env
-     *            envelope of the subset
+     * @param subsetEnv
+     *            envelope of the sub raster, may not be <code>null</code>
      * @param bands
-     *            to use for the given subset.
+     *            to use for the given sub raster, if <code>null</code> the bands of the instance shall be used.
      * @return subset of the raster
      */
-    public abstract AbstractRaster getSubRaster( Envelope env, BandType[] bands );
+    public abstract AbstractRaster getSubRaster( Envelope subsetEnv, BandType[] bands );
+
+    /**
+     * Returns a subset of the raster, note this is a view on the given raster.
+     * 
+     * @param subsetEnv
+     *            envelope of the sub raster
+     * @param bands
+     *            to use for the given sub raster, if <code>null</code> the bands of the instance shall be used.
+     * @param targetOrigin
+     *            the origin location of the target sub raster, if <code>null</code> the origin location of the instance
+     *            shall be used.
+     * @return subset of the raster
+     */
+    public abstract AbstractRaster getSubRaster( Envelope subsetEnv, BandType[] bands, OriginLocation targetOrigin );
 
     /**
      * Returns a subset of the raster.

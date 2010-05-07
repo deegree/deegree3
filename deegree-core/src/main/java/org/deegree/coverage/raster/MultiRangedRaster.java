@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -117,13 +118,18 @@ public class MultiRangedRaster extends AbstractRaster {
 
     @Override
     public MultiRangedRaster getSubRaster( Envelope env, BandType[] bands ) {
+        return getSubRaster( env, bands, null );
+    }
+
+    @Override
+    public MultiRangedRaster getSubRaster( Envelope env, BandType[] bands, OriginLocation targetLocation ) {
         if ( getEnvelope().equals( env ) && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
             return this;
         }
         checkBounds( env );
         MultiRangedRaster result = new MultiRangedRaster();
         for ( AbstractRaster raster : multiRange ) {
-            result.addRaster( raster.getSubRaster( env, bands ) );
+            result.addRaster( raster.getSubRaster( env, bands, targetLocation ) );
         }
         return result;
     }
