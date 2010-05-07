@@ -49,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
@@ -70,7 +69,6 @@ import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
 import org.deegree.coverage.raster.io.jaxb.RasterConfig;
 import org.deegree.coverage.raster.io.jaxb.RasterDirectory;
 import org.deegree.coverage.raster.io.jaxb.RasterFile;
-import org.deegree.coverage.raster.io.jaxb.RasterFileType;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig.Resolution;
 import org.deegree.cs.CRS;
 import org.deegree.geometry.Envelope;
@@ -86,8 +84,7 @@ import org.deegree.geometry.Envelope;
  */
 public class RasterBuilder implements CoverageBuilder {
 
-    // private final static String NS = "http://www.deegree.org/datasource/coverage/raster";
-    private final static String NS = "http://www.deegree.org/datasource";
+    private final static String NS = "http://www.deegree.org/datasource/coverage/raster";
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterBuilder.class );
 
@@ -177,7 +174,7 @@ public class RasterBuilder implements CoverageBuilder {
         try {
             JAXBContext jc = JAXBContext.newInstance( "org.deegree.coverage.raster.io.jaxb" );
             Unmarshaller u = jc.createUnmarshaller();
-            Object config = ( (JAXBElement<?>) u.unmarshal( configURL ) ).getValue();
+            Object config = u.unmarshal( configURL );
 
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( configURL.toString() );
@@ -221,7 +218,6 @@ public class RasterBuilder implements CoverageBuilder {
         throw new NullPointerException( "The configured multi resolution raster may not be null." );
     }
 
-
     private RasterIOOptions getOptions( MultiResolutionRasterConfig config ) {
         // TODO Auto-generated method stub
         return null;
@@ -244,10 +240,10 @@ public class RasterBuilder implements CoverageBuilder {
             try {
                 RasterIOOptions rOptions = new RasterIOOptions();
                 rOptions.copyOf( options );
-                
+
                 if ( config.getOriginLocation() != null ) {
                     rOptions.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
-                                 config.getOriginLocation().toString().toUpperCase() );
+                                  config.getOriginLocation().toString().toUpperCase() );
                 }
                 if ( directory != null ) {
                     File rasterFiles = new File( adapter.resolve( directory.getValue() ).getFile() );
