@@ -88,11 +88,7 @@
   <complexType name="AbstractDataType" abstract="true">
     <annotation>
       <documentation>
-        A data type defines some properties like name, title and descriptions. A data type can have a
-        bounding box, defining it's
-        validity. The scale
-        denominators are used to define the scales for which a data
-        instance is valid.
+        Base definitio for data sets. Defines metadata properties like name, title and descriptions.
       </documentation>
     </annotation>
     <sequence>
@@ -125,7 +121,7 @@
           determines when geometry LODs or objects are to be rendered are switched.
         -->
         <element name="MaxPixelError" type="double" default="5.0" minOccurs="0" />
-        <element ref="wpvs:ElevationDataset" />
+        <element ref="wpvs:DEMDataset" />
         <element ref="wpvs:DEMTextureDataset" minOccurs="0" maxOccurs="unbounded" />
         <element ref="wpvs:ColormapDataset" minOccurs="0" maxOccurs="unbounded" />
         <element ref="wpvs:RenderableDataset" minOccurs="0" maxOccurs="unbounded" />
@@ -138,16 +134,12 @@
       <attribute name="y" type="double" />
     </complexType>
   </element>
-  <element name="ElevationDataset">
+  <element name="DEMDataset">
     <annotation>
       <documentation>
-        An elevation model is visible through the capabilities and can be requested by a client.
-        Normally it
-        will define a DEM
-        (Digital Elevation
-        Model) but it might as well have a more semantic character (using
-        for example
-        rent prices of houses).
+        An elevation model is visible through the capabilities and can be requested by a client. Normally
+        it will define a DEM (Digital Elevation Model) but it might as well have a more semantic character (using for
+        example rent prices of houses).
       </documentation>
     </annotation>
     <complexType>
@@ -168,8 +160,7 @@
   <element name="ColormapDataset">
     <annotation>
       <documentation>
-        An colormap which can be applied to an elevation model and can be requested by a client. The
-        colors
+        An colormap which can be applied to an elevation model and can be requested by a client. The colors
         will be lineary interpreted between the min and max color.
       </documentation>
     </annotation>
@@ -206,9 +197,7 @@
     <annotation>
       <documentation>
         A data type defines some properties like name, title and descriptions. A data type can have a
-        bounding box, defining it's
-        validity. The scale
-        denominators are used to define the scales for which a data
+        bounding box, defining it's validity. The scale denominators are used to define the scales for which a data
         instance is valid.
       </documentation>
     </annotation>
@@ -237,10 +226,8 @@
   <element name="StyledGeometryProvider">
     <annotation>
       <documentation>
-        Defines a texture for very closed up views of the terrrain, for this purpose an SE-Style file
-        will
-        be evaluated, containing
-        information about a data source having geometries and style information.
+        Defines a texture for very closed up views of the terrrain, for this purpose an SE-Style file will
+        be evaluated, containing information about a data source having geometries and style information.
       </documentation>
     </annotation>
     <complexType>
@@ -295,8 +282,7 @@
   <element name="SwitchLevels">
     <annotation>
       <documentation>
-        Defines the number of pixels one meter of a building must have, before switching to the next
-        level
+        Defines the number of pixels one meter of a building must have, before switching to the next level
         of detail. Each level defines a quality level (starting with 0) where 0 is the most coarse level.
       </documentation>
     </annotation>

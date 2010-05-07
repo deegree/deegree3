@@ -57,9 +57,9 @@ import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.jaxb.wpvs.AbstractDataType;
 import org.deegree.services.jaxb.wpvs.ColormapDataset;
+import org.deegree.services.jaxb.wpvs.DEMDataset;
 import org.deegree.services.jaxb.wpvs.DEMTextureDataset;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
-import org.deegree.services.jaxb.wpvs.ElevationDataset;
 import org.deegree.services.jaxb.wpvs.RenderableDataset;
 import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
 import org.slf4j.Logger;
@@ -144,7 +144,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
             exportTextureDataset( writer, datasetDefinitions.getDEMTextureDataset() );
             exportColormapDataset( writer, datasetDefinitions.getColormapDataset() );
             exportRenderableDatasets( writer, datasetDefinitions.getRenderableDataset() );
-            exportElevationModel( writer, datasetDefinitions.getElevationDataset() );
+            exportElevationModel( writer, datasetDefinitions.getDEMDataset() );
         }
 
         writer.writeEndElement();// WPVS_NS, "Dataset"
@@ -176,7 +176,7 @@ public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
      * @param dem
      * @throws XMLStreamException
      */
-    private static void exportElevationModel( XMLStreamWriter writer, ElevationDataset dem )
+    private static void exportElevationModel( XMLStreamWriter writer, DEMDataset dem )
                             throws XMLStreamException {
         if ( dem != null ) {
             writer.writeStartElement( WPVS_NS, "ElevationModel" );

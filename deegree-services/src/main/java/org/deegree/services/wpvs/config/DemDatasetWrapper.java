@@ -46,8 +46,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
+import org.deegree.services.jaxb.wpvs.DEMDataset;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
-import org.deegree.services.jaxb.wpvs.ElevationDataset;
 
 /**
  * The <code>DemDatasetWrapper</code> class TODO add class documentation here.
@@ -91,8 +91,8 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
     @Override
     public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS, XMLAdapter configAdapter,
                                                 DatasetDefinitions dsd ) {
-        List<ElevationDataset> demDatsets = new ArrayList<ElevationDataset>();
-        ElevationDataset ed = dsd.getElevationDataset();
+        List<DEMDataset> demDatsets = new ArrayList<DEMDataset>();
+        DEMDataset ed = dsd.getDEMDataset();
         demDatsets.add( ed );
         if ( !demDatsets.isEmpty() ) {
             sceneEnvelope = analyseAndExtractConstraints( demDatsets, sceneEnvelope, toLocalCRS,
@@ -103,11 +103,11 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
         return sceneEnvelope;
     }
 
-    private Envelope analyseAndExtractConstraints( List<ElevationDataset> demDatsets, Envelope sceneEnvelope,
+    private Envelope analyseAndExtractConstraints( List<DEMDataset> demDatsets, Envelope sceneEnvelope,
                                                    double[] toLocalCRS, Double parentMaxPixelError,
                                                    XMLAdapter configAdapter ) {
         if ( demDatsets != null && !demDatsets.isEmpty() ) {
-            for ( ElevationDataset eds : demDatsets ) {
+            for ( DEMDataset eds : demDatsets ) {
                 if ( eds != null ) {
                     if ( isUnAmbiguous( eds.getTitle() ) ) {
                         LOG.info( "The feature dataset with name: " + eds.getName() + " and title: " + eds.getTitle()
@@ -115,7 +115,7 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
                     } else {
                         clarifyInheritance( eds, parentMaxPixelError );
                         try {
-                            sceneEnvelope = handleElevationDataset( eds, sceneEnvelope, toLocalCRS, configAdapter );
+                            sceneEnvelope = handleDEMDataset( eds, sceneEnvelope, toLocalCRS, configAdapter );
                         } catch ( IOException e ) {
                             LOG.error( "Failed to initialize configured demTexture dataset: " + eds.getName() + ": "
                                        + eds.getTitle() + " because: " + e.getLocalizedMessage(), e );
@@ -131,7 +131,7 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
      * @param datatype
      * @param parentMaxPixelError
      */
-    private void clarifyInheritance( ElevationDataset datatype, Double parentMaxPixelError ) {
+    private void clarifyInheritance( DEMDataset datatype, Double parentMaxPixelError ) {
         datatype.setMaxPixelError( clarifyMaxPixelError( parentMaxPixelError, datatype.getMaxPixelError() ) );
     }
 
@@ -142,12 +142,12 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
      * @param mds
      * @throws IOException
      */
-    private Envelope handleElevationDataset( ElevationDataset elevationDataset, Envelope sceneEnvelope,
+    private Envelope handleDEMDataset( DEMDataset demDataset, Envelope sceneEnvelope,
                                              double[] toLocalCRS, XMLAdapter configAdapter )
                             throws IOException {
 
-        if ( elevationDataset != null ) {
-            String storeId = elevationDataset.getBatchedMTStoreId();
+        if ( demDataset != null ) {
+            String storeId = demDataset.getBatchedMTStoreId();
             // TOOD lookup from manager / initialization
             MultiresolutionMesh mrModel = null;
             int i = 0;
