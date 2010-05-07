@@ -75,20 +75,20 @@ public class ColormapDatasetWrapper extends DatasetWrapper<Colormap> {
 
         List<ColormapDataset> colormapDatsets = dsd.getColormapDataset();
         if ( !colormapDatsets.isEmpty() ) {
-            sceneEnvelope = analyseAndExtractConstraints( colormapDatsets, sceneEnvelope, toLocalCRS, configAdapter );
+            sceneEnvelope = initDatasets( colormapDatsets, sceneEnvelope, toLocalCRS, configAdapter );
         } else {
             LOG.info( "No colormap dataset has been configured." );
         }
         return sceneEnvelope;
     }
 
-    private Envelope analyseAndExtractConstraints( List<ColormapDataset> colormapDatsets, Envelope sceneEnvelope,
+    private Envelope initDatasets( List<ColormapDataset> colormapDatsets, Envelope sceneEnvelope,
                                                    double[] toLocalCRS, XMLAdapter adapter ) {
         if ( colormapDatsets != null && !colormapDatsets.isEmpty() ) {
             for ( ColormapDataset dts : colormapDatsets ) {
                 if ( dts != null ) {
                     if ( isUnAmbiguous( dts.getTitle() ) ) {
-                        LOG.info( "The feature dataset with name: " + dts.getName() + " and title: " + dts.getTitle()
+                        LOG.info( "The colormap dataset with name: " + dts.getName() + " and title: " + dts.getTitle()
                                   + " had multiple definitions in your service configuration." );
                     } else {
                         sceneEnvelope = handleColormapDataset( dts, sceneEnvelope, toLocalCRS, adapter );

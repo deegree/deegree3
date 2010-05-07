@@ -36,6 +36,8 @@
 
 package org.deegree.services.wpvs.config;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,7 @@ import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 import org.deegree.services.jaxb.wpvs.DEMDataset;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
+import org.slf4j.Logger;
 
 /**
  * The <code>DemDatasetWrapper</code> class TODO add class documentation here.
@@ -59,7 +62,7 @@ import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
  */
 public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( DemDatasetWrapper.class );
+    private final static Logger LOG = getLogger( DemDatasetWrapper.class );
 
     private final int numberOfDEMFragmentsCached;
 
@@ -95,23 +98,21 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
         DEMDataset ed = dsd.getDEMDataset();
         demDatsets.add( ed );
         if ( !demDatsets.isEmpty() ) {
-            sceneEnvelope = analyseAndExtractConstraints( demDatsets, sceneEnvelope, toLocalCRS,
-                                                          dsd.getMaxPixelError(), configAdapter );
+            sceneEnvelope = initDatasets( demDatsets, sceneEnvelope, toLocalCRS, dsd.getMaxPixelError(), configAdapter );
         } else {
             LOG.info( "No elevation model dataset has been configured, no buildings, trees and prototypes will be available." );
         }
         return sceneEnvelope;
     }
 
-    private Envelope analyseAndExtractConstraints( List<DEMDataset> demDatsets, Envelope sceneEnvelope,
-                                                   double[] toLocalCRS, Double parentMaxPixelError,
-                                                   XMLAdapter configAdapter ) {
+    private Envelope initDatasets( List<DEMDataset> demDatsets, Envelope sceneEnvelope, double[] toLocalCRS,
+                                   Double parentMaxPixelError, XMLAdapter configAdapter ) {
         if ( demDatsets != null && !demDatsets.isEmpty() ) {
             for ( DEMDataset eds : demDatsets ) {
                 if ( eds != null ) {
                     if ( isUnAmbiguous( eds.getTitle() ) ) {
-                        LOG.info( "The feature dataset with name: " + eds.getName() + " and title: " + eds.getTitle()
-                                  + " had multiple definitions in your service configuration." );
+                        LOG.info( "The elevation model dataset with name: " + eds.getName() + " and title: "
+                                  + eds.getTitle() + " had multiple definitions in your service configuration." );
                     } else {
                         clarifyInheritance( eds, parentMaxPixelError );
                         try {
@@ -142,8 +143,8 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
      * @param mds
      * @throws IOException
      */
-    private Envelope handleDEMDataset( DEMDataset demDataset, Envelope sceneEnvelope,
-                                             double[] toLocalCRS, XMLAdapter configAdapter )
+    private Envelope handleDEMDataset( DEMDataset demDataset, Envelope sceneEnvelope, double[] toLocalCRS,
+                                       XMLAdapter configAdapter )
                             throws IOException {
 
         if ( demDataset != null ) {
@@ -151,56 +152,58 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
             // TOOD lookup from manager / initialization
             MultiresolutionMesh mrModel = null;
             int i = 0;
-//            while ( mrModel == null && i < abstractFiles.size() ) {
-//                JAXBElement<? extends FileType> abstractFile = abstractFiles.get( i );
-//                if ( abstractFile != null ) {
-//                    FileType value = abstractFile.getValue();
-//                    if ( value != null ) {
-//                        String unresolvedDEMURL = value.getValue();
-//                        URL demURL = resolve( configAdapter, unresolvedDEMURL );
-//                        if ( demURL != null ) {
-//                            LOG.info( "Using configured file: " + i + " for the dem file location: " + demURL.getFile() );
-//                            mrModel = new MultiresolutionMesh( new File( demURL.getFile() ),
-//                                                               this.directMeshfragmentPool );
-//                        }
-//                    }
-//                }
-//                i++;
-//            }
-//            if ( mrModel != null ) {
-//                RenderFragmentManager fragmentManager = new RenderFragmentManager( mrModel, numberOfDEMFragmentsCached );
-//
-//                TerrainRenderingManager result = new TerrainRenderingManager( fragmentManager,
-//                                                                              elevationDataset.getMaxPixelError(), 1,
-//                                                                              ambientColor, diffuseColor,
-//                                                                              specularColor, shininess );
-//                // the fragment manager is in wpvs scene coordinates.
-//                double[][] env = fragmentManager.getMultiresolutionMesh().getBBox();
-//                double[] min = Arrays.copyOf( env[0], 3 );
-//                double[] max = Arrays.copyOf( env[1], 3 );
-//                min[0] += ( -toLocalCRS[0] );
-//                min[1] += ( -toLocalCRS[1] );
-//                max[0] += ( -toLocalCRS[0] );
-//                max[1] += ( -toLocalCRS[1] );
-//                Envelope datasetEnv = geomFac.createEnvelope( min, max, sceneEnvelope.getCoordinateSystem() );
-//                sceneEnvelope = sceneEnvelope.merge( datasetEnv );
-//
-//                // adding the constraint to the wrapper.
-//                min = Arrays.copyOf( env[0], 3 );
-//                max = Arrays.copyOf( env[1], 3 );
-//                datasetEnv = geomFac.createEnvelope( min, max, sceneEnvelope.getCoordinateSystem() );
-//                addConstraint( elevationDataset.getTitle(), result, datasetEnv );
-//            } else {
-//                LOG.warn( "Enable to instantiate elevation model: " + elevationDataset.getName() + ": "
-//                          + elevationDataset.getTitle()
-//                          + " because no files (pointing to a Multiresolution Mesh file) could be resolved." );
-//            }
-//        } else {
-//            LOG.warn( "Enable to instantiate elevation model: "
-//                      + elevationDataset.getName()
-//                      + ": "
-//                      + elevationDataset.getTitle()
-//                      + " because no files (pointing to a Multiresolution Mesh file) were configured in the elevationmodel datasource element." );
+            // while ( mrModel == null && i < abstractFiles.size() ) {
+            // JAXBElement<? extends FileType> abstractFile = abstractFiles.get( i );
+            // if ( abstractFile != null ) {
+            // FileType value = abstractFile.getValue();
+            // if ( value != null ) {
+            // String unresolvedDEMURL = value.getValue();
+            // URL demURL = resolve( configAdapter, unresolvedDEMURL );
+            // if ( demURL != null ) {
+            // LOG.info( "Using configured file: " + i + " for the dem file location: " + demURL.getFile() );
+            // mrModel = new MultiresolutionMesh( new File( demURL.getFile() ),
+            // this.directMeshfragmentPool );
+            // }
+            // }
+            // }
+            // i++;
+            // }
+            // if ( mrModel != null ) {
+            // RenderFragmentManager fragmentManager = new RenderFragmentManager( mrModel, numberOfDEMFragmentsCached );
+            //
+            // TerrainRenderingManager result = new TerrainRenderingManager( fragmentManager,
+            // elevationDataset.getMaxPixelError(), 1,
+            // ambientColor, diffuseColor,
+            // specularColor, shininess );
+            // // the fragment manager is in wpvs scene coordinates.
+            // double[][] env = fragmentManager.getMultiresolutionMesh().getBBox();
+            // double[] min = Arrays.copyOf( env[0], 3 );
+            // double[] max = Arrays.copyOf( env[1], 3 );
+            // min[0] += ( -toLocalCRS[0] );
+            // min[1] += ( -toLocalCRS[1] );
+            // max[0] += ( -toLocalCRS[0] );
+            // max[1] += ( -toLocalCRS[1] );
+            // Envelope datasetEnv = geomFac.createEnvelope( min, max, sceneEnvelope.getCoordinateSystem() );
+            // sceneEnvelope = sceneEnvelope.merge( datasetEnv );
+            //
+            // // adding the constraint to the wrapper.
+            // min = Arrays.copyOf( env[0], 3 );
+            // max = Arrays.copyOf( env[1], 3 );
+            // datasetEnv = geomFac.createEnvelope( min, max, sceneEnvelope.getCoordinateSystem() );
+            // addConstraint( elevationDataset.getTitle(), result, datasetEnv );
+            // } else {
+            // LOG.warn( "Enable to instantiate elevation model: " + elevationDataset.getName() + ": "
+            // + elevationDataset.getTitle()
+            // + " because no files (pointing to a Multiresolution Mesh file) could be resolved." );
+            // }
+            // } else {
+            // LOG.warn( "Enable to instantiate elevation model: "
+            // + elevationDataset.getName()
+            // + ": "
+            // + elevationDataset.getTitle()
+            // +
+            // " because no files (pointing to a Multiresolution Mesh file) were configured in the elevationmodel datasource element."
+            // );
         }
         return sceneEnvelope;
     }

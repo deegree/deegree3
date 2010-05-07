@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.services.wpvs;
 
@@ -43,12 +43,12 @@ import javax.vecmath.Vector3f;
 
 /**
  * This class represents a <code>WPVSConfiguration</code> object.
- *
+ * 
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author last edited by: $Author$
- *
- * $Revision$, $Date$
- *
+ * 
+ *         $Revision$, $Date$
+ * 
  */
 public class WPVSConfiguration {
 
@@ -61,7 +61,7 @@ public class WPVSConfiguration {
 
     /**
      * creates and returns a canvas for offscreen rendering
-     *
+     * 
      * @return a offscreen Canvas3D on which the the scene will be rendered.
      */
     protected static synchronized GLPbuffer createOffscreenBuffer() {
@@ -70,7 +70,7 @@ public class WPVSConfiguration {
         // texture.
         // GLCanvas d = new GLCanvas();
         if ( GLDrawableFactory.getFactory().canCreateGLPbuffer() ) {
-            System.out.println( "YES" );
+            // System.out.println( "YES" );
             GLCapabilities caps = new GLCapabilities();
             GLPbuffer buf = GLDrawableFactory.getFactory().createGLPbuffer( caps, null, 800, 600, null// d.getContext()
             );

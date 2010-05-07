@@ -56,8 +56,8 @@ import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.slf4j.Logger;
 
 /**
- * The <code>DatasetWrapper</code> class defines methods for the retrieval the objects which match requested datasets
- * names and a {@link ViewParams}.
+ * The <code>DatasetWrapper</code> class defines methods for the retrieval of objects which match requested datasets
+ * types and a given {@link ViewParams}.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -73,20 +73,7 @@ public abstract class DatasetWrapper<CO> {
     /** The geometry factory to be used */
     protected final static GeometryFactory geomFac = new GeometryFactory();
 
-    // private Envelope datasetEnvelope;
-
     List<Pair<String, List<Constraint<CO>>>> datasourceConstraints = new LinkedList<Pair<String, List<Constraint<CO>>>>();
-
-    // private final XMLAdapter configAdapter;
-
-    // /**
-    // * @param sceneEnvelope
-    // * @param translationToLocalCRS
-    // * @param configAdapter
-    // */
-    // public DatasetWrapper( XMLAdapter configAdapter ) {
-    // this.configAdapter = configAdapter;
-    // }
 
     /**
      * Fill the wrapper with the values from the given dataset definition.
@@ -288,9 +275,9 @@ public abstract class DatasetWrapper<CO> {
         return result;
     }
 
-    private class Constraint<CO> {
+    private class Constraint<DO> {
 
-        private final CO datasourceObject;
+        private final DO datasourceObject;
 
         Envelope validEnvelope;
 
@@ -300,7 +287,7 @@ public abstract class DatasetWrapper<CO> {
          * @param min
          * @param max
          */
-        Constraint( CO datasource, Envelope createEnvelope ) {
+        Constraint( DO datasource, Envelope createEnvelope ) {
             this.datasourceObject = datasource;
             validEnvelope = createEnvelope;
 
@@ -309,7 +296,7 @@ public abstract class DatasetWrapper<CO> {
         /**
          * @return the object which is defined by this constraint.
          */
-        public CO getDatasourceObject() {
+        public DO getDatasourceObject() {
             return datasourceObject;
         }
 
@@ -324,18 +311,9 @@ public abstract class DatasetWrapper<CO> {
             }
             boolean result = true;
             if ( validEnvelope.getCoordinateDimension() == 3 ) {
-
                 double[][] bbox = new double[][] { validEnvelope.getMin().getAsArray(),
                                                   validEnvelope.getMax().getAsArray() };
                 result = viewParams.getViewFrustum().intersects( bbox );
-                // if ( result ) {
-                // Point3d ep = viewParams.getViewFrustum().getEyePos();
-                // double[] eye = new double[] { ep.x, ep.y, ep.z };
-                // double distance = VectorUtils.getDistance( bbox, eye );
-                // double pixelSize = viewParams.estimatePixelSizeForSpaceUnit( distance );
-                // double estimateSize = pixelSize * SQRT2;
-                // result = ( minScale <= estimateSize && maxScale > estimateSize );
-                // }
             }
             return result;
         }
@@ -351,7 +329,7 @@ public abstract class DatasetWrapper<CO> {
         @Override
         public boolean equals( Object other ) {
             if ( other != null && other instanceof Constraint ) {
-                final Constraint<CO> that = (Constraint<CO>) other;
+                final Constraint<DO> that = (Constraint<DO>) other;
                 return this.datasourceObject.equals( that.datasourceObject )
                        && this.validEnvelope.equals( that.validEnvelope );
             }
