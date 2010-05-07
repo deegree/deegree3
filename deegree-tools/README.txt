@@ -1,20 +1,18 @@
-= deegree 3 tools =
-
-This is a list of the dependencies of the deegree 3 tools module.
+= deegree-tools =
 
 @author last edited by: $Author$
 @version $Revision$, $Date$ 
 
 == modules ===
 
-This part describes all deegree 3 modules that the tools module depends on:
+This part describes all modules that this module depends on:
 
 - deegree-core
 - deegree-services
 
 == libraries ==
 
-This part describes all libraries the tools module depends on. If you use one of these
+This part describes all libraries that this module depends on. If you use one of these
 libs please add your package to the "Used for:" list.
 
 NOTE: Necessary libraries that are also used by one of the dependent modules are not listed here again.
