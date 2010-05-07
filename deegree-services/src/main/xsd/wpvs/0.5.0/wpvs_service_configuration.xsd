@@ -5,28 +5,28 @@
   <element name="ServiceConfiguration">
     <annotation>
       <documentation>
-        Top root element of the service configuration, it defines rendering parameters, get view request
+        Root element of the service configuration, it defines rendering parameters, get view request
         restrictions as well as datasets and elevation models.
       </documentation>
     </annotation>
     <complexType>
       <sequence>
         <!-- options for the caching -->
-        <!-- Configures the number of textures stored in GPU (Graphic Processing Unit) memory, e.g. ready for rendering. -->
+        <!-- Maximum number of textures stored in GPU (Graphic Processing Unit) memory -->
         <element name="TexturesInGPUMem" type="int" default="300" minOccurs="0" />
-        <!-- The number of texture tiles (a dataset texture for a dem fragment) to be cached -->
+        <!-- Maximum number of texture tiles (a dataset texture for a dem fragment) to be cached -->
         <element name="CachedTextureTiles" type="int" default="400" minOccurs="0" />
-        <!-- The maximum direct memory (in MegaBytes) to be allocated for texture coordinates -->
+        <!-- Maximum amount of direct memory (in MegaBytes) to be allocated for texture coordinates -->
         <element name="DirectTextureMemory" type="int" default="400" minOccurs="0" />
         <!--
-          The number of dem fragments stored in memory, this value depends on following variables: <ul> <li>width/height
-          of the elevationmodel</li> <li>the number of levels in a macrotriangle</li> <li>the number of rows in a
-          macrotriangle</li> </ul> <p>for a dem with 32768*32768 meters, 18 levels and 64 rows per macro triangle 1000
-          is good value.</p> <p>a dem with 32768*32768 meters, with 16 levels and 128 rows per macro 300 is sufficient.
-          </p> <p>In general, the higher the value, the more memory is needed, the less IO is needed.</p>
+          Maximum number of DEM fragments stored in memory, this value depends on following variables: width/height of
+          the elevation model, the number of levels in a macro triangle, the number of rows in a macrotriangle. For a
+          DEM of 32768*32768 meters, 18 levels and 64 rows per macro triangle, 1000 is reasonable value. For a DEM of
+          32768*32768 meters, with 16 levels and 128 rows per macro triangle, 300 is sufficient. In general, the higher
+          the value, the more memory is needed, the less IO is needed.
         -->
         <element name="NumberOfDEMFragmentsCached" type="int" default="1000" minOccurs="0" />
-        <!-- The maximum direct memory (in MegaBytes) to be allocated for reading mesh fragments from the disk -->
+        <!-- Maximum amount of direct memory (in MegaBytes) to be allocated for reading mesh fragments from the disk -->
         <element name="DirectIOMemory" type="int" default="500" minOccurs="0" />
         <!-- How many direct buffers should be held in cache, they will be used for the result images -->
         <element name="NumberOfResultImageBuffers" type="int" default="25" minOccurs="0" />
@@ -48,14 +48,14 @@
         <element ref="wpvs:SkyImages" />
         <!-- A file which contains information for the initialization of opengl (rb: the format is yet to be defined.) -->
         <element name="OpenGLInitConfigFile" type="string" minOccurs="0" />
+        <!-- Available datasets -->
         <element ref="wpvs:DatasetDefinitions" />
       </sequence>
     </complexType>
   </element>
   <element name="SkyImages">
     <annotation>
-      <documentation>Defines a list of images which can be rendered in the background of the scene, e.g. the sky
-      </documentation>
+      <documentation>List of images which can be selected as the background of the scene, usually the sky.</documentation>
     </annotation>
     <complexType>
       <sequence>
@@ -70,8 +70,7 @@
   </element>
   <element name="Copyright">
     <annotation>
-      <documentation>Defines a string or an image which should be rendered into the resulting GetView response image
-      </documentation>
+      <documentation>Image which is rendered on top of the scene.</documentation>
     </annotation>
     <complexType>
       <sequence>
@@ -88,13 +87,12 @@
   <complexType name="AbstractDataType" abstract="true">
     <annotation>
       <documentation>
-        Base definitio for data sets. Defines metadata properties like name, title and descriptions.
+        Base definition for all data sets. Defines metadata properties like name, title and descriptions.
       </documentation>
     </annotation>
     <sequence>
       <!--
-        The title is identity building for a data type, just like the wms 1.3.0
-        specification
+        The title defines the identity for a data set (request name), just like the WMS 1.3.0 specification.
       -->
       <element name="Title" type="string" />
       <element name="Name" type="string" minOccurs="0" />
@@ -226,7 +224,7 @@
   <element name="StyledGeometryProvider">
     <annotation>
       <documentation>
-        Defines a texture for very closed up views of the terrrain, for this purpose an SE-Style file will
+        Defines a texture for very closed up views of the terrain, for this purpose an SE-Style file will
         be evaluated, containing information about a data source having geometries and style information.
       </documentation>
     </annotation>
