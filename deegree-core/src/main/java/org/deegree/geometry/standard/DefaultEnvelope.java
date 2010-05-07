@@ -177,6 +177,6 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     @Override
     public String toString() {
-        return "min: " + min + ", max: " + max + ", crs: " + crs;
+        return "min: " + min + ", max: " + max + ", span0: " + getSpan0() + ", span1: " + getSpan1() + " , crs: " + crs;
     }
 }
