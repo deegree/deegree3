@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeWMS xmlns="http://www.deegree.org/services/wms" xmlns:ds="http://www.deegree.org/datasource" xmlns:cm="http://www.deegree.org/commons" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices" configVersion="0.5.0" xsi:schemaLocation="http://www.deegree.org/services/wms ../../../schema/wms/0.5.0/wms_configuration.xsd">
+<deegreeWMS configVersion="0.5.0" xmlns="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices"
+  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd">
 
   <ServiceConfiguration>
 
@@ -11,9 +13,6 @@
         <Name>cite:BasicPolygons</Name>
         <Title>cite:BasicPolygons</Title>
         <FeatureStoreId>basicpolygons</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/BasicPolygons.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/BasicPolygons.xml</File>
         </DirectStyle>
@@ -23,9 +22,6 @@
         <Name>cite:Forests</Name>
         <Title>cite:Forests</Title>
         <FeatureStoreId>forests</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/Forests.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/Forests.xml</File>
         </DirectStyle>
@@ -41,9 +37,6 @@
           <Extent>500,490,480</Extent>
         </Dimension>
         <FeatureStoreId>lakes</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/Lakes.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/Lakes.xml</File>
         </DirectStyle>
@@ -53,9 +46,6 @@
         <Name>cite:Ponds</Name>
         <Title>cite:Ponds</Title>
         <FeatureStoreId>ponds</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/Ponds.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/Ponds.xml</File>
         </DirectStyle>
@@ -65,9 +55,6 @@
         <Name>cite:NamedPlaces</Name>
         <Title>cite:NamedPlaces</Title>
         <FeatureStoreId>namedplaces</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/NamedPlaces.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/NamedPlaces.xml</File>
         </DirectStyle>
@@ -77,9 +64,6 @@
         <Name>cite:Buildings</Name>
         <Title>cite:Buildings</Title>
         <FeatureStoreId>buildings</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/Buildings.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/Buildings.xml</File>
         </DirectStyle>
@@ -89,9 +73,6 @@
         <Name>cite:BuildingCenters</Name>
         <Title>cite:BuildingCenters</Title>
         <FeatureStoreId>buildingcenters</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/BuildingCenters.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/BuildingCenters.xml</File>
         </DirectStyle>
@@ -101,9 +82,6 @@
         <Name>cite:DividedRoutes</Name>
         <Title>cite:DividedRoutes</Title>
         <FeatureStoreId>dividedroutes</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/DividedRoutes.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/DividedRoutes.xml</File>
         </DirectStyle>
@@ -113,9 +91,6 @@
         <Name>cite:RoadSegments</Name>
         <Title>cite:RoadSegments</Title>
         <FeatureStoreId>roadsegments</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/RoadSegments.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/RoadSegments.xml</File>
         </DirectStyle>
@@ -125,9 +100,6 @@
         <Name>cite:MapNeatline</Name>
         <Title>cite:MapNeatline</Title>
         <FeatureStoreId>mapneatline</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/MapNeatline.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/MapNeatline.xml</File>
         </DirectStyle>
@@ -137,9 +109,6 @@
         <Name>cite:Streams</Name>
         <Title>cite:Streams</Title>
         <FeatureStoreId>streams</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/Streams.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/Streams.xml</File>
         </DirectStyle>
@@ -149,9 +118,6 @@
         <Name>cite:Bridges</Name>
         <Title>cite:Bridges</Title>
         <FeatureStoreId>bridges</FeatureStoreId>
-        <ds:ShapefileDataSource>
-          <ds:File>../../data/cite/Bridges.shp</ds:File>
-        </ds:ShapefileDataSource>
         <DirectStyle>
           <File>../styles/Bridges.xml</File>
         </DirectStyle>

@@ -1,154 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wms:deegreeWMS xmlns:wms="http://www.deegree.org/services/wms" xmlns:ds="http://www.deegree.org/datasource"
-  xmlns:cm="http://www.deegree.org/commons" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:dgws="http://www.deegree.org/webservices" configVersion="0.5.0"
+<deegreeWMS configVersion="0.5.0" xmlns="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices"
   xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd">
 
-  <wms:ServiceConfiguration>
+  <ServiceConfiguration>
 
-    <wms:RequestableLayer>
-      <wms:Name>root</wms:Name>
-      <wms:Title>My Root Layer</wms:Title>
-      <wms:CRS>EPSG:4326</wms:CRS>
+    <RequestableLayer>
+      <Name>root</Name>
+      <Title>My Root Layer</Title>
+      <CRS>EPSG:4326</CRS>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:BasicPolygons</wms:Name>
-        <wms:Title>cite:BasicPolygons</wms:Title>
-        <wms:FeatureStoreId>basicpolygons</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/BasicPolygons.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:BasicPolygons</Name>
+        <Title>cite:BasicPolygons</Title>
+        <FeatureStoreId>basicpolygons</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/BasicPolygons.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:Forests</wms:Name>
-        <wms:Title>cite:Forests</wms:Title>
-        <wms:FeatureStoreId>forests</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/Forests.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:Forests</Name>
+        <Title>cite:Forests</Title>
+        <FeatureStoreId>forests</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/Forests.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:Lakes</wms:Name>
-        <wms:Title>cite:Lakes</wms:Title>
-        <wms:Dimension isElevation="true">
-          <wms:Property>ELEV</wms:Property>
-          <wms:DefaultValue>500</wms:DefaultValue>
-          <wms:NearestValue>true</wms:NearestValue>
-          <wms:Extent>500,490,480</wms:Extent>
-        </wms:Dimension>
-        <wms:FeatureStoreId>lakes</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/Lakes.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:Lakes</Name>
+        <Title>cite:Lakes</Title>
+        <Dimension isElevation="true">
+          <Property>ELEV</Property>
+          <DefaultValue>500</DefaultValue>
+          <NearestValue>true</NearestValue>
+          <Extent>500,490,480</Extent>
+        </Dimension>
+        <FeatureStoreId>lakes</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/Lakes.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:Ponds</wms:Name>
-        <wms:Title>cite:Ponds</wms:Title>
-        <wms:FeatureStoreId>ponds</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/Ponds.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:Ponds</Name>
+        <Title>cite:Ponds</Title>
+        <FeatureStoreId>ponds</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/Ponds.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:NamedPlaces</wms:Name>
-        <wms:Title>cite:NamedPlaces</wms:Title>
-        <wms:FeatureStoreId>namedplaces</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/NamedPlaces.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:NamedPlaces</Name>
+        <Title>cite:NamedPlaces</Title>
+        <FeatureStoreId>namedplaces</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/NamedPlaces.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:Buildings</wms:Name>
-        <wms:Title>cite:Buildings</wms:Title>
-        <wms:FeatureStoreId>buildings</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/Buildings.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:Buildings</Name>
+        <Title>cite:Buildings</Title>
+        <FeatureStoreId>buildings</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/Buildings.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:BuildingCenters</wms:Name>
-        <wms:Title>cite:BuildingCenters</wms:Title>
-        <wms:FeatureStoreId>buildingcenters</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/BuildingCenters.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:BuildingCenters</Name>
+        <Title>cite:BuildingCenters</Title>
+        <FeatureStoreId>buildingcenters</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/BuildingCenters.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:DividedRoutes</wms:Name>
-        <wms:Title>cite:DividedRoutes</wms:Title>
-        <wms:FeatureStoreId>dividedroutes</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/DividedRoutes.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:DividedRoutes</Name>
+        <Title>cite:DividedRoutes</Title>
+        <FeatureStoreId>dividedroutes</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/DividedRoutes.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:RoadSegments</wms:Name>
-        <wms:Title>cite:RoadSegments</wms:Title>
-        <wms:FeatureStoreId>roadsegments</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/RoadSegments.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:RoadSegments</Name>
+        <Title>cite:RoadSegments</Title>
+        <FeatureStoreId>roadsegments</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/RoadSegments.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:MapNeatline</wms:Name>
-        <wms:Title>cite:MapNeatline</wms:Title>
-        <wms:FeatureStoreId>mapneatline</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/MapNeatline.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:MapNeatline</Name>
+        <Title>cite:MapNeatline</Title>
+        <FeatureStoreId>mapneatline</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/MapNeatline.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:Streams</wms:Name>
-        <wms:Title>cite:Streams</wms:Title>
-        <wms:FeatureStoreId>streams</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/Streams.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:Streams</Name>
+        <Title>cite:Streams</Title>
+        <FeatureStoreId>streams</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/Streams.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:Bridges</wms:Name>
-        <wms:Title>cite:Bridges</wms:Title>
-        <wms:FeatureStoreId>bridges</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/Bridges.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:Bridges</Name>
+        <Title>cite:Bridges</Title>
+        <FeatureStoreId>bridges</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/Bridges.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-      <wms:RequestableLayer>
-        <wms:Name>cite:Autos</wms:Name>
-        <wms:Title>cite:Autos</wms:Title>
-        <wms:Dimension isTime="true">
-          <wms:Property>TIME</wms:Property>
-          <wms:MultipleValues>true</wms:MultipleValues>
-          <wms:NearestValue>true</wms:NearestValue>
-          <wms:Current>true</wms:Current>
-          <wms:Extent>2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S</wms:Extent>
-        </wms:Dimension>
-        <wms:FeatureStoreId>autos</wms:FeatureStoreId>
-        <wms:DirectStyle>
-          <wms:File>../styles/Autos.xml</wms:File>
-        </wms:DirectStyle>
-      </wms:RequestableLayer>
+      <RequestableLayer>
+        <Name>cite:Autos</Name>
+        <Title>cite:Autos</Title>
+        <Dimension isTime="true">
+          <Property>TIME</Property>
+          <MultipleValues>true</MultipleValues>
+          <NearestValue>true</NearestValue>
+          <Current>true</Current>
+          <Extent>2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S</Extent>
+        </Dimension>
+        <FeatureStoreId>autos</FeatureStoreId>
+        <DirectStyle>
+          <File>../styles/Autos.xml</File>
+        </DirectStyle>
+      </RequestableLayer>
 
-    </wms:RequestableLayer>
+    </RequestableLayer>
 
-  </wms:ServiceConfiguration>
+  </ServiceConfiguration>
 
-  <wms:PublishedInformation>
-    <wms:SupportedVersions>
-      <wms:Version>1.1.1</wms:Version>
-    </wms:SupportedVersions>
-  </wms:PublishedInformation>
+  <PublishedInformation>
+    <SupportedVersions>
+      <Version>1.1.1</Version>
+    </SupportedVersions>
+  </PublishedInformation>
 
-</wms:deegreeWMS>
+</deegreeWMS>
