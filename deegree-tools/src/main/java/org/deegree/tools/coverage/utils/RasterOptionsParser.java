@@ -226,7 +226,7 @@ public class RasterOptionsParser {
     public static AbstractCoverage loadCoverage( CommandLine line, RasterIOOptions options )
                             throws IOException {
         File f = getRasterLocation( line );
-        return RasterBuilder.buildCoverage( f, line.hasOption( OPT_RECURSIVE ), options );
+        return new RasterBuilder().buildCoverage( f, line.hasOption( OPT_RECURSIVE ), options );
     }
 
     /**

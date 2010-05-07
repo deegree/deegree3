@@ -97,7 +97,7 @@ import org.deegree.commons.version.DeegreeModuleInfo;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.coverage.raster.io.CoverageStoreManager;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.cs.configuration.CRSConfiguration;
 import org.deegree.feature.persistence.FeatureStoreManager;
 import org.deegree.record.persistence.RecordStoreManager;
@@ -1119,22 +1119,22 @@ public class OGCFrontController extends HttpServlet {
 
     private void initCoverageStores() {
         LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Setting up coverage stores." );
+        LOG.info( "Setting up coverages." );
         LOG.info( "--------------------------------------------------------------------------------" );
 
-        File csDir = null;
+        File coverageDir = null;
         try {
-            csDir = new File(
+            coverageDir = new File(
                               resolveFileLocation( DEFAULT_CONFIG_PATH + "/datasources/coverage", getServletContext() ).toURI() );
         } catch ( MalformedURLException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( URISyntaxException e ) {
             LOG.error( e.getMessage(), e );
         }
-        if ( csDir != null && csDir.exists() ) {
-            CoverageStoreManager.init( csDir );
+        if ( coverageDir != null && coverageDir.exists() ) {
+            CoverageBuilderManager.init( coverageDir );
         } else {
-            LOG.info( "No 'data/coverage' directory -- skipping initialization of coverage stores." );
+            LOG.info( "No 'data/coverage' directory -- skipping initialization of coverages." );
         }
         LOG.info( "" );
     }

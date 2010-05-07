@@ -79,7 +79,7 @@ public class MultiResolutionTileGrid implements MultiLevelRasterTileIndex {
             throw new IllegalArgumentException( "Specified dir: " + topLevelResolutionDir.getAbsolutePath()
                                                 + " is not a directory." );
         }
-        mrr = RasterBuilder.buildMultiResolutionRaster( topLevelResolutionDir, recursive, options );
+        mrr = new RasterBuilder().buildMultiResolutionRaster( topLevelResolutionDir, recursive, options );
         rasterLevels = new RasterLevel[mrr.getResolutions().size()];
         double currentMin = 0;
         List<Double> resolutions = mrr.getResolutions();

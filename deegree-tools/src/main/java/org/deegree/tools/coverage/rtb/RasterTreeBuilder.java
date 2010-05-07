@@ -380,7 +380,7 @@ public class RasterTreeBuilder {
         }
         shutdownExecutorAndWaitForFinish( executor );
         // srcRaster.dispose();
-        TiledRaster result = (TiledRaster) RasterBuilder.buildCoverage( outputDir, false, options );
+        TiledRaster result = (TiledRaster) new RasterBuilder().buildCoverage( outputDir, false, options );
         result.setCoordinateSystem( dstSRS );
 
         return result;

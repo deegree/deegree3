@@ -24,6 +24,7 @@
         <element name="Directory" type="string" />
       </sequence>
       <attribute name="configVersion" use="required" fixed="0.5.0" />
+      <attribute name="crs" use="optional" default="epsg:25832"/>      
     </complexType>
   </element>
 </schema>

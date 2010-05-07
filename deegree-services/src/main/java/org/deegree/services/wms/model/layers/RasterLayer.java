@@ -59,6 +59,7 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.commons.utils.log.LoggingNotes;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.filter.raster.RasterFilter;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -70,7 +71,6 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.coverage.raster.io.CoverageStoreManager;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -130,7 +130,7 @@ public class RasterLayer extends Layer {
      */
     public RasterLayer( AbstractLayerType lay, Layer parent ) {
         super( lay, parent );
-        AbstractCoverage cov = CoverageStoreManager.get( lay.getCoverageStoreId() );
+        AbstractCoverage cov = CoverageBuilderManager.get( lay.getCoverageStoreId() );
         this.raster = (AbstractRaster) ( cov instanceof AbstractRaster ? cov : null );
         this.multiraster = (MultiResolutionRaster) ( cov instanceof MultiResolutionRaster ? cov : null );
 

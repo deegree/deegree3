@@ -49,6 +49,7 @@ import java.util.Set;
 
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -60,7 +61,6 @@ import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.coverage.raster.io.CoverageStoreManager;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.CRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -155,7 +155,7 @@ public class WCServiceBuilder {
     private WCSCoverage extractCoverage( Coverage coverage )
                             throws ServiceInitException {
         String id = coverage.getCoverageStoreId();
-        AbstractCoverage cov = CoverageStoreManager.get( id );
+        AbstractCoverage cov = CoverageBuilderManager.get( id );
         if ( cov == null ) {
             throw new ServiceInitException( "No coverage store with id '" + id + "' is known." );
         }
