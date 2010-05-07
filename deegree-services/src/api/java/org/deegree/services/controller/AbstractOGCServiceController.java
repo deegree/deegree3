@@ -114,7 +114,7 @@ public abstract class AbstractOGCServiceController {
     protected DeegreeServicesMetadata mainControllerConf;
 
     /** JAXB classpath containing the configuration files in commons and other useful configuration locations. */
-    protected final static String JAXB_CONFIG_CLASSPATH = "org.deegree.commons.datasource.configuration:org.deegree.commons.configuration:";
+    protected final static String JAXB_CONFIG_CLASSPATH = "org.deegree.commons.configuration:";
 
     private final static SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
 
