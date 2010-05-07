@@ -143,49 +143,19 @@ public class Controller {
                                                           mouse.getCumulatedMouseChanging().getY()
                                                                                   + mouse.getMouseChanging().getY() ) );
 
-            System.out.println( "cumMousPos:  " + mouse.getCumulatedMouseChanging().getX() + " "
-                                + mouse.getCumulatedMouseChanging().getY() );
-            System.out.println( "margin:      " + panel.getImageMargin() );
             // if the user went into any critical region
             if ( mouse.getCumulatedMouseChanging().getX() >= panel.getImageMargin().getX()
                  || mouse.getCumulatedMouseChanging().getX() <= -panel.getImageMargin().getX()
                  || mouse.getCumulatedMouseChanging().getY() >= panel.getImageMargin().getY()
                  || mouse.getCumulatedMouseChanging().getY() <= -panel.getImageMargin().getY() ) {
 
-                Point2d updateDrawImageAtPosition = new Point2d(
-                                                                 mouse.getCumulatedMouseChanging().getX()
-                                                                                         + ( panel.getImageMargin().getX() ),
-                                                                 mouse.getCumulatedMouseChanging().getY()
-                                                                                         + ( panel.getImageMargin().getY() ) );
-                if ( mouse.getCumulatedMouseChanging().getX() >= panel.getImageMargin().getX() ) {
-                    updateDrawImageAtPosition.setX( ( panel.getBeginDrawImageAtPosition().getX() - mouse.getCumulatedMouseChanging().getX() )
-                                                    + ( panel.getImageMargin().getX() ) );
-                    System.out.println( "went EAST" );
+                Point2d updateDrawImageAtPosition = new Point2d( mouse.getCumulatedMouseChanging().getX(),
+                                                                 mouse.getCumulatedMouseChanging().getY() );
 
-                }
-                if ( mouse.getCumulatedMouseChanging().getX() <= -panel.getImageMargin().getX() ) {
-                    updateDrawImageAtPosition.setX( ( panel.getBeginDrawImageAtPosition().getX() - mouse.getCumulatedMouseChanging().getX() )
-                                                    + ( panel.getImageMargin().getX() ) );
-                    System.out.println( "went WEST" );
-
-                }
-                if ( mouse.getCumulatedMouseChanging().getY() >= panel.getImageMargin().getY() ) {
-                    updateDrawImageAtPosition.setY( ( panel.getBeginDrawImageAtPosition().getY() - mouse.getCumulatedMouseChanging().getY() )
-                                                    + ( panel.getImageMargin().getY() ) );
-                    System.out.println( "went SOUTH" );
-
-                }
-                if ( mouse.getCumulatedMouseChanging().getY() <= -panel.getImageMargin().getY() ) {
-                    updateDrawImageAtPosition.setY( ( panel.getBeginDrawImageAtPosition().getY() - mouse.getCumulatedMouseChanging().getY() )
-                                                    + ( panel.getImageMargin().getY() ) );
-                    System.out.println( "went NORTH" );
-
-                }
-                mouse.reset();
-                System.out.println( "my new Point2D after: " + updateDrawImageAtPosition );
+                System.out.println( "my new Point2D: " + updateDrawImageAtPosition );
                 model.setImageBoundingbox( updateDrawImageAtPosition );
                 panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
-
+                mouse.reset();
                 panel.repaint();
 
             } else {

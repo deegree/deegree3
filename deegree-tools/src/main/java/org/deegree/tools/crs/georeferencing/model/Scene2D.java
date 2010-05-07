@@ -51,10 +51,27 @@ import javax.vecmath.Point2d;
  */
 public interface Scene2D {
 
+    /**
+     * Generates an image based on a rectangle in which the image has to be drawn
+     * 
+     * @param sceneBounds
+     * @return
+     */
     public BufferedImage generateImage( Rectangle sceneBounds );
 
+    /**
+     * Sets the URL where to find the necessary data. This is outsourced from generating an image because this
+     * information is needed only once at the beginning of the process to draw an image.
+     * 
+     * @param imageUrl
+     */
     public void setImageUrl( URL imageUrl );
 
+    /**
+     * This should set the boundingbox for the image to draw.
+     * 
+     * @param change
+     */
     public void setImageBoundingbox( Point2d change );
 
 }

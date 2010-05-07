@@ -140,8 +140,10 @@ public class Scene2DImplWMS implements Scene2D {
         double panelHeight = sceneBounds.getHeight();
 
         wmsClient = new WMSClient111( imageRequestUrl );
-        lays = Collections.singletonList( "dem" );
-        srs = new CRS( "EPSG:32618" );
+        // lays = Collections.singletonList( "dem" );
+        // srs = new CRS( "EPSG:32618" );
+        lays = Collections.singletonList( "root" );
+        srs = new CRS( "EPSG:4326" );
         if ( imageBoundingbox == null ) {
             imageBoundingbox = wmsClient.getBoundingBox( srs.getName(), lays );
         }
@@ -202,14 +204,13 @@ public class Scene2DImplWMS implements Scene2D {
 
     @Override
     public void setImageBoundingbox( Point2d change ) {
-        double envStartPosX = imageBoundingbox.getMin().get0() - change.getX() * onePixel.getX();
-        double envStartPosY = imageBoundingbox.getMin().get1() + change.getY() * onePixel.getY();
+        double envStartPosX = imageBoundingbox.getMin().get0() + change.getX() * onePixel.getX();
+        double envStartPosY = imageBoundingbox.getMin().get1() - change.getY() * onePixel.getY();
 
-        double envEndPosX = imageBoundingbox.getMax().get0() - change.getX() * onePixel.getX();
-        double envEndPosY = imageBoundingbox.getMax().get1() + change.getY() * onePixel.getY();
+        double envEndPosX = imageBoundingbox.getMax().get0() + change.getX() * onePixel.getX();
+        double envEndPosY = imageBoundingbox.getMax().get1() - change.getY() * onePixel.getY();
 
-        System.out.println( "  start: " + imageBoundingbox.getMin().get0() + ", " + imageBoundingbox.getMin().get1()
-                            + " end: " + imageBoundingbox.getMax().get0() + ", " + imageBoundingbox.getMax().get1() );
+        System.out.println( "OnePixel: " + onePixel + " -- Change: " + change );
         System.out.println( "  start: " + envStartPosX + ", " + envStartPosY + " end: " + envEndPosX + ", "
                             + envEndPosY );
 

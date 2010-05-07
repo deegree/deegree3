@@ -53,7 +53,12 @@ import javax.vecmath.Point2d;
  */
 public class Scene2DPanel extends JPanel {
 
-    BufferedImage imageToDraw;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    private BufferedImage imageToDraw;
 
     private Point2d beginDrawImageAtPosition;
 
@@ -63,6 +68,11 @@ public class Scene2DPanel extends JPanel {
 
     private final double margin = 0.1;
 
+    /**
+     * Initializes the attributes that are needed to an image.
+     * <p>
+     * Is not in the constructor because there should be the possibility to decide when this should happen.
+     */
     public void init() {
         imageMargin = new Point2d( imageToDraw.getWidth() * margin, imageToDraw.getHeight() * margin );
         beginDrawImageAtPosition = new Point2d( 0 - imageMargin.getX(), 0 - imageMargin.getY() );
@@ -86,14 +96,20 @@ public class Scene2DPanel extends JPanel {
 
     }
 
-    public BufferedImage getImageToDraw() {
-        return imageToDraw;
-    }
-
+    /**
+     * Sets the image that should be drawed
+     * 
+     * @param imageToDraw
+     */
     public void setImageToDraw( BufferedImage imageToDraw ) {
         this.imageToDraw = imageToDraw;
     }
 
+    /**
+     * The relative margin that should be used...like 10%
+     * 
+     * @return
+     */
     public double getMargin() {
         return margin;
     }
@@ -106,10 +122,11 @@ public class Scene2DPanel extends JPanel {
         this.beginDrawImageAtPosition = beginDrawImageAtPosition;
     }
 
-    public Point2d getImageDimension() {
-        return imageDimension;
-    }
-
+    /**
+     * The absolute margin of an image
+     * 
+     * @return
+     */
     public Point2d getImageMargin() {
         return imageMargin;
     }

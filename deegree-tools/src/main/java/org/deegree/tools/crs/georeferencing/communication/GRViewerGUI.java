@@ -109,7 +109,7 @@ public class GRViewerGUI extends JFrame {
 
         setupMenubar();
         setup2DScene( gbl );
-        // setupOpenGL( gbl, true );
+        setupOpenGL( gbl, true );
         this.pack();
     }
 
@@ -123,7 +123,8 @@ public class GRViewerGUI extends JFrame {
         menuBar.add( menuFile );
         openurlMenuItem = new JMenuItem( "ows7-Test" );
 
-        ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
+        // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
+        ows7url = "http://localhost:8080/deegree-wms-cite111/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
 
         menuFile.add( openurlMenuItem );
         this.getRootPane().setJMenuBar( menuBar );
