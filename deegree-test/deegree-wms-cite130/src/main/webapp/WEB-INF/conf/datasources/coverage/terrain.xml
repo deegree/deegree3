@@ -1,3 +1,6 @@
-<RasterDataSource xmlns="http://www.deegree.org/datasource" crs="EPSG:4326" originLocation="outer">
+<?xml version="1.0" encoding="UTF-8"?>
+<Raster xmlns="http://www.deegree.org/datasource/coverage/raster" crs="EPSG:4326" originLocation="outer"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/0.5.0/coverage/raster.xsd">
   <RasterFile fileType="tif">../../../data/cite/terrain.tif</RasterFile>
-</RasterDataSource>
+</Raster>
