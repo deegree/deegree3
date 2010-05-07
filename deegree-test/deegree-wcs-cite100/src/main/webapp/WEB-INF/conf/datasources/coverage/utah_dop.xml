@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<MultiResolutionRaster xmlns="http://www.deegree.org/datasource/coverage/raster" crs="EPSG:26912"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<MultiResolutionRaster configVersion="0.5.0" xmlns="http://www.deegree.org/datasource/coverage/raster"
+  crs="EPSG:26912" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/0.5.0/coverage/raster.xsd">
   <Resolution res="16.0">
-    <Raster>
-      <RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../../data/utah/raster/dop/16.0
+    <RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../../data/utah/raster/dop/16.0
       </RasterDirectory>
-    </Raster>
   </Resolution>
   <Resolution res="32.0">
-    <Raster>
-      <RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../../data/utah/raster/dop/32.0
+    <RasterDirectory fileType="jpg" filePattern=".jpg" recursive="true">../../../data/utah/raster/dop/32.0
       </RasterDirectory>
-    </Raster>
   </Resolution>
-</MultiResolutionRaster >
+</MultiResolutionRaster>
