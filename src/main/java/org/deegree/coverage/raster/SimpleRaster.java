@@ -40,6 +40,7 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -181,9 +182,14 @@ public class SimpleRaster extends AbstractRaster {
 
     @Override
     public SimpleRaster getSubRaster( Envelope envelope, BandType[] bands ) {
+        return getSubRaster( envelope, bands, null );
+    }
+
+    @Override
+    public SimpleRaster getSubRaster( Envelope envelope, BandType[] bands, OriginLocation targetLocation ) {
         // rb: testing for envelope equality can lead to a memory leak, because the memory can not be freed.
         RasterRect rasterRect = getRasterReference().convertEnvelopeToRasterCRS( envelope );
-        RasterGeoReference rasterReference = getRasterReference().createRelocatedReference( envelope );
+        RasterGeoReference rasterReference = getRasterReference().createRelocatedReference( targetLocation, envelope );
         // RasterData view = getReadOnlyRasterData().getSubset( rasterRect, bands );
         // rb: don't need to get a readonly raster data, because it will be filled with data later.
         RasterData view = getRasterData().getSubset( rasterRect, bands );

@@ -70,6 +70,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
@@ -433,8 +434,7 @@ public class WMSClient111 {
         Pair<SimpleRaster, String> response = new Pair<SimpleRaster, String>();
         if ( imageResponse.first != null ) {
             BufferedImage img = imageResponse.first;
-            // TODO don't use raster API internal classes
-            PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) RasterFactory.rasterDataFromImage( img );
+            RasterData rasterData = RasterFactory.rasterDataFromImage( img );
             RasterGeoReference rasterEnv = RasterGeoReference.create( OriginLocation.OUTER, bbox, img.getWidth(),
                                                                       img.getHeight() );
             SimpleRaster raster = new SimpleRaster( rasterData, bbox, rasterEnv );

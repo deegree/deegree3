@@ -101,12 +101,23 @@ public class CacheRasterReader extends GridFileReader {
     private Map<Integer, TileEntry> instantiateTiles() {
         synchronized ( LOCK ) {
             Map<Integer, TileEntry> result = new ConcurrentHashMap<Integer, TileEntry>( getTileColumns()
-                                                                                        * getTileRows() );
-            for ( int c = 0; c < getTileColumns(); ++c ) {
-                for ( int r = 0; r < getTileRows(); ++r ) {
+                                                                                        * getTileRows() * 2 );
+            CacheInfoFile infoFile = (CacheInfoFile) this.infoFile;
+            boolean[][] tilesOnFile = infoFile.getTilesOnFile();
+            if ( tilesOnFile == null || tilesOnFile.length != getTileRows()
+                 || tilesOnFile[getTileRows() - 1].length != getTileColumns() ) {
+                tilesOnFile = new boolean[getTileRows()][getTileColumns()];
+            }
+            for ( int r = 0; r < getTileRows(); ++r ) {
+                for ( int c = 0; c < getTileColumns(); ++c ) {
                     RasterRect rect = new RasterRect( c * getTileRasterWidth(), r * getTileRasterHeight(),
                                                       getTileRasterWidth(), getTileRasterHeight() );
-                    result.put( getTileId( c, r ), new TileEntry( rect ) );
+                    // System.out.println( rect );
+                    int key = getTileId( c, r );
+                    // System.out.println( "Key (" + c + "," + r + "): " + key );
+                    TileEntry entry = new TileEntry( rect );
+                    entry.setTileOnFile( tilesOnFile[r][c] );
+                    result.put( key, entry );
                 }
             }
             return result;
@@ -322,8 +333,8 @@ public class CacheRasterReader extends GridFileReader {
                         resultBuffer = ByteBufferPool.allocate( intersection.height * intersection.width * sampleSize,
                                                                 false, false );
                     }
-                    for ( int row = minCRmaxCR[1]; row <= minCRmaxCR[3]; ++row ) {
-                        for ( int col = minCRmaxCR[0]; col <= minCRmaxCR[2]; ++col ) {
+                    for ( int row = minCRmaxCR[1]; row < getTileRows() && row <= minCRmaxCR[3]; ++row ) {
+                        for ( int col = minCRmaxCR[0]; col < getTileColumns() && col <= minCRmaxCR[2]; ++col ) {
                             leaveStreamOpen( true );
                             // getTileBuffer will get a read only (copy-of the tiles[row][col]) bytebuffer.
                             ByteBuffer tileBuffer = getTileBuffer( col, row );
@@ -411,6 +422,21 @@ public class CacheRasterReader extends GridFileReader {
     @Override
     public boolean shouldCreateCacheFile() {
         return false;
+    }
+
+    @Override
+    public RasterGeoReference getGeoReference() {
+        return super.getGeoReference().createRelocatedReference( OriginLocation.OUTER );
+    }
+
+    @Override
+    public int getHeight() {
+        return ( (CacheInfoFile) this.infoFile ).getRasterHeight();
+    }
+
+    @Override
+    public int getWidth() {
+        return ( (CacheInfoFile) this.infoFile ).getRasterWidth();
     }
 
     @Override
@@ -683,7 +709,8 @@ public class CacheRasterReader extends GridFileReader {
             }
             CacheInfoFile info = new CacheInfoFile( getGeoReference(), getTileRows(), getTileColumns(),
                                                     getTileRasterWidth(), getTileRasterHeight(), getRasterDataInfo(),
-                                                    getWidth(), getHeight(), tilesOnFiles, file().lastModified() );
+                                                    super.getWidth(), super.getHeight(), tilesOnFiles,
+                                                    file().lastModified() );
             try {
                 CacheInfoFile.write( metaInfo, info );
                 result = true;
