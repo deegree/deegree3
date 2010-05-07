@@ -65,6 +65,7 @@ import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
+import org.deegree.coverage.raster.io.jaxb.AbstractRasterType;
 import org.deegree.coverage.raster.io.jaxb.MultiResolutionRasterConfig;
 import org.deegree.coverage.raster.io.jaxb.RasterConfig;
 import org.deegree.coverage.raster.io.jaxb.RasterDirectory;
@@ -210,7 +211,7 @@ public class RasterBuilder implements CoverageBuilder {
             MultiResolutionRaster mrr = new MultiResolutionRaster();
             mrr.setCoordinateSystem( crs );
             for ( Resolution resolution : mrrConfig.getResolution() ) {
-                AbstractRaster rasterLevel = fromJAXB( resolution.getRaster(), adapter, options );
+                AbstractRaster rasterLevel = fromJAXB( resolution, adapter, options );
                 mrr.addRaster( rasterLevel );
             }
             return mrr;
@@ -228,7 +229,7 @@ public class RasterBuilder implements CoverageBuilder {
      * @param adapter
      * @return a corresponding raster, null if files could not be fund
      */
-    private AbstractRaster fromJAXB( RasterConfig config, XMLAdapter adapter, RasterIOOptions options ) {
+    private AbstractRaster fromJAXB( AbstractRasterType config, XMLAdapter adapter, RasterIOOptions options ) {
         if ( config != null ) {
             String defCRS = config.getCrs();
             CRS crs = null;
