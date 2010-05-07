@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:dgws="http://www.deegree.org/webservices"
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wpvs="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
   targetNamespace="http://www.deegree.org/services/wpvs" elementFormDefault="qualified">
   <import namespace="http://www.deegree.org/webservices" schemaLocation="../../webservices/0.5.0/services_metadata.xsd" />
   <element name="ServiceConfiguration">
     <annotation>
       <documentation>
-        Root element of the service configuration, it defines rendering parameters, get view request
-        restrictions as well as datasets and elevation models.
+        Root element of the service configuration, defines available datasets, rendering parameters and get
+        view request restrictions.
       </documentation>
     </annotation>
     <complexType>
@@ -92,13 +92,13 @@
     </annotation>
     <sequence>
       <!--
-        The title defines the identity for a data set (request name), just like the WMS 1.3.0 specification.
+        The title defines the request name of a data set, similar to the WMS 1.3.0 specification.
       -->
       <element name="Title" type="string" />
       <element name="Name" type="string" minOccurs="0" />
       <element name="MetadataURL" type="string" minOccurs="0" maxOccurs="unbounded" />
       <element name="Abstract" type="string" minOccurs="0" />
-      <element ref="dgws:Keywords" minOccurs="0" maxOccurs="unbounded" />
+      <element ref="md:Keywords" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
   </complexType>
   <element name="DatasetDefinitions">
@@ -111,7 +111,7 @@
         <element name="Title" type="string" />
         <element name="MetadataURL" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element name="Abstract" type="string" minOccurs="0" />
-        <element ref="dgws:Keywords" minOccurs="0" />
+        <element ref="md:Keywords" minOccurs="0" />
         <element name="BaseCRS" type="string" />
         <element ref="wpvs:TranslationToLocalCRS" />
         <!--
