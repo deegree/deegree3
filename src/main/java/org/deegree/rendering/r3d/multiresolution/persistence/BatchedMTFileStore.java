@@ -32,9 +32,16 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.persistence;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import org.deegree.commons.utils.nio.DirectByteBufferPool;
+import org.deegree.cs.CRS;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
@@ -45,8 +52,20 @@ import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
  * 
  * @version $Revision$, $Date$
  */
-public interface BatchedMTStore {
+public class BatchedMTFileStore implements BatchedMTStore {
 
-    public MultiresolutionMesh getMesh();
+    private CRS crs;
+    
+    private MultiresolutionMesh mesh;
 
+    public BatchedMTFileStore( CRS crs, URL dir, int maxDirectMemBytes ) throws IOException, URISyntaxException {
+        this.crs = crs;
+        DirectByteBufferPool pool = new DirectByteBufferPool( maxDirectMemBytes, "TODO" );
+        mesh = new MultiresolutionMesh( new File (dir.toURI()), pool );
+    }
+
+    @Override
+    public MultiresolutionMesh getMesh() {
+        return mesh;
+    }
 }

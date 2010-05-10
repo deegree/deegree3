@@ -69,14 +69,13 @@ import org.slf4j.LoggerFactory;
 import com.sun.opengl.util.GLUT;
 
 /**
- * 
  * The <code>TerrainRenderingManager</code> class manages the current fragments, it uses fragment shaders if multiple
  * texture are requested.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author: rbezema $
- * @version $Revision: $, $Date: $
  * 
+ * @version $Revision: $, $Date: $
  */
 public class TerrainRenderingManager {
 
@@ -526,5 +525,4 @@ public class TerrainRenderingManager {
             return textureManager.getTextures( glRenderContext, maxProjTexelSize, fragments );
         }
     }
-
 }
