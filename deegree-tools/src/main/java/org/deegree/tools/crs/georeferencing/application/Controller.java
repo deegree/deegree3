@@ -185,6 +185,7 @@ public class Controller {
                 panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
                 mouse.reset();
                 panel.repaint();
+                panel.init();
 
             } else {
                 panel.setBeginDrawImageAtPosition( new Point2d(

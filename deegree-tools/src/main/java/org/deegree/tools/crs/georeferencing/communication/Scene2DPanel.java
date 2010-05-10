@@ -78,7 +78,7 @@ public class Scene2DPanel extends JPanel {
         beginDrawImageAtPosition = new Point2d( 0 - imageMargin.getX(), 0 - imageMargin.getY() );
         imageDimension = new Point2d( imageToDraw.getWidth() + imageMargin.getX() * 2, imageToDraw.getHeight()
                                                                                        + imageMargin.getY() * 2 );
-
+        System.out.println( "beginDrawing the image: " + beginDrawImageAtPosition );
     }
 
     @Override
