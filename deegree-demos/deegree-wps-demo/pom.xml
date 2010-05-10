@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
-  <artifactId>deegree-wps-demo</artifactId>
+  <artifactId>deegree-csw</artifactId>
   <packaging>war</packaging>
   <version>3.0-SNAPSHOT</version>
-  <name>deegree 3 WPS Demo</name>
+  <name>csw Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <parent>
     <groupId>org.deegree</groupId>
@@ -35,7 +35,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>deegree-wps-demo</finalName>
+    <finalName>deegree-csw</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -44,6 +44,10 @@
           <source>1.6</source>
           <target>1.6</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
