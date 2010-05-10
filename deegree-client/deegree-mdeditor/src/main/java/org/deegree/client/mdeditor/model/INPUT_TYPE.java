@@ -44,5 +44,5 @@ package org.deegree.client.mdeditor.model;
  * @version $Revision: $, $Date: $
  */
 public enum INPUT_TYPE {
-    TEXT, INT, STRING, TIMESTAMP, DOUBLE
+    TEXT, INT, TEXTAREA, TIMESTAMP, DOUBLE
 }

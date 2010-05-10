@@ -59,6 +59,7 @@ import javax.faces.component.behavior.AjaxBehavior;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.component.html.HtmlInputText;
+import javax.faces.component.html.HtmlInputTextarea;
 import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.component.html.HtmlSelectManyListbox;
@@ -80,6 +81,7 @@ import org.deegree.client.mdeditor.model.FormConfiguration;
 import org.deegree.client.mdeditor.model.FormElement;
 import org.deegree.client.mdeditor.model.FormField;
 import org.deegree.client.mdeditor.model.FormGroup;
+import org.deegree.client.mdeditor.model.INPUT_TYPE;
 import org.deegree.client.mdeditor.model.InputFormField;
 import org.deegree.client.mdeditor.model.ReferencedElement;
 import org.deegree.client.mdeditor.model.SELECT_TYPE;
@@ -227,9 +229,15 @@ public class FormCreatorBean implements Serializable {
     }
 
     private void addValueField( FormField fe, HtmlPanelGrid parentGrid, ExpressionFactory ef, ELContext elContext ) {
+        String id = fe.getId();
+        String msgId = "msg_" + id;
         UIInput input = null;
         if ( fe instanceof InputFormField ) {
-            input = new HtmlInputText();
+            if ( INPUT_TYPE.TEXTAREA.equals( ( (InputFormField) fe ).getInputType() ) ) {
+                input = new HtmlInputTextarea();
+            } else {
+                input = new HtmlInputText();
+            }
         } else if ( fe instanceof SelectFormField ) {
             SelectFormField se = (SelectFormField) fe;
             if ( SELECT_TYPE.MANY.equals( se.getSelectType() ) ) {
@@ -262,11 +270,13 @@ public class FormCreatorBean implements Serializable {
             }
         }
         if ( input != null ) {
-            input.setId( fe.getId() );
+            input.setId( id );
             input.getAttributes().put( GuiUtils.FIELDPATH_ATT_KEY, fe.getPath() );
+            setStyleClass( fe, input, ef, elContext );
             setValue( fe, input, ef, elContext );
-            setValueChangedAjaxBehavior( input );
+            setValueChangedAjaxBehavior( input, msgId );
             setVisibility( fe, input, ef, elContext );
+            setTitle( fe, input, ef, elContext );
             parentGrid.getChildren().add( input );
         }
     }
@@ -284,13 +294,13 @@ public class FormCreatorBean implements Serializable {
         }
     }
 
-    private void setValueChangedAjaxBehavior( UIInput component ) {
+    private void setValueChangedAjaxBehavior( UIInput component, String msgId ) {
         AjaxBehavior ajaxInput = new AjaxBehavior();
         List<String> executes = new ArrayList<String>();
         executes.add( "@this" );
         ajaxInput.setExecute( executes );
         List<String> render = new ArrayList<String>();
-        render.add( "@none" );
+        render.add( "@this" );
         ajaxInput.setRender( render );
         ajaxInput.addAjaxBehaviorListener( new FormFieldValueChangedListener() );
         component.addClientBehavior( component.getDefaultEventName(), ajaxInput );
@@ -306,6 +316,19 @@ public class FormCreatorBean implements Serializable {
         String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].value}";
         ValueExpression ve = ef.createValueExpression( elContext, el, Object.class );
         component.setValueExpression( "value", ve );
+    }
+
+    private void setStyleClass( FormField fe, UIInput input, ExpressionFactory ef, ELContext elContext ) {
+        String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].invalid ? 'invalidFF' : ''}";
+        ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
+        input.setValueExpression( "styleClass", ve );
+    }
+
+
+    private void setTitle( FormField fe, UIComponent component, ExpressionFactory ef, ELContext elContext ) {
+        String el = "#{formFieldBean.formFields['" + fe.getPath().toString() + "'].title}";
+        ValueExpression ve = ef.createValueExpression( elContext, el, String.class );
+        component.setValueExpression( "title", ve );
     }
 
     public void setForm( UIForm form ) {

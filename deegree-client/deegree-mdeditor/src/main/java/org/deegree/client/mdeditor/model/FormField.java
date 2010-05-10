@@ -57,7 +57,11 @@ public abstract class FormField implements FormElement {
 
     private FormFieldPath path;
 
-    private boolean isIdentifier;
+    private boolean identifier;
+
+    protected boolean invalid = false;
+
+    private String title;
 
     public FormField( FormFieldPath path, String id, String label, boolean visible, String help, Object defaultValue,
                       boolean isIdentifier ) {
@@ -67,7 +71,7 @@ public abstract class FormField implements FormElement {
         this.visibility = visible;
         this.help = help;
         this.value = defaultValue;
-        this.setIdentifier( isIdentifier );
+        this.identifier = isIdentifier;
     }
 
     public String getId() {
@@ -120,11 +124,22 @@ public abstract class FormField implements FormElement {
     }
 
     public void setIdentifier( boolean isIdentifier ) {
-        this.isIdentifier = isIdentifier;
+        this.identifier = isIdentifier;
     }
 
     public boolean isIdentifier() {
-        return isIdentifier;
+        return identifier;
     }
 
+    public boolean isInvalid() {
+        return invalid;
+    }
+
+    public void setTitle( String title ) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title != null ? title : label;
+    }
 }

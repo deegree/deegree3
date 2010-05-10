@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.mdeditor.model;
 
+import java.text.SimpleDateFormat;
+
 /**
  * TODO add class documentation here
  * 
@@ -45,9 +47,94 @@ package org.deegree.client.mdeditor.model;
  */
 public class InputFormField extends FormField {
 
-    public InputFormField( FormFieldPath path, String id, String label, boolean visible, String help, boolean isIdentifier,
-                           INPUT_TYPE inputType, String defaultValue, Validation validation ) {
+    // TODO
+    private String timePattern = "yyyy-MM-dd";
+
+    private INPUT_TYPE inputType;
+
+    private Validation validation;
+
+    public InputFormField( FormFieldPath path, String id, String label, boolean visible, String help,
+                           boolean isIdentifier, INPUT_TYPE inputType, String defaultValue, Validation validation ) {
         super( path, id, label, visible, help, defaultValue, isIdentifier );
+        this.inputType = inputType;
+        this.validation = validation;
+
+        if ( validation != null ) {
+            switch ( inputType ) {
+            case TIMESTAMP:
+                setTitle( validation.getTimestampPattern() != null ? validation.getTimestampPattern() : timePattern );
+                break;
+            case DOUBLE:
+                setTitle( "double value between " + validation.getMinValue() + " and " + validation.getMaxValue() );
+                break;
+            case INT:
+                setTitle( "int value between " + validation.getMinValue() + " and " + validation.getMaxValue() );
+                break;
+            case TEXT:
+                if ( validation.getLength() > 0 ) {
+                    setTitle( "string with max length " + validation.getLength() );
+                }
+                break;
+            }
+        }
     }
 
+    public void setInputType( INPUT_TYPE inputType ) {
+        this.inputType = inputType;
+    }
+
+    public INPUT_TYPE getInputType() {
+        return inputType;
+    }
+
+    public void setValue( Object value ) {
+        invalid = false;
+        switch ( inputType ) {
+        case TIMESTAMP:
+            try {
+                if ( validation != null && validation.getTimestampPattern() != null ) {
+                    timePattern = validation.getTimestampPattern();
+                }
+                SimpleDateFormat format = new SimpleDateFormat( timePattern );
+                format.parse( (String) getValue() );
+            } catch ( Exception e ) {
+                invalid = true;
+            }
+            break;
+        case DOUBLE:
+            try {
+                double d = Double.parseDouble( (String) getValue() );
+                if ( !( validation != null && d >= validation.getMinValue() ) ) {
+                    invalid = true;
+                }
+                if ( !( validation != null && d <= validation.getMaxValue() ) ) {
+                    invalid = true;
+                }
+            } catch ( Exception e ) {
+                invalid = true;
+            }
+            break;
+        case INT:
+            try {
+                int i = Integer.parseInt( (String) getValue() );
+                if ( !( validation != null && i >= validation.getMinValue() ) ) {
+                    invalid = true;
+                }
+                if ( !( validation != null && i <= validation.getMaxValue() ) ) {
+                    invalid = true;
+                }
+            } catch ( Exception e ) {
+                invalid = true;
+            }
+            break;
+        case TEXT:
+            String s = (String) value;
+            if ( ( validation != null && validation.getLength() > 0 && s.length() >= validation.getLength() ) ) {
+                invalid = true;
+            }
+            break;
+        }
+        super.setValue( value );
+    }
 }

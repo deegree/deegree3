@@ -199,7 +199,7 @@
         <xs:simpleType>
             <xs:restriction base="xs:string">
                 <xs:enumeration value="text" />
-                <xs:enumeration value="string" />
+                <xs:enumeration value="textarea" />
                 <xs:enumeration value="timestamp" />
                 <xs:enumeration value="int" />
                 <xs:enumeration value="double" />

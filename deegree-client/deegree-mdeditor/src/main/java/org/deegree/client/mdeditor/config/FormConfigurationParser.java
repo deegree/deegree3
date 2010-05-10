@@ -301,7 +301,7 @@ public class FormConfigurationParser {
             validation.setLength( getElementInteger( xmlStream, "length", Integer.MIN_VALUE ) );
             validation.setTimestampPattern( getElementText( xmlStream, "timestampPattern", null ) );
             validation.setMinValue( getElementDouble( xmlStream, "minValue", Double.MIN_VALUE ) );
-            validation.setMaxValue( getElementDouble( xmlStream, "maxValue", Double.MIN_VALUE ) );
+            validation.setMaxValue( getElementDouble( xmlStream, "maxValue", Double.MAX_VALUE ) );
         }
 
         InputFormField ff = new InputFormField( getPath( id ), id, label, visible, help, isIdentifier, inputType,
@@ -340,8 +340,8 @@ public class FormConfigurationParser {
         String elementText = getElementText( xmlStream, "inputType", null );
         if ( "text".equals( elementText ) ) {
             return INPUT_TYPE.TEXT;
-        } else if ( "string".equals( elementText ) ) {
-            return INPUT_TYPE.STRING;
+        } else if ( "textarea".equals( elementText ) ) {
+            return INPUT_TYPE.TEXTAREA;
         } else if ( "timestamp".equals( elementText ) ) {
             return INPUT_TYPE.TIMESTAMP;
         } else if ( "int".equals( elementText ) ) {
@@ -349,7 +349,7 @@ public class FormConfigurationParser {
         } else if ( "double".equals( elementText ) ) {
             return INPUT_TYPE.DOUBLE;
         }
-        throw new XMLParsingException( xmlStream, "inputType " + elementText + "is not valid" );
+        throw new XMLParsingException( xmlStream, "inputType " + elementText + " is not valid" );
     }
 
     private SELECT_TYPE getSelectType( XMLStreamReader xmlStream )

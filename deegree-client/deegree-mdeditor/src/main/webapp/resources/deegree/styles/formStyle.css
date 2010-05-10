@@ -77,3 +77,7 @@ ul#verticalList a:hover,ul#verticalList span {
 	float:left;
 	margin-right: 10px;
 }
+
+.invalidFF{
+	border: 2px solid red;
+}
