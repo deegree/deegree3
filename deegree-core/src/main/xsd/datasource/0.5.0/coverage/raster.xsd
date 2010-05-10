@@ -84,7 +84,6 @@
     <complexType>
       <simpleContent>
         <extension base="string">
-          <attribute name="filePattern" type="string" default="*" />
           <attribute name="recursive" type="boolean" />
           <attribute name="fileType" default="jpg" type="string" />
         </extension>

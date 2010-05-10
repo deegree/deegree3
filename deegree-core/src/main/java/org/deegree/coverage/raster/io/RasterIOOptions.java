@@ -384,9 +384,6 @@ public class RasterIOOptions {
                 add( READ_WLD_FILE, otherOptions.readWorldFile() + "" );
             }
 
-            if ( get( OPT_FORMAT ) == null ) {
-                add( OPT_FORMAT, otherOptions.get( OPT_FORMAT ) );
-            }
             if ( getRasterGeoReference() == null ) {
                 setRasterGeoReference( otherOptions.getRasterGeoReference() );
             }
@@ -397,18 +394,30 @@ public class RasterIOOptions {
             if ( getCRS() == null && otherOptions.getCRS() != null ) {
                 add( CRS, otherOptions.getCRS().getName() );
             }
-            if ( get( LOCAL_RASTER_CACHE_DIR ) == null ) {
-                add( LOCAL_RASTER_CACHE_DIR, otherOptions.get( LOCAL_RASTER_CACHE_DIR ) );
+            for ( String key : otherOptions.options.keySet() ) {
+                if ( !( key.equals( DATA_LOADING_POLICY ) || key.equals( READ_WLD_FILE )
+                        || key.equals( GEO_ORIGIN_LOCATION ) || key.equals( CRS ) ) ) {
+                    String val = otherOptions.get( key );
+                    if ( val != null && options.get( key ) == null ) {
+                        options.put( key, val );
+                    }
+                }
             }
-            if ( get( RASTER_CACHE_DIR ) == null ) {
-                add( RASTER_CACHE_DIR, otherOptions.get( RASTER_CACHE_DIR ) );
-            }
-            if ( get( CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
-                add( CREATE_RASTER_MISSING_CACHE_DIR, otherOptions.get( CREATE_RASTER_MISSING_CACHE_DIR ) );
-            }
-            if ( get( ORIGIN_OF_RASTER ) == null ) {
-                add( ORIGIN_OF_RASTER, otherOptions.get( ORIGIN_OF_RASTER ) );
-            }
+            // if ( get( OPT_FORMAT ) == null ) {
+            // add( OPT_FORMAT, otherOptions.get( OPT_FORMAT ) );
+            // }
+            // if ( get( LOCAL_RASTER_CACHE_DIR ) == null ) {
+            // add( LOCAL_RASTER_CACHE_DIR, otherOptions.get( LOCAL_RASTER_CACHE_DIR ) );
+            // }
+            // if ( get( RASTER_CACHE_DIR ) == null ) {
+            // add( RASTER_CACHE_DIR, otherOptions.get( RASTER_CACHE_DIR ) );
+            // }
+            // if ( get( CREATE_RASTER_MISSING_CACHE_DIR ) == null ) {
+            // add( CREATE_RASTER_MISSING_CACHE_DIR, otherOptions.get( CREATE_RASTER_MISSING_CACHE_DIR ) );
+            // }
+            // if ( get( ORIGIN_OF_RASTER ) == null ) {
+            // add( ORIGIN_OF_RASTER, otherOptions.get( ORIGIN_OF_RASTER ) );
+            // }
 
         }
 

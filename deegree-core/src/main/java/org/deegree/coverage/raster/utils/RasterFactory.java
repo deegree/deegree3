@@ -99,6 +99,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class RasterFactory {
+
     private static class ThreadLocalServiceLoader extends ThreadLocal<ServiceLoader<RasterIOProvider>> {
         @Override
         public ServiceLoader<RasterIOProvider> initialValue() {
@@ -319,7 +320,7 @@ public class RasterFactory {
                 options.setRasterGeoReference( ref );
             }
         }
-        ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image, opts );
+        ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image, opts, null );
 
         return new SimpleRaster( rasterDataFromImage, envelope, ref );
 
@@ -549,8 +550,8 @@ public class RasterFactory {
     }
 
     /**
-     * Creates a buffered image from the given raster data. The options can be used to modify the outcome of the
-     * buffered image.
+     * Creates Raster data from the given RenderedImage image. The options can be used to modify the outcome of the
+     * raster data image.
      * 
      * @param img
      * @param options
@@ -558,6 +559,22 @@ public class RasterFactory {
      * @return the rasterdata object from the image or <code>null</code> if the given img is <code>null</code>
      */
     public static ByteBufferRasterData rasterDataFromImage( RenderedImage img, RasterIOOptions options ) {
+        return rasterDataFromImage( img, options, null );
+    }
+
+    /**
+     * Creates Raster data from the given buffered image. The options can be used to modify the outcome of the raster
+     * data image.
+     * 
+     * @param img
+     * @param options
+     *            which can hold information about the image read, may be <code>null</code>
+     * @param byteBuffer
+     *            to fill
+     * @return the rasterdata object from the image or <code>null</code> if the given img is <code>null</code>
+     */
+    public static ByteBufferRasterData rasterDataFromImage( RenderedImage img, RasterIOOptions options,
+                                                            ByteBuffer byteBuffer ) {
         ByteBufferRasterData result = null;
         if ( img != null ) {
 
@@ -591,7 +608,13 @@ public class RasterFactory {
             // rb: are we sure it is always pixel interleaved?
             RasterDataInfo rdi = new RasterDataInfo( noData, bandTypes, type, InterleaveType.PIXEL );
 
-            ByteBuffer byteBuffer = ByteBufferPool.allocate( rdi.bands * width * height * rdi.dataSize, false );
+            if ( byteBuffer == null || byteBuffer.capacity() < rdi.bands * width * height * rdi.dataSize ) {
+                if ( byteBuffer != null ) {
+                    log.warn( "The given bytebuffer's capacity was not to small to for the given buffered image, creating new buffer." );
+                }
+                byteBuffer = ByteBufferPool.allocate( rdi.bands * width * height * rdi.dataSize, false );
+            }
+
             if ( type == DataType.BYTE && imgDataType == DataBuffer.TYPE_INT || imgDataType == DataBuffer.TYPE_SHORT
                  || imgDataType == DataBuffer.TYPE_USHORT ) {
                 // hack for the INT_ARGB etc. etc.
@@ -776,13 +799,14 @@ public class RasterFactory {
 
     /**
      * Creates a buffered image from the given raster data by calling the
-     * {@link RasterFactory#rasterDataFromImage(RenderedImage, RasterIOOptions)} method without any options. *
+     * {@link RasterFactory#rasterDataFromImage(RenderedImage, RasterIOOptions, ByteBuffer))} method without any
+     * options. *
      * 
      * @param img
-     * @return the rasterdata object from the image or <code>null</code> if the given img is <code>null</code>
+     * @return the ByteBufferRasterData object from the image or <code>null</code> if the given img is <code>null</code>
      */
     public static ByteBufferRasterData rasterDataFromImage( BufferedImage img ) {
-        return rasterDataFromImage( img, null );
+        return rasterDataFromImage( img, null, null );
     }
 
     /**
@@ -851,4 +875,5 @@ public class RasterFactory {
         }
         return result;
     }
+
 }

@@ -139,10 +139,8 @@ public class IIORasterReader implements RasterReader {
     private AbstractRaster loadFromReader( IIORasterDataReader reader, RasterIOOptions options ) {
         width = reader.getWidth();
         height = reader.getHeight();
-        RasterIOOptions opts = options;
-        if ( options == null ) {
-            opts = new RasterIOOptions();
-        }
+        RasterIOOptions opts = new RasterIOOptions();
+        opts.copyOf( options );
         setID( opts );
 
         OriginLocation definedRasterOrigLoc = opts.getRasterOriginLocation();
