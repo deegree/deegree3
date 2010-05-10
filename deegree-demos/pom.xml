@@ -17,6 +17,7 @@
     <module>deegree-wfs-geosciml</module>
     <!--module>deegree-wms-demo</module-->
     <module>deegree-wps-demo</module>
+    <!-- <module>deegree-csw-demo</module> -->
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
