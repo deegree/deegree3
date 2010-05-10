@@ -81,4 +81,6 @@ public interface Scene2D {
      */
     public Envelope getImageBoundingbox();
 
+    public void reset();
+
 }

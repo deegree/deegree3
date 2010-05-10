@@ -100,20 +100,27 @@ public class Controller {
         @Override
         public void actionPerformed( ActionEvent e ) {
 
-            // get the image and resizes it with the margin
-            try {
-                scene2DUrl = new URL( view.openUrl() );
-                model.setImageUrl( scene2DUrl );
-                panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
-                panel.init();
-                panel.addScene2DMouseListener( new Scene2DMouseListener() );
-                mouse = new MouseModel();
-                panel.repaint();
+            initImagePaint();
 
-            } catch ( MalformedURLException e1 ) {
-                e1.printStackTrace();
-            }
+        }
+    }
 
+    /**
+     * 
+     */
+    private void initImagePaint() {
+        // get the image and resizes it with the margin
+        try {
+            scene2DUrl = new URL( view.openUrl() );
+            model.setImageUrl( scene2DUrl );
+            panel.setImageToDraw( model.generateImage( panel.getBounds() ) );
+            panel.init();
+            panel.addScene2DMouseListener( new Scene2DMouseListener() );
+            mouse = new MouseModel();
+            panel.repaint();
+
+        } catch ( MalformedURLException e1 ) {
+            e1.printStackTrace();
         }
     }
 
@@ -219,7 +226,8 @@ public class Controller {
         @Override
         public void componentResized( ComponentEvent c ) {
             if ( model.getImageBoundingbox() != null ) {
-                model.generateImage( panel.getBounds() );
+                model.reset();
+                initImagePaint();
             }
 
         }

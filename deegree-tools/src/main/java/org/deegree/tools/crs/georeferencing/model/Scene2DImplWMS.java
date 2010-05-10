@@ -147,6 +147,12 @@ public class Scene2DImplWMS implements Scene2D {
 
     }
 
+    /**
+     * 
+     * 
+     * @param sceneBounds
+     * @return the boundingbox of the image that should be displayed
+     */
     private Envelope generateImageBoundingbox( Rectangle sceneBounds ) {
         int proportion = determineProportion( sceneBounds );
 
@@ -171,13 +177,13 @@ public class Scene2DImplWMS implements Scene2D {
         double x1 = completeRequestBoundingbox.getMax().get0();
         double y0 = completeRequestBoundingbox.getMin().get1();
         double y1 = completeRequestBoundingbox.getMax().get1();
-        Point2d spanHalbe = new Point2d( ( spanX / 2 ), ( spanY / 2 ) );
+        Point2d halfOfSpan = new Point2d( ( spanX / 2 ), ( spanY / 2 ) );
         Point2d sight = new Point2d( ( spanX * 0.05 ), ( spanY * 0.05 ) );
 
-        double minX = x0 + spanHalbe.getX() - sight.getX();
-        double maxX = x1 - spanHalbe.getX() + sight.getX();
-        double minY = y0 + spanHalbe.getY() - sight.getY();
-        double maxY = y1 - spanHalbe.getY() + sight.getY();
+        double minX = x0 + halfOfSpan.getX() - sight.getX();
+        double maxX = x1 - halfOfSpan.getX() + sight.getX();
+        double minY = y0 + halfOfSpan.getY() - sight.getY();
+        double maxY = y1 - halfOfSpan.getY() + sight.getY();
 
         if ( proportion == 0 ) {
             // do nothing
@@ -246,8 +252,17 @@ public class Scene2DImplWMS implements Scene2D {
 
     }
 
+    @Override
     public Envelope getImageBoundingbox() {
         return imageBoundingbox;
+    }
+
+    @Override
+    public void reset() {
+        imageBoundingbox = null;
+        completeRequestBoundingbox = null;
+        onePixel = null;
+        requestedImage = null;
     }
 
 }
