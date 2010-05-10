@@ -1,0 +1,28 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+</h:head>
+<h:body>
+	<ui:composition template="/page/templates/layout.xhtml">
+		
+		<ui:define name="leftBox">
+			<ui:include src="/page/navigation.xhtml"/>
+		</ui:define>
+		
+			<ui:define name="content">
+				<f:subview id="mdChooseDataset">
+						<h:form id="loadDsForm" >
+						<h:panelGrid >
+							<h:outputText value="Bitte wählen Sie aus folgenden Datensätzen einen aus:" />
+							<h:selectOneListbox id="dsSelectLB" value="#{loadDatasetBean.selectedDataset}" required="true">
+								<f:selectItems value="#{loadDatasetBean.datasets}" />
+							</h:selectOneListbox>
+							<h:message for="dsSelectLB" />
+							<h:commandButton id="chooseDsBt" value="#{mdLabels['loadDataset']}" action="#{loadDatasetBean.loadDataset}" />
+							</h:panelGrid>
+						</h:form>
+					</f:subview>
+			</ui:define>
+	</ui:composition>
+</h:body>
+</html>

@@ -15,14 +15,16 @@
 								</ui:define>
 
 								<ui:define name="content">
-												<h:form id="emptyForm" binding="#{formCreatorBean.form}" />
+												<f:subview id="mdForm">
+																<h:form id="emptyForm" binding="#{formCreatorBean.form}" />
 
-												<!-- invisible ajax field, it seems JSF does not load the JS-Script if ajax is set on the server -->
-												<h:form id="w2" rendered="false">
-																<h:inputText value="test">
-																				<f:ajax render="@none" />
-																</h:inputText>
-												</h:form>
+																<!-- invisible ajax field, it seems JSF does not load the JS-Script if ajax is set on the server -->
+																<h:form id="w2" rendered="false">
+																				<h:inputText value="test">
+																								<f:ajax render="@none" />
+																				</h:inputText>
+																</h:form>
+												</f:subview>
 								</ui:define>
 				</ui:composition>
 </h:body>

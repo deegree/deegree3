@@ -35,6 +35,35 @@ ul#horizontalList a:hover,ul#horizontalList span {
 	background-color: gray;
 }
 
+ul#verticalList {
+	text-align: left;
+}
+
+ul#verticalList li {
+	list-style: none;
+	margin-bottom: 20px;
+	margin-left: -35px;
+}
+
+ul#verticalList a,ul#verticalList span {
+	padding: 0.2em 1em;
+	text-decoration: none;
+	font-weight: bold;
+	border: 1px solid black;
+	border-left-color: white;
+	border-top-color: white;
+	color: maroon;
+	background-color: #ccc;
+}
+
+ul#verticalList a:hover,ul#verticalList span {
+	border-color: white;
+	border-left-color: black;
+	border-top-color: black;
+	color: white;
+	background-color: gray;
+}
+
 .mdFormHeader {
 	text-align: left;
 }
@@ -45,6 +74,6 @@ ul#horizontalList a:hover,ul#horizontalList span {
 }
 
 #verticalMenu {
-	position: absolute;
-	float: left;
+	float:left;
+	margin-right: 10px;
 }

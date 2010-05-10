@@ -252,7 +252,7 @@ public class FormConfigurationParser {
         String referenceToCodeList = getElementText( xmlStream, "referenceToCodeList", null );
         String selectedValueAsString = getElementText( xmlStream, "selectedValue", null );
         Object selectedValue = selectedValueAsString;
-        if ( SELECT_TYPE.MANY.equals( selectType ) ) {
+        if ( SELECT_TYPE.MANY.equals( selectType ) && selectedValueAsString != null ) {
             List<String> selValues = new ArrayList<String>();
             String[] split = selectedValueAsString.split( "," );
             for ( int i = 0; i < split.length; i++ ) {

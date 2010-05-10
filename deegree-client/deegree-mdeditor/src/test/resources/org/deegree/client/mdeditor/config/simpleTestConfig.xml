@@ -51,7 +51,7 @@
                 </Validation>
             </InputFormElement>
             <SelectFormElement id="selectOne2">
-                <selectType>one</selectType>
+                <selectType>many</selectType>
             </SelectFormElement>
         </FormGroup>
     </FormGroup>

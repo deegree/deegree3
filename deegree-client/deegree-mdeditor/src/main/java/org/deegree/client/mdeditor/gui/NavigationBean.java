@@ -36,7 +36,6 @@
 package org.deegree.client.mdeditor.gui;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -65,9 +64,8 @@ public class NavigationBean implements Serializable {
     private static final long serialVersionUID = 9025028665690108601L;
 
     public Object saveDataset() {
-        String id = UUID.randomUUID().toString();
+        String id;
         FacesContext fc = FacesContext.getCurrentInstance();
-        fc.getELContext();
         FormFieldBean formfields = (FormFieldBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
                                                                                                  null, "formFieldBean" );
 
@@ -78,6 +76,13 @@ public class NavigationBean implements Serializable {
             FormFieldPath pathToIdentifier = manager.getPathToIdentifier();
             Object value = formfields.getFormFields().get( pathToIdentifier.toString() ).getValue();
             id = String.valueOf( value );
+            if ( value == null || id == null || id.length() == 0 ) {
+                FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL,
+                                                             "ERROR.SAVE_DATASET.INVALID_ID" );
+                fc.addMessage( "SAVE_FAILED_INVALID_ID", msg );
+
+                return "/page/form/errorPage.xhtml";
+            }
 
             DatasetWriter.writeElements( id, formfields.getFormGroups() );
 
@@ -85,6 +90,8 @@ public class NavigationBean implements Serializable {
             FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_FATAL, "ERROR.SAVE_DATASET",
                                                          e.getMessage() );
             fc.addMessage( "SAVE_FAILED", msg );
+
+            return "/page/form/errorPage.xhtml";
         }
 
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.SAVE_DATASET", id );
@@ -125,10 +132,6 @@ public class NavigationBean implements Serializable {
         FacesMessage msg = GuiUtils.getFacesMessage( fc, FacesMessage.SEVERITY_INFO, "SUCCESS.RELOAD" );
         fc.addMessage( "RELOAD_SUCCESS", msg );
         return "/page/form/successPage.xhtml";
-    }
-
-    public Object loadDataset() {
-        return null;
     }
 
 }

@@ -60,36 +60,41 @@ abstract class FormWriter {
 
     static void appendFormGroup( XMLStreamWriter writer, FormGroup fg )
                             throws XMLStreamException {
-        writer.writeStartElement( FG_ELEM );
-        writer.writeAttribute( "id", fg.getId() );
+        // writer.writeStartElement( FG_ELEM );
+        // writer.writeAttribute( "id", fg.getId() );
 
         for ( FormElement fe : fg.getFormElements() ) {
             if ( fe instanceof FormField ) {
-                Object value = ( (FormField) fe ).getValue();
+                FormField ff = (FormField) fe;
+                Object value = ff.getValue();
                 if ( value != null ) {
-                    writer.writeStartElement( "Element" );
-                    writer.writeStartElement( "id" );
-                    writer.writeCharacters( fe.getId() );
-                    writer.writeEndElement();
-                    if ( value instanceof List<?> ) {
+
+                    if ( value instanceof List<?> && ( (List<?>) value ).size() > 0 ) {
+                        writer.writeStartElement( "Element" );
+                        writeId( writer, ff.getPath().toString() );
                         for ( Object o : (List<?>) value ) {
                             writeValue( writer, String.valueOf( o ) );
                         }
-                    } else if ( value instanceof Object[] ) {
+                        writer.writeEndElement();
+                    } else if ( value instanceof Object[] && ( (Object[]) value ).length > 0 ) {
+                        writer.writeStartElement( "Element" );
+                        writeId( writer, ff.getPath().toString() );
                         Object[] array = (Object[]) value;
                         for ( int i = 0; i < array.length; i++ ) {
                             writeValue( writer, String.valueOf( array[i] ) );
                         }
-                    } else {
+                        writer.writeEndElement();
+                    } else if ( ( String.valueOf( value ) ).length() > 0 ) {
+                        writer.writeStartElement( "Element" );
+                        writeId( writer, ff.getPath().toString() );
                         writeValue( writer, String.valueOf( value ) );
+                        writer.writeEndElement();
                     }
-                    writer.writeEndElement();
                 }
             } else if ( fe instanceof FormGroup ) {
                 appendFormGroup( writer, (FormGroup) fe );
             }
         }
-        writer.writeEndElement();
     }
 
     private static void writeValue( XMLStreamWriter writer, String value )
@@ -99,4 +104,10 @@ abstract class FormWriter {
         writer.writeEndElement();
     }
 
+    private static void writeId( XMLStreamWriter writer, String path )
+                            throws XMLStreamException {
+        writer.writeStartElement( "id" );
+        writer.writeCharacters( path );
+        writer.writeEndElement();
+    }
 }

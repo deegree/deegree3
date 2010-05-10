@@ -99,6 +99,7 @@ public class MenuCreatorBean implements Serializable {
 
             if ( listId != null && listGroup.getChildCount() == 0 ) {
                 listGroup.setRendererType( "org.deegree.ListGroupRenderer" );
+                listGroup.setId( GuiUtils.getUniqueId() );
                 listGroup.getAttributes().put( "listId", listId );
                 listGroup.getAttributes().put( "menuId", menuId );
                 for ( FormGroup formGroup : manager.getFormGroups() ) {
@@ -112,7 +113,8 @@ public class MenuCreatorBean implements Serializable {
                     param.setValue( formGroup.getId() );
                     link.getChildren().add( param );
                     listGroup.getChildren().add( link );
-                }
+                    System.out.println("l: " + link.getId() + " p " + param.getId());
+                } 
             }
         } catch ( ConfigurationException e ) {
             // TODO Auto-generated catch block

@@ -52,6 +52,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
+    <managed-bean>
+        <managed-bean-name>loadDatasetBean</managed-bean-name>
+        <managed-bean-class>org.deegree.client.mdeditor.gui.LoadDatasetBean</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
     <render-kit>
         <renderer>
             <component-family>javax.faces.Panel</component-family>

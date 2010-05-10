@@ -71,4 +71,20 @@ public class FormGroupInstanceReader {
         return items;
     }
 
+    public static List<String> getDatasets() {
+        List<String> datasets = new ArrayList<String>();
+        String dir = Configuration.getFilesDirURL();
+        File f = new File( dir );
+        if ( f.exists() && f.isDirectory() ) {
+            File[] listFiles = f.listFiles();
+            for ( int i = 0; i < listFiles.length; i++ ) {
+                String fileName = listFiles[i].getName();
+                if ( listFiles[i].isFile() && fileName.endsWith( ".xml" ) ) {
+                    datasets.add( fileName.substring( 0, fileName.indexOf( ".xml" ) ) );
+                }
+            }
+        }
+        return datasets;
+    }
+
 }

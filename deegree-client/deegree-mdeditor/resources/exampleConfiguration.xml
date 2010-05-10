@@ -31,7 +31,7 @@
     </FormGroup>
 
     <FormGroup id="AllgFormGroup">
-        <label>Angaben 2</label>
+        <label>Angaben</label>
         <title>Allgemeine Angaben zum Metadatensatz</title>
         <SelectFormElement id="selectOne11" visible="true">
             <label>Hierarchieebene:</label>
@@ -70,7 +70,7 @@
     </FormGroup>
 
     <FormGroup id="KontaktFormGroup">
-        <label>Kontaktdaten</label>
+        <label>Kontakte</label>
         <title>Kontaktdaten</title>
         <InputFormElement id="KtextName">
             <label>Name (Person):</label>
