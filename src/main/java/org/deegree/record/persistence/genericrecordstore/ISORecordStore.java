@@ -1077,6 +1077,9 @@ public class ISORecordStore implements RecordStore {
 
             PostGISWhereBuilder builder = null;
             int formatNumber = 0;
+            int[] formatNumbers = null;
+            PreparedStatement stmt = null;
+
             // if there is a typeName denoted, the record with this profile should be deleted.
             // if there is no typeName attribute denoted, every record matched should be deleted.
             if ( delete.getTypeName() != null ) {
@@ -1086,68 +1089,80 @@ public class ISORecordStore implements RecordStore {
                         formatNumber = typeNames.get( qName );
                     }
                 }
+            } else {
+                formatNumbers = new int[2];
+                formatNumbers[0] = 1;
+                formatNumbers[1] = 2;
             }
-            // TODO sortProperty
-            try {
-                builder = new PostGISWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(), null,
-                                                   useLegacyPredicates );
+            if ( formatNumber == 0 ) {
+                for ( int formatNum : formatNumbers ) {
+                    // TODO sortProperty
+                    try {
+                        builder = new PostGISWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(), null,
+                                                           useLegacyPredicates );
 
-            } catch ( FilterEvaluationException e ) {
+                    } catch ( FilterEvaluationException e ) {
 
-                e.printStackTrace();
-            }
-            ResultSet rs = null;
-            PreparedStatement preparedStatement = null;
-            List<Pair<StringBuilder, Collection<Object>>> preparedStatementList = new ArrayList<Pair<StringBuilder, Collection<Object>>>();
+                        e.printStackTrace();
+                    }
 
-            List<Pair<StringBuilder, Collection<Object>>> whereClauseList = new GenerateWhereClauseList(
-                                                                                                         builder.getWhereClause(),
-                                                                                                         builder.getWhereParams() ).generateList();
+                    ResultSet rs = null;
+                    PreparedStatement preparedStatement = null;
+                    List<Pair<StringBuilder, Collection<Object>>> preparedStatementList = new ArrayList<Pair<StringBuilder, Collection<Object>>>();
 
-            for ( Pair<StringBuilder, Collection<Object>> whereBuilderPair : whereClauseList ) {
-                try {
-                    Pair<StringBuilder, Collection<Object>> selectBrief = generateSELECTStatement(
-                                                                                                   formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
-                                                                                                   null, 2, 0, false,
-                                                                                                   builder,
-                                                                                                   whereBuilderPair );
-                    preparedStatementList.add( selectBrief );
-                } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    List<Pair<StringBuilder, Collection<Object>>> whereClauseList = new GenerateWhereClauseList(
+                                                                                                                 builder.getWhereClause(),
+                                                                                                                 builder.getWhereParams() ).generateList();
+
+                    for ( Pair<StringBuilder, Collection<Object>> whereBuilderPair : whereClauseList ) {
+                        try {
+                            Pair<StringBuilder, Collection<Object>> selectRecord = generateSELECTStatement(
+                                                                                                            formatTypeInISORecordStore.get( CSWConstants.SetOfReturnableElements.brief ),
+                                                                                                            null,
+                                                                                                            formatNum,
+                                                                                                            0, false,
+                                                                                                            builder,
+                                                                                                            whereBuilderPair );
+                            preparedStatementList.add( selectRecord );
+                        } catch ( IOException e ) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+
+                    preparedStatement = combinePreparedStatement( preparedStatementList, null, conn, false, builder );
+
+                    rs = preparedStatement.executeQuery();
+                    List<Integer> deletableDatasets = new ArrayList<Integer>();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append( "DELETE FROM " );
+                    stringBuilder.append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
+                    stringBuilder.append( " WHERE " ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
+                    stringBuilder.append( " = ?" );
+
+                    if ( rs != null ) {
+                        while ( rs.next() ) {
+                            deletableDatasets.add( rs.getInt( 2 ) );
+
+                        }
+                        rs.close();
+
+                        for ( int i : deletableDatasets ) {
+
+                            stmt = conn.prepareStatement( stringBuilder.toString() );
+                            stmt.setObject( 1, i );
+                            stmt.executeUpdate();
+
+                        }
+                    }
+                    affectedIds.addAll( deletableDatasets );
                 }
-            }
 
-            preparedStatement = combinePreparedStatement( preparedStatementList, null, conn, false, builder );
-
-            rs = preparedStatement.executeQuery();
-            List<Integer> deletableDatasets = new ArrayList<Integer>();
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append( "DELETE FROM " );
-            stringBuilder.append( PostGISMappingsISODC.DatabaseTables.datasets.name() );
-            stringBuilder.append( " WHERE " ).append( PostGISMappingsISODC.CommonColumnNames.id.name() );
-            stringBuilder.append( " = ?" );
-            PreparedStatement stmt = null;
-            if ( rs != null ) {
-                while ( rs.next() ) {
-                    deletableDatasets.add( rs.getInt( 2 ) );
-
-                }
-                rs.close();
-
-                for ( int i : deletableDatasets ) {
-
-                    stmt = conn.prepareStatement( stringBuilder.toString() );
-                    stmt.setObject( 1, i );
-                    stmt.executeUpdate();
-
-                }
             }
 
             if ( stmt != null ) {
                 stmt.close();
             }
-            affectedIds = deletableDatasets;
 
             break;
         }
