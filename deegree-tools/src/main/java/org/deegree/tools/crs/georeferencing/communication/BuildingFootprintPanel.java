@@ -50,7 +50,7 @@ import javax.swing.JPanel;
  * 
  * @version $Revision$, $Date$
  */
-class XYCoordinates extends JPanel {
+class BuildingFootprintPanel extends JPanel {
 
     /**
      * 
@@ -68,7 +68,7 @@ class XYCoordinates extends JPanel {
     /**
      * 
      */
-    public XYCoordinates() {
+    public BuildingFootprintPanel() {
         // TODO Auto-generated constructor stub
     }
 

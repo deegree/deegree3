@@ -42,6 +42,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 
 import javax.media.opengl.GLCanvas;
@@ -76,7 +77,7 @@ public class GRViewerGUI extends JFrame {
 
     private final JPanel panelRightAbove;
 
-    private XYCoordinates xyCoordinates;
+    private BuildingFootprintPanel footprintPanel;
 
     private JMenuItem openurlMenuItem;
 
@@ -99,13 +100,13 @@ public class GRViewerGUI extends JFrame {
         // panel right above
         panelRightAbove = new JPanel( new BorderLayout() );
         panelRightAbove.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED ) );
-        xyCoordinates = new XYCoordinates();
+        footprintPanel = new BuildingFootprintPanel();
         panelRightAbove.setBackground( Color.white );
-        panelRightAbove.add( xyCoordinates );
+        panelRightAbove.add( footprintPanel );
         panelRightAbove.setPreferredSize( SUBCOMPONENT_DIMENSION );
 
         GridBagLayoutHelper.addComponent( this.getContentPane(), gbl, panelRightAbove, 1, 0, 1, 1,
-                                          xyCoordinates.getInsets(), GridBagConstraints.LINE_END, 1, 1 );
+                                          footprintPanel.getInsets(), GridBagConstraints.LINE_END, 1, 1 );
 
         setupMenubar();
         setup2DScene( gbl );
@@ -123,8 +124,9 @@ public class GRViewerGUI extends JFrame {
         menuBar.add( menuFile );
         openurlMenuItem = new JMenuItem( "ows7-Test" );
 
-        // ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
-        ows7url = "http://localhost:8080/deegree-wms-cite111/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
+        ows7url = "http://ows7.lat-lon.de/haiti-wms/services?request=GetCapabilities&service=WMS&version=1.1.1";
+        // ows7url =
+        // "http://localhost:8080/deegree-wms-cite111/services?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS";
 
         menuFile.add( openurlMenuItem );
         this.getRootPane().setJMenuBar( menuBar );
@@ -191,6 +193,11 @@ public class GRViewerGUI extends JFrame {
      */
     public Scene2DPanel getScenePanel2D() {
         return scenePanel2D;
+    }
+
+    public void addHoleWindowListener( ComponentListener c ) {
+        this.addComponentListener( c );
+
     }
 
 }

@@ -41,6 +41,8 @@ import java.net.URL;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.geometry.Envelope;
+
 /**
  * TODO add class documentation here
  * 
@@ -73,5 +75,10 @@ public interface Scene2D {
      * @param change
      */
     public void setImageBoundingbox( Point2d change );
+
+    /**
+     * returns the boundingbox of the image
+     */
+    public Envelope getImageBoundingbox();
 
 }

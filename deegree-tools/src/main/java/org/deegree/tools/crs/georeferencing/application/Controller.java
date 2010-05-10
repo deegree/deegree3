@@ -37,6 +37,8 @@ package org.deegree.tools.crs.georeferencing.application;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.MalformedURLException;
@@ -75,9 +77,19 @@ public class Controller {
         panel = view.getScenePanel2D();
 
         view.addScene2DurlListener( new Scene2DurlListener() );
+        view.addHoleWindowListener( new HoleWindowListener() );
 
     }
 
+    /**
+     * 
+     * Controls the ActionListener
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
     class Scene2DurlListener implements ActionListener {
 
         /*
@@ -105,6 +117,15 @@ public class Controller {
         }
     }
 
+    /**
+     * 
+     * Controls the MouseListener
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
     class Scene2DMouseListener implements MouseListener {
 
         @Override
@@ -167,6 +188,45 @@ public class Controller {
                 panel.repaint();
                 System.out.println( panel.getBeginDrawImageAtPosition() );
             }
+
+        }
+
+    }
+
+    /**
+     * 
+     * Controls the ComponentListener
+     * 
+     * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    class HoleWindowListener implements ComponentListener {
+
+        @Override
+        public void componentHidden( ComponentEvent arg0 ) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void componentMoved( ComponentEvent arg0 ) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void componentResized( ComponentEvent c ) {
+            if ( model.getImageBoundingbox() != null ) {
+                model.generateImage( panel.getBounds() );
+            }
+
+        }
+
+        @Override
+        public void componentShown( ComponentEvent arg0 ) {
+            // TODO Auto-generated method stub
 
         }
 

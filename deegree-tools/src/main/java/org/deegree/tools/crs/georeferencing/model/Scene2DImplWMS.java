@@ -68,6 +68,8 @@ public class Scene2DImplWMS implements Scene2D {
 
     private List<String> formatList;
 
+    private Envelope completeRequestBoundingbox;
+
     private Envelope imageBoundingbox;
 
     private Point2d onePixel;
@@ -89,8 +91,7 @@ public class Scene2DImplWMS implements Scene2D {
      * @param maxY
      * @return
      */
-    private BufferedImage generateMap( double panelWidth, double panelHeight, double minX, double maxX, double minY,
-                                       double maxY ) {
+    private BufferedImage generateMap( double panelWidth, double panelHeight, Envelope imageBoundingbox ) {
         BufferedImage image = null;
 
         try {
@@ -133,24 +134,50 @@ public class Scene2DImplWMS implements Scene2D {
     @Override
     public BufferedImage generateImage( Rectangle sceneBounds ) {
 
-        int proportion = determineProportion( sceneBounds );
+        double panelWidth = sceneBounds.getWidth();
+        double panelHeight = sceneBounds.getHeight();
+
         geometryFactory = new GeometryFactory();
+        if ( imageBoundingbox == null ) {
+            requestedImage = generateMap( panelWidth, panelHeight, generateImageBoundingbox( sceneBounds ) );
+        } else {
+            requestedImage = generateMap( panelWidth, panelHeight, imageBoundingbox );
+        }
+        return requestedImage;
+
+    }
+
+    private Envelope generateImageBoundingbox( Rectangle sceneBounds ) {
+        int proportion = determineProportion( sceneBounds );
 
         double panelWidth = sceneBounds.getWidth();
         double panelHeight = sceneBounds.getHeight();
 
         wmsClient = new WMSClient111( imageRequestUrl );
-        // lays = Collections.singletonList( "dem" );
-        // srs = new CRS( "EPSG:32618" );
-        lays = Collections.singletonList( "root" );
-        srs = new CRS( "EPSG:4326" );
-        if ( imageBoundingbox == null ) {
-            imageBoundingbox = wmsClient.getBoundingBox( srs.getName(), lays );
+        lays = Collections.singletonList( "dem" );
+        srs = new CRS( "EPSG:32618" );
+        // lays = Collections.singletonList( "root" );
+        // srs = new CRS( "EPSG:4326" );
+
+        if ( wmsClient.hasLayer( lays.get( 0 ) ) ) {
+            completeRequestBoundingbox = wmsClient.getBoundingBox( srs.getName(), lays );
+        } else {
+            // the layer is not supported
         }
-        double minX = imageBoundingbox.getMin().get0();
-        double maxX = imageBoundingbox.getMax().get0();
-        double minY = imageBoundingbox.getMin().get1();
-        double maxY = imageBoundingbox.getMax().get1();
+
+        double spanX = completeRequestBoundingbox.getSpan0();
+        double spanY = completeRequestBoundingbox.getSpan1();
+        double x0 = completeRequestBoundingbox.getMin().get0();
+        double x1 = completeRequestBoundingbox.getMax().get0();
+        double y0 = completeRequestBoundingbox.getMin().get1();
+        double y1 = completeRequestBoundingbox.getMax().get1();
+        Point2d spanHalbe = new Point2d( ( spanX / 2 ), ( spanY / 2 ) );
+        Point2d sight = new Point2d( ( spanX * 0.05 ), ( spanY * 0.05 ) );
+
+        double minX = x0 + spanHalbe.getX() - sight.getX();
+        double maxX = x1 - spanHalbe.getX() + sight.getX();
+        double minY = y0 + spanHalbe.getY() - sight.getY();
+        double maxY = y1 - spanHalbe.getY() + sight.getY();
 
         if ( proportion == 0 ) {
             // do nothing
@@ -164,20 +191,21 @@ public class Scene2DImplWMS implements Scene2D {
         } else {
             double newHeight = ( panelHeight / panelWidth ) * ( maxX - minX );
 
-            imageBoundingbox = geometryFactory.createEnvelope( minX, minY, minX, ( minX + newHeight ), srs );
+            imageBoundingbox = geometryFactory.createEnvelope( minX, minY, maxX, ( minY + newHeight ), srs );
 
         }
         onePixel = normalizeImageBoundingbox( sceneBounds, imageBoundingbox );
         formatList = Collections.singletonList( "image/jpeg" );
-
-        requestedImage = generateMap( panelWidth, panelHeight, minX, maxX, minY, maxY );
-        return requestedImage;
+        return imageBoundingbox;
 
     }
 
     /**
      * Based on bounds from an upper component this method normalizes the bounds of the upper component regarding to an
      * envelope to one pixel.
+     * <p>
+     * Sets the relation between panelBounds as the rectangle of the panel and bbox as the envelope of the requested
+     * image.
      * 
      * @param panelBounds
      *            the rectangle bounds, not <Code>null</Code>
@@ -193,7 +221,7 @@ public class Scene2DImplWMS implements Scene2D {
         double envelopeMeasureY = bbox.getMax().get1() - bbox.getMin().get1();
         double oneX = envelopeMeasureX / w;
         double oneY = envelopeMeasureY / h;
-
+        System.out.println( "one Pixel is: " + oneX + " - " + oneY );
         return new Point2d( oneX, oneY );
     }
 
@@ -216,6 +244,10 @@ public class Scene2DImplWMS implements Scene2D {
 
         imageBoundingbox = geometryFactory.createEnvelope( envStartPosX, envStartPosY, envEndPosX, envEndPosY, srs );
 
+    }
+
+    public Envelope getImageBoundingbox() {
+        return imageBoundingbox;
     }
 
 }
