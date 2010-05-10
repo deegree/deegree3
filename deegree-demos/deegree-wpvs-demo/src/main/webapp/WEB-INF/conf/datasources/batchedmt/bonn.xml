@@ -7,4 +7,5 @@
   <Directory>file:/media/storage/bonn3d/dem/geometry/64</Directory>
   <!--Directory>file:/media/storage/bonn3d/dem/geometry/32</Directory-->
   <!-- <Directory>file:/tmp</Directory>-->
+  <MaxDirectMemory>1048576</MaxDirectMemory>
 </BatchedMTFileStore>
