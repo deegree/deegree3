@@ -107,7 +107,6 @@ public class PerspectiveViewService {
 
     private ModelDatasetWrapper renderableDatasets;
 
-    
     private TextureDatasetWrapper textureDatasets;
 
     private ColormapDatasetWrapper colormapDatasets;
@@ -303,15 +302,18 @@ public class PerspectiveViewService {
                                                              defaultCRS );
         renderableDatasets = new ModelDatasetWrapper();
         sceneEnvelope = renderableDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
-                                                                     configAdapter, dsd );
+                                                                       configAdapter, dsd );
 
         LOG.debug( "The scene envelope after loading the renderables: {} ", sceneEnvelope );
-
 
         LOG.debug( "The scene envelope after loading the trees: {} ", sceneEnvelope );
 
         int noDFC = sc.getNumberOfDEMFragmentsCached() == null ? 1000 : sc.getNumberOfDEMFragmentsCached();
         int dIOM = sc.getDirectIOMemory() == null ? 500 : sc.getDirectIOMemory();
+        demDatasets = new DemDatasetWrapper( noDFC, dIOM, ConfiguredOpenGLInitValues.getTerrainAmbient(),
+                                             ConfiguredOpenGLInitValues.getTerrainDiffuse(),
+                                             ConfiguredOpenGLInitValues.getTerrainSpecular(),
+                                             ConfiguredOpenGLInitValues.getTerrainShininess() );
         sceneEnvelope = demDatasets.fillFromDatasetDefinitions( sceneEnvelope, this.translationToLocalCRS,
                                                                 configAdapter, dsd );
 
@@ -503,8 +505,8 @@ public class PerspectiveViewService {
                                                    this.maxTextureSize,
                                                    configuredOpenGLInitValues.getCompositingTextureShaderPrograms() );
         GetViewRenderer renderer = new GetViewRenderer( request, context, imageBuffer, demRenderer, colormap,
-                                                        textureManagers, buildingRenders, 
-                                                        this.copyrightKey, this.copyrighScale, this.latitudeOfScene );
+                                                        textureManagers, buildingRenders, this.copyrightKey,
+                                                        this.copyrighScale, this.latitudeOfScene );
 
         synchronized ( offscreenBuffer ) {
             offscreenBuffer.addGLEventListener( renderer );

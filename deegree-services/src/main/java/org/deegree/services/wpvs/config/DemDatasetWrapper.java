@@ -72,9 +72,9 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
     private float[] ambientColor;
 
     private float[] specularColor;
-    
+
     private float[] diffuseColor;
-    
+
     private float shininess;
 
     /**
@@ -83,9 +83,20 @@ public class DemDatasetWrapper extends DatasetWrapper<TerrainRenderingManager> {
      * @param directMeshfragmentPoolSize
      *            the size (in MB) of the pool used for allocating direct byte buffers for reading mesh fragments, used
      *            in the {@link MeshFragmentDataReader}.
+     * @param ambientColor
+     * @param diffuseColor
+     * @param specularColor
+     * @param shininess
      */
-    public DemDatasetWrapper( int numberOfDEMFragmentsCached, int directMeshfragmentPoolSize ) {
+    public DemDatasetWrapper( int numberOfDEMFragmentsCached, int directMeshfragmentPoolSize, float[] ambientColor,
+                              float[] diffuseColor, float[] specularColor, float shininess ) {
         this.numberOfDEMFragmentsCached = numberOfDEMFragmentsCached;
+        this.ambientColor = ambientColor;
+        this.diffuseColor = diffuseColor;
+        this.specularColor = specularColor;
+        this.shininess = shininess;
+        // this.directMeshfragmentPool = new DirectByteBufferPool( directMeshfragmentPoolSize * 1024 * 1024,
+        // "fragment_data" );
     }
 
     /**
